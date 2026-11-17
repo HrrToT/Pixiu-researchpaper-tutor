@@ -85,8 +85,12 @@ def owned_wrapper_title(record,source):
     return work
 
 
-def projection(evidence):
-    return {key:deepcopy(evidence[key]) for key in OWNED if key in evidence}
+def projection(evidence, *, literal_state=False):
+    result={key:deepcopy(evidence[key]) for key in OWNED if key in evidence}
+    if literal_state:
+        result['literalVerification']=evidence.get('verification',{}).get('literal')
+        if 'textQualityAudit' in evidence:result['textQualityAudit']=deepcopy(evidence['textQualityAudit'])
+    return result
 
 
 def extract(record, make_evidence, validate, update):
@@ -102,6 +106,10 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     run_id = record['runId']; state = record.get('state', {})
     canonical = record['adaptiveExtractionContractVersion'] == 3
     input_version = 2 if canonical else 1
+    from services.deep_research.source_passage_reuse import rejected_state_enabled
+    from services.deep_research.text_quality import literal_state_valid
+    rejected_states=rejected_state_enabled(record)
+    frozen_projection=lambda ev:projection(ev,literal_state=rejected_states)
     sources = state.get('readResults', [])
     obligations = {o['obligationId']:o for p in state.get('plan', []) for o in p['obligations']}
     old_evidence = state.get('evidence', [])
@@ -117,10 +125,12 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
                     'location','originalTextDigest','quote','obligations'}
                 or type(entry['input']['version']) is not int or entry['input']['version'] != input_version
                 or key != digest(entry['input']) or entry['evidenceId'] not in by_id
-                or entry['evidenceDigest'] != digest(projection(by_id[entry['evidenceId']]))):
+                or entry['evidenceDigest'] != digest(frozen_projection(by_id[entry['evidenceId']]))):
             raise DeepResearchError('invalid_source_passage_state','保存的原文证据或输入摘要已改变，不能继续提取。')
         old = by_id[entry['evidenceId']]; frozen = entry['input']
-        if (old.get('verification',{}).get('literal') != 'passed'
+        literal=old.get('verification',{}).get('literal')
+        if ((literal not in ('passed','failed') if rejected_states else literal!='passed')
+                or rejected_states and not literal_state_valid(old)
                 or any(frozen[a] != old.get(b) for a,b in (('sourceId','sourceId'),('workId','sourceWorkId'),
                     ('versionId','sourceVersionId'),('contentHash','contentHash'),('accessLevel','accessLevel'),
                     ('quote','quote')))
@@ -200,12 +210,14 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
                 for a,b in (('ownerMaterialId','ownerMaterialId'),('sourcePublicationIdentity','publicationIdentity')):
                     if source.get(b): ev[a] = deepcopy(source[b])
                 attach_table_packet(ev, source)
-                eid = ev['evidenceId']; owned_digest = digest(projection(ev))
+                if rejected_states and not literal_state_valid(ev):
+                    raise DeepResearchError('invalid_source_passage_state','原文验证状态与字符检查不一致，未保存本批证据。')
+                eid = ev['evidenceId']; owned_digest = digest(frozen_projection(ev))
                 entry = {'input':frozen,'evidenceId':eid,'evidenceDigest':owned_digest}
                 if key in journal['entries'] and journal['entries'][key] != entry:
                     raise DeepResearchError('invalid_source_passage_state','原文证据输入已改变，不能复用旧记录。')
                 if eid in by_id:
-                    if digest(projection(by_id[eid])) != owned_digest:
+                    if digest(frozen_projection(by_id[eid])) != owned_digest:
                         raise DeepResearchError('invalid_source_passage_state','已有原文证据与读取内容不一致。')
                     by_id[eid]['obligationIds'] = list(dict.fromkeys([*by_id[eid].get('obligationIds',[]), *eligible]))
                 else:

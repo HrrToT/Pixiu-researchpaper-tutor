@@ -4,13 +4,21 @@ from services.deep_research.contracts import digest
 
 def enabled(record):
     return (type(record.get('sourcePassageReuseContractVersion')) is int
-        and record['sourcePassageReuseContractVersion'] in (1,2)
+        and (record['sourcePassageReuseContractVersion'] in (1,2) or rejected_state_enabled(record))
         and type(record.get('adaptiveExtractionContractVersion')) is int
         and record['adaptiveExtractionContractVersion']==3)
 
 
 def failure_reuse_enabled(record):
-    return enabled(record) and record['sourcePassageReuseContractVersion']==2
+    return enabled(record) and record['sourcePassageReuseContractVersion'] in (2,3)
+
+
+def rejected_state_enabled(record):
+    """A new journal binds literal rejection and its glyph audit immutably."""
+    return (type(record.get('sourcePassageReuseContractVersion')) is int
+        and record['sourcePassageReuseContractVersion']==3
+        and type(record.get('sourceGlyphContractVersion')) is int and record['sourceGlyphContractVersion']==1
+        and type(record.get('adaptiveExtractionContractVersion')) is int and record['adaptiveExtractionContractVersion']==3)
 
 
 def key(frozen):

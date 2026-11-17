@@ -9,6 +9,17 @@ def control_count(text):
     return sum((ord(c)<32 and c not in "\n\r\t") or ord(c)==127 or c=="\ufffd" for c in text)
 
 
+def literal_state_valid(evidence):
+    """Validate a persisted guard decision without granting literal support."""
+    literal=evidence.get('verification',{}).get('literal')
+    if literal not in ('passed','failed'):return False
+    count=control_count(evidence.get('quote'))+control_count(evidence.get('sourceContext'))
+    if count:
+        return literal=='failed' and evidence.get('textQualityAudit')=={
+            'version':1,'status':'unreadable_glyphs','controlCount':count}
+    return 'textQualityAudit' not in evidence
+
+
 def guard(factory,record):
     if type(record.get('sourceGlyphContractVersion')) is not int or record['sourceGlyphContractVersion']!=1:
         return factory
