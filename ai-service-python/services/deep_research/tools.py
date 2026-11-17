@@ -719,6 +719,7 @@ class BudgetedSemanticChecker:
         diagnostic_target_structure=False,
         short_circuit_scope_observations=False,
         workflow_representation_context=None,
+        comparison_review_batches=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -761,6 +762,7 @@ class BudgetedSemanticChecker:
         self._configuration_consistency = configuration_consistency
         self._prospective_envelope = prospective_envelope
         self._review_batch_planning = review_batch_planning
+        self._comparison_review_batches = comparison_review_batches
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -832,7 +834,13 @@ class BudgetedSemanticChecker:
         isolated = (self._isolate_factual_claims() if callable(self._isolate_factual_claims)
                     else self._isolate_factual_claims) is True
         size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
-        batches = proposal_batches + [(facts[i:i + size], node) for i in range(0, len(facts), size)]
+        fact_batches=[facts[i:i + size] for i in range(0,len(facts),size)]
+        batch_policy=self._comparison_review_batches
+        batch_policy=(batch_policy() if callable(batch_policy) else batch_policy) is True
+        if batch_policy and isolated and facts:
+            from services.deep_research.comparison_review_batches import groups
+            fact_batches=groups(facts,lambda batch:self._check_batch(batch,evidence,[],node=node,_preview=True))
+        batches = proposal_batches + [(batch, node) for batch in fact_batches]
         verdicts = [*quantity_failures,*premise_failures]
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
         context_states={}
@@ -1342,10 +1350,15 @@ The dataAvailability object is an internal audit, not new experimental results.
         envelope_version=(self._prospective_envelope() if callable(self._prospective_envelope)
                           else self._prospective_envelope)
         full_review_inputs=advice_mode or review_envelope(envelope_version,review_version,claims)
+        factual_batch_policy=self._comparison_review_batches
+        factual_batch_policy=(factual_batch_policy() if callable(factual_batch_policy) else factual_batch_policy) is True
+        complete_factual_batch=factual_batch_policy and single_decision and node in {'verify','verify_repair'}
         if full_review_inputs and not advice_mode:
             prompt=build_review(claims_text=claims_text,context=wire_context,question=question,
                 evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode,
                 version=envelope_version)
+        if complete_factual_batch:
+            full_review_inputs=True
         if advice_mode:
             from services.deep_research.general_advice import prompt as advice_prompt
             prompt=advice_prompt(claims_text,question,evidence_text)
@@ -1498,18 +1511,25 @@ The dataAvailability object is an internal audit, not new experimental results.
             content = result.get("content", "[]")
             from services.deep_research.graph import _safe_parse_json
             parsed = _safe_parse_json(content)
+            isolated_batch_failures={}
             if single_decision:
                 from services.deep_research.factual_decision import decode
-                if source_field_references:
-                    from services.deep_research.review_source_fields import resolve_response
-                    parsed=resolve_response(parsed,claims,visible_evidence,reverse_aliases)
                 singleton_policy=self._singleton_factual_response
                 singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
-                parsed=decode(parsed,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':claims[0]['claimId']}
-                    if singleton_policy and len(claims)==1 else {}))
+                def decode_one(rows,targets):
+                    if source_field_references:
+                        from services.deep_research.review_source_fields import resolve_response
+                        rows=resolve_response(rows,targets,visible_evidence,reverse_aliases)
+                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
+                        if singleton_policy and len(targets)==1 else {}))
+                if complete_factual_batch and len(claims)>1:
+                    from services.deep_research.comparison_review_batches import decode_targets
+                    parsed,isolated_batch_failures=decode_targets(parsed,claims,result,lambda rows,c:decode_one(rows,[c]))
+                else:
+                    parsed=decode_one(parsed,claims)
             
-            expected = {claim['claimId'] for claim in claims}
-            if (result.get('finishReason') == 'length' or not isinstance(parsed, list)
+            expected = {claim['claimId'] for claim in claims} - isolated_batch_failures.keys()
+            if ((result.get('finishReason') == 'length' and not isolated_batch_failures) or not isinstance(parsed, list)
                     or len(parsed) != len(expected)
                     or any(not isinstance(v, dict) or v.get('status') not in {'passed', 'failed'}
                            for v in parsed)
@@ -1538,7 +1558,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 parsed = [normalize_audit_scope(target_by_id[v['claimId']], v, visible_evidence,
                           version=comparison_version) for v in parsed]
             from services.deep_research.rejection_audit import enabled as rejection_binding,bind as bind_rejection
-            if full_review_inputs and not advice_mode and rejection_binding(envelope_version):
+            if full_review_inputs and not advice_mode and not complete_factual_batch and rejection_binding(envelope_version):
                 if envelope_version==10:
                     from services.deep_research.review_field_refs import bind_refs as bind_rejection
                 parsed=[bind_rejection(v,[*json.loads(claims_text),*wire_context]) for v in parsed]
@@ -1608,6 +1628,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if availability_errors:
                     verdict['status'] = 'failed'
                     verdict['reason'] = '所选数据范围或可用数量尚未核实：' + ', '.join(availability_errors)
+            if isolated_batch_failures:
+                combined={**isolated_batch_failures,**{v['claimId']:v for v in parsed}}
+                return [combined[c['claimId']] for c in claims]
             return parsed
             
         except DeepResearchError as exc:

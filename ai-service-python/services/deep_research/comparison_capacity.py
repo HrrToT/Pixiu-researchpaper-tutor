@@ -66,6 +66,12 @@ def after_synthesis(record):
     # Each isolated factual point needs its own semantic review. Scope operators,
     # capacity splits, repairs or invalid responses can require additional calls.
     review = len(facts) + bool(advice) + bool(science)
+    from services.deep_research.comparison_review_batches import enabled as batch_enabled,MAX_TARGETS
+    batching=batch_enabled(record)
+    if batching:
+        # Optimistic call lower bound only: complete inputs may split further,
+        # and scope operators still have separate scientific operations.
+        review = (len(facts)+MAX_TARGETS-1)//MAX_TARGETS + bool(advice) + bool(science)
     audit = int(bool(claims))
     remaining = maximum - ordinary - reserved
     return {'version': 1, 'status': 'estimated', 'draftPoints': len(claims),

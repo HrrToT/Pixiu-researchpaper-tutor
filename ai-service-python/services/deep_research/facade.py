@@ -111,10 +111,15 @@ class ResearchFacade:
         comparison_cells_version: int = 0,
         shared_experiment_plan_version: int = 0,
         shared_experiment_http_observation_version: int = 0,
+        comparison_review_batch_version: int = 0,
     ):
         if type(comparison_cells_version) is not int or comparison_cells_version not in (0,1):
             raise ValueError('Invalid server comparison cell rollout policy')
         self._comparison_cells_version = comparison_cells_version
+        if (type(comparison_review_batch_version) is not int or comparison_review_batch_version not in (0,1)
+                or comparison_review_batch_version == 1 and comparison_cells_version != 1):
+            raise ValueError('Invalid server comparison review batch policy')
+        self._comparison_review_batch_version = comparison_review_batch_version
         if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1):
             raise ValueError('Invalid server shared experiment rollout policy')
         self._shared_experiment_plan_version = shared_experiment_plan_version
@@ -310,6 +315,7 @@ class ResearchFacade:
             "authoredBodyContractVersion": 3,
             "synthesisInputContractVersion": 2,
             "comparisonCellsContractVersion": self._comparison_cells_version,
+            "comparisonReviewBatchContractVersion": self._comparison_review_batch_version,
             "comparisonPlanningContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 2 if self._comparison_cells_version == 1 else 0,
@@ -1337,7 +1343,9 @@ class ResearchFacade:
         from services.deep_research.general_advice import enabled as general_advice_enabled
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
+        from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled
         checker = BudgetedSemanticChecker(invoker, run_id,
+            comparison_review_batches=lambda: comparison_batch_enabled(self._repo.require_run(run_id)),
             workflow_representation_context=lambda claims, context: representation_review_context(
                 self._repo.require_run(run_id), claims, context),
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),

@@ -297,6 +297,9 @@ def initialize_runtime():
     if _runtime is not None:
         return _runtime
     comparison_profile = os.environ.get('DEEP_RESEARCH_COMPARISON_CELLS', '0')
+    comparison_batch_profile = os.environ.get('DEEP_RESEARCH_COMPARISON_REVIEW_BATCHES', '0')
+    if comparison_batch_profile not in ('0','1'):
+        raise ValueError('Invalid server comparison review batch policy')
     shared_profile = os.environ.get('DEEP_RESEARCH_SHARED_EXPERIMENT_PLAN', '0')
     shared_observation_profile = os.environ.get('DEEP_RESEARCH_SHARED_HTTP_OBSERVATION', '0')
     if shared_observation_profile not in ('0','1'):
@@ -397,6 +400,7 @@ def initialize_runtime():
     from functools import partial
     facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
                            comparison_cells_version=int(comparison_profile),
+                           comparison_review_batch_version=int(comparison_batch_profile),
                            shared_experiment_plan_version=int(shared_profile),
                            shared_experiment_http_observation_version=int(shared_observation_profile),
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))

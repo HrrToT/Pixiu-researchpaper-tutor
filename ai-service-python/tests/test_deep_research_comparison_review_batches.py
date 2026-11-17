@@ -1,0 +1,217 @@
+from copy import deepcopy
+import json
+import re
+from unittest.mock import Mock
+
+import pytest
+
+from services.deep_research.comparison_review_batches import MARKER,enabled,groups
+from services.deep_research.contracts import UnknownCallError
+from services.deep_research.tools import BudgetedSemanticChecker
+
+
+def inputs(count=3):
+    claims=[{'claimId':f'c{i}','kind':'reported','text':f'Method {chr(65+i)} retains quality.',
+             'conditions':{},'evidenceRefs':[f'own{i}']} for i in range(count)]
+    evidence=[{'evidenceId':f'own{i}','quote':c['text'],'sourceWorkId':f'paper{i}',
+               'sourceVersionId':'v','sourceContext':f'Context. {c["text"]} Qualification.'}
+              for i,c in enumerate(claims)]
+    return claims,evidence
+
+
+def response(key,index):
+    return {'claimId':key,'reason':'Own observation supports this bounded target.',
+            'scopeAudit':{'claimStrength':'bounded','evidenceStrength':'bounded','supported':True,
+                'statementPath':['text'],'premises':[{'evidenceId':f'E{index+1}','path':['quote']}]}}
+
+
+def checker(invoke,active=True):
+    c=BudgetedSemanticChecker(invoke,'r',single_factual_decision=True,factual_scope=True,
+        complete_factual_scope=True,isolate_factual_claims=True,audit_source_fields=True,
+        audit_target_fields=True,scope_source_paths=True)
+    c._comparison_review_batches=active
+    return c
+
+
+def test_three_targets_use_one_request_with_all_own_evidence_and_normal_validation():
+    claims,evidence=inputs();before=deepcopy((claims,evidence))
+    invoke=Mock(return_value={'content':json.dumps([response(c['claimId'],i) for i,c in enumerate(claims)])})
+    result=checker(invoke)(claims,evidence)
+    assert [r['status'] for r in result]==['passed']*3
+    assert invoke.call_count==1 and invoke.call_args.kwargs['use_reserve'] is True
+    for e in evidence:assert e['quote'] in invoke.call_args.kwargs['prompt']
+    assert (claims,evidence)==before
+
+
+@pytest.mark.parametrize('defect',['missing','duplicate','malformed','borrowed_field'])
+def test_one_bad_target_does_not_approve_it_or_discard_valid_siblings(defect):
+    claims,evidence=inputs();raw=[response(c['claimId'],i) for i,c in enumerate(claims)]
+    if defect=='missing':raw.pop(1)
+    elif defect=='duplicate':raw.append(deepcopy(raw[1]))
+    elif defect=='malformed':raw[1]['scopeAudit'].pop('supported')
+    else:
+        # A source-field reference from a sibling must fail its own target.
+        raw[1].pop('reason');raw[1]['reasonParts']=[{'text':'A statement.', 'evidenceId':'E1','path':['quote']}]
+    invoke=Mock(return_value={'content':json.dumps(raw)})
+    result=checker(invoke)(claims,evidence)
+    assert [r['status'] for r in result]==['passed','failed','passed']
+    assert result[1]['executionState']=='received_invalid'
+    assert invoke.call_count==1
+
+
+def test_borrowed_scope_premise_fails_normal_own_source_gate():
+    claims,evidence=inputs();raw=[response(c['claimId'],i) for i,c in enumerate(claims)]
+    raw[1]['scopeAudit']['premises'][0]['evidenceId']='E1'
+    result=checker(Mock(return_value={'content':json.dumps(raw)}))(claims,evidence)
+    assert [r['status'] for r in result]==['passed','failed','passed']
+
+
+@pytest.mark.parametrize('defect',['foreign','not_array','length'])
+def test_unassignable_or_truncated_reply_keeps_entire_batch_unresolved(defect):
+    claims,evidence=inputs();raw=[response(c['claimId'],i) for i,c in enumerate(claims)]
+    if defect=='foreign':raw.append(response('foreign',0))
+    elif defect=='not_array':raw={'unexpected':'value'}
+    invoke=Mock(return_value={'content':json.dumps(raw),'finishReason':'length' if defect=='length' else 'stop'})
+    result=checker(invoke)(claims,evidence)
+    assert all(v['status']=='failed' and v['executionState']=='received_invalid' for v in result)
+    assert invoke.call_count==1
+
+
+def test_maximum_three_and_old_singleton_grouping_are_preserved():
+    claims,evidence=inputs(4)
+    def invoke(**kw):
+        ids=list(dict.fromkeys(re.findall(r'"claimId"\s*:\s*"(c\d+)"',kw['prompt'])))
+        return {'content':json.dumps([response(key,i) for i,key in enumerate(ids)])}
+    active=Mock(side_effect=invoke);legacy=Mock(side_effect=invoke)
+    assert all(v['status']=='passed' for v in checker(active)(claims,evidence))
+    assert all(v['status']=='passed' for v in checker(legacy,False)(claims,evidence))
+    assert active.call_count==2 and legacy.call_count==4
+
+
+def test_complete_oversized_quote_is_not_trimmed_or_sent():
+    claims,evidence=inputs(1);evidence[0]['quote']='x'*40000
+    evidence[0]['sourceContext']=evidence[0]['quote']
+    invoke=Mock();result=checker(invoke)(claims,evidence)
+    assert result[0]['status']=='failed' and result[0]['executionState']=='not_started'
+    assert result[0]['reviewInputCapacity']['inputBytes']>24000
+    invoke.assert_not_called()
+
+
+def test_unknown_propagates_and_does_not_dispatch_next_group():
+    claims,evidence=inputs(4);invoke=Mock(side_effect=UnknownCallError('unknown'))
+    with pytest.raises(UnknownCallError):checker(invoke)(claims,evidence)
+    assert invoke.call_count==1
+
+
+def test_groups_preserve_all_targets_when_singleton_cannot_fit():
+    claims,_=inputs(4);before=deepcopy(claims)
+    result=groups(claims,lambda batch:{'inputBytes':100*len(batch),'maxInputBytes':50})
+    assert result==[[c] for c in claims] and claims==before
+
+
+@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+def test_server_owned_marker_cannot_be_changed_or_injected(tmp_path,replacement):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    repo=DeepResearchRepository(tmp_path/'runs.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=1,
+                          comparison_review_batch_version=1)
+    try:
+        r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Compare methods',
+            'deferStart':True,MARKER:replacement},start_async=False)
+        assert type(r[MARKER]) is int and r[MARKER]==1
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run(r['runId'],lambda old:{**old,MARKER:replacement})
+    finally:facade.shutdown()
+
+
+def test_default_rollout_does_not_enable_batches_or_upgrade_old_missing_marker(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    repo=DeepResearchRepository(tmp_path/'runs.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=1)
+    try:
+        r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Compare',
+            'deferStart':True,MARKER:1},start_async=False)
+        assert r[MARKER]==0 and not enabled(r)
+        old={**r,'runId':'old','taskId':'old','idempotencyKey':'old'};old.pop(MARKER);repo.create_run(old)
+        assert MARKER not in repo.update_run('old',lambda row:row)
+        with pytest.raises(ValueError,match='Immutable'):
+            repo.update_run('old',lambda row:{**row,MARKER:0})
+    finally:facade.shutdown()
+
+
+def test_actual_source_field_resolver_quarantines_only_borrowed_target():
+    claims,evidence=inputs();raw=[response(c['claimId'],i) for i,c in enumerate(claims)]
+    for i,row in enumerate(raw):
+        row.pop('reason')
+        row['reasonParts']=[{'text':'The cited observation supports this target.',
+                             'evidenceId':f'E{i+1}','path':['quote']}]
+    raw[1]['reasonParts'][0]['evidenceId']='E1'
+    invoke=Mock(return_value={'content':json.dumps(raw)})
+    c=checker(invoke);c._review_diagnostic_bindings=True;c._integrated_diagnostic_schema=True
+    c._review_reason_parts=True;c._review_source_fields=True
+    result=c(claims,evidence)
+    assert [v['status'] for v in result]==['passed','failed','passed']
+    assert result[1]['executionState']=='received_invalid'
+    assert invoke.call_count==1
+
+
+@pytest.mark.parametrize('scenario',['success','unknown'])
+def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_path,scenario):
+    from llm.provider import LLMResult,LLMUsage,LLMProviderError
+    from services.deep_research.contracts import DeepResearchError
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.tools import TrackedLLMInvoker
+    from test_deep_research_shared_experiment_generation import context
+    r,_,_=context();r[MARKER]=1;r['comparisonPlanningContractVersion']=2
+    r['state']['outputKind']='paper_comparison'
+    repo=DeepResearchRepository(tmp_path/'ledger.sqlite3');repo.initialize();repo.create_run(r)
+    repo.begin_execution('r');claims,evidence=inputs()
+    client=Mock()
+    if scenario=='unknown':
+        client.invoke.side_effect=LLMProviderError('Timed out',provider='fixture',model='fixture',
+                                                  failure_kind='read_timeout')
+    else:
+        client.invoke.return_value=LLMResult(content=json.dumps([response(c['claimId'],i)
+            for i,c in enumerate(claims)]),provider='fixture',model='fixture',usage=LLMUsage(200,100,300))
+    tracked=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,run_record_fn=repo.require_run,
+        verification_max_input_bytes=32000,call_history_fn=repo.list_calls)
+    c=checker(tracked)
+    if scenario=='success':
+        first=c(claims,evidence);snapshot=deepcopy(repo.list_calls('r'))
+        assert c(claims,evidence)==first
+        assert all(v['status']=='passed' for v in first)
+        assert snapshot[0]['status']=='succeeded' and snapshot[0]['settled']
+    else:
+        with pytest.raises(DeepResearchError):c(claims,evidence)
+        snapshot=deepcopy(repo.list_calls('r'))
+        assert snapshot[0]['status']=='unknown' and not snapshot[0]['settled']
+        with pytest.raises(DeepResearchError):c(claims,evidence)
+    assert len(snapshot)==1 and repo.list_calls('r')==snapshot
+    assert client.invoke.call_count==1
+
+
+@pytest.mark.parametrize('value',[None,True,'1',0,2])
+def test_batch_policy_requires_exact_server_marker_and_isolated_comparison_profile(value):
+    from test_deep_research_shared_experiment_generation import context
+    r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
+    r[MARKER]=1
+    assert enabled(r)
+    r[MARKER]=value
+    assert not enabled(r)
+    r[MARKER]=1;r['claimIsolationContractVersion']=value
+    assert not enabled(r)
+
+
+def test_capacity_lower_bound_counts_bounded_batches_without_claiming_time_or_token_fit():
+    from test_deep_research_shared_experiment_generation import context
+    from services.deep_research.comparison_capacity import after_synthesis
+    r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
+    r[MARKER]=1;r['stage']='synthesize';claims,_=inputs(4)
+    r['state']['reportBody']={'claims':claims}
+    result=after_synthesis(r)
+    assert result['minimumReviewCalls']==2 and result['minimumWholeAnswerAuditCalls']==1
+    assert not result['tokensAndTimeFitEstablished'] and not result['scientificApproval']
+    r.pop(MARKER)
+    assert after_synthesis(r)['minimumReviewCalls']==4
