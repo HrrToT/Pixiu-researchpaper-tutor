@@ -33,6 +33,12 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         raise ValueError('Invalid comparison stage input window')
     if type(merge_joint) is not bool:
         raise ValueError('Invalid comparison stage merge policy')
+    from services.deep_research.comparison_measurement_display import isolated, ISOLATED_INPUT_BYTES
+    if isolated(record):
+        # Fixed at creation by the frozen authoring profile, never shrunk with
+        # current usage. Mandatory bundles/context must still fit in full.
+        merge_joint = False
+        max_input_bytes = min(max_input_bytes, ISOLATED_INPUT_BYTES)
     question = effective_question(record)
     reverse = {value: key for key, value in aliases.items()}
     if (len(reverse) != len(aliases) or len({r['evidenceId'] for r in rows}) != len(rows)

@@ -133,6 +133,7 @@ def test_new_run_display_policy_is_strict_and_historical_records_remain_disabled
          'state': {'outputKind': 'paper_comparison'}}
     assert not enabled(r)
     assert enabled({**r, 'comparisonAuthoringContractVersion': 1})
+    assert enabled({**r, 'comparisonAuthoringContractVersion': 2})
     assert not enabled({**r, 'comparisonAuthoringContractVersion': True})
     assert not enabled({**r, 'comparisonPlanningContractVersion': 5, 'comparisonAuthoringContractVersion': 1})
     for kind in ('experiment_design', 'claim_verification', 'reading_summary', None):
@@ -259,7 +260,9 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
         assert r['comparisonPlanningContractVersion']==6
-        assert r['comparisonAuthoringContractVersion']==1
+        assert r['comparisonAuthoringContractVersion']==2
+        with pytest.raises(ValueError, match='Immutable run field'):
+            repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': 1})
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}
         repo.create_run(old)
         check=Mock(return_value=[])

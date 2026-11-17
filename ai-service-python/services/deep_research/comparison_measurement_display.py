@@ -7,16 +7,22 @@ from copy import deepcopy
 
 
 CONDITION = '原表测量'
+ISOLATED_INPUT_BYTES = 24000
 
 
 def enabled(record):
     return (record.get('state', {}).get('outputKind') == 'paper_comparison'
             and type(record.get('comparisonAuthoringContractVersion')) is int
-            and record['comparisonAuthoringContractVersion'] == 1
+            and record['comparisonAuthoringContractVersion'] in (1, 2)
             and type(record.get('comparisonPlanningContractVersion')) is int
             and record['comparisonPlanningContractVersion'] == 6
             and type(record.get('comparisonReviewBatchContractVersion')) is int
             and record['comparisonReviewBatchContractVersion'] == 2)
+
+
+def isolated(record):
+    """New runs physically separate paper evidence from cross-paper drafting."""
+    return enabled(record) and record['comparisonAuthoringContractVersion'] == 2
 
 
 def attach(point, selected):

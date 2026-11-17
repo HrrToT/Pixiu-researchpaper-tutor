@@ -6,6 +6,23 @@ from services.deep_research.contracts import BudgetExhaustedError, DeepResearchE
 from services.deep_research.tools import BudgetedSemanticChecker, TrackedLLMInvoker
 
 
+def test_isolated_comparison_recheck_window_is_fixed_and_old_profiles_are_unchanged():
+    from services.deep_research.verification_capacity import verification_input_limit
+    r = {'verificationInputContractVersion': 1, 'comparisonPlanningContractVersion': 6,
+         'comparisonReviewBatchContractVersion': 2, 'comparisonAuthoringContractVersion': 2,
+         'state': {'outputKind': 'paper_comparison'}}
+    assert verification_input_limit(r, 'verify_repair', 12000, 32000) == 24000
+    r['budget'] = {'tokens': 99999}
+    assert verification_input_limit(r, 'verify_repair', 12000, 32000) == 24000
+    assert verification_input_limit(r, 'verify', 12000, 32000) == 32000
+    assert verification_input_limit(r, 'verify_repair', 12000, 18000) == 18000
+    for version in (0, 1, True):
+        assert verification_input_limit({**r, 'comparisonAuthoringContractVersion': version},
+                                        'verify_repair', 12000, 32000) == 32000
+    assert verification_input_limit({**r, 'state': {'outputKind': 'experiment_design'}},
+                                    'verify_repair', 12000, 32000) == 32000
+
+
 def targets_from(prompt):
     return json.JSONDecoder().raw_decode(prompt.split('Claims:\n', 1)[1].lstrip())[0]
 

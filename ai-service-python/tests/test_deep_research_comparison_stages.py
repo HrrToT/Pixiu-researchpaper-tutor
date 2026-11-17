@@ -100,13 +100,58 @@ def test_new_authoring_projects_task_but_preserves_full_question_and_freezes_pro
         prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
 
 
+def test_isolated_profile_keeps_paper_and_joint_evidence_physically_separate():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=2)
+    saved = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert [s['stageId'] for s in saved['stages']] == ['P1', 'P2', 'joint']
+    assert saved['maxInputBytes'] == 24000
+    assert sum(s['requiredBundleCount'] for s in saved['stages']) == len(bundles)
+    assert saved['allFrozenPremiseBundlesRetained'] and saved['admission']['callLowerBound'] == 11
+    for stage in saved['stages']:
+        data = packet(stage)
+        assert stage['inputBytes'] <= 24000
+        if stage['stageId'] == 'joint':
+            assert data['jointTargets'] and not any(p['targets'] for p in data['papers'])
+        else:
+            assert len(data['papers']) == 1 and not data['jointTargets']
+            assert data['papers'][0]['source'] == stage['stageId']
+    r['state']['comparisonStageInput'] = saved
+    r['budget']['modelCalls'] = 15
+    assert prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases) == saved
+    r['comparisonAuthoringContractVersion'] = 1
+    with pytest.raises(DeepResearchError, match='身份改变'):
+        prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+
+def test_isolated_profile_refuses_missing_mandatory_context_instead_of_remerging():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=2)
+    bundles[0]['requiredContextByEvidenceId'] = {bundles[0]['evidenceIds'][0]: 'required context ' * 10000}
+    with pytest.raises((DeepResearchError, ValueError)):
+        prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+
+@pytest.mark.parametrize('profile', [None, 0, 1, 2])
+def test_repository_never_upgrades_or_relabels_comparison_authoring_on_existing_run(tmp_path, profile):
+    r, repo = graph_fixture(tmp_path, authoring=profile)
+    before = repo.require_run(r['runId'])
+    replacement = 1 if profile == 2 else 2
+    with pytest.raises(ValueError, match='Immutable run field'):
+        repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': replacement})
+    with pytest.raises(ValueError, match='Immutable run field'):
+        repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': True})
+    assert repo.require_run(r['runId']) == before
+
+
 def test_actual_graph_persists_exact_measurement_conditions_without_semantic_approval(tmp_path):
     from services.deep_research.graph import make_synthesize_node
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.verification import verify_claims
-    r, repo = graph_fixture(tmp_path)
+    r, repo = graph_fixture(tmp_path, authoring=1)
     def seed(row):
-        row['comparisonAuthoringContractVersion'] = 1
         for ev in row['state']['evidence']:
             ev.update(quote='Table row 8: Ours | 134', sourceContext='Table row 8: Ours | 134',
                 tableData={'groups': [['Benchmark', ['FPS']]], 'rows': [[8, 'Ours', ['134']]]})
@@ -284,7 +329,7 @@ def test_readonly_ledger_lookup_requires_exact_native_request_identity():
     assert recorded_response(r,prompt,options,[row]) is None
 
 
-def graph_fixture(tmp_path):
+def graph_fixture(tmp_path, *, authoring=None):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.verification import make_evidence
     r,p,_,_,_=fixture()
@@ -298,6 +343,8 @@ def graph_fixture(tmp_path):
                          location={},obligation_ids=[o['obligationId'] for o in p['requirements']])
         evidence.append(ev)
     r['state'].update(plan=[{'itemId':'p','obligations':p['requirements']}],evidence=evidence)
+    if authoring is not None:
+        r['comparisonAuthoringContractVersion'] = authoring
     repo=DeepResearchRepository(tmp_path/'graph.sqlite3');repo.initialize();repo.create_run(r)
     return r,repo
 

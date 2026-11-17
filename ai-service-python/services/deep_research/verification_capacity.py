@@ -23,5 +23,11 @@ def has_verification_input_contract(record, node):
 
 def verification_input_limit(record, node, legacy_limit, configured_limit):
     if has_verification_input_contract(record, node):
+        from services.deep_research.comparison_measurement_display import isolated, ISOLATED_INPUT_BYTES
+        if node == 'verify_repair' and isolated(record):
+            # Split complete targets through the ordinary checker before send.
+            # This stable window preserves request digests across resume;
+            # current budget remains an independent atomic admission check.
+            return min(configured_limit, ISOLATED_INPUT_BYTES)
         return min(configured_limit, VERIFICATION_INPUT_BYTES)
     return legacy_limit
