@@ -5,7 +5,7 @@
 本文件不再复制候选提交号、测试数量与下一案例，避免与执行状态冲突。
 
 - 当前源码、实际运行结果、适用证据及下一动作：[当前执行状态](DEEP_RESEARCH_CURRENT_EXECUTION_20261117.md)。
-- 开发优先级、失败定位、验证顺序和停止局部修补的条件：[完成开发指导](DEEP_RESEARCH_COMPLETION_GUIDANCE_20261117.md)。
+- 开发优先级、失败定位、验证顺序和停止局部修补的条件：[完成开发指导](DEEP_RESEARCH_COMPLETION_GUIDANCE_20261118.md)。
 - 验收标准：[原设计第19节](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据)。
 
 | 门槛 | 必须交付 |
