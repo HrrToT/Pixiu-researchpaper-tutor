@@ -315,7 +315,7 @@ class ResearchFacade:
             "authoredBodyContractVersion": 3,
             "synthesisInputContractVersion": 2,
             "comparisonCellsContractVersion": self._comparison_cells_version,
-            "comparisonReviewBatchContractVersion": self._comparison_review_batch_version,
+            "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 2 if self._comparison_cells_version == 1 else 0,
@@ -1343,9 +1343,10 @@ class ResearchFacade:
         from services.deep_research.general_advice import enabled as general_advice_enabled
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
-        from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled
+        from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile
         checker = BudgetedSemanticChecker(invoker, run_id,
             comparison_review_batches=lambda: comparison_batch_enabled(self._repo.require_run(run_id)),
+            comparison_repair_review_output=lambda: current_profile(self._repo.require_run(run_id)),
             workflow_representation_context=lambda claims, context: representation_review_context(
                 self._repo.require_run(run_id), claims, context),
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),

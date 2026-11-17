@@ -109,7 +109,7 @@ def test_groups_preserve_all_targets_when_singleton_cannot_fit():
     assert result==[[c] for c in claims] and claims==before
 
 
-@pytest.mark.parametrize('replacement',[None,True,'1',0,2])
+@pytest.mark.parametrize('replacement',[None,True,'1',0,1,3])
 def test_server_owned_marker_cannot_be_changed_or_injected(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -119,7 +119,7 @@ def test_server_owned_marker_cannot_be_changed_or_injected(tmp_path,replacement)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Compare methods',
             'deferStart':True,MARKER:replacement},start_async=False)
-        assert type(r[MARKER]) is int and r[MARKER]==1
+        assert type(r[MARKER]) is int and r[MARKER]==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda old:{**old,MARKER:replacement})
     finally:facade.shutdown()
@@ -136,8 +136,9 @@ def test_default_rollout_does_not_enable_batches_or_upgrade_old_missing_marker(t
         assert r[MARKER]==0 and not enabled(r)
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old'};old.pop(MARKER);repo.create_run(old)
         assert MARKER not in repo.update_run('old',lambda row:row)
-        with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run('old',lambda row:{**row,MARKER:0})
+        for value in (None,0):
+            with pytest.raises(ValueError,match='Immutable'):
+                repo.update_run('old',lambda row:{**row,MARKER:value})
     finally:facade.shutdown()
 
 
@@ -158,13 +159,14 @@ def test_actual_source_field_resolver_quarantines_only_borrowed_target():
 
 
 @pytest.mark.parametrize('scenario',['success','unknown'])
-def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_path,scenario):
+@pytest.mark.parametrize('repair',[False,True])
+def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_path,scenario,repair):
     from llm.provider import LLMResult,LLMUsage,LLMProviderError
     from services.deep_research.contracts import DeepResearchError
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.tools import TrackedLLMInvoker
     from test_deep_research_shared_experiment_generation import context
-    r,_,_=context();r[MARKER]=1;r['comparisonPlanningContractVersion']=2
+    r,_,_=context();r[MARKER]=2 if repair else 1;r['comparisonPlanningContractVersion']=2
     r['state']['outputKind']='paper_comparison'
     repo=DeepResearchRepository(tmp_path/'ledger.sqlite3');repo.initialize();repo.create_run(r)
     repo.begin_execution('r');claims,evidence=inputs()
@@ -178,21 +180,29 @@ def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_
     tracked=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,run_record_fn=repo.require_run,
         verification_max_input_bytes=32000,call_history_fn=repo.list_calls)
     c=checker(tracked)
+    c._comparison_repair_review_output=repair
+    run=(lambda:c.check_revisions(claims,evidence,[])) if repair else (lambda:c(claims,evidence))
     if scenario=='success':
-        first=c(claims,evidence);snapshot=deepcopy(repo.list_calls('r'))
-        assert c(claims,evidence)==first
+        first=run();snapshot=deepcopy(repo.list_calls('r'))
+        assert run()==first
         assert all(v['status']=='passed' for v in first)
         assert snapshot[0]['status']=='succeeded' and snapshot[0]['settled']
     else:
-        with pytest.raises(DeepResearchError):c(claims,evidence)
+        with pytest.raises(DeepResearchError):run()
         snapshot=deepcopy(repo.list_calls('r'))
         assert snapshot[0]['status']=='unknown' and not snapshot[0]['settled']
-        with pytest.raises(DeepResearchError):c(claims,evidence)
+        with pytest.raises(DeepResearchError):run()
     assert len(snapshot)==1 and repo.list_calls('r')==snapshot
     assert client.invoke.call_count==1
+    if repair:
+        from services.deep_research.factual_review import REPAIR_OUTPUT_OPTION
+        request=client.invoke.call_args.args[0]
+        assert request.extra_body['max_tokens']==4000
+        assert request.extra_body['thinking']=={'type':'disabled'}
+        assert REPAIR_OUTPUT_OPTION not in request.extra_body
 
 
-@pytest.mark.parametrize('value',[None,True,'1',0,2])
+@pytest.mark.parametrize('value',[None,True,'1',0,3])
 def test_batch_policy_requires_exact_server_marker_and_isolated_comparison_profile(value):
     from test_deep_research_shared_experiment_generation import context
     r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
@@ -215,3 +225,31 @@ def test_capacity_lower_bound_counts_bounded_batches_without_claiming_time_or_to
     assert not result['tokensAndTimeFitEstablished'] and not result['scientificApproval']
     r.pop(MARKER)
     assert after_synthesis(r)['minimumReviewCalls']==4
+
+
+@pytest.mark.parametrize('version',[1,2])
+def test_new_repair_output_cap_keeps_legacy_wire_and_same_reasoning_mode(version):
+    from services.deep_research.factual_review import REPAIR_OUTPUT_OPTION
+    from services.deep_research.runtime import research_model_options
+    claims,evidence=inputs(1);invoke=Mock(return_value={'content':json.dumps([response('c0',0)])})
+    c=checker(invoke);c._comparison_repair_review_output=version==2
+    assert c.check_revisions(claims,evidence,[])[0]['status']=='passed'
+    kw=invoke.call_args.kwargs;options=research_model_options(kw['node'],kw['extra_body'])
+    assert options['thinking']=={'type':'disabled'} and options['reasoning_effort']=='none'
+    assert options['max_tokens']==(4000 if version==2 else 8192)
+    assert (REPAIR_OUTPUT_OPTION in kw['extra_body']) is (version==2)
+    assert REPAIR_OUTPUT_OPTION not in options
+
+
+@pytest.mark.parametrize('version',[None,0,1])
+def test_old_runs_cannot_inject_new_repair_output_before_reservation(version):
+    from services.deep_research.factual_review import REPAIR_OUTPUT_OPTION
+    from services.deep_research.tools import TrackedLLMInvoker
+    from services.deep_research.contracts import DeepResearchError
+    from test_deep_research_shared_experiment_generation import context
+    r,_,_=context();r[MARKER]=version;r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
+    client=Mock();reserve=Mock()
+    invoke=TrackedLLMInvoker(client,reserve,Mock(),run_record_fn=lambda _:r)
+    with pytest.raises(DeepResearchError,match='版本不匹配'):
+        invoke('r','verify_repair','unchanged sources',{'max_tokens':4000,REPAIR_OUTPUT_OPTION:True},use_reserve=True)
+    reserve.assert_not_called();client.invoke.assert_not_called()

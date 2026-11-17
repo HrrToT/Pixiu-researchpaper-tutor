@@ -69,3 +69,41 @@ def test_final_audit_preserves_failure_location_without_additional_call():
         'checkId':'criterion:mechanism','missingFields':['limitSpans']}]
     assert invoke.call_count==1
     assert len(result['gaps'])==2
+    opted=audit_final_answer('r','Explain the mechanism',plan,claims,[],invoke,json.loads,
+        diagnostics=True,request_contract=3,consolidated_instructions=True,literal_limits=True,
+        empty_missing_limits=True)
+    assert opted['status']=='checked' and len(opted['gaps'])==2
+    assert all(v['status']=='missing' for v in opted['verdicts'])
+    assert 'requestResponseErrors' not in opted and invoke.call_count==2
+
+
+def test_opt_in_empty_locator_preserves_explicit_missing_and_does_not_mutate_raw():
+    raw=[deepcopy(ROW)];raw[0]['checks'][0]['checkId']='c'
+    fixed=deepcopy(FIXED);fixed[0]['checks'][0].pop('processRequired')
+    fixed[0]['checks'][0]['responseType']='limitation';before=deepcopy(raw)
+    errors=[]
+    result=normalize(raw,fixed,literal_limits=True,empty_missing_limits=True,response_errors=errors)
+    assert result[0]['status']=='missing' and result[0]['limitAudits'][0]['spans']==[]
+    assert errors==[] and raw==before
+    assert normalize(raw,fixed,literal_limits=True) is None
+
+
+@pytest.mark.parametrize('status,bindings,extra',[
+    ('covered',[],{}),('partial',[],{}),('missing',[{'claimId':'x','field':'text'}],{}),
+    ('missing',[],{'unexpected':'value'})])
+def test_negative_locator_normalization_never_fills_positive_or_invalid_decisions(status,bindings,extra):
+    fixed=deepcopy(FIXED);fixed[0]['checks'][0].pop('processRequired')
+    fixed[0]['checks'][0]['responseType']='limitation'
+    raw=[deepcopy(ROW)];raw[0]['checks'][0].update(status=status,bindings=bindings,**extra)
+    assert normalize(raw,fixed,literal_limits=True,empty_missing_limits=True) is None
+
+
+def test_explicit_bad_locator_is_never_replaced_by_empty_locator():
+    fixed=deepcopy(FIXED);fixed[0]['checks'][0].pop('processRequired')
+    fixed[0]['checks'][0]['responseType']='limitation'
+    raw=[deepcopy(ROW)];raw[0]['checks'][0]['limitSpans']=None
+    expected=normalize(raw,fixed,literal_limits=True)
+    actual=normalize(raw,fixed,literal_limits=True,empty_missing_limits=True)
+    assert actual==expected and actual[0]['status']=='missing'
+    assert actual[0]['limitAudits'][0]['spans'] is None
+    assert actual[0]['limitAudits'][0]['errors']==['invalid_limit_spans']

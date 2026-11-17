@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False):
+    if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
+        raise ValueError('Empty missing limits require literal limit validation')
     if type(reasoned_process_bindings) is not bool or reasoned_process_bindings and not correct_process_bindings:
         raise ValueError('Reasoned binding correction requires active correction policy')
     if (type(correct_process_bindings) is not bool or correct_process_bindings
@@ -258,6 +260,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     from services.deep_research.request_coverage import normalize
                     raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
+                        **({'empty_missing_limits':True} if empty_missing_limits else {}),
                         **({'response_errors':request_response_errors} if diagnostics else {}),
                         **({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):

@@ -9,8 +9,13 @@ MAX_TARGETS = 3
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get(MARKER)) is int
-            and record[MARKER] == 1 and type(record.get('claimIsolationContractVersion')) is int
+            and record[MARKER] in (1,2) and type(record.get('claimIsolationContractVersion')) is int
             and record['claimIsolationContractVersion'] == 1)
+
+
+def current_profile(record):
+    """New wire/output policy; v1 stored requests must retain their identity."""
+    return enabled(record) and record[MARKER] == 2
 
 
 def groups(claims, preview):

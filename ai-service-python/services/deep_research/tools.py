@@ -341,9 +341,16 @@ class TrackedLLMInvoker:
         use_reserve: bool = False,
     ) -> dict[str, Any]:
         from llm.provider import LLMRequest, LLMProviderError
-        from services.deep_research.factual_review import OPTION as REVIEW_OPTION
+        from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION
         from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
         bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
+        repair_output=(extra_body or {}).get(REPAIR_OUTPUT_OPTION,False)
+        if type(repair_output) is not bool:
+            raise ValueError('Invalid factual repair review output profile')
+        if repair_output:
+            from services.deep_research.comparison_review_batches import current_profile
+            if node!='verify_repair' or self._run_record is None or not current_profile(self._run_record(run_id)):
+                raise DeepResearchError('invalid_model_options','事实修订审核配置与运行版本不匹配，尚未发送。')
         experiment_reasoning=(extra_body or {}).get(EXPERIMENT_OPTION,False)
         from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
         binding_reasoning=(extra_body or {}).get(BINDING_OPTION,False)
@@ -352,7 +359,7 @@ class TrackedLLMInvoker:
             raise ValueError('Invalid bounded factual review option')
         if self._request_options:
             extra_body = self._request_options(node, dict(extra_body or {}))
-        elif bounded_review or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
+        elif bounded_review or repair_output or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
             from services.deep_research.runtime import research_model_options
             extra_body=research_model_options(node,dict(extra_body or {}))
         elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
@@ -720,6 +727,7 @@ class BudgetedSemanticChecker:
         short_circuit_scope_observations=False,
         workflow_representation_context=None,
         comparison_review_batches=False,
+        comparison_repair_review_output=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -763,6 +771,7 @@ class BudgetedSemanticChecker:
         self._prospective_envelope = prospective_envelope
         self._review_batch_planning = review_batch_planning
         self._comparison_review_batches = comparison_review_batches
+        self._comparison_repair_review_output = comparison_repair_review_output
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -1496,6 +1505,11 @@ The dataAvailability object is an internal audit, not new experimental results.
                             else self._bounded_factual_review) is True
             from services.deep_research.factual_review import eligible as review_eligible,OPTION as REVIEW_OPTION
             review_options={REVIEW_OPTION:True} if bounded_review and node=='verify' and review_eligible(claims) else {}
+            repair_output=self._comparison_repair_review_output
+            repair_output=(repair_output() if callable(repair_output) else repair_output) is True
+            if repair_output and complete_factual_batch and node=='verify_repair' and review_eligible(claims):
+                from services.deep_research.factual_review import REPAIR_OUTPUT_OPTION
+                review_options[REPAIR_OUTPUT_OPTION]=True
             result = self._invoke(
                 run_id=self._run_id,
                 node=node,

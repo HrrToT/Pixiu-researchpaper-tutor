@@ -2,6 +2,7 @@
 from datetime import datetime, UTC
 
 OPTION='_bounded_factual_review'
+REPAIR_OUTPUT_OPTION='_bounded_factual_repair_output'
 
 
 def cell_review_enabled(record):

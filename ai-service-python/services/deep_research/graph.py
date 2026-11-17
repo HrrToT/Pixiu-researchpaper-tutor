@@ -2056,6 +2056,9 @@ def make_verify_node(
         from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
         if comparison_envelope(record) and comparison_audit_args:
             comparison_audit_args['comparison_audit_envelope']=True
+        from services.deep_research.comparison_review_batches import current_profile
+        if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
+            comparison_audit_args['empty_missing_limits']=True
         def verify_comparison_claims(targets, supporting_evidence, semantic):
             from services.deep_research.comparison_generation import enabled as cell_enabled
             if not cell_enabled(record):

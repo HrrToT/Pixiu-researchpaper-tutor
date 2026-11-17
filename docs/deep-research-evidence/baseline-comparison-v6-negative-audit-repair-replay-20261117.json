@@ -1,0 +1,94 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v6",
+  "scope": "saved response and request capacity reconstruction",
+  "auditReplay": [
+    {
+      "normalizationEnabled": false,
+      "status": "invalid_response",
+      "gaps": 5,
+      "decisions": [],
+      "responseErrors": [
+        {
+          "code": "invalid_check_fields",
+          "obligationId": "ob-1-2",
+          "checkId": "criterion:c-1-2-2",
+          "missingFields": [
+            "limitSpans"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizationEnabled": true,
+      "status": "checked",
+      "gaps": 5,
+      "decisions": [
+        "partial",
+        "partial",
+        "partial",
+        "missing",
+        "partial"
+      ],
+      "responseErrors": []
+    }
+  ],
+  "repairReviewMeasurements": [
+    {
+      "profile": 1,
+      "requests": [
+        {
+          "node": "verify_repair",
+          "promptSha256": "0eb997dba422f3d80e43dae360cb69a1146bfd1ed7adaced8eb050e0b572fab8",
+          "inputBytes": 15887,
+          "outputCap": 8192,
+          "thinking": {
+            "type": "disabled"
+          },
+          "reservation": 25103
+        },
+        {
+          "node": "verify_repair",
+          "promptSha256": "e33188476e5a538b1d721ed790f0ec24dc5b333cc7b80f8ba469fe0edf248960",
+          "inputBytes": 25636,
+          "outputCap": 8192,
+          "thinking": {
+            "type": "disabled"
+          },
+          "reservation": 34852
+        }
+      ]
+    },
+    {
+      "profile": 2,
+      "requests": [
+        {
+          "node": "verify_repair",
+          "promptSha256": "0eb997dba422f3d80e43dae360cb69a1146bfd1ed7adaced8eb050e0b572fab8",
+          "inputBytes": 15887,
+          "outputCap": 4000,
+          "thinking": {
+            "type": "disabled"
+          },
+          "reservation": 20911
+        },
+        {
+          "node": "verify_repair",
+          "promptSha256": "e33188476e5a538b1d721ed790f0ec24dc5b333cc7b80f8ba469fe0edf248960",
+          "inputBytes": 25636,
+          "outputCap": 4000,
+          "thinking": {
+            "type": "disabled"
+          },
+          "reservation": 30660
+        }
+      ]
+    }
+  ],
+  "startingRemainingTokens": 31361,
+  "networkRequests": 0,
+  "modelCalls": 0,
+  "ledgerReservations": 0,
+  "wholeRepairSequenceFitEstablished": false,
+  "scientificContentAccepted": false,
+  "boundary": "Each request is measured at the same starting budget; this does not establish sequential usage, final audit capacity, latency or scientific quality."
+}

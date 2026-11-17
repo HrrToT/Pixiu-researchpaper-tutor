@@ -25,7 +25,7 @@ def enabled():
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION,DIRECT_SYNTHESIS_OPTION
-    from services.deep_research.factual_review import OPTION as REVIEW_OPTION
+    from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
     from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
@@ -33,13 +33,14 @@ def research_model_options(node, options):
     experiment_reasoning=options.pop(EXPERIMENT_OPTION,False)
     direct_plan=options.pop(DIRECT_PLAN_OPTION,False)
     bounded_review=options.pop(REVIEW_OPTION,False)
+    repair_output=options.pop(REPAIR_OUTPUT_OPTION,False)
     short_factual = options.pop(OPTION, False)
     direct_repair = options.pop(DIRECT_REPAIR_OPTION,False)
     high_synthesis = options.pop(HIGH_SYNTHESIS_OPTION,False)
     compact_reasoning = options.pop(COMPACTION_OPTION,False)
     direct_synthesis = options.pop(DIRECT_SYNTHESIS_OPTION,False)
     binding_reasoning=options.pop(BINDING_OPTION,False)
-    other_profiles=(short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning,direct_synthesis)
+    other_profiles=(short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning,direct_synthesis,repair_output)
     if (type(binding_reasoning) is not bool or binding_reasoning and (node!='verify_answer_coverage'
             or any(type(v) is not bool or v for v in other_profiles))):
         raise ValueError('Invalid coverage binding reasoning profile')
@@ -48,6 +49,15 @@ def research_model_options(node, options):
         if type(cap) is not int or not 1<=cap<=3500:
             raise ValueError('Invalid coverage binding output cap')
         return {**options,'thinking':{'type':'enabled'},'reasoning_effort':'low','max_tokens':cap}
+    if type(repair_output) is not bool:
+        raise ValueError('Invalid factual repair review output profile')
+    if repair_output:
+        if node!='verify_repair' or any(type(v) is not bool or v for v in other_profiles[:-1]):
+            raise ValueError('Factual repair review output profile requires an isolated factual review')
+        cap=options.get('max_tokens',4000)
+        if type(cap) is not int or not 1<=cap<=4000:
+            raise ValueError('Invalid factual repair review output cap')
+        return {**options,'thinking':{'type':'disabled'},'reasoning_effort':'none','max_tokens':cap}
     if type(direct_synthesis) is not bool or direct_synthesis and (not short_factual
             or any((high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning))):
         raise ValueError('Invalid direct factual synthesis profile')
