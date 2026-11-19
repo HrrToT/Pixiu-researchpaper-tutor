@@ -176,6 +176,51 @@ def test_future_measurement_guides_reading_without_advancing_dependency_frontier
     invoke.assert_not_called()
 
 
+@pytest.mark.parametrize('requery', [False, True])
+def test_comparison_acquisition_reads_ahead_once_per_authorized_material(requery):
+    from services.deep_research.dependencies import initialize, scoped_updater
+    from services.deep_research.graph import make_acquire_node
+
+    plan = [
+        {'itemId': 'method', 'obligations': [{'obligationId': 'm', 'question': 'Representation'}]},
+        {'itemId': 'results', 'dependencies': ['method'], 'obligations': [
+            {'obligationId': 'fps', 'question': 'FPS', 'requiredSources': ['a']},
+            {'obligationId': 'table', 'question': 'FPS and PSNR', 'requiredSources': ['a', 'b']},
+        ]},
+    ]
+    record = {'status': 'running', 'readingPriorityContractVersion': 9, 'dependencyContractVersion': 1,
+              'comparisonAuthoringContractVersion': 3, 'comparisonPlanningContractVersion': 6,
+              'comparisonReviewBatchContractVersion': 2,
+              'materials': [{'materialId': k, 'pdfId': k} for k in ('a', 'b', 'revoked')],
+              'state': {'outputKind': 'paper_comparison', 'plan': plan, 'dependencyExecution': initialize(plan)}}
+
+    def update(rid, fn, **kwargs):
+        nonlocal record
+        record = fn(deepcopy(record))
+        return deepcopy(record)
+
+    def retrieve(query, pdf_id, *, limit):
+        assert limit == 5
+        if query == 'FPS and PSNR':
+            return [{**source(pdf_id), 'sourceWorkId': pdf_id}]
+        return []
+
+    tracked = Mock(side_effect=retrieve)
+    node = make_acquire_node(tracked, lambda rid, owner: owner != 'revoked',
+                             scoped_updater(update, include_read_plan=True))
+    state = {'run_id': 'r'}
+    if requery:
+        state['requery_queries'] = [{'obligationId': 'm', 'query': 'Clarify representation'}]
+    node(state)
+    expected = ({('Clarify representation', k) for k in ('a', 'b')} if requery else
+                {(query, k) for k in ('a', 'b') for query in ('Representation', 'FPS and PSNR')})
+    assert {call.args for call in tracked.call_args_list} == expected
+    assert tracked.call_count == len(expected)
+    assert record['state']['dependencyExecution'] == initialize(plan)
+    assert all(row['obligationIds'] == ['table'] for row in record['state']['sources'])
+    assert len(record['state']['sources']) == (0 if requery else 2)
+
+
 def test_unchecked_or_foreign_literal_evidence_never_enters_navigation_bundles():
     obs, rows = inputs(); row = rows[-1]
     evidence = {'evidenceId': 'e', 'sourceWorkId': row['workId'], 'sourceVersionId': row['versionId'],

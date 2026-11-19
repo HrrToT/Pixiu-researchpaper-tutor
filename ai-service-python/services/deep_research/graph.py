@@ -563,6 +563,25 @@ def make_acquire_node(
         
         # Local retrieval for task materials
         if source_policy_mode != "external_only":
+            from services.deep_research.comparison_measurement_display import local_contributions
+            from services.deep_research.measurement_table_navigation import planned_query_priority
+            active_ids = {item['itemId'] for item in plan}
+            measurement_targets = []
+            if (not requery_queries and record.get('readingPriorityContractVersion') == 9
+                    and local_contributions(record)
+                    and record.get('state', {}).get('dependencyExecution', {}).get('wave') == 0):
+                for item in record.get('readNavigationPlan', []):
+                    if item['itemId'] in active_ids:
+                        continue
+                    for obligation in item.get('obligations', []):
+                        query = obligation.get('searchQuery') or obligation.get('question', '')
+                        priority = planned_query_priority(query)
+                        if priority:
+                            measurement_targets.append((priority, {
+                                'query': query, 'obligationId': obligation['obligationId'],
+                                'requiredSources': obligation.get('requiredSources', []),
+                            }))
+
             def local_jobs():
                 for material in materials:
                     material_id = material.get("materialId", "")
@@ -571,7 +590,18 @@ def make_acquire_node(
                     if not scope_validator(run_id, material_id):
                         continue
 
-                    for target in query_targets:
+                    # Read ahead once per material using an existing measurement
+                    # query. The retrieval ledger can reuse it when its step starts.
+                    targets = query_targets
+                    matching = [(priority, target) for priority, target in measurement_targets
+                                if not target['requiredSources'] or material_id in target['requiredSources']]
+                    if matching:
+                        _, target = max(matching, key=lambda candidate: candidate[0])
+                        if not any(row['query'] == target['query'] and (
+                                not row.get('requiredSources') or material_id in row['requiredSources'])
+                                for row in query_targets):
+                            targets = [target, *query_targets]
+                    for target in targets:
                         if target.get("requiredSources") and material_id not in target["requiredSources"]:
                             continue
                         if target.get("missingSource") and target["missingSource"] != material_id:
@@ -2907,7 +2937,8 @@ def build_deep_research_graph(
     workflow.add_node("resolve_brief", bounded(make_resolve_brief_node(llm_invoke, repo_update)))
     workflow.add_node("wait_clarification", make_wait_for_clarification_node(repo_update))
     workflow.add_node("plan", bounded(make_plan_node(llm_invoke, repo_update, validate_plan_fn)))
-    workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, frontier_update, external_acquire=external_acquire))
+    workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator,
+        scoped_updater(repo_update, include_read_plan=True), external_acquire=external_acquire))
     workflow.add_node("read", make_read_node(read_fn, scope_validator,
                                             scoped_updater(repo_update, include_read_plan=True)))
     if extract_batch_size > 1:

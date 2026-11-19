@@ -21,6 +21,13 @@ def _key(text):
     return re.sub(r'[^a-z0-9]', '', text.casefold())
 
 
+def planned_query_priority(query):
+    """Rank frozen retrieval queries by the number of named measurement domains."""
+    return sum(bool(re.search(pattern, query, re.I) or any(
+        re.search(r'(?<![A-Za-z0-9])' + re.escape(metric) + r'(?![A-Za-z0-9])', query, re.I)
+        for metric in metrics)) for metrics, pattern in _DOMAINS)
+
+
 def _benchmark_hints(query):
     # Only literal name-like targets, not an inferred benchmark from the paper title.
     names = re.findall(r'\b(?:on|dataset|benchmark)\s+([A-Za-z][A-Za-z0-9&_\-]*)', query, re.I)
