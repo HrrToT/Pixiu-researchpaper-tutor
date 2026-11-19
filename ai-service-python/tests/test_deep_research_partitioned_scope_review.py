@@ -69,6 +69,31 @@ def test_failed_fact_is_never_upgraded_by_an_epistemic_operator():
     assert result['status']=='failed' and 'Fact unsupported' in result['reason'] and len(calls)==1
 
 
+@pytest.mark.parametrize('node', ['verify', 'verify_repair'])
+def test_direct_comparison_boundary_review_preserves_request_and_entailment_checks(node):
+    from services.deep_research.factual_review import DIRECT_REVIEW_OPTION, OPTION, REPAIR_OUTPUT_OPTION
+    from services.deep_research.partitioned_scope_review import review
+    from services.deep_research.runtime import research_model_options
+
+    claim, expression, record, evidence = inputs(settings=False)
+    checker, calls = checker_for(claim, expression, record, evidence)
+    checker._bounded_factual_review = True
+    old = review(checker, claim, expression, evidence, node)
+    checker._direct_comparison_scope_review = True
+    new = review(checker, claim, expression, evidence, node)
+    assert old == new and new['status'] == 'passed'
+    assert calls[0]['prompt'] == calls[1]['prompt']
+    expected_option = DIRECT_REVIEW_OPTION if node == 'verify' else REPAIR_OUTPUT_OPTION
+    assert calls[1]['extra_body'][expected_option] is True
+    assert OPTION not in calls[1]['extra_body']
+    options = research_model_options(node, calls[1]['extra_body'])
+    assert options['thinking'] == {'type': 'disabled'} and options['max_tokens'] == 4000
+    checker, calls = checker_for(claim, expression, record, evidence,
+                                  modify=lambda rows, _: rows[0].update(relation='undetermined'))
+    checker._direct_comparison_scope_review = True
+    assert review(checker, claim, expression, evidence, node)['status'] == 'failed'
+
+
 @pytest.mark.parametrize('mutation',['entailed','undetermined','ambiguous','negation','omission',
                                    'foreign','spliced','wrong_proposition','bool_index','empty_reason'])
 def test_boundary_needs_exact_proposition_explicit_quantification_and_own_bindings(mutation):

@@ -317,7 +317,7 @@ class ResearchFacade:
             "comparisonCellsContractVersion": self._comparison_cells_version,
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
-            "comparisonAuthoringContractVersion": 3 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
+            "comparisonAuthoringContractVersion": 4 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 3 if self._comparison_cells_version == 1 else 0,
             "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
@@ -1345,9 +1345,11 @@ class ResearchFacade:
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
         from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile
-        from services.deep_research.comparison_measurement_display import isolated as isolated_comparison, local_contributions
+        from services.deep_research.comparison_measurement_display import (
+            direct_scope_review, isolated as isolated_comparison, local_contributions)
         checker = BudgetedSemanticChecker(invoker, run_id,
             direct_comparison_review=lambda: local_contributions(self._repo.require_run(run_id)),
+            direct_comparison_scope_review=lambda: direct_scope_review(self._repo.require_run(run_id)),
             preserve_initial_review_budget=lambda: isolated_comparison(self._repo.require_run(run_id)),
             comparison_review_batches=lambda: comparison_batch_enabled(self._repo.require_run(run_id)),
             comparison_repair_review_output=lambda: current_profile(self._repo.require_run(run_id)),

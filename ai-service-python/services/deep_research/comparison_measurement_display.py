@@ -13,7 +13,7 @@ ISOLATED_INPUT_BYTES = 24000
 def enabled(record):
     return (record.get('state', {}).get('outputKind') == 'paper_comparison'
             and type(record.get('comparisonAuthoringContractVersion')) is int
-            and record['comparisonAuthoringContractVersion'] in (1, 2, 3)
+            and record['comparisonAuthoringContractVersion'] in (1, 2, 3, 4)
             and type(record.get('comparisonPlanningContractVersion')) is int
             and record['comparisonPlanningContractVersion'] == 6
             and type(record.get('comparisonReviewBatchContractVersion')) is int
@@ -22,12 +22,16 @@ def enabled(record):
 
 def isolated(record):
     """New runs physically separate paper evidence from cross-paper drafting."""
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (2, 3)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (2, 3, 4)
 
 
 def local_contributions(record):
     """New snapshots separate global goals from per-paper assignments."""
-    return enabled(record) and record['comparisonAuthoringContractVersion'] == 3
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (3, 4)
+
+
+def direct_scope_review(record):
+    return enabled(record) and record['comparisonAuthoringContractVersion'] == 4
 
 
 def attach(point, selected):

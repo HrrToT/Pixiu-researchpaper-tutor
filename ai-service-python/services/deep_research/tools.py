@@ -745,6 +745,7 @@ class BudgetedSemanticChecker:
         comparison_repair_review_output=False,
         preserve_initial_review_budget=False,
         direct_comparison_review=False,
+        direct_comparison_scope_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -792,6 +793,7 @@ class BudgetedSemanticChecker:
         self._comparison_repair_review_output = comparison_repair_review_output
         self._preserve_initial_review_budget = preserve_initial_review_budget
         self._direct_comparison_review = direct_comparison_review
+        self._direct_comparison_scope_review = direct_comparison_scope_review
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')

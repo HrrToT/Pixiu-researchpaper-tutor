@@ -166,11 +166,17 @@ Targets:
         prompt+='\n'+mechanism
     if len(prompt.encode()) > limit:
         raise DeepResearchError('scope_review_capacity','推广命题核查的完整原文超过输入容量，未发送。')
-    from services.deep_research.factual_review import OPTION
+    from services.deep_research.factual_review import DIRECT_REVIEW_OPTION, OPTION, REPAIR_OUTPUT_OPTION
     bounded = checker._bounded_factual_review
     bounded = (bounded() if callable(bounded) else bounded) is True
+    policy = getattr(checker, '_direct_comparison_scope_review', False)
+    direct = (policy() if callable(policy) else policy) is True
+    if direct and node in ('verify', 'verify_repair'):
+        options = {DIRECT_REVIEW_OPTION if node == 'verify' else REPAIR_OUTPUT_OPTION: True}
+    else:
+        options = {OPTION: True} if bounded and node == 'verify' else {}
     result=checker._invoke(run_id=checker._run_id,node=node,prompt=prompt,
-        extra_body={'max_tokens':4000,'temperature':0.0,**({OPTION:True} if bounded and node=='verify' else {})},use_reserve=True)
+        extra_body={'max_tokens':4000,'temperature':0.0,**options},use_reserve=True)
     if result.get('notStarted')=='factual_review_time_budget':
         return {'claimId':claim['claimId'],'status':'failed','reason':'剩余时间不足以完成推广命题核查。',
                 'executionState':'not_started','reviewTimeAdmission':result['admission'],'partitionedScopeAudit':audit}
