@@ -1,0 +1,68 @@
+{
+  "sourceCommit": "f1ae554457a8d3c582720aaa0edb20606c3f72a6",
+  "case": "D2-BASELINE-COMPRESSION-v17",
+  "split": "development",
+  "runId": "dr_run_0cbea7cb85ec521491555ed5c7c0a74a",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "modelCalls": 13,
+  "ledgerTokens": 71717,
+  "elapsedSeconds": 276,
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify": 5
+  },
+  "typedEvidenceCount": 4,
+  "typedEvidencePapers": 2,
+  "tableReferenceCount": 94,
+  "draftCount": 9,
+  "wholeClaimAcceptedBeforeRelease": 4,
+  "publishedClaimCount": 0,
+  "releaseReason": "coherence_unconfirmed",
+  "rejectedByReason": {
+    "numeric_mismatch": 1,
+    "absence_not_established": 2,
+    "table_condition_not_displayed": 1,
+    "semantic_unresolved": 1
+  },
+  "finalAuditStatus": "budget_exhausted",
+  "finalAuditLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 21407,
+    "used": 22879
+  },
+  "repairStatus": "skipped_time",
+  "repairStop": {
+    "batch": 0,
+    "kind": "repairTimeSeconds",
+    "limit": 270.0,
+    "used": 275.620239
+  },
+  "lastVerification": {
+    "elapsedSeconds": 109.0,
+    "usage": {
+      "total_tokens": 8332,
+      "input_tokens": 1887,
+      "output_tokens": 6445
+    }
+  },
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "4d6b36dcedc16e1ad03aa9b88ceb1b99e44fb85e89566be07834bb0204f63e4d",
+    "calls": "aaefc8e47f51e147e12d933f2ee35b9b49fe9b0ab259f940a600aa5063375a57",
+    "result": "0bc1a7fe3c87cb74a1236191bcba4775dfbaf5e6d23f18eef070fd7e64562fdc",
+    "execution": "e001710f81577f74c17280137742329a9b1405d07865ab9479fc6cc8c44b488b",
+    "restore": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "scientificContentAccepted": false,
+  "independentAcceptance": false
+}
