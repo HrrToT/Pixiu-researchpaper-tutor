@@ -1,0 +1,27 @@
+{
+  "sourceReceiptSha256": "5266b4506d1e4cb93f7b37722b1d3ad15654cdcfc67bee8a31508a221d8cb3cd",
+  "scope": "First acquisition frontier; saved local source rows only",
+  "activePlan": [
+    "item-1"
+  ],
+  "results": [
+    {
+      "version": 8,
+      "readCount": 12,
+      "tablesRead": 0,
+      "evidenceWithTableData": 0,
+      "fullReadSequenceMatchesOriginal": true
+    },
+    {
+      "version": 9,
+      "readCount": 12,
+      "tablesRead": 1,
+      "evidenceWithTableData": 1,
+      "fullReadSequenceMatchesOriginal": false
+    }
+  ],
+  "providerRequests": 0,
+  "scientificApproval": false,
+  "sourceCommit": "5fb2c4694e89672a7a07c7d0df3b5a7a207b12e1",
+  "relatedTestsPassed": 78
+}
