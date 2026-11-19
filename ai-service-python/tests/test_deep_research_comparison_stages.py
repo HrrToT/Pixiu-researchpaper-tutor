@@ -105,6 +105,29 @@ def test_previous_isolated_profile_retains_full_goal_questions_and_original_iden
         prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
 
 
+def test_compact_stage_policy_preserves_the_full_packet_and_request_checkpoint():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=6)
+
+    def build():
+        return prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+    historical = build()
+    r['comparisonAuthoringContractVersion'] = 7
+    compact = build()
+    for old, new in zip(historical['stages'], compact['stages'], strict=True):
+        assert packet(old) == packet(new)
+        assert new['inputBytes'] < old['inputBytes'] - 1000
+        for key in ('targetIds', 'requiredEvidenceIds', 'allowedEvidenceByTarget', 'allowedCellsByTarget'):
+            assert new[key] == old[key]
+    r['state']['comparisonStageInput'] = compact
+    assert build() == compact
+    r['comparisonAuthoringContractVersion'] = 6
+    with pytest.raises(DeepResearchError, match='身份改变'):
+        build()
+
+
 def test_preparation_keeps_each_bundle_once_source_local_with_typed_tables_and_no_approval():
     r,p,rows,aliases,bundles=fixture();before=deepcopy((r,p,rows,aliases,bundles))
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)
