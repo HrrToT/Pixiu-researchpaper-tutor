@@ -1,0 +1,106 @@
+{
+  "sourceCommit": "71bd520b784573cdcbe0a1f86a5409d3c8f4c9c9",
+  "case": "D2-BASELINE-COMPRESSION-v20",
+  "split": "development",
+  "runId": "dr_run_cd9bf69a13d35c18aaa305c361e59e92",
+  "comparisonAuthoringContractVersion": 7,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "modelCalls": 16,
+  "ledgerTokens": 72152,
+  "elapsedSeconds": 225.0,
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 6
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 49,
+  "typedEvidenceCount": 4,
+  "draftCount": 3,
+  "reportClaimCount": 0,
+  "draftStageRequests": [
+    {
+      "stage": "P1",
+      "inputBytes": 23990,
+      "requiredBundles": 12,
+      "targets": [
+        "table_0_0",
+        "table_1_0",
+        "table_2_0",
+        "table_3_0"
+      ]
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23991,
+      "requiredBundles": 12,
+      "targets": [
+        "table_0_1",
+        "table_1_1",
+        "table_2_1",
+        "table_3_1"
+      ]
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23986,
+      "requiredBundles": 10,
+      "targets": [
+        "joint_O5",
+        "joint_O6",
+        "joint_O7"
+      ]
+    }
+  ],
+  "rejectedByReason": {
+    "semantic_unresolved": 3
+  },
+  "finalAuditStatus": "not_checked",
+  "finalAuditGapCount": 9,
+  "finalAuditLimit": null,
+  "repairStatus": "skipped_budget",
+  "repairBatchStop": null,
+  "repairReleaseDeferred": null,
+  "releaseStatus": null,
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "b72642f94ebbe11a98f02c598481da70c351542da5dfafa9778d620450177063",
+    "calls": "4adeac6f92d961fe7dbde87eb068773ed0c9414ff372bf2deb836394d42362e3",
+    "result": "af88a4e0b2d5ae3940a73d4162e0dedbe0983eed9066dc6d3eb079e0dc617113",
+    "execution": "ddedd77fb9038bc77172615ccd3fb1e1d0f01999a5f094a38f9f3957b76eadc1"
+  },
+  "rawAuthoringDiagnostics": {
+    "P1": {
+      "points": 4,
+      "kindProse": 4,
+      "nestedCellRefPoints": 2
+    },
+    "P2": {
+      "points": 4,
+      "kindProse": 4,
+      "nestedCellRefPoints": 3
+    },
+    "joint": {
+      "points": 3,
+      "kindProse": 0,
+      "nestedCellRefPoints": 0
+    }
+  },
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 8248,
+    "used": 10883
+  }
+}
