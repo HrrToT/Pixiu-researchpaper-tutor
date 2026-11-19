@@ -2199,6 +2199,9 @@ def make_verify_node(
         comparison_audit_args = ({'comparison_cells': comparison_metadata(saved['comparisonCellDraft'])}
                                  if cell_enabled(record) and saved.get('comparisonCellDraft') is not None else {})
         from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
+        from services.deep_research.comparison_measurement_display import direct_scope_review
+        if comparison_audit_args and direct_scope_review(record):
+            comparison_audit_args['compact_comparison_layout'] = True
         if comparison_envelope(record) and comparison_audit_args:
             comparison_audit_args['comparison_audit_envelope']=True
         from services.deep_research.comparison_review_batches import current_profile

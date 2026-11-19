@@ -25,7 +25,7 @@ def presentation(version=3):
                                        'axisId':'axis', 'axisTitle':'结果与条件', 'claimIds':['a','b']}]}
 
 
-def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False):
+def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -66,7 +66,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False):
         request_contract=5, diagnostics=True,literal_dimensions=True, coherence=True,
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
-        literal_limits=True,comparison_cells=comparison,
+        literal_limits=True,comparison_cells=comparison,compact_comparison_layout=compact_layout,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, CLAIMS, evidence)
     return result, sent
@@ -146,6 +146,32 @@ def test_renderer_copies_mutable_inputs_and_rejects_legacy_layout():
     assert data['claims'][0]['text']==CLAIMS[0]['text']
     assert data['comparisonPresentation']['layout'][0]['axisTitle']=='结果与条件'
     with pytest.raises(ValueError):renderer(QUESTION,[],CLAIMS,{},presentation(2))
+
+
+def test_compact_input_preserves_decision_inputs_and_verdict():
+    options = {'wire_mode': 'object_v1', 'explicit_shapes': True}
+    legacy_result, [legacy] = audit(**options)
+    compact_result, [compact] = audit(**options, compact_layout=True)
+    assert compact_result == legacy_result
+    for key in ('question', 'requirements', 'claims', 'evidence', 'bindingCatalog'):
+        if key in legacy:
+            assert compact[key] == legacy[key]
+    assert compact['metadata'] == {
+        key: value for key, value in legacy['metadata'].items()
+        if key not in {'requestSemanticsContractVersion', 'identificationLocatorContractVersion',
+                       'taskSourceAccessContractVersion', 'answerBindingCatalogVersion'}
+    }
+    legacy_presentation = legacy['comparisonPresentation']
+    compact_presentation = compact['comparisonPresentation']
+    assert compact_presentation == {
+        **legacy_presentation,
+        'layout': [{key: row[key] for key in ('axisId', 'axisTitle', 'source', 'claimIds')}
+                   for row in legacy_presentation['layout']],
+    }
+    for row in legacy['checkOutputShapes']:
+        added = compact['extraCheckFields'].get(row['obligationId'], {})
+        for check in row['checks']:
+            assert check['fields'][4:] == added.get(check['checkId'], [])
 
 
 def test_explicit_output_fields_bind_each_check_to_its_own_obligation_without_verdicts():

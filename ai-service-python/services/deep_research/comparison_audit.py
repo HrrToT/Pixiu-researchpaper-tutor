@@ -95,16 +95,37 @@ The existing supporting_research notRequired alternative remains available only
 under its original exemption conditions; it never exempts an answer requirement.
 '''
 
+COMPACT_SHAPES = '''extraCheckFields[obligationId][checkId] lists the only fields added
+to the base check schema. Omit unlisted extras even for partial/missing.
+'''
+
+# These versions select server validators. They are not part of the displayed answer.
+INTERNAL_METADATA = (
+    'requestSemanticsContractVersion',
+    'identificationLocatorContractVersion',
+    'taskSourceAccessContractVersion',
+    'answerBindingCatalogVersion',
+)
+
 
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
-             literal_limits=False, coherence=False, object_envelope=False):
+             literal_limits=False, coherence=False, object_envelope=False, compact_layout=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
         raise ValueError('Typed comparison presentation required')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
+    if compact_layout:
+        # The model needs the rendered cell placement. Internal obligation
+        # routing remains in the claims and fixed checklist, and the server
+        # continues to bind the full presentation digest before publication.
+        fields = ('axisId', 'axisTitle', 'source', 'claimIds')
+        layout = data['comparisonPresentation']['layout']
+        data['comparisonPresentation']['layout'] = [{k: row[k] for k in fields} for row in layout]
+        for key in INTERNAL_METADATA:
+            data['metadata'].pop(key, None)
     if type(object_envelope) is not bool or object_envelope and not coherence:
         raise ValueError('Object envelope requires coherence audit')
     policy = CORE + LAYOUT
@@ -125,7 +146,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             'Root coherence fields (never items):') if object_envelope else COHERENCE)
     if (type(comparison.get('checkOutputShapeVersion')) is int
             and comparison['checkOutputShapeVersion'] == 1):
-        data['checkOutputShapes'] = [
+        shapes = [
             {'obligationId': row['obligationId'],
              'checks': [{'checkId': check['checkId'],
                          'fields': ['checkId', 'status', 'bindings', 'reason']
@@ -135,7 +156,15 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
                                       and check.get('responseType') == 'limitation' else [])}
                         for check in row['checks']]}
             for row in requirements]
-        policy += SHAPES
+        if compact_layout:
+            data['extraCheckFields'] = {
+                row['obligationId']: {check['checkId']: check['fields'][4:]
+                                      for check in row['checks'] if len(check['fields']) > 4}
+                for row in shapes if any(len(check['fields']) > 4 for check in row['checks'])}
+            policy += COMPACT_SHAPES
+        else:
+            data['checkOutputShapes'] = shapes
+            policy += SHAPES
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))
