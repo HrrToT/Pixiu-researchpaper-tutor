@@ -83,6 +83,9 @@ def render(*, question, length_contract, requirements, source_context, targets,
         'no evaluated setting. Navigation is unverified, not a citation or public text.\n'
         if has_tables else 'No typed table cells are supplied; do not invent cells/bindings. '
         'Plain-text numbers still need own complete quotations and exact entity/conditions.\n')
+    if comparison_authoring == 2:
+        from services.deep_research.comparison_repair import CELL_REFERENCES
+        table_rule = CELL_REFERENCES
     data={'requirements':requirements,'sourceRegistry':source_context,
           'questions':questions,'targets':[{'claim':t,'checks':checks[t['claimId']]} for t in targets],
           'goalsByTarget':goals,'unverifiedPointHints':hints,

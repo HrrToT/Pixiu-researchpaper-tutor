@@ -78,7 +78,7 @@ def table_catalog(plan, tables):
     return registry, catalog
 
 
-def _point(point, target, registry, *, measurement_display=False):
+def resolve_point(point, target, registry, *, measurement_display=False):
     required = {'kind', 'body', 'evidenceRefs', 'cellRefs'}
     if (not isinstance(point, dict) or not required <= set(point)
             or set(point) - required - {'draftingBasis', 'detailLevel'}):
@@ -160,7 +160,7 @@ def decode(payload, plan, tables, *, max_claims):
                     or len(set(goals)) != len(goals)):
                 raise ValueError('invalid_answer_target_goals')
             if row['point'] is not None:
-                point = _point(row['point'], target, registry, measurement_display=display_version == 1)
+                point = resolve_point(row['point'], target, registry, measurement_display=display_version == 1)
                 count += 1
         except ValueError as exc:
             errors.append({'targetId': key, 'reason': str(exc)})

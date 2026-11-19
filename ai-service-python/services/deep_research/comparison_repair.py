@@ -2,6 +2,53 @@
 import json
 
 
+def table_catalog(rows, sources_by_evidence):
+    """Use the synthesis cell registry with the repair request's own aliases."""
+    from services.deep_research.comparison_wire import table_catalog as build_catalog
+    sources, evidence = {}, {}
+    source_aliases = {}
+    for row in rows:
+        if not row.get('tableData'):
+            continue
+        eid = row['evidenceId']
+        identity = sources_by_evidence[eid]
+        alias = source_aliases.setdefault(identity, f'P{len(source_aliases) + 1}')
+        sources[alias] = {'workId': identity[0], 'versionId': identity[1]}
+        evidence[eid] = {**row, 'source': alias}
+    registry, catalog = build_catalog({'evidence': evidence, 'sources': sources}, {})
+    # The repair prompt resolves paper identity from the evidence aliases.
+    # These local registry aliases have no meaning in its other sections.
+    return registry, [{k: v for k, v in entry.items() if k != 'source'} for entry in catalog]
+
+
+def resolve_cells(rows, allowed, registry):
+    """Reject invalid cells per revision before converting aliases to full IDs."""
+    from services.deep_research.comparison_wire import resolve_point
+    resolved = []
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(row.get('claimId'), str):
+            continue
+        cid = row['claimId']
+        if cid not in allowed:
+            continue
+        try:
+            point = resolve_point({k: v for k, v in row.items() if k != 'claimId'},
+                                  {'evidenceIds': allowed[cid]}, registry)
+        except ValueError:
+            continue
+        resolved.append({'claimId': cid, **point})
+    return resolved
+
+
+CELL_REFERENCES = '''Return cellRefs on each revision. Use [] for prose without table measurements.
+Select only cells needed to answer that target. Copy each V reference from tableCatalog
+and include its own E evidenceId in evidenceRefs. Never return tableBindings, invent
+coordinates, copy unrelated values or write V references in the answer. Cite the minimum
+evidence that supports the revised text and its conditions. Explain mechanisms qualitatively
+unless the target asks for measurements. A selected cell is still subject to verification.
+'''
+
+
 def source_batches(claims, presentation):
     if (not isinstance(presentation, dict) or presentation.get('version') != 3
             or not isinstance(presentation.get('sources'), dict)

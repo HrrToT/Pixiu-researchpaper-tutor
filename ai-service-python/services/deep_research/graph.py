@@ -2381,10 +2381,10 @@ def make_verify_node(
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
-                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled
+                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, referenced_repair
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
-                        **({'comparison_authoring':True} if comparison_authoring_enabled(record)
+                        **({'comparison_authoring':2 if referenced_repair(record) else True} if comparison_authoring_enabled(record)
                            and compact_repair and unified_repair_eligible else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
                            and record['verifiedTextRepairContractVersion'] in (1,2)

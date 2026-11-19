@@ -38,6 +38,38 @@ def test_comparison_repair_omits_deletion_declarations_but_keeps_originals_and_e
     assert len(new['prompt'].encode()) < len(old['prompt'].encode())
 
 
+def test_repair_resolves_visible_cells_and_leaves_prose_without_coordinates():
+    from services.deep_research.repair import _parse_repair_response
+    report, verification, ev, opts = comparison_fixture()
+    ev[0].update(quote='Table row 8: Ours-30K | 134',
+                 tableData={'groups': [['Benchmark', ['FPS']]],
+                            'rows': [[8, 'Ours-30K', ['134']]]})
+    prepared = _prepare_repair(report, verification, ev, 'Explain the operation.',
+                               **{**opts, 'comparison_authoring': 2})
+    ref, = prepared['comparisonCellRegistry']
+    evidence_id = prepared['comparisonCellRegistry'][ref]['binding']['evidenceId']
+    assert ref in prepared['prompt'] and 'tableCatalog' in prepared['prompt']
+    assert prepared['comparisonAuthoringContractVersion'] == 2
+    plain_input = {key: value for key, value in prose('c').items()
+                   if key not in {'obligationIds', 'tableBindings'}}
+    measured = {**deepcopy(plain_input), 'evidenceRefs': [evidence_id], 'cellRefs': [ref]}
+    measured['body']['prose']['text'] = 'Benchmark 上 Ours-30K 为 134 FPS。'
+
+    def parse(row):
+        return _parse_repair_response(prepared, {'content': json.dumps([row])}, json.loads)
+
+    compiled, = parse(measured)
+    assert compiled['tableBindings'] == [{'evidenceId': ev[0]['evidenceId'], 'rowNumber': 8,
+                                          'groupIndex': 0, 'metric': 'FPS', 'value': '134'}]
+    assert compiled['conditions']['原表测量'] == 'Benchmark / Ours-30K：FPS 134'
+    assert not parse({**measured, 'cellRefs': ['Vinvented']})
+    assert not parse({**measured, 'cellRefs': [ref, ref]})
+    assert not parse({**measured, 'tableBindings': compiled['tableBindings']})
+    assert not parse({**measured, 'evidenceRefs': ['E99']})
+    plain, = parse({**plain_input, 'evidenceRefs': [evidence_id], 'cellRefs': []})
+    assert plain['tableBindings'] == [] and '原表测量' not in plain['conditions']
+
+
 @pytest.mark.parametrize('response_kind', ['empty', 'unchanged', 'changed', 'old_deletion_schema'])
 def test_comparison_repair_records_outcomes_and_never_resends_received_batch(response_kind):
     report, verification, ev, opts = comparison_fixture()
