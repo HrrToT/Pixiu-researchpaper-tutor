@@ -565,11 +565,11 @@ def make_acquire_node(
         if source_policy_mode != "external_only":
             from services.deep_research.comparison_measurement_display import local_contributions
             from services.deep_research.measurement_table_navigation import planned_query_priority
-            active_ids = {item['itemId'] for item in plan}
             measurement_targets = []
             if (not requery_queries and record.get('readingPriorityContractVersion') == 9
                     and local_contributions(record)
                     and record.get('state', {}).get('dependencyExecution', {}).get('wave') == 0):
+                active_ids = {item['itemId'] for item in plan}
                 for item in record.get('readNavigationPlan', []):
                     if item['itemId'] in active_ids:
                         continue
