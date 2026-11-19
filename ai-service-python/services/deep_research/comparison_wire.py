@@ -10,9 +10,23 @@ import json
 from services.deep_research.table_evidence import visible_table_packet
 
 
-STAGE_POLICY = '''Write in clear Chinese for the audience in requestContext. Return only
+STAGE_ENVELOPE = '''Write in clear Chinese for the audience in requestContext. Return only
 {"answers":[{"targetId":"provided ID","goalRefs":["allowed G ID"],"point":POINT_OR_NULL}]}.
-Return every supplied target once. null means unresolved. Select goalRefs from each
+'''
+
+EXPLICIT_STAGE_ENVELOPE = '''Write in clear Chinese for the audience in requestContext.
+Return a JSON object. This example shows the types only; replace IDs and text with your inputs.
+{"answers":[{"targetId":"TARGET_EXAMPLE","goalRefs":["G_EXAMPLE"],"point":{"kind":"reported","body":{"prose":{"text":"Claim with its conditions.","conditions":{}}},"evidenceRefs":["E_EXAMPLE"],"cellRefs":["V_EXAMPLE"],"detailLevel":"fulltext"}}]}
+For an unresolved target use {"targetId":"TARGET_EXAMPLE","goalRefs":[],"point":null}.
+point.kind is the claim type, such as "reported" or "inference". "prose",
+"boundary" and "reasoning" are keys inside point.body only.
+point.cellRefs is a flat array of V ID strings. In tableCatalog, copy just the V ID
+from each selected cell pair. Rows, [V ID, value] pairs and nested arrays are input only.
+'''
+
+COMPARISON_POINT_KINDS = frozenset({'reported', 'inference', 'hypothesis', 'proposal', 'suggestion'})
+
+STAGE_POLICY = '''Return every supplied target once. null means unresolved. Select goalRefs from each
 target's goalChoices by the goal actually answered. The server binds targets and permissions.
 Paper targets answer their own paper and assigned dimension. Joint targets own the
 cross-paper contrast, comparability and recommendation. Complete your stage's contribution
@@ -261,7 +275,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             'instructionLayers': list(getattr(question, 'instruction_layers', (str(question),)))}
         task = ('Complete ONLY the supplied paper targets and jointTargets in clear Chinese. '
                 'The full human request in requestContext is context; each target defines this stage contribution.')
-    from services.deep_research.comparison_measurement_display import local_contributions, compact_stage_prompt
+    from services.deep_research.comparison_measurement_display import (
+        compact_stage_prompt, explicit_stage_schema, local_contributions)
     projected = source_scope is not None and local_contributions(record)
     if projected:
         # Frozen questions/criteria remain intact in one global catalogue.
@@ -280,8 +295,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                          for choice in target['goalChoices']]
     if projected and compact_stage_prompt(record):
         length = limit or 'concise, no explicit maximum'
+        envelope = EXPLICIT_STAGE_ENVELOPE if explicit_stage_schema(record) else STAGE_ENVELOPE
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
-                + STAGE_POLICY + body_guidance
+                + envelope + STAGE_POLICY + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'
                 + 'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n'
                 + input_text(data) + '\n')

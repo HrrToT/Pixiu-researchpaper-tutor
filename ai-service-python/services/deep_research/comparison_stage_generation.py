@@ -10,6 +10,8 @@ from services.deep_research.contracts import BudgetExhaustedError, DeepResearchE
 from services.deep_research.experiment_planning import remaining_seconds
 from services.deep_research.factual_reasoning import request_options
 from services.deep_research.request_context import effective_question
+from services.deep_research.comparison_measurement_display import explicit_stage_schema
+from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS
 
 
 def recorded_response(record, prompt, options, calls):
@@ -40,6 +42,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
     if snapshot.get('inputDigest') != binding or snapshot.get('scientificApproval') is not False:
         raise DeepResearchError('invalid_comparison_stage_input', '比较输入身份不一致。')
     record = current()
+    check_kind = explicit_stage_schema(record)
     saved = deepcopy(record.get('state',{}).get('comparisonStageGeneration'))
     expected = [s['stageId'] for s in snapshot['stages']]
     if len(set(expected)) != len(expected):
@@ -129,6 +132,9 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 elif (not isinstance(cells,list) or any(not isinstance(ref,str)
                         or ref not in stage['allowedCellsByTarget'][row['targetId']] for ref in cells)):
                     reason = 'stage_table_permission'
+                elif check_kind and (not isinstance(point.get('kind'), str)
+                                     or point['kind'] not in COMPARISON_POINT_KINDS):
+                    reason = 'stage_claim_kind'
             if reason:
                 isolated.append({'targetId':row['targetId'],'reason':reason})
                 admitted.append({'targetId':row['targetId'],'goalRefs':[],'point':None})

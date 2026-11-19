@@ -365,6 +365,47 @@ def test_stage_cannot_borrow_references_from_another_stage(foreign):
     assert entry['response']==raw[0] and entry['isolatedTargets'][0]['reason']=='stage_'+foreign+'_permission'
 
 
+@pytest.mark.parametrize('bad_field,reason', [
+    ('kind', 'stage_claim_kind'),
+    ('cellRefs', 'stage_table_permission'),
+])
+def test_explicit_stage_shape_keeps_valid_siblings_and_journals_invalid_rows(bad_field, reason):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=8)
+    snapshot = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    raw = []
+
+    def invoke(node, prompt, options):
+        stage = next(item for item in snapshot['stages'] if item['prompt'] == prompt)
+        response = null_response(stage)
+        if stage['stageId'] != 'P1':
+            return response
+        assert '"kind":"reported","body":{"prose":' in prompt
+        assert '"cellRefs":["V_EXAMPLE"]' in prompt
+        body = json.loads(response['content'])
+        for answer in body['answers'][:2]:
+            target = answer['targetId']
+            evidence_id = stage['allowedEvidenceByTarget'][target][0]
+            answer.update(goalRefs=['G1'], point={'kind': 'reported',
+                'body': {'prose': {'text': 'Unverified source report.', 'conditions': {}}},
+                'evidenceRefs': [evidence_id], 'cellRefs': []})
+        body['answers'][0]['point'][bad_field] = 'prose' if bad_field == 'kind' else [['V_EXAMPLE', '134']]
+        response['content'] = json.dumps(body)
+        raw.append(deepcopy(response))
+        return response
+
+    def checkpoint(value):
+        r['state']['comparisonStageGeneration'] = deepcopy(value)
+
+    response = generate(snapshot, current=lambda: deepcopy(r), checkpoint=checkpoint, invoke=invoke)
+    rejected, retained = json.loads(response['content'])['answers'][:2]
+    assert rejected['point'] is None and retained['point']['kind'] == 'reported'
+    entry = r['state']['comparisonStageGeneration']['stages']['P1']
+    assert entry['response'] == raw[0]
+    assert entry['isolatedTargets'] == [{'targetId': rejected['targetId'], 'reason': reason}]
+
+
 @pytest.mark.parametrize('exhausted',['calls','time'])
 def test_exhausted_dispatch_budget_does_not_send_the_next_stage(exhausted):
     r,snapshot=prepared()
