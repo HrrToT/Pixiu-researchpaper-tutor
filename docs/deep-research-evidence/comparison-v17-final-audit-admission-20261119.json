@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "ebb0761cf8897e68499b975ed75f42054343b73d",
+  "case": "D2-BASELINE-COMPRESSION-v17",
+  "method": "Saved verification checkpoint through the production verify node and tracked invoker with an isolated SQLite ledger. Stop immediately after the actual reservation succeeds.",
+  "inputReceipt": "baseline-comparison-v17-real-20261119.json",
+  "modelRequests": 0,
+  "factualVerdicts": "saved",
+  "settledTokensBeforeAudit": 71717,
+  "tokenBudget": 100000,
+  "profile3": {
+    "maximumPromptBytes": 21407,
+    "requiredPromptBytes": 22879,
+    "requiredEvidenceRows": 8,
+    "auditAdmitted": false
+  },
+  "profile4": {
+    "maximumPromptBytes": 21407,
+    "requiredPromptBytes": 21041,
+    "sentPromptBytesInOfflineSimulation": 21142,
+    "requiredEvidenceRows": 8,
+    "optionalEvidenceRows": 1,
+    "auditAdmitted": true,
+    "reservedModelCalls": 1,
+    "reservedTokens": 28018,
+    "projectedTotalTokens": 99735
+  },
+  "keptExact": [
+    "original question",
+    "all accepted claims and conditions",
+    "complete requirements and binding catalog",
+    "table digest and sections",
+    "all eight required evidence rows",
+    "per-check response field requirements"
+  ],
+  "focusedOfflineTestsPassed": 82,
+  "limits": [
+    "The recorded v17 claims were used for admission sizing. This does not exercise a new model response.",
+    "The wall-clock budget was not replayed. This does not establish capacity after a new repair or prove report publication."
+  ]
+}
