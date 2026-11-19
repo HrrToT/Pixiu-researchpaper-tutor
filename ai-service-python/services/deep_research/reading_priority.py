@@ -5,7 +5,7 @@ from services.deep_research.source_continuity import needs_preceding_context,met
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -30,6 +30,24 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                       measurement_tables=measurement_tables,processing_cost=processing_cost)
     else:
         ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
+    if measurement_tables and table_navigation_obligations:
+        from services.deep_research.reading_roles import quality, requests
+        from services.deep_research.measurement_table_navigation import score
+        targets = requests(table_navigation_obligations, readable, mixed_script_terms=mixed_script_terms)
+        best_by_paper = {}
+        for source in ordered:
+            if not source.get('tableData') or (source['sourceId'], source.get('contentHash')) in extracted:
+                continue
+            eligible = eligible_obligation_ids(source, table_navigation_obligations)
+            match = max((score(source, request) for request in targets
+                         if request['obligationId'] in eligible and quality(source, request['query']) == (True, True)),
+                        default=0)
+            identity = (source['workId'], source.get('versionId'))
+            if match > best_by_paper.get(identity, (0, None))[0]:
+                best_by_paper[identity] = (match, source)
+        # Keep most read slots available for the active step's own role queues.
+        preferred = [source for _, source in list(best_by_paper.values())[:limit // 2]]
+        ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:
         if source['sourceId'] in used:

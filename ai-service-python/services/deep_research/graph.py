@@ -720,18 +720,24 @@ def make_read_node(
         available = [sources_map[sid] for sid in source_ids if sid in sources_map]
         available.sort(key=lambda source: (source["sourceId"], source.get("contentHash")) in extracted)
         read_limit = 24 if record.get("budget", {}).get("profile") == "extended" else 12
-        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6,7,8):
+        if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (1,2,3,4,5,6,7,8,9):
             from services.deep_research.reading_priority import select_read_sources
             from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_enabled
+            from services.deep_research.comparison_measurement_display import local_contributions
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
+            table_navigation = {}
+            if record['readingPriorityContractVersion'] == 9 and local_contributions(record):
+                table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
+                                    for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'table_navigation_obligations': table_navigation} if table_navigation else {}),
                 **({'processing_cost':True} if cost_enabled(record) else {}),
-                **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10,8:10}[record['readingPriorityContractVersion']]}
-                   if record['readingPriorityContractVersion'] in (2,3,4,5,6,7,8) else {}),
-                **({'substantive':True,**({'mixed_script_terms':True} if record['readingPriorityContractVersion'] in (7,8) else {})} if record['readingPriorityContractVersion'] in (6,7,8)
+                **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10,8:10,9:10}[record['readingPriorityContractVersion']]}
+                   if record['readingPriorityContractVersion'] in (2,3,4,5,6,7,8,9) else {}),
+                **({'substantive':True,**({'mixed_script_terms':True} if record['readingPriorityContractVersion'] in (7,8,9) else {})} if record['readingPriorityContractVersion'] in (6,7,8,9)
                    and record.get('state',{}).get('outputKind') in {'paper_comparison','claim_verification'} else {}),
-                **({'measurement_tables':True} if record['readingPriorityContractVersion']==8 and record.get('state',{}).get('outputKind') in {'paper_comparison','claim_verification'} else {}),
+                **({'measurement_tables':True} if record['readingPriorityContractVersion'] in (8,9) and record.get('state',{}).get('outputKind') in {'paper_comparison','claim_verification'} else {}),
                 **({'illustrative_context':True} if continuity_enabled(record) else {}),
                 **({'method_context':True} if method_enabled(record) else {}))
         else:
@@ -1212,9 +1218,9 @@ def make_synthesize_node(
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
-                **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8) else {})} if type(record.get('readingPriorityContractVersion')) is int
-                   and record['readingPriorityContractVersion'] in (6,7,8) and output_kind in {'paper_comparison','claim_verification'} else {}),
-                **({'measurement_tables':True} if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion']==8 and output_kind in {'paper_comparison','claim_verification'} else {}),
+                **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8,9) else {})} if type(record.get('readingPriorityContractVersion')) is int
+                   and record['readingPriorityContractVersion'] in (6,7,8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),
+                **({'measurement_tables':True} if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,3) else {}),
                 **({'criterion_method_navigation':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==3 else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
@@ -1675,7 +1681,7 @@ space with unsupported global absence or incidental iteration/performance values
                    and record['workflowPremiseAllocationContractVersion']==1 else {}),
                 **({'factualInputContractVersion':1,'procedureObjectNavigation':
                     type(record.get('readingPriorityContractVersion')) is int
-                    and record['readingPriorityContractVersion'] in (6,7,8)}
+                    and record['readingPriorityContractVersion'] in (6,7,8,9)}
                    if consolidated_factual else {}),
                 **({'sizingContractVersion':2,'encodedInputBytes':wire_size(prompt),
                     'fixedEncodedInputBytes':wire_size(render_premises([])),
@@ -2902,7 +2908,8 @@ def build_deep_research_graph(
     workflow.add_node("wait_clarification", make_wait_for_clarification_node(repo_update))
     workflow.add_node("plan", bounded(make_plan_node(llm_invoke, repo_update, validate_plan_fn)))
     workflow.add_node("acquire", make_acquire_node(retrieve_fn, scope_validator, frontier_update, external_acquire=external_acquire))
-    workflow.add_node("read", make_read_node(read_fn, scope_validator, frontier_update))
+    workflow.add_node("read", make_read_node(read_fn, scope_validator,
+                                            scoped_updater(repo_update, include_read_plan=True)))
     if extract_batch_size > 1:
         from services.deep_research.extraction import make_batched_extract_node
         extractor = make_batched_extract_node(llm_invoke, make_evidence_fn, scope_validator, frontier_update,

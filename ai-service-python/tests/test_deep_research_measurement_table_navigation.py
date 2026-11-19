@@ -133,6 +133,49 @@ def test_model_free_graph_read_extract_and_premise_stages_keep_original_table_ce
     invoke.assert_not_called()
 
 
+def test_future_measurement_guides_reading_without_advancing_dependency_frontier():
+    from services.deep_research.dependencies import initialize, scoped_updater
+
+    measurements, rows = inputs()
+    plan = [
+        {'itemId': 'method', 'obligations': [{'obligationId': 'method', 'question': 'Explain the representation'}]},
+        {'itemId': 'results', 'dependencies': ['method'], 'obligations': list(measurements.values())},
+    ]
+    record = {
+        'runId': 'r', 'readingPriorityContractVersion': 9, 'dependencyContractVersion': 1,
+        'comparisonAuthoringContractVersion': 3, 'comparisonPlanningContractVersion': 6,
+        'comparisonReviewBatchContractVersion': 2, 'adaptiveExtractionContractVersion': 3,
+        'state': {'sources': rows, 'plan': plan, 'outputKind': 'paper_comparison',
+                  'dependencyExecution': initialize(plan), 'evidence': []}, 'budget': {},
+    }
+
+    def update(rid, fn, **kwargs):
+        nonlocal record
+        record = fn(deepcopy(record))
+        return deepcopy(record)
+
+    reads = []
+
+    def read(rid, sid):
+        reads.append(sid)
+        row = next(s for s in rows if s['sourceId'] == sid)
+        return {'accessLevel': 'fulltext', 'pages': [{'page': 1, 'text': row['text']}]}
+
+    scope = lambda rid, owner: owner == 'a'
+    make_read_node(read, scope, scoped_updater(update, include_read_plan=True))(
+        {'run_id': 'r', 'source_ids': [s['sourceId'] for s in rows]})
+    assert reads[0] == 'table-a'
+    assert all(not sid.endswith('-b') for sid in reads)
+    assert record['state']['plan'] == plan
+    assert record['state']['dependencyExecution'] == initialize(plan)
+    assert 'readNavigationPlan' not in record
+    invoke = Mock(side_effect=AssertionError('No model call for literal extraction'))
+    make_batched_extract_node(invoke, make_evidence, scope, scoped_updater(update))({'run_id': 'r'})
+    table_rows = [row for row in record['state']['evidence'] if row.get('tableData')]
+    assert table_rows and all(row['obligationIds'] == ['method'] for row in table_rows)
+    invoke.assert_not_called()
+
+
 def test_unchecked_or_foreign_literal_evidence_never_enters_navigation_bundles():
     obs, rows = inputs(); row = rows[-1]
     evidence = {'evidenceId': 'e', 'sourceWorkId': row['workId'], 'sourceVersionId': row['versionId'],

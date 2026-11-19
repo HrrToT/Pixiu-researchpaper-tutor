@@ -58,7 +58,7 @@ def scoped_record(record):
         'coverage': [c for c in domain.get('coverage', []) if c.get('obligationId') in obligations]}}
 
 
-def scoped_updater(update):
+def scoped_updater(update, *, include_read_plan=False):
     """Keep the full plan/earlier gaps in storage while nodes see one frontier."""
     def scoped(run_id, mutate, **kwargs):
         def merge(current):
@@ -78,7 +78,11 @@ def scoped_updater(update):
                 domain[key] = [row for row in before.get(key, []) if row.get('obligationId') not in active_obligations]
                 domain[key].extend((proposed.get('state') or {}).get(key, []))
             return {**proposed, 'state': domain}
-        return scoped_record(update(run_id, merge, **kwargs))
+        full = update(run_id, merge, **kwargs)
+        view = scoped_record(full)
+        if include_read_plan and enabled(full):
+            return {**view, 'readNavigationPlan': full['state']['plan']}
+        return view
     return scoped
 
 

@@ -427,7 +427,7 @@ class ResearchFacade:
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 8,
             "sourceContinuityContractVersion": 2,
-            "readingPriorityContractVersion": 8,
+            "readingPriorityContractVersion": 9,
             "absenceScopeContractVersion": 8,
             "answerFormatContractVersion": 3,
             "repairProgressContractVersion": 2,
