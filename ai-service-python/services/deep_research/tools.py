@@ -725,6 +725,7 @@ class BudgetedSemanticChecker:
         scope_observation_assertions=False,
         consistent_scope_premises=False,
         general_advice_review=False,
+        device_memory_advice=False,
         scope_source_paths=False,
         mechanism_grounding=False,
         singleton_factual_response=False,
@@ -751,6 +752,7 @@ class BudgetedSemanticChecker:
         self._metric_domains = metric_domains
         self._research_question = research_question
         self._general_advice_review = general_advice_review
+        self._device_memory_advice = device_memory_advice
         self._isolate_factual_claims = isolate_factual_claims
         self._comparison_reasoning = comparison_reasoning
         self._comparison_audit_version = comparison_audit_version
@@ -1405,9 +1407,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                 version=envelope_version)
         if complete_factual_batch:
             full_review_inputs=True
+        device_memory = False
         if advice_mode:
             from services.deep_research.general_advice import prompt as advice_prompt
-            prompt=advice_prompt(claims_text,question,evidence_text)
+            policy = self._device_memory_advice
+            device_memory = (policy() if callable(policy) else policy) is True
+            prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory)
         version_policy=self._source_version_review
         version_policy=(version_policy() if callable(version_policy) else version_policy) is True
         if version_policy:
@@ -1634,10 +1639,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                 target = by_id[verdict['claimId']]
                 if advice_mode:
                     from services.deep_research.general_advice import validate as validate_advice
-                    errors=validate_advice(target,verdict,visible_evidence)
+                    errors=validate_advice(target,verdict,visible_evidence,device_memory=device_memory)
                     if errors:
                         verdict['status']='failed'
-                        verdict['reason']='普通建议的用途或自身来源尚未核实：'+', '.join(errors)
+                        verdict['reason'] = ('显存选择缺少可核对的实际显存测量。文件大小不能用来推断显存收益。'
+                            '可给出先在目标设备实测、再依据结果选择的建议。'
+                            if 'device_memory_premise_not_established' in errors
+                            else '普通建议的用途或自身来源尚未核实：' + ', '.join(errors))
                     continue
                 if set(target.get('evidenceRefs', [])) - visible_ids:
                     verdict['status'] = 'failed'

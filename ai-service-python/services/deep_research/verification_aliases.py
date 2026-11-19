@@ -43,6 +43,10 @@ def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=
         for row in audit.get('premises',[]) if isinstance(audit,dict) and isinstance(audit.get('premises'),list) else []:
             if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
                 row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])
+        memory = audit.get('deviceMemory') if isinstance(audit, dict) else None
+        premise = memory.get('premise') if isinstance(memory, dict) else None
+        if isinstance(premise, dict) and isinstance(premise.get('evidenceId'), str):
+            premise['evidenceId'] = reverse.get(premise['evidenceId'], premise['evidenceId'])
     if scope_expression:
         expression=restored.get('scopeExpressionAudit')
         for key in ('observedSettings','notEstablished'):

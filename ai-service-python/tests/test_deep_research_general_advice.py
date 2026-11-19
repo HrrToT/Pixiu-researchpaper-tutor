@@ -60,6 +60,34 @@ def test_old_policy_keeps_original_experiment_review_path():
     assert 'prospective experimental design' in invoke.call_args.kwargs['prompt']
 
 
+@pytest.mark.parametrize('revision', [False, True])
+@pytest.mark.parametrize('mode, text, quote, approved', [
+    (None, '显存受限时优先考虑压缩表示，其文件更小，实际显存需实测。', 'The model file was 45 MB.', False),
+    ('measured', '显存受限时优先考虑压缩表示。', 'The model file was 45 MB. GPU memory was not measured.', False),
+    ('test_first', '显存受限时优先考虑压缩表示，先实测显存。', 'The model file was 45 MB.', False),
+    ('test_first', '文件大小不能证明显存更低，但优先考虑压缩表示，先实测显存。', 'The model file was 45 MB.', False),
+    ('test_first', '文件大小不能证明显存更低。先在目标设备测量峰值显存，再按测量结果选择。', 'The model file was 45 MB.', True),
+    ('measured', '该设置下实测峰值显存为 4 GB，可在相同设置下考虑该方法。', 'Peak GPU memory was 4 GB on the evaluation device.', True),
+])
+def test_device_memory_advice_requires_a_bound_measurement_or_test_first(revision, mode, text, quote, approved):
+    c, _ = fixture()
+    e = make_evidence({'workId': 'p', 'versionId': 'v', 'contentHash': 'h', 'accessLevel': 'fulltext'},
+                      quote, quote, location={}, obligation_ids=[])
+    c.update(text=text, evidenceRefs=[e['evidenceId']])
+    row = verdict(purpose='other_nonexperimental')
+    if mode:
+        memory = {'mode': mode}
+        if mode == 'measured':
+            memory.update(premise=deepcopy(row['adviceAudit']['premises'][0]), excerpt=quote)
+        row['adviceAudit']['deviceMemory'] = memory
+    invoke = Mock(return_value={'content': json.dumps([row])})
+    checker = BudgetedSemanticChecker(invoke, 'r', general_advice_review=True, device_memory_advice=True)
+    result = checker.check_revisions([c], [e], []) if revision else checker([c], [e])
+    assert (result[0]['status'] == 'passed') is approved
+    if approved and mode == 'measured':
+        assert result[0]['adviceAudit']['deviceMemory']['premise']['evidenceId'] == e['evidenceId']
+
+
 @pytest.mark.parametrize('field',['designRole','executionSpec','designContractVersion','budgetContractVersion','hypothesisContractVersion','protocolContractVersion','workflowContractVersion'])
 def test_formal_or_even_invalid_design_fields_cannot_select_advice_path(field):
     c,_=fixture();c[field]=None
@@ -105,9 +133,9 @@ def test_advice_policy_is_server_owned_immutable_and_absent_on_legacy(tmp_path,r
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'给出阅读顺序','deferStart':True,
             'recommendationReviewContractVersion':replacement},start_async=False)
-        assert run['recommendationReviewContractVersion']==1
+        assert run['recommendationReviewContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run(run['runId'],lambda r:{**r,'recommendationReviewContractVersion':replacement})
+            repo.update_run(run['runId'],lambda r:{**r,'recommendationReviewContractVersion':1 if replacement == 2 else replacement})
         assert not enabled({'state':{'outputKind':'direction_survey'}})
     finally:facade.shutdown()
 
