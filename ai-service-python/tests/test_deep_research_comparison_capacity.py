@@ -119,3 +119,49 @@ def test_production_verify_always_audits_after_deferred_repair_even_when_it_fail
     assert result['answerCoverage']['status']==('budget_exhausted' if repair_outcome=='audit_budget' else 'checked')
     accepted_ids={c['claimId'] for c in result['verifiedClaims']}
     assert (rejected_id in accepted_ids)==(repair_outcome in ('changed','audit_budget'))
+
+
+def test_exhausted_repair_audit_keeps_the_previously_checked_comparison():
+    from unittest.mock import Mock, patch
+    from services.deep_research.answer_coherence import identity
+    from services.deep_research.comparison_presentation import audit_digest
+    from services.deep_research.graph import make_verify_node
+
+    r = populated_factual_record()
+    r.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=6)
+    from services.deep_research.authored_body import decode
+    claims = [decode(c) for c in r['state']['reportBody']['claims']]
+    rejected_id = claims[0]['claimId']
+    first_check = {'accepted': claims[1:], 'rejected': [
+        {'claimId': rejected_id, 'reason': 'semantic_unresolved'}]}
+    revision = {**claims[0], 'text': 'Revised with scope.'}
+    verify = Mock(side_effect=[first_check, {'accepted': [revision], 'rejected': []}])
+    limit = {'kind': 'coveragePromptBytes', 'limit': 10, 'used': 2000}
+    audits = []
+
+    def audit(rid, question, plan, accepted, *args, comparison_cells, **kwargs):
+        if audits:
+            assert revision['claimId'] in {claim['claimId'] for claim in accepted}
+            return {'status': 'budget_exhausted', 'budgetLimit': limit}
+        checked = {'status': 'checked', 'comparisonPresentationDigest': audit_digest(comparison_cells, accepted),
+                   'answerCoherence': {'contractVersion': 1, 'status': 'checked', 'coherent': True,
+                                       'issues': [], 'answerDigest': identity(question, accepted)},
+                   'gaps': [{'obligationId': 'mechanism', 'missingEvidence': 'Still missing.'}]}
+        audits.append(checked)
+        return checked
+
+    def update(rid, fn, **kwargs):
+        nonlocal r
+        r = fn(deepcopy(r))
+        return deepcopy(r)
+
+    with patch('services.deep_research.repair.repair_rejected', return_value=[revision]), patch(
+            'services.deep_research.final_coverage.audit_final_answer', side_effect=audit) as reviewer:
+        make_verify_node(verify, None, update, llm_invoke=Mock())({'run_id': 'r'})
+
+    state = r['state']
+    assert reviewer.call_count == 2
+    assert state['verifiedReport']['verifiedClaims'] == first_check['accepted']
+    assert state['verifiedReport']['answerCoverage'] == audits[0]
+    assert state['repairVerification']['accepted'] != first_check['accepted']
+    assert state['repairReleaseDeferred'] == {'status': 'budget_exhausted', 'budgetLimit': limit}

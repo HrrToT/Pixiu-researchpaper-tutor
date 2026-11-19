@@ -2381,10 +2381,10 @@ def make_verify_node(
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
-                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, referenced_repair
+                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, repair_profile
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
-                        **({'comparison_authoring':2 if referenced_repair(record) else True} if comparison_authoring_enabled(record)
+                        **({'comparison_authoring':repair_profile(record)} if comparison_authoring_enabled(record)
                            and compact_repair and unified_repair_eligible else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
                            and record['verifiedTextRepairContractVersion'] in (1,2)
@@ -2562,7 +2562,19 @@ def make_verify_node(
                         verification_result = merged
                     elif merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
-                        answer_coverage = audit_accepted(merged.get('accepted', []), current.get('budget'))
+                        merged_audit = audit_accepted(merged.get('accepted', []), current.get('budget'))
+                        from services.deep_research.comparison_measurement_display import repair_profile
+                        from services.deep_research.comparison_repair import can_retain_audited_answer
+                        if repair_profile(record) == 3 and can_retain_audited_answer(
+                                answer_coverage, merged_audit, effective_question(record),
+                                verification_result.get('accepted', []), comparison_audit_args.get('comparison_cells')):
+                            repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                                'repairReleaseDeferred': {'status': merged_audit['status'],
+                                                          'budgetLimit': merged_audit.get('budgetLimit')}}},
+                                expected_revision=None)
+                            merged = verification_result
+                        else:
+                            answer_coverage = merged_audit
                     verification_result = merged
             except BudgetExhaustedError as exc:
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

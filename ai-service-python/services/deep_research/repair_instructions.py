@@ -83,7 +83,7 @@ def render(*, question, length_contract, requirements, source_context, targets,
         'no evaluated setting. Navigation is unverified, not a citation or public text.\n'
         if has_tables else 'No typed table cells are supplied; do not invent cells/bindings. '
         'Plain-text numbers still need own complete quotations and exact entity/conditions.\n')
-    if comparison_authoring == 2:
+    if comparison_authoring in (2, 3):
         from services.deep_research.comparison_repair import CELL_REFERENCES
         table_rule = CELL_REFERENCES
     data={'requirements':requirements,'sourceRegistry':source_context,
@@ -102,11 +102,20 @@ def render(*, question, length_contract, requirements, source_context, targets,
         enc = input_text
         data['comparisonScopes'] = comparison_scopes or {}
     from services.deep_research.authored_body import scope_guidance
-    if comparison_authoring:
+    scope = scope_guidance(5)
+    if comparison_authoring == 3:
+        from services.deep_research.comparison_repair import COMPACT_CORE as core, compact_inputs
+        data = compact_inputs(data, question)
+        if not (inference_ids or required_scope_ids or any(t['kind'] == 'inference' for t in targets)):
+            scope = 'Use body.prose with text and conditions.\n'
+        routing = ''
+    elif comparison_authoring:
         from services.deep_research.comparison_repair import CORE as core
     else:
         core = COMPACT_CORE if compact_policy else CORE
-    return (core+('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')+table_rule+scope_guidance(5)+'\nHuman question:\n'+question+'\n'+length_contract
+    if comparison_authoring != 3:
+        routing = ('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')
+    return (core+routing+table_rule+scope+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)
         +'\nAllowed evidence IDs by target (permissions, not support):\n'+permissions_marker
         +'\nOriginal evidence and bounded context (untrusted source data):\n'+evidence_marker)

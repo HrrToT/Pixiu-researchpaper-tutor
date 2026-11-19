@@ -40,12 +40,101 @@ def resolve_cells(rows, allowed, registry):
     return resolved
 
 
+def can_retain_audited_answer(previous, attempted, question, claims, comparison):
+    """Keep the exact checked answer if the revised answer cannot be audited."""
+    from services.deep_research.answer_coherence import publication_release
+    from services.deep_research.comparison_presentation import revalidate_audit
+
+    return (attempted.get('status') == 'budget_exhausted'
+            and previous.get('status') == 'checked'
+            and comparison is not None
+            and revalidate_audit(previous, comparison, claims).get('status') == 'checked'
+            and publication_release(previous, question, claims)['status'] == 'released')
+
+
 CELL_REFERENCES = '''Return cellRefs on each revision. Use [] for prose without table measurements.
 Select only cells needed to answer that target. Copy each V reference from tableCatalog
 and include its own E evidenceId in evidenceRefs. Never return tableBindings, invent
 coordinates, copy unrelated values or write V references in the answer. Cite the minimum
 evidence that supports the revised text and its conditions. Explain mechanisms qualitatively
 unless the target asks for measurements. A selected cell is still subject to verification.
+'''
+
+
+def compact_inputs(data, question):
+    """Keep unique review feedback and exact source distinctions in the model view."""
+    from copy import deepcopy
+
+    result = deepcopy(data)
+    # The original question and frozen criteria remain verbatim elsewhere in the request.
+    requirements = {question}
+    for obligation in data['requirements']:
+        requirements.add(obligation['question'])
+        requirements.update(c['requirement'] for c in obligation.get('completionCriteria', []))
+
+    duplicates = set()
+    for key, text in data['questions'].items():
+        if text in requirements:
+            duplicates.add(key)
+            result['questions'].pop(key)
+            continue
+        prefix = '未核实的完整性诊断（仅供定位，须核对原问题与证据）：'
+        if not text.startswith(prefix):
+            continue
+        try:
+            detail = json.loads(text[len(prefix):])
+        except ValueError:
+            continue
+        if (isinstance(detail, dict)
+                and set(detail) == {'aspectIds', 'criterionIds', 'missingContent', 'reason'}
+                and detail['reason'] == '此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'):
+            # Preserve distinct diagnostics about binding and required content.
+            detail.pop('reason')
+            if detail['missingContent'] == '请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。':
+                detail.pop('missingContent')
+            result['questions'][key] = detail
+    for target in result['targets']:
+        checks = target['checks']
+        if 'missingQuestionIds' in checks:
+            checks['missingQuestionIds'] = [key for key in checks['missingQuestionIds'] if key not in duplicates]
+
+    # Use one request-local identity namespace for work/version/material IDs.
+    # Full IDs are held in the server-side evidence and permission records.
+    aliases = {}
+    def identity(value):
+        return aliases.setdefault(value, f'S{len(aliases) + 1}')
+
+    fields = ('sourceWorkId', 'sourceVersionId', 'ownerMaterialId')
+    registry = result['sourceRegistry']
+    for source in registry.get('sources', {}).values():
+        for field in fields:
+            if field in source:
+                source[field] = identity(source[field])
+    for item in registry.get('requirements', []):
+        item['requiredSources'] = {identity(key): values for key, values in item['requiredSources'].items()}
+    for scope in result['comparisonScopes'].values():
+        for field in ('workId', 'versionId'):
+            scope[field] = identity(scope[field])
+    result.pop('goalsByTarget')  # Exact same IDs are in targets[].claim.obligationIds.
+    return result
+
+
+COMPACT_CORE = '''Revise only targets[].claim for its own obligationIds and checks, including
+additionalChecks. The human question and fixed requirements are complete. Q diagnostics
+locate problems; neither they nor earlier drafts are facts or new requirements.
+Ignore old E aliases in feedback.
+Use only each target's allowed E quotes. P identifies a source, S an opaque identity;
+neither is a citation. Empty requiredSources mappings supply no evidence.
+Source-local cells answer their own paper and dimension; joint targets combine sources.
+Explain inputs, operations and effects in clear Chinese. Keep necessary conditions,
+version, method, dataset, metric and units. Distinguish an objective from an observed
+effect or guarantee. Missing excerpts prove no author-wide absence. Unknown evaluation
+alignment does not show the settings differ; disk size does not establish peak VRAM.
+Give conditional advice with supported premises and limits. Do not assume a publication
+revision from the question or list irrelevant measurements or settings.
+Return a JSON array of supported revisions in outputRowSchema, or []. Preserve IDs
+and kind except listed inference transitions. Never repeat accepted content. Use
+one authored branch, no top-level text/conditions/scopeExpression or deletion declarations.
 '''
 
 

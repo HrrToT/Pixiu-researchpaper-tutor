@@ -70,6 +70,41 @@ def test_repair_resolves_visible_cells_and_leaves_prose_without_coordinates():
     assert plain['tableBindings'] == [] and '原表测量' not in plain['conditions']
 
 
+def test_comparison_compact_repair_keeps_distinct_versions_requirements_and_diagnostics():
+    from services.deep_research.comparison_repair import compact_inputs
+    question = 'Compare the methods under their actual test conditions.'
+    criterion = 'Give the tested resolution.'
+    detail = {'aspectIds': ['criterion:condition'], 'criterionIds': ['condition'],
+              'missingContent': 'The accepted text does not specify the resolution.',
+              'reason': '此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。'}
+    diagnostic = '未核实的完整性诊断（仅供定位，须核对原问题与证据）：' + json.dumps(detail, ensure_ascii=False)
+    unique_question = 'What did the cited comparison actually test?'
+    data = {'requirements': [{'obligationId': 'test', 'question': question,
+                              'completionCriteria': [{'requirement': criterion}]}],
+            'questions': {'Q1': question, 'Q2': criterion, 'Q3': diagnostic, 'Q4': unique_question},
+            'targets': [{'claim': {'claimId': 'c', 'obligationIds': ['test']},
+                         'checks': {'missingQuestionIds': ['Q1', 'Q2', 'Q3', 'Q4'],
+                                    'detail': 'Retain the review finding.'}}],
+            'sourceRegistry': {'sources': {
+                'P1': {'sourceWorkId': 'work', 'sourceVersionId': 'v1', 'title': 'Paper'},
+                'P2': {'sourceWorkId': 'work', 'sourceVersionId': 'v2', 'title': 'Paper'}},
+                'requirements': [{'requiredSources': {'work': ['P1', 'P2'], 'unavailable': []}}]},
+            'comparisonScopes': {'c': {'workId': 'work', 'versionId': 'v1'}},
+            'goalsByTarget': {'c': ['test']}}
+    before = deepcopy(data)
+    compact = compact_inputs(data, question)
+    assert data == before and compact['requirements'] == before['requirements']
+    assert compact['targets'][0]['checks'] == {'missingQuestionIds': ['Q3', 'Q4'],
+                                             'detail': 'Retain the review finding.'}
+    assert compact['questions'] == {'Q3': {k: v for k, v in detail.items() if k != 'reason'},
+                                    'Q4': unique_question}
+    sources = compact['sourceRegistry']['sources']
+    scope = compact['comparisonScopes']['c']
+    assert sources['P1']['sourceWorkId'] == sources['P2']['sourceWorkId'] == scope['workId']
+    assert sources['P1']['sourceVersionId'] == scope['versionId'] != sources['P2']['sourceVersionId']
+    assert list(compact['sourceRegistry']['requirements'][0]['requiredSources'].values()) == [['P1', 'P2'], []]
+
+
 @pytest.mark.parametrize('response_kind', ['empty', 'unchanged', 'changed', 'old_deletion_schema'])
 def test_comparison_repair_records_outcomes_and_never_resends_received_batch(response_kind):
     report, verification, ev, opts = comparison_fixture()
