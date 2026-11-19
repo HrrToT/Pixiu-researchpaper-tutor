@@ -602,11 +602,15 @@ class DeepResearchRepository:
                         raise UnresolvedUnknownError(normalized_run, [row[0] for row in unresolved])
                     if delta:
                         from services.deep_research.finalization_pool import (
+                            comparison_repair_can_use_release,
                             eligible_finalization_request, prepare_finalization_budget,
                             released_reserve_tokens, select_reservation_pool)
                         # Select against current counters under the same write
                         # transaction. Full budget checks below still admit or
                         # reject; the ledger records the actual pool used.
+                        if normalized_node == 'repair_claims':
+                            use_reserve = (use_reserve and normalized_tool == 'llm_invoke'
+                                           and comparison_repair_can_use_release(run_record))
                         allow_released = eligible_finalization_request(run_record.get('budget') or {},
                                                                       use_reserve, normalized_node)
                         run_record['budget'] = prepare_finalization_budget(run_record.get('budget') or {},

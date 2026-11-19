@@ -102,6 +102,41 @@ def test_over_total_reservation_rolls_back_the_transfer_and_leaves_no_call(tmp_p
     assert repo.require_run('run') == before and not repo.list_calls('run')
 
 
+@pytest.mark.parametrize('profile, ordinary_calls, protected_calls, admitted', [
+    (3, 7, 5, True),
+    (2, 7, 5, False),
+    (3, 11, 5, False),
+    (3, 7, 4, False),
+])
+def test_comparison_repair_reuses_released_budget_after_initial_review(
+        tmp_path, profile, ordinary_calls, protected_calls, admitted):
+    repo = DeepResearchRepository(tmp_path / 'comparison.sqlite3')
+    repo.initialize()
+    repo.create_run({'runId': 'run', 'status': 'running',
+        'comparisonAuthoringContractVersion': profile, 'comparisonPlanningContractVersion': 6,
+        'comparisonReviewBatchContractVersion': 2, 'state': {'outputKind': 'paper_comparison'},
+        'budget': budget(tokens=61168, normalTokens=30948, modelCalls=ordinary_calls,
+                         reservedModelCalls=protected_calls, releasedReserveTokens=19780)})
+    before = repo.require_run('run')['budget']
+    if not admitted:
+        with pytest.raises(BudgetExhaustedError):
+            reserve(repo, 'repair', 28774, 'repair_claims')
+        assert repo.require_run('run')['budget'] == before and repo.list_calls('run') == []
+        return
+    call, reused = reserve(repo, 'repair', 28774, 'repair_claims')
+    assert not reused and not call['usesReserve']
+    current = repo.require_run('run')['budget']
+    assert current['tokens'] == 89942
+    assert current['normalTokens'] == 59722
+    for key in ('maxTokens', 'reserveTokens', 'maxModelCalls', 'reserveModelCalls', 'reservedModelCalls'):
+        assert current[key] == before[key]
+    repo.complete_call(call['callId'], status='succeeded', reservation_token=call['reservationToken'],
+                       result={'content': '[]'}, budget_delta={'tokens': -21774})
+    reopened = DeepResearchRepository(repo.db_path)
+    assert reserve(reopened, 'repair', 28774, 'repair_claims')[1] is True
+    assert reopened.require_run('run')['budget']['tokens'] == 68168
+
+
 def test_concurrent_final_reservations_never_double_spend_the_same_total_balance(tmp_path):
     repo = repository(tmp_path)
     def worker(index):

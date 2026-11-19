@@ -2299,6 +2299,8 @@ def make_verify_node(
             from services.deep_research.table_identity_context import enabled as table_identity_enabled
             from services.deep_research.repair_compaction import enabled as repair_compaction_enabled, compact_repairs
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
+            from services.deep_research.finalization_pool import comparison_repair_can_use_release
+            from services.deep_research.comparison_measurement_display import local_contributions
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
                 # Do not spend the final seconds on wording that cannot be checked.
@@ -2322,7 +2324,9 @@ def make_verify_node(
                     from services.deep_research.factual_reasoning import request_options as factual_options
                     options.update(factual_options(record,effective_question(record),
                         record.get('state',{}).get('outputKind')))
-                    response = llm_invoke(run_id, "repair_claims", prompt, options)
+                    current = repo_update(run_id, lambda r: r, expected_revision=None) if local_contributions(record) else record
+                    response = llm_invoke(run_id, "repair_claims", prompt, options,
+                        **({'use_reserve': True} if comparison_repair_can_use_release(current) else {}))
                 except BudgetExhaustedError as exc:
                     repo_update(run_id, lambda r: {**r, "state": {**r.get("state", {}),
                         "repairStatus": "skipped_budget", "repairLimit": exc.details}}, expected_revision=None)
@@ -2355,7 +2359,8 @@ def make_verify_node(
                     edit_repair=(shared_experiment_repair(record)
                         and record['experimentRepairContractVersion'] in (2,3,4,5,6) and can_edit(repair_report))
                     from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
-                    released_finalization=comparison_operations_enabled(record)
+                    released_finalization = (comparison_repair_can_use_release(current) if local_contributions(record)
+                                             else comparison_operations_enabled(record))
                     repair_input_options={'released_finalization':True} if released_finalization else {}
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit

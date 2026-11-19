@@ -45,8 +45,24 @@ _FINALIZATION_NODES: frozenset[str] = frozenset(
         "verify_advice",
         "verify_repair_advice",
         "verify_answer_coverage",
+        "repair_claims",
     }
 )
+
+
+def comparison_repair_can_use_release(record):
+    """A rewrite can use released capacity after initial review fills the reserve."""
+    from services.deep_research.comparison_measurement_display import local_contributions
+    budget = record.get('budget') or {}
+    if not local_contributions(record) or not released_reserve_tokens(budget):
+        return False
+    if not all(_valid_nonneg_int(budget.get(key)) for key in
+               ('modelCalls', 'reservedModelCalls', 'reserveModelCalls', 'maxModelCalls')):
+        return False
+    if budget['reservedModelCalls'] != budget['reserveModelCalls']:
+        return False
+    remaining = budget['maxModelCalls'] - budget['modelCalls'] - budget['reservedModelCalls']
+    return remaining >= 3  # Rewrite, independent recheck, whole-answer audit.
 
 _LIMIT_FIELDS = ("maxModelCalls", "reserveModelCalls", "maxTokens", "reserveTokens")
 _USED_FIELDS = ("modelCalls", "reservedModelCalls", "normalTokens", "tokens")
