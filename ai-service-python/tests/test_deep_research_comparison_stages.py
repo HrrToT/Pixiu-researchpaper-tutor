@@ -35,6 +35,33 @@ def prepared():
     return r,prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)
 
 
+def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=3)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    goal['question'] = '为什么不能直接拿两篇的FPS排名？'
+    template = {**rows[0], 'accessLevel': 'fulltext', 'sourceContext': {}}
+    template.pop('tableData', None)
+    template.pop('tableDataRef', None)
+    additions = [
+        {**template, 'evidenceId': f'optional-{index}', 'quote': f'Additional description {index}.'}
+        for index in range(22)
+    ]
+    note = {**template, 'evidenceId': 'evaluation-setup',
+            'quote': 'All performance evaluations are conducted on an A6000 GPU.'}
+    rows.extend([*additions, note])
+    aliases.update({row['evidenceId']: 'original-' + row['evidenceId'] for row in [*additions, note]})
+    versions = [prepare({**r, 'comparisonJointReportsContractVersion': version}, plan['requirements'],
+                        plan['sources'], rows, {}, bundles, aliases) for version in (3, 4)]
+    prior, current = [next(s for s in snap['stages'] if s['stageId'] == 'joint') for snap in versions]
+    assert prior['requiredEvidenceIds'] == current['requiredEvidenceIds']
+    assert len(current['suppliedEvidenceIds']) <= 20
+    assert note['evidenceId'] not in prior['suppliedEvidenceIds']
+    assert note['evidenceId'] in current['allowedEvidenceByTarget']['joint_' + goal['obligationId']]
+    assert note['quote'] in current['prompt']
+
+
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():
     r,p,rows,aliases,bundles=fixture()
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases)

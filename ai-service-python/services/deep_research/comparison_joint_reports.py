@@ -13,6 +13,13 @@ _SINGLE_NUMERIC_EXAMPLE = re.compile(
 
 _NUMERIC = re.compile(r'数字|数值|定量|\bnumeric(?:al)?\b|\bquantitative\b', re.I)
 _ADVICE = re.compile(r'建议|推荐|(?:有条件|如何|怎样)选择|\b(?:recommend\w*|advice|conditional choice)\b', re.I)
+_SPEED = re.compile(
+    r'(?<![A-Za-z0-9])(?:fps|frame\s+rate|rendering\s+(?:speed|time|latency|performance))(?![A-Za-z0-9])'
+    r'|帧率|渲染(?:速度|耗时|延迟)', re.I)
+_PROTOCOL = re.compile(
+    r'\b(?:evaluat\w*|benchmark\w*|measur\w*|render\w*|timing)\b[^.!?。]{0,120}'
+    r'\b(?:on|using|with|at)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform|resolution)\b'
+    r'|(?:评估|测量|测试|渲染)[^。！？]{0,65}(?:显卡|GPU|硬件|分辨率)', re.I)
 
 
 def has_single_numeric_example(roles):
@@ -90,11 +97,26 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion'] in (1, 2, 3))
+            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4))
 
 
 def resource_allocation_enabled(record):
-    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3)
+    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4)
+
+
+def comparison_protocol_priority(rows, targets):
+    """Reserve optional priority for one evaluation-protocol passage per relevant source."""
+    relevant_sources = {source for target in targets
+                        if target['role'] == 'joint' and not target.get('deliverable')
+                        and _SPEED.search(target['question']) for source in target['sources']}
+    prioritized = set()
+    for row in rows:
+        source = row['source']
+        if (source in relevant_sources and row.get('accessLevel') == 'fulltext'
+                and not (row.get('tableData') or row.get('tableDataRef')) and _PROTOCOL.search(row['quote'])):
+            prioritized.add(row['evidenceId'])
+            relevant_sources.remove(source)
+    return prioritized
 
 
 PLANNING = '''Use joint for a shared source-reported contrast or numerical example as well as

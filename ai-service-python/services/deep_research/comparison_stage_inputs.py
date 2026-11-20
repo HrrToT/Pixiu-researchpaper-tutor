@@ -101,11 +101,17 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]
         if include_joint and joint_comparison_delivery(record):
-            from services.deep_research.comparison_joint_reports import joint_numeric_example
-            if joint_numeric_example(full_plan['roles'], question):
-                # Mandatory premise bundles are fitted first. Give typed
-                # result passages the first remaining slots ahead of prose.
-                own = sorted(own, key=lambda row: not (row.get('tableData') or row.get('tableDataRef')))
+            from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
+            examples = joint_numeric_example(full_plan['roles'], question)
+            protocols = (comparison_protocol_priority(own, all_targets)
+                         if record.get('comparisonJointReportsContractVersion') == 4 else set())
+            if examples or protocols:
+                # Mandatory premises are fitted first. Offer the narrow
+                # protocol passages before optional table inventories.
+                own = sorted(own, key=lambda row: (
+                    row['evidenceId'] not in protocols,
+                    examples and not (row.get('tableData') or row.get('tableDataRef')),
+                ))
         target_ids = [key for member in members
                       for key in (joint_targets if member == 'joint' else paper_targets[member])]
         required = [bundle for member in members for bundle in assigned[member]]
