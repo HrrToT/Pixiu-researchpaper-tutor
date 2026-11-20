@@ -92,7 +92,8 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
                     if audit:audit.failure(exc)
                     pages = []
                 started=monotonic()
-                location = resolve_quote_location(quote, pages, location)
+                location = resolve_quote_location(quote, pages, location,
+                    typography=record.get('physicalPageDiagnosticsContractVersion') == 2)
                 if audit:audit.value['resolveSeconds']+=monotonic()-started
         if audit:audit.resolution(location)
         return make_evidence(source, quote, original, location=location,

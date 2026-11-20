@@ -9,6 +9,23 @@ QUOTE = "The mitochondrial membrane potential drives ATP synthesis in healthy ce
 
 
 class ResolveQuoteLocationTests(unittest.TestCase):
+    def test_versioned_typography_matches_only_a_complete_unique_quote(self):
+        quote = '• An overview uses α and covariance-suitable terms, Fig.2, and (≥ 30 fps).'
+        text = '•An overview uses αand covariance – suitable terms, Fig. 2, and (≥30fps).'
+        pages = [{'page': 4, 'text': text}]
+        self.assertEqual(resolve_quote_location(quote, pages, {})['pageResolution'], 'unresolved')
+        resolved = resolve_quote_location(quote, pages, {}, typography=True)
+        self.assertEqual((resolved['pageResolution'], resolved['page']), ('exact', 4))
+        repeated = resolve_quote_location(quote, [*pages, {'page': 7, 'text': quote}],
+                                          {'page': 4}, typography=True)
+        self.assertEqual(repeated['pageResolution'], 'ambiguous')
+        self.assertEqual(repeated['pageCandidates'], [4, 7])
+        self.assertNotIn('page', repeated)
+        for different in ('≤30fps', '≥31fps', '≥3 0fps', '≥–30fps'):
+            result = resolve_quote_location(quote,
+                [{'page': 4, 'text': text.replace('≥30fps', different)}], {}, typography=True)
+            self.assertEqual(result['pageResolution'], 'unresolved')
+
     def test_inline_punctuation_spacing_without_merging_words_or_numbers(self):
         quote = 'The Example-GS method (i.e. anchor prediction) preserves quality.'
         result = resolve_quote_location(quote, [{'page': 2, 'text':

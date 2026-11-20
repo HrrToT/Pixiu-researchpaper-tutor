@@ -44,7 +44,7 @@ class PageDiagnostics:
 
 def enabled(record):
     return (type(record.get('physicalPageDiagnosticsContractVersion')) is int
-            and record['physicalPageDiagnosticsContractVersion']==1)
+            and record['physicalPageDiagnosticsContractVersion'] in (1, 2))
 
 
 def append(previous, batch):

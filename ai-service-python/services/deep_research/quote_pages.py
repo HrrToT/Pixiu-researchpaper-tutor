@@ -45,7 +45,19 @@ def _normalize(text):
     return _WHITESPACE_RE.sub(" ", text).strip()
 
 
-def _valid_page_texts(pages):
+def _normalize_typography(text):
+    text = _normalize(text)
+    # These forms differ between the index and physical PDF extraction.
+    # Preserve ordinary word boundaries, digits and the mathematical minus.
+    text = re.sub(r'(?<=[A-Za-z]{2}) [–—] (?=[A-Za-z]{2})', '-', text)
+    text = re.sub(r' *• *', ' • ', text)
+    text = re.sub(r'\b((?:Fig|Eq|Sec)\.) *(?=\d)', r'\1 ', text, flags=re.I)
+    text = re.sub(r'(?<=[αβγσ]) *(?=(?:and|values?|coefficients?)\b)', ' ', text)
+    text = re.sub(r'([≥≤]) *(?=\d)', r'\1', text)
+    return re.sub(r'(?<=\d) *(?=fps\b)', ' ', text, flags=re.I).strip()
+
+
+def _valid_page_texts(pages, normalize):
     """Yield (page_number, normalized_text) for well-formed page records."""
     if not isinstance(pages, (list, tuple)):
         return
@@ -59,10 +71,10 @@ def _valid_page_texts(pages):
         text = record.get("text")
         if not isinstance(text, str):
             continue
-        yield page, _normalize(text)
+        yield page, normalize(text)
 
 
-def resolve_quote_location(quote, pages, location):
+def resolve_quote_location(quote, pages, location, *, typography=False):
     """Return a new location dict with the physically verified page.
 
     ``pages`` are trusted physically parsed PDF pages: dicts with a positive
@@ -75,11 +87,12 @@ def resolve_quote_location(quote, pages, location):
     for key in _POSITIONAL_KEYS + _GEOMETRY_KEYS + ("pageCandidates",):
         result.pop(key, None)
 
-    norm_quote = _normalize(quote) if isinstance(quote, str) else ""
+    normalize = _normalize_typography if typography else _normalize
+    norm_quote = normalize(quote) if isinstance(quote, str) else ""
 
     matched = set()
     if len(norm_quote) >= _MIN_QUOTE_CHARS:
-        for page, text in _valid_page_texts(pages):
+        for page, text in _valid_page_texts(pages, normalize):
             if norm_quote in text:
                 matched.add(page)
 

@@ -90,6 +90,7 @@ def test_history_is_bounded_and_flag_is_strict():
     for n in range(30):history=append(history,{'quotes':n})
     assert len(history['batches'])==16 and history['batches'][0]['quotes']==14
     assert enabled({'physicalPageDiagnosticsContractVersion':1})
+    assert enabled({'physicalPageDiagnosticsContractVersion':2})
     assert not enabled({}) and not enabled({'physicalPageDiagnosticsContractVersion':True})
 
 
@@ -100,6 +101,7 @@ def test_new_server_run_freezes_diagnostic_policy(tmp_path):
     facade=ResearchFacade(repo,lambda **kwargs:None,llm_client=object())
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'阅读论文'},start_async=False)
+        assert run['physicalPageDiagnosticsContractVersion']==2
         assert enabled(repo.require_run(run['runId']))
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'physicalPageDiagnosticsContractVersion':True})
