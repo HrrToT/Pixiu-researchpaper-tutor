@@ -1,6 +1,6 @@
 # 实验方案整轮重构决策
 
-2026-11-20 只读复核：D3-VQ-FACTORIAL-v7 在应用仍为 `paused`，错误码 `unresolved_unknown`。归档账本中，问题解析、规划和三次相关性审核已结算，首次共享方案生成 `plan_experiment_shared` 无可确认回执。当前记录仍缺完整方案、科学审核及发布结果，保留原运行及未知调用身份。[v7 运行记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json)
+2026-11-20 只读复核：D3-VQ-FACTORIAL-v7 在应用仍为 `paused`，错误码 `unresolved_unknown`。归档账本中，问题解析、规划和三次相关性审核已结算，首次共享方案生成 `plan_experiment_shared` 无可确认回执。该请求从发出至记录未知约 91 秒，已保存错误为 `deadline_exceeded`，与共享生成节点配置的 90 秒期限一致。当前记录仍缺完整方案、科学审核及发布结果，保留原运行及未知调用身份。[v7 运行记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json)
 
 文档发布修复最终检查：43df0becf 对应完整离线 9379 项、491 模块通过，旧 9375 项全部保留，源码一致。完整方案以文档呈现，不再嵌套“实验建议”列表；事实引用直接使用原文证据链接。本地论文跳转后关闭引用弹窗，与外部来源一致。前端 43 项、Java/H2 56 项相关检查通过；样本由真实编译发布路径配合人工输入和模拟审核生成，不计科学质量或浏览器到数据库的完整验收。证据：deep-research-evidence/shared-experiment-document-full-20261117.json、shared-experiment-document-product-20261117.json。真实内容、整轮成本和在线产品门槛仍待验证。
 
