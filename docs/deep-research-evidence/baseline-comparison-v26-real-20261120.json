@@ -1,0 +1,90 @@
+{
+  "sourceCommit": "8c0b8720985a1fac184780febebf7f169469e7b7",
+  "case": "D2-BASELINE-COMPRESSION-v26",
+  "split": "development",
+  "runId": "dr_run_ae2e4ae338e458459ec860de31fb6a38",
+  "comparisonAuthoringContractVersion": 16,
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "reservedModelCalls": 5,
+    "tokens": 83978,
+    "elapsedSeconds": 188.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "totalModelCalls": 17
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 4,
+    "verify_answer_coverage": 2,
+    "repair_claims": 1,
+    "verify_repair": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 35,
+  "draftCount": 11,
+  "preReleaseAcceptedBySystem": 7,
+  "reportClaimCount": 6,
+  "rejectedByReason": {
+    "numeric_mismatch": 1,
+    "semantic_unresolved": 3
+  },
+  "finalAuditStatus": "checked",
+  "finalAuditGapCount": 4,
+  "finalAuditLimit": null,
+  "auditTransport": [
+    {
+      "state": "succeeded",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8425,
+        "input_tokens": 7240,
+        "output_tokens": 1185
+      },
+      "receivedShape": "comparison_audit_v1"
+    },
+    {
+      "state": "succeeded",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 3037,
+        "input_tokens": 1575,
+        "output_tokens": 1462
+      },
+      "receivedShape": "invalid_wrapper"
+    }
+  ],
+  "repairTransport": [
+    {
+      "finishReason": "stop",
+      "receivedShape": "items"
+    }
+  ],
+  "repairStatus": "response_received",
+  "releaseStatus": "released",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "28d6b2233adb9937335dea61bfe7da7685bf7221d5c692d26d79a892fae08f04",
+    "calls": "dcbefe2f9b1aed0576b6369581dc7229e5300d9bca62cef2dacf3a66e9cca6db",
+    "result": "b8ac741565888abdacd0429717b43b19a4df738f7c7ce9036ad26b4a7adb5260",
+    "execution": "680dac103d3bcca42a833e4f7dbca104c569369ba292ef8740d717ff824fe95b"
+  }
+}
