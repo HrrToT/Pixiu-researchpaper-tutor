@@ -70,6 +70,37 @@ def test_repair_resolves_visible_cells_and_leaves_prose_without_coordinates():
     assert plain['tableBindings'] == [] and '原表测量' not in plain['conditions']
 
 
+def test_comparison_repair_example_matches_native_envelope_and_named_conditions():
+    from services.deep_research.contracts import DeepResearchError
+    from services.deep_research.graph import _safe_parse_json
+    from services.deep_research.repair import _parse_repair_response
+    from services.deep_research.structured_output import normalize
+
+    report, verification, ev, opts = comparison_fixture()
+    old = _prepare_repair(report, verification, ev, 'Explain the operation.',
+                          **{**opts, 'comparison_authoring': 3})
+    new = _prepare_repair(report, verification, ev, 'Explain the operation.',
+                          **{**opts, 'comparison_authoring': 4})
+    assert new['originals'] == old['originals'] and new['allowed'] == old['allowed']
+    assert new['aliases'] == old['aliases']
+    assert 'Return a JSON array' not in new['prompt']
+    example = next(line for line in new['prompt'].splitlines() if line.startswith('{"items":[{'))
+    row, = json.loads(example)['items']
+    row['claimId'] = 'c'
+    row['kind'] = report['claims'][0]['kind']
+    row['evidenceRefs'] = [next(k for k, v in new['aliases'].items() if v in new['allowed']['c'])]
+
+    def parse(content):
+        response = normalize('repair_claims', {'content': content, 'finishReason': 'stop'})
+        return _parse_repair_response(new, response, _safe_parse_json, strict_response=True)
+
+    raw = json.dumps({'items': [row]})
+    compiled, = parse(raw)
+    assert compiled['conditions'] == {'dataset': 'Observed dataset'}
+    with pytest.raises(DeepResearchError, match='未能解析'):
+        parse(raw.replace('"dataset": ', ''))
+
+
 def test_comparison_compact_repair_keeps_distinct_versions_requirements_and_diagnostics():
     from services.deep_research.comparison_repair import compact_inputs
     question = 'Compare the methods under their actual test conditions.'

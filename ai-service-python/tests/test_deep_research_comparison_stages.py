@@ -105,6 +105,43 @@ def test_previous_isolated_profile_retains_full_goal_questions_and_original_iden
         prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
 
 
+def test_single_paper_packet_excludes_peer_assignments_but_keeps_joint_request():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(question=QUESTION + '向初学者解释。',
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=10)
+    previous = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    r['comparisonAuthoringContractVersion'] = 11
+    current = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+
+    assert current['requirements'] == previous['requirements'] == p['requirements']
+    assert current['stages'][-1] == previous['stages'][-1]
+    for old, new in zip(previous['stages'][:-1], current['stages'][:-1], strict=True):
+        data = packet(new)
+        assert data['requestContext'] == {'audience': 'beginner'}
+        assert data['jointTargets'] == []
+        assert data['papers'] == packet(old)['papers']
+        assert r['question'] not in new['prompt']
+        assert 'whether their text is available' in new['prompt']
+        for field in ('targetIds', 'requiredEvidenceIds', 'allowedEvidenceByTarget', 'allowedCellsByTarget'):
+            assert old[field] == new[field]
+
+
+def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
+    r, p, rows, aliases, bundles = fixture()
+    limit = '数字只选一组来源和口径明确的基线对照作例子'
+    r.update(question=QUESTION + '。' + limit, comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=11)
+    joint = next(o for o in p['requirements'] if o['comparisonRole']['kind'] == 'joint')
+    joint['comparisonRole']['requestExcerpt'] = limit
+    snapshot = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    for stage in snapshot['stages'][:-1]:
+        assert packet(stage)['requestContext']['numericExample'] == 'one joint example for the entire report'
+        assert 'Do not repeat benchmark metric values' in stage['prompt'].replace('\n', '')
+    assert limit in packet(snapshot['stages'][-1])['requestContext']['question']
+    assert 'numericExample' not in packet(snapshot['stages'][-1])['requestContext']
+
+
 def test_compact_stage_policy_preserves_the_full_packet_and_request_checkpoint():
     r, p, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,

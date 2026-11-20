@@ -30,7 +30,7 @@ _NEGATIVE = re.compile(r'(?:不要|不用|无需|不需要)[^。！？\n]{0,8}(?
                        r'|\b(?:not|without) (?:a )?(?:beginner|simplif)', re.I)
 
 
-def eligible(record, report, output_kind):
+def beginner_requested(record):
     from services.deep_research.audience_request import enabled as described_enabled,described_reader_request
     requested = False
     for layer in instruction_layers(record):
@@ -40,11 +40,15 @@ def eligible(record, report, output_kind):
                 described_enabled(record) and described_reader_request(layer)):
             requested = True
             break
+    return requested
+
+
+def eligible(record, report, output_kind):
     return (type(record.get('audienceRewriteContractVersion')) is int
             and record['audienceRewriteContractVersion'] in (1,2,3,4,5,6,7,8,9)
             and output_kind in {'direction_survey', 'claim_verification', 'paper_comparison'}
             and isinstance(record.get('question'), str)
-            and requested
+            and beginner_requested(record)
             and isinstance(report, dict) and isinstance(report.get('claims'), list)
             and bool(report['claims'])
             and all(isinstance(c, dict) and c.get('kind') in {'reported', 'inference'}

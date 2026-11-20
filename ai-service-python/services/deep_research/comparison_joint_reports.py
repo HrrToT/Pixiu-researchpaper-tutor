@@ -1,4 +1,19 @@
 """Allow source-reported joint contrasts without relabeling them as inference."""
+import re
+
+
+_SINGLE_NUMERIC_EXAMPLE = re.compile(
+    r'(?:数字|数值|定量)[^\n。！？；;]{0,35}(?<!不)(?<!不要)(?<!不能)(?:只|仅)[^\n。！？；;]{0,8}(?:一|1)组[^\n。！？；;]{0,35}(?:例|对照)'
+    r'|(?<!不)(?<!不要)(?<!不能)(?:只|仅)[^\n。！？；;]{0,8}(?:一|1)组[^\n。！？；;]{0,22}(?:数字|数值|定量)[^\n。！？；;]{0,18}(?:例|对照)'
+    r'|(?<!not )\b(?:only|just|at most)\s+(?:one|a single|1)\s+(?:numeric(?:al)?|quantitative)\s+(?:example|comparison)\b',
+    re.IGNORECASE,
+)
+
+
+def has_single_numeric_example(roles):
+    """Route an explicitly quoted one-example limit to its joint target."""
+    return any(role['kind'] == 'joint' and _SINGLE_NUMERIC_EXAMPLE.search(role['requestExcerpt'])
+               for role in roles.values())
 
 
 def enabled(record):

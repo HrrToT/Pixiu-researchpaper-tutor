@@ -83,7 +83,7 @@ def render(*, question, length_contract, requirements, source_context, targets,
         'no evaluated setting. Navigation is unverified, not a citation or public text.\n'
         if has_tables else 'No typed table cells are supplied; do not invent cells/bindings. '
         'Plain-text numbers still need own complete quotations and exact entity/conditions.\n')
-    if comparison_authoring in (2, 3):
+    if comparison_authoring in (2, 3, 4):
         from services.deep_research.comparison_repair import CELL_REFERENCES
         table_rule = CELL_REFERENCES
     data={'requirements':requirements,'sourceRegistry':source_context,
@@ -103,17 +103,27 @@ def render(*, question, length_contract, requirements, source_context, targets,
         data['comparisonScopes'] = comparison_scopes or {}
     from services.deep_research.authored_body import scope_guidance
     scope = scope_guidance(5)
-    if comparison_authoring == 3:
+    if comparison_authoring in (3, 4):
         from services.deep_research.comparison_repair import COMPACT_CORE as core, compact_inputs
         data = compact_inputs(data, question)
         if not (inference_ids or required_scope_ids or any(t['kind'] == 'inference' for t in targets)):
             scope = 'Use body.prose with text and conditions.\n'
         routing = ''
+        if comparison_authoring == 4:
+            core = core.replace('Return a JSON array of supported revisions in outputRowSchema, or [].',
+                'Return a JSON object with exactly one key: items. Put supported revisions in items, or use {"items":[]}.')
+            routing = ('\nExample of valid JSON types (replace the example values with actual input values):\n'
+                       '{"items":[{"claimId":"CLAIM_EXAMPLE","kind":"reported","body":{"prose":'
+                       '{"text":"An evidence-supported result.","conditions":{"dataset":"Observed dataset"}}},'
+                       '"evidenceRefs":["E_EXAMPLE"],"cellRefs":[],"detailLevel":"fulltext"}]}\n'
+                       'conditions is always a JSON object with named key/value pairs, or {}. Put explanatory '
+                       'sentences in text, never as unnamed entries inside conditions. For source-local '
+                       'targets, omit statements about what other papers show or whether their text is available.\n')
     elif comparison_authoring:
         from services.deep_research.comparison_repair import CORE as core
     else:
         core = COMPACT_CORE if compact_policy else CORE
-    if comparison_authoring != 3:
+    if comparison_authoring not in (3, 4):
         routing = ('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')
     return (core+routing+table_rule+scope+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)

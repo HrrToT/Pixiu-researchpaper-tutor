@@ -18,7 +18,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
                     metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False,
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
-    if (type(comparison_authoring) is not bool and not (type(comparison_authoring) is int and comparison_authoring in (2, 3)) or comparison_authoring and
+    if (type(comparison_authoring) is not bool and not (type(comparison_authoring) is int and comparison_authoring in (2, 3, 4)) or comparison_authoring and
             (not consolidated_instructions or compact_repair_policy != 2 or verified_text_edits)):
         raise ValueError('Comparison repair requires the explicit compact authored policy')
     if type(verified_text_edits) is not bool:raise ValueError('Invalid verified text edit policy')
@@ -232,7 +232,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if factual_prompt_version==3:
         from services.deep_research.table_evidence import visible_table_packet
         has_tables=any(visible_table_packet(row.get('tableData'),row.get('quote','')) for row in rows)
-    if comparison_authoring in (2, 3):
+    if comparison_authoring in (2, 3, 4):
         revision_shape['cellRefs'] = ['exact V ID from tableCatalog, or use []']
     elif has_tables:
         revision_shape['tableBindings'] = [{'evidenceId': 'E1', 'rowNumber': 'actual integer',
@@ -638,7 +638,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
                 template=integrated_prompt(question,length_contract,active_requirements,originals,packed_checks,question_dictionary,context,
                     permissions_marker,evidence_marker,text_edit_plan)
     from services.deep_research.experiment_edits import columnar
-    if comparison_authoring in (2, 3):
+    if comparison_authoring in (2, 3, 4):
         from services.deep_research.comparison_repair import table_catalog
         source_identities = {short_ids[e['evidenceId']]: (e.get('sourceWorkId'), e.get('sourceVersionId'))
                              for e in selected}
@@ -650,7 +650,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
                             and (not focused or ref in originals[key]['evidenceRefs'])]
                        for key, values in allowed.items()}
         evidence_rows = selected_rows
-        if comparison_authoring in (2, 3):
+        if comparison_authoring in (2, 3, 4):
             _, catalog = table_catalog(selected_rows, source_identities)
             evidence_rows = [{k: v for k, v in row.items() if k != 'tableData'} for row in selected_rows]
         wire=columnar(evidence_rows) if experimental_edits else evidence_rows
@@ -675,7 +675,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             shared = json.dumps(wire,ensure_ascii=False,separators=(',',':')) + ('\n'+legend if legend else '')
         result=template.replace(permissions_marker, json.dumps(permissions, ensure_ascii=False, separators=(',', ':')), 1).replace(
             evidence_marker,shared,1)
-        if comparison_authoring in (2, 3):
+        if comparison_authoring in (2, 3, 4):
             result += '\ntableCatalog (cells only; no extra evidence permissions):\n' + input_text(catalog)
         if condition_marker:
             from services.deep_research.condition_source_index import build as condition_index
@@ -733,7 +733,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             **({'comparisonAuthoringContractVersion':int(comparison_authoring), 'comparisonDisplayEvidence': [
                 {k: deepcopy(e[k]) for k in ('evidenceId','quote','tableData','sourceWorkId','sourceVersionId') if k in e}
                 for e in selected if e['evidenceId'] in visible]} if comparison_authoring else {}),
-            **({'comparisonCellRegistry': table_catalog(rows, source_identities)[0]} if comparison_authoring in (2, 3) else {}),
+            **({'comparisonCellRegistry': table_catalog(rows, source_identities)[0]} if comparison_authoring in (2, 3, 4) else {}),
             **({'repairRemovalContractVersion':1} if goal_version==4 and not comparison_authoring else {}),
             **({'repairRemovalContractVersion':3 if verbatim_repair else 2} if goal_version==5 and not comparison_authoring else {}),
             **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
@@ -790,7 +790,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     if type(prepared.get('editFormatVersion')) is int and prepared['editFormatVersion']==1:
         from services.deep_research.experiment_edits import expand
         revised=expand(prepared,revised,representation_audit)
-    if prepared.get('comparisonAuthoringContractVersion') in (2, 3):
+    if prepared.get('comparisonAuthoringContractVersion') in (2, 3, 4):
         from services.deep_research.comparison_repair import resolve_cells
         short_ids = {full: short for short, full in aliases.items()}
         revised = resolve_cells(revised, {cid: [short_ids[ref] for ref in refs] for cid, refs in allowed.items()},
@@ -800,7 +800,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     for row in revised:
         if not isinstance(row, dict):
             continue
-        if prepared.get('comparisonAuthoringContractVersion') in (1, 2, 3) and 'discardedDraftSpans' in row:
+        if prepared.get('comparisonAuthoringContractVersion') in (1, 2, 3, 4) and 'discardedDraftSpans' in row:
             continue  # Never reinterpret an old deletion schema as the new protocol.
         boundary_body=False;boundary_preview=None
         if prepared.get('authoredBodyContractVersion')==1:
@@ -905,7 +905,7 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
             row['designRole'] = original['designRole']
         from services.deep_research.execution_materialization import materialize_execution_claim
         normalized = normalize_conditions({'claims': [dict(row)]})['claims'][0]
-        if prepared.get('comparisonAuthoringContractVersion') in (1, 2, 3):
+        if prepared.get('comparisonAuthoringContractVersion') in (1, 2, 3, 4):
             from services.deep_research.comparison_measurement_display import refresh
             try:
                 normalized = refresh(normalized, prepared['comparisonDisplayEvidence'])
@@ -944,7 +944,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     """
     from services.deep_research.contracts import digest, DeepResearchError
     from services.deep_research.repair_batches import split_repair_targets
-    if (type(comparison_authoring) is not bool and not (type(comparison_authoring) is int and comparison_authoring in (2, 3)) or comparison_authoring and
+    if (type(comparison_authoring) is not bool and not (type(comparison_authoring) is int and comparison_authoring in (2, 3, 4)) or comparison_authoring and
             (not consolidated_instructions or compact_repair_policy != 2 or verified_text_edits)):
         raise ValueError('Comparison repair requires the explicit compact authored policy')
     if type(released_finalization) is not bool:

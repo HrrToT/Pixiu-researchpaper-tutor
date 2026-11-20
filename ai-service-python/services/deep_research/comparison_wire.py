@@ -276,7 +276,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         task = ('Complete ONLY the supplied paper targets and jointTargets in clear Chinese. '
                 'The full human request in requestContext is context; each target defines this stage contribution.')
     from services.deep_research.comparison_measurement_display import (
-        compact_stage_prompt, explicit_stage_schema, local_contributions)
+        compact_stage_prompt, explicit_stage_schema, isolate_paper_assignment, local_contributions)
     projected = source_scope is not None and local_contributions(record)
     if projected:
         # Frozen questions/criteria remain intact in one global catalogue.
@@ -296,8 +296,35 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
     if projected and compact_stage_prompt(record):
         length = limit or 'concise, no explicit maximum'
         envelope = EXPLICIT_STAGE_ENVELOPE if explicit_stage_schema(record) else STAGE_ENVELOPE
+        policy = STAGE_POLICY
+        if not data['jointTargets'] and isolate_paper_assignment(record):
+            from services.deep_research.audience_rewrite import beginner_requested
+            from services.deep_research.comparison_joint_reports import has_single_numeric_example
+            # The assembled report and joint step still receive the original
+            # request. A paper cell supplies evidence about its assigned method.
+            data['requestContext'] = {
+                'audience': 'beginner' if beginner_requested(record) else 'research reader',
+            }
+            policy = policy.replace(
+                'Paper targets answer their own paper and assigned dimension. Joint targets own the\n'
+                'cross-paper contrast, comparability and recommendation. Complete your stage\'s contribution\n'
+                'to the fixed researchGoals and human request. Put conclusions before details in their target.',
+                'For each target, answer its assigned dimension using only the named paper.\n'
+                'Every statement in the point must concern that paper. Do not describe or speculate about\n'
+                'other works, including what they report or whether their text is available.\n'
+                'If you cannot support the assigned point from its own evidence, return point=null.\n'
+                'Put the supported result first and keep measured conditions with it.')
+            policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
+                       'repeat settings and metrics from other dimensions. Preserve literal metric identity '
+                       'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
+            if has_single_numeric_example(plan['roles']):
+                data['requestContext']['numericExample'] = 'one joint example for the entire report'
+                policy += ('The joint stage owns the sole benchmark number example. Describe storage, quality '
+                           'and rendering observations qualitatively in these cells. Keep exact quantities '
+                           'only if needed to explain a method step, condition or processing cost. Do not repeat '
+                           'benchmark metric values or inventories here.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
-                + envelope + STAGE_POLICY + body_guidance
+                + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'
                 + 'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n'
                 + input_text(data) + '\n')
