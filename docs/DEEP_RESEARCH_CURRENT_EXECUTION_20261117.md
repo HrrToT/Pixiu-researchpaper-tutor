@@ -16,6 +16,8 @@ v27 原始联合请求缺 LightGaussian 自身评估条件，重训基线说明�
 
 分辨率预热的数字预检已修复。保存的 v27 草稿与原始 3DGS 原文回放，旧契约将英文倍率和两处上采样检查点误判为缺数，新契约允许原草稿进入语义审核。错误倍率、错误迭代点、把重复频次当倍率以及原文未报告上采样次数仍被预检拒绝。原引文和草稿保持原文，最终是否支持该表述仍由语义审核决定。
 
+分辨率修复后的首轮全量回归为 9753 项通过、1 项失败，旧 9749 个测试身份全部保留。失败用例仍将已启用的版本 16 当作未知版本，现改用未声明的版本 17 保持原检查目标。该次全量仍记录为失败。[全量回执](deep-research-evidence/comparison-resolution-schedule-host-full-20261120.json)
+
 单组数字约束复查：v27 两个分栏请求都明确提示整份报告只有一组联合数字示例，但每个 LightGaussian 分栏目标仍可引用 80 个表格单元格，每个原始 3DGS 分栏目标仍可引用 90 个。原始生成回复中，LightGaussian 的存储画质和渲染速度两栏实际选择了 8 个和 2 个单元格，联合示例另选 10 个。下一处修复应约束结果数字的输出归属，同时保留分栏用于作定性阐释的原表证据和必要的方法或处理成本数值。
 
 修复候选全量离线 9746 项通过，旧 9734 项全部保留。以相同两篇和固定问题真实提交一次，16 次调用全部结算，79,248 Token、180 秒。报告发布了一组包含双方存储、画质和 FPS 的同表重训对照；仍为 `partial`，未通过科学验收。原服务、任务、运行及调用记录均核对恢复。[全量回归](deep-research-evidence/comparison-bounded-review-host-full-20261120.json) · [候选装载](deep-research-evidence/comparison-bounded-review-candidate-load-20261120.json) · [运行记录](deep-research-evidence/baseline-comparison-v27-real-20261120.json)
