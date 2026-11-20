@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-15",
+  "codeCommit": "68ff878",
+  "promptVersion": "dr-v2.20261015.76",
+  "question": "Generic evidence capacity, exact source identity and prospective protocol repair",
+  "synthesisInputReplay": {
+    "case": "H5R-v5",
+    "availableEvidence": 13,
+    "before": {
+      "promptBytes": 23873,
+      "selected": 1
+    },
+    "after": {
+      "promptBytes": 23863,
+      "selected": 10
+    },
+    "exactPriorOpacityQuoteRetained": true,
+    "quoteChanges": false,
+    "maxPromptBytes": 24000,
+    "fullReviewerRulesPreserved": true,
+    "frozenUserCriteriaPreserved": true
+  },
+  "externalInputReplay": {
+    "paperSha256": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+    "pageRankingReplay": [
+      {
+        "obligationId": "ob1",
+        "oldPages": [
+          1,
+          8,
+          12
+        ],
+        "newPages": [
+          5,
+          4,
+          2
+        ],
+        "methodPage5Present": true
+      },
+      {
+        "obligationId": "ob2",
+        "oldPages": [
+          1,
+          8,
+          12
+        ],
+        "newPages": [
+          8,
+          12,
+          2
+        ],
+        "methodPage5Present": false
+      }
+    ],
+    "versionIdentityReplay": [
+      {
+        "claimId": "c1",
+        "reachesIndependentSemanticCheck": true,
+        "accepted": 0,
+        "rejection": [
+          {
+            "claimId": "c1",
+            "reason": "semantic_unresolved",
+            "detail": "offline gate check only"
+          }
+        ]
+      },
+      {
+        "claimId": "c2",
+        "reachesIndependentSemanticCheck": true,
+        "accepted": 0,
+        "rejection": [
+          {
+            "claimId": "c2",
+            "reason": "semantic_unresolved",
+            "detail": "offline gate check only"
+          }
+        ]
+      }
+    ],
+    "modelCalls": 0,
+    "boundary": "Offline selection and structural replay, not content acceptance."
+  },
+  "tests": {
+    "full": {
+      "passed": 1288,
+      "seconds": 47.59,
+      "warnings": 1,
+      "scope": "test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py, test_config.py"
+    },
+    "focusedDrafting": {
+      "passed": 81,
+      "seconds": 2.07,
+      "overlap": true
+    },
+    "focusedExternal": {
+      "passed": 52,
+      "seconds": 3.38,
+      "overlap": true
+    }
+  },
+  "changes": [
+    "Drafting deduplicates instructions; independent scientific review retains full requirements.",
+    "Source-version identities are matched whole; nested condition values remain numerically checked while numbered labels are excluded.",
+    "External selection retains translated topic terms and does not reward the one-word paper identifier in headers.",
+    "PDF source export uses the same bounded server size setting as acquisition.",
+    "Budget audit accepts exact shared preparation fields only alongside an actual per-group recovery binding."
+  ],
+  "boundary": "Offline replays make no model calls and establish input/gate behavior only, not scientific or independent content acceptance."
+}

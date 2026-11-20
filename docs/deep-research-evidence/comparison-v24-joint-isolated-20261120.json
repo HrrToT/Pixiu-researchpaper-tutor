@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "3d74d60ca",
+  "sourceRun": "D2-BASELINE-COMPRESSION-v24",
+  "probe": "joint-only",
+  "finishReason": "stop",
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "usage": {
+    "input_tokens": 8138,
+    "output_tokens": 642,
+    "total_tokens": 8780,
+    "estimated": false
+  },
+  "targetCount": 2,
+  "typedReferenceUses": 8,
+  "permissionCheckPassed": true,
+  "internalSourceLabelsInBody": false,
+  "runtimeWrites": 0,
+  "newPublishedClaims": 0,
+  "scientificAcceptance": false,
+  "manualFinding": "The recommendation infers suitability under a peak GPU memory constraint from model file size. It is marked as reported and mixes the original 3D-GS and LightGaussian reports without establishing a shared evaluation protocol.",
+  "receiptSHA256": {
+    "intent": "66b0dec6e9d0e8fdb1c81231e7fc33dd84843da6e73a1eae98b162e6c149cc7c",
+    "request": "d3d553412c3f7c7c8bb27febf875fa6342de4887f7280501fc1cedb6e37c4fcb",
+    "response": "aa5a7d84395295b7d788b9e437b74a02026f3bd59541e5f07251c96e81e96e94"
+  }
+}

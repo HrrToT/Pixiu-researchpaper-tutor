@@ -1,0 +1,21 @@
+{
+  "originalAction": "X1G-v2 source add",
+  "initialHttpStatus": 500,
+  "partialWriteBeforeFix": false,
+  "initialTaskRevision": 18,
+  "pdfBytes": 17019833,
+  "base64Characters": 22693112,
+  "rootCauseEvidence": [
+    "Ordinary RestTemplate JSON path rejects a 17MiB PDF Base64 string with StreamConstraintsException in regression test",
+    "Actual Python export returned200 and actual PDF Base64 exceeds22million characters",
+    "Source-only bounded decoder succeeds on original request after loading fix"
+  ],
+  "fixScope": "Only ResearchService.exportV2Source; ordinary JSON constraints unchanged",
+  "pdfByteCap": 67108864,
+  "wholeResponseByteCap": 89609560,
+  "pdfHashAndSignatureChecksRetained": true,
+  "fullJavaTests": 161,
+  "failures": 0,
+  "providerCallsForFix": 0,
+  "sourceAddProof": "external-x1g-v2-add-source-20261030.json"
+}

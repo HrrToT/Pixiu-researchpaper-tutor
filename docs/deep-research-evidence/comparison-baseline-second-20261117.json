@@ -1,0 +1,149 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "attempt": 2,
+  "runId": "dr_run_767af2e555535391842c6e4ac32a13f4",
+  "sourceCommit": "cf24fe32c5535e8df0277266e208c5eddae28c70",
+  "fullRegression": "comparison-author-column-full-20261117.json",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "modelRequests": 9,
+  "allSettled": true,
+  "newUnknownRequests": 0,
+  "reportedTokens": 47507,
+  "elapsedSeconds": 306.0,
+  "draftPoints": 9,
+  "initialAcceptedPoints": 1,
+  "initialRejected": [
+    {
+      "claimId": "cmp_3_0",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "134e0",
+        "154e0",
+        "183e-3",
+        "214e-3",
+        "2314e-2",
+        "2721e-2",
+        "411e0",
+        "734e0",
+        "815e-3",
+        "841e-3"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：134、154、0.183、0.214、23.14、27.21、411、734、0.815、0.841。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。",
+      "additionalChecks": [
+        {
+          "reason": "unverified_table_cell"
+        }
+      ]
+    },
+    {
+      "claimId": "cmp_0_0",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 68.855,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_0_1",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 68.544,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_1_0",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 68.299,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_1_1",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 68.056,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_2_0",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 67.841,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_2_1",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 67.465,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    },
+    {
+      "claimId": "cmp_3_1",
+      "reason": "semantic_unresolved",
+      "detail": "剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 67.223,
+        "requiredSeconds": 75.0,
+        "observedSettledReviews": 0
+      }
+    }
+  ],
+  "repairStatus": "skipped_time",
+  "repairBatchStop": {
+    "batch": 0,
+    "kind": "repairTimeSeconds",
+    "limit": 270.0,
+    "used": 306.282427
+  },
+  "coverageStatus": "invalid_response",
+  "coverageRawRootKeys": [
+    "items",
+    "auditType",
+    "coherent",
+    "issues"
+  ],
+  "publishedConclusion": false,
+  "defaultRuntimeRestored": true,
+  "allPriorRunPayloadsExact": 397,
+  "allPriorTaskPayloadsExact": 106,
+  "pausedCountPreserved": 16,
+  "active": 0,
+  "rawPrefix": "tmp/dr-acceptance-receipts/D2-BASELINE-COMPRESSION-v2",
+  "automaticRetry": false,
+  "next": "No third prompt-only trial. Profile exact saved acquisition/extraction path; resolve coverage envelope at protocol layer; enforce numerical-example ownership and question-scoped output cardinality without deleting requirements."
+}

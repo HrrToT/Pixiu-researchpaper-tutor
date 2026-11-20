@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "6a88077af3bb45aac11a0535f33301c2d1ec5e75",
+  "fullRegression": "comparison-unified-wire-full-20261118.json",
+  "candidate": "academic-dr-unified-comparison-candidate-20261118",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 4,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

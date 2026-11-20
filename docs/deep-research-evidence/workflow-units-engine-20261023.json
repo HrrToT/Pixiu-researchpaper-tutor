@@ -1,0 +1,27 @@
+{
+  "contract": 6,
+  "defaultEnabled": false,
+  "focusedUnitTestsPassed": 19,
+  "sourceHashes": {
+    "services/deep_research/workflow_units.py": "8fb7b75ae8332ac6b4e4fdd1fea321e4f96762057f16f3485a43194dc3363942",
+    "services/deep_research/workflow_transport.py": "24f4d52a39801bfd038a26078deef859877ae9f16fb67b64dadab94baacc9b0d",
+    "services/deep_research/planning_transport.py": "c9c5e0c08d967e2f8f8ea2ad3e2304d72d6fa0285df89e3ff532de6d9879a0d1",
+    "services/deep_research/execution_workflow_blueprint.py": "89d115bc1f946a3518a79982d114ac5a73663d7d69639e553780e9a7a0875de5",
+    "services/deep_research/tools.py": "a6c9a451085e1453548031e57c8cdfe072a2e362473af48e6c4608c2d9aef99c",
+    "services/deep_research/runtime.py": "641c4e4e175e92c157da9cd6795cf1ee82be3d8d621b820dc7ee620922b551be",
+    "services/deep_research/finalization_pool.py": "ad6491007da4312599c3b9e08a297d55970ce228a82697900e831642446fd924"
+  },
+  "schemaBytes": {
+    "plan_workflow_meta": 2853,
+    "plan_workflow_init": 3736
+  },
+  "boundary": "Engineering fixture and full regression checks only. No new provider request, scientific approval, or default activation. The lifecycle representation gap must be resolved before release.",
+  "fullRegression": {
+    "sourceCommit": "d20c6080",
+    "files": 243,
+    "passed": 4462,
+    "warnings": 1,
+    "seconds": 328.35,
+    "logSha256": "d5e4a7380edc9f0edf279cf3b7dec23155f906c9dc4ea8b2569f83e9fb2920fa"
+  }
+}

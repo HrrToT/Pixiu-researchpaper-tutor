@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v68",
+  "runId": "dr_run_2ee37e283dd75cee8a9d7a64ef63a3ad",
+  "promptVersion": "dr-v2.20261026.278",
+  "status": "failed",
+  "metadata": {
+    "status": "ready",
+    "errors": [],
+    "finishReason": "stop",
+    "frameIterations": 20,
+    "revisionUsed": false
+  },
+  "initialization": {
+    "unit": "component:0",
+    "status": "invalid_response",
+    "errors": [
+      "unit.output_truncated"
+    ],
+    "finishReason": "length",
+    "rawContentPresent": true,
+    "rawContentBytes": 2669,
+    "usage": {
+      "total_tokens": 13976,
+      "input_tokens": 7832,
+      "output_tokens": 6144
+    },
+    "options": {
+      "temperature": 0.0,
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "max_tokens": 6144,
+      "timeout_seconds": 90,
+      "_deepseek_api": "responses"
+    },
+    "schemaName": "workflow_unit_init_v7"
+  },
+  "boundary": "Metadata passed directly with explicit 20-frame proposal; this is not scientific approval. First initialization hit configured6144 output cap (includes reasoning), response truncated and rejected. No retry, public plan or scientific credit.",
+  "providerCalls": 8,
+  "productionWrites": "one authorized fixed development run only",
+  "scientificCredit": 0
+}

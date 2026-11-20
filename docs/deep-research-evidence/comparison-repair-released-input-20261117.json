@@ -1,0 +1,51 @@
+{
+  "scope": "Actual graph and repair fitter on shadow copies; capture before sender/time gate",
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "historicalReceiptUnchanged": true,
+  "runBudgetUnchanged": true,
+  "timeAdmissionEstablished": false,
+  "scientificContentAccepted": false,
+  "variants": [
+    {
+      "planningVersion": 1,
+      "preparedRequests": [],
+      "repairLimit": {
+        "kind": "repairEvidenceBytes",
+        "limit": 11921,
+        "used": 12184
+      },
+      "repairStatus": "skipped_budget"
+    },
+    {
+      "planningVersion": 2,
+      "preparedRequests": [
+        {
+          "promptBytes": 23962,
+          "outputTokens": 5120,
+          "preflightLimit": 24000,
+          "releasedFinalization": true,
+          "promptSha256": "e54b794605c2bc05a5ff2a51b9cdeb2e3c1c512720a2ce961b44e94c2508f800"
+        }
+      ],
+      "repairLimit": null,
+      "repairStatus": null
+    }
+  ],
+  "asOf": "2026-11-17",
+  "relatedTests": 140,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit": "tmp/repair-released-input-20261117.xml",
+  "fullRegressionCoversCandidate": false,
+  "runtimeLoaded": false,
+  "raw": "tmp/comparison-repair-release-20261117.json",
+  "boundary": "Preparation only. Capture replaces the dispatch callback and stops before sender/time admission. Does not establish sufficient wall clock, model response, re-verification or successful repair; historical failure unchanged.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/repair.py": "d04e156eaa47449ff0d0cc498a95e1fd58ce4348213ba5a5c1066af8a0234d77",
+    "ai-service-python/services/deep_research/repair_budget.py": "1694d54a3043ab01d9b5805eb95140385f6dc9346fb046972f458c0e13919d00",
+    "ai-service-python/services/deep_research/graph.py": "5085e520f353f91ffcb3b1f5686294ead32a148c5c5ed79a7e382ff95ea7ae2b",
+    "ai-service-python/tests/test_deep_research_repair_released_input.py": "f0b009ed2f1c39bb64940f5d00550477bee2b3be0f90e98fe7b31403739c019c"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-18",
+  "originalRunId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+  "policyVersionInMemory": 3,
+  "productionRecordChanged": false,
+  "indexHitsReplayed": true,
+  "actualScopeChecks": true,
+  "actualOriginalFileGet": true,
+  "modelCalls": 0,
+  "counts": {
+    "fileGets": 1,
+    "parseWorkers": 1
+  },
+  "query": "3DGStream 12 seconds per frame reconstruction 200 FPS operation unit scope",
+  "materialHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+  "boundary": "Read-only source-adapter preflight with original scoped snapshot and replayed index hits; not a new live model run or an independent acceptance pass.",
+  "sourceCommit": "1e6daa48",
+  "promptVersion": "dr-v2.20261018.133",
+  "selected": [
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-5",
+      "mode": "indexed_hybrid",
+      "location": {
+        "page": 1,
+        "chunk": 5,
+        "section": "Introduction"
+      },
+      "contentHash": "10776d637295443f1d0a717c1ddecb3e258daa75dff7a274b289829572acea24",
+      "textSha256": "10776d637295443f1d0a717c1ddecb3e258daa75dff7a274b289829572acea24"
+    },
+    {
+      "sourceId": "src_4a7aa70678814089434fe39f4ee329cffb15b569e427d0129ae49f209eb0f282",
+      "mode": "pdf_requested_measurement",
+      "location": {
+        "page": 1,
+        "offset": 0
+      },
+      "contentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "textSha256": "768975e396c1936eb0b341d7f3e6f951b981a776e06d7554851bb935d3649407"
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-4",
+      "mode": "indexed_hybrid",
+      "location": {
+        "page": 1,
+        "chunk": 4,
+        "section": "Introduction"
+      },
+      "contentHash": "afe54598a523702b4e684be1d81d143c59cf6529973c12897bfe91a4dfa6a763",
+      "textSha256": "afe54598a523702b4e684be1d81d143c59cf6529973c12897bfe91a4dfa6a763"
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-42",
+      "mode": "indexed_hybrid",
+      "location": {
+        "page": 8,
+        "chunk": 42,
+        "section": "Conclusion"
+      },
+      "contentHash": "22d82a4461ec87afeb952184982d41c02e6e3043ed4644f04cf2326cdc2e76a6",
+      "textSha256": "22d82a4461ec87afeb952184982d41c02e6e3043ed4644f04cf2326cdc2e76a6"
+    },
+    {
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-11",
+      "mode": "indexed_hybrid",
+      "location": {
+        "page": 2,
+        "chunk": 11,
+        "section": "Free-Viewpoint Videos of Dynamic Scenes"
+      },
+      "contentHash": "54936b1bb8f8a0595669c3b9670c9cd29904c7f38af0fc880ff84d133c3171bc",
+      "textSha256": "54936b1bb8f8a0595669c3b9670c9cd29904c7f38af0fc880ff84d133c3171bc"
+    }
+  ],
+  "missingRequestedMeasurements": [],
+  "checks": {
+    "scopedMaterialSnapshot": true,
+    "originalFileHash": true,
+    "isolatedPdfParser": true,
+    "secondQueryReusedCachedPages": true
+  },
+  "securityTests": {
+    "indexedForeignHitsRejected": [
+      1,
+      2,
+      3
+    ],
+    "scopeRevocationPropagates": true,
+    "changedFileHashPropagates": true,
+    "authorizationErrorsPropagate": [
+      401,
+      403
+    ],
+    "knownOptionalReadFailureCached": true
+  },
+  "focusedTests": {
+    "passed": 63,
+    "warnings": 1,
+    "seconds": 3.92,
+    "log": "tmp/pytest-dr132-pdf-final.log"
+  },
+  "fullTests": {
+    "passed": 2152,
+    "warnings": 1,
+    "seconds": 141.0,
+    "log": "tmp/pytest-dr133-full.log"
+  },
+  "scope": "Source-adapter preflight and source/security regressions only. Saved vector hits are replayed; scope checks, owned file GET and parsing are real. No new research run or model request. This does not pass content or independent acceptance."
+}

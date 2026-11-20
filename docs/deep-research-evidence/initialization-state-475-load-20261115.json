@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "1942dd25f315e7fbd097d8ccf32782e71b2606f8",
+  "promptVersion": "dr-v2.20261115.475",
+  "fullRegression": "deep-research-evidence/initialization-state-475-final-20261115.json",
+  "baseline": "tmp/dr-acceptance-receipts/initialization-context-474.before.json",
+  "health": "ok",
+  "all105TasksExact": true,
+  "all391OldRunsExact": true,
+  "all9872CallRowsExact": true,
+  "allDeepResearchModuleHashesMatch": true,
+  "transportParserAndTableHashesMatch": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCalls": 0
+}

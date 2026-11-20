@@ -1,0 +1,21 @@
+{
+  "applicationLedgerUnchanged": true,
+  "materialResults": [
+    {
+      "paper": 1,
+      "rows": 5,
+      "structuredTableRows": 2
+    },
+    {
+      "paper": 2,
+      "rows": 5,
+      "structuredTableRows": 2
+    }
+  ],
+  "scope": "Existing runtime only, direct LocalTaskRetriever using saved comparison query and frozen material scope",
+  "liveCaseSubmitted": false,
+  "scientificAcceptance": false,
+  "limitations": [
+    "Confirms owned indexed retrieval only; does not verify candidate graph selection, citations or publication."
+  ]
+}

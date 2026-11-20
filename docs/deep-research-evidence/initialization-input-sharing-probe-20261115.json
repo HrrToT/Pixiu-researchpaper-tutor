@@ -1,0 +1,15 @@
+{
+  "engineeringOnly": true,
+  "oldInputBytes": 45356,
+  "keyAndStringSharedInputBytes": 37685,
+  "unchangedMaxInputBytes": 32000,
+  "wouldFitExistingWindow": false,
+  "originalDataDigest": "d185e1f0597434462759362d4cef9ff71154cb206b42d6e52c7c5482b8280be6",
+  "originalEvidenceRows": 17,
+  "allSelectedEvidenceAndContextRetained": true,
+  "sameTrustedPrefixSchemaAndOutputAllowance": true,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

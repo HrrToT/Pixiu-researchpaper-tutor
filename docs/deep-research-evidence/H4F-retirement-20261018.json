@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-18",
+  "case": "H4F",
+  "firstRunId": "dr_run_ee62d7b47eac52e2aa87a981085bbe16",
+  "firstReview": "H4F-v1-first-review-20261018.json",
+  "event": "retired_before_literal_measurement_retrieval_diagnosis",
+  "reason": "First result substituted conclusion value for the specifically requested abstract measurement. Generic exact-value-plus-unit retrieval will be developed from this finding.",
+  "firstAcceptanceChanged": false,
+  "originalDefinitionChanged": false,
+  "subsequentRunsIndependent": false
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v17",
+  "structuredOutputContractVersion": 8,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "originalPayloadUnchanged": true,
+  "unchangedUserPromptAndWholePlan": true,
+  "unchangedTypedDraftFromArchivedResponse": true,
+  "completeOriginalQuotesAndThreeMethodContextsRetained": true,
+  "newPlanningAndBodyIdentityBoundToExactProspectiveSystem": true,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "oldFingerprintChanged": true,
+      "inputBytes": 24217
+    },
+    {
+      "node": "synthesize",
+      "oldFingerprintChanged": true,
+      "inputBytes": 30820
+    }
+  ],
+  "boundary": "Counterfactual offline transport replay with archived draft response. No new scientific judgment, no old request upgrade or changed result.",
+  "sourceCommit": "17498220"
+}

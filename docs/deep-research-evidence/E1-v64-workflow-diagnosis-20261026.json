@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v64",
+  "runId": "dr_run_20fc6261ee925e2b8dc08e6b038408d0",
+  "promptVersion": "dr-v2.20261026.274",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "units": {
+    "metadata": {
+      "errors": [
+        "unit.json"
+      ],
+      "requestDigest": "70b5ed9db122661a0e57eff697292b249a1d46e94416f34a812d4524db0a8c9a",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8896,
+        "input_tokens": 7301,
+        "output_tokens": 1595
+      },
+      "boundaryIssues": [
+        {
+          "code": "ordered.phase_id",
+          "path": "/phases/3/phaseId",
+          "actual": "record_frame",
+          "expected": "unique nonempty phase ID; preserve authored order"
+        },
+        {
+          "code": "ordered.phase_id",
+          "path": "/phases/4/phaseId",
+          "actual": "record_frame",
+          "expected": "unique nonempty phase ID; preserve authored order"
+        }
+      ],
+      "observationInterfaceIssues": [],
+      "phaseKinds": [
+        "fit",
+        "fit",
+        "fit",
+        "record",
+        "record"
+      ],
+      "evaluationPhaseCount": 0,
+      "recordGroups": [
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    },
+    "metadataRepair": {
+      "errors": [
+        "unit.json"
+      ],
+      "requestDigest": "30190f6f859c1a4d460a0effc1ab6b1348ca26060c9cf13b1d66c284d3377931",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9875,
+        "input_tokens": 8276,
+        "output_tokens": 1599
+      },
+      "boundaryIssues": [
+        {
+          "code": "ordered.phase_id",
+          "path": "/phases/3/phaseId",
+          "actual": "record_frame",
+          "expected": "unique nonempty phase ID; preserve authored order"
+        },
+        {
+          "code": "ordered.phase_id",
+          "path": "/phases/4/phaseId",
+          "actual": "record_frame",
+          "expected": "unique nonempty phase ID; preserve authored order"
+        }
+      ],
+      "observationInterfaceIssues": [],
+      "phaseKinds": [
+        "fit",
+        "fit",
+        "fit",
+        "record",
+        "record"
+      ],
+      "evaluationPhaseCount": 0,
+      "recordGroups": [
+        [
+          "0"
+        ],
+        [
+          "1"
+        ]
+      ]
+    }
+  },
+  "independentLocalAssessment": {
+    "noGroupRenamingNeeded": true,
+    "duplicatePhaseIds": [
+      "record_frame"
+    ],
+    "noEvaluationPhaseInEitherResponse": true,
+    "revisionKnownLaterConsumersAfterUniqueDisposalBoundary": [
+      {
+        "componentId": "stage1_ntc_result",
+        "disposedAtIndex": 2,
+        "laterConsumerIndex": 3
+      },
+      {
+        "componentId": "stage1_ntc_result",
+        "disposedAtIndex": 2,
+        "laterConsumerIndex": 4
+      },
+      {
+        "componentId": "stage2_additions",
+        "disposedAtIndex": 2,
+        "laterConsumerIndex": 4
+      }
+    ],
+    "noAmbiguousReferenceWasResolved": true
+  },
+  "settledCalls": 8,
+  "settledTokens": 38605,
+  "elapsedSeconds": 69,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Observation/group interface improved, but duplicate phase identity prevents canonical decode. Independent kind/lifetime inspection does not invent IDs or valid phases. No initialization/public plan or scientific credit. Next assess typed observation steps with explicit measurement/recording and index-based identity, preserving authored actions and original checks."
+}

@@ -1,0 +1,129 @@
+{
+  "version": "arxiv:2406.06521v1",
+  "pdfHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+  "pdfBytes": 12922135,
+  "hits": [
+    {
+      "page": 5,
+      "term": "minimum scale",
+      "offset": 1229,
+      "pageCharacters": 3166,
+      "insideFirst6000": true,
+      "surrounding": "ific axes,\nthe Gaussian ellipsoid can be flattened into planes aligned\nwith those axes. We compress the Gaussian ellipsoid along the\ndirection of the minimum scale factor, effectively flattening the\nellipsoid into a plane closest to its original shape. According\nto the method [9], we directly minimize the minimum scale\nfactor Si"
+    },
+    {
+      "page": 8,
+      "term": "TSDF",
+      "offset": 4276,
+      "pageCharacters": 4548,
+      "insideFirst6000": true,
+      "surrounding": "bsGS [67]. The learning rate\nfor the exposure coefficient is 0.001. We begin by rendering\nthe depth for each training view, followed by utilizing the\nTSDF Fusion algorithm [45] to generate the corresponding\nTSDF field. Subsequently, we extract the mesh [38] from the\nTSDF field. We only utilize the exposure compensation on the\nTa"
+    },
+    {
+      "page": 8,
+      "term": "4090",
+      "offset": 4539,
+      "pageCharacters": 4548,
+      "insideFirst6000": true,
+      "surrounding": "the\nTSDF field. We only utilize the exposure compensation on the\nTanks and Temples dataset. All experiments in this paper are\nconducted on Nvidia RTX 4090 GPU."
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "historicalRun": "dr_run_e792ce01a8da5a8eb6ac2543b972fb7c",
+  "ownedReadEvidenceContainsTSDF": false,
+  "ownedReadEvidenceContains4090": false,
+  "actualFinalReadSlots": 12,
+  "actualFinalPgsrReadSlots": [
+    {
+      "sourceId": "src_3e94e86f16cb369e14c6237445c9cb0b63f72feeb824b05b0c73b2f170fb0860",
+      "location": {
+        "page": 10,
+        "offset": 5996,
+        "section": "REFERENCES",
+        "sectionRole": "references"
+      },
+      "characters": 4
+    },
+    {
+      "sourceId": "src_99465169b669a4cb38393022fa55f7a9dbb5024873cc65473d4855e4b75af35d",
+      "location": {
+        "page": 15,
+        "offset": 0,
+        "section": "REFERENCES",
+        "sectionRole": "references"
+      },
+      "characters": 143
+    },
+    {
+      "sourceId": "src_550a320667dea0f191a4d5c8049535c7819fc6fa6bdd542bc4fe502099896942",
+      "location": {
+        "page": 6,
+        "offset": 2010,
+        "section": "",
+        "sectionRole": "unknown"
+      },
+      "characters": 2297
+    },
+    {
+      "sourceId": "src_5ce6bc6f665329c19e793acb52665df8401775f25fd5e287e1261318cf3a866e",
+      "location": {
+        "page": 10,
+        "offset": 3996,
+        "section": "REFERENCES",
+        "sectionRole": "references"
+      },
+      "characters": 2000
+    },
+    {
+      "sourceId": "src_a6e79457b05b570db6f6b1d40037e0839b22b37ec0bd4ca77941ce22bc2c4dc9",
+      "location": {
+        "page": 7,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      },
+      "characters": 1372
+    },
+    {
+      "sourceId": "src_b1a334d414ab01997e7015c2e3e590c65aef0c734d13b20dacd2860e587956a5",
+      "location": {
+        "page": 3,
+        "offset": 4078,
+        "section": "",
+        "sectionRole": "unknown"
+      },
+      "characters": 1579
+    }
+  ],
+  "diagnosis": "Original PDF key statements are within first6000 characters. No current evidence contains them; the final PGSR read allocation includes reference passages of4 and143 characters. Acquisition success is not method/settings reading coverage. Next repair must choose substantive own-method/results/settings passages across required papers under unchanged12-read cap.",
+  "actualAcquiredButUnreadKeyPassages": [
+    {
+      "sourceId": "src_9e45c8749b31b020988b49b91a6eaf84676e0dfe640c07854d74372d142182f6",
+      "location": {
+        "page": 8,
+        "offset": 4086,
+        "section": "",
+        "sectionRole": "unknown"
+      },
+      "characters": 462,
+      "selectedInFinalRead": false,
+      "representedInAnyEvidence": false,
+      "exactText": "We adopt\nthe densification strategy of AbsGS [67]. The learning rate\nfor the exposure coefficient is 0.001. We begin by rendering\nthe depth for each training view, followed by utilizing the\nTSDF Fusion algorithm [45] to generate the corresponding\nTSDF field. Subsequently, we extract the mesh [38] from the\nTSDF field. We only utilize the exposure compensation on the\nTanks and Temples dataset. All experiments in this paper are\nconducted on Nvidia RTX 4090 GPU."
+    },
+    {
+      "sourceId": "src_fe89a648be60bf461b5de22692cb30e94638548089eb5d1f8d1e19f259580189",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "section": "",
+        "sectionRole": "unknown"
+      },
+      "characters": 2065,
+      "selectedInFinalRead": false,
+      "representedInAnyEvidence": false,
+      "exactText": "5\nFig. 5: The rendering and mesh reconstruction results in various indoor and outdoor scenes that we have achieved. PGSR achieves high-precision\ngeometric reconstruction from a series of RGB images without requiring any prior knowledge.\nFig. 6: Unbiased Depth.\nDue to the difficulty in modeling real-world scene geometry\nattributes such as depth and normals using 3D Gaussian\nshapes, it’s necessary to flatten the 3D Gaussians into 2D\nflat Gaussians in order to accurately represent the geometry\nsurface of the actual scene. Achieving precise geometry re-\nconstruction and high-quality rendering requires the 2D flat\nGaussians to accurately conform to the scene surface. Since\nthe 2D flat Gaussians approximate a local plane, we can\nconveniently render the depth and normals of the scene.\nFlattening 3D Gaussian: The covariance matrixPPP\ni=\nRiSiST\niRT\niof a 3D Gaussian expresses the ellipsoidal shape.\nHere, Rirepresents the orthonormal basis of the ellipsoid’s\nthree axes, and the scale factor Sidefines the size along each\ndirection. By compressing the scale factor along specific axes,\nthe Gaussian ellipsoid can be flattened into planes aligned\nwith those axes. We compress the Gaussian ellipsoid along the\ndirection of the minimum scale factor, effectively flattening the\nellipsoid into a plane closest to its original shape. According\nto the method [9], we directly minimize the minimum scale\nfactor Si=diag(s1, s2, s3)for each Gaussian:\nLs=∥min(s1, s2, s3)∥1. (1)\nUnbiased Depth Rendering: The direction of the minimum\nscale factor corresponds to the normal niof the Gaussian. Dueto the ambiguity of the normal direction when there are two\ndirections for the shortest axis, we resolve this issue by using\nthe viewing direction to determine the normal direction. This\nimplies that the angle between the viewing direction and the\nnormal direction should be greater than 90 degrees. The final\nnormal map under the current viewpoint is achieved through\nα-blending:\nN=X\ni∈NRT\ncniαii−1Y\nj=1(1−αj), (2)\nwhere Rcis the rotation from the camera to the global world.\n"
+    }
+  ],
+  "acquisitionSucceededButReadSelectionMissed": true
+}

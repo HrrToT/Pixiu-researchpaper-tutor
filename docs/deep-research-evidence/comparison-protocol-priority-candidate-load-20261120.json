@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "cbe95b6fcd658e2c8b834b77fb97f0afd33e7523",
+  "fullRegression": "comparison-protocol-priority-host-full-20261120.json",
+  "candidate": "academic-dr-protocol-priority-candidate-20261120",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 4,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

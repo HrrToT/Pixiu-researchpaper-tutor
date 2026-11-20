@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "errorType": "AcademicAccessError",
+  "message": "公开全文解析超时",
+  "parseSeconds": 20.08,
+  "parser": "unmodified production AcademicSourceClient._parse_fulltext",
+  "pageCap": 100,
+  "deadlineSeconds": 20,
+  "networkRequests": 0,
+  "modelCalls": 0,
+  "applicationCacheWrites": 0,
+  "boundary": "Local evaluator parser feasibility only; not application external discovery/fulltext retrieval or scientific quality acceptance."
+}

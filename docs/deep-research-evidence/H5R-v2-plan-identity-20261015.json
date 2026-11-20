@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H5R",
+  "attempt": 2,
+  "runId": "dr_run_125c04218c175bfa990f3965573d0714",
+  "promptVersion": "dr-v2.20261015.70",
+  "machineStatus": "failed",
+  "machineOutcome": "none",
+  "qualityAccepted": false,
+  "qualityEvaluated": false,
+  "errorCode": "invalid_plan_response",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 2,
+    "maxModelCalls": 18,
+    "tokens": 2786,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 18.0,
+    "cost": null
+  },
+  "rawResultPath": "tmp/dr-acceptance-receipts/H5R-v2.result.json",
+  "rawResultSha256": "e2e56457193e4863ccfb40679b85535cb1f3335a682fcf937d30570515734b6c",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H5R-v2.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H5R-v2.calls.json",
+  "findings": [
+    "Generated plan reused ob1 in item1 and item2 for different questions; global uniqueness validation correctly rejected the ambiguous unnormalized labels.",
+    "No paper acquisition, synthesis or report occurred, so .70 experimental output quality was not tested.",
+    "The new .71 boundary deterministically scopes cross-item reused labels before freezing the new plan. No substantive question, criterion, dependency or source is changed.",
+    "Same-item duplicates, malformed identities, cycles and unknown dependencies still fail. Existing saved plans are not relabelled."
+  ],
+  "fixCommit": "61640c3",
+  "fixPromptVersion": "dr-v2.20261015.71",
+  "offlineReplay": {
+    "mode": "Saved original response injected once, no network/model request",
+    "result": {
+      "plan_ids": [
+        "item1",
+        "item2"
+      ],
+      "assess_inherited": false
+    },
+    "identityChanges": [
+      {
+        "itemId": "item1",
+        "originalObligationId": "ob1",
+        "obligationId": "ob_6da70df0cfd280cf07b8969a"
+      },
+      {
+        "itemId": "item2",
+        "originalObligationId": "ob1",
+        "obligationId": "ob_92f860573a0cd868998d0a13"
+      }
+    ],
+    "obligations": 4
+  },
+  "verification": {
+    "focused": {
+      "passed": 111,
+      "seconds": 12.0
+    },
+    "researchReadingTables": {
+      "passed": 1261,
+      "warnings": 1,
+      "seconds": 50.91
+    }
+  },
+  "boundary": "Development regression only. Two settled requests, no automatic retry. The seven older unknown requests remain protected."
+}

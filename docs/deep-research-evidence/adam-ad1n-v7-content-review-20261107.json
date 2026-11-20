@@ -1,0 +1,100 @@
+{
+  "case": "AD1N-v7",
+  "split": "development",
+  "runId": "dr_run_4ca437c7235d53778fdb9fee6a60f5d4",
+  "sourceCommit": "2e3fac15",
+  "promptVersion": "dr-v2.20261107.415",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_synthesis_response",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 8,
+  "settledTokens": 38322,
+  "elapsedSeconds": 147,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "normalCalls": 7,
+  "usedReserveCalls": 1,
+  "source": [
+    "arxiv:1412.6980",
+    "arxiv:1412.6980v1",
+    "fulltext",
+    "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7"
+  ],
+  "sourceMatchesFrozenReferencePdf": true,
+  "readerFirstActuallyExecuted": true,
+  "readerEdit": {
+    "status": "received",
+    "outcome": "rejected",
+    "reason": "character_limit",
+    "originalCharacters": 330,
+    "proposedCharacters": 343,
+    "fixedScopeCharacters": 95,
+    "editableCharactersAvailable": 205,
+    "protectedScopeAlsoChangedInResponse": true,
+    "boundary": "The actual first rejection is length; scope mismatch is an additional offline observation, not a second actual runtime verdict."
+  },
+  "compaction": {
+    "finishReason": "length",
+    "usage": {
+      "total_tokens": 9730,
+      "input_tokens": 1538,
+      "output_tokens": 8192
+    },
+    "rawContentEmpty": true,
+    "effectiveOptionsFromActualGraphReplay": {
+      "max_tokens": 8192,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low"
+    }
+  },
+  "factualReviewExecuted": false,
+  "coverageReviewExecuted": false,
+  "manualReview": {
+    "passed": false,
+    "qualityScored": false,
+    "reason": "No accepted final answer. Reader-first scheduling worked, but edit failed length and the original fallback truncated. No scientific/reader-quality acceptance."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 22,
+    "ledgerRows": 9017,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "otherTasksExact": 15,
+  "ledgerRows": 9017,
+  "active": 0,
+  "paused": 15,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1215,
+    "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+  },
+  "rawPayloadSha256": "3acb486c795839b5cf4a4f964f02a0eb9d4d671166560c8dab3998642c9c5978",
+  "nextAction": "Make plain wording compaction non-thinking under a frozen new policy; give the reader editor an explicit editable budget after server-owned protected scope and merge protected points on the server. Preserve identities/sources/kinds/length/unknown handling. No further real case this turn.",
+  "boundary": "Known settled failure only, original results unchanged; full DR0-DR5 and independent acceptance remain open."
+}

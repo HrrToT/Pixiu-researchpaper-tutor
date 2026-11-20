@@ -1,0 +1,55 @@
+{
+  "scope": "Source-bound ordinary author-row comparison display context; no automatic scientific acceptance",
+  "sourceBase": "983180e67",
+  "related": {
+    "tests": 628,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit": "tmp/comparison-table-context-related-20261117.xml"
+  },
+  "finalContext": {
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit": "tmp/comparison-table-context-final-20261117.xml"
+  },
+  "replay": {
+    "scope": "Counterfactual schema-corrected saved consumer replay only; no regeneration or historical result upgrade",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0,
+    "originalPayloadSha256": "22724e24b239571e9424aa7e79735821fee9a6643263f480b756e525f2e597d3",
+    "originalUnchanged": true,
+    "cases": [
+      {
+        "claimId": "cmp_1_0",
+        "withoutColumn": "table_condition_not_displayed",
+        "withExactColumn": null,
+        "wrongVersionRejected": true,
+        "negativeSemanticCannotPass": true,
+        "changedHeaderInvalidatesAudit": true
+      },
+      {
+        "claimId": "cmp_3_0",
+        "withoutColumn": "table_condition_not_displayed",
+        "withExactColumn": null,
+        "wrongVersionRejected": true,
+        "negativeSemanticCannotPass": true,
+        "changedHeaderInvalidatesAudit": true
+      }
+    ]
+  },
+  "boundaries": [
+    "Only server planning version2 and compiled layout version3",
+    "All references must have exact work/version/literal ownership and unique cell/goal",
+    "Only plain Ours can use actual source column; baseline and marked variants remain literal",
+    "Dataset/metric/value checks and separate semantic judgement retained",
+    "Final audit digest binds source header/version/routing and accepted text"
+  ],
+  "fullRegression": "pending",
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificContentCredit": 0
+}

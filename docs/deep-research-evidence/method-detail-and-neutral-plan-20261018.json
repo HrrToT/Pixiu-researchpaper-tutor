@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "2ee36ac2",
+  "promptVersion": "dr-v2.20261018.130",
+  "componentCommits": {
+    "methodDetails": "5eab7f45",
+    "neutralPlanning": "2ee36ac2"
+  },
+  "contracts": {
+    "sourcePrecisionContractVersion": 1,
+    "structuredOutputContractVersion": 4
+  },
+  "checks": {
+    "passed": 2104,
+    "warnings": 1,
+    "seconds": 120.48,
+    "log": "tmp/pytest-dr130-full.log"
+  },
+  "behavior": [
+    "Mechanism/input/output queries reserve at most two existing source slots for concrete operation text and necessary preceding context. Source texts/IDs/locations are never concatenated or rewritten.",
+    "Candidates require the same owned paper and pinned index version, unique source/chunk identities, literal body component/query matches and operational language. Repeated paper headers do not count as component matches.",
+    "The best semantic hit and existing context pairs stay protected. Ambiguous/missing prerequisites skip the candidate; the result stays within the existing limit.",
+    "The existing bounded 400-document index cache is reused, live scope checked again for each call. No extra model, PDF fetch or query-rewrite request is introduced.",
+    "Server-owned immutable sourcePrecision contract 1 enables the new selector only for new runs; historical unmarked retrieval is unchanged.",
+    "Native JSON contract 4 adds neutral planning instructions and distinguishes unverified plan examples from source evidence in synthesis/compaction/repair. Earlier native versions retain their exact messages.",
+    "Every trusted system/framing remains within the existing 1024-token reservation. Candidate retrieval and trusted instructions do not establish factual or answer-completeness acceptance."
+  ],
+  "realIndexProbe": "method-detail-real-index-20261018.json",
+  "runtime": "runtime-load-dr130-source-precision-20261018.json",
+  "boundary": "A live retired-case diagnostic remains separate from independent acceptance. All original first failures and historical unknowns are retained."
+}

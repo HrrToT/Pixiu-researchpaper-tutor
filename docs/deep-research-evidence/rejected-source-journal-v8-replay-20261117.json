@@ -1,0 +1,21 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v8",
+  "scope": "fresh offline journal reconstruction from exact archived read contexts",
+  "payloadSha256": "9e5fafeb45a44cb50ed6b449dce61619156f2f57bdb1a67e8ccec2a83e6ea9f6",
+  "oldFailureReproducedBeforeFactory": true,
+  "oldRunResumed": false,
+  "newReuseContractVersion": 3,
+  "firstReadSources": 12,
+  "firstEvidence": 36,
+  "glyphRejections": 3,
+  "incrementalFactoryCalls": 18,
+  "secondEvidence": 54,
+  "repeatedFactoryCalls": 0,
+  "rejectedRowsUnchanged": true,
+  "rejectedEvidenceBlockedBeforeSemantic": true,
+  "newJournalDigestsBindLiteralState": true,
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "pdfPageFactoryUsed": false,
+  "scientificApproval": false
+}

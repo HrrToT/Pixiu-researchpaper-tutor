@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v23",
+  "groups": [
+    {
+      "ids": [
+        "c4",
+        "c6"
+      ],
+      "inputBytes": 23962,
+      "originalsChecksContextsRegistryExact": true,
+      "mandatoryQuotesContextsExact": true
+    },
+    {
+      "ids": [
+        "c3",
+        "c5"
+      ],
+      "inputBytes": 23963,
+      "originalsChecksContextsRegistryExact": true,
+      "mandatoryQuotesContextsExact": true
+    }
+  ],
+  "deferredIds": [
+    "c1",
+    "c2",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "allEligibleTargetsOnce": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Controlled24KB preparation and callbacks with all original data preserved. Callbacks return unresolved; no actual remaining-budget or scientific pass.100KB reference was comparison only, never production.",
+  "sourceCommit": "57b6efcf"
+}

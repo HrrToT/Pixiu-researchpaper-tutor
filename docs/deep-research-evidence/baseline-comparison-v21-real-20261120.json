@@ -1,0 +1,118 @@
+{
+  "sourceCommit": "3c14b867632b32383ad1e2a417c7fe06b79caf3b",
+  "case": "D2-BASELINE-COMPRESSION-v21",
+  "split": "development",
+  "runId": "dr_run_cfcfcc242af65b6b96a4560d45b71e53",
+  "comparisonAuthoringContractVersion": 8,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "modelCalls": 13,
+  "ledgerTokens": 71917,
+  "elapsedSeconds": 134.0,
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 4
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 57,
+  "typedEvidenceCount": 4,
+  "draftCount": 10,
+  "reportClaimCount": 0,
+  "draftStageRequests": [
+    {
+      "stage": "P1",
+      "inputBytes": 23997,
+      "requiredBundles": 9,
+      "targets": [
+        "table_0_0",
+        "table_1_0",
+        "table_2_0",
+        "table_3_0"
+      ]
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23861,
+      "requiredBundles": 9,
+      "targets": [
+        "table_0_1",
+        "table_1_1",
+        "table_2_1",
+        "table_3_1"
+      ]
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23900,
+      "requiredBundles": 12,
+      "targets": [
+        "joint_ob-2-2",
+        "joint_ob-3-1",
+        "joint_ob-3-2"
+      ]
+    }
+  ],
+  "rejectedByReason": {
+    "numeric_mismatch": 2,
+    "absence_not_established": 2,
+    "semantic_unresolved": 4
+  },
+  "finalAuditStatus": "invalidated_comparison_presentation",
+  "finalAuditGapCount": 9,
+  "finalAuditLimit": null,
+  "repairStatus": null,
+  "repairBatchStop": null,
+  "repairReleaseDeferred": null,
+  "releaseStatus": "held",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "a3313f9724642cb9d40eecd6a4ea3c2a57fd02f86f93ac50d4fd9eb5f00a5300",
+    "calls": "8a34c1ebf241003ee3f3cdcf1acf8f0c5046fee5f37e3792f6f0b79ae8a59606",
+    "result": "ef0b35773662a2b9bd000220c6c7a459da6baf87ba536e73b47d7af7c16dff01",
+    "execution": "bf75b78d403f08618bc58576c75bd486dc94228c9b2d37f30dca35fbf29f6d18"
+  },
+  "rawAuthoringDiagnostics": {
+    "P1": {
+      "points": 4,
+      "kindProse": 0,
+      "nestedCellRefPoints": 0,
+      "isolatedTargets": 0
+    },
+    "P2": {
+      "points": 4,
+      "kindProse": 0,
+      "nestedCellRefPoints": 0,
+      "isolatedTargets": 0
+    },
+    "joint": {
+      "points": 3,
+      "kindProse": 0,
+      "nestedCellRefPoints": 0,
+      "isolatedTargets": 1
+    }
+  },
+  "initialReviewAdmissionReplay": {
+    "exactSavedRequestMatches": 5,
+    "providerRequests": 0,
+    "nextNode": "verify",
+    "nextReservationTokens": 32047,
+    "projectedTotalTokens": 103964,
+    "maxTokens": 100000,
+    "projectedNormalTokens": 66944,
+    "availableNormalPoolLimit": 62980,
+    "recordedErrorKind": "modelCalls"
+  },
+  "preReleaseAcceptedBySystem": 2
+}

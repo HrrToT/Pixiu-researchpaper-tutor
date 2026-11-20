@@ -1,0 +1,59 @@
+{
+  "candidatePromptVersion": "dr-v2.20261105.383",
+  "baseCommit": "cc5262c62809af1f1a372c6f2f18a688ef6ae41e",
+  "sourceCase": "X5H-v1",
+  "input": "unchanged saved real model plan after new plan-node revision binding",
+  "maxExternalSearches": 1,
+  "maxFulltextFetches": 1,
+  "modelCalls": 0,
+  "externalCalls": 2,
+  "actualResult": {
+    "versions": [
+      "arxiv:2406.01467v1"
+    ],
+    "sourceCount": 8,
+    "contentHashes": [
+      "b4b71257a412123d8033e441388a71c774fbd5b244c7ba212cb5d27da1d13a9f"
+    ],
+    "selectedPages": [
+      1,
+      3,
+      7
+    ],
+    "requestedVersionCacheStored": true,
+    "oldV2CacheManifestExact": true,
+    "elapsedSeconds": 8.764,
+    "providerModelCalls": 0,
+    "sourceCaseNotRejudged": true
+  },
+  "preservation": {
+    "before": {
+      "ledgerRows": 8402,
+      "ledgerSha256": "ddd9d52a3616934bd4b4979acc4aff69c3431ebc0e53cbdf2b4d0c1b818c1fd2",
+      "payloadSha256": "4814208b9c7795a950c9d211a3a6c2afce36a47fef607fcd0bf1e28671c083b8"
+    },
+    "after": {
+      "ledgerRows": 8402,
+      "ledgerSha256": "ddd9d52a3616934bd4b4979acc4aff69c3431ebc0e53cbdf2b4d0c1b818c1fd2",
+      "payloadSha256": "4814208b9c7795a950c9d211a3a6c2afce36a47fef607fcd0bf1e28671c083b8"
+    },
+    "exactProductionPreservation": true,
+    "productionPublish": false,
+    "independentCredit": 0
+  },
+  "originalFailedCaseNotRejudged": true,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "rawHashes": {
+    "tmp\\component-revisions383-20261105\\receipt\\calls.json": "d3d6cdb714c99f8ea974da21804fea7aa79b0ae94ac9ede2e3e4887d0a0e0331",
+    "tmp\\component-revisions383-20261105\\receipt\\payload.json": "b17b0420e0a24ba7549137572291a3dfdc032ffd74c60131da83aae2e6dfe5d1",
+    "tmp\\component-revisions383-20261105\\receipt\\preservation.json": "eb560f74d93d923edaf804f28726f27bd554dda72b812d8894c2f8e7c7cf6ebd",
+    "tmp\\component-revisions383-20261105\\receipt\\result.json": "2fe82bef3fd75e3172311783d474884b2e031388da628e9fb4e7ac9453afb340",
+    "tmp\\component-revisions383-20261105\\receipt\\sources.json": "bd4981fe6ffbc94c187b27f7ae18fd4c1aa9510e03a9ed282c5a44e0a2985f1a"
+  },
+  "acquisitionSourceHashes": {
+    "ai-service-python\\services\\deep_research\\source_revisions.py": "228d3f24f22a31e4d06ac046169f98bb48300f2509bff06ff660baf76af9275d",
+    "ai-service-python\\services\\deep_research\\external.py": "459690ec0bd207200342774f9fff547c6674f16e214f5910cfc3998067bb56ee",
+    "ai-service-python\\services\\deep_research\\graph.py": "3b6dcfa4d283e8e2767d3e39e5ac739a4436fac18584a13550a5450837a581bb"
+  }
+}

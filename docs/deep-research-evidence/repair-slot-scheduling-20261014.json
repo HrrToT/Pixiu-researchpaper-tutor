@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-14",
+  "promptVersion": "dr-v2.20261014.61",
+  "finding": "Empty server-allocated data and budget slots shared broad obligation/source permissions. Coverage scheduling mistook them for existing failed answers and froze the actual incomplete intervention definition.",
+  "change": "Missing-design-deliverable slots remain independent repair targets, but cannot take priority over a real answer when selecting which existing claim must fill a coverage gap. Keep intervention definitions with execution/controls; data and budget choices precede the joint hypothesis/analysis batch.",
+  "offlineReplay": {
+    "caseId": "D3-v23",
+    "runId": "dr_run_6de5b270b1dd5f89800e229f00fb91b0",
+    "providerRequests": 0,
+    "additionalTarget": "c2",
+    "batches": [
+      {
+        "targetIds": [
+          "design_completion_data",
+          "design_completion_budget"
+        ],
+        "promptBytes": 23913,
+        "visibleEvidence": 7,
+        "optionalContextsOmitted": 2
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c6",
+          "c7"
+        ],
+        "promptBytes": 17274,
+        "visibleEvidence": 0,
+        "optionalContextsOmitted": 0
+      },
+      {
+        "targetIds": [
+          "c2",
+          "c3",
+          "c4",
+          "c8"
+        ],
+        "promptBytes": 20294,
+        "visibleEvidence": 2,
+        "optionalContextsOmitted": 0
+      }
+    ],
+    "requiredEvidence": "All mandatory original citations and supplied hints retain their existing bounded context. Only additional optional candidates may omit context.",
+    "boundary": "Empty simulated responses measure initial request capacity, not quality or the size of later context after new drafts. Each actual later request is admitted again."
+  },
+  "validation": {
+    "targetedPassed": 61,
+    "seconds": 11.59,
+    "fullRegression": {
+      "passed": 1176,
+      "warnings": 2,
+      "seconds": 147.35
+    }
+  },
+  "acceptance": "Scheduling and capacity replay pass. New real content and full DR0-DR5 acceptance remain incomplete.",
+  "implementationCommit": "12067a5"
+}

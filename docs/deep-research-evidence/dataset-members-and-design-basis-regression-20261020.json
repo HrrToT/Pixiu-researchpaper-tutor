@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "b449bc09",
+  "promptVersion": "dr-v2.20261020.193",
+  "fullOfflineRegressions": [
+    {
+      "sourceCommit": "84a9c755",
+      "passed": 3084,
+      "warnings": 1,
+      "seconds": 167.89,
+      "log": "tmp/pytest-dr192-full.log",
+      "sha256": "207ab20a2da6c78ac4d39443f067adf889d71794cbe65ab7dbc66a3db649282e"
+    },
+    {
+      "sourceCommit": "b449bc09",
+      "passed": 3089,
+      "warnings": 1,
+      "seconds": 173.73,
+      "log": "tmp/pytest-dr193-full.log",
+      "sha256": "d820df90154c3785ce0ebee93132919dfc43f4d7c25a5a631186ee84916d942f"
+    }
+  ],
+  "focused": {
+    "datasetAndOldSourceContracts": 64,
+    "readingAndMembership": 16,
+    "reasonedExperimentAndExistingProfiles": 44
+  },
+  "focusedOverlap": true,
+  "providerCalls": 0,
+  "originalReadAndQuoteCapsPreserved": true,
+  "legacySynthesisAndAudienceFingerprints": 18,
+  "controlledNewInput": {
+    "bytes": 23885,
+    "sourceRows": 9,
+    "literalEquationAndMemberRowsBothIncluded": true,
+    "missingPremiseBundles": 0,
+    "outputCapUnchanged": 16384,
+    "additionalModelStages": 0
+  },
+  "boundary": "Controlled reading/extraction/allocation and generation-option fixtures only. Member passage was retrieved but not read in actualH5F-v5. Literal rows have no semantic/numerical-column approval. Private basis is unchecked, excluded from public claims and never grants citations. New low-effort generation has no live positive acceptance yet."
+}

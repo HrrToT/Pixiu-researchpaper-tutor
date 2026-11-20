@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "05bc4831e319c7d8f78f1dc9891a2c878a88aaa5",
+  "fullRegression": "comparison-source-stages-graph-full-20261118.json",
+  "candidate": "academic-dr-source-stages-candidate-20261118",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

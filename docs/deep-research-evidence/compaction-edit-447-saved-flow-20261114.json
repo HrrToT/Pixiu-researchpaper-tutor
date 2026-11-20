@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "c5aa4391a522c29dcf02be9bf903301f4c52ea76",
+  "modelCalls": 0,
+  "oldRequestDigestExact": true,
+  "oldRequestDigest": "2b91d67e344a129056332f8c23f689b627d5a3d6691d8e83776af9e9d6d42bc8",
+  "originalInputRowsExact": true,
+  "newBudget": {
+    "totalCharacters": 300,
+    "currentCompleteCharacters": 362,
+    "fixedDisplayAndAcceptedCharacters": 21,
+    "currentScopeReserveCharacters": 119,
+    "ordinaryProseSharedCharactersIfScopeUnchanged": 160,
+    "pointMeasurements": [
+      {
+        "claimId": "c1",
+        "kind": "prose",
+        "currentCharactersAboveFixed": 222
+      },
+      {
+        "claimId": "c2",
+        "kind": "scope",
+        "currentCharactersAboveFixed": 119
+      }
+    ]
+  },
+  "old339CharacterResponseStillRejected": true,
+  "newCheckpointIdentityDifferent": true,
+  "originalOptionsUnchanged": {
+    "max_tokens": 8192,
+    "temperature": 0.0,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "promptBytes": 8971,
+  "selectiveEditing": true,
+  "scientificContentAccepted": false,
+  "boundary": "Question-scoped editing permissions only; no numerical or source guard relaxation. Original point inputs, source identity/ASTs and model options remain unchanged; the same overlength response still fails. No paid model request or old-run upgrade."
+}

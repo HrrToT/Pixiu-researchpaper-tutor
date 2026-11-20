@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "caseId": "D2-BASELINE-COMPRESSION-v6",
+  "runId": "dr_run_9d674fc5c9e0524faaa2a2a2fa49b96b",
+  "sourceCommit": "2601436d8e409bdb9e4d5c88496b40d9e848fd91",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "modelCalls": 11,
+    "maxModelCalls": 18,
+    "tokens": 68639,
+    "maxTokens": 100000,
+    "elapsedSeconds": 280.0
+  },
+  "calls": [
+    {
+      "node": "resolve_brief",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:32:28Z",
+      "completedAt": "2026-11-17T10:32:31Z",
+      "durationSeconds": 3.0
+    },
+    {
+      "node": "plan",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:32:31Z",
+      "completedAt": "2026-11-17T10:32:38Z",
+      "durationSeconds": 7.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:33:16Z",
+      "completedAt": "2026-11-17T10:33:18Z",
+      "durationSeconds": 2.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:33:43Z",
+      "completedAt": "2026-11-17T10:33:45Z",
+      "durationSeconds": 2.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:34:11Z",
+      "completedAt": "2026-11-17T10:34:13Z",
+      "durationSeconds": 2.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:34:22Z",
+      "completedAt": "2026-11-17T10:34:23Z",
+      "durationSeconds": 1.0
+    },
+    {
+      "node": "synthesize",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:34:26Z",
+      "completedAt": "2026-11-17T10:35:06Z",
+      "durationSeconds": 40.0
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:35:11Z",
+      "completedAt": "2026-11-17T10:35:52Z",
+      "durationSeconds": 41.0,
+      "returnedTargetCount": 3
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:35:53Z",
+      "completedAt": "2026-11-17T10:36:32Z",
+      "durationSeconds": 39.0,
+      "returnedTargetCount": 1
+    },
+    {
+      "node": "verify_answer_coverage",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:36:33Z",
+      "completedAt": "2026-11-17T10:36:42Z",
+      "durationSeconds": 9.0
+    },
+    {
+      "node": "repair_claims",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T10:36:44Z",
+      "completedAt": "2026-11-17T10:37:01Z",
+      "durationSeconds": 17.0
+    }
+  ],
+  "initialAcceptedClaims": 3,
+  "initialRejectedClaims": [
+    {
+      "claimId": "cmp_1_0",
+      "reason": "numeric_mismatch",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "absence_not_established",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_conclusion_1",
+      "reason": "absence_not_established",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_2_1",
+      "reason": "semantic_unresolved",
+      "executionState": null
+    }
+  ],
+  "coverageStatus": "invalid_response",
+  "requestResponseErrors": [
+    {
+      "code": "invalid_check_fields",
+      "obligationId": "ob-1-2",
+      "checkId": "criterion:c-1-2-2",
+      "missingFields": [
+        "limitSpans"
+      ]
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairDraftCount": 4,
+  "repairLimit": {
+    "kind": "tokens",
+    "limit": 100000,
+    "used": 103491
+  },
+  "finalAcceptedClaims": 3,
+  "reportBodySha256": "7336085376bd0d448354e982d477232a65077b1c4c0c755c548d67ca74c326f9",
+  "originalRestored": true,
+  "newUnknownCalls": 0,
+  "scientificContentAccepted": false,
+  "manualResultUsable": false,
+  "unmetUserResults": [
+    "original-paper comparison column remains unresolved",
+    "extra processing cost not explained; selected ablations do not replace it",
+    "two full dataset metric inventories instead of one requested baseline example",
+    "no adequate FPS comparability explanation or conditional choice"
+  ],
+  "nextDiagnosis": [
+    "negative missing coverage item omitted required empty limitSpans; whole audit invalid",
+    "repair generated but verification reservation exceeded remaining token budget; no repaired claim published",
+    "conceptual geometry-set article is treated as an unsupported count; controlled replay excludes the v1 hypothesis",
+    "numeric reporting ownership field omitted in one reviewer result"
+  ],
+  "comparisonBoundary": "Observed 280s versus v5 323s is not a controlled causal estimate; drafts and targets differ.",
+  "privateArtifacts": "Raw paper passages, prompts, responses and local receipts remain private; no account information published.",
+  "diagnosticCorrection": {
+    "evidence": "baseline-comparison-v6-article-correction-20261117.json",
+    "previousVersionLabelHypothesisWithdrawn": true,
+    "savedRunAndOriginalResponsesUnchanged": true
+  }
+}

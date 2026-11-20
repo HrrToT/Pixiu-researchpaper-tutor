@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v14",
+  "outlineEncodingContractVersion": 2,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldRawAllocationExactlyReconstructed": true,
+  "oldFailureUnchanged": true,
+  "allSevenRequiredEvidenceIdsRetained": true,
+  "allExactQuotesAndPermissionsRetained": true,
+  "allThreeRequiredMethodContextsRetained": true,
+  "rawAllocationBytes": 24114,
+  "encodedAllocationBytes": 23845,
+  "unchangedCap": 24000,
+  "planningPlaceholderBytes": 2500,
+  "planningRequestBytes": 15813,
+  "planningRequestFrozen": true,
+  "stoppedBeforePlanningProvider": true,
+  "actualReturnedPlanUsed": false,
+  "independentCredit": 0,
+  "boundary": "Implemented v2 allocation replay, not just a candidate measurement. Stops before planning provider, so it proves required-input retention only; no actual plan/body/review/content acceptance or change to historical failed runs."
+}

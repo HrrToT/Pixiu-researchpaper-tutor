@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "engineRecovered": true,
+  "beforeApplicationStartReadOnlySnapshot": true,
+  "ledgerRows": 5514,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "ledgerAndAllPriorPayloadsExactlyPreserved": true,
+  "pythonHealth": "ok",
+  "grobidHealth": "ok",
+  "ragHealth": "ok",
+  "javaRestoredUsingExistingValidatedJar": true,
+  "javaDatabaseBackedUpBeforeStart": true,
+  "frontendRestored": true,
+  "providerCallsDuringRecovery": 0,
+  "boundary": "Service recovery and historical data retention, not new scientific content acceptance."
+}

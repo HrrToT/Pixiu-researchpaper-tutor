@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v21",
+  "sourceCommit": "09782ac7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 4,
+  "requests": [
+    {
+      "callId": "f4c6b9af3e1cdde7a21d63d0ca49e3bb",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 28082,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c2",
+        "c3",
+        "c6"
+      ]
+    },
+    {
+      "callId": "1e839e592269fa962def711fe8315aed",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1"
+      ],
+      "inputBytes": 28628,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c7",
+        "c8",
+        "c9",
+        "c6"
+      ]
+    },
+    {
+      "callId": "dd91669abefcd327cf5354a984b2890a",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c6"
+      ],
+      "inputBytes": 27859,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c7",
+        "c8",
+        "c9",
+        "c1"
+      ]
+    },
+    {
+      "callId": "e83a02466878e8baf825a56a877c4f0e",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 21414,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c6"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 28082,
+      "fixedInputBytes": 20272,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 28082,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "fullInputBytes": 28628,
+      "fixedInputBytes": 19521,
+      "maxInputBytes": 32000,
+      "referencedRows": 8,
+      "selectedRows": 8,
+      "selectedInputBytes": 28628,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c6"
+      ],
+      "fullInputBytes": 27859,
+      "fixedInputBytes": 21439,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 27859,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 21414,
+      "fixedInputBytes": 21414,
+      "maxInputBytes": 32000,
+      "referencedRows": 0,
+      "selectedRows": 0,
+      "selectedInputBytes": 21414,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 17634,
+    "used": 19115
+  },
+  "boundary": "Exact archived review reconstruction only. Successful output shape does not validate scientific judgements."
+}

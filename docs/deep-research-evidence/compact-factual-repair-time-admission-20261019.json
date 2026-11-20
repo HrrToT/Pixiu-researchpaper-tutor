@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-19",
+  "promptVersion": "dr-v2.20261019.187",
+  "sourceCase": "H2F-v7",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "observedPreRepairElapsedSeconds": 292.37,
+  "remainingSeconds": 67.63,
+  "oldAdmissionSeconds": 90.0,
+  "newAdmissionSeconds": 60.0,
+  "targets": 2,
+  "maxWallClockSeconds": 360,
+  "boundary": "Archived final timing after a skipped repair, arithmetic admission replay only. Advisory estimate; does not guarantee Provider latency, bypass deadlines or establish content acceptance. Old records unchanged."
+}

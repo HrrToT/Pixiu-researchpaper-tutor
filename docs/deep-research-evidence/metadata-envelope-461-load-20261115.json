@@ -1,0 +1,18 @@
+{
+  "pdfTableColumnsHashMatches": true,
+  "pdfTableColumnsSha256": "fc6b1e5a17181f072dc31a67d2734ee5e9d060b7a29fd1e8daf0aac5037ea0f3",
+  "sourceCommit": "4b100b35edd82a89e305d176fae0a07260ebf56f",
+  "baselineFile": "tmp/dr-acceptance-receipts/metadata-output-460.before.json",
+  "fullRegression": "deep-research-evidence/metadata-envelope-461-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.461",
+  "allDeepResearchModuleHashesMatch": true,
+  "all105TasksExact": true,
+  "all388OldRunsExact": true,
+  "all9758CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

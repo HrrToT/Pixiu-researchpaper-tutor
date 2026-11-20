@@ -1,0 +1,27 @@
+.pdf-citation-focus {
+  position: absolute;
+  pointer-events: none;
+  z-index: 12;
+  background: rgba(168, 132, 230, .18);
+  box-shadow: inset 0 0 0 2px rgba(133, 89, 201, .65);
+  border-radius: 3px;
+  animation: citation-focus-in 160ms ease-out;
+  transition: opacity 200ms ease-out;
+}
+.pdf-citation-focus[data-leaving=true] { opacity: 0; }
+.pdf-citation-focus-page { background: transparent; }
+.pdf-citation-focus-label {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--panel-bg, #fff);
+  color: var(--text-primary, #362747);
+  font: 12px/1.5 sans-serif;
+  box-shadow: 0 1px 6px #0002;
+}
+@keyframes citation-focus-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .pdf-citation-focus { animation: none; transition: none; }
+}

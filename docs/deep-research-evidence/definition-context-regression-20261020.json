@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "0de41ea7",
+  "promptVersion": "dr-v2.20261020.201",
+  "fullOffline": {
+    "passed": 3261,
+    "warnings": 1,
+    "seconds": 191.46,
+    "log": "tmp/pytest-dr201-full.log",
+    "sha256": "80a57eb86dca085f7a469002bab355efaa331d49162226292d5daf4366b9c0c7"
+  },
+  "focusedPassed": 101,
+  "focusedSeconds": 4.39,
+  "focusedOverlap": true,
+  "newTests": 25,
+  "oldActualRequestFingerprintsMatched": 24,
+  "newContracts": {
+    "synthesisEvidence": 5,
+    "experimentDraft": 5
+  },
+  "contextBoundary": "An anaphoric definition must have unique literal occurrence and exact source/work/version/hash match to one actually read fulltext source. Contiguous bounded literal prefix is mandatory and atomic in both prompts; ambiguous/foreign/wrapper/table candidates cannot supply it. Original evidence stays unchanged and semantic unchecked.",
+  "planBoundary": "Same2500byte private cap and6144output. Six scientific protocol decisions plus own sourceRefs index, no duplicated paper-fact prose. Original evidence/frozen requirements/full configuration remain; separate frame windows vs held-out cameras and training-only eligibility rule. Invalid/unknown saved responses cannot fallback/retry.",
+  "controlledActualEvidenceProof": "definition-context-actual-input-20261020.json",
+  "realCase": {
+    "case": "E1-v3",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "contentAccepted": false,
+    "settledModelCalls": 11,
+    "settledTokens": 47446,
+    "newUnknowns": 0,
+    "independentCredit": 0,
+    "planningBytes": 1779,
+    "planningReady": true,
+    "actualDefinitionInPlanning": true,
+    "fullConfigurationActuallyReturned": true,
+    "fullConfigurationInputBytes": 23257,
+    "acceptedDesignRoles": 0,
+    "rejectedDesignRoles": 9,
+    "repairSent": false,
+    "repairCapacity": {
+      "kind": "repairEvidenceBytes",
+      "limit": 19967,
+      "used": 25192
+    },
+    "proof": "E1-v3-diagnostic-20261020.json"
+  },
+  "runtimeLoadProof": "runtime-load-dr201-definition-context-20261020.json",
+  "afterCaseRetentionProof": "runtime-postcases-dr201-e1-v3-20261020.json",
+  "remaining": [
+    "Losslessly remove duplicated derived configuration/metadata from actual repair envelope25192bytes to fit actual19967byte capacity while preserving raw prose, full specs, source evidence, scope and rejection reasons.",
+    "Fix full initialization/per-frame Stage1 transfer, actual addition policy, renderer/measurement/storage boundaries and honest unmatched stage budget. Audit prospective-hypothesis review separately; do not waive genuine failures.",
+    "Complete actual configuration/repair content quality and fresh independent replacements; DR0-DR5 and original independent0/5 remain unchanged."
+  ],
+  "boundary": "Offline/controlled paths and actual planning/full draft generation progress. Actual content is inconclusive, not accepted; no automatic rerun after the single case. Goal active, PR draft."
+}

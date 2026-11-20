@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.67",
+  "issue": "A true quote from any supplied evidence row could ground a covered factual aspect even when no bound accepted factual claim cited that evidence. A pure proposal's source basis could also satisfy the verdict-level source-grounding requirement for other factual text.",
+  "change": "A source-based factual aspect now needs at least one bound reported/inference claim citing the exact evidenceId. Several claims can jointly answer an aspect; pure prospective requirements are not forced to invent citations. Source grounding of a pure proposal cannot replace grounding of factual answer text.",
+  "unchanged": ["Literal original-source validation", "Current accepted-answer bindings", "Independent factual/semantic checks", "Original-question scope audit", "Budgets and no automatic retry", "Historical reports"],
+  "validation": {
+    "targeted": {"passed": 66, "seconds": 2.70},
+    "fullResearchAndConfiguration": {"passed": 1189, "warnings": 1, "seconds": 51.65},
+    "newFreshManifestAndReceiptChecks": {"passed": 33, "seconds": 0.78, "overlap": true}
+  },
+  "regressionCases": ["Exact quote from another uncited paper/version rejected", "Answer with empty citations cannot borrow a source basis", "Joint factual bindings remain permitted when one cites the precise basis", "Pure prospective choice remains permitted without invented paper citation", "Proposal source cannot substitute for factual-answer grounding"],
+  "realProviderRequestsForThisFix": 0,
+  "boundary": "This closes an identity/audit-trail gap, not a proof of semantic completeness or actual improved model quality. Real Provider validation is currently affected by the recorded Flash outage."
+}

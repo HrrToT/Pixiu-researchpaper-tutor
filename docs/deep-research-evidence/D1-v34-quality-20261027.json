@@ -1,0 +1,258 @@
+{
+  "date": "2026-10-27",
+  "caseId": "D1-v34",
+  "runId": "dr_run_27d0018eacae58dbb5e12fbbb0d64493",
+  "promptVersion": "dr-v2.20261027.307",
+  "sourceCommit": "0e811ca8d572d99796464b0f518e4ebe26096776",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 41822,
+  "elapsedSeconds": 115.62,
+  "cost": null,
+  "readChunks": [
+    46,
+    35,
+    37,
+    38,
+    45,
+    52
+  ],
+  "actualPartitionedObservationVerdicts": [
+    {
+      "claimId": "scope-observation-c3936d7c6f47b999a94a72bdb79be4ac7e80c05a675dde9919c1aed34242b887-0",
+      "status": "passed",
+      "reason": "The claim states that LightGaussian uses a Gaussian pruning ratio of 66%. Evidence E1 explicitly states: 'With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality...' This directly supports the claim. The subject is LightGaussian, and the pruning ratio is clearly 66%.",
+      "scopeAudit": {
+        "claimStrength": "bounded",
+        "evidenceStrength": "bounded",
+        "supported": true,
+        "statementPath": [
+          "text"
+        ],
+        "premises": [
+          {
+            "evidenceId": "E1",
+            "path": [
+              "quote"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "claimId": "scope-observation-c3936d7c6f47b999a94a72bdb79be4ac7e80c05a675dde9919c1aed34242b887-1",
+      "status": "passed",
+      "reason": "The claim states that LightGaussian uses SH order = 2 degrees. Evidence E1 and E2 both explicitly mention 'SH reduced to 2 degrees' in the context of LightGaussian's ablation study, directly supporting the claim.",
+      "scopeAudit": {
+        "claimStrength": "bounded",
+        "evidenceStrength": "bounded",
+        "supported": true,
+        "statementPath": [
+          "text"
+        ],
+        "premises": [
+          {
+            "evidenceId": "E1",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "E2",
+            "path": [
+              "quote"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "actualBoundaryVerdict": {
+    "index": 0,
+    "proposition": "在其他数据集或更极端压缩下图像质量接近原始3DGS",
+    "relation": "not_entailed",
+    "quantification": "ambiguous",
+    "isNegation": false,
+    "authorOmission": false,
+    "reason": "命题声称在其他数据集或更极端压缩下图像质量接近原始3DGS。提供的证据仅报告了在特定数据集（未明确）上，当高斯剪枝率为66%且SH降至2度时，SSIM从0.927轻微降至0.926，以及SH降至1度时SSIM降至0.923。证据还指出当剪枝率达到70%或VQ比率接近65%时质量明显下降。因此，证据不支持在其他数据集或更极端压缩下质量接近原始3DGS的普遍性主张，且未提供其他数据集的结果。",
+    "premises": [
+      {
+        "evidenceId": "E1",
+        "path": [
+          "quote"
+        ]
+      },
+      {
+        "evidenceId": "E2",
+        "path": [
+          "quote"
+        ]
+      }
+    ]
+  },
+  "ordinaryWireStatus": "failed",
+  "ordinaryNormalizedEqualsWire": true,
+  "ordinaryScopeAudit": {
+    "claimStrength": "bounded",
+    "evidenceStrength": "bounded",
+    "supported": true,
+    "statementPath": [
+      "text"
+    ],
+    "premises": [
+      {
+        "evidenceId": "E1",
+        "path": [
+          "quote"
+        ]
+      }
+    ]
+  },
+  "ordinaryComparisonAudit": {
+    "scope": "within_study",
+    "alignment": "established",
+    "supportsClaim": true,
+    "premises": [
+      {
+        "evidenceId": "E1",
+        "path": [
+          "quote"
+        ]
+      }
+    ],
+    "differences": []
+  },
+  "ordinaryReason": "The claim asserts specific SSIM values for LightGaussian (Ours) and 3D-GS on Mip-NeRF 360 and Tank and Temple datasets. The evidence table shows: Mip-NeRF 360: 3D-GS SSIM=0.815, Ours SSIM=0.806; Tank and Temple: 3D-GS SSIM=0.841, Ours SSIM=0.832. These numbers match the claim. However, the claim states '作者报告' (author reports), which is supported by the table. The comparisonAudit is required for within_study target. The alignment is established within the same table, and the premises are present. The scopeAudit: claimStrength is bounded (specific datasets), evidenceStrength is bounded, supported=true. The statementPath is [\"text\"]. The premises are bound to E1. The comparisonAudit: scope=within_study, alignment=established, supportsClaim=true, premises=[{\"evidenceId\":\"E1\",\"path\":[\"quote\"]}], differences=[]. The claim is fully supported by the evidence. Therefore, the verdict should be passed. However, the instruction says to be strict and check every clause. The claim is a reported result, and the evidence directly supports it. The comparisonAudit and scopeAudit are satisfied. So the status should be passed.",
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "table_condition_not_displayed",
+      "requiredTableDisplay": [
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "Ours"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "Ours"
+        }
+      ],
+      "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    }
+  ],
+  "repairedRejected": [
+    {
+      "claimId": "c1",
+      "reason": "table_condition_not_displayed",
+      "requiredTableDisplay": [
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Mip-NeRF 360 Datasets",
+          "method": "Ours"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "3D-GS [16]"
+        },
+        {
+          "group": "Tank and Temple Datasets",
+          "method": "Ours"
+        }
+      ],
+      "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "The claim asserts specific SSIM values for LightGaussian (Ours) and 3D-GS on Mip-NeRF 360 and Tank and Temple datasets. The evidence table shows: Mip-NeRF 360: 3D-GS SSIM=0.815, Ours SSIM=0.806; Tank and Temple: 3D-GS SSIM=0.841, Ours SSIM=0.832. These numbers match the claim. However, the claim states '作者报告' (author reports), which is supported by the table. The comparisonAudit is required for wi"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "推广命题尚未核实：scope_boundary_entailment_unresolved"
+      }
+    }
+  ],
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 18,
+    "ledgerRows": 7326,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  },
+  "earlierWorkspaceObjectsRetained": {
+    "baseline": "D1-v33 final workspace snapshot",
+    "counts": {
+      "messages": 29,
+      "notes": 0,
+      "artifacts": 58
+    },
+    "paperIdsAndFocusUnchanged": true
+  },
+  "boundary": "One development case; no new scientific or independent acceptance credit, no second case, no old failure upgraded.",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.json",
+      "sha256": "2ea52f94431835a41dd70e220c6f453fa8865463750b7fa0e8eaf53aa3406ddf"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.plan.json",
+      "sha256": "66d3d86cc5a6be659eabc31c92b957991323f34f0617fc67e84f0acd27b8d935"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.result.json",
+      "sha256": "89230e5d3ae4138ee5980bb7a1b760e29c36a8142ebd77fc338a029766dd55da"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.payload.json",
+      "sha256": "762871e5fc68f3914454c5bcab4c6ea0564de6d0f6d2ec2cff37095181a13582"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.calls.json",
+      "sha256": "b73881d3c2df6d5dfa5c75d50dcccaec6dde7db99761d4b75fbb5e232f028349"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v34.preservation.json",
+      "sha256": "9d4adf38bfaa10517c2b424f05d1fdbb314425c1851e50823c90fff0ca79a66b"
+    }
+  ]
+}

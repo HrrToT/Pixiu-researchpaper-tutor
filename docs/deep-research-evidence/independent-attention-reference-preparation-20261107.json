@@ -1,0 +1,28 @@
+{
+  "papers": [
+    {
+      "version": "2205.14135v1",
+      "url": "https://arxiv.org/pdf/2205.14135v1",
+      "sha256": "be21f20c749ba8443988b479bece93617dd37b214ea9099413f951f756d4104f",
+      "bytes": 2004922,
+      "pages": 31,
+      "maxApplicationBytes": 33554432,
+      "evaluationCopy": "tmp\\attention-holdout-preparation\\2205.14135v1.pdf",
+      "applicationCacheWritten": false
+    },
+    {
+      "version": "2307.08691v1",
+      "url": "https://arxiv.org/pdf/2307.08691v1",
+      "sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "bytes": 1660578,
+      "pages": 14,
+      "maxApplicationBytes": 33554432,
+      "evaluationCopy": "tmp\\attention-holdout-preparation\\2307.08691v1.pdf",
+      "applicationCacheWritten": false
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "proxy": "current system proxy",
+  "redirectFollowed": false
+}

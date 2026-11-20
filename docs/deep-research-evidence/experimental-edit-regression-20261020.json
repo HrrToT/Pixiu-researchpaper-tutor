@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "ebbf73ae",
+  "promptVersion": "dr-v2.20261020.202",
+  "fullOffline": {
+    "passed": 3287,
+    "warnings": 1,
+    "seconds": 191.66,
+    "log": "tmp/pytest-dr202-full-final.log",
+    "sha256": "cfaa8b4fcc62a39815644f47a816a6da8b4d1aed9d1eb9be2b25a40071220138"
+  },
+  "focusedPassed": 102,
+  "focusedSeconds": 3.42,
+  "focusedOverlap": true,
+  "newTests": 26,
+  "oldActualRequestFingerprintsMatched": 24,
+  "experimentRepairContractVersion": 2,
+  "implementation": "Existing typed experimental roles may use bounded JSON Pointer add/replace/remove edits to text/config/refs/conditions/detail/tableBindings. Immutable IDs/kinds/roles/version stamps and accepted/sibling IDs cannot change. Lossless common-column tables preserve original data including null/absence. Complete claims are reconstructed, materialized and passed to unchanged independent validators.",
+  "budgetBoundary": "Edit requests reserve4096output, not8192full-rewrite output. Actual input allowance is recomputed from that reservation and live remaining normal pool, always<=24000bytes; original18calls/100kToken/6min and final verification reserve remain. Existing/mixed/missing typed objects keep old route; old1 pending identity unchanged, new edit request identity version2 frozen.",
+  "controlledCapacity": {
+    "oldActualFailureReproduced": {
+      "kind": "repairEvidenceBytes",
+      "limit": 19967,
+      "used": 25192
+    },
+    "actualNormalTokensRemaining": 29183,
+    "newInputBytes": 23885,
+    "completeReservation": 29005,
+    "mockedDispatchCalls": 1
+  },
+  "controlledProof": "experimental-edit-actual-capacity-final-20261020.json",
+  "realCase": {
+    "case": "E1-v4",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "contentAccepted": false,
+    "settledModelCalls": 14,
+    "settledTokens": 66644,
+    "newUnknowns": 0,
+    "independentCredit": 0,
+    "actualEditInputBytes": 23591,
+    "actualEditInputCap": 23626,
+    "outputCap": 4096,
+    "operations": 14,
+    "reconstructedCompleteClaims": 9,
+    "independentRepairChecksRan": true,
+    "finalAcceptedRoles": 0,
+    "finalRejectedRoles": 9,
+    "proof": "E1-v4-diagnostic-20261020.json"
+  },
+  "runtimeLoadProof": "runtime-load-dr202-experimental-edit-20261020.json",
+  "afterCaseRetentionProof": "runtime-postcases-dr202-e1-v4-20261020.json",
+  "remaining": [
+    "Expose exact validator JSON paths/expected constraints for state shapes and workflow references, and repair actual intervention/measurement/storage omissions.",
+    "Audit reviewer contract against prospective hypotheses, explicit whole-stage unmatched costs, and proposed prechecked view splits; retain genuine membership/source/configuration checks and do not auto-approve.",
+    "Supply the matching named scene-to-dataset premise in actually read evidence. Prove final experimental quality and fresh independent cases; DR0-DR5 and original independent0/5 remain incomplete."
+  ],
+  "boundary": "Capacity/dispatch/reconstruction and independent rechecking actually work. Content still inconclusive. No automatic repeat after the one real case. Goal active, PR draft."
+}

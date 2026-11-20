@@ -1,0 +1,20 @@
+{
+  "scope": "Comparison cell foundation; saved actual synthesis-input allocation only",
+  "originalInputSha256": "f8af450cdbb79722aebeea4a4c6bdbe4c55725101aaa63e5b82f673d810c2f18",
+  "requirements": 8,
+  "papers": 2,
+  "suppliedEvidence": 13,
+  "cells": 14,
+  "emptyCells": [],
+  "allFrozenRequirementsRetained": true,
+  "allSourcesAndEvidenceRetained": true,
+  "ownershipExact": true,
+  "originTagsAreNavigationOnly": true,
+  "originTagsDoNotRestrictReuseForOtherFrozenGoals": true,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "productionEnabled": false,
+  "scientificContentAccepted": false,
+  "relatedTests": 41,
+  "remaining": "Integrate cell protocol into actual generation, verification, publication and repair paths; distinguish factual dimensions and joint judgement goals, keep full-scope coverage and original resource budget. No real comparison quality credit."
+}

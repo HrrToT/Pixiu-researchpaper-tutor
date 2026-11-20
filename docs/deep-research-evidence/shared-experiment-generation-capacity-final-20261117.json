@@ -1,0 +1,38 @@
+{
+  "scope": "Closed counterfactual candidate request on saved D3 public evidence; interrupted before budget reservation, never a model run or resume",
+  "inputArtifacts": {
+    "run": {
+      "path": "tmp\\dr-acceptance-receipts\\D3-VQ-FACTORIAL-v6.payload.json",
+      "sha256": "6e39c9f26c8bd49c6de0274820d00b59b63060060179509bb925c1e0199b16a1"
+    },
+    "reviewedRequest": {
+      "path": "tmp\\initialization-readable-483-public-review-20261116\\reviewed-request.json",
+      "sha256": "ed4e233eeb13dca7da14c685d0afc39a40e38519b23b309cb9c832743a98b7cc"
+    }
+  },
+  "frozenHistoricalRecordUnchanged": true,
+  "candidatePolicyAppliedOnlyToLocalCopy": true,
+  "all17RequiredEvidenceRowsAndContextsExact": true,
+  "questionExact": true,
+  "requirementsSourcesAndTablesExact": true,
+  "inputBytes": 30447,
+  "promptBytes": 20883,
+  "transportOverheadBytes": 9564,
+  "limitBytes": 32000,
+  "headroomBytes": 1553,
+  "requestDigestMatchesActualTrackedInvoker": true,
+  "estimatedAtomicReservation": {
+    "modelCalls": 1,
+    "tokens": 37615
+  },
+  "reservationBoundary": "Estimate only, no reservation was committed and no actual usage was measured.",
+  "systemPolicyBytes": 305,
+  "outputTokens": 6144,
+  "wholeRunTokensAndTimeFitEstablished": false,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "budgetReservations": 0,
+  "runtimeLoaded": false,
+  "scientificCredit": 0,
+  "originalArtifactsUnchanged": true
+}

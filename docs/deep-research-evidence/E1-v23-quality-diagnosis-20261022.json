@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v23",
+  "sourceCommit": "00987455",
+  "promptVersion": "dr-v2.20261022.228",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "independentCredit": 0,
+  "providerCallsDuringDiagnosis": 0,
+  "productionWritesDuringDiagnosis": 0,
+  "planningDraftFingerprintsMatched": 2,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "inputBytes": 23099,
+      "actualFingerprintMatched": true
+    },
+    {
+      "node": "synthesize",
+      "inputBytes": 29963,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "negativeFeedback": {
+    "unboundIds": [
+      "c1",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "exactBoundIds": [
+      "c3",
+      "c4",
+      "c5"
+    ],
+    "notStartedIds": [
+      "c2"
+    ],
+    "bindingIsNotScientificTruth": true
+  },
+  "confirmedGuardExamples": [
+    {
+      "claimId": "c1",
+      "errors": [
+        "finding.4.value_mismatch"
+      ],
+      "originalReason": "假设依赖的多个拟议组件存在未解决的科学有效性问题：数据划分的相机ID未经验证且可能不存在；共同初始化中的NTC状态定义不完整且与论文描述不符；预算未覆盖所有训练阶段；指标中的存储测量未定义序列化格式；分析未提供不确定性量化。因此，假设无法作为可执行的未执行设计进行验证。"
+    },
+    {
+      "claimId": "c7",
+      "errors": [
+        "finding.0.value_mismatch",
+        "finding.1.value_mismatch",
+        "finding.2.value_mismatch"
+      ],
+      "originalReason": "指标未通过：质量指标PSNR和SSIM的方向和聚合级别未明确；速度测量协议缺少设备、分辨率、预热、同步、计时区域和重复次数；存储测量未列出包含的文件或模型表示，也未说明会计边界和单位。"
+    },
+    {
+      "claimId": "c8",
+      "errors": [
+        "finding.0.not_an_absent_schema_field",
+        "finding.1.not_an_absent_schema_field",
+        "finding.2.not_an_absent_schema_field"
+      ],
+      "originalReason": "分析方案未完整绑定所有必需槽位：effects、uncertainty、decision 均缺少具体绑定，且存在不完整/不兼容问题。"
+    },
+    {
+      "claimId": "c9",
+      "errors": [
+        "finding.0.not_an_absent_schema_field",
+        "finding.1.not_an_absent_schema_field",
+        "finding.2.not_an_absent_schema_field"
+      ],
+      "originalReason": "限制声明未完整绑定所有必需槽位，且存在不完整/不兼容问题。"
+    }
+  ],
+  "capacityUnreviewed": {
+    "claimId": "c2",
+    "reason": "semantic_unresolved",
+    "detail": "完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。",
+    "executionState": "not_started",
+    "reviewTimeAdmission": null,
+    "reviewInputCapacity": {
+      "inputBytes": 34467,
+      "maxInputBytes": 32000
+    }
+  },
+  "actualRepairAdmission": {
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 17280,
+      "used": 26306
+    },
+    "actualOutputReservation": 4096,
+    "submittedRepairCalls": 0,
+    "correction": "Experimental edit output already reserved4096. Earlier commentary attributing this to a total-target output reservation was incorrect. Normal pool input limit remains genuinely exceeded."
+  },
+  "remainingIssues": [
+    "Hard workflow operation-rule error remains.",
+    "Exact bound rejections still demand paper evidence for proposed hyperparameters and a fixed device. Literal binding does not establish scientific correctness.",
+    "Complete review of c2 exceeded32KB even singly.",
+    "Mandatory repair input26306 exceeds available17280; structural priority not exercised by a real call.",
+    "Policy2 additionally defers capacity-unreviewed c2; controlled input still requires24779>24000. No automatic paid rerun."
+  ],
+  "boundary": "0/9accepted. Four invalid feedback rows were kept unreviewed, not approved. Latest real run uses priority1; priority2 has offline validation only."
+}

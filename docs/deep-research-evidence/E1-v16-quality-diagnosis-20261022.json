@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v16",
+  "sourceCommit": "55f771a3",
+  "independentCredit": 0,
+  "facts": {
+    "accepted": 0,
+    "rejected": 9,
+    "notDispatchedForCapacity": [
+      "c2",
+      "c6",
+      "c8"
+    ],
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 16580,
+      "used": 19568
+    },
+    "prospectiveHypothesis": "c1 model passed but its linked c8 analysis was not verified, so final dependency gate rejected it"
+  },
+  "actualDraftDefects": [
+    "c6 initializes all3DGS values in one10000x59 uniform tensor and NTC as an opaque1000-vector; actual representation architecture/state compatibility is not established.",
+    "c5 prose declares1000shared+30x100NTC+30x50stage2; typed budget only1000baseline and0/50group amounts, omitting whole-window NTC/stage2 scaling.",
+    "c7 lacks concrete view aggregation, device/synchronization/timing region and complete storage accounting; proposes additive-parameter bytes rather than complete per-frame representation.",
+    "c9 hard absence guard rejects unsupported paper/author-wide missingness."
+  ],
+  "reviewDefectsOrMixedReasons": [
+    "c4 own quotes explicitly name flame salmon within N3DV; failed review incorrectly demands original camera IDs/frame indices for proposed split/window despite prechecks and existing named-mode policy.",
+    "c3 text/config hasAdam lr0.001/betas/epsilon and otherInterventions:none; blanket missing-optimizer/other-intervention language is inaccurate. Opaque NTC initialization remains a valid defect.",
+    "c5 clearly says50steps per frame and shared optimizer hasactual values; those alleged omissions are inaccurate, but total-cost mismatch is real."
+  ],
+  "next": [
+    "Reorganize fixed review instructions and shared definitions so complete target evidence fits; preserve all necessary configuration and own-source permissions.",
+    "Generate compatible explicit model states, shared temporal preparation, whole-window budgets and complete measurements before another paid case.",
+    "Calibrate named-data and concrete-choice review against current policy without converting unreviewed/defective claims to passes."
+  ],
+  "boundary": "Manual diagnosis from original draft, exact request reconstruction and saved raw verdicts. Not a new automated/scientific pass; no old result upgraded."
+}

@@ -1,0 +1,33 @@
+{
+  "allOther103TasksExact": true,
+  "taskCount": 104,
+  "all382PriorRunsExact": true,
+  "appCallRows": 9579,
+  "oldPausedUnknown": 15,
+  "active": 0,
+  "materials": [
+    {
+      "key": "compact_v1",
+      "pdfId": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+      "ragChunkCount": 83,
+      "ragIndexed": true,
+      "questionReady": true,
+      "processingStatus": "ready",
+      "aiAnalysisStatus": "not_requested"
+    },
+    {
+      "key": "compressed_v1",
+      "pdfId": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf",
+      "ragChunkCount": 68,
+      "ragIndexed": true,
+      "questionReady": true,
+      "processingStatus": "ready",
+      "aiAnalysisStatus": "not_requested"
+    }
+  ],
+  "componentCallsInApplication": 0,
+  "contentAccepted": false,
+  "boundary": "Normal PDF ingestion and preservation only; no scientific comparison or independent acceptance.",
+  "newD2RunUnchangedAfterComponents": true,
+  "all383RunsExactAfterComponents": true
+}

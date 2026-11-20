@@ -1,0 +1,22 @@
+{
+  "case": "E1-v30",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldInputBytes": 23175,
+  "inputCap": 23513,
+  "new": {
+    "admitted": false,
+    "error": "Budget exhausted for repairEvidenceBytes: used 26139/23513"
+  },
+  "boundary": "Archived repair input admission replay only; no content acceptance.",
+  "sourceCommit": "cf5846ad",
+  "productionDefaultEnabled": false,
+  "fullRegression": {
+    "passed": 4205,
+    "seconds": 236.08,
+    "warnings": 1,
+    "scope": "Input3 development configuration; production default subsequently retained at input2 and 75 focused checks rerun."
+  },
+  "defaultRetainedFocusedPassed": 75,
+  "legacyReplayScripts": 38
+}

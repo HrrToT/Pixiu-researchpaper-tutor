@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v40",
+  "sourceCommit": "cfdf9c6f",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 2,
+  "requests": [
+    {
+      "actualFingerprintMatched": true,
+      "callId": "f350c70f0fee150be48cc90e2028515a",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 26156,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "697a8432ad1008b7d87fcd6a3e3e1df6",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 28991,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c6",
+        "c4",
+        "c5",
+        "c7"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 26156,
+      "fixedInputBytes": 20098,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 26156,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 28991,
+      "fixedInputBytes": 22933,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 28991,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25189
+  },
+  "boundary": "Exact envelope10 request reconstruction with archived failed verdict fixtures. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB."
+}

@@ -1,0 +1,91 @@
+{
+  "scope": "Actual saved synthesis-input replay, no generated answer or content approval",
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "originalReceiptUnchanged": true,
+  "variants": [
+    {
+      "planningVersion": 1,
+      "operationPolicy": false,
+      "inputBytes": 23880,
+      "actualLimitBytes": 24000,
+      "suppliedRows": 12,
+      "distillationPremiseIncluded": false,
+      "distillationContextRequired": false,
+      "missingBundles": [],
+      "suppliedEvidenceIds": [
+        "ev_bfe320ac0ba668061c4cccdf3baec27830172d72b50f56f5293d348e82510944",
+        "ev_bc4b2c80d7a88bce436c0a6638869174416facbbbb6dd63001c579c1566515be",
+        "ev_87834d98d7b40634bde0fe39a9e8892e5b258437640483fc9f3f1d69b7a7a448",
+        "ev_b966f67e6e1e72a1eac0e7dae51294dfd69c074a3daa5f2d254351c8b2ca7f6c",
+        "ev_d7936974cf4289e3b8f0a69897f68738abe5eb39578892186c8e3cbf2f061cd9",
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+        "ev_a0302d0302a67e594085543424531d0101c70cdd8dd112757d67d74c4ed82af5",
+        "ev_a3991ce2eef139b17245ad17abbc863d50927d5b6644b5543e72d530bc00e510",
+        "ev_b4fb09c9274bc9115423ef1531639fad5a07d2ce288b620e1ecce85aa2103ffc",
+        "ev_32d562049c7fba60dd0bc4ae85761610dcd716ee881a402c538dd8a5d4d1161f",
+        "ev_4ed3d6244e49779328830e07a71630f0eedf38a39947b55b33e7328d399fdde8",
+        "ev_d96326656b1f1c5790f82b184457d09392cc80f6ba01b3a8dae4a02f4e3af366"
+      ]
+    },
+    {
+      "planningVersion": 2,
+      "operationPolicy": true,
+      "inputBytes": 31993,
+      "actualLimitBytes": 32000,
+      "suppliedRows": 20,
+      "distillationPremiseIncluded": true,
+      "distillationContextRequired": true,
+      "missingBundles": [],
+      "suppliedEvidenceIds": [
+        "ev_a0302d0302a67e594085543424531d0101c70cdd8dd112757d67d74c4ed82af5",
+        "ev_32d562049c7fba60dd0bc4ae85761610dcd716ee881a402c538dd8a5d4d1161f",
+        "ev_0f4d41eca89a2face20c7c32ab49a102177cb95e5b97d4285f8cbf691e6c5f92",
+        "ev_85e03817c26f97636cc048f5007044a44e89c7279fc6af8c8be09fd5ac1c245d",
+        "ev_bfe320ac0ba668061c4cccdf3baec27830172d72b50f56f5293d348e82510944",
+        "ev_bc4b2c80d7a88bce436c0a6638869174416facbbbb6dd63001c579c1566515be",
+        "ev_87834d98d7b40634bde0fe39a9e8892e5b258437640483fc9f3f1d69b7a7a448",
+        "ev_b966f67e6e1e72a1eac0e7dae51294dfd69c074a3daa5f2d254351c8b2ca7f6c",
+        "ev_d7936974cf4289e3b8f0a69897f68738abe5eb39578892186c8e3cbf2f061cd9",
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+        "ev_a3991ce2eef139b17245ad17abbc863d50927d5b6644b5543e72d530bc00e510",
+        "ev_b4fb09c9274bc9115423ef1531639fad5a07d2ce288b620e1ecce85aa2103ffc",
+        "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+        "ev_4ed3d6244e49779328830e07a71630f0eedf38a39947b55b33e7328d399fdde8",
+        "ev_d96326656b1f1c5790f82b184457d09392cc80f6ba01b3a8dae4a02f4e3af366",
+        "ev_64cc3c7ad243d28e212d3df7aefe9c20638acf138d484a0ad7bf4e35df2d05b2",
+        "ev_990d6431c26072bb7946cb16bd065815b1ba3fbe22f94b3452117e8f915aa1af",
+        "ev_dc74e1a73893abcf98528e6b2e04c4f81fcbf4defa23e562302eea3bbe159a7e",
+        "ev_d66af49892484dace00e70482772a66c72d840fe9dbad2560b9670060602d364",
+        "ev_0d651f62558b48d235f3b2f911f3614a1c88ee94bf4d638b510d08df1a04406e"
+      ]
+    }
+  ],
+  "asOf": "2026-11-17",
+  "relatedTests": 146,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit": "tmp/comparison-operation-policy-v2-final-20261117.xml",
+  "runtimeLoaded": false,
+  "scientificContentAccepted": false,
+  "fullRegressionCoversCandidate": false,
+  "runBudgetUnchanged": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "finalAnswerAuditLimitUnchanged": 24000,
+  "raw": "tmp/comparison-operation-input-policy-v2-final-20261117.json",
+  "boundary": "All acquired premise groups fit; not full-paper acquisition completeness or model quality. Real application state/receipts unchanged. New server-selected planning policy2 only; legacy/v1 retains selection/window. Atomic reserve and unknown protection are unchanged.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_intent.py": "835fb6727de31e07d4c9b97bf0dd90e5d8cf7d8a9d996e60f079f13dbdc8cf91",
+    "ai-service-python/services/deep_research/facade.py": "7f603917bdc786bdb2c269e05fca52936475707364826619bd73859241c9af49",
+    "ai-service-python/services/deep_research/graph.py": "05e678b3edb94462009bda24caaa84dd5a4428fda16441f94900cc33cd8d74f0",
+    "ai-service-python/services/deep_research/method_navigation.py": "50ed5e0398f0cafc6295aa4b615c74b3bba5c42e72a8b8cdf19c231d73e7edb8",
+    "ai-service-python/services/deep_research/synthesis_evidence.py": "d55a563ce8121e850c9baf60c8f8c72dabf5da7fd457bc35433d9252213a4624",
+    "ai-service-python/services/deep_research/tools.py": "bbda3e39e9af00f2c949bda6e3400bb431dd5f0b97bc9a8facbcfa72e372703b",
+    "ai-service-python/tests/test_deep_research_comparison_operation_input.py": "fe71966bfed32ceddebeb41671c1a97e555b290548fe26db3297b7e446f8da23",
+    "ai-service-python/tests/test_deep_research_comparison_intent.py": "7c2fcf8480c939766f66217072af1b2dd7ca41fcb1fb125bc40de0d6b3056173"
+  }
+}

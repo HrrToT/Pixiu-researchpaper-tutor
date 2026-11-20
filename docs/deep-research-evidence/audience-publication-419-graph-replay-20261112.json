@@ -1,0 +1,33 @@
+{
+  "case": "AD1N-v9",
+  "mode": "counterfactual short wording fixture with actual saved synthesis, no factual approval",
+  "nodes": [
+    "synthesize",
+    "synthesize_audience"
+  ],
+  "visibleCharacters": 223,
+  "limit": 300,
+  "budget": {
+    "totalCharacters": 300,
+    "fixedCharacters": 104,
+    "layoutCharacters": 22,
+    "reservedCharacters": 126,
+    "editableCharacters": 174,
+    "protectedClaimIds": [
+      "c2"
+    ],
+    "editableClaimIds": [
+      "c1"
+    ]
+  },
+  "fixedC2Exact": true,
+  "citationsKindsObligationsExact": true,
+  "noCompactionDispatch": true,
+  "rawPayloadUnchanged": true,
+  "rawPayloadSha256": "f73769697a78b95c02ae45a1a4b3b52f2da77707f136dbada8d3981e4c9c6eb9",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Demonstrates normal graph wiring and budget use for a supplied short edit. This fixture is not a generated or scientifically verified answer."
+}

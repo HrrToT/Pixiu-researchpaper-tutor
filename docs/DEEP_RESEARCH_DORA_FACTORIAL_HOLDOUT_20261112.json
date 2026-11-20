@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T11:45:17.186998+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "lora_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-adaptation-review-20261112\\2106.09685v1.pdf",
+      "sha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "bytes": 1502998,
+      "pageCount": 20,
+      "arxiv": "2106.09685v1",
+      "reference": "https://arxiv.org/abs/2106.09685v1"
+    },
+    "dora_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-adaptation-review-20261112\\2402.09353v1.pdf",
+      "sha256": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876",
+      "bytes": 604050,
+      "pageCount": 19,
+      "arxiv": "2402.09353v1",
+      "reference": "https://arxiv.org/abs/2402.09353v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {},
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "hardFailures": [
+      "用四个名字替代四个可执行且完整的因素组合，或在不同组同时改变rank、目标模块、数据/步数等未声明混杂。",
+      "把分母停止梯度写成从前向移除归一化、始终固定分母数值，或停止低秩方向增量本身的梯度。",
+      "把冻结幅值设为零导致初始模型改变，或未定义可使四组一致的初始化和参数掩码。",
+      "把论文已有24.4%显存消融数字当四组预期保证，误归因相对LoRA或任意设备，或声称交互/新颖性已被证实。",
+      "不同预算下直接归因质量差异，只跑部分组却声称完整交互；把不显著当零效应，拿测试集调参后作确认性结论。",
+      "关键事实/数值/来源/条件严重错误，方案无法判断主效应及交互，或超过18调用/100000Token/360秒；未知、未审核或字段齐全不算通过。"
+    ],
+    "sourceAnchors": [
+      {
+        "paper": "lora_v1",
+        "pages": [
+          3,
+          5
+        ],
+        "checks": "Base weights frozen, low-rank increment trained, A random and B zero initialization; does not by itself prove the new DoRA factorial hypothesis."
+      },
+      {
+        "paper": "dora_v1",
+        "pages": [
+          4,
+          5,
+          6,
+          12,
+          13
+        ],
+        "checks": "Eq5 magnitude/direction initialization, denominator detachment affects gradient not forward updates, existing memory/accuracy ablation versus itself, 7B commonsense task setup and hyperparameter columns."
+      }
+    ],
+    "sourceCautions": [
+      "DoRA Table7 compares trained-magnitude DoRA with/without detachment, not the proposed full four-cell experiment or relative-to-LoRA memory advantage.",
+      "Reported batch size and accumulation need explicit proposed physical/effective interpretation; do not assume ambiguous conventions are established facts.",
+      "Proposed fixed settings, seeds, resource ceiling, thresholds and formulas are experimental decisions, not source results. Do not require one preselected hardware/precision/seed count as a gold answer.",
+      "An admissible implementation may use equivalent transposed tensor conventions or stable normalization if all cells have consistent semantics and initialization; no requirement to reproduce evaluator code.",
+      "No GPU training is performed by this research case. Executability means a scientifically complete reproducible proposal, not a fabricated executed experiment."
+    ],
+    "sharedMaterialDependency": {
+      "cases": [
+        "H2-ADAPT",
+        "H4-LORA-VERSIONS"
+      ],
+      "materials": {
+        "lora_v1": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+        "dora_v1": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      "rule": "Definitions frozen before model execution; material-informed engine tuning requires re-auditing/retiring dependent held-out cases. Shared-source cases are not statistically independent."
+    },
+    "independence": "Materials were evaluator-only H2 preparation, with prior task/run/index/cache/history checks. Current named receipts still absent and production payload IDs/call ledger unchanged. No application import or model execution; no tuning using this question.",
+    "scope": "Original H5 new experimental entry, retaining full four-group controls, budget, execution, measurements and independent/interaction boundaries. All six dimensions apply. Not a substitute for D3 development quality or H6 budget-failure behavior.",
+    "goldInputBoundary": "Only question/material scope/budget enter application intent. Detailed criteria and reviewer anchors stay evaluator-only."
+  },
+  "cases": [
+    {
+      "id": "H5-DORA-FACTORIAL",
+      "split": "holdout",
+      "materials": [
+        "lora_v1",
+        "dora_v1"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "仅依据当前两篇论文，研究DoRA中“幅值可训练”和“归一化分母停止梯度”是否分别及交互影响任务效果与训练显存。以DoRA论文的LLaMA-7B常识推理设置为依据，设计完整2×2四组对照实验方案。说明每组改什么、保留什么，初始化和同预算控制，数据与划分，指标、执行与重复，单独作用和交互的判断，以及资源不足时如何处理。必要的新选择或假设请标明，不用外部资料。这只是待执行方案，不要宣称已有结果或保证新颖。",
+      "required": [
+        "提出有文献依据、可被结果否定的假设；区分论文已报告的单因素消融与本方案新提出的幅值训练×分母梯度交互问题，不声称新组合已验证或保证新颖。",
+        "明确四个唯一组合：幅值训练/冻结×分母梯度保留/停止。四组均训练低秩方向增量、冻结同一基座，不能把其中一组偷偷换成不同模型、rank或完全不训练。",
+        "给出可实现的前向/梯度定义及训练参数掩码；停止梯度只影响反传，分母仍随方向增量重算，冻结幅值固定在初始范数而非零。",
+        "四组具有相同初始有效权重和配对随机种子/低秩初始化；说明可训练幅值参数的微小差异是待研究因素，不通过改变rank或目标模块来强行配平参数量。",
+        "明确数据版本、八任务训练合并及逐任务评估/划分、基座和目标模块、rank/缩放/优化器/调度/精度/长度等关键设置；引用原设定并明确新选择，未知细节可给待确认项及确认方法，不能混用7B/13B或VL-BART配置。",
+        "给出可执行的同预算控制：每组训练步/样本或token/epochs、物理batch与累积及有效batch的定义、重复数量、总运行数和资源估算/上限；允许用实测数据规模代入明确步数公式，不要求伪造数据量或耗时。",
+        "执行包含前向一致性/梯度掩码检查、四组共同小规模可行性与显存预检、正式配对重复、固定验证/测试协议及记录；数据选择或调参不能窥视测试结果。",
+        "同时量化任务效果和峰值训练显存，保持显存测量设备/精度/batch/序列长/阶段一致，必要时记录时间；不得把论文报告显存当新四组实测。",
+        "给出主效应、条件效应和差中差交互的计算或等价可执行分析；用配对重复/不确定性与事先声明的实用阈值判断，不能以两两比较或未显著当无交互证明。",
+        "说明OOM/资源不足、失败和预算耗尽如何处理：统一调整全组并重定义比较或停止并标不充分，不仅降低最耗资源组训练量；缺失组不能支持完整主效应/交互结论。",
+        "简洁完整地组织假设、四组、共享条件、步骤、指标、判断和局限，关键机制原文可回查，拟议选择与既有事实清楚区分。"
+      ],
+      "forbidden": [
+        "用四个名字替代四个可执行且完整的因素组合，或在不同组同时改变rank、目标模块、数据/步数等未声明混杂。",
+        "把分母停止梯度写成从前向移除归一化、始终固定分母数值，或停止低秩方向增量本身的梯度。",
+        "把冻结幅值设为零导致初始模型改变，或未定义可使四组一致的初始化和参数掩码。",
+        "把论文已有24.4%显存消融数字当四组预期保证，误归因相对LoRA或任意设备，或声称交互/新颖性已被证实。",
+        "不同预算下直接归因质量差异，只跑部分组却声称完整交互；把不显著当零效应，拿测试集调参后作确认性结论。",
+        "关键事实/数值/来源/条件严重错误，方案无法判断主效应及交互，或超过18调用/100000Token/360秒；未知、未审核或字段齐全不算通过。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H5-DORA-FACTORIAL": "f8108b23befd7bae4977db2c65fe94b9c29c40adad02a62f18b5c654348a8ca7"
+  }
+}

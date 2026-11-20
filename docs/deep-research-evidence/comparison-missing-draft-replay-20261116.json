@@ -1,0 +1,16 @@
+{
+  "scope": "Actual failed D2-v7 payload replay through verification and publication with closed adapters",
+  "originalRunId": "dr_run_8611ceebde8756818fd9fbf5d6d05176",
+  "originalResultUnchanged": true,
+  "evidenceRetained": 29,
+  "acceptedClaims": 0,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "publicationOutcome": "inconclusive",
+  "auditStatus": "invalidated_comparison_presentation",
+  "relatedTests": 68,
+  "fixtureResult": "No missing-draft exception; preserved gaps and acquired evidence",
+  "scientificContentAccepted": false,
+  "fullRegression": "Pending current-source full suite; previous 9024 result predates missing-draft fix",
+  "rawPayloadSha256": "610ed23349e28a0b8e75db7a944052227147e819d1ec9570490f9552d41b9686"
+}

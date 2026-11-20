@@ -1,0 +1,47 @@
+{
+  "case": "D2-VQ-v1-v8",
+  "runId": "dr_run_6724066c597453569aea8e6cda495339",
+  "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "outcome": "none",
+  "elapsedSeconds": 360.0,
+  "totalModelRequests": 12,
+  "succeededSettled": 11,
+  "knownReportedTokens": 52991,
+  "unsettledReservedTokens": 30955,
+  "budgetTokensIncludingUnknownReservation": 83946,
+  "unknownCallIds": [
+    "fc9e35a90a4a515f64ca52510c8b707d"
+  ],
+  "unknownArgsDigests": [
+    "ae5c0d8b13ba5c3a2cd68eaa485327e294e2c8150bc73b5cd798c617b49af834"
+  ],
+  "cellCount": 8,
+  "draftClaims": 9,
+  "persistedAcceptedClaims": 0,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "requestReplayed": false,
+  "defaultRuntimeRestored": true,
+  "restorationProof": "deep-research-evidence/comparison-v8-default-restored-20261116.json",
+  "contentReviewBeforeWholeAnswerVerification": {
+    "status": "not_accepted",
+    "issues": [
+      "Source-specific obligations form separate rows even when referring to the same requested axis.",
+      "Mechanism/cost goals are combined and the second-paper point does not explain its main quantization mechanism or cost.",
+      "Fairness and recommendation cells repeat headline results rather than supplying the required comparison judgement.",
+      "No final whole-answer coverage audit completed."
+    ],
+    "boundary": "Draft-level scope/readability diagnosis only; the unknown request and remaining scientific verdicts are not inferred."
+  },
+  "next": "Preserve v8 unknown without replay. Finish and verify independent point-review time admission, then restructure shared comparison axes/joint judgements and whole-case capacity before any other real development case. Do not bypass prior-case settlement by renaming this case.",
+  "rawSha256": {
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v8.json": "57df18f7eb46bc47d7544a5fffcf62376b5667723ba9b9eda702a48f51337ad6",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v8.payload.json": "743659587b2e03a195eca6d07e718b28aa3285c96095b28351e62b4ca34218da",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v8.calls.json": "95e3b27a68f586eb86f9d12189181632edcaaa922d13de8944ad14f92179b97d",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v8.result.json": "d97d1b1a403e38c780f5b7e56714c5faacf457b02e7394a0e80711e0957cd854",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v8.execution.json": "15d3ac442869e1cbeac24acd2bf3a5ba21a4540abe14dfeaee81bb7b513c1f7b"
+  }
+}

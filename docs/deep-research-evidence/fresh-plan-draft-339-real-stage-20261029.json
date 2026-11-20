@@ -1,0 +1,172 @@
+{
+  "component": "new current plan plus settled acquired source generation/verification; no retrieval/publication",
+  "version": "339 before inference gate correction",
+  "planSourceSha256": "37010ecad7cc6458f9d4c353e81365d9dc21ba4e30021167ea92490817a152b7",
+  "payloadSha256": "282be465beb3ce5c7105cb0432aaa0e9705c71c31b9eaf904d65d91790c3260d",
+  "providerCalls": 7,
+  "tokens": 43766,
+  "elapsedSeconds": 146.255,
+  "allSettled": true,
+  "noRetry": true,
+  "initialClaims": [
+    {
+      "claimId": "c1",
+      "text": "据表1，在Mip-NeRF 360与Tank and Temple上，LightGaussian压缩模型与原始3D-GS的PSNR/SSIM/LPIPS差距小，说法成立（有界推断）。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1",
+        "ob_2"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "PSNR↑",
+          "value": "27.21"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "SSIM↑",
+          "value": "0.815"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "LPIPS↓",
+          "value": "0.214"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "PSNR↑",
+          "value": "27.13"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "SSIM↑",
+          "value": "0.806"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "LPIPS↓",
+          "value": "0.237"
+        }
+      ]
+    },
+    {
+      "claimId": "c2",
+      "text": "已报告设置：LightGaussian（Ours）（评估数据集：Mip-NeRF 360；评估数据集：Tank and Temple）。尚不能据此确认LightGaussian压缩模型相对原始3DGS的“图像质量接近（PSNR/SSIM/LPIPS差距小）”在其他真实世界大规模场景中普遍成立。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": []
+    }
+  ],
+  "originalMachineAccepted": 2,
+  "originalMachineCoverageGaps": 0,
+  "postCorrectionLocalRecheck": {
+    "candidates": [
+      {
+        "claimId": "c2",
+        "text": "已报告设置：LightGaussian（Ours）（评估数据集：Mip-NeRF 360；评估数据集：Tank and Temple）。尚不能据此确认LightGaussian压缩模型相对原始3DGS的“图像质量接近（PSNR/SSIM/LPIPS差距小）”在其他真实世界大规模场景中普遍成立。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+          "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "unverified_table_cell",
+        "availableTableReferences": [
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rows": [
+              {
+                "rowNumber": 7,
+                "method": "Compact 3D-GS [37]"
+              },
+              {
+                "rowNumber": 8,
+                "method": "3D-GS [16]"
+              },
+              {
+                "rowNumber": 9,
+                "method": "3D-GS  *  [16]"
+              },
+              {
+                "rowNumber": 10,
+                "method": "Ours"
+              }
+            ],
+            "groups": [
+              {
+                "groupIndex": 0,
+                "label": "Mip-NeRF 360 Datasets",
+                "metrics": [
+                  "FPS",
+                  "Size",
+                  "PSNR",
+                  "SSIM",
+                  "LPIPS"
+                ]
+              },
+              {
+                "groupIndex": 1,
+                "label": "Tank and Temple Datasets",
+                "metrics": [
+                  "FPS",
+                  "Size",
+                  "PSNR",
+                  "SSIM",
+                  "LPIPS"
+                ]
+              }
+            ]
+          }
+        ],
+        "detail": "tableBindings必须指向本条自身原文的真实单元格；rowNumber是源行号，不是所选行的数组下标。推算值不能伪装为原表单元格。"
+      }
+    ]
+  },
+  "actualOriginalCellChecks": {
+    "c1": "unverified_table_cell",
+    "c2": null
+  },
+  "contentAcceptance": "failed; literal metric headers not bound; pre-correction gate omission invalidates original acceptance",
+  "sourcePayloadAndClaimsUnchanged": true,
+  "exactProductionPreservation": true,
+  "productionPublish": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "correctionReplayProviderCalls": 0
+}

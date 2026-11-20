@@ -1,0 +1,26 @@
+{
+  "sourceStage": "compaction-320 saved scope-boundary response",
+  "newPromptVersion": "dr-v2.20261028.321",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "legacyValidationErrors": [
+    "scope_expression_premises_not_bound"
+  ],
+  "newBindingValidationErrors": [],
+  "conflictingQuoteErrors": [
+    "scope_expression_premises_not_bound"
+  ],
+  "entailedBoundaryErrors": [
+    "scope_boundary_entailment_unresolved"
+  ],
+  "ownSourceAliasRestored": true,
+  "originalPayloadUnchanged": true,
+  "originalPayloadSha256": "32f2e4ec454040ac277d2c081ef1c5a6c6d5b6e58c0d8da58f8ab6570ac18063",
+  "rawCallsSha256": "37c2277445740f80f56d888deeee104c40a03efe8978846e0cdea2537eed91cd",
+  "boundaryResponseSha256": "611e40080692e5e54b082c7284cdf3f94152dd7599064066a5f3267496a70c74",
+  "scientificDecisionUnchanged": true,
+  "oldResultUpgraded": false,
+  "independentCredit": 0,
+  "boundaryOnly": true,
+  "rawReceipts": "tmp\\component-compaction-320-20261028\\receipt"
+}

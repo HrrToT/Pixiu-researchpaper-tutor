@@ -1,0 +1,49 @@
+{
+  "components": [
+    {
+      "directory": "tmp\\plan-correction-454-component-20261115",
+      "calls": 1,
+      "tokens": 4453,
+      "seconds": 6.829,
+      "finishReason": "stop",
+      "observation": "Known JSON structure corrected; short literal required source-context normalization, proven separately by final graph replay.",
+      "rawHashes": {
+        "tmp\\plan-correction-454-component-20261115\\captured.json": "d20711e54ba34322237931de309eb3a8c647aae5ca01415e175577020a555e11",
+        "tmp\\plan-correction-454-component-20261115\\intent.json": "8c74a41df9044993fa4f71267e00bc3399e75ed8a41d34bed973391f371d1c7e",
+        "tmp\\plan-correction-454-component-20261115\\result.json": "505fc751b5a616e01dc879011055d54eb276279ed3e88e8adf921fae881442f2",
+        "tmp\\plan-correction-454-component-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "directory": "tmp\\plan-correction-454-literal-component-20261115",
+      "calls": 1,
+      "tokens": 4544,
+      "seconds": 7.04,
+      "finishReason": "stop",
+      "observation": "Explicit length reminder still copied short literal; prompt variant not selected.",
+      "rawHashes": {
+        "tmp\\plan-correction-454-literal-component-20261115\\captured.json": "87b496d5bfeda686421b52ac0bc6c1a8c497399430e8ded3f70ff1af41533ec2",
+        "tmp\\plan-correction-454-literal-component-20261115\\intent.json": "ad95d64a2fcc841e872676d2c31c15c346aea0c0ef75107f3648e20f05d2955b",
+        "tmp\\plan-correction-454-literal-component-20261115\\result.json": "77d06503f779ea224e037ed711bc817b36052150e467e5406e2718ab850f6952",
+        "tmp\\plan-correction-454-literal-component-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "directory": "tmp\\plan-correction-454-regenerate-component-20261115",
+      "calls": 1,
+      "tokens": 3080,
+      "seconds": 9.215,
+      "finishReason": "stop",
+      "observation": "Regeneration without raw output still used short literals; prompt variant not selected.",
+      "rawHashes": {
+        "tmp\\plan-correction-454-regenerate-component-20261115\\captured.json": "3c47be43848fb8618fb7f0457bca6b86da82f8929c06d8f63975f9257a2bd7fb",
+        "tmp\\plan-correction-454-regenerate-component-20261115\\intent.json": "6bb6b84b643c32beb39a09041579197e6d6c7cf7c4dadf427f34b2ef32d8f017",
+        "tmp\\plan-correction-454-regenerate-component-20261115\\result.json": "01eb05e18068438a17257481b5ddb2cf6ec2c4a043c48877a06b5b81d712267e",
+        "tmp\\plan-correction-454-regenerate-component-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "applicationWrites": 0,
+  "scienceCredit": 0,
+  "deployed": false
+}

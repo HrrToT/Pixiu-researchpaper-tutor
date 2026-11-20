@@ -1,0 +1,18 @@
+{
+  "pdfTableColumnsHashMatches": true,
+  "pdfTableColumnsSha256": "fc6b1e5a17181f072dc31a67d2734ee5e9d060b7a29fd1e8daf0aac5037ea0f3",
+  "sourceCommit": "239ff9939e97f6ceb194aeb16b7892ed88c99fc8",
+  "baselineFile": "tmp/dr-acceptance-receipts/experiment-stage-458.before.json",
+  "fullRegression": "deep-research-evidence/experiment-stage-allocation-458-final2-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.458",
+  "allDeepResearchModuleHashesMatch": true,
+  "all105TasksExact": true,
+  "all386OldRunsExact": true,
+  "all9686CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

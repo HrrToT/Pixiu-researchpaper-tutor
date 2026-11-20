@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-27",
+  "caseId": "D1-v38",
+  "runId": "dr_run_ace9b033948658a19b6f1fda449ee5b5",
+  "promptVersion": "dr-v2.20261027.312",
+  "sourceCommit": "49da607dce138a30035bc5405f21a5ba35484d0d",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 147.264,
+  "modelCalls": 14,
+  "settledTokens": 67058,
+  "cost": null,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "verifiedClaimIds": [
+    "c1"
+  ],
+  "explicitObservedSettingProjectionActuallyUsed": true,
+  "reviewedSettingCount": 4,
+  "jointCompactionActuallyCalled": false,
+  "conditionsAndBoundaryPointStillRejected": true,
+  "scopeBoundaryReviewReached": false,
+  "coverageStatus": "checked",
+  "coverageDiagnosticSemanticsAccepted": false,
+  "manualFindings": [
+    "0.007 is present in the original PDF introduction on physical page 2; it is not evidence of contamination.",
+    "Table 1 has original and retrained baselines; SSIM differences 0.009 and 0.007 refer to different rows.",
+    "Saved and fresh direct GROBID TEI omit specific middle Introduction passages that are present on PDF page 2.",
+    "The initial setting value mixes dataset identity with a measured difference; the repaired size comparison was rejected for an invalid comparison-condition audit.",
+    "The final coverage diagnostic again suggests paper-wide unverified datasets/metrics despite supplied multi-dataset/multi-metric evidence."
+  ],
+  "originalWorkspaceObjectsRetained": {
+    "messages": 32,
+    "notes": 0,
+    "artifacts": 64
+  },
+  "originalMaterialsAndFocusRetained": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 28,
+    "ledgerRows": 7415,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  },
+  "sourceAudit": "pdf-tei-source-gap-20261027.json"
+}

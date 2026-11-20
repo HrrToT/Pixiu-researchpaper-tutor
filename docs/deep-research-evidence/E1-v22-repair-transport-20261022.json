@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v22",
+  "sourceCommit": "9f539cfe",
+  "actualRequestFingerprintMatched": true,
+  "targetIds": [
+    "c4",
+    "c5"
+  ],
+  "inputBytes": 23878,
+  "outputCap": 4096,
+  "inputCap": 24000,
+  "exactReturnedRevisionsReconstructed": true,
+  "responseCoverage": {
+    "version": 1,
+    "expectedTargetIds": [
+      "c4",
+      "c5"
+    ],
+    "submittedEditIds": [
+      "c4",
+      "c5"
+    ],
+    "unresolvedTargets": [],
+    "missingTargetIds": [],
+    "invalidTargetIds": [],
+    "unexpectedTargetIds": [],
+    "malformedEntries": 0,
+    "responseCoverageComplete": true,
+    "scientificApproval": false,
+    "expandedRevisionIds": [
+      "c4",
+      "c5"
+    ],
+    "unusableEditTargetIds": []
+  },
+  "repairEvidencePacketVersion": 1,
+  "laterBatchesStop": {
+    "batch": 1,
+    "kind": "repairPromptBytes",
+    "limit": 16382,
+    "used": 21683
+  },
+  "providerCallsDuringReplay": 0,
+  "productionWritesDuringReplay": 0,
+  "independentCredit": 0,
+  "boundary": "One settled repair request and exact returned revisions. Both downstream revisions rejected; other groups not sent due remaining budget."
+}

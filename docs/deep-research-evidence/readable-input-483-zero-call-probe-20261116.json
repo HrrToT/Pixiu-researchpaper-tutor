@@ -1,0 +1,18 @@
+{
+  "oldInputBytes": 31872,
+  "candidateInputBytes": 31971,
+  "inputLimitBytes": 32000,
+  "all17EvidenceAndContextValuesExact": true,
+  "fieldDictionaryRemoved": true,
+  "onlyTwoLosslessLayers": "string sharing then object-row tables",
+  "namedSourceAndContextKeysRetained": true,
+  "identicalStringSchemasShared": 21,
+  "nativeSchemaBytesSaved": 195,
+  "originalSchemaRestoredExactlyAfterReferenceExpansion": true,
+  "promptScientificInstructionsUnchanged": true,
+  "outputAndWholeRunBudgetsUnchanged": true,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "providerSchemaAccepted": false,
+  "contentEffectVerified": false
+}

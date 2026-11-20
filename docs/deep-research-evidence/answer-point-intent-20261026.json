@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "d0416bdc",
+  "promptVersion": "dr-v2.20261026.302",
+  "answerPointIntentContractVersion": 1,
+  "offlineChecks": {
+    "passed": 547,
+    "files": 35,
+    "elapsedSeconds": 48.75,
+    "sourceAndTestsStable": true,
+    "providerCalls": 0
+  },
+  "savedInputReplay": {
+    "inputSha256": "0d105a6b582fa8e4b1ddc7c397c02b5fd8972389b5e1b5478296396ef14865d8",
+    "oldPromptBytes": 23954,
+    "newPromptBytes": 23724,
+    "maxPromptBytes": 24000,
+    "privatePointCount": 2,
+    "originalClaimsUnchanged": true,
+    "noEvidencePermissionExpansion": true,
+    "allOriginalCitedEvidenceRetained": true,
+    "originalQuotesIncludedUnchanged": 3,
+    "optionalCandidateCountBefore": 13,
+    "optionalCandidateCountAfter": 12,
+    "originalRejectedProseNotCopied": true,
+    "sourceFileUnchanged": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "boundary": "Local request assembly only. One optional candidate is omitted by existing whole-row admission; all original citations and complete required quotes retained. No model or content acceptance."
+  },
+  "boundary": "Offline behavior, identity, old prompt preservation and local request assembly; not provider or scientific quality acceptance."
+}

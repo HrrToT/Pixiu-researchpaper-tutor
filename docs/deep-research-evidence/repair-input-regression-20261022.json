@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "d299a05d",
+  "promptVersion": "dr-v2.20261022.224",
+  "experimentRepairInputContractVersion": 1,
+  "requiresNativeSystemPolicy": 8,
+  "fullOffline": {
+    "passed": 3908,
+    "warnings": 1,
+    "seconds": 224.35,
+    "files": 216,
+    "log": "tmp/pytest-dr224-full.log",
+    "sha256": "ebb0adc374a4bd33f0559c647dec152a0e35a2eb8a4a23c36114ce44414345c1"
+  },
+  "focusedPassed": 106,
+  "focusedSeconds": 7.09,
+  "focusedOverlap": true,
+  "newTests": 33,
+  "legacyReplayScriptCount": 25,
+  "legacyActualFingerprintsMatched": 77,
+  "offlineProviderCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "controlledReplay": "repair-input-e1-v18-controlled-20261022.json",
+  "implementation": "Server-owned immutable repair input1 under native8 shares ONLY existing same-source/hash/chunk containment contexts, never joins. Exact literal quotations/windows/metadata and original claims/conditions/checks/permissions restored. Concise user envelope relies on frozen system prospective rules; same edit/coverage parsers,24KB input,4096 output and whole-run budget. Old pending input identities cannot switch encoding or resend.",
+  "boundary": "Full Deep Research offline regression and archived-input three-group callback capture only. Initial integrity probe incorrectly expected optional omitted contexts to equal full-reference contexts; final comparison requires exact mandatory rows and permits only the existing explicitly marked optional-context omissions. No new scientific approval or independent credit."
+}

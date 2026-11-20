@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v36",
+  "sourceCommit": "42100c8e",
+  "receivedJSONValid": true,
+  "declaredSchemaMismatch": {
+    "extraTopLevel": [
+      "pairingBudget"
+    ],
+    "missingProtocol": [
+      "pairingBudget"
+    ]
+  },
+  "apiFamily": "responses",
+  "declaredSchemaName": "private_experiment_columns_v1",
+  "purePrototype": {
+    "moveFrom": [
+      "pairingBudget"
+    ],
+    "moveTo": [
+      "protocol",
+      "pairingBudget"
+    ],
+    "exactRoundTrip": true,
+    "allValuesPreserved": true,
+    "passesExistingPrivateStructuralValidation": true
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Isolated reversible prototype only; no implementation or acceptance of the archived failed run. Source support, initialization, budgets and final content still require all original checks."
+}

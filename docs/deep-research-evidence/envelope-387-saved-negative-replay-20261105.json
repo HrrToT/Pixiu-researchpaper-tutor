@@ -1,0 +1,16 @@
+{
+  "promptVersion": "dr-v2.20261105.387",
+  "sourceCase": "X5R-v3",
+  "mode": "offline raw response transport and exact-target decoder replay; no new scientific review",
+  "rawCallsSha256": "19d44ea27fe52009dea0f1b2b5d12a31e5c19879062f34d9bc27964b64cb053f",
+  "oldReceivedShape": "invalid_wrapper",
+  "newReceivedShape": "single_factual_candidate",
+  "decodedStatus": "failed",
+  "explicitSupported": false,
+  "rawScientificFieldsPreserved": true,
+  "originalOutcomePreserved": "failed",
+  "originalFilesUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0
+}

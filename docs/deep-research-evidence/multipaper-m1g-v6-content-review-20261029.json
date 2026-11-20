@@ -1,0 +1,30 @@
+{
+  "case": "M1G-v6",
+  "runId": "dr_run_7148e6cf47355bffba0d043370090efc",
+  "machineOutcome": "partial",
+  "visibleCharacters": 310,
+  "limit": 400,
+  "semanticAccepted": 5,
+  "semanticRejected": 0,
+  "coverageStatus": "invalid_response",
+  "invalidScopeReason": "Overall checker bound five nonexistent empty conditions fields; actual sourceAccessSummary was not bound. Keep rejection.",
+  "humanSourceReview": {
+    "lightThreeStages": "supported by Methods chunk14 p3",
+    "catTriplaneHyperprior": "supported by proposed-method chunk8",
+    "catViewFrequencyMask": "supported by contribution chunk0",
+    "catRequiredChannelAutoregression": "missing from final answer; frozen required criterion NOT met",
+    "catSpatialContextMechanism": "not explicitly explained in final answer",
+    "comparison": "avoids a false claim that CAT never masks; preserving anchors wording needs careful scope; do not certify all mechanisms complete"
+  },
+  "acceptance": "not_passed",
+  "scores": {
+    "targetResponse": 3,
+    "evidenceSupport": 4,
+    "synthesis": 3,
+    "readability": 4
+  },
+  "independentCredit": 0,
+  "editingCallUsed": false,
+  "audienceRewriteUsed": true,
+  "next": "Fix missing-field coverage bindings without accepting fabricated fields; preserve shared sourceAccessSummary semantics; improve evidence-to-answer completeness for required spatial/channel context."
+}

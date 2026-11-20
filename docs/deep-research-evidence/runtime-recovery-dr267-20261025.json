@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-25",
+  "causeObserved": "Docker Desktop and Linux engine absent; first startup failed removing dockerInference AF_UNIX runtime endpoint",
+  "scope": "Runtime recovery only, no volume reset/container creation/source change",
+  "preservedRuntimeDirectories": [
+    "C:/Users/Lenovo/AppData/Local/Docker/run.stale-20261025-dr267",
+    "C:/Users/Lenovo/AppData/Local/docker-secrets-engine.stale-20261025-dr267"
+  ],
+  "onlyZeroByteReparseEndpointsVerified": true,
+  "dockerSettingsChanged": false,
+  "deletedFiles": 0,
+  "originalContainer": "academic-dr-runtime",
+  "originalVolume": "academic_dr_runtime_20261012",
+  "pythonStoreBackup": "tmp/dr267-runtime-recovery-20261025/python-store-before-start",
+  "preStartReadOnlyCheck": {
+    "ledgerRows": 6234,
+    "oldRuns": 250,
+    "active": 0,
+    "pausedUnknowns": 11
+  },
+  "java": {
+    "startedAt": "2026-10-25T15:18:14.5134777+08:00",
+    "jarHash": "F219E0ADD2012FCC939ED2BD18691AB0C9E5F454EB45C16387AFDBF7C463CD67",
+    "databaseBackup": "D:\\aiproj\\ai_project\\tmp\\dr267-runtime-recovery-20261025\\academic_db.mv.db",
+    "javaPid": 40908
+  },
+  "frontendStartedOnlyWhenPortFree": true,
+  "sourceCommit": "7936b526b41a2cdd349bc947b28f081278d34933",
+  "promptVersion": "dr-v2.20261025.267",
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "providerCallsForRecovery": 0,
+  "boundary": "Recorded engine failure and guarded reversible endpoint-directory preservation. No claim about why Desktop stopped, no new model request from recovery itself; E1-v57 tracked separately."
+}

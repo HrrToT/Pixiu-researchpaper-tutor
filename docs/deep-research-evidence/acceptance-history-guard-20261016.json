@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-16",
+  "sourceCommit": "9a9aeea",
+  "offlineTests": {
+    "passed": 56,
+    "seconds": 1.25
+  },
+  "before": {
+    "ledgerRows": 3208,
+    "ledgerSha256": "e87cb3930baaa3c22229f09d6e923c5ae3741e96d8eff666a511276b102328d8",
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "ledgerRows": 3208,
+    "ledgerSha256": "e87cb3930baaa3c22229f09d6e923c5ae3741e96d8eff666a511276b102328d8",
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "audits": [
+    {
+      "caseId": "D1",
+      "newSubmissionBlocked": false,
+      "error": null,
+      "authoritativeReads": [
+        {
+          "runId": "dr_run_5122b7d7cf8a5b1e8e8f676309942e33",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_c118246c5e6f5f74971b4b05bcf51c58",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_e86d32df0d225a4386cccbf12efd2459",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "partial",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_46d8b95868c65b8d9ca726c6fb3b62a7",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "partial",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_cafff17780ea59e4a158e39e2af4e465",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "partial",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_66ec09fffdfe5c8d9a97a0a2f1816d75",
+          "taskId": "dr-live-d1-20261012",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_5008da2e191c52bcb16480a34801993f",
+          "taskId": "dr-live-d1-20261012",
+          "status": "failed",
+          "outcome": "none",
+          "errorCode": "invalid_plan_response"
+        }
+      ]
+    },
+    {
+      "caseId": "D2",
+      "newSubmissionBlocked": true,
+      "error": "Prior attempt has no confirmed terminal outcome; do not bypass it with a new attempt.",
+      "authoritativeReads": [
+        {
+          "runId": "dr_run_ef4dfa99bb5358a8b4044b40e91e0bbc",
+          "taskId": "dr-live-d2-20261012",
+          "status": "completed",
+          "outcome": "inconclusive",
+          "errorCode": ""
+        },
+        {
+          "runId": "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+          "taskId": "dr-live-d2-20261012",
+          "status": "paused",
+          "outcome": "none",
+          "errorCode": "unresolved_unknown"
+        }
+      ]
+    }
+  ],
+  "boundary": "GET-only and SQLite mode=ro. No model calls or workspace/receipt mutations. D1 history is settled, not content-accepted; D2 legacy v11 remains unknown and blocks new submission."
+}

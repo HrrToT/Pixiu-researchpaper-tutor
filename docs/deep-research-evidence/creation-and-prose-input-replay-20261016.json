@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.103",
+  "workflowSourceCommit": "1a9f352",
+  "inputCase": "H5R-v15",
+  "rawSha256": "f17bbf258ed389c98c116162e7d27f9a9365c08d748bf7f51410d91efe8210f7",
+  "draftPromptBytes": 23840,
+  "availableEvidence": 7,
+  "visibleEvidence": 3,
+  "exactSceneAndOpacityMechanismVisible": true,
+  "originalDataClaim": {
+    "claimId": "c4",
+    "paperWideAbsenceRejected": true,
+    "internalAliasDetected": true,
+    "rejection": {
+      "claimId": "c4",
+      "reason": "absence_not_established"
+    }
+  },
+  "realModelCalls": 0,
+  "networkRequests": 0,
+  "historicalInputUnchanged": true,
+  "boundary": "Offline capacity and rejection evidence, not generated content acceptance. Empty draft response publishes no claim; no old run or quotation is modified.",
+  "initialReplayFailure": {
+    "reason": "New workflow instructions displaced the exact requested scene passage while generic benchmark tables were selected first.",
+    "beforePromptBytes": 23761,
+    "fix": "Rank explicit rare query labels and method operations before generic benchmark tables; keep source/paper balancing and full quotes.",
+    "assertionsPreserved": true
+  },
+  "sourceCommit": "20d1d06",
+  "tests": {
+    "passed": 1659,
+    "warnings": 1,
+    "seconds": 58.78,
+    "log": "tmp/pytest-dr103-full-final.log"
+  }
+}

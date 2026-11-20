@@ -1,0 +1,260 @@
+{
+  "case": "E1-v52",
+  "sourceCommit": "d5a9b889",
+  "promptVersion": "dr-v2.20261023.262",
+  "runId": "dr_run_699c27b8fdad568f874ba6c87e31cd7e",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRowsContractVersion": 2,
+  "metadata": {
+    "status": "invalid_response",
+    "errors": [
+      "timeline.phase.evaluation_updates",
+      "timeline.component.lifecycle"
+    ],
+    "finishReason": "stop",
+    "usage": {
+      "total_tokens": 8918,
+      "input_tokens": 7321,
+      "output_tokens": 1597
+    },
+    "rawBytes": 5187,
+    "rawSha256": "34a609d1d50205781b1409626152c1d962941487659aa3bc994cf3080809b75d",
+    "requestDigest": "c34e86f0c81d0c7be75e9f8dd2ff3d448c0546a974459a39f9fbb8485491213f",
+    "ledgerDigestMatches": true,
+    "completeWireDecodedExactly": true,
+    "components": 3,
+    "phases": 9
+  },
+  "diagnosticOnlyFeedback": {
+    "codes": [
+      "timeline.phase.evaluation_updates",
+      "timeline.component.lifecycle"
+    ],
+    "issues": [
+      {
+        "code": "timeline.phase.evaluation_updates",
+        "path": "/phases/6/updates"
+      },
+      {
+        "code": "timeline.phase.evaluation_updates",
+        "path": "/phases/7/updates"
+      },
+      {
+        "code": "timeline.phase.evaluation_updates",
+        "path": "/phases/8/updates"
+      },
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/0/lifecycle"
+      },
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/1/lifecycle"
+      },
+      {
+        "code": "timeline.component.lifecycle",
+        "path": "/components/2/lifecycle"
+      },
+      {
+        "code": "metadata.phase_refs.type",
+        "path": "/components/0/lifecycle/createAfter",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "baseline"
+      },
+      {
+        "code": "metadata.disposal.unknown",
+        "path": "/components/0/lifecycle/disposeAfter",
+        "expected": "exact declared phase ID or null",
+        "actual": "after_frame30_record"
+      },
+      {
+        "code": "metadata.phase_refs.type",
+        "path": "/components/1/lifecycle/createAfter",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "after_frame0_model"
+      },
+      {
+        "code": "metadata.disposal.unknown",
+        "path": "/components/1/lifecycle/disposeAfter",
+        "expected": "exact declared phase ID or null",
+        "actual": "after_frame_record"
+      },
+      {
+        "code": "metadata.phase_refs.type",
+        "path": "/components/2/lifecycle/createAfter",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "after_stage1_ntc_shared"
+      },
+      {
+        "code": "metadata.disposal.unknown",
+        "path": "/components/2/lifecycle/disposeAfter",
+        "expected": "exact declared phase ID or null",
+        "actual": "after_frame_record"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/0/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "baseline"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/1/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_frame0_model"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/2/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_train_stage1_ntc"
+      },
+      {
+        "code": "metadata.update.unknown",
+        "path": "/phases/2/updates/0",
+        "expected": "declared mutable state; new result values belong in outputs",
+        "actual": "transformed_3dgs"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/3/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_transform_3dgs"
+      },
+      {
+        "code": "metadata.read.unknown_state",
+        "path": "/phases/3/reads/0/state",
+        "expected": "declared state; calculated results use phaseId/outputId references",
+        "actual": "transformed_3dgs"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/4/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_spawn_stage2_gaussians"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/5/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_optimize_stage2_gaussians"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/6/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_transform_3dgs"
+      },
+      {
+        "code": "metadata.read.unknown_state",
+        "path": "/phases/6/reads/0/state",
+        "expected": "declared state; calculated results use phaseId/outputId references",
+        "actual": "transformed_3dgs"
+      },
+      {
+        "code": "metadata.readonly.updates",
+        "path": "/phases/6/updates",
+        "expected": "[]; calculated metrics are phase outputs, not state updates",
+        "actual": [
+          "arm_skip_psnr"
+        ]
+      },
+      {
+        "code": "metadata.update.unknown",
+        "path": "/phases/6/updates/0",
+        "expected": "declared mutable state; new result values belong in outputs",
+        "actual": "arm_skip_psnr"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/7/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_prune_stage2_gaussians"
+      },
+      {
+        "code": "metadata.read.unknown_state",
+        "path": "/phases/7/reads/0/state",
+        "expected": "declared state; calculated results use phaseId/outputId references",
+        "actual": "transformed_3dgs"
+      },
+      {
+        "code": "metadata.readonly.updates",
+        "path": "/phases/7/updates",
+        "expected": "[]; calculated metrics are phase outputs, not state updates",
+        "actual": [
+          "arm_execute_psnr"
+        ]
+      },
+      {
+        "code": "metadata.update.unknown",
+        "path": "/phases/7/updates/0",
+        "expected": "declared mutable state; new result values belong in outputs",
+        "actual": "arm_execute_psnr"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/8/after/0",
+        "expected": "one exact declared phase ID",
+        "actual": "after_render_arm_skip"
+      },
+      {
+        "code": "metadata.phase_refs.unknown",
+        "path": "/phases/8/after/1",
+        "expected": "one exact declared phase ID",
+        "actual": "after_render_arm_execute"
+      },
+      {
+        "code": "metadata.read.unknown_state",
+        "path": "/phases/8/reads/0/state",
+        "expected": "declared state; calculated results use phaseId/outputId references",
+        "actual": "arm_skip_psnr"
+      },
+      {
+        "code": "metadata.read.unknown_state",
+        "path": "/phases/8/reads/1/state",
+        "expected": "declared state; calculated results use phaseId/outputId references",
+        "actual": "arm_execute_psnr"
+      },
+      {
+        "code": "metadata.readonly.updates",
+        "path": "/phases/8/updates",
+        "expected": "[]; calculated metrics are phase outputs, not state updates",
+        "actual": [
+          "frame_metrics"
+        ]
+      },
+      {
+        "code": "metadata.update.unknown",
+        "path": "/phases/8/updates/0",
+        "expected": "declared mutable state; new result values belong in outputs",
+        "actual": "frame_metrics"
+      }
+    ],
+    "declaredPhaseIds": [
+      "prepare_frame0_model",
+      "train_stage1_ntc",
+      "transform_3dgs",
+      "spawn_stage2_gaussians",
+      "optimize_stage2_gaussians",
+      "prune_stage2_gaussians",
+      "render_arm_skip",
+      "render_arm_execute",
+      "record_frame_metrics"
+    ],
+    "declaredComponentIds": [
+      "frame0_model",
+      "stage1_ntc_shared",
+      "stage2_additional_gaussians"
+    ],
+    "scientificApproval": false
+  },
+  "originalValueUnchanged": true,
+  "initializationUnitsReached": false,
+  "publicDraftReached": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "providerRetries": 0,
+  "boundary": "This case emitted complete metadata but failed readonly/lifecycle checks. Feedback explains fields without repairing them or granting scientific approval.",
+  "diagnosticOnlyFeedbackOrigin": "Offline diagnostic helper; not invoked by the .262 runtime and not a repair."
+}

@@ -1,0 +1,11 @@
+{
+  "status": "aborted_environment_stall",
+  "sourceCommit": "5035b5a1",
+  "lastCompletedTests": 132,
+  "noCompleteSuiteClaim": true,
+  "reason": "Sandbox run stopped before asyncio route test completion. Same route test passed under normal local permissions in 2.87s; sandbox loopback socket access separately denied. No assertion failures observed before stop.",
+  "logSha256": "89fe9e0b6af2ab8ef0f021e302d0bf24b713519ff2086c7a0080cd2be3c00c8c",
+  "diagnosticJUnit": "tmp/receipt-environment-check-20261112.xml",
+  "diagnosticTestsPassed": 1,
+  "paidCalls": 0
+}

@@ -1,0 +1,22 @@
+{
+  "engineeringOnly": true,
+  "inputBytes": 31740,
+  "limit": 32000,
+  "requiredPlanAndAllocationRefs": 16,
+  "supplied": 17,
+  "originalRows": 18,
+  "allOriginalRequiredRefsRetained": true,
+  "allOriginalNonEvidenceFieldsExact": true,
+  "allSelectedRowsWholeAndExact": true,
+  "newGuidanceIncluded": true,
+  "modelCalls": 0,
+  "applicationWrites": false,
+  "scientificApproval": false,
+  "boundary": "Replay of public reviewed component input and original required-alias identities only; complete new full-run generation remains unverified.",
+  "reconstructedOriginalPromptExact": true,
+  "scriptSha256": "1cdc35b21d60a2ad6dfe1164e5397b402e3f86a9b216e4dc5510e2ffbdbc44d1",
+  "sourceCommit": "4b100b35",
+  "originalInput": "tmp/metadata-output-460-public-review-20261115/reviewed-request.json",
+  "sourceRunId": "dr_run_f1a0fae991515e55ad3a39074dfc71a3",
+  "inputSha256": "d0906ed59a26fa2e969b1fca26961dbe62ed12e201d9208eaf7c8bd326c090bf"
+}

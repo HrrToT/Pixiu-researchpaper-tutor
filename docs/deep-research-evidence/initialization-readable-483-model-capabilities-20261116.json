@@ -1,0 +1,33 @@
+{
+  "sourceEndpoint": "https://api.deepseek.com/models",
+  "queryType": "authenticated read-only model metadata",
+  "configuredModel": "deepseek-v4-pro",
+  "observedModels": [
+    {
+      "id": "deepseek-v4-pro",
+      "name": "DeepSeek-V4-Pro",
+      "supportedEffortLevels": [
+        "low",
+        "high",
+        "max"
+      ],
+      "defaultEffortLevel": "high"
+    },
+    {
+      "id": "deepseek-flash",
+      "name": "DeepSeek-V4.1-Flash",
+      "supportedEffortLevels": [
+        "low",
+        "high",
+        "max"
+      ],
+      "defaultEffortLevel": "high"
+    }
+  ],
+  "observationRecordedFromToolResponse": true,
+  "rawHttpResponseArtifactSaved": false,
+  "generationCalls": 0,
+  "materialsSent": false,
+  "configurationChanged": false,
+  "boundary": "Capability metadata only; no claim about quality, latency or response retrieval support"
+}

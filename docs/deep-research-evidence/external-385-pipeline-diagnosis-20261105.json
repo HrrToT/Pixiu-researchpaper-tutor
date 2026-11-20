@@ -1,0 +1,35 @@
+{
+  "promptVersion": "dr-v2.20261105.385",
+  "sourceCase": "X5R-v1",
+  "finding": "Body acquisition alone was insufficient: the original synthesis premise order spent capacity on repeated loss/background excerpts and omitted implementation.",
+  "initialAcquisitionFixed": true,
+  "initialSynthesisReplay": {
+    "inputBytes": 23995,
+    "evidenceCount": 44,
+    "lossVisible": true,
+    "implementationVisible": false,
+    "TSDFVisible": false,
+    "result": "failed local assertion; no provider invoked"
+  },
+  "finalSynthesisReplay": {
+    "inputBytes": 23970,
+    "evidenceCount": 47,
+    "representationLossAndImplementationVisible": true,
+    "proof": "external-385-confirmed-synthesis-input-replay-20261105.json"
+  },
+  "changes": "Literal section spans, two method pages plus author overview for conceptual explanations, and requirement-specific own-method premise priority. Explicit results/background requests remain neutral. Repeated verbs cannot dominate the application step.",
+  "unchangedBounds": {
+    "pagesPerAcquisitionTarget": 3,
+    "pageCharacters": 6000,
+    "readPassagesStandard": 12,
+    "synthesisInputBytes": 24000,
+    "modelCalls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "bodyTextNormalized": false,
+  "priorRunsMigrated": false,
+  "providerCalls": 0,
+  "independentCredit": 0,
+  "realContentVerified": false
+}

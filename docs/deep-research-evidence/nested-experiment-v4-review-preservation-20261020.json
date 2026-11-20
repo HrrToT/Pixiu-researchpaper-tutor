@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v4",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "controlledReviewContractVersion": 1,
+  "requests": [
+    {
+      "node": "verify_repair_design_config",
+      "oldCallId": "897336e6b88a7742d4f09ba29ca97169",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 26539,
+      "newInputBytes": 28208,
+      "sameActualTargetsContextsEvidenceAndOptions": true
+    },
+    {
+      "node": "verify_repair_design_science",
+      "oldCallId": "7dff427171fc7a717e129b785997201c",
+      "oldActualFingerprintMatched": true,
+      "oldInputBytes": 26101,
+      "newInputBytes": 27770,
+      "sameActualTargetsContextsEvidenceAndOptions": true
+    }
+  ],
+  "oldHardAndSemanticResultsPreserved": true,
+  "boundary": "Exact original two actual review fingerprints reproduced. Controlled new server contract adds only prospective/estimand/choice distinctions within the same32000byte window; targets, full context, quotes and call options unchanged. Reusing archived responses here is a MOCK, not fresh model/content/latency acceptance. E1-v4 inconclusive and old unknowns remain unchanged.",
+  "sourceCommit": "f78f6bee"
+}

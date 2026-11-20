@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v8",
+  "runId": "dr_run_31617e98c83f5e7baedbc4481111b2b6",
+  "parentRunId": "dr_run_56107afc748d54828af1a50e84eb5d62",
+  "sourceCommit": "6f6a7b92",
+  "promptVersion": "dr-v2.20261018.162",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "settledTokens": 22675,
+  "elapsedSeconds": 24.385,
+  "cost": null,
+  "actualCompactFactualRequestFingerprintMatched": true,
+  "repairArgsDigest": "1c61a7b3064771ad5f4b1cf863c93ec70a3d8b5a8dbdfcdb8a2c512753c33a95",
+  "presentationNormalizationReplayedExactly": true,
+  "presentationAudit": [
+    {
+      "claimId": "c1",
+      "originalText": "不同论文的FPS不能直接相除，因为测量条件不同：LightGaussian在自有平台重训基线（E1），而3DGS报告1080p下≥30fps（E14），未建立相同硬件与场景的受控对比。",
+      "originalConditions": {
+        "LightGaussian": "在自有平台重训基线（E1）",
+        "3DGS": "报告1080p下≥30fps（E14）",
+        "comparison": "未建立相同硬件与场景的受控对比"
+      },
+      "normalizedText": "不同论文的FPS不能直接相除，因为测量条件不同：LightGaussian在自有平台重训基线，而3DGS报告1080p下≥30fps，未建立相同硬件与场景的受控对比。",
+      "normalizedConditions": {
+        "LightGaussian": "在自有平台重训基线",
+        "3DGS": "报告1080p下≥30fps",
+        "comparison": "未建立相同硬件与场景的受控对比"
+      },
+      "removed": [
+        {
+          "field": "text",
+          "marker": "（E1）",
+          "offset": 46
+        },
+        {
+          "field": "text",
+          "marker": "（E14）",
+          "offset": 70
+        },
+        {
+          "field": "conditions.LightGaussian",
+          "marker": "（E1）",
+          "offset": 9
+        },
+        {
+          "field": "conditions.3DGS",
+          "marker": "（E14）",
+          "offset": 14
+        }
+      ]
+    }
+  ],
+  "semanticComparisonAuditProductionCalls": 1,
+  "actualSemanticVerdict": {
+    "claimId": "c1",
+    "status": "failed",
+    "reason": "The claim asserts that FPS cannot be directly compared because LightGaussian re-trained baselines on its own platform while 3DGS reports ≥30fps at 1080p, and no controlled comparison exists. E1 (LightGaussian) states re-training baselines on its platform for fair comparison, but does not provide FPS measurements or hardware details. E2 (3DGS) reports ≥30fps at 1080p, but does not specify hardware or scene. The evidence does not establish that the measurement conditions differ; it only shows that LightGaussian re-trained baselines and 3DGS reported a performance threshold. The claim's conclusion of non-comparability is an inference not directly supported by the evidence, as the evidence does not demonstrate differing hardware or scene conditions. Therefore, the claim fails.",
+    "comparisonAudit": {
+      "scope": "cross_study",
+      "alignment": "not_established",
+      "supportsClaim": false,
+      "premises": [
+        {
+          "evidenceId": "E1",
+          "quote": "We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison."
+        },
+        {
+          "evidenceId": "E2",
+          "quote": "We introduce three key elements that allow us to achieve state-of-the-art visual quality while maintaining competitive training times and importantly allow high-quality real-time (≥ 30 fps) novel-view synthesis at 1080p resolution."
+        }
+      ],
+      "differences": []
+    }
+  },
+  "oldDataPreservation": {
+    "oldLedgerPrefixUnchanged": true,
+    "newD5Rows": 7,
+    "allD5RowsSettled": true,
+    "parentPayloadUnchanged": true,
+    "previousTaskObjectsUnchanged": {
+      "notes": 0,
+      "messages": 18,
+      "artifacts": 36
+    },
+    "paperIdsAndMaterialHashesUnchanged": true,
+    "ledgerRowsImmediatelyAfterCase": 3855,
+    "activeImmediatelyAfterCase": 0,
+    "historicalUnknowns": 9
+  },
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairVerificationChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "The claim asserts that FPS cannot be directly compared because LightGaussian re-trained baselines on its own platform while 3DGS reports ≥30fps at 1080p, and no controlled comparison exists. E1 (LightGaussian) states re-training baselines on its platform for fair comparison, but does not provide FPS measurements or hardware details. E2 (3DGS) reports ≥30fps at 1080p, but does not specify hardware "
+      }
+    ]
+  },
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n- 为什么不同论文中的FPS不能直接相除：最终回答尚未完整回应这一问题\n\n</details>",
+  "findings": [
+    "Joint acquisition uses existing two-source premises without redundant fetch/extract calls.",
+    "Actual factual contract3 repair request matches its Provider fingerprint. Four own bracketed citation markers removed with originals retained; substantive different-conditions assertion is unchanged.",
+    "The actual independent comparison verifier correctly rejects the unsupported difference: alignment not_established, supportsClaim false, own exact quotations from both papers and no fabricated differences.",
+    "This proves live conservative semantic rejection, not generation quality or a positive comparison pass. No conclusion is published.",
+    "All seven calls settled once. Original3848ledgerprefix, parent payload/old task objects/material hashes and nine unknown identities preserved."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v8.json",
+      "sha256": "a9c7d4e55b5dea4c04da0c316aebcdeb3ad85f2c7c51642c240b1452cfdc6cc6"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v8.payload.json",
+      "sha256": "f3628d526db4b0aff358620f6f690e5e32218c097bae79f2d9aebc82ae959b46"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v8.calls.json",
+      "sha256": "20260b85291d3651a38fc49cedd0c844269c43faabbe68f2873404d41a6ed3c0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v8.result.json",
+      "sha256": "813a392c31fa26568a6ad5c3ce42e42d5e99f672770f4f421eb2da04a05f26c2"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v8.parent-before.json",
+      "sha256": "4af402de025688251a19c696ea8c466a26dc776a887c50a8d3f652dc265beb5a"
+    }
+  ],
+  "boundary": "Development content failure. Live semantic comparison audit and presentation journal exercised; no positive content, independent or overall completion credit."
+}

@@ -1,0 +1,56 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "attempt": 1,
+  "runId": "dr_run_37cd76290e445fff957e8bf15320b7a5",
+  "sourceCommit": "5d20e574d",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "modelRequests": 11,
+  "allSettled": true,
+  "newUnknownRequests": 0,
+  "reportedTokens": 57635,
+  "elapsedSeconds": 259.0,
+  "draftPoints": 7,
+  "acceptedPoints": 1,
+  "rejectedPoints": 6,
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 11921,
+    "used": 12184
+  },
+  "auditResponse": {
+    "normalizedContent": "null",
+    "rawRootKeys": [
+      "items",
+      "auditType",
+      "coherent",
+      "issues"
+    ],
+    "transport": {
+      "version": 1,
+      "requestedFormat": "json_object",
+      "expectedShape": "items",
+      "receivedShape": "invalid_wrapper"
+    }
+  },
+  "confirmedProblems": [
+    "Generated tableBindings used metricKey and quotation arrows while validator requires metric and exact packet header; correct rejection, conflicting/incomplete generation guidance.",
+    "Cost draft misattributed benchmark retraining as compression workflow; ordinary semantic check correctly rejected it.",
+    "Mechanism explanation omitted pruning/recovery/SH distillation despite relevant acquired passages.",
+    "Coverage raw JSON placed coherence fields beside items; strict wrapper rejected it, no historical response reinterpreted.",
+    "Repair exact source input exceeded its current capacity by263 bytes; no retry."
+  ],
+  "defaultRuntimeRestored": true,
+  "allPriorRunPayloadsExact": 396,
+  "allPriorTaskPayloadsExact": 105,
+  "pausedCountPreserved": 16,
+  "active": 0,
+  "v8UnknownPreserved": true,
+  "allCurrentLedgerRowsSha256": "270402ef60a62e83f83bd5efbb817c1579bc4e34b8e7dddbe610d9c393ab6509",
+  "rawPrefix": "tmp/dr-acceptance-receipts/D2-BASELINE-COMPRESSION-v1",
+  "automaticRetry": false,
+  "next": "Replay source binding schema and native coverage envelope offline. Do not auto-rerun; keep all scientific gates open."
+}

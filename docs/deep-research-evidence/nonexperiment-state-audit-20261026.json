@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-26",
+  "method": "read-only current SQLite payloads joined to latest canonical receipts",
+  "rows": [
+    {
+      "case": "D1",
+      "runId": "dr_run_70754e75a2c856bcadbaeafb3de0b036",
+      "promptVersion": "dr-v2.20261018.171",
+      "status": "completed",
+      "outcome": "complete",
+      "errorCode": "",
+      "verificationSummary": {
+        "accepted": 2,
+        "rejected": 0
+      },
+      "hasReport": true,
+      "independentApprovalNotInferred": true
+    },
+    {
+      "case": "H1F",
+      "runId": "dr_run_9490e39f37bc51f4803a4f0e7e73d881",
+      "promptVersion": "dr-v2.20261018.157",
+      "status": "completed",
+      "outcome": "complete",
+      "errorCode": "",
+      "verificationSummary": {
+        "accepted": 3,
+        "rejected": 0
+      },
+      "hasReport": true,
+      "independentApprovalNotInferred": true
+    },
+    {
+      "case": "H2F",
+      "runId": "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "promptVersion": "dr-v2.20261020.190",
+      "status": "paused",
+      "outcome": "none",
+      "errorCode": "unresolved_unknown",
+      "verificationSummary": null,
+      "hasReport": false,
+      "independentApprovalNotInferred": true
+    },
+    {
+      "case": "H3F",
+      "runId": "dr_run_1e5563cfebfd516db26e3c213b266ca1",
+      "promptVersion": "dr-v2.20261018.180",
+      "status": "completed",
+      "outcome": "complete",
+      "errorCode": "",
+      "verificationSummary": {
+        "accepted": 2,
+        "rejected": 0
+      },
+      "hasReport": true,
+      "independentApprovalNotInferred": true
+    },
+    {
+      "case": "H5F",
+      "runId": "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "promptVersion": "dr-v2.20261020.193",
+      "status": "paused",
+      "outcome": "none",
+      "errorCode": "unresolved_unknown",
+      "verificationSummary": null,
+      "hasReport": false,
+      "independentApprovalNotInferred": true
+    }
+  ],
+  "providerCalls": 0,
+  "writesToProduction": 0,
+  "independentCredit": 0,
+  "boundary": "Historical completion is not current-version or independent quality approval. Unknown H2F/H5F/E1 must not be bypassed by renaming cases or repeating them. Review completed reports and distinct research paths separately."
+}

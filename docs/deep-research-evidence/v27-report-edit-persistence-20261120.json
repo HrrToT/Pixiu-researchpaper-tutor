@@ -1,0 +1,20 @@
+{
+  "runId": "dr_run_e7f077f205f65179ac9240d60aa603d3",
+  "artifactId": "v2-research:dr_run_e7f077f205f65179ac9240d60aa603d3:latest:artifact",
+  "outcome": "partial",
+  "source": "Previously generated, saved v27 report copied from the live workspace with GET only",
+  "frontendCommit": "426247ff7",
+  "verifiedJarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+  "isolatedSaveHttpStatuses": [200],
+  "isolatedTaskRevision": 21,
+  "freshBrowserRead": true,
+  "originalReportUnchanged": true,
+  "citationAndRunIdentityUnchanged": true,
+  "priorBodyAvailable": true,
+  "isolatedRestartExact": true,
+  "originalWorkspaceUnchanged": true,
+  "liveWorkspaceWrites": 0,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "A copied real partial report exercised the browser editor and an isolated Java/H2 store; no new report or follow-up was generated."
+}

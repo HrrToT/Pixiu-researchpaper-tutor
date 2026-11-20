@@ -1,0 +1,29 @@
+{
+  "developmentArxivId": "2403.17888v3",
+  "runtimeContainer": "academic-dr-shared-experiment-candidate-20261117",
+  "advertisedCapabilities": {"externalAcademic": true, "fulltext": true},
+  "freshRuntimeProbe": {
+    "cacheDisabled": true,
+    "metadataVersionId": "arxiv:2403.17888v3",
+    "metadataAccessLevel": "abstract",
+    "pdfReachedParserAfterFormatAndSizeValidation": true,
+    "fulltextError": "公开全文页数、加密状态或解析结果不支持",
+    "pypdfInstalled": false,
+    "runCountBeforeAndAfter": 425,
+    "ledgerRowCountBeforeAndAfter": 11173
+  },
+  "sameBytesParserComparison": {
+    "source": "Existing development PDF cache, read only",
+    "contentSha256": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7",
+    "bytes": 24830200,
+    "runtimeFailureKind": "ModuleNotFoundError",
+    "isolatedImage": "pixiu-research-pdf-proof:20261120",
+    "isolatedNetworkDisabled": true,
+    "parsedPages": 13,
+    "parsedCharacters": 62436
+  },
+  "holdoutLocalCheck": {"exactV1CacheManifestExists": false, "runtimeResearchPayloadsWithArxivId": 0, "networkRequests": 0},
+  "runtimeRestarted": false,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

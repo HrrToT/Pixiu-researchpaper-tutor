@@ -1,0 +1,16 @@
+{
+  "papers": {
+    "arxiv:1412.6980": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    }
+  },
+  "indexIdentityHits": [],
+  "indexBodyTitleMentions": {
+    "Adam: A Method for Stochastic Optimization": 0
+  },
+  "indexRows": 1215,
+  "providerCalls": 0,
+  "writes": 0,
+  "scope": "Read-only candidate freshness before definition; body mentions are recorded separately from owned-paper acquisition or prior focal model cases."
+}

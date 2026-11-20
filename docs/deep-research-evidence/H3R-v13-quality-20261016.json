@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-16",
+  "case": "H3R-v13",
+  "runId": "dr_run_3921c42b1096547cb3747aa37a9a5d91",
+  "sourceCommit": "ef9f080",
+  "promptVersion": "dr-v2.20261016.105",
+  "status": "completed",
+  "outcome": "complete",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 6,
+    "maxModelCalls": 18,
+    "tokens": 24304,
+    "maxTokens": 100000,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "elapsedSeconds": 128.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "callsSucceeded": 17,
+  "modelCalls": 6,
+  "finalCoverageStatus": "checked",
+  "errorCode": "",
+  "sourcePayloadSha256": "8b8a4b86281949a909c24aef0301772eaa6f0a5e7343a7295706d8ba7c112e4e",
+  "raw": "tmp/dr-acceptance-receipts/H3R-v13.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H3R-v13.calls.json",
+  "review": {
+    "status": "not_accepted",
+    "scores": {
+      "目标回应": 4,
+      "证据支持": 4,
+      "条件完整": 3,
+      "综合价值": 3,
+      "可执行性": null,
+      "可读性": 3
+    },
+    "improved": [
+      "Own-method motivation and detailed training evidence are both retained and cited.",
+      "The external version is arxiv:2312.12337v4 and the report explicitly labels fulltext excerpts.",
+      "Both requested topics are answered in 197 prose characters; all six source quotations were checked against saved fulltext excerpts."
+    ],
+    "findings": [
+      "The answer assumes that a novice knows local minima, depth buckets, gradients and backpropagation.",
+      "Training is still stated mainly through alpha/phi and a method label, without an ordinary-language account of the observed error and later sampling behavior.",
+      "Correct/incorrect-depth feedback follows the authors illustrative case, but the answer should preserve its intuitive/conditional scope rather than imply a universal update rule.",
+      "Machine complete is retained as the actual outcome; manual content acceptance remains false."
+    ],
+    "notApplicable": {
+      "可执行性": "Explanation task rather than an executable experimental proposal."
+    }
+  },
+  "boundary": "One explicitly reauthorized submission per case, no automatic retry. Retired development case; no independent acceptance credit. No historical result mutation.",
+  "uiProof": "deep-research-evidence/H3R-v13-report-20261016.png"
+}

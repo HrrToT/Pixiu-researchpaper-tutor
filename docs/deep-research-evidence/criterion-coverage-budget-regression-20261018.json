@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "e28e7474",
+  "promptVersion": "dr-v2.20261018.137",
+  "evidenceCoverageContractVersion": 2,
+  "full": {
+    "passed": 2213,
+    "warnings": 1,
+    "seconds": 145.85,
+    "log": "tmp/pytest-dr137-full.log"
+  },
+  "focused": {
+    "passed": 94,
+    "seconds": 28.97,
+    "log": "tmp/pytest-dr137-requirements.log",
+    "overlapsFullSuite": true
+  },
+  "modelCalls": 0,
+  "maximaOrReservesChanged": false,
+  "properties": [
+    "New passages are assessed only for still-unfulfilled criteria of the exact required source.",
+    "A successful criterion proof is retained; adding unrelated evidence does not invoke a new model call for it.",
+    "Unchecked passages for an open criterion remain eligible; this optimization does not discard missing requirements.",
+    "Saved contract 1 retains its original selection and requests; both contracts remain server owned and immutable."
+  ],
+  "boundary": "Offline integration and deliberately specified saved-input fixture judgments; new provider quality still requires a separate real diagnostic."
+}

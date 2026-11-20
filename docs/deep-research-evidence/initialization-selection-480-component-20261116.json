@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "af1370b099ed9db65283fb4f011781815134df18",
+  "promptVersion": "dr-v2.20261116.480",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 11225,
+    "input_tokens": 9878,
+    "output_tokens": 1347
+  },
+  "unitValid": true,
+  "unitErrors": [],
+  "inputBytes": 31954,
+  "actualInputBodyByteIdenticalTo479": true,
+  "all17RequiredEvidenceRowsRetained": true,
+  "schemaAndOutputAllowanceUnchanged": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "contentReview": {
+    "accepted": false,
+    "stateCount": 6,
+    "improvements": [
+      "Single selected sfm_points field with point/coordinate axes; training_images no longer mixed in",
+      "Scale method reads declared training_data/sfm_points, not undeclared sibling gaussian_positions"
+    ],
+    "issues": [
+      "Separate DC and 48 SH channels have no declared basis partition",
+      "Scale, opacity and color parameter encoding does not establish compatibility with the chosen renderer",
+      "Nearest-neighbor procedure omits explicit distance metric and degeneracy handling",
+      "Global author omissions copied, including already specified proposal choices"
+    ],
+    "boundary": "Entity/dependency changes improved this single sample; scientific completeness remains unverified"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-selection-480-reviewed-component-20261116/result.json",
+  "rawResultSha256": "e64d273d29562cef8ed2c0b7bd1660c2eabf842bb02c0f5a03b5fb50aa1c8131"
+}

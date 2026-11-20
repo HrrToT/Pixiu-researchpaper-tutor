@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "2e4bb9ac",
+  "component": "focused-draft-edit",
+  "providerCalls": 1,
+  "allCallsSettled": true,
+  "tokens": 783,
+  "editableIds": [
+    "c2"
+  ],
+  "returnedIds": [
+    "c2"
+  ],
+  "readonlyContextExactlyPreserved": true,
+  "editableCharacters": 119,
+  "editableAllowance": 106,
+  "visibleCharacters": 310,
+  "characterLimit": 300,
+  "wireUserMatchesPrompt": true,
+  "result": "rejected_length",
+  "postEditVerificationRan": false,
+  "retry": false,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "after": {
+      "ledgerRows": 7682,
+      "ledgerSha256": "ccb948abe79ec858755dbc7df0b93af4853a611bd6d9247a6088ddf63bf9826f",
+      "payloadSha256": "115afaf955e35880b01e8f30243f35cad57aa65ebf5601f700898b5d0d81f002"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0,
+    "elapsedSeconds": 9.781
+  },
+  "receiptHashes": {
+    "calls.json": "9f53ef1b41bb2fd8aa57eac86a9478204eacb0cc3f544558b735c1ede7ced9f7",
+    "failure.json": "97e15f2bbbe149aafc9c515c744d1a24a7353438abec6e255ddad6ae809a31e9",
+    "payload.json": "33bffd07d3c5c30890f9cc8615d569c8dffd267405e9570fe311c6970375f0fd",
+    "preservation.json": "a6ab3820642c77142c208dccde7fd93a8b32f73ca83dc7bc2002d942d592bfd6",
+    "progress.json": "2b77ca1436c21e61f9ed468030fd6a37aed95b86f7b2c3b91e1e630e7dde4764",
+    "request-1.json": "250d7b2f6124b32657b3deb2d06dd814a5c0b76f1038b8a152f5a97146872c02"
+  }
+}

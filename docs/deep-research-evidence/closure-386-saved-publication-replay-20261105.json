@@ -1,0 +1,42 @@
+{
+  "promptVersion": "dr-v2.20261105.386",
+  "sourceCase": "X5R-v2",
+  "runId": "dr_run_011ef7d165255e79beca7ef442927508",
+  "mode": "offline actual publication node replay of saved original facts and final coverage; capture callback only",
+  "originalPayloadSha256": "0b24a64a5321c3892f9f0c86b2344960789ed0a4582e6da7e77d7ce905265bfe",
+  "originalMachineOutcomePreserved": "partial",
+  "candidateOutputs": {
+    "None": {
+      "outcome": "partial",
+      "gaps": [
+        {
+          "obligationId": "ob_3",
+          "sourceWorkId": "arxiv:2406.01467v1",
+          "question": "这些图怎样用于几何重建",
+          "checked": false,
+          "missingEvidence": "联合前提尚未就绪：这些图怎样用于几何重建"
+        }
+      ],
+      "claimIds": [
+        "c1",
+        "c2",
+        "c3"
+      ]
+    },
+    "1": {
+      "outcome": "complete",
+      "gaps": [],
+      "claimIds": [
+        "c1",
+        "c2",
+        "c3"
+      ]
+    }
+  },
+  "scientificClaimsAndReferencesUnchanged": true,
+  "historicalAcquisitionGapPreserved": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "newRealResearchVerified": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "1a11da8919b20419c9719e57aa217d6c8f90a129",
+  "promptVersion": "dr-v2.20261028.317",
+  "repairCompactionContractVersion": 1,
+  "tableIdentityContextContractVersion": 1,
+  "requestCoverageContractVersion": 2,
+  "claimCheckContractVersion": 1,
+  "sourceHashes": {
+    "services/deep_research/claim_check.py": "1d6763e491b4135393c9a819c5a62b0632a714fcda882afe27523f748a7591d9",
+    "services/deep_research/repair_compaction.py": "cf8b67c2aa22c2b3a44e85653c1c7d04b823aefa703901338a607a21185ebbf2",
+    "services/deep_research/scope_compaction.py": "ede16f2c7dbd021d72f434b06776c330615b2d68cc60aa90f0571d3a0d1d005d",
+    "services/deep_research/table_identity_context.py": "2217530eb2bfa694174979864017ac89b21517cb1d52ef5cf40f5b80945741ef",
+    "services/deep_research/request_coverage.py": "cd87ea269b9c19da3875c120611cda05049afa099159e88940eae1d8f56a2fb8",
+    "services/deep_research/final_coverage.py": "b468b6f9bc8d213b173169d79db4a1047521721ca75fce397a9d88363631aa0f",
+    "services/deep_research/coverage_repair.py": "012cbae01750b1b158a35ace632ce876c4209ba2bf23a469644687027acd05ab",
+    "services/deep_research/factual_template.py": "1cf227bbb9570231fd4c54257e3552497cac023d52ec60152c461925409d5bc0",
+    "services/deep_research/local_sources.py": "c19d802cddff9522ca28c6fad57ac2882c0bac21d5ac522939524b09012fd579",
+    "services/deep_research/scope_expression_review.py": "e1ca77ccee7918915c93e4e109ddc6172a86b527d86fbebd64aa15615438c87e",
+    "services/deep_research/repair.py": "c094e79b0810228ef7c73fbcc3b7a259f9313a87bbff3c4cb985cc34f938c191",
+    "services/deep_research/graph.py": "774c6bf7064d4370b5a26d4f84f7445066808d4789ad02c24b96d83d1d87524a",
+    "services/deep_research/facade.py": "bdb5dd1cdbca3fd9f50074dc91c03eafb888a511892ab28b94cd6a12279e1ad9",
+    "services/deep_research/repository.py": "1aea3762e653a2e3dc557d3976ac7a51f98b06c2586d20de91494012dc3f23cc"
+  },
+  "oldLedgerAndRunPayloadsExactlyPreserved": true,
+  "ledgerRows": 7465,
+  "pausedUnknowns": 13,
+  "active": 0,
+  "protectedWorkspaces": 5,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "restarts": 1,
+  "providerCalls": 0,
+  "independentCredit": 0
+}

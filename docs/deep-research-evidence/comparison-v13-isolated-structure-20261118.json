@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "ec9a2f68a5dee3dd6ebb0f4577bda7d8a1c88981",
+  "sourceReceiptSha256": "a64b83637f562b3fd42c8260431c4c1da2c0184d717c816b6e2c0ae777119bba",
+  "stageAlternatives": [
+    {
+      "requestedMergeJoint": true,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 32000,
+      "stages": [
+        {
+          "id": "P2",
+          "inputBytes": 29411,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "P1_joint",
+          "inputBytes": 31891,
+          "paperCount": 2,
+          "paperTargetCount": 4,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 15
+        }
+      ],
+      "inputBytesTotal": 61302,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 10,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": false,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 32000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 30404,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "P2",
+          "inputBytes": 29411,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "joint",
+          "inputBytes": 30060,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 6
+        }
+      ],
+      "inputBytesTotal": 89875,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": false,
+      "authoringVersion": 1,
+      "maxStageInputBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23991,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23916,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23934,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 6
+        }
+      ],
+      "inputBytesTotal": 71841,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    },
+    {
+      "requestedMergeJoint": true,
+      "authoringVersion": 2,
+      "maxStageInputBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23910,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23997,
+          "paperCount": 1,
+          "paperTargetCount": 4,
+          "jointTargetCount": 0,
+          "requiredBundleCount": 9
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23992,
+          "paperCount": 2,
+          "paperTargetCount": 0,
+          "jointTargetCount": 2,
+          "requiredBundleCount": 6
+        }
+      ],
+      "inputBytesTotal": 71899,
+      "allFrozenPremiseBundlesRetained": true,
+      "callLowerBound": 11,
+      "scientificApproval": false
+    }
+  ],
+  "recheckAlternatives": [
+    {
+      "windowBytes": 32000,
+      "authoringVersion": 1,
+      "prototypeWindowOverride": true,
+      "reservationPreviews": [
+        {
+          "node": "verify_repair",
+          "delta": {
+            "modelCalls": 1,
+            "tokens": 29700
+          },
+          "projectedTokensAtSavedBudget": 93543,
+          "useReserve": true,
+          "argsDigest": "c705a5f86d38cd18c6cae84960d01ab692958ca35ff5b88a1fb48a5c23259ddd"
+        }
+      ],
+      "unresolvedFixtureVerdictCount": 2,
+      "allRequestsIndividuallyFitSavedTotal": true,
+      "sequentialProviderBudgetFitEstablished": false,
+      "scientificApproval": false
+    },
+    {
+      "windowBytes": 24000,
+      "authoringVersion": 1,
+      "prototypeWindowOverride": true,
+      "reservationPreviews": [
+        {
+          "node": "verify_repair",
+          "delta": {
+            "modelCalls": 1,
+            "tokens": 26959
+          },
+          "projectedTokensAtSavedBudget": 90802,
+          "useReserve": true,
+          "argsDigest": "6fce01fc02004dfd596092f4769cdaa45e02743c34e92432a291b6e185cd65c9"
+        },
+        {
+          "node": "verify_repair",
+          "delta": {
+            "modelCalls": 1,
+            "tokens": 19815
+          },
+          "projectedTokensAtSavedBudget": 83658,
+          "useReserve": true,
+          "argsDigest": "9d12e64f94ee9219b114a5c261bbc9b8d339ef8217c5cb910bd8b8b74d917406"
+        }
+      ],
+      "unresolvedFixtureVerdictCount": 2,
+      "allRequestsIndividuallyFitSavedTotal": true,
+      "sequentialProviderBudgetFitEstablished": false,
+      "scientificApproval": false
+    },
+    {
+      "windowBytes": 24000,
+      "authoringVersion": 2,
+      "prototypeWindowOverride": false,
+      "reservationPreviews": [
+        {
+          "node": "verify_repair",
+          "delta": {
+            "modelCalls": 1,
+            "tokens": 26959
+          },
+          "projectedTokensAtSavedBudget": 90802,
+          "useReserve": true,
+          "argsDigest": "6fce01fc02004dfd596092f4769cdaa45e02743c34e92432a291b6e185cd65c9"
+        },
+        {
+          "node": "verify_repair",
+          "delta": {
+            "modelCalls": 1,
+            "tokens": 19815
+          },
+          "projectedTokensAtSavedBudget": 83658,
+          "useReserve": true,
+          "argsDigest": "9d12e64f94ee9219b114a5c261bbc9b8d339ef8217c5cb910bd8b8b74d917406"
+        }
+      ],
+      "unresolvedFixtureVerdictCount": 2,
+      "allRequestsIndividuallyFitSavedTotal": true,
+      "sequentialProviderBudgetFitEstablished": false,
+      "scientificApproval": false
+    }
+  ],
+  "providerRequests": 0,
+  "liveLedgerMutations": 0,
+  "sourceReceiptUnchanged": true,
+  "boundary": "Actual graph and semantic request construction; null stage and reused empty review fixtures. Stage-only preparation and individual reservations do not establish full-round costs, time or quality."
+}

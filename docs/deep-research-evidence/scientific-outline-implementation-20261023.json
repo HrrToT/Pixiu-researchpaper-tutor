@@ -1,0 +1,59 @@
+{
+  "scientificOutlineContractVersion": 1,
+  "journalVersion": 2,
+  "journalFormat": "scientific_outline",
+  "defaultEnabled": false,
+  "node": "plan_experiment_outline",
+  "maxOutputTokens": 2048,
+  "maxResponseBytes": 8192,
+  "requestTimeoutSeconds": 60,
+  "focusedRegression": {
+    "files": 7,
+    "passed": 148,
+    "seconds": 22.09
+  },
+  "actualSavedInput": {
+    "actualInput": "E1-v49",
+    "evidenceItems": 14,
+    "originalPromptBytes": 24220,
+    "newPromptBytes": 15255,
+    "newPromptPlusSchemaBytes": 16087,
+    "evidenceDigest": "8e94705f0f0e9cc3f5a5d6342bd194876b90fe4f0578e9c3e574860e5c267b19",
+    "allOriginalEvidenceSourcesTablesRequirementsAndQuestionRetained": true,
+    "providerCalls": 0,
+    "scientificApproval": false,
+    "boundary": "Input-only measurement. Complete final states still generated and validated by lifecycle units; no real model quality credit."
+  },
+  "sourceHashes": {
+    "services/deep_research/experiment_template.py": "02c58a72720c82f811a5993c805c9e627b0b633bfb74e906f18716b1c3ac2f1f",
+    "services/deep_research/finalization_pool.py": "1387441aa0d58b40298854bf1bf80c0a947996eec7d167f82e540df1aee8e458",
+    "services/deep_research/graph.py": "73a88811127ef614c2423bc43ae8550bcafa357f9fc837c389cf36425b1ccffc",
+    "services/deep_research/planning_transport.py": "80cf75fbccbfa57f2078ebcb6c6e7cc712eb4c680bb9372a81b886990ebe5c10",
+    "services/deep_research/repository.py": "ccfcd0c8157a0043a7efcf2e7b2f5375c2444b49af0587eb2f6c7386550b318c",
+    "services/deep_research/runtime.py": "65c228696ed017421f1882e4fcbb7d557e9dae4b09ebfd758cad3969fb199f79",
+    "services/deep_research/structured_output.py": "2d7110a60902bf23a2508ec6a347c8015e5e4f26b915bc3a6b5f8d1aff429363",
+    "services/deep_research/tools.py": "9fbf00ea97f278e77cd4c0c9fe778ba4b9563ca4c5bf0742ef2af51772c1dce6",
+    "services/deep_research/scientific_outline.py": "86f084c5c1cd74b623b948cc6948b9d28f8a55afa2a79a4722a71cd62794c003",
+    "tests/test_deep_research_scientific_outline.py": "f823d7eac3a65f1430f40f638c360a24e2cd41e085be76b8d1beced85795ec2b"
+  },
+  "fullRegression": {
+    "sourceCommit": "8bab562cd866d20a2ca40fd4f67d6c74b5b4c6dc",
+    "files": 249,
+    "passed": 4595,
+    "warnings": 1,
+    "seconds": 478.76,
+    "sourceStable": true,
+    "logSha256": "6c41b0028e49c2e630d0250568bd6ee581ec2fe3b8799e7c344820eb6b6c697f",
+    "receiptSha256": "527b485218274774fb55c996782bf63b4f4c74afdd8562bb01f25cec6e564b48"
+  },
+  "providerCalls": 0,
+  "serviceRestarts": 0,
+  "boundary": "Gated implementation. Complete final initialization, lifecycle, budget, sources and independent checks remain required. No new provider-backed content or DR0-DR5 acceptance credit.",
+  "legacyReplay": {
+    "scripts": 38,
+    "allPassed": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "summarySha256": "c24aac88519763e9e9abf6637010d872e1341033afd25227c4b7bd52c673f076"
+  }
+}

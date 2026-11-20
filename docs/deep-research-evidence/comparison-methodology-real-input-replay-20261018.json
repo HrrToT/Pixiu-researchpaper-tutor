@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "cases": [
+    {
+      "case": "D1-v27",
+      "oldSynthesisFingerprint": "626941910a1f7ea4f70a798e08e2471b89a3e7b22d8493899ea5fe2ae8596d05",
+      "oldRepairFingerprint": "7c60bb3cb9b077d6265500f1e667eaee2f226e7d331957d5695fc76ebeefc232",
+      "oldProviderFingerprintsMatched": true,
+      "newSynthesisBytes": 23971,
+      "newRepairBytes": 23956,
+      "newDefinitionInBothRequests": true,
+      "repairSourcePermissionsNotExpanded": true,
+      "originalRecordsAndBudgetUnchanged": true
+    },
+    {
+      "case": "D5-v13",
+      "oldSynthesisFingerprint": "e87d581058c0fc11113e145becc257c6e67ef0e596ac7427580c3df08b29105a",
+      "oldRepairFingerprint": "06787cb6b6d588c99c49e03b2cf57c427b20949acab2626decbfc1dcdddeaeb6",
+      "oldProviderFingerprintsMatched": true,
+      "newSynthesisBytes": 23789,
+      "newRepairBytes": 23995,
+      "newDefinitionInBothRequests": true,
+      "repairSourcePermissionsNotExpanded": true,
+      "originalRecordsAndBudgetUnchanged": true
+    }
+  ],
+  "engineeringReferences": [
+    "https://google.github.io/benchmark/user_guide.html#manual-timing",
+    "https://docs.mlcommons.org/inference/submission/"
+  ],
+  "referenceBoundary": "Official measurement-mode/system-benchmark guidance informed generic logical distinctions, not empirical task evidence or a new runtime dependency. No primary-document performance facts enter user reports.",
+  "boundary": "Four archived actual synthesis/repair request fingerprints match unchanged old policy. New generation and repair receive the same reasoning definitions, no model options or budget expansion; fresh semantic/content validation remains required."
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "a27f1cc7",
+  "promptVersion": "dr-v2.20261022.221",
+  "experimentReviewEnvelopeContractVersion": 1,
+  "fullOffline": {
+    "passed": 3822,
+    "warnings": 1,
+    "seconds": 218.35,
+    "files": 213,
+    "log": "tmp/pytest-dr221-full.log",
+    "sha256": "76f9555bf3e023efe219a00580025e769fff093054bd346a4a0a3dfdc9413f1f"
+  },
+  "focusedPassed": 89,
+  "focusedSeconds": 4.46,
+  "additionalFinalNewFilePassed": 35,
+  "additionalFinalNewFileSeconds": 2.37,
+  "focusedOverlap": true,
+  "newTests": 35,
+  "legacyActualFingerprintsMatched": 66,
+  "legacyReplayScriptCount": 21,
+  "offlineProviderCalls": 0,
+  "independentCredit": 0,
+  "controlledReplay": "review-envelope-e1-v16-controlled-20261022.json",
+  "implementation": "Immutable server-owned prospective review envelope1: one canonical shared policy, complete original targets/conditions/typed context and own source permissions; split full requests before context stripping, mark single-target overflow as not_started and retain capacity metadata. Same validators, role options, whole-run budgets,32KB review window and old request identities.",
+  "boundary": "Full Deep Research offline suite and archived DEVELOPMENT-input controlled callback only. Initial3focused failures were test-fixture assertions/quotation metadata, corrected before final runs. No original result upgraded, no fresh content/independent acceptance."
+}

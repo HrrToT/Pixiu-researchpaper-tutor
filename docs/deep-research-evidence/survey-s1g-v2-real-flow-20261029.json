@@ -1,0 +1,202 @@
+{
+  "caseId": "S1G-v2",
+  "caseDefinitionSha256": "12b20f54f4585c2b3a646be516e623435e706efba9e06db9de2fec6073b32923",
+  "runId": "dr_run_5d293b25705955dc88013e50e36039b3",
+  "taskId": "dr-survey-flow-20261029",
+  "promptVersion": "dr-v2.20261029.341",
+  "quantitySpellingContractVersion": 7,
+  "status": "completed",
+  "outcome": "complete",
+  "modelCalls": 8,
+  "tokens": 29013,
+  "elapsedSeconds": 61.491,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "tools": [
+    {
+      "node": "resolve_brief",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "plan",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "acquire",
+      "tool": "retrieve",
+      "status": "succeeded"
+    },
+    {
+      "node": "acquire",
+      "tool": "retrieve",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "assess_relevance",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "acquire",
+      "tool": "retrieve",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "read",
+      "tool": "read_source",
+      "status": "succeeded"
+    },
+    {
+      "node": "assess_relevance",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "synthesize",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "verify_design_science",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "verify",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    },
+    {
+      "node": "verify_answer_coverage",
+      "tool": "llm_invoke",
+      "status": "succeeded"
+    }
+  ],
+  "verifiedClaims": [
+    {
+      "claimId": "c1",
+      "text": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少高斯数量N；SH蒸馏将高阶球谐系数转移到低阶，降低特征维度F；向量量化基于全局显著性降低位宽。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b",
+        "ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    },
+    {
+      "claimId": "c2",
+      "text": "建议阅读顺序：先读高斯剪枝与恢复（减少数量），再读SH蒸馏（压缩特征），最后读向量量化（降低位宽）。实际读到的是论文全文。",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_0e3dd18e63edf8e206378d8808c11ccad81ad5615f903057a6ce8f4328d4a13d",
+        "ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b",
+        "ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2",
+        "ob_3"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "proposal"
+    }
+  ],
+  "rejectedClaims": [],
+  "coverageGaps": 0,
+  "evidenceCount": 18,
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "artifactsCompleteTagged": true,
+  "repeatTerminalReadExactlyUnchanged": true,
+  "oldTaskResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 21,
+    "ledgerRows": 7501,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingPresentationDefect": "Reading-order proposal rendered as 实验建议 and receives 假设与实验建议尚未经过实验验证. No experiment was requested or proposed. Also routed to verify_design_science.",
+  "releaseContentAcceptance": false,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "payloadSha256": "1ea4d1e7d7a719e75373390ad6989411302edac49fa6fa7548fce5100239a61c",
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true
+}

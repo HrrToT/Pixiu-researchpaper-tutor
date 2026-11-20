@@ -1,0 +1,63 @@
+{
+  "case": "D2-VQ-v1-v1",
+  "runId": "dr_run_51b0b20e658c5a459b97daf630903093",
+  "sourceCommit": "20972508",
+  "promptVersion": "dr-v2.20261115.453",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_plan_response",
+  "actualModelCalls": 2,
+  "tokens": 3434,
+  "elapsedSeconds": 10.0,
+  "allCallsSettled": true,
+  "formatValidation": {
+    "status": "rejected",
+    "reason": "Plan response is not a JSON array"
+  },
+  "reportedModels": [
+    "deepseek-flash",
+    "deepseek-flash"
+  ],
+  "contentAccepted": false,
+  "automaticRetry": false,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 2,
+    "ledgerRows": 9579,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "findings": [
+    "Original JSON nesting was malformed, including nested obligations under an obligation. Native JSON transport reported invalid_json and content null; plan was rejected before material retrieval. No guessed JSON repair or content approval.",
+    "Two PDFs were uploaded through normal material API and indexed (83 and68chunks); AI overview remained not_requested. This only proves material ingestion, not comparative content quality.",
+    "Investigate planner client routing separately with the exact recorded request and strict existing validator; preserve original failed case. Full comparison and executable experiment requirements remain."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v1.calls.json": "a22a95b30feefce3932bc44a5155f036e2a95943bb0abcc8fb6702aa28b7a210",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v1.json": "e88cce17fce55f6d6e0d1103e0c4b4706528065a81dbbdbcbb03e79c5bf66f98",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v1.payload.json": "3a2823534fb4ca9c88dc68ed4d5c48a1a1e897facd72272b6c6ca7102f2f1c4b",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v1.preservation.json": "06fa6617f7868eefd0e03093021dfd7b2d7f57863b8b34d290e8ac85c6a4dfbd",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v1.result.json": "7cf5b0aead98969f4b85580413e09d05d279436f2c27ea8ea04d9421e2c36c4e"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "case": "G1N-v9",
+  "runId": "dr_run_dd47b2be73e45b3aa0a47c41b0be5c64",
+  "originalEvidenceRows": 60,
+  "candidateRows": 20,
+  "suppliedRows": 12,
+  "fixedInputBytes": 15543,
+  "inputBytes": 23980,
+  "meshExtractionEvidence": [
+    {
+      "evidenceId": "ev_e0a59ab4509976c8a57fa0dc56585aa0887d7c8e9a685e2537b7115f16c41372",
+      "sourceWorkId": "arxiv:2406.06521",
+      "location": {
+        "page": 8,
+        "offset": 3158,
+        "section": "V. E XPERIMENTS",
+        "sectionRole": "other",
+        "sourcePassageStart": 978,
+        "sourcePassageEnd": 1246
+      },
+      "supplied": false,
+      "quote": " The learning rate\nfor the exposure coefficient is 0.001. We begin by rendering\nthe depth for each training view, followed by utilizing the\nTSDF Fusion algorithm [45] to generate the corresponding\nTSDF field. Subsequently, we extract the mesh [38] from the\nTSDF field."
+    },
+    {
+      "evidenceId": "ev_5a6d929afe6f1c81a0326075f360d1f6d8b4ae519a66cc04d085f16d0ffbfaca",
+      "sourceWorkId": "arxiv:2404.10772",
+      "location": {
+        "page": 7,
+        "offset": 1655,
+        "section": "4.4 Ablation Study",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 0,
+        "sourcePassageEnd": 435
+      },
+      "supplied": false,
+      "quote": "4.4 Ablation Study\nMesh Extraction: Our GOF enables mesh extraction from 3D Gaus-\nsians directly by identifying a level set without resorting to Poisson\nreconstruction or TSDF fusion. To demonstrate the effectiveness\nand generalizability of our mesh extraction strategy, we apply it to aSOTA 3DGS-based model, Mip-Splatting [Yu et al .2024a] and com-\npare it with TSDF fusion. A comparison of the extracted meshes is\nshown in Figure 6."
+    },
+    {
+      "evidenceId": "ev_cde4fe99bfbf9a6aa0c597c585edf2874879ec97eb40d1777c1676ee939870c1",
+      "sourceWorkId": "arxiv:2404.10772",
+      "location": {
+        "page": 7,
+        "offset": 1655,
+        "section": "4.4 Ablation Study",
+        "sectionRole": "unknown",
+        "sourcePassageStart": 435,
+        "sourcePassageEnd": 674
+      },
+      "supplied": false,
+      "quote": " The mesh extracted from TSDF fusion is noisy and\nhas a lot of holes on the ground, due to the inconsistency of depth.\nBy contrast, our extracted mesh is more complete. Our method also\nextracts detailed surfaces for the background regions."
+    }
+  ],
+  "finding": "The cached original PGSR page8 TSDF passage was acquired/read/extracted but not supplied to synthesis. This is an allocation/input-capacity gap, not proof the PDF lacked mesh extraction details. Do not add a case-specific TSDF fact or upgrade old c1.",
+  "providerCalls": 0,
+  "productionWrites": 0
+}

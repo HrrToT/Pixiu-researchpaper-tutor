@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v3",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldGroups": [
+    [
+      "c4",
+      "c5",
+      "c7"
+    ],
+    [
+      "c1",
+      "c8",
+      "c9"
+    ],
+    [
+      "c2",
+      "c3",
+      "c6"
+    ]
+  ],
+  "proposedGroups": [
+    {
+      "targetIds": [
+        "c4",
+        "c5"
+      ],
+      "inputBytes": 22181,
+      "originalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 22723,
+      "originalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "inputBytes": 21431,
+      "originalsPreserved": true
+    }
+  ],
+  "maxInputBytes": 24000,
+  "boundary": "Offline preflight only; all target originals, required own quotations and sibling definitions retained. No model or content acceptance."
+}

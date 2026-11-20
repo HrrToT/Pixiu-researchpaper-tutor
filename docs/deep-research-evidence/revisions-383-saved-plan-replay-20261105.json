@@ -1,0 +1,71 @@
+{
+  "sourceCase": "X5H-v1",
+  "sourcePayloadSha256": "0431b154a0044a2a9a0ebba97df0cbf581ef298186f1a285b00010c61532dcf2",
+  "sourceCallsSha256": "cd1532ee8462c52af05b68d5a07292689395bac9851bb583f637778c7fdb525a",
+  "legacyNormalizedRefs": [
+    [
+      "arxiv:2406.01467"
+    ],
+    [
+      "arxiv:2406.01467"
+    ],
+    [
+      "arxiv:2406.01467"
+    ]
+  ],
+  "newNormalizedRefs": [
+    [
+      "arxiv:2406.01467v1"
+    ],
+    [
+      "arxiv:2406.01467v1"
+    ],
+    [
+      "arxiv:2406.01467v1"
+    ]
+  ],
+  "sourceRevisionAudit": {
+    "requestedRevisions": {
+      "arxiv:2406.01467": [
+        "arxiv:2406.01467v1"
+      ]
+    },
+    "changes": [
+      {
+        "obligationId": "ob_1",
+        "before": [
+          "arXiv:2406.01467v1"
+        ],
+        "after": [
+          "arxiv:2406.01467v1"
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "before": [
+          "arXiv:2406.01467v1"
+        ],
+        "after": [
+          "arxiv:2406.01467v1"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "before": [
+          "arXiv:2406.01467v1"
+        ],
+        "after": [
+          "arxiv:2406.01467v1"
+        ]
+      }
+    ]
+  },
+  "questionUnchanged": true,
+  "originalResponseAndRecordsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "modelMockDispatches": 1,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "localReplayCorrection": "SQLite call.result is JSON-encoded text; decoded its envelope before passing saved content to the real plan node. No model request or production change in either local attempt."
+}

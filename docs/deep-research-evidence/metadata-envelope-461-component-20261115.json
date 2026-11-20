@@ -1,0 +1,32 @@
+{
+  "promptVersion": "dr-v2.20261115.461",
+  "sourceCommit": "43131325",
+  "status": "executed_once_invalid",
+  "isolatedMetadataOnly": true,
+  "maximumCalls": 1,
+  "modelCalls": 1,
+  "tokens": 12735,
+  "inputTokens": 9705,
+  "outputTokens": 3030,
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "timeline.input.group_leak"
+  ],
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "rawResult": "tmp\\metadata-envelope-461-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "62363bf303b194cd84ee9666fd3576d2f88e2b247287aff82eb55f7eea2af348",
+  "publicAudit": "tmp\\metadata-envelope-461-public-review-20261115\\audit.json",
+  "publicAuditSha256": "34543e709d7e76f4fba3ae036a0ba130431e427678a2c94062876614a90d51c1",
+  "rawOutputBytes": 11345,
+  "remaining": "Control group 00 still reads quantization-only components; retain rejection. Complete experiment quality not accepted."
+}

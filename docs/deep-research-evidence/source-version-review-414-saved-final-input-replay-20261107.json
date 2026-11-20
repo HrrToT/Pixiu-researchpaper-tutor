@@ -1,0 +1,35 @@
+{
+  "case": "AD1N-v5",
+  "payloadSha256": "c80f74b4d148f58f8dc7e2407014aa2b441adcc9ef66d65d44a88c0610be10bf",
+  "rawFileUnchanged": true,
+  "replay": "Actual facade checker factory using a temporary local repository copy; only sourceVersionReview1 added to candidate.",
+  "stubResponse": "Every callback returns an explicit unsupported fixture; not a real or replayed scientific model verdict.",
+  "measurements": [
+    {
+      "node": "verify",
+      "legacyBytes": 17287,
+      "candidateBytes": 18816,
+      "sourceContextVersionAndOptionsExact": true
+    },
+    {
+      "node": "verify",
+      "legacyBytes": 12987,
+      "candidateBytes": 14516,
+      "sourceContextVersionAndOptionsExact": true
+    },
+    {
+      "node": "verify",
+      "legacyBytes": 13003,
+      "candidateBytes": 14532,
+      "sourceContextVersionAndOptionsExact": true
+    }
+  ],
+  "allRequestsExceptAddedGuidanceExact": true,
+  "legacyRequestsAndVerdictsExactAgainstCommit": "ac7e6f2f",
+  "unsupportedFixturesRemainFailed": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Confirms actual wiring, capacity and unchanged original source/version/context/options. Does not establish that a model will obey the notation or quantifier guidance or correct old rejection reasons."
+}

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "31cc5f0d",
+  "promptVersion": "dr-v2.20261022.237",
+  "experimentPlanEncodingContractVersion": 6,
+  "experimentExecutionGuidanceContractVersion": 2,
+  "experimentReviewEnvelopeContractVersion": 7,
+  "structuredOutputContractVersion": 12,
+  "sourceHashes": {
+    "experiment_execution_guidance.py": "c547a469fa0806b43b34eaa8993694d25681ae6f9b7cba0f5d0f1dd62331ab4e",
+    "experiment_review_envelope.py": "cae0df2cf5d6052966d9ef755ba7de890d3fa97caff0504edcc6778b2bc12571",
+    "experiment_template.py": "04e431a423ea294685fe072e2c3134163bbc3f90b4df17d01878ac2102af73be",
+    "review_field_index.py": "31565c55befea81493116a00f416bafee244b28670de6e1ea85f6e73dfaac237",
+    "rejected_design_context.py": "58fabadcb1ff8aa99c47449594ff6d9fa921fb089685bad7cf7a90d6b042a210",
+    "rejection_audit.py": "35c25ceea45f9e65b47f35ea14f537046935a9406832dc6b795d22f87c6472ee",
+    "verification.py": "3576d87af0625f31d8e073a816905291d882d22164fd3de7c28777c7505810f7",
+    "tools.py": "3bdb707696774bfc06b6fe14266ed62ed9bbcc279d0d517dff235921a28acab5",
+    "facade.py": "637d333a41a40a25cba6cf1bf0cbcb2b6a7d58d8250c79a2ee792217fca38572"
+  },
+  "idleBeforeRestart": true,
+  "ledgerRows": 5464,
+  "active": 0,
+  "pausedUnknowns": 11,
+  "allPriorRunPayloadsAndLedgerExactlyPreserved": true,
+  "wholeTaskSnapshotsExactlyPreserved": 4,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "providerCalls": 0,
+  "productionModelRunsCreated": 0,
+  "independentCredit": 0,
+  "boundary": "Idle restart,exact source hashes,health and data retention. No new model run was created; this does not validate generated scientific content or rendered browser UI."
+}

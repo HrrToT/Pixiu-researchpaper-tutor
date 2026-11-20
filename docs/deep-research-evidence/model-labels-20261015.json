@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-15",
+  "issue": "The model response and research ledger retained only the configured identifier, even when the provider returned a different model label.",
+  "change": "LLMResult keeps its existing configured model field and adds optional reported_model. The DeepSeek parser preserves a nonblank provider model string up to256 characters. Research settlement records it as optional reportedModel; invalid/absent labels are omitted from the ledger.",
+  "compatibility": "Configured routing, request payload, token accounting, caches and existing model fields remain unchanged. Historical records are not backfilled or assigned a guessed model version.",
+  "trustBoundary": "A provider-reported label is audit metadata, not proof of underlying weights and never a permission or routing input.",
+  "validation": {
+    "focusedClientOfflineAndLedger": {"passed": 42, "seconds": 0.78},
+    "backendResearchClientReadingIntegration": {"passed": 1259, "warnings": 1, "seconds": 71.96,
+      "scope": "test_deep_research*.py plus config, LLM timeout/deadline/offline, reading-chain and route-service contracts"},
+    "durability": ["Actual SQLite settlement stores both identifiers", "Reopened repository returns identical settled result without invoking the provider", "Legacy missing label keeps the former serialized fields", "Malformed/oversized labels do not change the configured request model"]
+  },
+  "newProviderGenerationRequests": 0,
+  "realProviderMetadataValidation": "Not yet performed; current checks use explicitly mocked responses.",
+  "completion": "Observability improved; remaining research content and independent acceptance gates remain open."
+}

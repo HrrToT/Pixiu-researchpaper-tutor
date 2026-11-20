@@ -1,0 +1,255 @@
+{
+  "date": "2026-10-26",
+  "purpose": "Synthetic constraint adherence, no paper or user content",
+  "sourceCommit": "277432285532c93fab01b316e7cfd9b781a720ba",
+  "maxCalls": 3,
+  "calls": 3,
+  "maxOutputTokensPerCall": 256,
+  "timeoutSecondsPerCall": 30,
+  "totalMeasuredTokens": 456,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "rawReceipts": {
+    "constant.intent.json": {
+      "prompt": "Return JSON with value forbidden. Follow the required output schema if these conflict.",
+      "messages": null,
+      "stop": null,
+      "extra_body": {
+        "_deepseek_api": "responses",
+        "max_tokens": 256,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_schema",
+          "name": "probe_constant",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "const": "allowed"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "timeout_seconds": 30
+    },
+    "constant.result.json": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "content": "{\"value\": \"allowed\"}",
+      "usage": {
+        "input_tokens": 72,
+        "output_tokens": 6,
+        "total_tokens": 78,
+        "estimated": false
+      },
+      "finish_reason": "stop",
+      "reported_model": "deepseek-v4-pro"
+    },
+    "referenced_branch.intent.json": {
+      "prompt": "Return JSON with step kind observe and groups [\"0\",\"1\"]. Follow the required output schema if these conflict.",
+      "messages": null,
+      "stop": null,
+      "extra_body": {
+        "_deepseek_api": "responses",
+        "max_tokens": 256,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_schema",
+          "name": "probe_referenced_branch",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "step": {
+                "$ref": "#/$defs/step"
+              }
+            },
+            "required": [
+              "step"
+            ],
+            "additionalProperties": false,
+            "$defs": {
+              "step": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "observe"
+                      },
+                      "groups": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 1,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "0",
+                            "1"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "groups"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "record"
+                      },
+                      "groups": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 1,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "0",
+                            "1"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "groups"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "timeout_seconds": 30
+    },
+    "referenced_branch.result.json": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "content": "{\"step\": {\"kind\": \"observe\", \"groups\": [\"0\", \"1\"]}}",
+      "usage": {
+        "input_tokens": 244,
+        "output_tokens": 20,
+        "total_tokens": 264,
+        "estimated": false
+      },
+      "finish_reason": "stop",
+      "reported_model": "deepseek-v4-pro"
+    },
+    "single_group.intent.json": {
+      "prompt": "Return JSON with groups [\"0\",\"1\"]. Follow the required output schema if these conflict.",
+      "messages": null,
+      "stop": null,
+      "extra_body": {
+        "_deepseek_api": "responses",
+        "max_tokens": 256,
+        "thinking": {
+          "type": "disabled"
+        },
+        "reasoning_effort": "none",
+        "response_format": {
+          "type": "json_schema",
+          "name": "probe_single_group",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "groups": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "0",
+                    "1"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "groups"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "timeout_seconds": 30
+    },
+    "single_group.result.json": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "content": "{\n  \"groups\": [\"0\", \"1\"]\n}",
+      "usage": {
+        "input_tokens": 102,
+        "output_tokens": 12,
+        "total_tokens": 114,
+        "estimated": false
+      },
+      "finish_reason": "stop",
+      "reported_model": "deepseek-v4-pro"
+    },
+    "summary.json": [
+      {
+        "case": "constant",
+        "satisfiesDiagnosticObligations": true,
+        "finishReason": "stop",
+        "tokens": 78
+      },
+      {
+        "case": "single_group",
+        "satisfiesDiagnosticObligations": false,
+        "finishReason": "stop",
+        "tokens": 114
+      },
+      {
+        "case": "referenced_branch",
+        "satisfiesDiagnosticObligations": false,
+        "finishReason": "stop",
+        "tokens": 264
+      }
+    ]
+  },
+  "receiptHashes": {
+    "constant.intent.json": "4663fbc2c59ccb498fbb194ab1ab83170159f886556425358734d3bd57c1ec0a",
+    "constant.result.json": "a75cca2ff163e237feb5605e53eeaef94e31d4df76f895174cd769748f2dcf2d",
+    "referenced_branch.intent.json": "5d2ea3bd582031c8d3c3d9608ca6d39d7dc4a0605a1a10a9ec4820dd70a14029",
+    "referenced_branch.result.json": "a01421e54d7e78aeedfb1e531aa7c85c452ce045541df5ace3628019f9050b46",
+    "single_group.intent.json": "abf2c213267cd9d56ea5981dba3a54d9d1f226c782cbbfa9fe2b17965dd0b120",
+    "single_group.result.json": "db89c39fe652dbe7d93709d0bc8be92b764d0632fb2bc1bfca7191112797fadc",
+    "summary.json": "f0bea1df013f4101ac437a3be757721f4ca33227c91d53fb4617077cf96a8dbc"
+  },
+  "offlineVerification": {
+    "probeAndExistingTransportTests": {
+      "passed": 108,
+      "seconds": 35.09
+    },
+    "scalarPrototypeAndStepIntegrationTests": {
+      "passed": 41,
+      "seconds": 4.17
+    }
+  },
+  "conclusion": "Constant test passed; direct and referenced-branch array cardinality tests failed. This demonstrates observed maxItems non-adherence, not universal schema failure or omitted local transport.",
+  "officialReferences": [
+    "https://api-docs.deepseek.com/api/create-response/",
+    "https://api-docs.deepseek.com/guides/responses_api/"
+  ],
+  "candidate": "workflow_metadata_single_group explicit scalar group for observe/record; not integrated or activated; old contracts unchanged",
+  "boundary": "Synthetic probe is not scientific acceptance; original scientific validators remain mandatory."
+}

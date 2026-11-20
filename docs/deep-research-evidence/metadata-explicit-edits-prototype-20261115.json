@@ -1,0 +1,45 @@
+{
+  "prototypeOnly": true,
+  "authoredEngineeringFixtureOnly": true,
+  "modelCalls": 0,
+  "applicationWrites": false,
+  "originalResponseSha256": "62363bf303b194cd84ee9666fd3576d2f88e2b247287aff82eb55f7eea2af348",
+  "baseDigest": "9b1b45b51309c3b3b95b26abbf045c1732ac4af301e82b4b370d0b0f31da73e0",
+  "explicitEdits": [
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/2"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/3"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/4"
+    },
+    {
+      "op": "remove",
+      "path": "/steps/4/reads/5"
+    }
+  ],
+  "editWireBytes": 259,
+  "fullWireBytes": 7263,
+  "originalUnchanged": true,
+  "sourceRefsExact": true,
+  "allUneditedFieldsExact": true,
+  "allFourArmsRetained": true,
+  "componentsAndFitOperationsExact": true,
+  "compiledStructuralErrors": [],
+  "partialEditStillRejected": true,
+  "negativeCasesRejected": [
+    "wrong_base",
+    "foreign_path",
+    "duplicate_path",
+    "unsupported_operation",
+    "empty_edits"
+  ],
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Explicit edit mechanism feasibility only. No model-authored editing, production integration, general error coverage or scientific quality acceptance."
+}

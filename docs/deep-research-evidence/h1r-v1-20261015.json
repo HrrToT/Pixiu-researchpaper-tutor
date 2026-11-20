@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H1R-v1",
+  "runId": "dr_run_06614cf8c6775731bb0352a085569de9",
+  "promptVersion": "dr-v2.20261015.63",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "machineResult": {"status": "completed", "outcome": "partial", "successfulModelCalls": 10, "actualTokensFromSettledResponses": 35937},
+  "primaryAgentReview": {
+    "qualityAccepted": false,
+    "remainingIssues": ["Camera parameters' role in matching and unprojection is missing", "Depth-to-coordinate explanation remains incomplete", "Photometric supervision is repeated across two claims"],
+    "boundary": "No remaining factual rejection does not establish answer completeness or novice usability."
+  },
+  "diagnosis": {
+    "sourceVersion": "9f12755c3d6011c5",
+    "anchorChunk": 16,
+    "definitionChunk": 15,
+    "section": "Method",
+    "finding": "The retrieved method passage starts with where; the immediately preceding owned passage defines images and camera projection matrices. Both belong to the same indexed paper version and section.",
+    "plannedRepair": "At most one independently identified predecessor within the existing retrieval source count; never merge text or inherit another passage's page."
+  },
+  "independentEligibility": "retired_after_first_run_used_for_engine_diagnosis",
+  "frozenOriginalDefinition": "docs/DEEP_RESEARCH_HOLDOUT_REPLACEMENTS.json",
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/H1R-v1.authoritative.json",
+  "nextAcceptance": "Freeze a fresh independent H1 replacement. Any further MVSplat run is development-only. H3R remains unexecuted and independent."
+}

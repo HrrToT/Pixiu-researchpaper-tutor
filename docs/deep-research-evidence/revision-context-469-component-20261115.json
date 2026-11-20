@@ -1,0 +1,34 @@
+{
+  "promptVersion": "dr-v2.20261115.469",
+  "sourceCommit": "9ac24616762c2d51a395f4fbe24656596796bcbe",
+  "isolatedCompleteMetadataRevisionOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 60000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 20416,
+    "input_tokens": 14981,
+    "output_tokens": 5435
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "timeline.input.group_leak"
+  ],
+  "sameDecodedMetadataAsRejectedDraft": true,
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9838,
+    "runs": 390,
+    "callsSha256": "122784a23d94d70db2f7456630f3ad6460fe58f39b239167957a463b6686bf26",
+    "runsSha256": "ca2a1de33da3124de0fd6d0e6c11300214cb94455c8d735efa57bed600e5b33e"
+  },
+  "rawResult": "tmp\\revision-context-469-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "28c845f477ac7fe33903b432333d871fba0b57c55ca849b03fd4cb55464d2904",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Make revision diagnostics directly legible; no repeat of this fixed component and no full case until revised metadata is valid."
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v8",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualPlanningFingerprintMatched": true,
+  "oldStoredFailedPlanRemainsFailedWithNoResend": true,
+  "controlledEncodingVersion": 1,
+  "fullOriginalBasisResponseAndAllValuesPreserved": true,
+  "originalEvidenceAliasesAndCompleteRowsPreserved": true,
+  "audit": {
+    "rawBytes": 2595,
+    "wireBytes": 2486,
+    "slotLimit": 2500,
+    "scientificApproval": false
+  },
+  "controlledNewPlanningInputBytes": 13904,
+  "controlledNewGenerationInputBytes": 23972,
+  "generationCapUnchanged": 24000,
+  "bodyRequestFrozenBeforeMockProvider": true,
+  "fullConfigurationGenerated": false,
+  "semanticApproval": false,
+  "newIndependentCredit": 0,
+  "boundary": "Actual failed2595byte planning response replayed in isolated clones. Old pending/failed identity remains unchanged; new contract losslessly packs2486bytes and freezes a full original-evidence generation request under24KB. The body provider is deliberately not called; no model output/scientific/latency acceptance or historical upgrade.",
+  "sourceCommit": "b85ccc0c",
+  "verifiedAsOf": "2026-10-21"
+}

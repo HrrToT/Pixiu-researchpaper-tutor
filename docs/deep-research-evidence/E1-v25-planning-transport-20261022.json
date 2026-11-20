@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v25",
+  "sourceCommit": "2813e909",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 25433,
+  "actualRawResponseBytes": 5403,
+  "newColumnPlanningInputBytes": 25990,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Actual failed3-object-plan request reconstructed exactly. New4-column prompt is a controlled capacity/data-preservation check only, not content approval or a new model submission."
+}

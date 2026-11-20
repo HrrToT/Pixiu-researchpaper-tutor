@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v71",
+  "runId": "dr_run_b22a9dd594d85c4c90bd64fc08f080c9",
+  "promptVersion": "dr-v2.20261026.281",
+  "status": "failed",
+  "steps": [
+    {
+      "scope": "per_repeat",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "fit"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "observe"
+    },
+    {
+      "scope": "per_frame",
+      "kind": "observe"
+    }
+  ],
+  "originalLifecycle": [
+    {
+      "componentId": "frame0_model",
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage1_ntc",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage2_additional_3dgs",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage2_optimizer",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    }
+  ],
+  "revisedLifecycle": [
+    {
+      "componentId": "frame0_model",
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage1_ntc",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "additional_3dgs",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage2_optimizer",
+      "lifecycle": {
+        "scope": "per_frame",
+        "createBefore": 1,
+        "disposeAfter": "scope_end"
+      }
+    }
+  ],
+  "repairStatus": "invalid_response",
+  "repairErrors": [
+    "unit.json"
+  ],
+  "initializationRepairExercised": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

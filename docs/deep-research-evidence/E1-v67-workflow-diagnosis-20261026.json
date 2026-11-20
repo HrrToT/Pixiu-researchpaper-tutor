@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v67",
+  "runId": "dr_run_3f43e5c390495607b21d18471b81c8bd",
+  "promptVersion": "dr-v2.20261026.277",
+  "status": "failed",
+  "units": {
+    "initial": {
+      "finishReason": "stop",
+      "errors": [
+        "timeline.frameIterations"
+      ],
+      "frameIterations": 0,
+      "frameStepIndices": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "lifecycles": [
+        {
+          "componentId": "frame0_3dgs",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 0,
+            "disposeAfter": "scope_end"
+          }
+        },
+        {
+          "componentId": "stage1_ntc",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 1,
+            "disposeAfter": "scope_end"
+          }
+        },
+        {
+          "componentId": "arm_b_additional_3dgs",
+          "lifecycle": {
+            "scope": "per_frame",
+            "createBefore": 2,
+            "disposeAfter": "scope_end"
+          }
+        }
+      ],
+      "feedback": {
+        "codes": [
+          "timeline.frameIterations"
+        ],
+        "issues": [
+          {
+            "code": "timeline.frameIterations",
+            "path": "/frameIterations",
+            "actualPresent": true,
+            "actual": 0
+          }
+        ],
+        "declaredComponentIds": [
+          "frame0_3dgs",
+          "stage1_ntc",
+          "arm_b_additional_3dgs"
+        ],
+        "scientificApproval": false,
+        "authoredValuesPreserved": true,
+        "declaredStepCount": 6,
+        "explicitScopeEndReleases": [
+          {
+            "componentIndex": 0,
+            "componentId": "frame0_3dgs",
+            "scope": "per_repeat",
+            "disposeAfter": null
+          },
+          {
+            "componentIndex": 1,
+            "componentId": "stage1_ntc",
+            "scope": "per_repeat",
+            "disposeAfter": null
+          },
+          {
+            "componentIndex": 2,
+            "componentId": "arm_b_additional_3dgs",
+            "scope": "per_frame",
+            "disposeAfter": 5
+          }
+        ]
+      }
+    },
+    "repair": {
+      "finishReason": "stop",
+      "errors": [
+        "timeline.frameIterations"
+      ],
+      "frameIterations": 0,
+      "frameStepIndices": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "lifecycles": [
+        {
+          "componentId": "frame0_3dgs",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 0,
+            "disposeAfter": "scope_end"
+          }
+        },
+        {
+          "componentId": "stage1_ntc",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 1,
+            "disposeAfter": "scope_end"
+          }
+        },
+        {
+          "componentId": "arm_b_additional_3dgs",
+          "lifecycle": {
+            "scope": "per_frame",
+            "createBefore": 2,
+            "disposeAfter": "scope_end"
+          }
+        }
+      ],
+      "feedback": {
+        "codes": [
+          "timeline.frameIterations"
+        ],
+        "issues": [
+          {
+            "code": "timeline.frameIterations",
+            "path": "/frameIterations",
+            "actualPresent": true,
+            "actual": 0
+          }
+        ],
+        "declaredComponentIds": [
+          "frame0_3dgs",
+          "stage1_ntc",
+          "arm_b_additional_3dgs"
+        ],
+        "scientificApproval": false,
+        "authoredValuesPreserved": true,
+        "declaredStepCount": 6,
+        "explicitScopeEndReleases": [
+          {
+            "componentIndex": 0,
+            "componentId": "frame0_3dgs",
+            "scope": "per_repeat",
+            "disposeAfter": null
+          },
+          {
+            "componentIndex": 1,
+            "componentId": "stage1_ntc",
+            "scope": "per_repeat",
+            "disposeAfter": null
+          },
+          {
+            "componentIndex": 2,
+            "componentId": "arm_b_additional_3dgs",
+            "scope": "per_frame",
+            "disposeAfter": 5
+          }
+        ]
+      }
+    }
+  },
+  "scientificCredit": 0,
+  "initialAndRevisionWireIdentical": true,
+  "boundary": "Explicit scope_end and scalar groups succeeded in this run; positive frame-block execution count remains inconsistent (0 with per_frame steps). No automatic correction, initialization, public plan or scientific credit."
+}

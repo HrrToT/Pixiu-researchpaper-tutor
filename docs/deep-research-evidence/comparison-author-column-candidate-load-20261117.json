@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "cf24fe32c5535e8df0277266e208c5eddae28c70",
+  "fullRegression": "comparison-author-column-full-20261117.json",
+  "candidate": "academic-dr-author-column-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "health": "ok",
+  "sourceHashesMatch": true,
+  "comparisonCellsContractVersion": 1,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

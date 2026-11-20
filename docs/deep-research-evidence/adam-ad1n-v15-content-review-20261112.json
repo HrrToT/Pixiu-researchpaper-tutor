@@ -1,0 +1,44 @@
+{
+  "case": "AD1N-v15",
+  "split": "development",
+  "sourceCommit": "64363ba7",
+  "promptVersion": "dr-v2.20261112.425",
+  "runId": "dr_run_83aa05ade6c05829b2152a2ed6d72110",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 14,
+  "settledTokens": 69889,
+  "elapsedSeconds": 276,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "editableSourceReaderActuallyExercised": true,
+  "invalidDiagnosticBodyRepairDeferralActuallyExercised": true,
+  "deferredClaims": [
+    "c1"
+  ],
+  "actualBodyRepairTargets": [
+    "c2"
+  ],
+  "machineAcceptedClaims": [
+    "c2"
+  ],
+  "answerCoverageGaps": 4,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "manualFindings": [
+    "Initial generation separates reported mechanism and inferred comparison boundary, but the protected boundary consumes significant display budget.",
+    "Editable-plus-fixed source reader executes but reintroduces a performance-guarantee limit outside its assigned O1-O3 points.",
+    "Core explanation still uses an unexplained formula, omits the actual parameter-update relationship, and states corrected expectation equals true moment without stationarity qualification.",
+    "C1 reviewer reports support but omits mandatory diagnosticFacts; server keeps C1 unverified and does not edit it.",
+    "C2 had a concrete unsupported m0 observation and is the only repaired target; a narrower v0 observation passes.",
+    "Published result consists only of a mixed-language settings/comparison-boundary inventory; it does not satisfy the novice explanation request."
+  ],
+  "oldLedgerAndPayloadsExact": true,
+  "other15TasksExact": true,
+  "indexExact": true,
+  "ledgerRows": 9204,
+  "active": 0,
+  "paused": 15,
+  "rawPayloadSha256": "a39905fbf97ab70da6ddda0fc39259365297f6995250fd2132fa8bcd215d10b5",
+  "boundary": "Runtime branches and settlement proven; complete answer quality and independent acceptance remain unproven. No prior outcome changed."
+}

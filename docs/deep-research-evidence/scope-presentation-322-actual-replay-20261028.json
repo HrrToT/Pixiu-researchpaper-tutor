@@ -1,0 +1,20 @@
+{
+  "newPromptVersion": "dr-v2.20261028.322",
+  "scopeExpressionContractVersion": 3,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "beforeCharacters": 276,
+  "afterCharacters": 246,
+  "beforeBoundaryText": "所引来源报告的评估设置包括：LightGaussian，数据集=Mip-NeRF 360; Tank&Temple；LightGaussian，GPU=NVIDIA A6000(重训练3D-GS*)。这些引用不足以证明：在范围「所有无界场景/压缩配置」内的所有情形中，LightGaussian相对于3D-GS，图像质量接近(PSNR/SSIM/LPIPS差异达作者报告幅度)。",
+  "afterBoundaryText": "已报告设置：LightGaussian（数据集：Mip-NeRF 360; Tank&Temple；GPU：NVIDIA A6000(重训练3D-GS*)）。尚不能据此确认LightGaussian相对3D-GS的“图像质量接近(PSNR/SSIM/LPIPS差异达作者报告幅度)”在所有无界场景/压缩配置中普遍成立。",
+  "canonicalReviewPropositionsIdentical": true,
+  "sourceAndBindingFieldsIdentical": true,
+  "allRenderedFieldsPreservedInExpression": true,
+  "newAuditVerification": [
+    "unchecked"
+  ],
+  "sourcePayloadUnchanged": true,
+  "sourcePayloadSha256": "32f2e4ec454040ac277d2c081ef1c5a6c6d5b6e58c0d8da58f8ab6570ac18063",
+  "contentAccepted": false,
+  "independentCredit": 0
+}

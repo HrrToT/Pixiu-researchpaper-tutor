@@ -1,0 +1,34 @@
+{
+  "promptVersion": "dr-v2.20261105.384",
+  "sourceCommit": "54358457",
+  "sourceCase": "X5H-v1",
+  "scope": "single actual final-answer coverage audit of saved performance-only answer; no synthesis, repair or factual approval",
+  "modelCalls": 1,
+  "tokens": 6158,
+  "allCallsSettled": true,
+  "auditStatus": "checked",
+  "gapObligations": [
+    "ob_3",
+    "answer_scope"
+  ],
+  "rawResponseSha256": "68c85369c25038cb07c0cf4d891439118d4d2a37ceecddf522fe66c512552d4d",
+  "productionPreservation": {
+    "before": {
+      "ledgerRows": 8402,
+      "ledgerSha256": "ddd9d52a3616934bd4b4979acc4aff69c3431ebc0e53cbdf2b4d0c1b818c1fd2",
+      "payloadSha256": "4814208b9c7795a950c9d211a3a6c2afce36a47fef607fcd0bf1e28671c083b8"
+    },
+    "after": {
+      "ledgerRows": 8402,
+      "ledgerSha256": "ddd9d52a3616934bd4b4979acc4aff69c3431ebc0e53cbdf2b4d0c1b818c1fd2",
+      "payloadSha256": "4814208b9c7795a950c9d211a3a6c2afce36a47fef607fcd0bf1e28671c083b8"
+    },
+    "exactProductionPreservation": true,
+    "productionPublish": false,
+    "independentCredit": 0
+  },
+  "noAutomaticRetry": true,
+  "independentCredit": 0,
+  "completeResearchContentAccepted": false,
+  "reasonBoundary": "Model mentioned example algorithms in its private reason; reasons are not source facts or new frozen requirements and were not adopted as required steps."
+}

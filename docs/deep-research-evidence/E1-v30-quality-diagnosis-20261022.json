@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "31cc5f0d",
+  "case": "E1-v30",
+  "independentCredit": 0,
+  "contentAccepted": false,
+  "findings": [
+    {
+      "area": "generation",
+      "evidence": "c6 baselineInitialization has shape [0], fresh load_pretrained and additional component input state initial_3dgs; validators reject shape, unavailable input and operation rule.",
+      "next": "Align initial and repair grammars; generate complete initial states before fitting, with valid state references."
+    },
+    {
+      "area": "review",
+      "evidence": "c1 hypothesis rejected for lacking observed PSNR/SSIM results; c2 proposed values rejected merely for absent paper values.",
+      "next": "Separate testable predictions and proposed design choices from attributed factual claims."
+    },
+    {
+      "area": "review",
+      "evidence": "c7 rejection says timing details missing although quoted text contains warmup 1 frame, CUDA synchronization, 3 repeats and timing boundary. Invalid finding bindings retained.",
+      "next": "Audit contradictory missing-field findings without auto-approving science."
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairBatchStop": {
+    "batch": 2,
+    "kind": "repairPromptBytes",
+    "limit": 10502,
+    "used": 22898
+  },
+  "boundary": "Manual inspection of archived output; field binding is not scientific correctness. Original independent gates remain incomplete."
+}

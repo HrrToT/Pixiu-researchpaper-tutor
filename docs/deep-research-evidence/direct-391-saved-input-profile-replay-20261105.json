@@ -1,0 +1,197 @@
+{
+  "promptVersion": "dr-v2.20261105.391",
+  "mode": "Actual saved G1N-v2 synthesis node input and request-option capture,0 provider/network calls",
+  "sourceRun": "dr_run_19728b3190ee58b9820b8222b65d2410",
+  "old": {
+    "version": 9,
+    "promptSha256": "1edd03f95a6654e86f358e59ff0de9f6e9a1a54ab74eab074be0908c3872ac51",
+    "inputBytes": 24000,
+    "options": {
+      "max_tokens": 8192,
+      "temperature": 0.2,
+      "thinking": {
+        "type": "enabled"
+      },
+      "reasoning_effort": "low",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "allocation": {
+      "version": 1,
+      "candidateEvidenceIds": [
+        "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+        "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f",
+        "ev_88d041cce6602e2b4d9e1a3ed551ba0c43dbb78df7fe34b5cf0eed696bd946b6",
+        "ev_fedeeaead6d4f3dfab1298725b1cf95631a61967ea58c3579dc3260ec0b07428",
+        "ev_370c85ad7c379d5aee202fe72c658283460132b356dead24814ace1ae84f4255",
+        "ev_6823788fc68a0181ee1742d38c4bbc1b78027d661ff2eb5380e8a67fecbfccdd",
+        "ev_740aef1fa0aead4d7239dc86f6a797d6f8db77c9b5cf3fafd1bc94520bf28be4",
+        "ev_2858e6012f3917a72719ead23d2297103ce8f35f7d29c0b4a2284a230c9bbad2"
+      ],
+      "suppliedEvidenceIds": [
+        "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+        "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f"
+      ],
+      "missingPremiseBundles": [
+        {
+          "obligationId": "ob_3",
+          "criterionId": "human_aspect_1",
+          "requirement": "Mip-NeRF360 的渲染质量如何",
+          "source": "arxiv:2404.10772v1",
+          "evidenceIds": [
+            "E15"
+          ]
+        },
+        {
+          "obligationId": "ob_3",
+          "criterionId": "human_aspect_1",
+          "requirement": "Mip-NeRF360 的渲染质量如何",
+          "source": "arxiv:2406.06521v1",
+          "evidenceIds": [
+            "E16"
+          ]
+        },
+        {
+          "obligationId": "ob_6",
+          "criterionId": "req_1",
+          "requirement": "基于前面核对的证据，给出在不同应用场景下的选择建议。",
+          "source": "arxiv:2406.06521v1",
+          "evidenceIds": [
+            "E17"
+          ]
+        }
+      ],
+      "inputBytes": 24000,
+      "fixedInputBytes": 13932,
+      "tableDataOmittedEvidenceIds": [],
+      "sharedTablePackets": 0
+    }
+  },
+  "new": {
+    "version": 10,
+    "promptSha256": "1edd03f95a6654e86f358e59ff0de9f6e9a1a54ab74eab074be0908c3872ac51",
+    "inputBytes": 24000,
+    "options": {
+      "max_tokens": 8192,
+      "temperature": 0.2,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "allocation": {
+      "version": 1,
+      "candidateEvidenceIds": [
+        "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+        "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f",
+        "ev_88d041cce6602e2b4d9e1a3ed551ba0c43dbb78df7fe34b5cf0eed696bd946b6",
+        "ev_fedeeaead6d4f3dfab1298725b1cf95631a61967ea58c3579dc3260ec0b07428",
+        "ev_370c85ad7c379d5aee202fe72c658283460132b356dead24814ace1ae84f4255",
+        "ev_6823788fc68a0181ee1742d38c4bbc1b78027d661ff2eb5380e8a67fecbfccdd",
+        "ev_740aef1fa0aead4d7239dc86f6a797d6f8db77c9b5cf3fafd1bc94520bf28be4",
+        "ev_2858e6012f3917a72719ead23d2297103ce8f35f7d29c0b4a2284a230c9bbad2"
+      ],
+      "suppliedEvidenceIds": [
+        "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55",
+        "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_377b04c8d40917fa45e747ced7427cb525192de07095e6dab8edfc98216962ab",
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+        "ev_a3c2f212682511804fb34de742fbaf3137443d276d62026b7fbbf837a816079f"
+      ],
+      "missingPremiseBundles": [
+        {
+          "obligationId": "ob_3",
+          "criterionId": "human_aspect_1",
+          "requirement": "Mip-NeRF360 的渲染质量如何",
+          "source": "arxiv:2404.10772v1",
+          "evidenceIds": [
+            "E15"
+          ]
+        },
+        {
+          "obligationId": "ob_3",
+          "criterionId": "human_aspect_1",
+          "requirement": "Mip-NeRF360 的渲染质量如何",
+          "source": "arxiv:2406.06521v1",
+          "evidenceIds": [
+            "E16"
+          ]
+        },
+        {
+          "obligationId": "ob_6",
+          "criterionId": "req_1",
+          "requirement": "基于前面核对的证据，给出在不同应用场景下的选择建议。",
+          "source": "arxiv:2406.06521v1",
+          "evidenceIds": [
+            "E17"
+          ]
+        }
+      ],
+      "inputBytes": 24000,
+      "fixedInputBytes": 13932,
+      "tableDataOmittedEvidenceIds": [],
+      "sharedTablePackets": 0
+    }
+  },
+  "samePromptAndPremises": true,
+  "unchanged8192OutputCap": true,
+  "originalPayloadUnchanged": true,
+  "rawSha256": "7c35cd98f7bc79ad586deb3bb39153df37a39be57e9a7f8b929e432bd8ea27fa",
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "references": [
+    "https://api-docs.deepseek.com/guides/thinking_mode/",
+    "https://api-docs.deepseek.com/api/create-chat-completion/"
+  ],
+  "referenceBoundary": "Official API defines explicit disabled thinking/none and usage reasoning_tokens. Historical call lacks reasoning-token detail; no retrospective inference of exact hidden tokens. This only changes the initial eligible drafting role, not review or acceptance."
+}

@@ -1,0 +1,114 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-NAMED-TARGETS-v1",
+  "implementationSourceCommit": "a97459c89",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "66c9cc5ea0a7cfd742351f4488921c248d45987827b6e2f7188c2d896ac0664b",
+  "inputBytes": 31956,
+  "originalEvidenceRows": 17,
+  "allOriginalSourceDataUnchanged": true,
+  "providerCalls": 1,
+  "attempt": 1,
+  "callStatus": "succeeded",
+  "settled": true,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 14790,
+    "input_tokens": 10186,
+    "output_tokens": 4604
+  },
+  "recordedCallSeconds": 44.0,
+  "requestBudget": {
+    "calls": 1,
+    "tokens": 50000,
+    "wallSeconds": 180,
+    "maxOutputTokens": 6144,
+    "requestDeadlineSeconds": 90
+  },
+  "unitValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.source_closure",
+      "path": "/sourceRefs"
+    }
+  ],
+  "compactCanonicalBytes": 12181,
+  "variablesPerTarget": {
+    "baseline": [
+      "position",
+      "opacity",
+      "scale",
+      "rotation",
+      "dc_color",
+      "sh_color"
+    ],
+    "shared_initialization": [
+      "position",
+      "opacity",
+      "scale",
+      "rotation",
+      "dc_color",
+      "sh_color"
+    ],
+    "gaussian_model": [
+      "position",
+      "opacity",
+      "scale",
+      "rotation",
+      "dc_color",
+      "sh_color"
+    ],
+    "sh_codebook": [
+      "sh_code"
+    ],
+    "scale_rotation_codebook": [
+      "scale_code",
+      "rotation_code"
+    ],
+    "sh_indices": [
+      "sh_index"
+    ],
+    "scale_rotation_indices": [
+      "scale_rotation_index"
+    ]
+  },
+  "rawResponseBytes": 20788,
+  "nativeSchemaReceiptComputedOffline": {
+    "version": 1,
+    "schemaName": "workflow_representation_v4_named_targets",
+    "schemaDigest": "8cea67af48c7116e52440fdbe50f439622af70448a70ae364f3d24a23b51ad2b",
+    "providerSchemaEnforcementVerified": false,
+    "scientificApproval": false,
+    "status": "valid",
+    "issues": [],
+    "issuesTruncated": false
+  },
+  "nativeReceiptReplayedByNewCodeNotAddedToOriginalResult": true,
+  "manualContentReview": {
+    "accepted": false,
+    "observations": [
+      "Complete named targets distinguish Gaussian variables, codebook vectors and index fields.",
+      "The three Gaussian targets each have six fields, but shapes describe only channel vectors and omit the Gaussian count.",
+      "Codebook shapes omit their code count; index shapes omit the Gaussian count.",
+      "Training data is assumed to contain already-created Gaussian/codebook/index entities.",
+      "Encoding fourth items contain dtype labels rather than complete units/basis/channel conventions.",
+      "Entry origin:paper does not establish source support for all attached layout/dtype choices.",
+      "Canonical source-closure error remains; schema-valid is not scientifically valid."
+    ]
+  },
+  "isolatedSchemaOverride": true,
+  "productWireChanged": false,
+  "automaticRetry": false,
+  "frozen": false,
+  "followupInitializationCalls": 0,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "applicationDataUnchanged": true,
+  "artifacts": {
+    "tmp/shared-representation-named-targets-v1-result-20261116/result.json": "6f46a1c535fb368e82632603d6e2f570ba7cd65e25b8e34d9e96b2379e1e9c0b",
+    "tmp/shared-representation-named-targets-v1-public-review-20261116/reviewed-request.json": "ebf3e29ef1e29bb2f1553608388bea0d01cef1edce3fdf63cadb87ea0b01123f"
+  },
+  "boundary": "One isolated declaration diagnostic; not a complete experiment, application activation or independent content acceptance."
+}

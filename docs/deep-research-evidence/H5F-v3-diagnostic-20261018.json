@@ -1,0 +1,559 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v3",
+  "sourceCommit": "04b8c4f1",
+  "promptVersion": "dr-v2.20261018.179",
+  "runId": "dr_run_9528cc27aded52969b30d37198d5f782",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 39033,
+  "elapsedSeconds": 86.543,
+  "cost": null,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 16384,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "disabled"
+    },
+    "reasoning_effort": "none",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 3,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": 1,
+    "readability": 3
+  },
+  "findings": [
+    "New experiment intent/source drafting eliminates the earlier PSNR-score-standard-deviation surrogate and the inappropriate significance demand. The reviewer now correctly rejects an unchosen 光流或像素差异 measurement and missing motion handling/quality guard.",
+    "The proposal remains non-executable: common initial states and workflow inputs/operations fail checks, the named scene is not established in its citations, and metrics/aggregation are unspecified. Published groups/budget alone are not a complete experiment.",
+    "A treatment named paper AST with generic smoothing weights does not specify the paper's time-noise intervention. Implementing the actual requested intervention still needs its source-backed operation.",
+    "Review also demands repetition of a tolerance already present in the linked analysis; shared definitions must be checked across roles rather than copied into every hypothesis/limits paragraph.",
+    "Repair preflight still stops at24724/24000 required evidence bytes for this new draft, though the archived old draft fits. Next inspect scientific coupling of metrics/hypothesis/analysis and scheduling without dropping quotes/configuration or raising the cap.",
+    "One fixed development submission, no independent credit, immediate retry or old-score upgrade."
+  ],
+  "actualDescriptiveIntentRespected": true,
+  "invalidVagueJitterMeasurementRejected": true,
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 24724
+  },
+  "report": "## 分组表\n\n- 实验建议：同一场景下设置两组：关闭退火平滑（对照组）与启用论文所述退火平滑（处理组）。两组共享初始化、数据划分和训练预算，仅退火平滑开关不同。\n\n拟议分组（尚未执行）：\n- 因素：\"annealing_smoothing\"\n  - 对照组操作：\"关闭退火平滑\"\n    - 参数：未设置\n  - 实验组操作：\"启用论文所述退火平滑\"\n    - 参数：\n      - \"smoothing_start_step\"（数值）：1000\n      - \"smoothing_end_step\"（数值）：5000\n      - \"smoothing_initial_weight\"（数值）：0.1\n      - \"smoothing_final_weight\"（数值）：0.001\n  适用条件：factor：退火平滑；levels：['关闭', '启用']\n\n## 固定条件\n\n- 实验建议：基线训练预算为5000个优化步骤，恢复预算与基线匹配，每组均为5000个优化步骤。两组恢复预算相同，确保配对比较的预算匹配。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多5000优化步\n- 停止规则：\"达到最大优化步骤\"\n- 恢复预算：各组匹配\n  - 0组：5000优化步\n  - 1组：5000优化步\n  适用条件：baselineBudget：5000优化步骤；recoveryBudget：每组5000优化步骤\n\n<details>\n<summary>还有 16 项未完成</summary>\n\n- 基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。只提一个假设、同一场景两组：关闭退火平滑与启用论文所述退火平滑；给出共同初始化、固定条件、明确有限预算、指标、可执行步骤与配对判断。只作单场景描述性比较，方案尚未执行，不保证新颖或普遍有效。：最终回答尚未完整回应这一问题\n- 核对拟选数据集及准确子集的身份和实际成员依据；命名选择核对场景/样本名，按数量或全量选择核对该子集数量，不以整个父数据集替代子集。拟议划分、分辨率和训练预算由方案明确选择；仅在用户要求复现或核对原设置时追查作者的这些设置。：最终回答尚未完整回应这一问题\n- 基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。：最终回答尚未完整回应这一问题\n- 论文中用于动态场景重建的数据集或场景有哪些？：联合前提尚未就绪：识别论文中使用的至少一个具体动态场景数据集或场景名称，以便实验中选择同一场景。\n- 补齐实验方案：假设：尚未形成经过检查的方案内容\n- 补齐实验方案：执行步骤：尚未形成经过检查的方案内容\n- 补齐实验方案：指标：尚未形成经过检查的方案内容\n- 补齐实验方案：结果解释：尚未形成经过检查的方案内容\n- 补齐实验方案：风险：尚未形成经过检查的方案内容\n- 补齐实验方案：待验证假设：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：固定条件：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：执行步骤与记录：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：指标与测量口径：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：结果判断方法：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：风险与适用边界：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。",
+  "draft": {
+    "sections": [
+      {
+        "title": "假设",
+        "claimIds": [
+          "c1"
+        ]
+      },
+      {
+        "title": "分组表",
+        "claimIds": [
+          "c2"
+        ]
+      },
+      {
+        "title": "固定条件",
+        "claimIds": [
+          "c3",
+          "c4",
+          "c5"
+        ]
+      },
+      {
+        "title": "执行步骤",
+        "claimIds": [
+          "c6"
+        ]
+      },
+      {
+        "title": "指标",
+        "claimIds": [
+          "c7"
+        ]
+      },
+      {
+        "title": "结果解释",
+        "claimIds": [
+          "c8"
+        ]
+      },
+      {
+        "title": "风险",
+        "claimIds": [
+          "c9"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "在固定相机位姿误差下，启用论文所述退火平滑训练（相对于关闭退火平滑）会降低同一场景时间插值序列的抖动指标，且不使重建质量指标（PSNR）下降超过预设容忍度。\n\n拟议假设与判断范围（尚未验证）\n\n假设陈述：\"在固定相机位姿误差下，启用论文所述退火平滑训练（相对于关闭退火平滑）会降低同一场景时间插值序列的抖动指标，且不使重建质量指标（PSNR）下降超过预设容忍度。\"\n\n关注效应：\n  - \"jitter_effect\"\n  - \"psnr_effect\"\n\n本假设用于探索：报告估计值和可提供的不确定性说明，但不做显著性或等价性判定。",
+        "kind": "hypothesis",
+        "evidenceRefs": [],
+        "conditions": {
+          "scope": "单场景描述性比较，方案尚未执行，不保证新颖或普遍有效",
+          "causalDirection": "退火平滑训练 → 时间插值抖动"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "hypothesis",
+        "executionSpec": {
+          "statement": "在固定相机位姿误差下，启用论文所述退火平滑训练（相对于关闭退火平滑）会降低同一场景时间插值序列的抖动指标，且不使重建质量指标（PSNR）下降超过预设容忍度。",
+          "analysisClaimId": "c8",
+          "effectKeys": [
+            "jitter_effect",
+            "psnr_effect"
+          ],
+          "purpose": "explore"
+        },
+        "designContractVersion": 2,
+        "hypothesisContractVersion": 1
+      },
+      {
+        "claimId": "c2",
+        "text": "同一场景下设置两组：关闭退火平滑（对照组）与启用论文所述退火平滑（处理组）。两组共享初始化、数据划分和训练预算，仅退火平滑开关不同。\n\n拟议分组（尚未执行）：\n- 因素：\"annealing_smoothing\"\n  - 对照组操作：\"关闭退火平滑\"\n    - 参数：未设置\n  - 实验组操作：\"启用论文所述退火平滑\"\n    - 参数：\n      - \"smoothing_start_step\"（数值）：1000\n      - \"smoothing_end_step\"（数值）：5000\n      - \"smoothing_initial_weight\"（数值）：0.1\n      - \"smoothing_final_weight\"（数值）：0.001",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "factor": "退火平滑",
+          "levels": [
+            "关闭",
+            "启用"
+          ]
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "groups",
+        "executionSpec": {
+          "factors": [
+            {
+              "name": "annealing_smoothing",
+              "control": {
+                "action": "关闭退火平滑",
+                "parameters": []
+              },
+              "treatment": {
+                "action": "启用论文所述退火平滑",
+                "parameters": [
+                  {
+                    "name": "smoothing_start_step",
+                    "type": "number",
+                    "value": 1000
+                  },
+                  {
+                    "name": "smoothing_end_step",
+                    "type": "number",
+                    "value": 5000
+                  },
+                  {
+                    "name": "smoothing_initial_weight",
+                    "type": "number",
+                    "value": 0.1
+                  },
+                  {
+                    "name": "smoothing_final_weight",
+                    "type": "number",
+                    "value": 0.001
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "designContractVersion": 2
+      },
+      {
+        "claimId": "c3",
+        "text": "两组共享相同的初始化、渲染设置、优化器设置及其他干预。初始化由执行步骤中的工作流定义，渲染使用固定分辨率，优化器使用固定学习率与调度，其他干预显式禁用。\n\n拟议固定条件（尚未执行）：\n- 初始化与配对：使用执行流程中统一定义的基线与新组件初值，并在每次重复内配对复制到各组。\n- 渲染或评估设置：渲染图像\n  - image_width：800\n  - image_height：800\n- 优化器与更新规则：使用Adam优化器\n  - learning_rate：0.0005\n  - betas：\"0.9,0.999\"\n- 其他干预：禁用其他干预",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "shared": [
+            "初始化",
+            "渲染",
+            "优化器",
+            "其他干预"
+          ]
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "controls",
+        "executionSpec": {
+          "initialization": {
+            "workflowClaimId": "c6"
+          },
+          "rendering": {
+            "action": "渲染图像",
+            "parameters": [
+              {
+                "name": "image_width",
+                "type": "number",
+                "value": 800
+              },
+              {
+                "name": "image_height",
+                "type": "number",
+                "value": 800
+              }
+            ]
+          },
+          "optimizer": {
+            "action": "使用Adam优化器",
+            "parameters": [
+              {
+                "name": "learning_rate",
+                "type": "number",
+                "value": 0.0005
+              },
+              {
+                "name": "betas",
+                "type": "choice",
+                "value": "0.9,0.999"
+              }
+            ]
+          },
+          "otherInterventions": {
+            "action": "禁用其他干预",
+            "parameters": []
+          }
+        },
+        "designContractVersion": 2,
+        "protocolContractVersion": 2
+      },
+      {
+        "claimId": "c4",
+        "text": "选用D-NeRF数据集中的Lego场景作为单场景数据。该场景在论文中被提及存在训练集与测试集场景差异，但本实验仅使用其训练集部分进行时间插值评估。数据划分采用固定种子随机划分，独立单元为时间帧。\n\n拟议配置（尚未执行）：\n\n- 数据集：D-NeRF Lego\n- 场景选择：指定场景 Lego\n- 数据划分：以种子42随机划分，评估比例20%\n- 随机种子：42\n- 独立单元：时间帧\n- 基线：每个种子重新训练基线\n\n随机划分操作：先按样本标识排序，再用指定种子打乱；N≥2时取min(N−1,max(1,floor(N×评估比例)))项作评估，其余作训练。\n\n执行前预检（尚未执行）：枚举实际样本并保存清单，拒绝重复标识；显式划分的标识必须存在。按上述规则划分后，训练集与评估集必须都非空且互不重叠；否则停止实验并记录原因，不自动换数据。记录实际数量、排序、种子及随机数实现版本。这些是预检要求，不表示论文已报告或系统已确认样本数量。",
+        "kind": "proposal",
+        "evidenceRefs": [
+          "ev_530e250ef8c80fb1f9afe9a11a9ae721e9ec6cd55d8f8841b2f1c7b84961193a",
+          "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2"
+        ],
+        "conditions": {
+          "dataset": "D-NeRF",
+          "scene": "Lego",
+          "split": "固定种子随机划分",
+          "independentUnit": "时间帧"
+        },
+        "obligationIds": [
+          "data_availability",
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "data",
+        "executionSpec": {
+          "dataset": "D-NeRF Lego",
+          "scenes": {
+            "mode": "named",
+            "names": [
+              "Lego"
+            ]
+          },
+          "split": {
+            "mode": "seeded_fraction",
+            "evaluationFraction": 0.2,
+            "seed": 42
+          },
+          "seeds": [
+            42
+          ],
+          "independentUnit": "时间帧",
+          "replication": {
+            "mode": "retrained_per_seed"
+          }
+        },
+        "designContractVersion": 2,
+        "protocolContractVersion": 2
+      },
+      {
+        "claimId": "c5",
+        "text": "基线训练预算为5000个优化步骤，恢复预算与基线匹配，每组均为5000个优化步骤。两组恢复预算相同，确保配对比较的预算匹配。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多5000优化步\n- 停止规则：\"达到最大优化步骤\"\n- 恢复预算：各组匹配\n  - 0组：5000优化步\n  - 1组：5000优化步",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "baselineBudget": "5000优化步骤",
+          "recoveryBudget": "每组5000优化步骤"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "budget",
+        "executionSpec": {
+          "baseline": {
+            "mode": "train",
+            "unit": "optimizer_steps",
+            "maxBudget": 5000,
+            "stoppingRule": "达到最大优化步骤"
+          },
+          "recovery": {
+            "mode": "matched",
+            "unit": "optimizer_steps",
+            "groups": {
+              "0": 5000,
+              "1": 5000
+            }
+          }
+        },
+        "designContractVersion": 2,
+        "budgetContractVersion": 1
+      },
+      {
+        "claimId": "c6",
+        "text": "执行步骤：准备数据、获取基线、初始化组件、配对分组、应用干预、恢复训练、评估、记录。基线模式为训练，复制模式为每个种子重新训练。基线初始化从零开始，组件初始化从基线派生。检查点选择采用固定预算。",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "baselineMode": "train",
+          "replicationMode": "retrained_per_seed",
+          "checkpointSelection": "fixed_budget"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "steps",
+        "executionSpec": {
+          "refs": {
+            "data": "c4",
+            "budget": "c5",
+            "controls": "c3",
+            "groups": "c2"
+          },
+          "order": [
+            "prepare_data",
+            "acquire_baseline",
+            "initialize_components",
+            "pair_groups",
+            "apply_interventions",
+            "recover",
+            "evaluate",
+            "record"
+          ],
+          "baselineMode": "train",
+          "replicationMode": "retrained_per_seed",
+          "baselineInitialization": {
+            "initializationMode": "fresh",
+            "inputs": [],
+            "creation": {
+              "action": "随机初始化",
+              "parameters": []
+            },
+            "stateDefinitions": [
+              {
+                "name": "canonical_gaussians",
+                "dtype": "float32",
+                "shape": [
+                  10000,
+                  3
+                ],
+                "initializer": {
+                  "mode": "uniform",
+                  "low": -0.5,
+                  "high": 0.5,
+                  "rng": "numpy",
+                  "seed": {
+                    "mode": "data_seed"
+                  }
+                }
+              },
+              {
+                "name": "deformation_mlp_weights",
+                "dtype": "float32",
+                "shape": [
+                  256,
+                  256
+                ],
+                "initializer": {
+                  "mode": "normal",
+                  "mean": 0.0,
+                  "std": 0.01,
+                  "rng": "numpy",
+                  "seed": {
+                    "mode": "data_seed"
+                  }
+                }
+              }
+            ]
+          },
+          "componentInitializations": [
+            {
+              "componentId": "deformation_mlp",
+              "initializationMode": "derive",
+              "inputs": [
+                {
+                  "state": "canonical_gaussians",
+                  "selector": "baseline"
+                }
+              ],
+              "creation": {
+                "action": "复制基线状态",
+                "parameters": []
+              },
+              "stateDefinitions": [
+                {
+                  "name": "deformation_mlp_weights",
+                  "dtype": "float32",
+                  "shape": [
+                    256,
+                    256
+                  ],
+                  "initializer": {
+                    "mode": "operation",
+                    "inputIndices": [
+                      0
+                    ],
+                    "rule": {
+                      "action": "复制",
+                      "parameters": []
+                    }
+                  }
+                }
+              ],
+              "appliesTo": [
+                "0",
+                "1"
+              ]
+            }
+          ],
+          "checkpointSelection": {
+            "mode": "fixed_budget"
+          },
+          "records": [
+            "baseline_identity",
+            "split_manifest",
+            "seed_manifest",
+            "component_states",
+            "group_configs",
+            "recovery_budgets",
+            "evaluation_outputs",
+            "raw_measurements",
+            "group_checkpoints"
+          ]
+        },
+        "designContractVersion": 2,
+        "workflowContractVersion": 4
+      },
+      {
+        "claimId": "c7",
+        "text": "指标包括时间插值抖动指标和重建质量指标PSNR。抖动指标基于同一视角时间路径上相邻帧渲染图像的光流或像素差异，方向为越低越好；PSNR方向为越高越好，聚合级别为图像级平均。",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "jitterMetric": "相邻帧渲染图像光流或像素差异",
+          "psnrMetric": "图像级平均PSNR"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "metrics",
+        "executionSpec": null,
+        "designContractVersion": 2
+      },
+      {
+        "claimId": "c8",
+        "text": "分析采用描述性比较，计算处理组与对照组在抖动指标和PSNR上的配对差异。不确定性模式为描述性，决策模式为描述性，边界为预设的PSNR容忍度。\n\n拟议配置（尚未执行）：\n\n效应定义：\n\n- jitter_effect：处理组抖动指标 - 对照组抖动指标\n- psnr_effect：处理组PSNR - 对照组PSNR\n\n不确定性：描述性分析，边界为报告配对差异的描述性统计量（均值、标准差）\n\n判定逻辑：描述性判断，边界为若抖动指标配对差异为负且PSNR配对差异不低于-0.5 dB，则支持假设",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "analysisType": "描述性比较",
+          "uncertainty": "描述性",
+          "decision": "描述性"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "analysis",
+        "executionSpec": {
+          "effects": {
+            "jitter_effect": "处理组抖动指标 - 对照组抖动指标",
+            "psnr_effect": "处理组PSNR - 对照组PSNR"
+          },
+          "uncertainty": {
+            "mode": "descriptive",
+            "boundary": "报告配对差异的描述性统计量（均值、标准差）"
+          },
+          "decision": {
+            "mode": "descriptive",
+            "boundary": "若抖动指标配对差异为负且PSNR配对差异不低于-0.5 dB，则支持假设"
+          }
+        },
+        "designContractVersion": 2
+      },
+      {
+        "claimId": "c9",
+        "text": "本实验为单场景描述性比较，未执行，不保证新颖或普遍有效。固定相机位姿误差可能引入混淆，且时间插值抖动指标可能受真实运动影响。结论仅适用于该场景和设置。",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "scope": "单场景描述性比较",
+          "confounding": [
+            "固定相机位姿误差",
+            "真实运动"
+          ],
+          "generalization": "不保证普遍有效"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": [],
+        "designRole": "limits",
+        "executionSpec": null,
+        "designContractVersion": 2
+      }
+    ],
+    "budgetContractVersion": 1,
+    "hypothesisContractVersion": 1,
+    "protocolContractVersion": 2,
+    "workflowContractVersion": 4
+  },
+  "repairChecks": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v3.json",
+      "sha256": "5e6c26423b29a8e4871205eae1339a6f577734fd2e398b720315e5eaec0d1b66"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v3.payload.json",
+      "sha256": "35acdcbffc6c5b5bdf9d2cd184f923fc169a3ce94b8b067867d88c835562bcfd"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v3.calls.json",
+      "sha256": "5d42713cdce7d426856d714f450b32701f2307f60ece96f908ee8303f5e9cc0c"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v3.result.json",
+      "sha256": "13726fc36cda6b6a0c4cf14fbd642ea530ec955e9ec69267c9f92f5c0bcafd82"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}

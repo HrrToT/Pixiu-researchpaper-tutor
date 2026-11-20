@@ -1,0 +1,11 @@
+{
+  "oldInputBytes": 31742,
+  "candidateInputBytes": 31954,
+  "inputLimitBytes": 32000,
+  "actualInputBodyByteIdentical": true,
+  "schemaAndOutputAllowanceUnchanged": true,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "contentEffectVerified": false,
+  "change": "One selected tensor/table per input; no undeclared sibling-state reads"
+}

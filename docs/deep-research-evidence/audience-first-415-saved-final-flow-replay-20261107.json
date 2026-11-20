@@ -1,0 +1,35 @@
+{
+  "case": "AD1N-v6",
+  "payloadSha256": "f22652bc0cb5281bb9967633655407a5dafc75075ed3d5a53995a4bee03a25c0",
+  "rawUnchanged": true,
+  "replayOverrides": {
+    "startedAt": "current time for admission only",
+    "candidateOnly": "audienceFirstContractVersion1"
+  },
+  "legacyEvents": [
+    "synthesize",
+    "synthesize_compact"
+  ],
+  "legacyResult": {
+    "error_code": "invalid_synthesis_response"
+  },
+  "candidateEvents": [
+    "synthesize",
+    "synthesize_audience"
+  ],
+  "candidateCharacterCount": 143,
+  "characterLimit": 300,
+  "candidateAudienceOutcome": "applied",
+  "scopeC2AndOriginalCitationsKindsObligationsExact": true,
+  "initialSynthesisRequestExact": true,
+  "legacyRequestsExactAgainstCommit": "1a4a2d06",
+  "repeatNodeReusesReceivedAudienceEditWithoutDispatch": true,
+  "repeatInitialSynthesisRequestExact": true,
+  "savedInitialAndTruncatedCompactionResponsesReused": true,
+  "readerResponse": "Counterfactual wording fixture, not a model result. No science/coverage review executed.",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Proves order and existing source/length merge behavior for this saved input with a supplied valid short edit, not actual edit quality or success probability. Original failed run is unchanged."
+}

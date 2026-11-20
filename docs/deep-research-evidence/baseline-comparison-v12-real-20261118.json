@@ -1,0 +1,100 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v12",
+  "runId": "dr_run_aa8e677d5230545f9cfe6a31122893c2",
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "scientificAcceptance": false,
+  "independentHoldout": false,
+  "automaticRetry": false,
+  "modelCalls": 9,
+  "modelCallStatuses": {
+    "succeeded": 9
+  },
+  "ledgerTokens": 42853,
+  "elapsedSeconds": 144.0,
+  "generation": {
+    "compiledPoints": 3,
+    "wireAudit": {
+      "version": 2,
+      "status": "compiled_unverified",
+      "errors": [
+        {
+          "targetId": "table_0_0",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_0_1",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_1_0",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_1_1",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_2_0",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_2_1",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_3_0",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_3_1",
+          "reason": "invalid_answer_source_permission"
+        }
+      ],
+      "tableReferenceCount": 0,
+      "scientificApproval": false
+    }
+  },
+  "initialRejections": [
+    {
+      "claimId": "cmp_conclusion_0",
+      "reason": "missing_table_bindings"
+    },
+    {
+      "claimId": "cmp_conclusion_1",
+      "reason": "missing_table_bindings"
+    },
+    {
+      "claimId": "cmp_conclusion_2",
+      "reason": "missing_table_bindings"
+    }
+  ],
+  "finalVerificationSummary": {
+    "accepted": 0,
+    "rejected": 3
+  },
+  "coverageStatus": "not_checked",
+  "repairStatus": "response_received",
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "observations": [
+    "Goal short references were valid; all eight paper cells were isolated for foreign or mixed source evidence. Three joint points compiled.",
+    "Source evidence had 4 typed table items. Exact-request replay supplied 20 evidence rows, omitted typed table data for E9/E10/E13, and exposed no table references.",
+    "All three joint points were refused for missing table bindings. No recommendation containing unbound measurements was published.",
+    "No accepted claims remained, so complete-answer audit was not called; this case does not validate the new per-check output field catalog.",
+    "Disabling table-data omission only in an offline allocation prototype retained 3 catalogs within 31988 bytes, but missing premise bundles grew from 4 to 7. It is not an accepted production solution.",
+    "No complete comparison or independent acceptance; original restored with all current records exact. No new unknown requests."
+  ],
+  "nextAction": "Offline redesign of source-local generation/evidence allocation. Do not repeat paid same-question prompting or universally disable omission; preserve full evidence needs and budget.",
+  "rawReceiptSha256": {
+    ".payload.json": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+    ".calls.json": "53d6d6e6c1df8f4a7e0eba3bab3f25420502693aeaae61462cb68537c3ee6054",
+    ".result.json": "ba78d30db573fd72bf5874666245dc21042efb43cefc45e578a0463dbfbc2b25",
+    ".execution.json": "a9083347fa2982a34fb5d405731d90b8e0dd8f084ed99e0a23c39ed21c223f31",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}

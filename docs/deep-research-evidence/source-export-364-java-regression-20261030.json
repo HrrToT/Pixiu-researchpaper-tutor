@@ -1,0 +1,193 @@
+{
+  "sourceFrozen": true,
+  "exitCode": 0,
+  "elapsedSeconds": 61.031,
+  "suites": [
+    {
+      "name": "com.ai.assistant.backend_java.BackendJavaApplicationTests",
+      "tests": "1",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "21.612"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.AcademicControllerTest",
+      "tests": "33",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "4.81"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.ApiContractSmokeTest",
+      "tests": "3",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.423"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskDocumentIdentityControllerTest",
+      "tests": "3",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "3.475"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskDocumentTransferControllerTest",
+      "tests": "7",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.642"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskLearningControllerTest",
+      "tests": "6",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "1.94"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskMaterialControllerTest",
+      "tests": "4",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.42"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskOperationControllerTest",
+      "tests": "23",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "1.091"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchControllerTest",
+      "tests": "9",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "2.116"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskResearchV2ControllerTest",
+      "tests": "49",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "2.385"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.controller.TaskWorkspaceControllerTest",
+      "tests": "6",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.221"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.MaterialProcessingServiceTest",
+      "tests": "5",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.672"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.PdfServiceTaskHistoryTest",
+      "tests": "4",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.649"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.ResearchSourceExportJsonTest",
+      "tests": "3",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.89"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.ResearchSourcePdfTest",
+      "tests": "2",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.121"
+    },
+    {
+      "name": "com.ai.assistant.backend_java.service.TaskResearchReadProjectionTest",
+      "tests": "3",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "time": "0.012"
+    }
+  ],
+  "tests": 161,
+  "failures": 0,
+  "errors": 0,
+  "sourceHashes": {
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\BackendJavaApplication.java": "178aa2997e2faea6cae51b0f551496dff140fda7f80dfb92e08953ecef89ea2d",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\config\\WebConfig.java": "67550fed1d655e513c240671b0916ef79f23400c2b7182de47fd14f51b99721d",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\AcademicController.java": "7e31809dca1722ef50354397c6a320ae178eb14d6df3f67ff7def2cda01c2998",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskDocumentIdentityController.java": "7a2b4fd6d2b997c788d6ce0f97af1dc9724677771d487ab8d65cd9971185d5d1",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskDocumentTransferController.java": "c3ad7e404b3d07708302e60575b4b74fc98168bbdab6baac3251eb8982d367bb",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskMaterialController.java": "d36cc5a425105c2ef2a88964da3e0f9d2019fbd03ce75872b362381e14da854c",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskWorkspaceController.java": "62365e7720490435bae5bb5decad43b213c191f64ef871a8f3fc745d8eaea01e",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskWorkspaceErrorHandler.java": "d81435d4a07cc996616863bf7f5beedf28de7119b2215dc0450c1f16c071c68d",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\model\\ChatMessage.java": "c354274692d10ca795eb8be062376d642850bfbe86813ecbd627f07b8ee93412",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\model\\Paper.java": "2c2b0adcf72c98fad6a5d0da83889565ede7d9ea39bfd6a4ef24ecd43d60b6f5",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\model\\TaskDocumentTransfer.java": "e8a3467d9c8a4b468427dbfd3a1f15f7585bbad6cdda03527a1326d0d79f2119",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\model\\TaskMigrationSnapshot.java": "64205f77bb0b3892a6ff5db97dffebdd266f203c769b4e61fe1294973a36096f",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\model\\TaskWorkspace.java": "e6eb6eb4f55236d3016f66228ab61d155228328144c51ba8b9a15ef7fdd04280",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\repository\\ChatMessageRepository.java": "886a857e105427d7d9318f39bb267d4bcbc6e32c8efb5935437f141a11e3aaf6",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\repository\\PaperRepository.java": "2a6159699677372cd1ce5a5cc8aa656c53b1d7c5406a69106d0bab42c0c75266",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\repository\\TaskDocumentTransferRepository.java": "85a1d66e4850c7cfde3cf4ed5365ed908d10fcb49cb171686cc45af7894de4d5",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\repository\\TaskMigrationSnapshotRepository.java": "78d7ada086b3f536e3d01bad0f9fb6f0fd8f06578e741e47d4d0c1cdf7adef0f",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\repository\\TaskWorkspaceRepository.java": "9948b9b82a404d226f4412b68ae1fb6d312282ea44699c19dcc4fc890db5e461",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\AgentGatewayService.java": "962457f87d4b8a57974d5b07a3eb1fdea0d1e09856c5d3b7c74adbe27c7279fa",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\AiService.java": "0bab8c261354283f3ca3602e06c8eacebd4b5dc74c5c3eabd030d02a3d67c700",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\CritiqueContract.java": "9e4847bc89cf8c856e3f4e884a3cd7c0bd57d7b9b11b9c60921830bfe7a8719a",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\GatewayHelper.java": "36049b32e4e5c2bf01184420151d9b72a8b235724e5b2d80d42f2bdad9935290",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\MaterialProcessingService.java": "f195e6ba475c3a54f4f511d5565e11d07c5e2ec645fb06aa777989f946edc4f3",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\PdfService.java": "104c10d77603d4d4b41edfbc7d61d2e7099d7667a65e64b59db4469a2163a0f4",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\ResearchService.java": "47ce67166050b9bb3ee6caf9d49660be23579fa552221c28514aaa5d36027fb5",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\ResearchSourceExportJson.java": "e1b75a2b298db4edf1bc94ceec52dbce9715224bd3a72e1ec8823ba625771033",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\ResearchSourcePdf.java": "5a230f96f722dab9198606c96cfa23b112073cb70e7e44fe5839148840ccd724",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskDocumentIdentityService.java": "354bb018e9147af5cd90fce8e6b4996e513f0cf28e772379628ba23440d0ca1c",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskDocumentTransferService.java": "df6f7ed41eeb171df9370a83f470a55c214070c21ecfbae335bd1e85ceb233c2",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskLearningService.java": "4813ec8c8b2c3aa3a45dca92a3d47a59934b6bffc8b2891c77fd5316528273cb",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskOperationService.java": "61fa26e7f74365d2064d9d8ba3c5454b01a21afbe588ea57f2fbd9ac918d8288",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskResearchService.java": "1d6e1555b95c010c08ab1fcae07acc90d7199371bfc0c92ef28ee15dc943e3b2",
+    "backend-java\\src\\main\\java\\com\\ai\\assistant\\backend_java\\service\\TaskWorkspaceService.java": "6de9f4338cebd5e8469745c29e38a30cefb2cd51e060a090d697209630b3f73a",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\BackendJavaApplicationTests.java": "50d21c25b914386f7f098d77a26ed8f4249a9db11b40f92bcbafa5930883046c",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\AcademicControllerTest.java": "926bc6a249dd91410a507c9a1df271fc895f917afff206f61bc53ce474d92aa7",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\ApiContractSmokeTest.java": "f066844bf78262a9eddd7f18a866d0161045d6586186744e58d46aedef025d66",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskDocumentIdentityControllerTest.java": "4ca571e651a1f196395558633dd4c6cfdae556b6be258d60a0fc636ad2048411",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskDocumentTransferControllerTest.java": "69ad426366286a4a39d5ca656c9aa0eca1958bf9ecbb16fd92d3005868aa00a0",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskLearningControllerTest.java": "8cf464fbed40b7e5480ed8235cd69265390cfcbd3c8d7bff64e9d70cd5c29687",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskMaterialControllerTest.java": "fb46ebed2bc99d3f3158b5592eb49c8cfa30b5bb0998bcda2c2e3834719f97b2",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskOperationControllerTest.java": "214d7221fc56b719e419a1428d754e75d0b6ad4fe01661e6cbbf323d2819e2b2",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskResearchControllerTest.java": "8c85143b36eaa9bf5397f1973735aecc6d3eb6a74ff5a38ddf22573ca0f76293",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskResearchV2ControllerTest.java": "ef993ddd1ec116a325a9e98631dbffb4f389d355b1001d98182c0d52b0ab6988",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\controller\\TaskWorkspaceControllerTest.java": "d64ea4ad85501021d7d68c15cf5985f6acb1181903085827310ddfbab0fb4ddb",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\service\\MaterialProcessingServiceTest.java": "41ab93f96bf7a1cd6822e7fbdf2a987e3b988a08cf132e72c3cbed4743d34c89",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\service\\PdfServiceTaskHistoryTest.java": "c1e8be874bddb87a6d7a2f793c394ccd90e555a05d220860b53c6b51093f8ffd",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\service\\ResearchSourceExportJsonTest.java": "88248cd1d85000bfe64ead91122a156a918cae0304717a5e36548bef1b334454",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\service\\ResearchSourcePdfTest.java": "b52ac865f25e2dd237f07d32da5ab7f9bcbab47e9f4ad4c9ae0fd7c639d2c15e",
+    "backend-java\\src\\test\\java\\com\\ai\\assistant\\backend_java\\service\\TaskResearchReadProjectionTest.java": "ff89ad25c7622cc13ae6760170904ef822e67e3b9c9b836ee110a88ae3697ed8"
+  },
+  "providerCalls": 0,
+  "productionDbWrites": 0,
+  "log": "D:\\aiproj\\ai_project\\tmp\\source-export-364-java-full-20261030.log",
+  "summary": "Results:\n[INFO] \n[INFO] Tests run: 161, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] \n[INFO] --- jar:3.4.2:jar (default-jar) @ backend-java ---\n[INFO] Building jar: D:\\aiproj\\ai_project\\tmp\\source-export-364-java-target\\backend-java-0.0.1-SNAPSHOT.jar\n[INFO] \n[INFO] --- spring-boot:3.4.2:repackage (repackage) @ backend-java ---\n[INFO] Replacing main artifact D:\\aiproj\\ai_project\\tmp\\source-export-364-java-target\\backend-java-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to D:\\aiproj\\ai_project\\tmp\\source-export-364-java-target\\backend-java-0.0.1-SNAPSHOT.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  53.831 s\n[INFO] Finished at: 2026-10-30T00:49:56+08:00\n[INFO] ------------------------------------------------------------------------\n"
+}

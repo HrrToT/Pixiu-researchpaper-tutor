@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-23",
+  "fullSuitePassed": 4250,
+  "testFiles": 233,
+  "seconds": 283.99,
+  "warnings": 1,
+  "focusedPassed": 140,
+  "legacyScriptsPassed": 38,
+  "extraArchivedRequestFingerprintsMatched": 3,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Offline tests and original input preservation, not verification of new model judgement."
+}

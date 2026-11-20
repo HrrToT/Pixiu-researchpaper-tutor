@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "43e4c2515",
+  "sameReadCap": 12,
+  "oldTablePackets": 1,
+  "candidateTablePackets": 3,
+  "inputBytes": 23907,
+  "fixedInputBytes": 14564,
+  "suppliedEvidenceCount": 13,
+  "missingPremiseBundles": [],
+  "sharedTablePackets": 3,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "rawPath": "tmp/measurement-navigation-pipeline-485-compact-20261116/result.json",
+  "boundary": "Saved second-wave acquisition plus actual read/extract/request-build functions. New source text is saved acquisition fallback, not a live reader or model result. Does not prove factual correctness, comparability, model answer quality or whole-run budget.",
+  "preservation": {
+    "tasks": 105,
+    "runs": 391,
+    "calls": 9872,
+    "paused": 15,
+    "active": 0,
+    "allPayloadsExact": true
+  },
+  "relatedTests": 134,
+  "fullRegression": "running; not yet credited"
+}

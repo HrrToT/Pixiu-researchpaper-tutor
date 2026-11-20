@@ -1,0 +1,142 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v16",
+  "sourceCommit": "a27f1cc7",
+  "experimentReviewEnvelopeContractVersion": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "allEightEligibleTargetsReachControlledCallback": true,
+  "everyOwnQuoteAndOriginalContextPreserved": true,
+  "originalPayloadUnchanged": true,
+  "accepted": 0,
+  "requests": [
+    {
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 30550
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1"
+      ],
+      "inputBytes": 24040
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c2"
+      ],
+      "inputBytes": 28320
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3"
+      ],
+      "inputBytes": 23462
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c6"
+      ],
+      "inputBytes": 31983
+    },
+    {
+      "node": "verify_design_science",
+      "targetIds": [
+        "c8"
+      ],
+      "inputBytes": 23297
+    }
+  ],
+  "allocation": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 30550,
+      "fixedInputBytes": 18082,
+      "maxInputBytes": 32000,
+      "referencedRows": 11,
+      "selectedRows": 11,
+      "selectedInputBytes": 30550,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1"
+      ],
+      "fullInputBytes": 24040,
+      "fixedInputBytes": 16665,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 24040,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c2"
+      ],
+      "fullInputBytes": 28320,
+      "fixedInputBytes": 17931,
+      "maxInputBytes": 32000,
+      "referencedRows": 8,
+      "selectedRows": 8,
+      "selectedInputBytes": 28320,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "fullInputBytes": 23462,
+      "fixedInputBytes": 18292,
+      "maxInputBytes": 32000,
+      "referencedRows": 4,
+      "selectedRows": 4,
+      "selectedInputBytes": 23462,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c6"
+      ],
+      "fullInputBytes": 31983,
+      "fixedInputBytes": 18620,
+      "maxInputBytes": 32000,
+      "referencedRows": 11,
+      "selectedRows": 11,
+      "selectedInputBytes": 31983,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c8"
+      ],
+      "fullInputBytes": 23297,
+      "fixedInputBytes": 18397,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 23297,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "boundary": "Controlled transport-boundary simulation, no fresh model judgments. Hard-rejected c9 remains excluded; original real0/9 unchanged."
+}

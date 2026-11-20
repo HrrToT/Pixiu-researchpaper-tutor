@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-12",
+  "statusFileBeforeSha256": "ecb59f47e413e90065a9b5c2d7e9d7316a0c2fb169c95350e55ed6f9be82ea00",
+  "runtimeProof": "deep-research-evidence/runtime-load-observation-stop-430-20261112.json",
+  "fullOfflineProof": "deep-research-evidence/dr430-complete-offline-final-regression-20261112.json",
+  "priorCurrentFieldsArchived": true,
+  "historicalCaseRecordsExact": true,
+  "waiversExact": true,
+  "releaseGatesExact": true,
+  "overall": "incomplete",
+  "independentCredit": 0,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "priorCurrentCheckpointArchive": {
+    "archiveCommit": "cc53eeda2d75496c28be2b79c649919f1e3755c7",
+    "archiveFile": "docs/DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json",
+    "jsonPointer": "/currentCheckpoint",
+    "canonicalSha256": "90fd4c82f7d66302e5483ffb587b7e0b0eb1a332c22ebea40d5428a5115bb863",
+    "boundary": "Exact prior checkpoint remains in immutable Git history; not current runtime metadata."
+  },
+  "checkpointHistoryExact": true
+}

@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-16",
+  "commit": "20d1d06",
+  "promptVersion": "dr-v2.20261016.103",
+  "before": {
+    "active": [],
+    "calls": 3048,
+    "ledgerSha256": "152bac2dba9f5bc09c26fa459d716a6f5b04c8ea04551d052c187d0a96daa408",
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "active": [],
+    "calls": 3048,
+    "ledgerSha256": "152bac2dba9f5bc09c26fa459d716a6f5b04c8ea04551d052c187d0a96daa408",
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 17.8
+  },
+  "boundary": "Restart only after no active research. All existing ledger records and seven paused runs preserved. No model request during restart verification."
+}

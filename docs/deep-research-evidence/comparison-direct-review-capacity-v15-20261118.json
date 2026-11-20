@@ -1,0 +1,142 @@
+{
+  "sourceReceiptSha256": "e817d6681e889dc94b44b9ba4a64d7b5d083de9a96400e3d2f8ef8c94f538ad4",
+  "alternatives": [
+    {
+      "authoringVersion": 2,
+      "prototypeWindow": 32000,
+      "requests": [
+        {
+          "node": "verify",
+          "argsDigest": "8b48dbbbdd56336310e9d010a553139dc774cb644dec9dbbd11ec91e1f6d3ce1",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 29057
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "fd8d967d107c2422ba3e86f07399292ebb25fe56df2cb299e6a7c0ba26f6825c",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 33795
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 31936
+          }
+        }
+      ],
+      "callCount": 3,
+      "sumReservationUpperBounds": 94788,
+      "scientificApproval": false
+    },
+    {
+      "authoringVersion": 2,
+      "prototypeWindow": 24000,
+      "requests": [
+        {
+          "node": "verify",
+          "argsDigest": "8b48dbbbdd56336310e9d010a553139dc774cb644dec9dbbd11ec91e1f6d3ce1",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 29057
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "6faa851fb60edf94346d04fb897e84cf1d9274610708b16192bbfc79ad425fab",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 33157
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "cf03239c8f215fe97a1b6ea51d13d9a9523cd824380fa5fc967a96c550019f56",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 32448
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 31936
+          }
+        }
+      ],
+      "callCount": 4,
+      "sumReservationUpperBounds": 126598,
+      "scientificApproval": false
+    },
+    {
+      "authoringVersion": 3,
+      "prototypeWindow": 32000,
+      "requests": [
+        {
+          "node": "verify",
+          "argsDigest": "93dd0da66d9c6768b69451bb2c3bb1f4da0ea05f0935a06f5b208bd91274c708",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 24865
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "728efbcba9620f06eaed99fb41eb548b3747126a7b1f352f19566197a3b713e2",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 29603
+          }
+        },
+        {
+          "node": "verify",
+          "argsDigest": "961628831983e628c4aa4d08ca8dd6bff90e8ac33dfce9a5b61e145f68b1adfb",
+          "reservation": {
+            "modelCalls": 1,
+            "tokens": 27744
+          }
+        }
+      ],
+      "callCount": 3,
+      "sumReservationUpperBounds": 82212,
+      "scientificApproval": false
+    }
+  ],
+  "observedSettledInitialReviews": [
+    {
+      "usage": {
+        "total_tokens": 10652,
+        "input_tokens": 4420,
+        "output_tokens": 6232
+      },
+      "responseBytes": 1611
+    },
+    {
+      "usage": {
+        "total_tokens": 10928,
+        "input_tokens": 6008,
+        "output_tokens": 4920
+      },
+      "responseBytes": 1831
+    }
+  ],
+  "providerRequests": 0,
+  "liveLedgerMutations": 0,
+  "boundary": "Empty fixture decisions only. Window prototypes do not establish sequential cost, time, repair/final-audit capacity or quality.",
+  "validatedSourceCommit": "2c5f3b1393fbabf8fef3a82fc979708f4928d763",
+  "savedBudgetPressureTest": {
+    "savedTokens": 68398,
+    "boundedNextReservation": 27744,
+    "projectedTokens": 96142,
+    "ordinaryPoolFallbackVerifiedOffline": true,
+    "largerBudget": false,
+    "sequentialRoundFitEstablished": false
+  }
+}

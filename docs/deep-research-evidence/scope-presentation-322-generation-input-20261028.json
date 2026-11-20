@@ -1,0 +1,48 @@
+{
+  "promptVersion": "dr-v2.20261028.322",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "inputBytes": 24000,
+  "limitBytes": 24000,
+  "allCachedTableAndRetrainingNoteEvidencePresent": true,
+  "requiredEvidenceIds": [
+    "ev_4ef70bc4667ed5932b7e7bea9f7e21259c7e9f1a95cf00770e33ea9dd61ddfc3",
+    "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+    "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+  ],
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+      "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+      "ev_4ef70bc4667ed5932b7e7bea9f7e21259c7e9f1a95cf00770e33ea9dd61ddfc3",
+      "ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49",
+      "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+      "ev_744684d72b81ee16c27ec2c8bc71d51b55975544050f779a25ac80952e4c7a2a",
+      "ev_0fbab51569db4ef6ece08b10c99b82110ff8f405f822f0a534513d62e9763a6b",
+      "ev_0c96f872441e619c0d5950e7fb48333436d5b6b4e5be0f603e282dbd81b5200b",
+      "ev_c702d9140425f4efe9cf89c40e0b5a9ca61817b0fc683cadbf5e89814d066346",
+      "ev_3a5407a2ab223a7ceabc2e4676a6a46ec8a28a24b44ae734bc2c8e8e5b949947",
+      "ev_b4fb09c9274bc9115423ef1531639fad5a07d2ce288b620e1ecce85aa2103ffc",
+      "ev_e9767f90f32bedda9ab6771f1f5ac3646b07e0df041cada9abdd734e786f4bd7",
+      "ev_0e3dd18e63edf8e206378d8808c11ccad81ad5615f903057a6ce8f4328d4a13d",
+      "ev_77e584f4892aba33fea69c9fbd591d6b564781fd3c2248fca977d65eb6b1c83b",
+      "ev_c06590c1dcf4e4b2d5f2d978b6cbc6fc9b542fb366ed5978f36a7a727cb0e22d"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_618c1bc11d1c592d7899fc2fdbd630052d907a0c6bb20efab44358f4a3053af6",
+      "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+      "ev_4ef70bc4667ed5932b7e7bea9f7e21259c7e9f1a95cf00770e33ea9dd61ddfc3",
+      "ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49",
+      "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+      "ev_0fbab51569db4ef6ece08b10c99b82110ff8f405f822f0a534513d62e9763a6b"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 24000,
+    "fixedInputBytes": 17750,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 2
+  },
+  "contentAccepted": false,
+  "independentCredit": 0
+}

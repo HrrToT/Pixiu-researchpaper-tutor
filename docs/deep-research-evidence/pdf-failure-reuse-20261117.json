@@ -1,0 +1,259 @@
+{
+  "scope": "Version2 scoped reuse of definite PDF parser failure; safe worker diagnostics, not proof original failure cause repaired",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "scientificCredit": 0,
+  "relatedTests": 250,
+  "junit": "tmp/pdf-failure-reuse-related-20261117.xml",
+  "archivedFailureReplay": {
+    "scope": "Archived two extraction batches with same observed source_parse_failed fixture; exact identity and work-count proof, not reproduction of worker exit or actual latency",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0,
+    "originalUnchanged": true,
+    "originalPayloadSha256": "9c9a4698b80313b30c37d36c78899717f2b4a8f14b4681f8a6b4b7f0dbe06e70",
+    "variants": [
+      {
+        "reuseVersion": 1,
+        "parseAttempts": 35,
+        "attemptsPerBatch": [
+          30,
+          5
+        ],
+        "all35EvidenceProjectionsExact": true,
+        "allJournalEntriesExact": true,
+        "noSemanticApproval": true
+      },
+      {
+        "reuseVersion": 2,
+        "parseAttempts": 4,
+        "attemptsPerBatch": [
+          2,
+          2
+        ],
+        "all35EvidenceProjectionsExact": true,
+        "allJournalEntriesExact": true,
+        "noSemanticApproval": true
+      }
+    ],
+    "avoidedParseAttempts": 31
+  },
+  "normalAppContextProbe": {
+    "scope": "Same actual PDF-worker command before/after app import and in background thread; app lifespan not started, external HTTP denied",
+    "rows": [
+      {
+        "context": "plain_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.622086830000626,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "plain_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.334110755007714,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "app_import_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.4702890799962915,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "app_import_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.5606148119986756,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "app_import_background_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.4412848929932807,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "app_import_background_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.4287310919899028,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      }
+    ],
+    "externalRequestsBlocked": 0,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "originalRunUnchanged": true
+  },
+  "isolatedRagContextProbe": {
+    "scope": "Same actual PDF-worker command before/after app import and in background thread; isolated RAG warmed from local model cache; app lifespan not started, external HTTP denied",
+    "rows": [
+      {
+        "context": "plain_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.3216221740003675,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "plain_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.1571984719921602,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "rag_warm_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.6019469820021186,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "rag_warm_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.5096369050006615,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "rag_warm_background_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.2240792060038075,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "rag_warm_background_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.07733910701063,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      }
+    ],
+    "externalRequestsBlocked": 0,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "originalRunUnchanged": true
+  },
+  "newWorkerOutputCompatibility": {
+    "scope": "Same actual PDF-worker command before/after app import and in background thread; app lifespan not started, external HTTP denied",
+    "rows": [
+      {
+        "context": "plain_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.680582332002814,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "plain_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.3583994020009413,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "app_import_main_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.3148455589980586,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "app_import_main_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.1514285859884694,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      },
+      {
+        "context": "app_import_background_thread",
+        "materialId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "seconds": 1.3058685599971795,
+        "returnCode": 0,
+        "stdoutBytes": 82424,
+        "stderrBytes": 0,
+        "pages": 14,
+        "pageOutputSha256": "9dcefc43b47902a5c1ac0c36ac8ff099ccda700f3ae863c900234cf8ea781f2c"
+      },
+      {
+        "context": "app_import_background_thread",
+        "materialId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "seconds": 1.1181582689896459,
+        "returnCode": 0,
+        "stdoutBytes": 61237,
+        "stderrBytes": 0,
+        "pages": 19,
+        "pageOutputSha256": "78caffd2561a740dddfe61d78d5dbf1f83860e38051fef631d1177c8f9e1e880"
+      }
+    ],
+    "externalRequestsBlocked": 0,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "originalRunUnchanged": true,
+    "all33PageRecordsByteIdenticalToPriorWorker": true
+  },
+  "invariants": [
+    "New sourcePassageReuseContractVersion2 only, version1 literal reuse remains unchanged",
+    "Only source_parse_failed cached for identical material/hash within existing scope-checked physical batch; never permission or across-batch cache",
+    "Scope/version/missing errors rethrow; transient requests/timeouts still retry and can recover",
+    "Failure cache leaves page unresolved; original evidence/journal projections and unverified semantics preserved",
+    "Worker errors expose allowlisted class/exit code only; no document bytes, exception text, paths or credentials",
+    "Root failure was not reproduced in ordinary, app-import, isolated RAG-warm or background-thread probes; actual future safe error tag still required"
+  ],
+  "fullRegression": "pending",
+  "runtimeLoaded": false
+}

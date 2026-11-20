@@ -1,0 +1,17 @@
+"""Readable operation values; validation and scientific judgment live elsewhere."""
+import json
+
+
+def operation_text(operation, *, include_action=True):
+    from services.deep_research.workflow_initialization_structured import method_text
+    parts = [method_text(operation['action'])] if include_action else []
+    for parameter in operation['parameters']:
+        value = parameter['value']
+        if parameter['name']=='state_layout':
+            from services.deep_research.workflow_initialization_semantics import layout_text
+            value=layout_text(value)
+        shown = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, allow_nan=False)
+        name = {'state_layout': '新组件状态与初值'}.get(parameter['name'], parameter['name'])
+        parts.append(name + '：' + shown)
+    result = '；'.join(parts)
+    return ('；' + result) if result and not include_action else result

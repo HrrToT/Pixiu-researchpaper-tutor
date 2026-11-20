@@ -1,0 +1,40 @@
+{
+  "sourceCase": "S1G-v5",
+  "payloadSha256": "a2bbd0c23920fdc1a04adcd73ffe13bcaa9c2e8691c0cc12fdd0513a8ec4fb71",
+  "versions": {
+    "8": {
+      "hardRejected": [
+        {
+          "claimId": "c1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "1e0",
+            "2e0",
+            "3e0"
+          ],
+          "detail": "本条引用原文未直接报告这些数值：1、2、3。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+        }
+      ],
+      "semanticCalledFor": [
+        "c2"
+      ],
+      "accepted": 0
+    },
+    "9": {
+      "hardRejected": [],
+      "semanticCalledFor": [
+        "c1",
+        "c2"
+      ],
+      "accepted": 0
+    }
+  },
+  "originalClaimsAndEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "remainingIssues": [
+    "Access disclosure must reflect acquired fulltext excerpts, not imply entire paper was read.",
+    "Unsupported exclusive reporting assertion still needs independent semantic rejection."
+  ]
+}

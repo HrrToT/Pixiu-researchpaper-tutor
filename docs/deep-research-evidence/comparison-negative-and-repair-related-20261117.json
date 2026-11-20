@@ -1,0 +1,26 @@
+{
+  "scope": "negative coverage and bounded factual repair related regression",
+  "tests": 178,
+  "failures": 0,
+  "errors": 0,
+  "modules": 1,
+  "sourceSha256": {
+    "comparison_review_batches.py": "1fe22254915538b00c6e0b2140490e9bf41c06d86b8adb16f3f57d8fe71eac51",
+    "facade.py": "2188dc146d33972de3ec30ee47dc55f0171d7c9aa641a8e5326a3ae009456452",
+    "factual_review.py": "f5142de221e0f7e2456315e33b1bc67c894972582c7601741f7651e53fad931d",
+    "final_coverage.py": "e10f0308131dfbee49802a31606f427ecd1d5c83bf0d3145752f164885a8f17e",
+    "graph.py": "355710cf9c16636613e28210d66aa93983dc2b318ba2e167b2ae3ccd214d1b03",
+    "measurement_numbers.py": "8fac841463b3f6b57b8f33513ec981eb8dbe90fdf797eafe4bab2557fa03779e",
+    "repository.py": "bea8032618239636224236811ad4148558796ebe08ea5ad44d914eed5a7da615",
+    "request_coverage.py": "5488e4bd1f52aebfbe06c4f19511813a2ccb60d87147f43fd888bc9be3935749",
+    "runtime.py": "1ebbe5223495047b9b75057088afd56599ba983fdbbf391d163f04936006c129",
+    "tools.py": "c494414bddddc03398d13153b0ba481b2dca7342dc5703e2f55b21408f7dd040"
+  },
+  "realProviderCasesSubmitted": 0,
+  "scientificContentAccepted": false,
+  "fullCurrentCandidateVerified": false,
+  "fullBaseline": "comparison-review-batches-full-20261117.json",
+  "oldBatchProfile": 1,
+  "newBatchProfile": 2,
+  "defaultProfile": 0
+}

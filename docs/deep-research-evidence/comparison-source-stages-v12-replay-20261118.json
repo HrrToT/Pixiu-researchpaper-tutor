@@ -1,0 +1,56 @@
+{
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "baseCommit": "1656ef710",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "stages": [
+    {
+      "stageId": "P2",
+      "inputBytes": 30000,
+      "targetCount": 4,
+      "requiredBundles": 9,
+      "requiredEvidenceCount": 7,
+      "suppliedEvidenceCount": 20,
+      "tableCatalogCount": 2
+    },
+    {
+      "stageId": "P1_joint",
+      "inputBytes": 31974,
+      "targetCount": 7,
+      "requiredBundles": 21,
+      "requiredEvidenceCount": 18,
+      "suppliedEvidenceCount": 20,
+      "tableCatalogCount": 2
+    }
+  ],
+  "admission": {
+    "remainingModelCalls": 11,
+    "callLowerBound": 10,
+    "additionalAdviceOrRecheckCallsMayBeRequired": true,
+    "providerTokensAndWallClockFitEstablished": false,
+    "generationInputBytesTotal": 61974
+  },
+  "allFrozenPremiseBundlesRetained": true,
+  "allAliasesMatchOriginalEvidenceIds": true,
+  "isolatedSqliteReopenReusesAllStages": true,
+  "controlledResponsePoints": 2,
+  "scientificApproval": false,
+  "boundary": "Production input builder and checkpoint runner only, invoked through an offline graph seam. Responses are controlled own-quote fixtures with other targets null. Default graph does not select stages yet. No actual provider cost, latency or scientific acceptance.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_wire.py": "fd7d9504ac58a22705fe0d01a81a04edb2236de4fa51aac3e21f155f017f172f",
+    "ai-service-python/services/deep_research/comparison_stage_inputs.py": "3b4826ce10ee8f2fd21c7ed03246c05b0826fda764c9efe16fe37f85b4b550c7",
+    "ai-service-python/services/deep_research/comparison_stage_generation.py": "bfb024462c524a28b4a163bf9eb6f9fd75ba25fef70ea5cedf6418e1d76e8877"
+  },
+  "relatedChecks": {
+    "tests": 859,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": 44,
+    "sourceUnchanged": true,
+    "runId": "comparison-source-stages-related-v2-20261118"
+  },
+  "graphIntegrationComplete": false,
+  "serverDefaultChanged": false,
+  "fullRegressionComplete": false
+}

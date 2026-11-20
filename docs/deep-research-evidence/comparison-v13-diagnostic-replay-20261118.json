@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "runId": "dr_run_748aaa1634b457d5ada079972a2d1ee3",
+  "planningVersion": 6,
+  "receiptSha256": {
+    "payload": "a64b83637f562b3fd42c8260431c4c1da2c0184d717c816b6e2c0ae777119bba",
+    "calls": "81b1e6be36f8ed8336a6a68ccdddb4ab8bf5f3c052948fc75b9a10deec616043",
+    "execution": "5172b236f0f855e5ac856ec1aecceec10ad605debd44a0ee736df3ec4fcd169c",
+    "restore": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "terminal": {
+    "status": "completed",
+    "outcome": "inconclusive",
+    "errorCode": ""
+  },
+  "usage": {
+    "modelCalls": 11,
+    "tokens": 63843,
+    "elapsedSeconds": 193.0
+  },
+  "modelRequests": [
+    {
+      "node": "resolve_brief",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 811
+    },
+    {
+      "node": "plan",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 2857
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 5463
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 2893
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 4820
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "model": "deepseek-v4-flash",
+      "tokens": 2512
+    },
+    {
+      "node": "synthesize",
+      "status": "succeeded",
+      "model": "deepseek-v4-pro",
+      "tokens": 11624
+    },
+    {
+      "node": "synthesize",
+      "status": "succeeded",
+      "model": "deepseek-v4-pro",
+      "tokens": 10596
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "model": "deepseek-v4-pro",
+      "tokens": 8833
+    },
+    {
+      "node": "repair_claims",
+      "status": "succeeded",
+      "model": "deepseek-v4-pro",
+      "tokens": 6366
+    },
+    {
+      "node": "repair_claims",
+      "status": "succeeded",
+      "model": "deepseek-v4-pro",
+      "tokens": 7068
+    }
+  ],
+  "claims": [
+    {
+      "claimId": "cmp_0_0",
+      "kind": "reported",
+      "tableGate": null,
+      "initialReasons": [
+        "absence_not_established"
+      ],
+      "citedEvidenceCount": 7,
+      "bindingCount": 0
+    },
+    {
+      "claimId": "cmp_1_0",
+      "kind": "reported",
+      "tableGate": null,
+      "initialReasons": [
+        "semantic_unresolved"
+      ],
+      "citedEvidenceCount": 2,
+      "bindingCount": 0
+    },
+    {
+      "claimId": "cmp_2_0",
+      "kind": "reported",
+      "tableGate": "table_condition_not_displayed",
+      "initialReasons": [
+        "absence_not_established"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 12
+    },
+    {
+      "claimId": "cmp_3_0",
+      "kind": "reported",
+      "tableGate": null,
+      "initialReasons": [
+        "numeric_mismatch"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 0
+    },
+    {
+      "claimId": "cmp_4_0",
+      "kind": "reported",
+      "tableGate": "table_condition_not_displayed",
+      "initialReasons": [
+        "absence_not_established"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 8
+    },
+    {
+      "claimId": "cmp_5_0",
+      "kind": "reported",
+      "tableGate": "table_condition_not_displayed",
+      "initialReasons": [
+        "table_condition_not_displayed"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 8
+    },
+    {
+      "claimId": "cmp_6_0",
+      "kind": "reported",
+      "tableGate": null,
+      "initialReasons": [
+        "absence_not_established"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 2
+    },
+    {
+      "claimId": "cmp_7_0",
+      "kind": "reported",
+      "tableGate": null,
+      "initialReasons": [
+        "semantic_unresolved"
+      ],
+      "citedEvidenceCount": 1,
+      "bindingCount": 2
+    },
+    {
+      "claimId": "cmp_conclusion_0",
+      "kind": "inference",
+      "tableGate": "table_condition_not_displayed",
+      "initialReasons": [
+        "absence_not_established"
+      ],
+      "citedEvidenceCount": 2,
+      "bindingCount": 2
+    },
+    {
+      "claimId": "cmp_conclusion_1",
+      "kind": "proposal",
+      "tableGate": "table_condition_not_displayed",
+      "initialReasons": [
+        "table_condition_not_displayed"
+      ],
+      "citedEvidenceCount": 2,
+      "bindingCount": 2
+    }
+  ],
+  "controlledDisplayAblations": {
+    "original": "table_condition_not_displayed",
+    "literal_size_label": null,
+    "explicit_ours_and_size": null,
+    "wrong_cell": "table_cell_mismatch",
+    "wrong_dataset": "table_condition_not_displayed",
+    "wrong_method": "unverified_table_cell",
+    "missing_bindings": "missing_table_bindings"
+  },
+  "repairResponses": [
+    {
+      "count": 0,
+      "claimIds": [],
+      "unchangedTexts": []
+    },
+    {
+      "count": 3,
+      "claimIds": [
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_5_0"
+      ],
+      "unchangedTexts": [
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_5_0"
+      ]
+    }
+  ],
+  "repairBatches": [
+    [
+      "cmp_0_0",
+      "cmp_1_0",
+      "cmp_2_0"
+    ],
+    [
+      "cmp_3_0",
+      "cmp_4_0",
+      "cmp_5_0"
+    ],
+    [
+      "cmp_6_0",
+      "cmp_conclusion_0",
+      "cmp_conclusion_1"
+    ]
+  ],
+  "compiledRepairIds": {
+    "0": [],
+    "1": [
+      "cmp_4_0",
+      "cmp_5_0"
+    ]
+  },
+  "repairStop": {
+    "batch": 2,
+    "kind": "repairPromptBytes",
+    "limit": 12090,
+    "used": 19349
+  },
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "stateUnchanged": true,
+  "providerDispatchesDuringReplay": 0,
+  "scientificApproval": false,
+  "independentAcceptance": false
+}

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-27",
+  "pdfSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "physicalPages": 19,
+  "summaryActuallyExistsInPdf": true,
+  "summaryPhysicalPage": 2,
+  "contaminationHypothesisWithdrawn": true,
+  "sourcePdfUnchanged": true,
+  "savedTeiSha256": "ed19be037ce1e99673e0689e766fed1c99aa3e8d1d8dd58b5fc67b7ebabcc2c0",
+  "freshDirectGrobidTeiSha256": "889180d7aa9f5fec7aeb0ec09c3216344a07562c82ed527edfa4f94448a6e4ed",
+  "freshDirectGrobidBodyEqualsSavedBody": true,
+  "teiBodyCharacters": 33050,
+  "missingIntroductionAnchors": [
+    {
+      "text": "in virtual reality",
+      "presentOnPhysicalPdfPage": 2,
+      "absentFromBothTeiBodies": true
+    },
+    {
+      "text": "mapping 3D locations",
+      "presentOnPhysicalPdfPage": 2,
+      "absentFromBothTeiBodies": true
+    },
+    {
+      "text": "In this paper, we address",
+      "presentOnPhysicalPdfPage": 2,
+      "absentFromBothTeiBodies": true
+    }
+  ],
+  "numericIdentity": {
+    "physicalPage": 6,
+    "dataset": "Mip-NeRF 360",
+    "metric": "SSIM",
+    "originalRow": {
+      "method": "3D-GS",
+      "value": "0.815"
+    },
+    "retrainedRow": {
+      "method": "3D-GS*",
+      "value": "0.813"
+    },
+    "ours": "0.806",
+    "differenceFromOriginal": "0.009",
+    "differenceFromRetrained": "0.007",
+    "starMeaningVerifiedInCaption": "Authors retrained using original code/configuration on their NVIDIA A6000 platform."
+  },
+  "providerCalls": 0,
+  "productionIndexWrites": 0,
+  "oldRunWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Direct PDF text and rendered pages 1/2 inspected; Table 1 identity read on physical page 6. Confirms specific missing TEI body passages, not that all prior failures share one cause."
+}

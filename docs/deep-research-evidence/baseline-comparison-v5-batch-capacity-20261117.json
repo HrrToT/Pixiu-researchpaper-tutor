@@ -1,0 +1,80 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v5",
+  "runId": "dr_run_67b4e3df18b95a4baccad52c85b5f55d",
+  "scope": "complete factual review request preview only; production batching unchanged",
+  "payloadSha256": "c506123806c5d93461069c0331e967e333b87f4692b23b92c9c378301d9fad57",
+  "networkRequests": 0,
+  "modelCalls": 0,
+  "reservations": 0,
+  "evidenceCount": 47,
+  "semanticCandidateCount": 3,
+  "measurements": [
+    {
+      "claimIds": [
+        "cmp_0_0"
+      ],
+      "inputBytes": 13341,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_1_0"
+      ],
+      "inputBytes": 14473,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_2_0"
+      ],
+      "inputBytes": 14998,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_0_0",
+        "cmp_1_0"
+      ],
+      "inputBytes": 15764,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_0_0",
+        "cmp_2_0"
+      ],
+      "inputBytes": 16026,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_1_0",
+        "cmp_2_0"
+      ],
+      "inputBytes": 17421,
+      "maxInputBytes": 32000
+    },
+    {
+      "claimIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0"
+      ],
+      "inputBytes": 18449,
+      "maxInputBytes": 32000
+    }
+  ],
+  "sumSingletonInputBytes": 42812,
+  "threeTargetInputBytes": 18449,
+  "inputReductionPercent": 56.91,
+  "fitsCompleteInputWindow": true,
+  "scientificAcceptance": false,
+  "latencyImprovementEstablished": false,
+  "wholeRunBudgetFitEstablished": false,
+  "requiredBeforeProduction": [
+    "Freeze grouping behavior for new runs; preserve old request identities",
+    "Retain per-target own evidence and independent validation; no borrowed citations",
+    "Test missing/duplicate/malformed target decisions and no automatic retry",
+    "Recalculate output capacity, review calls and complete repair/audit time"
+  ]
+}

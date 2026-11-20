@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "fc29776f",
+  "promptVersion": "dr-v2.20261022.216",
+  "case": "E1-v13",
+  "split": "development",
+  "runId": "dr_run_cb4bb0d1628f566699f725e85b88d01b",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "elapsedSeconds": 0,
+  "settledModelCalls": 9,
+  "settledTokens": 26143,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "planEncodingAudit": {
+    "rawBytes": 2959,
+    "wireBytes": 2850,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v13.json",
+      "sha256": "ceeec47ded510e3fba81fee6a267828d6f3f0c9382207db35f0af2f5f20fd46b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v13.payload.json",
+      "sha256": "6aad9ea9015daf302b26b0f9b8bc38cf5d2cb5c7d94da7ec5b5102f820f3697b"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v13.calls.json",
+      "sha256": "8eb0ca8c0a31a3890927cf3b64cac8d888f5f40cf9b8b574d545eb7a310dafb0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v13.result.json",
+      "sha256": "1175c276caca549e2af7be4cab87cf031b6955a0109497744d3b6b8a68dc432b"
+    }
+  ],
+  "boundary": "One fixed development submission, all9calls settled; planning returned, full generation refused before sending because24186>24000. No new content, reviewer, citation-presentation or independent acceptance proof; no retry.",
+  "errorCode": "experiment_drafting_input_capacity",
+  "contentGenerationSubmitted": false,
+  "contentQualityValidated": false,
+  "draftCapacity": {
+    "inputBytes": 24186,
+    "maxInputBytes": 24000,
+    "requestDigest": "504467fbc3cef95f0ac55e574394182ba21900d0a1b75233626966a159c3d4fe",
+    "scientificApproval": false
+  }
+}

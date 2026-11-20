@@ -1,0 +1,43 @@
+{
+  "sourceCase": "D1-v40",
+  "promptVersion": "dr-v2.20261028.316",
+  "scope": "isolated post-generation verification stage; no retrieval, generation or production publish",
+  "providerCalls": 4,
+  "allSucceeded": true,
+  "totalTokens": 16727,
+  "coverageStatus": "checked",
+  "coverageGapCount": 0,
+  "repairInvoked": false,
+  "manualContentAcceptance": false,
+  "manualFinding": "Author result summary and generic non-universality boundary do not independently check the supplied main results and baseline conditions. Fixed checklist coverage is insufficient proof of quality.",
+  "independentCredit": 0,
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-coverage-repair-v2-20261028\\receipt",
+  "receiptSha256": {
+    "calls.json": "39c402be6668f942951a2d2f8aa9ecd1c25d9a4960ebb0dee40e1eb860c88317",
+    "payload.json": "470f84853e41d2e5ea1f47f8e21b3fac1295f3b8668f8fb9f6f8bd5e912dd05c",
+    "preservation.json": "e4020959709d9e175f8e9b867b3ca9486503f673a8a37daf6c2785fc947c621e",
+    "progress.json": "2ba2da9c2357082b7ba4277d19e3a82c3e9a2f0ba2c75d215ff368dd61d0a26a",
+    "request-1.json": "00ddb0cebf976fdfa3cf5473449b71ce2469ac41ba15aae217cb78eafc7b9329",
+    "request-2.json": "1f247f444b14b6042c54fd3eadc322f919ff2e43814d3fc387fa7e97e69b536f",
+    "request-3.json": "093bdf18e85e0e4ebcc4f2424438ba1bc636a9142526b8a869f056b673cb5a45",
+    "request-4.json": "af3f26e82ee2131fc2c47f95f3c4386e547d8c4224348900bdf1bd78f796057d",
+    "result.json": "6b27ca55e0db0439f217b20b68ffbf34b5221b79e47300ad5d04001089c54825"
+  }
+}

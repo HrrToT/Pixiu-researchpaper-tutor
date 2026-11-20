@@ -1,0 +1,111 @@
+{
+  "baseCommit": "9ba3dad4c",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/audience_rewrite.py": "fddd395d858b7b126e8d33c851890b6e2b5e505cc2b939ac8e4514204abb76e9",
+    "ai-service-python/services/deep_research/audience_source_roles.py": "6cd44c0d5eca101aa06c6467852d6c0367b37bb7bc04b05c4a46f73aa601a6ad",
+    "ai-service-python/services/deep_research/facade.py": "4ca6f31f48e351f837f185390598b2cf559820d1bc4751732d3bb1522f980633",
+    "ai-service-python/services/deep_research/graph.py": "8c35804fcd8ecb18a625094df6d83a8153ed18fc72378772e311a4be26ce668d"
+  },
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scope": "Saved v9 synthesis and audience responses through production synthesis node and isolated SQLite repository; exact native legacy request reconstruction.",
+  "profiles": [
+    {
+      "profile": 4,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31851,
+          "digest": "ed4df1b6d9d8378a8d832c6a22dfb782069be1cbb4eb0dc59476ce6fd14c0cf0",
+          "matchesSavedRequest": true
+        },
+        {
+          "node": "synthesize_audience",
+          "inputBytes": 22236,
+          "digest": "8eff02b79921fadccf6ee96e005089777f8eeceaa6377b6a2836ce720bb3ed42",
+          "matchesSavedRequest": true
+        }
+      ],
+      "draftClaims": 6,
+      "publishedCandidateClaims": 6,
+      "editOutcome": "applied",
+      "compiledCellCount": 8,
+      "rawOldResponseOnly": true,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true,
+      "scopeStatus": "legacy_unscoped",
+      "scopes": []
+    },
+    {
+      "profile": 5,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31851,
+          "digest": "ed4df1b6d9d8378a8d832c6a22dfb782069be1cbb4eb0dc59476ce6fd14c0cf0",
+          "matchesSavedRequest": true
+        },
+        {
+          "node": "synthesize_audience",
+          "inputBytes": 22307,
+          "digest": "57cc9232e0b3988a848e4164cd57c25c170d5f14efad643f52e56d43f3620171",
+          "matchesSavedRequest": false
+        }
+      ],
+      "draftClaims": 6,
+      "publishedCandidateClaims": 6,
+      "editOutcome": "applied",
+      "compiledCellCount": 8,
+      "rawOldResponseOnly": true,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true,
+      "scopeStatus": "prepared",
+      "scopes": [
+        {
+          "claimId": "cmp_0_0",
+          "kind": "source_cell",
+          "source": "P1",
+          "dimension": "表示与压缩机制"
+        },
+        {
+          "claimId": "cmp_1_0",
+          "kind": "source_cell",
+          "source": "P2",
+          "dimension": "表示与压缩机制"
+        },
+        {
+          "claimId": "cmp_2_0",
+          "kind": "source_cell",
+          "source": "P1",
+          "dimension": "额外处理成本"
+        },
+        {
+          "claimId": "cmp_3_0",
+          "kind": "source_cell",
+          "source": "P2",
+          "dimension": "额外处理成本"
+        },
+        {
+          "claimId": "cmp_4_0",
+          "kind": "source_cell",
+          "source": "P1",
+          "dimension": "存储与画质"
+        },
+        {
+          "claimId": "cmp_6_0",
+          "kind": "source_cell",
+          "source": "P1",
+          "dimension": "渲染速度"
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "cases": 236,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scientificApproval": false,
+  "boundary": "The received old bad wording is replayed unchanged and can still pass structural merge. New role input is not proof of semantic compliance. Original factual and coverage verification remains mandatory; no new provider response or complete comparison has been accepted."
+}

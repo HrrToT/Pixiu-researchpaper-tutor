@@ -1,0 +1,140 @@
+{
+  "sourceCommit": "71362f2d8ff1b8c74bd0633de48a2c594dc02666",
+  "case": "D2-BASELINE-COMPRESSION-v14",
+  "runId": "dr_run_b6c6793930d6504fa2d126d136e796b6",
+  "split": "development",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "planningVersion": 6,
+  "comparisonAuthoringVersion": 1,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "modelCalls": 10,
+  "allModelCallsSucceeded": true,
+  "ledgerTokens": 65771,
+  "elapsedSeconds": 170.0,
+  "maxModelCalls": 18,
+  "maxTokens": 100000,
+  "maxWallClockSeconds": 360,
+  "suppliedPaperCount": 2,
+  "allFrozenPremiseBundlesRetained": true,
+  "stages": [
+    {
+      "stageId": "P1",
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    {
+      "stageId": "P2_joint",
+      "status": "compiled_unverified",
+      "isolatedTargets": [
+        {
+          "targetId": "table_0_1",
+          "reason": "stage_evidence_permission"
+        },
+        {
+          "targetId": "table_1_1",
+          "reason": "stage_evidence_permission"
+        },
+        {
+          "targetId": "table_2_1",
+          "reason": "stage_evidence_permission"
+        },
+        {
+          "targetId": "table_3_1",
+          "reason": "stage_evidence_permission"
+        }
+      ]
+    }
+  ],
+  "wireErrors": [],
+  "compiledContainerErrors": [
+    {
+      "conclusionIndex": 0,
+      "reason": "Invalid observed setting fields"
+    }
+  ],
+  "canonicalDraftCount": 5,
+  "initialRejections": [
+    {
+      "claimId": "cmp_2_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_4_0",
+      "reason": "numeric_mismatch"
+    },
+    {
+      "claimId": "cmp_conclusion_1",
+      "reason": "unbound_table_measurement"
+    },
+    {
+      "claimId": "cmp_0_0",
+      "reason": "semantic_unresolved"
+    },
+    {
+      "claimId": "cmp_6_0",
+      "reason": "semantic_unresolved"
+    }
+  ],
+  "repairOutcomeAudit": {
+    "0": {
+      "version": 1,
+      "targets": [
+        {
+          "claimId": "cmp_0_0",
+          "status": "revised_unverified"
+        },
+        {
+          "claimId": "cmp_2_0",
+          "status": "not_revised"
+        },
+        {
+          "claimId": "cmp_4_0",
+          "status": "revised_unverified"
+        },
+        {
+          "claimId": "cmp_6_0",
+          "status": "revised_unverified"
+        }
+      ],
+      "scientificApproval": false
+    },
+    "1": {
+      "version": 1,
+      "targets": [
+        {
+          "claimId": "cmp_conclusion_1",
+          "status": "not_revised"
+        }
+      ],
+      "scientificApproval": false
+    }
+  },
+  "repairDraftCount": 3,
+  "repairVerificationAdmissionRefused": {
+    "kind": "tokens",
+    "limit": 100000,
+    "used": 100754
+  },
+  "reservationIsProjectedNotActualSpend": true,
+  "finalVerificationSummary": {
+    "accepted": 0,
+    "rejected": 5
+  },
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "26904328b907a8f67e0ce0a9c3d819bef156e9a14f90d99fe011b8681bd114f3",
+    "calls": "3112c161ba78247cd1b105a6a96f5669bbc09d3fa27c2efb945467938407f033",
+    "result": "1051fbdef844e9d7ef28c7f2a200213d348bdc2127ae1f41b29c1f164104e0b4",
+    "execution": "917a4b23d17472855d39b1f85f82f67ab86af7262382c3830dc6e431cba7dbdb",
+    "restore": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "scientificContentAccepted": false,
+  "independentAcceptance": false,
+  "nextAction": "Offline diagnose merged-stage source selection, boundary structure and independent recheck admission. No immediate same-question paid rerun."
+}

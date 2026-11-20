@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-16",
+  "case": "H3R-v15",
+  "runId": "dr_run_4738564f5ff35157996a35068c62ed32",
+  "sourceCommit": "ab35c73",
+  "promptVersion": "dr-v2.20261016.110",
+  "status": "paused",
+  "outcome": "none",
+  "errorCode": "unresolved_unknown",
+  "stage": "verify",
+  "budgetSnapshot": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "modelCalls": 3,
+    "tokens": 36432,
+    "normalTokens": 5181,
+    "elapsedSeconds": 0,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "reservedModelCalls": 2,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "confirmedModelCalls": 4,
+  "confirmedTokens": 8482,
+  "cost": null,
+  "unknownModelCalls": [
+    {
+      "callId": "920c39e5d282842cc713189a6cd15049",
+      "node": "verify",
+      "reservedTokens": 27950,
+      "reservedAt": "2026-10-16T04:00:16Z",
+      "completedAt": "2026-10-16T08:44:14Z",
+      "settled": false,
+      "error": {
+        "message": "DeepSeek request failed.",
+        "type": "provider_error",
+        "status_code": null,
+        "failureKind": "transport_error"
+      }
+    }
+  ],
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "sourcePayloadSha256": "3511700bee0bd653f577d414ea08bca82f0068a8ca8fe18f01de1d105f1d26bb",
+  "raw": "tmp/dr-acceptance-receipts/H3R-v15.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H3R-v15.calls.json",
+  "review": {
+    "status": "unscored_unresolved_transport",
+    "scores": null,
+    "draftFindings": [
+      "Unverified draft retains both own-method motivation and training evidence from arXiv v4 fulltext.",
+      "Draft describes the correct-depth intuitive case as gradient ascent; the supplied author text describes gradient descent increasing opacity.",
+      "Draft remains jargon-heavy and presents the intuitive conditional example too generally.",
+      "No fact-verification response, repair or final coverage was received. These are draft observations, not a completed content review."
+    ]
+  },
+  "boundary": "One authorized submission. Request outcome/usage unknown; reservation is not measured usage. No retry, continuation, manual confirmation or new-attempt bypass. No unchecked draft published. Long transport interval spans confirmed host sleep; Provider execution/usage remains unconfirmed.",
+  "hostSleepProof": "deep-research-evidence/host-sleep-during-dr110-20261016.json"
+}

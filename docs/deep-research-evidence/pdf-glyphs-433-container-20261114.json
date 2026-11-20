@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "dc5ff7c1",
+  "container": "academic-dr-runtime",
+  "versions": "6.21.4 4.68.0",
+  "parentWorkerDeadlineSeconds": 20,
+  "papers": [
+    {
+      "name": "adam",
+      "pages": 9,
+      "hostReferenceExact": true,
+      "stderrBytes": 0,
+      "unresolvedPages": [],
+      "parseAndReferenceCheckSeconds": 2.719
+    },
+    {
+      "name": "h2o",
+      "pages": 45,
+      "hostReferenceExact": true,
+      "stderrBytes": 0,
+      "unresolvedPages": [
+        31
+      ],
+      "parseAndReferenceCheckSeconds": 15.125
+    }
+  ],
+  "wheels": {
+    "fonttools-4.68.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl": "4b9c89b5876f1a74b1341632dfaf4c4c2be565d76c060445df401ebe7a4ceefa",
+    "pypdf-6.21.4-py3-none-any.whl": "33e4fb41ca352810eb4e9838aa0d82d6888a5f8bf682f43e99cce5faa666255c"
+  },
+  "modelCalls": 0,
+  "boundary": "Real Linux parsing and dependency installation only; not runtime facade reload or content acceptance.",
+  "timingBoundary": "Timings include Docker transport and host reference comparison; the worker itself was independently limited to20 seconds by its in-container parent."
+}

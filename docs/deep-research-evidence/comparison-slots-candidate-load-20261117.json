@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "6a378dc68e141b9c061e91f7ff15d1fc7271bce1",
+  "fullRegression": "comparison-fixed-slots-full-20261117.json",
+  "candidate": "academic-dr-comparison-slots-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

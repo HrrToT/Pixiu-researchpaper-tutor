@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "283fe9d56b91343bc25ca32402832bd555e2d771",
+  "baselineFile": "tmp/dr-acceptance-receipts/review-structure-453.before.json",
+  "fullRegression": "deep-research-evidence/review-structure-453-alias-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.453",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all381OldRunsExact": true,
+  "all9575CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

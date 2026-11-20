@@ -1,0 +1,58 @@
+{
+  "case": "M1G-v4",
+  "sourcePayloadSha256": "f808e75e58bb750dfb52f06e50cf5ded473884067646a6538a7ec34a9d432435",
+  "oldAndNewRejectUnchangedOverlongResponse": true,
+  "audits": [
+    {
+      "visibleCharacters": 410,
+      "characterLimit": 400,
+      "status": "rejected_length",
+      "verification": "unchecked"
+    },
+    {
+      "visibleCharacters": 410,
+      "characterLimit": 400,
+      "status": "rejected_length",
+      "verification": "unchecked"
+    }
+  ],
+  "newMeasuredBudget": {
+    "currentCharacters": 387,
+    "hardAllowance": 371,
+    "draftTarget": 315,
+    "minimumReductionToTarget": 72,
+    "points": [
+      {
+        "claimId": "c1",
+        "currentCharacters": 77,
+        "targetCharacters": 62
+      },
+      {
+        "claimId": "c2",
+        "currentCharacters": 77,
+        "targetCharacters": 62
+      },
+      {
+        "claimId": "c3",
+        "currentCharacters": 71,
+        "targetCharacters": 61
+      },
+      {
+        "claimId": "c4",
+        "currentCharacters": 85,
+        "targetCharacters": 69
+      },
+      {
+        "claimId": "c5",
+        "currentCharacters": 77,
+        "targetCharacters": 61
+      }
+    ]
+  },
+  "textAllowance": 371,
+  "presentationOverhead": 29,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "qualityAcceptance": false,
+  "next": "Real single attempt required; prompt correctness is not model compliance."
+}

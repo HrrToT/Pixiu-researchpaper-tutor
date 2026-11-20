@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-26",
+  "status": "unactivated_representation_prototype",
+  "runtimePromptVersion": "dr-v2.20261026.272",
+  "existingCanonicalOrder": {
+    "source": "ai-service-python/services/deep_research/workflow_lifecycle.py",
+    "creationPointLine": 29,
+    "totalOrderLines": [
+      124,
+      125,
+      126
+    ],
+    "observation": "Canonical validator already establishes total event order from phase array position; separate after edges only point backward."
+  },
+  "representation": {
+    "phaseOrder": "explicit array order, no redundant after field",
+    "allocation": "authored createBefore phase ID, lowered to the preceding boundary",
+    "invalidUnrepresentableAllocation": "rejected rather than silently clamped to frame entrance",
+    "unchanged": "all source IDs, state IDs, groups, scopes, reads, updates, actions, parameters, outputs, finite budgets, frame count and disposal choices"
+  },
+  "validation": {
+    "files": 3,
+    "passed": 86,
+    "seconds": 6.49,
+    "log": "tmp/pytest-ordered-prototype-boundaries-fixed-20261026.log",
+    "logSha256": "9c5fef1af4a44908a7df10da07aa2f1cd0560c483489b26e35197433ecec85e1",
+    "boundaryGrid": {
+      "placements": 54,
+      "preservedPositions": 45,
+      "unrepresentableRejected": 9
+    },
+    "fullAssemblyAndPublicBinding": true,
+    "historicalWireRejectedRatherThanConverted": true,
+    "semanticCounterexamples": [
+      "late_creation",
+      "group_leak",
+      "bad_budget",
+      "future_read",
+      "early_disposal"
+    ]
+  },
+  "initialBoundaryFailure": {
+    "passed": 85,
+    "failed": 1,
+    "log": "tmp/pytest-ordered-prototype-boundaries-20261026.log",
+    "logSha256": "1d3d8abf5859c110e94170f2011e6ff046d87a890a9de92f194f7c2c58f28930",
+    "cause": "Original per-frame creation point clamps all earlier positions to frame entrance; fixed prototype rejects every such authored position, not only index zero."
+  },
+  "sourceHashesAtRecord": {
+    "ai-service-python/services/deep_research/workflow_metadata_ordered.py": "570b3cd926c5615176fd7cc016472b2e58850fe010545404476b116dd5e42161",
+    "ai-service-python/tests/test_deep_research_workflow_metadata_ordered.py": "35c13069a25f325299b39a6832dd7fb205d866481ea348c8c0891ce0b924d83b"
+  },
+  "runtimeActivated": false,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "historicalRunsMigrated": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "nextGate": "Integrate a separately versioned generation/repair grammar without old-policy conflicts; retain originals and all existing validators, then assess fixed real case. Prototype conversion/fixture checks do not prove model output or scientific quality."
+}

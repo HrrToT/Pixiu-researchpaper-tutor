@@ -1,0 +1,253 @@
+{
+  "sourceCase": "G1N-v9",
+  "baselineCommit": "f79003ff90faaa8d89b9db677e9e1636a6c44a0c",
+  "rawPayloadSha256": "d45b3b26c038cd1fb276a3ae0efc09931d6ea7a00e87d012f763d50f4cf7435b",
+  "legacyFullPromptAndPreparationExact": true,
+  "questionLiteralExact": true,
+  "completeRequirementsExact": true,
+  "requirementsSha256": "2c951d4ce7b1764d75f4f69b0ae93c7f9f4ca25cfaed062a130ffcb3446fbbe9",
+  "sourceRegistryExact": true,
+  "oldFixedBytes": 15543,
+  "newFixedBytes": 13190,
+  "oldSupplied": 12,
+  "newSupplied": 16,
+  "newInputBytes": 23968,
+  "allCommonEvidenceFieldsExact": true,
+  "commonRows": 11,
+  "removedFromSelection": [
+    "ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8"
+  ],
+  "addedToSelection": [
+    "ev_1b9fe474e2d80532e06f3089bb1d84cbae6de8557741965b4245ebc2327ca14e",
+    "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+    "ev_f876a38f94a8999de7fe1cb807777e6328bed7022891bed03bb92e59e2968246",
+    "ev_e0a59ab4509976c8a57fa0dc56585aa0887d7c8e9a685e2537b7115f16c41372",
+    "ev_61541dec58e41564ec43244227c09b1047c680299d18cc98b83182a0ee0c6b4e"
+  ],
+  "newMeshExtractionQuotes": [
+    {
+      "evidenceId": "ev_e0a59ab4509976c8a57fa0dc56585aa0887d7c8e9a685e2537b7115f16c41372",
+      "quote": " The learning rate\nfor the exposure coefficient is 0.001. We begin by rendering\nthe depth for each training view, followed by utilizing the\nTSDF Fusion algorithm [45] to generate the corresponding\nTSDF field. Subsequently, we extract the mesh [38] from the\nTSDF field.",
+      "source": "P1",
+      "sourceContext": {},
+      "resultRoleHintOnly": "unspecified",
+      "location": {
+        "page": 8,
+        "offset": 3158,
+        "section": "V. E XPERIMENTS",
+        "sectionRole": "other",
+        "sourcePassageStart": 978,
+        "sourcePassageEnd": 1246
+      },
+      "obligations": [
+        "ob_1",
+        "ob_2",
+        "ob_3"
+      ],
+      "accessLevel": "fulltext",
+      "contextOmitted": true
+    }
+  ],
+  "oldAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_51bfe15ac574d16d5d7d870a3afd4a77612026f41bbd358299ec432ac4cc8d3c",
+      "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_1b9fe474e2d80532e06f3089bb1d84cbae6de8557741965b4245ebc2327ca14e",
+      "ev_61541dec58e41564ec43244227c09b1047c680299d18cc98b83182a0ee0c6b4e",
+      "ev_f876a38f94a8999de7fe1cb807777e6328bed7022891bed03bb92e59e2968246",
+      "ev_19ad58fea6a25e0eff5df813924c04d70562f3b523c86d3390e5a1eb9a1ce1c3",
+      "ev_f102a13bbb86ac00432e4a10f2649c537c3141f8390d89f52044bf4ca4474e16",
+      "ev_1cda7553433a1f0e2a40214e4ba6a02638ea012cc24cdf6652b20e0cd7356365",
+      "ev_1372ad9e0d931810cba3f70cb42b4712bc530bb1fe465fcd19480dfe4369727a"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_51bfe15ac574d16d5d7d870a3afd4a77612026f41bbd358299ec432ac4cc8d3c",
+      "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2404.10772v1",
+        "navigationRole": "result",
+        "evidenceIds": [
+          "E12",
+          "E13"
+        ]
+      },
+      {
+        "obligationId": "ob_1",
+        "criterionId": "human_aspect_1",
+        "requirement": "高斯表示与网格提取路径有什么不同",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "criterionId": "req_1",
+        "requirement": "列出 GOF 和 PGSR 在 DTU 上报告的几何精度数值和训练耗时，并注明指标方向和分辨率",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_2",
+        "criterionId": "req_2",
+        "requirement": "说明数值是否来自作者自报或同表对比，以及硬件条件",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_3",
+        "criterionId": "human_aspect_1",
+        "requirement": "Mip-NeRF360 的渲染质量如何",
+        "source": "arxiv:2404.10772v1",
+        "evidenceIds": [
+          "E15"
+        ]
+      },
+      {
+        "obligationId": "ob_4",
+        "criterionId": "human_aspect_1",
+        "requirement": "核对数据集、指标方向、分辨率和硬件条件",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E16"
+        ]
+      },
+      {
+        "obligationId": "ob_4",
+        "criterionId": "human_aspect_2",
+        "requirement": "区分作者自报与同表对比",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_5",
+        "criterionId": "req_1",
+        "requirement": "检查两篇论文是否报告模型存储或显存使用，并说明证据是否充分",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_5",
+        "criterionId": "req_2",
+        "requirement": "如果证据不足，明确说明无法比较",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      },
+      {
+        "obligationId": "ob_6",
+        "criterionId": "req_1",
+        "requirement": "根据已核对的指标，给出在不同应用场景下的选择建议",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E16"
+        ]
+      },
+      {
+        "obligationId": "ob_6",
+        "criterionId": "req_2",
+        "requirement": "建议必须基于论文证据，并注明条件",
+        "source": "arxiv:2406.06521v1",
+        "evidenceIds": [
+          "E14"
+        ]
+      }
+    ],
+    "inputBytes": 23980,
+    "fixedInputBytes": 15543,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "newAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_e0a59ab4509976c8a57fa0dc56585aa0887d7c8e9a685e2537b7115f16c41372",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_51bfe15ac574d16d5d7d870a3afd4a77612026f41bbd358299ec432ac4cc8d3c",
+      "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_1b9fe474e2d80532e06f3089bb1d84cbae6de8557741965b4245ebc2327ca14e",
+      "ev_61541dec58e41564ec43244227c09b1047c680299d18cc98b83182a0ee0c6b4e",
+      "ev_f876a38f94a8999de7fe1cb807777e6328bed7022891bed03bb92e59e2968246",
+      "ev_19ad58fea6a25e0eff5df813924c04d70562f3b523c86d3390e5a1eb9a1ce1c3",
+      "ev_f102a13bbb86ac00432e4a10f2649c537c3141f8390d89f52044bf4ca4474e16",
+      "ev_1cda7553433a1f0e2a40214e4ba6a02638ea012cc24cdf6652b20e0cd7356365",
+      "ev_1372ad9e0d931810cba3f70cb42b4712bc530bb1fe465fcd19480dfe4369727a"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+      "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+      "ev_e0a59ab4509976c8a57fa0dc56585aa0887d7c8e9a685e2537b7115f16c41372",
+      "ev_e3d7cc78021a29706c9154278704d4bf8d26892a76bb6e9b3e0c928ec207f110",
+      "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+      "ev_31cc037797cad9d3dd0aff72dbeb148242626e9a9054c87db6fd63b1979dd323",
+      "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+      "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+      "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+      "ev_51bfe15ac574d16d5d7d870a3afd4a77612026f41bbd358299ec432ac4cc8d3c",
+      "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a",
+      "ev_a40350edfc9b4c1a683f5fe72de54067358e29d7d8f324ab7f39a81d88e9074e",
+      "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+      "ev_1b9fe474e2d80532e06f3089bb1d84cbae6de8557741965b4245ebc2327ca14e",
+      "ev_61541dec58e41564ec43244227c09b1047c680299d18cc98b83182a0ee0c6b4e",
+      "ev_f876a38f94a8999de7fe1cb807777e6328bed7022891bed03bb92e59e2968246"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23968,
+    "fixedInputBytes": 13190,
+    "factualInputContractVersion": 1,
+    "procedureObjectNavigation": true,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "sourcePayloadUnchanged": true,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Prospective saved-input preparation only. Source-owned quotations are unchanged; actual model selection, factual checks, time admission and full DR0-DR5 acceptance are not proved."
+}

@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-20",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_before_first_submission",
+  "materials": {
+    "stream": {
+      "path": "D:/3DGS/paper/3DGStream/2403.01444v4.pdf",
+      "title": "3DGStream v4",
+      "sha256": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98"
+    }
+  },
+  "cases": [
+    {
+      "id": "E1",
+      "split": "development",
+      "materials": [
+        "stream"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "基于3DGStream v4，设计一个最小实验评估第2阶段自适应新增高斯步骤带来的重建质量、每帧存储和额外训练开销。只选论文中一个有新出现内容的场景，固定相同第0帧模型、相机划分及第1阶段NTC结果，两组分别跳过或执行第2阶段；逐帧新增高斯不传到下一帧。只提出一个可检验假设，给出具体数据及帧窗口选择、共同初始化与完整状态、有限预算、测量与配对判读。比较整个第2阶段的增量取舍，不把新增参数与额外优化分别归因；单场景描述性方案，尚未执行，不保证改善。",
+      "required": [
+        "一个假设，比较完整新增步骤的增量取舍，保持单场景描述性边界，不改成其他方法/因子实验。",
+        "明确各组共有的首帧模型与阶段1NTC结果；实际新增规则来自自己的全文，明确当前帧附加高斯不递传。",
+        "数据集/成员有实际原文；帧窗口、训练/评估相机与检查点规则明确，不用最终评估视图挑窗口或调参。",
+        "完整且一致的初始化、必要高斯/网络状态、实际渲染/损失/优化设置和有限预算；选择拟议数值时标明未执行。",
+        "质量、每帧存储和额外训练开销都有可执行观测、基准/单位/聚合，按同帧同相机配对。",
+        "正确记录跳过阶段2的控制与额外优化的预算差异；不把无参数的空转优化宣称为同等训练或隔离纯新增数量效应。",
+        "保持原有九个角色的完整配置、自己的论文事实引用和独立审查；不能用字段齐全冒充科学通过。"
+      ],
+      "forbidden": [
+        "将新增高斯传给下一帧",
+        "将所有高斯属性变化说成NTC的7维输出",
+        "伪造数据集成员、论文默认值、已发布资产或执行结果",
+        "用未执行结果承诺质量改善",
+        "遗漏存储或训练开销，只报画质",
+        "声称已分离新增数量与额外优化的独立因果作用"
+      ],
+      "anchors": [
+        {
+          "physicalPage": 4,
+          "section": "Method",
+          "expected": "前一时刻初始化；阶段1NTC变换；当前帧用变换后与新增高斯渲染，仅前者递传。"
+        },
+        {
+          "physicalPage": 4,
+          "section": "Neural Transformation Cache",
+          "expected": "多分辨率哈希编码和浅MLP输出平移3维、四元数旋转4维。"
+        },
+        {
+          "physicalPage": 5,
+          "section": "Adaptive 3DG Addition",
+          "expected": "新增对象由当前帧新增高斯表示；避免递传累积；阶段2具体生成/优化规则需自己的正文。"
+        },
+        {
+          "physicalPage": 6,
+          "section": "Implementation",
+          "expected": "论文阶段1为150、阶段2为100迭代；不得据此虚构本方案已执行或所有共享设置已完整指定。"
+        }
+      ],
+      "independentCredit": 0
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "hardFailures": [
+      "伪造来源",
+      "严重事实错误",
+      "关键数值或条件错绑",
+      "把建议当已验证结果",
+      "越权或超预算",
+      "部分支持却按通过发布"
+    ],
+    "rawReceiptDirectory": "tmp/dr-acceptance-receipts"
+  },
+  "developmentBoundary": "Known paper, genuinely distinct new experimental question, not an independent holdout. Stage2 package tradeoff is not an AST/pose-jitter, SH/pruning, old-layer-opacity, factual comparison or explanation retry. Preserve all11unknowns. One submission only, no auto-retry, original18calls/100kToken/6min budget. Do not change this frozen question/criteria after observing output.",
+  "caseDefinitionHashes": {
+    "E1": "653e899ef3ef071945d747de39688ce1690e8742fb47d7518a1721bbdd7f83c0"
+  }
+}

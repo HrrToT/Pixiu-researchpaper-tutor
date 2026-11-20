@@ -1,0 +1,903 @@
+{
+  "provenance": {
+    "rawResultSha256": "8f8d3fc3dedef437ee92b9f76cbcc1d8402d2dbe26f0c339c025fd9ed571d07f",
+    "scientificAcceptance": false
+  },
+  "wire": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E5",
+      "E6",
+      "E7",
+      "E9",
+      "E13",
+      "E14",
+      "E16",
+      "E17",
+      "E19",
+      "E20"
+    ],
+    "baselineMode": "train",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "gaussian_parameters",
+        "appliesTo": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "sh_codebook",
+        "appliesTo": [
+          "01",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "sh_indices",
+        "appliesTo": [
+          "01",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "cov_codebook",
+        "appliesTo": [
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "cov_indices",
+        "appliesTo": [
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "exact_scene_name_and_view_counts",
+      "paper_30k_applicability_to_all_scenes",
+      "paper_random_seeds_and_repetitions",
+      "paper_formal_interaction_test_or_ci_method",
+      "paper_dc_color_quantization_in_main_results",
+      "paper_codebook_initialization_details",
+      "paper_rendering_gpu_and_resolution",
+      "paper_heldout_test_view_identity"
+    ],
+    "frameIterations": 0,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "setup",
+        "reads": [],
+        "groups": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ],
+        "sharing": "shared",
+        "updates": [
+          "gaussian_parameters"
+        ],
+        "outputs": [
+          "gaussian_parameters"
+        ],
+        "action": {
+          "action": "initialize_shared_gaussians",
+          "parameters": [
+            {
+              "name": "scene_choice",
+              "type": "choice",
+              "value": "tanks_and_temples_train_scene"
+            },
+            {
+              "name": "initialization_source",
+              "type": "choice",
+              "value": "sfm_initialization"
+            },
+            {
+              "name": "dc_color_handling",
+              "type": "choice",
+              "value": "unquantized_in_all_groups"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "fit",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          }
+        ],
+        "groups": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ],
+        "sharing": "per_group",
+        "updates": [
+          "gaussian_parameters",
+          "sh_codebook",
+          "sh_indices",
+          "cov_codebook",
+          "cov_indices"
+        ],
+        "outputs": [
+          "gaussian_parameters",
+          "sh_codebook",
+          "sh_indices",
+          "cov_codebook",
+          "cov_indices"
+        ],
+        "action": {
+          "action": "train_gaussians_with_quantization",
+          "parameters": [
+            {
+              "name": "training_iterations",
+              "type": "number",
+              "value": 30000
+            },
+            {
+              "name": "centroid_update_frequency",
+              "type": "number",
+              "value": 1
+            },
+            {
+              "name": "assignment_update_frequency",
+              "type": "number",
+              "value": 100
+            },
+            {
+              "name": "sh_quantization_on",
+              "type": "choice",
+              "value": "per_group"
+            },
+            {
+              "name": "cov_quantization_on",
+              "type": "choice",
+              "value": "per_group"
+            },
+            {
+              "name": "sh_codebook_size",
+              "type": "number",
+              "value": 512
+            },
+            {
+              "name": "cov_codebook_size",
+              "type": "number",
+              "value": 4016
+            },
+            {
+              "name": "dc_color_quantization",
+              "type": "choice",
+              "value": "off"
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 30000
+        }
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "psnr_metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "ssim_metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "lpips_metric",
+              "type": "choice",
+              "value": "lpips"
+            },
+            {
+              "name": "evaluation_views",
+              "type": "choice",
+              "value": "held_out_test_views"
+            }
+          ]
+        },
+        "outputs": [
+          "psnr",
+          "ssim",
+          "lpips"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_reconstruction_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_psnr",
+            "recorded_ssim",
+            "recorded_lpips"
+          ]
+        },
+        "group": "00"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "psnr_metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "ssim_metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "lpips_metric",
+              "type": "choice",
+              "value": "lpips"
+            },
+            {
+              "name": "evaluation_views",
+              "type": "choice",
+              "value": "held_out_test_views"
+            }
+          ]
+        },
+        "outputs": [
+          "psnr",
+          "ssim",
+          "lpips"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_reconstruction_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_psnr",
+            "recorded_ssim",
+            "recorded_lpips"
+          ]
+        },
+        "group": "01"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "psnr_metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "ssim_metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "lpips_metric",
+              "type": "choice",
+              "value": "lpips"
+            },
+            {
+              "name": "evaluation_views",
+              "type": "choice",
+              "value": "held_out_test_views"
+            }
+          ]
+        },
+        "outputs": [
+          "psnr",
+          "ssim",
+          "lpips"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_reconstruction_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_psnr",
+            "recorded_ssim",
+            "recorded_lpips"
+          ]
+        },
+        "group": "10"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "psnr_metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "ssim_metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "lpips_metric",
+              "type": "choice",
+              "value": "lpips"
+            },
+            {
+              "name": "evaluation_views",
+              "type": "choice",
+              "value": "held_out_test_views"
+            }
+          ]
+        },
+        "outputs": [
+          "psnr",
+          "ssim",
+          "lpips"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_reconstruction_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_psnr",
+            "recorded_ssim",
+            "recorded_lpips"
+          ]
+        },
+        "group": "11"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          }
+        ],
+        "measurement": {
+          "action": "measure_storage",
+          "parameters": [
+            {
+              "name": "storage_unit",
+              "type": "choice",
+              "value": "megabytes"
+            },
+            {
+              "name": "include_codebook",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_indices",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_unquantized_parameters",
+              "type": "choice",
+              "value": "yes"
+            }
+          ]
+        },
+        "outputs": [
+          "storage_mb"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_storage",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_storage_mb"
+          ]
+        },
+        "group": "00"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_storage",
+          "parameters": [
+            {
+              "name": "storage_unit",
+              "type": "choice",
+              "value": "megabytes"
+            },
+            {
+              "name": "include_codebook",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_indices",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_unquantized_parameters",
+              "type": "choice",
+              "value": "yes"
+            }
+          ]
+        },
+        "outputs": [
+          "storage_mb"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_storage",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_storage_mb"
+          ]
+        },
+        "group": "01"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_storage",
+          "parameters": [
+            {
+              "name": "storage_unit",
+              "type": "choice",
+              "value": "megabytes"
+            },
+            {
+              "name": "include_codebook",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_indices",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_unquantized_parameters",
+              "type": "choice",
+              "value": "yes"
+            }
+          ]
+        },
+        "outputs": [
+          "storage_mb"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_storage",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_storage_mb"
+          ]
+        },
+        "group": "10"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_storage",
+          "parameters": [
+            {
+              "name": "storage_unit",
+              "type": "choice",
+              "value": "megabytes"
+            },
+            {
+              "name": "include_codebook",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_indices",
+              "type": "choice",
+              "value": "yes"
+            },
+            {
+              "name": "include_unquantized_parameters",
+              "type": "choice",
+              "value": "yes"
+            }
+          ]
+        },
+        "outputs": [
+          "storage_mb"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_storage",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_storage_mb"
+          ]
+        },
+        "group": "11"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "rendering_metric",
+              "type": "choice",
+              "value": "fps"
+            },
+            {
+              "name": "rendering_resolution",
+              "type": "choice",
+              "value": "paper_reported_resolution"
+            },
+            {
+              "name": "rendering_gpu",
+              "type": "choice",
+              "value": "single_rtx_6000"
+            }
+          ]
+        },
+        "outputs": [
+          "fps"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_fps"
+          ]
+        },
+        "group": "00"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "rendering_metric",
+              "type": "choice",
+              "value": "fps"
+            },
+            {
+              "name": "rendering_resolution",
+              "type": "choice",
+              "value": "paper_reported_resolution"
+            },
+            {
+              "name": "rendering_gpu",
+              "type": "choice",
+              "value": "single_rtx_6000"
+            }
+          ]
+        },
+        "outputs": [
+          "fps"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_fps"
+          ]
+        },
+        "group": "01"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "rendering_metric",
+              "type": "choice",
+              "value": "fps"
+            },
+            {
+              "name": "rendering_resolution",
+              "type": "choice",
+              "value": "paper_reported_resolution"
+            },
+            {
+              "name": "rendering_gpu",
+              "type": "choice",
+              "value": "single_rtx_6000"
+            }
+          ]
+        },
+        "outputs": [
+          "fps"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_fps"
+          ]
+        },
+        "group": "10"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "gaussian_parameters",
+            "selector": "current_parameters"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_indices",
+            "selector": "assignment_indices"
+          },
+          {
+            "state": "cov_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "cov_indices",
+            "selector": "assignment_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "rendering_metric",
+              "type": "choice",
+              "value": "fps"
+            },
+            {
+              "name": "rendering_resolution",
+              "type": "choice",
+              "value": "paper_reported_resolution"
+            },
+            {
+              "name": "rendering_gpu",
+              "type": "choice",
+              "value": "single_rtx_6000"
+            }
+          ]
+        },
+        "outputs": [
+          "fps"
+        ],
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "recorded_fps"
+          ]
+        },
+        "group": "11"
+      }
+    ]
+  }
+}

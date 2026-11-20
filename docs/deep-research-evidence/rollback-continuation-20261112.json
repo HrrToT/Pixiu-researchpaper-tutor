@@ -1,0 +1,38 @@
+{
+  "baselineCommit": "81a827f0c03febc4d181900b00516e38be916511",
+  "redEntryTests": {
+    "tests": 6,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "redStateTest": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "finalRelatedRegression": {
+    "tests": 57,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "promptVersionUnchanged": "dr-v2.20261112.430",
+  "modelRequestIdentityChanged": false,
+  "productionRolloutFlagChanged": false,
+  "loadedInUserService": false,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Production factory and persistent isolated SQLite with model/publication fixtures, not an online deployment rollback drill",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/runtime.py": "497e02dbe106a0a8bcad74ec38ffc29122c3050c6018c81b40e6e4116169257d",
+    "ai-service-python/tests/test_deep_research_rollout_rollback.py": "534ed30a50fffbc108a55f16b59863d951c1cf07c8fb0a7d32aea9178c5ada58"
+  },
+  "logs": {
+    "tmp/rollback-red-20261112.log": "032601da68c7ad1add11cde2ab1c970e5f124f826f0fcbde237051a1151126cf",
+    "tmp/rollback-red-v2-20261112.log": "d186fd6d6fca0212c2102f070cbf1436fa7760d57e2431328cfcf47ba3c56633",
+    "tmp/rollback-state-red-20261112.log": "6972a05e838a950099cd70f9e2807cb3614339f29ea06d504b575a7acb39e2cb",
+    "tmp/rollback-release-final-20261112.log": "c772d0db540fe38ecfb7a232c1cbbb308f2195452b36a76e97cd28535fac2377"
+  }
+}

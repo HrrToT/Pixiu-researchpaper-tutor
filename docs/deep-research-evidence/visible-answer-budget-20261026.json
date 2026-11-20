@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "e35caef4",
+  "presentationVersion": 2,
+  "promptVersion": "dr-v2.20261026.300",
+  "offlineTests": {
+    "passed": 431,
+    "files": 29,
+    "elapsedSeconds": 27.52,
+    "sourceAndTestsStable": true,
+    "exitCode": 0
+  },
+  "replay": {
+    "scope": "read-only saved report presentation replay; no current model or scientific acceptance",
+    "inputSha256": "9b902ddaffb45e6433dab6b1fc0a2deef7334649985ffcbbd7a82e1033f1820b",
+    "sourceUnchanged": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "cases": [
+      {
+        "case": "D1",
+        "runId": "dr_run_70754e75a2c856bcadbaeafb3de0b036",
+        "limit": 300,
+        "visibleAnswerCharacters": 222,
+        "withinLimit": true,
+        "claimCount": 2,
+        "claimTextPreserved": true
+      },
+      {
+        "case": "H1F",
+        "runId": "dr_run_9490e39f37bc51f4803a4f0e7e73d881",
+        "limit": 350,
+        "visibleAnswerCharacters": 188,
+        "withinLimit": true,
+        "claimCount": 3,
+        "claimTextPreserved": true
+      },
+      {
+        "case": "H3F",
+        "runId": "dr_run_1e5563cfebfd516db26e3c213b266ca1",
+        "limit": 350,
+        "visibleAnswerCharacters": 349,
+        "withinLimit": true,
+        "claimCount": 2,
+        "claimTextPreserved": true
+      }
+    ]
+  },
+  "boundary": "Offline associated checks and read-only saved report replay. No model regeneration, production report rewrite, scientific or independent acceptance."
+}

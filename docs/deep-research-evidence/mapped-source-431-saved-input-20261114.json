@@ -1,0 +1,13 @@
+{
+  "case": "AD1N-v17 saved input only",
+  "legacyRequestExact": true,
+  "targets": 2,
+  "mappedTargetsWithoutDraftHints": 2,
+  "targetMetadataExact": true,
+  "completeSourceRowsExact": true,
+  "modelCalls": 0,
+  "contentAccepted": false,
+  "legacyPromptCharacters": 15792,
+  "newPromptCharacters": 15691,
+  "boundary": "Checks request construction using actual failed case; does not establish real rewrite quality."
+}

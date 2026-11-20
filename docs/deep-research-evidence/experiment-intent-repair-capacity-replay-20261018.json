@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v2",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "groups": [
+    {
+      "targetIds": [
+        "c4",
+        "c7"
+      ],
+      "boundedInputBytes": 19617,
+      "originalInputBytes": 24697,
+      "allTargetOriginalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c8",
+        "c9"
+      ],
+      "boundedInputBytes": 22717,
+      "originalInputBytes": 28707,
+      "allTargetOriginalsPreserved": true
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "boundedInputBytes": 22991,
+      "originalInputBytes": 29238,
+      "allTargetOriginalsPreserved": true
+    }
+  ],
+  "schedulerFixtureCalls": 3,
+  "maxInputBytes": 24000,
+  "oldInputsAndQuotesUnchanged": true,
+  "boundary": "Archived real failed configuration now fits bounded preflight/scheduling with mocked abstentions. No real model dispatch or scientific/content acceptance. Old pending requests/outcomes unchanged."
+}

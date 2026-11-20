@@ -1,0 +1,39 @@
+{
+  "promptVersion": "dr-v2.20261115.468",
+  "sourceCommit": "db2e27b088266ec3f03217b26e993b89370f2c6b",
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "finishReason": "stop",
+  "usage": {
+    "total_tokens": 15706,
+    "input_tokens": 10085,
+    "output_tokens": 5621
+  },
+  "unitValid": false,
+  "unitErrors": [
+    "timeline.input.group_leak"
+  ],
+  "rawBytes": 22596,
+  "wireBytes": 12648,
+  "expandedBytes": 16460,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9838,
+    "runs": 390,
+    "callsSha256": "122784a23d94d70db2f7456630f3ad6460fe58f39b239167957a463b6686bf26",
+    "runsSha256": "ca2a1de33da3124de0fd6d0e6c11300214cb94455c8d735efa57bed600e5b33e"
+  },
+  "rawResult": "tmp\\metadata-planning-output-468-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "35c021230a753f57af74ef8f90f6f678309f84a6697e4d7019c1c1c39b4d4201",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "revisionProbe": {
+    "inputBytes": 46775,
+    "legacyLimit": 40000,
+    "modelCalls": 0,
+    "wouldInvoke": false
+  }
+}

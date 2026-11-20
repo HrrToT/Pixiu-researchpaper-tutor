@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "6c89dad1",
+  "promptVersion": "dr-v2.20261018.171",
+  "offline": {"passed": 2776, "warnings": 1, "seconds": 177.72, "log": "tmp/pytest-dr171-full.log"},
+  "focused": {"passed": 108, "seconds": 5.2, "overlapWithFullSuite": true, "log": "tmp/pytest-dr171-focused.log"},
+  "changes": [
+    "Comparison policy2 permits only an exact matching target enum token followed by a colon and bounded explanatory suffix without another scope token. Preserve original field in internal normalization audit; raw Provider response stays unchanged in ledger.",
+    "Every quotation, source/version, declared cell, comparison premise, alignment, supportsClaim and scope-strength check still runs. Wrong or ambiguous enum, missing support, false supportsClaim and false differences remain rejected.",
+    "Absence policy4 recognizes the nominal 未验证范围 heading and untested-dimension modifiers under a negative epistemic modal. These route to independent semantic checking, not automatic approval. Author-wide absence in the following text still fails closed.",
+    "Server owns immutable comparison2 and absence4 on new runs; legacy1/2/3 behavior remains unchanged. No extra Provider request or expanded budget."
+  ],
+  "recordedReplay": "docs/deep-research-evidence/audit-format-scope-real-input-replay-20261018.json",
+  "boundary": "Offline regression and archived-response replay do not establish fresh content quality or independent-case acceptance."
+}

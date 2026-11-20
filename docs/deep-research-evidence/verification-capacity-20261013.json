@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-13",
+  "promptVersion": "dr-v2.20261013.55",
+  "baseCommit": "c5ca3b6",
+  "change": "Split oversized verification batches before dispatch, preserve all shared design rules and sibling definitions, deduplicate source metadata, and stop unsendable single targets before provider calls.",
+  "constraints": [
+    "Original claim text, typed executionSpec values, quotations, table data, locations and own-reference permissions are preserved.",
+    "Source aliases distinguish work, version and title; no cross-version merge.",
+    "All requests use the existing tracked call/token admission and conservative reservation.",
+    "No retry of submitted calls; completed subrequests use the durable result on replay.",
+    "A split does not declare context claims verified or publish them."
+  ],
+  "offlineReplay": {
+    "inputRunId": "dr_run_a42e81318fe75e06b5b37c3a52b6cbdc",
+    "caseId": "D3-v20",
+    "modelCalls": 0,
+    "databaseAccess": "read-only",
+    "oldVisibleEvidence": {"before": 6, "after": 1},
+    "simulatedDispatches": [
+      {"claims": ["c3", "c4", "c5"], "fixedBytes": 22095, "promptBytes": 23601, "requiredEvidence": 2, "visibleEvidence": 2},
+      {"claims": ["c8"], "fixedBytes": 20174, "promptBytes": 20174, "requiredEvidence": 0, "visibleEvidence": 0},
+      {"claims": ["design_completion_budget"], "fixedBytes": 20211, "promptBytes": 23982, "requiredEvidence": 6, "visibleEvidence": 6},
+      {"claims": ["design_completion_limits"], "fixedBytes": 20189, "promptBytes": 23960, "requiredEvidence": 6, "visibleEvidence": 6}
+    ],
+    "verdictCount": 6,
+    "limitation": "Local failed fixture verdicts prove request construction only. Four requests replace one for this input, increasing conservative reservation and possibly actual cost; admission can stop the run within its existing maximum."
+  },
+  "review": {
+    "model": "bailian/qwen3.8-max-tp via Qoder CLI",
+    "scope": "Three source/test files; no papers or runtime data; tools disabled; request retries zero.",
+    "result": "No split termination or own-reference leakage found. Adopted typed handling for fixed-content capacity failure; unrelated legacy naming and transport heuristics were not changed.",
+    "boundary": "Review snapshot preceded source-registry compaction. Final metadata and typed-field preservation are separately tested and reviewed by the primary agent."
+  },
+  "rejectedApproach": "Role-specific reduction of shared design requirements failed the existing joint-contract regression and was reverted. All original role requirements remain.",
+  "targetedValidation": {"capacityAndReplayTestsPassed": 8, "seconds": 4.35},
+  "extractionAndCapacityValidation": {"passed": 30, "seconds": 7.62},
+  "fullRegression": {"passed": 999, "warnings": 2, "seconds": 171.37},
+  "runtime": {"loadedCommit": "d8d61e8", "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 20.1}, "pausedRunsPreserved": 4},
+  "realCase": {
+    "caseId": "D3-v21",
+    "runId": "dr_run_372ccd0a70fa5c0d899a7093daac85f3",
+    "promptVersion": "dr-v2.20261013.55",
+    "submissions": 1,
+    "status": "failed",
+    "stage": "resolve_brief",
+    "outcome": "none",
+    "providerHttpStatus": 402,
+    "providerRequests": 1,
+    "retries": 0,
+    "elapsedSeconds": 1.0,
+    "ledgerReservedTokens": 4449,
+    "actualUsageTokens": null,
+    "cost": null,
+    "receipt": "tmp/dr-acceptance-receipts/D3-v21.json",
+    "rawResult": "tmp/dr-acceptance-receipts/D3-v21.result.json",
+    "interpretation": "Provider rejected the initial brief request. No extraction, repair or verification occurred. Reserved ledger tokens are not measured billed usage. HTTP 402 alone does not identify the precise account cause."
+  },
+  "failurePresentation": {
+    "change": "Confirmed model HTTP 402 failures now advise checking account quota and billing without exposing raw provider diagnostics. Unknown calls still take precedence and remain paused; unrelated or stale errors are not mislabeled.",
+    "regression": {"passed": 24, "warnings": 2, "seconds": 34.94},
+    "runtimeLoaded": true,
+    "loadedCommit": "5d9e2a2",
+    "health": {"status": "ok", "rag": "ok", "grobid": "ok", "uptimeSeconds": 55.6},
+    "loadObservation": "Initial health observations timed out during startup. The same running container subsequently returned healthy; no extra restart was performed."
+  },
+  "acceptance": "Full offline regression passed. New runtime content quality remains untested because the initial provider request returned HTTP 402. DR0-DR5 remains incomplete."
+}

@@ -1,0 +1,38 @@
+{
+  "runId": "dr_run_536fa175ed415ea4a63994143d83d76e",
+  "taskId": "dr-survey-flow-20261029",
+  "repeatTerminalGetWorkspaceExactlyUnchanged": true,
+  "fiveProtectedWorkspacesExactlyUnchanged": true,
+  "ownedCounts": {
+    "artifacts": 2,
+    "messages": 1,
+    "notes": 0
+  },
+  "publishedOutcomes": {
+    "artifacts": [
+      "partial",
+      "partial"
+    ],
+    "messages": [
+      null
+    ],
+    "notes": []
+  },
+  "publications": [
+    {
+      "id": "v2-research:dr_run_536fa175ed415ea4a63994143d83d76e:report_dr_run_536fa175ed415ea4a63994143d83d76e_v1:artifact",
+      "origin": "machine",
+      "reportVersionId": "report_dr_run_536fa175ed415ea4a63994143d83d76e_v1",
+      "outcome": "partial"
+    },
+    {
+      "id": "v2-research:dr_run_536fa175ed415ea4a63994143d83d76e:latest:artifact",
+      "origin": "latest",
+      "reportVersionId": "report_dr_run_536fa175ed415ea4a63994143d83d76e_v1",
+      "outcome": "partial"
+    }
+  ],
+  "realProviderCase": "S1G-v1",
+  "independentCredit": 0,
+  "contentAcceptance": false
+}

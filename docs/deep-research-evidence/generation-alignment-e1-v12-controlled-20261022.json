@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v12",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "newPlanningBytes": 15575,
+  "newGenerationBytes": 23325,
+  "generationCap": 24000,
+  "oldRepairBytes": 23838,
+  "newRepairBytes": 23875,
+  "repairCap": 23892,
+  "allOriginalGenerationEvidenceIdsRetained": true,
+  "allOriginalRepairClaimsAndPermissionsRetained": true,
+  "independentCredit": 0,
+  "boundary": "New instructions/preflight with exact archived responses, not a new model verdict or historical acceptance. Original scientific failures remain; source permissions and input caps unchanged."
+}

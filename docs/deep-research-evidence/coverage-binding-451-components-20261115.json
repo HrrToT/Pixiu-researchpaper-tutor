@@ -1,0 +1,49 @@
+{
+  "components": [
+    {
+      "component": "coverage-binding-v31-451-20261115",
+      "calls": 1,
+      "tokens": 1141,
+      "seconds": 3.632,
+      "finishReason": "stop",
+      "correctionStatus": "invalid_response",
+      "coverageGapsAfterReplay": 1,
+      "answerTextExact": true,
+      "answerMetadataExact": true,
+      "scientificProseRepairCalled": false,
+      "scientificContentAccepted": false,
+      "independentCredit": 0,
+      "profileOnlyExperiment": false,
+      "rawResult": "tmp\\coverage-binding-v31-451-20261115\\result.json",
+      "rawResultSha256": "624d4ce28c11e272448c3b2c8caa85ff3bad777c928996b8fce4c1a9d267d88d"
+    },
+    {
+      "component": "coverage-binding-v31-low-451-20261115",
+      "calls": 1,
+      "tokens": 2574,
+      "seconds": 17.561,
+      "finishReason": "stop",
+      "correctionStatus": "corrected",
+      "coverageGapsAfterReplay": 0,
+      "answerTextExact": true,
+      "answerMetadataExact": true,
+      "scientificProseRepairCalled": false,
+      "scientificContentAccepted": false,
+      "independentCredit": 0,
+      "profileOnlyExperiment": true,
+      "rawResult": "tmp\\coverage-binding-v31-low-451-20261115\\result.json",
+      "rawResultSha256": "aac65f9a40d9e6855f549c5adceba55ef365488fac9c260b46f31602271d62dd"
+    }
+  ],
+  "productionRuntimeStill450": true,
+  "451PolicyUsesOriginalNonthinkingProfile": true,
+  "lowProfileNotEnabledBy451": true,
+  "all103TasksExact": true,
+  "all380ApplicationRunsExact": true,
+  "all9549ApplicationCallRowsExact": true,
+  "historicalPaused": 15,
+  "activeApplicationRuns": 0,
+  "automaticRetries": 0,
+  "scientificContentAccepted": false,
+  "boundary": "Actual saved v31 graph replay preserves every accepted answer field. One isolated direct response repeats invalid request role and stays uncertain with no prose repair. One independent low-effort profile experiment corrects to two exact disjoint request spans and passes existing coverage validators. This is review-binding evidence only, no new whole case or manual scientific/novice acceptance; v31 original remains partial unchanged."
+}

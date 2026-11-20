@@ -1,0 +1,59 @@
+{
+  "baseCommit": "2fc646e1c",
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "planningProfile": 6,
+  "stageDispatchFixtures": 2,
+  "stages": [
+    {
+      "inputBytes": 30000,
+      "targetCount": 4,
+      "evidenceRows": 20,
+      "tableCatalogs": 2
+    },
+    {
+      "inputBytes": 31974,
+      "targetCount": 7,
+      "evidenceRows": 20,
+      "tableCatalogs": 2
+    }
+  ],
+  "allFrozenPremiseBundlesRetained": true,
+  "inputBytesTotal": 61974,
+  "graphSynthesisDraftClaims": 2,
+  "ordinaryVerifierWithoutSemanticApprovalWithholdsAllFacts": true,
+  "sqliteReopenReusesStagesAndReportVersion": true,
+  "publicationOutboxCount": 1,
+  "publicationDeduplicated": true,
+  "outcome": "inconclusive",
+  "scientificAcceptance": false,
+  "boundary": "Actual synthesize/verify/publish graph nodes and isolated SQLite/outbox. Stage responses are controlled own-quote fixtures, other targets null. No real model output, paid cost, timing or content acceptance.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_capacity.py": "8ba4c91cb27409a5f2c0e362976a0b055477a2731739b43edd57bb27ca7df58f",
+    "ai-service-python/services/deep_research/comparison_generation.py": "216a9e51b0571a5882a033e00aa7f725886b21c1b299a5d0fd6ba135c4e93fca",
+    "ai-service-python/services/deep_research/comparison_intent.py": "bcd6b0d5744ac31cc7603a525ed427328104107203193c1dfffb5ac321f533ca",
+    "ai-service-python/services/deep_research/comparison_stage_inputs.py": "059bca1f735d9932deca78b02700937735861686a3124abbd44f5256a621c765",
+    "ai-service-python/services/deep_research/comparison_stage_generation.py": "7e750e17a04bcee630dbb2e74ae9f3d500f0268d1f5c49db8fad07000631159e",
+    "ai-service-python/services/deep_research/facade.py": "245494c8de39d2428eb015e0a18b75b2c0e97bfbb108c82d5ae6f5940faca4fb",
+    "ai-service-python/services/deep_research/graph.py": "d8b22ad244ccf01880f3724aeeb153b0b9c2fa42331ebd4d13b83fba25c48671",
+    "ai-service-python/services/deep_research/tools.py": "f48ed6d8d10bc7d657530f78d9653651a0b7efbf0a8de015857353aeeac9cbdb",
+    "ai-service-python/services/deep_research/plan_resume.py": "4990d8d2dcb1dd54ad240a6258dbca2b2cc7a36395687b7273351c9ddc37deb9"
+  },
+  "relatedChecks": {
+    "tests": 969,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": 50,
+    "sourceUnchanged": true,
+    "runId": "comparison-stages-graph-related-v2-20261118"
+  },
+  "realLedgerTests": {
+    "checkpointInterruptionKnownResponseRecoveredWithoutResend": true,
+    "unknownRequestIdentityAndReservationRetained": true,
+    "materialPermissionRecheckedForCachedStages": true
+  },
+  "fullRegressionCompleted": false,
+  "runtimeLoaded": false
+}

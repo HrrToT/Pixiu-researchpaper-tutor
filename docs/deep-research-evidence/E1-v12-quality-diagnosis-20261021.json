@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-21",
+  "case": "E1-v12",
+  "sourceCommit": "15c71b39",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "realRepairAllNineTargetsSubmittedAndExpanded": true,
+  "actualCoverageAudit": {
+    "version": 1,
+    "expectedTargetIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "submittedEditIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "unresolvedTargets": [],
+    "missingTargetIds": [],
+    "invalidTargetIds": [],
+    "unexpectedTargetIds": [],
+    "malformedEntries": 0,
+    "responseCoverageComplete": true,
+    "scientificApproval": false,
+    "expandedRevisionIds": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "unusableEditTargetIds": []
+  },
+  "internalMarkerFindings": [
+    {
+      "claimId": "c1",
+      "ownAliases": [
+        "E4",
+        "E5",
+        "E6",
+        "E7"
+      ],
+      "ranges": [
+        {
+          "marker": "E4-E6",
+          "allRangeLabelsAlreadyCited": true,
+          "uncitedLabels": []
+        },
+        {
+          "marker": "E4-E6",
+          "allRangeLabelsAlreadyCited": true,
+          "uncitedLabels": []
+        }
+      ],
+      "remainingUnbracketedMarkers": [
+        "E4",
+        "E6",
+        "E7"
+      ],
+      "example": "{\"text\": \"在N3DV数据集的flame salmon场景中，固定相同的第0帧模型、相机划分及第1阶段NTC结果，并逐帧不传播新增高斯时，执行第2阶段自适应新增高斯（按论文E4-E6的梯度选择、采样、继承与仅优化新增参数）相比跳过第2阶段，在帧1→2窗口上会改变重建质量（PSNR/SSIM）、每帧存储（高斯参数字节数）和额外训练开销（第2阶段优化墙钟时间）。本假设为探索性描述比较，不预设改善方向，也不将新增参数与额外优化分别归因。\", \"conditions\": {\"context\": \"方案尚未执行；E4-E6为论文第2阶段操作，E7为flame salmon场景与帧1→2窗口；相机划分、种子、迭代数等为拟议选择。\"}}"
+    },
+    {
+      "claimId": "c2",
+      "ownAliases": [
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "ranges": [
+        {
+          "marker": "E4-E6",
+          "allRangeLabelsAlreadyCited": true,
+          "uncitedLabels": []
+        }
+      ],
+      "remainingUnbracketedMarkers": [
+        "E4",
+        "E6"
+      ],
+      "example": "{\"text\": \"两组：对照组（跳过第2阶段）与处理组（执行第2阶段自适应新增高斯）。两组共享相同的第0帧模型、相机划分和第1阶段NTC结果；处理组逐帧新增高斯不传到下一帧。\", \"conditions\": {\"context\": \"分组为拟议设计；E4-E6定义第2阶段操作，但具体实现参数（如优化器学习率）为拟议值。\"}}"
+    },
+    {
+      "claimId": "c4",
+      "ownAliases": [
+        "E7"
+      ],
+      "ranges": [],
+      "remainingUnbracketedMarkers": [
+        "E7"
+      ],
+      "example": "{\"text\": \"数据：N3DV数据集flame salmon场景，帧窗口为帧1→2（论文E7用于展示NTC有效性的窗口）。相机划分：按相机索引每3个取1个作为留出评估视图，其余为训练视图；使用种子0进行数据划分。独立单元为单个相机视图。\", \"conditions\": {\"context\": \"E7明确flame salmon场景与帧1→2窗口；相机划分与种子为拟议选择，需根据实际数据集文件验证。\"}}"
+    },
+    {
+      "claimId": "c6",
+      "ownAliases": [
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "ranges": [
+        {
+          "marker": "E4-E6",
+          "allRangeLabelsAlreadyCited": true,
+          "uncitedLabels": []
+        },
+        {
+          "marker": "E4-E6",
+          "allRangeLabelsAlreadyCited": true,
+          "uncitedLabels": []
+        }
+      ],
+      "remainingUnbracketedMarkers": [
+        "E4",
+        "E6"
+      ],
+      "example": "{\"text\": \"执行步骤：准备数据（加载flame salmon帧1→2，按相机索引每3取1留出评估）；获取基线（训练第1阶段NTC 1000步，得到第0帧模型与NTC结果）；初始化组件（从基线复制完整状态到两组）；配对分组（对照组跳过第2阶段，处理组执行第2阶段）；应用干预（处理组按E4-E6执行自适应新增高斯并优化100步/帧，逐帧不传播新增高斯）；恢复（处理组记录第2阶段训练量200步，对照组0步）；评估（在留出相机视图上计算PSNR/SSIM、存储字节数、第2阶段墙钟时间）；记录（保存所有清单与测量）。\", \"conditions\": {\"context\": \"步骤为拟议设计；E4-E6定义第2阶段操作，但具体实现细节（如优化器）为拟议值。"
+    },
+    {
+      "claimId": "c9",
+      "ownAliases": [
+        "E7"
+      ],
+      "ranges": [],
+      "remainingUnbracketedMarkers": [
+        "E7"
+      ],
+      "example": "{\"text\": \"风险与限制：方案尚未执行，不保证改善；相机划分与帧窗口基于论文E7，但实际数据集中相机索引和文件身份需预检；训练视图是否包含新出现内容需在拟合前用训练视图判断，若不满足则拒绝该窗口；第2阶段优化器学习率等为拟议值，可能影响结果；单场景描述性方案，结论不推广到其他场景。\", \"conditions\": {\"context\": \"E7仅提供场景与帧窗口，未提供相机划分细节；所有拟议设置需在实际执行前验证。\"}}"
+    }
+  ],
+  "controlsConfigIdenticalBeforeAfter": true,
+  "actualNumericControlValues": {
+    "resolution_width": 1280,
+    "resolution_height": 720,
+    "learning_rate": 0.001,
+    "iterations_per_frame": 100
+  },
+  "repairedBudgetMode": "unmatched",
+  "repairedBudgetProseStillAssertsMatched": true,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算配置不匹配：对照组总训练量为1000步，处理组为1200步，未匹配预算，无法隔离第2阶段增量效应；且未提供共享第1阶段NTC训练1000次迭代的论文证据。"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c9",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "初始化引用c6但c6未提供，无法验证共同初始化；渲染分辨率1280x720未在证据中确认且未说明来源；优化器仅优化新增高斯但未定义新增高斯的初始状态和参数；相机划分规则未给出具体相机总数和索引列表，无法预检非空且不相交。",
+      "revisionRejection": {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "渲染设置缺少具体分辨率参数值；优化器设置缺少学习率数值；其他干预未明确禁用量化、占用和压缩等操作。"
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "质量协议未指定逐帧计算后窗口平均的具体窗口大小或聚合方式；速度协议未指定预热次数、同步方法、计时区域及重复次数；存储协议未指定参数量化精度或字节计算方式。",
+      "revisionRejection": {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "指标定义不完整：PSNR/SSIM未指定参考图像来源（留出视图的真实图像），存储未明确参数精度（float32）及是否包含所有高斯参数，速度测量未指定同步方法（如CUDA同步）和预热细节。"
+      }
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "effects字段定义了差值公式但未指定配对观察的具体聚合方式（如逐帧平均还是窗口平均）；uncertainty和decision均为描述性模式但未给出具体边界或决策规则（如差值符号和相对变化百分比如何判定）；未明确配对单位（视图、帧或场景）。",
+      "revisionRejection": {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "效果定义中存储差异和时间差异的聚合方式不一致；不确定性模式为描述性但未明确报告原始差异和相对变化的边界；决策规则未指定具体阈值或符号判断标准。"
+      }
+    }
+  ],
+  "findings": [
+    "Coverage is now proven in a real run, but all nine edits still fail quality checks.",
+    "Remaining prose includes unbracketed paper-E7 attributions and E4-E6 ranges; determine own citation permission before any display normalization. Uncited labels must remain rejected.",
+    "Controls numeric resolution/rate values did NOT get deleted: initial and revised native configs are identical. Revised review nevertheless says those values are missing.",
+    "Budget really remains contradictory: repaired config says unmatched while original text still says matched. This genuine defect remains even though reviewer also incorrectly insists on isolated-effect matching and paper evidence for explicitly proposed iterations."
+  ],
+  "nextWork": [
+    "Normalize only already-owned explicit source attributions/ranges with mathematical-symbol protection and audit; do not strip uncited markers.",
+    "Check review visibility of full unverified linked definitions and native numeric fields before treating a missing-field complaint as established.",
+    "Align all generation/review budget instructions with the actual whole-stage objective and repair prose/config contradictions.",
+    "Complete method-grounded state, temporal ordering, measurement and independent DR0-DR5 acceptance."
+  ],
+  "boundary": "Read-only factual diagnosis, no revised content or changed verdict. Actual plan2058/wire1949 is below the preferred2500 slot, so this real run proves new-contract execution, not real over-preferred-slot recovery. The archived2750-byte recovery remains controlled-only."
+}

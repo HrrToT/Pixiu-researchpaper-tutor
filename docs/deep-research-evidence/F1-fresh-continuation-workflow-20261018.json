@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "e6c14f57",
+  "taskId": "dr-fresh-continuation-20261018",
+  "purpose": "Fresh actual frontend edit and continuation workflow integration; not independent content acceptance.",
+  "workflowAccepted": true,
+  "independentCredit": 0,
+  "parentArtifactRef": "artifact:v2-research:dr_run_bcf5f55e68f35ff5adb9e8617cfa9016:latest:artifact",
+  "editedParentHash": "962c2d378eaf21b46e8caa59591909adb0eab1bef66ecddd93c2def3d0d2b38a",
+  "editedParentText": "## 我的阅读记录\n\n1. 高斯剪枝减少的是对场景重建贡献微小的高斯数量，从而降低冗余。 [1](#research-evidence-ev_0c78f5d4bd5e337229fce3a4e88ea857b5794c80347a851738dbb878870be8be) [2](#research-evidence-ev_3f807418dc5b26f84ed68bad17741f3f196207dc80d14fde16709db580a9e7d0)\n2. 我的第二个问题改为：高斯剪枝为什么可能删掉重要细节？这条是我新增的待核对问题。",
+  "staleRevisionProbe": {
+    "taskId": "dr-fresh-continuation-20261018",
+    "parentRunId": "dr_run_bcf5f55e68f35ff5adb9e8617cfa9016",
+    "staleTaskRevision": 5,
+    "currentTaskRevision": 6,
+    "responseStatus": 409,
+    "responseBody": "{\"message\":\"任务已更新，请刷新后重试\",\"code\":\"TASK_CONFLICT\"}",
+    "before": {
+      "calls": 3914,
+      "runs": 161
+    },
+    "after": {
+      "calls": 3914,
+      "runs": 161
+    },
+    "providerCalls": 0,
+    "newRuns": 0,
+    "requestId": "e9099aa2-5871-5b8f-833e-16669f0ee8b0",
+    "boundary": "One explicit stale-client pre-child probe after actual UI edit. HTTP409 and unchanged run/call counts; not a failed Provider request or an automatic retry."
+  },
+  "cases": [
+    {
+      "case": "F1P-v1",
+      "runId": "dr_run_bcf5f55e68f35ff5adb9e8617cfa9016",
+      "promptVersion": "dr-v2.20261018.163",
+      "status": "completed",
+      "machineOutcome": "complete",
+      "ledgerRows": 19,
+      "modelCalls": 8,
+      "settledTokens": 16263,
+      "elapsedSeconds": 34.284,
+      "report": "## 判断\n\n- 高斯剪枝减少的是对场景重建贡献微小的高斯数量，从而降低冗余。 [1](#research-evidence-ev_0c78f5d4bd5e337229fce3a4e88ea857b5794c80347a851738dbb878870be8be) [2](#research-evidence-ev_3f807418dc5b26f84ed68bad17741f3f196207dc80d14fde16709db580a9e7d0)\n- SH降阶减少的是球谐函数的阶数，从而简化光照模型。 [1](#research-evidence-ev_0c78f5d4bd5e337229fce3a4e88ea857b5794c80347a851738dbb878870be8be)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 8 页 · 全文片段\n\n> Results show that Gaussian Pruning and Recovery effectively removes redundant Gaussians, retaining only those crucial for scene representation. SH Distillation reduces the Spherical Harmonics degree, simplifying the lighting model with minimal quality loss.\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 8 页 · 全文片段\n\n> In this method, we prune Gaussians that contribute minimally to scene reconstruction, reducing redundancy while preserving visual fidelity.\n\n</details>",
+      "rawFiles": [
+        {
+          "path": "tmp/dr-acceptance-receipts/F1P-v1.json",
+          "sha256": "8a8909b702d71a75eb0275d8cbe30e03cd9a8beab56f34176f64149f45ce43a7"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1P-v1.payload.json",
+          "sha256": "c901d3910decf91f42c335869689f7dd9f6bb5ad635ca41f45e14a497ff0a6f5"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1P-v1.calls.json",
+          "sha256": "8b0c9a4d2c16c1460e6abd06ce7b5a023a84ed61802469175c90ddcc5c090d49"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1P-v1.result.json",
+          "sha256": "b694965953a9c3eec7f662e70cabddcd267126d86624423fe001c3718604a853"
+        }
+      ]
+    },
+    {
+      "case": "F1C-v1",
+      "runId": "dr_run_52cd2b8d6d6b5b0097189d026675b861",
+      "promptVersion": "dr-v2.20261018.163",
+      "status": "completed",
+      "machineOutcome": "partial",
+      "ledgerRows": 21,
+      "modelCalls": 8,
+      "settledTokens": 19589,
+      "elapsedSeconds": 31.722,
+      "report": "## 判断\n\n- 高斯剪枝若仅按不透明度等简单标准删除高斯，可能误删承载重要场景细节的高斯，导致建模质量下降。 [1](#research-evidence-ev_a7a18d4a3bd88ee3cac0c62b07b423d7b7095e3d4657b7097a5206c85e6f700d)\n  适用条件：context：剪枝标准为简单标准（如不透明度）；被删高斯承载重要场景细节。\n\n<details>\n<summary>还有 1 项未完成</summary>\n\n- 按要求整理为2点：当前已核验正文有1点，尚未满足分点要求。\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> However, pruning Gaussians based on simple criteria (e.g., point opacity) risks degrading modeling performance, as it may eliminate essential scene details, as shown in Fig.3.\n\n</details>",
+      "rawFiles": [
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v1.json",
+          "sha256": "3d2712b28ccfd4abf5a1549f2554fb26180b73b1e0a7d6703e3cbdbf7b24b415"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v1.payload.json",
+          "sha256": "11f69e7e06cbc89309f7d12f4e296c90048e74ef468fc92b02b6a8409620e493"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v1.calls.json",
+          "sha256": "8fdaf0afa8ada8bf0dbdd65082c864defdf908be724a97c6533129901dabc506"
+        }
+      ],
+      "exactEditedParentContextBound": true
+    },
+    {
+      "case": "F1C-v2",
+      "runId": "dr_run_d9860c2ec6b9574ea1fc6daf5f1790f0",
+      "promptVersion": "dr-v2.20261018.164",
+      "status": "completed",
+      "machineOutcome": "complete",
+      "ledgerRows": 21,
+      "modelCalls": 8,
+      "settledTokens": 20417,
+      "elapsedSeconds": 30.303,
+      "report": "## 判断\n\n- 有依据的推断：高斯剪枝若仅按不透明度等简单标准删除高斯，可能误删承载重要场景细节的高斯，从而降低建模质量。 [1](#research-evidence-ev_a7a18d4a3bd88ee3cac0c62b07b423d7b7095e3d4657b7097a5206c85e6f700d)\n  适用条件：context：剪枝标准为简单准则（如点不透明度）时\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> However, pruning Gaussians based on simple criteria (e.g., point opacity) risks degrading modeling performance, as it may eliminate essential scene details, as shown in Fig.3.\n\n</details>",
+      "rawFiles": [
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v2.json",
+          "sha256": "05fb4d54ad9dc51a7813c9f1a4c44a9d7090193be7fe5c4c31857a50a473d33c"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v2.payload.json",
+          "sha256": "f0d49cd2059d5a95794dc7f9a575819ecc62223504bdda7056884d14e85cc00e"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v2.calls.json",
+          "sha256": "aad55bed72dfbf6a15b321254ce8e1358d0f18a09a5ff37a51acd935ee48a0e7"
+        },
+        {
+          "path": "tmp/dr-acceptance-receipts/F1C-v2.result.json",
+          "sha256": "0d3073c9c8996e85358f378256f57a7f69b81f3ef72afc88edda2aba89e0e85e"
+        }
+      ],
+      "exactEditedParentContextBound": true
+    }
+  ],
+  "retention": {
+    "calls": 3956,
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "initialPrefixPreserved": true,
+    "initialOldPayloadsPreserved": true,
+    "childV2PrefixPreserved": true,
+    "childV2OldPayloadsPreserved": true
+  },
+  "oldTasksUnchanged": 91,
+  "currentTaskCount": 92,
+  "oldCurrentTaskEntitiesUnchanged": {
+    "notes": 0,
+    "messages": 2,
+    "artifacts": 4
+  },
+  "modelCalls": 24,
+  "settledTokens": 56269,
+  "cost": null,
+  "manualContentCheck": {
+    "respondsToUserEditedSecondPoint": true,
+    "oldSHPointNotUsedAsQuestion": true,
+    "ownQuoteSupportsPruningImportantDetailsRisk": true,
+    "userDraftIsContextNotVerifiedEvidence": true,
+    "originalAndUserDraftPreserved": true,
+    "firstChildPartialRemainsPartial": true,
+    "currentQuestion120CharacterLimitRespected": true,
+    "limitations": [
+      "Condition duplicates prose and exposes internal context label; display cleanup remains.",
+      "One integration example does not establish general content quality or replace independent cases."
+    ]
+  },
+  "uiObserved": [
+    "Edit saved and user-draft label visible.",
+    "Continue form opens on complete report.",
+    "One explicit submit creates child; form closes and focus returns to trigger.",
+    "Final report can be opened from child card; sources stay folded."
+  ],
+  "screenshots": [
+    "deep-research-evidence/F1-v1-user-edit-20261018.jpg",
+    "deep-research-evidence/F1-v2-final-report-20261018.jpg"
+  ],
+  "boundary": "All three cases were submitted once under frozen definitions and bounded budgets. No historical result is upgraded. Overall DR0-DR5 and independent quality gates remain incomplete."
+}

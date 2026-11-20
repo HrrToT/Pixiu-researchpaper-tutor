@@ -1,0 +1,34 @@
+{
+  "promptVersion": "dr-v2.20261105.379",
+  "coverageDiagnosticsContractVersion": 4,
+  "component": "one final-answer coverage audit of unchanged X4L-v10 accepted claims",
+  "intentCaptionCorrection": "Copied local intent caption mentions repair; actual recorded node and executable code performed ONLY verify_answer_coverage, with one-call cap.",
+  "modelCalls": 1,
+  "tokens": 6258,
+  "seconds": 7.0,
+  "coverageStatus": "checked",
+  "gaps": [],
+  "coherence": {
+    "contractVersion": 1,
+    "status": "checked",
+    "answerDigest": "7bcb15688f1c5f091dbe1497c9498667493a782c64840c34838f9498f51234a7",
+    "coherent": true,
+    "issues": []
+  },
+  "coverageEvidenceTransportVersion": 1,
+  "oldInputsAndScientificVerdictsReusedWithoutPromotion": true,
+  "productionPreserved": true,
+  "productionLedgerRows": 8303,
+  "oldRunRejudged": false,
+  "productionPublished": false,
+  "fullWorkflowAccepted": false,
+  "independentCredit": 0,
+  "artifacts": {
+    "calls.json": "c0089faff549be2d0cd31cce6e5f660ff1823a5d7e1f864e45b5e39a0f13eb0f",
+    "payload.json": "ffed6bfb4cc3ba2bd2ae72bf287c4b03ca1d4b048e843b4a13c58f7521838f8e",
+    "preservation.json": "dd48ef273ea5498145f3481002decf89ac6866364024bdea0115615145d83235",
+    "request-1.json": "17b45aea8611d766fbe424b18ebe12ccab602ab31276120c1c6f708f1b4715b9",
+    "response-1.json": "b1aad20addab9231654dc0478f65b997e832057de809c039692c7b36e05a0eac",
+    "result.json": "c4da17a71b25cb5a4cdd768abe93dcf581b9eb78a8452f1cffc6e2a2f8f27056"
+  }
+}

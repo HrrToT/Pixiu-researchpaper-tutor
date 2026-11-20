@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "d299a05d",
+  "sourceCase": "E1-v19",
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 2,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "actualFingerprintMatched": true,
+      "inputBytes": 23758
+    },
+    {
+      "node": "synthesize",
+      "actualFingerprintMatched": true,
+      "inputBytes": 30162
+    }
+  ],
+  "providerCallsDuringReplay": 0,
+  "productionWritesDuringReplay": 0,
+  "providerFinishReason": "stop",
+  "rawOutputSha256": "0520c48dda9d6e5a087a118fc076b66463d6710623aeeb7670ec8195422516ba",
+  "rawOutputState": "received_invalid",
+  "parserError": {
+    "message": "Expecting ',' delimiter",
+    "line": 267,
+    "column": 75,
+    "character": 8997
+  },
+  "nonliteralNumberLocations": [
+    {
+      "line": 267,
+      "snippet": "{\"name\": \"hash_table_size\", \"type\": \"number\", \"value\": 2^19},"
+    },
+    {
+      "line": 277,
+      "snippet": "\"shape\": [2^19, 2],"
+    }
+  ],
+  "enteredSemanticVerification": false,
+  "enteredRepair": false,
+  "next": [
+    "Add explicit strict numeric-literal guidance to new experiment generation, preserving scientific string formulas and rejecting arithmetic syntax in numeric fields.",
+    "Keep strict parsing and original raw responses; never eval/patch2^19 or silently salvage this failed run.",
+    "Verify a fresh fixed development case reaches the repaired branch before claiming live repair quality; frozen independent acceptance remains0/5."
+  ],
+  "boundary": "Exact archived request identity reconstruction and raw parser diagnosis only. No new judgement of the unparsed draft, no old-run upgrade or replay."
+}

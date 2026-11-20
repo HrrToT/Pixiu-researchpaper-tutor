@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-19",
+  "sourceCommit": "9b5f68d4",
+  "promptVersion": "dr-v2.20261019.187",
+  "fullOffline": {
+    "passed": 3019,
+    "warnings": 1,
+    "seconds": 148.72,
+    "log": "tmp/pytest-dr187-full.log",
+    "sha256": "0a0d5cb4176e5406ef256ef4d49ac394bd98c0377427b9798e43c520e30ab686"
+  },
+  "serverFrozenContracts": {
+    "factualRepairContractVersion": 2
+  },
+  "bounds": {
+    "maxInputBytes": 24000,
+    "maxOutputTokens": 8192,
+    "standardModelCalls": 18,
+    "standardTokens": 100000,
+    "standardSeconds": 360
+  },
+  "shortFactualAdmissionSeconds": {
+    "oneTarget": 45,
+    "twoTargets": 60,
+    "threeTargets": 75,
+    "otherPaths": "old90-or-quarter-wall-clock minimum"
+  },
+  "legacyProviderFingerprintsMatched": 16,
+  "legacySameInputRepairDifferentials": 2,
+  "providerCalls": 0,
+  "boundary": "Full offline fixtures plus archived input/time arithmetic replay only. Admission floors are estimates, not latency guarantees or scientific approval. No current real generation or independent credit; old requests unchanged."
+}

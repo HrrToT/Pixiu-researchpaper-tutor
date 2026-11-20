@@ -1,0 +1,29 @@
+{
+  "scope": "comparison factual review batching related regression; not scientific acceptance",
+  "tests": 127,
+  "failures": 0,
+  "errors": 0,
+  "defaultEnabled": false,
+  "maxTargetsPerRequest": 3,
+  "sourceSha256": {
+    "comparison_review_batches.py": "e4cb39540d9afbce73f6442e26bd82cd8b6ddb71a5e4b2d69a53a092611d411d",
+    "comparison_capacity.py": "38682de3da1fb2059d0a8194961277e56a34fd58638f52be7d73324d4f9452c5",
+    "facade.py": "2e909c8cbb1333dfc69fa531616b4aa618ae35dbacde7e0d4af70d85b42a0c64",
+    "repository.py": "446d54124841d583d941d41bbdb7c72f8ea7cee34eb59300454d6fb7b86bbe5f",
+    "runtime.py": "20f98c1857f801a30d829c81a599cacc79d6965eb4c907f6d8a77b2a56602448",
+    "tools.py": "8871cbc51a4be618eaeb878d057e8e16201ed08ac7b15b7625ac02326b23252a"
+  },
+  "checks": [
+    "per-target invalid response quarantine",
+    "own source gates retained",
+    "unknown propagation stops next group",
+    "real SQLite success reuse without resend",
+    "real SQLite unknown preservation without resend",
+    "server-owned immutable marker; old absence preserved",
+    "full oversized singleton not trimmed or sent",
+    "legacy singleton grouping preserved"
+  ],
+  "scientificAcceptance": false,
+  "latencyImprovementEstablished": false,
+  "realProviderCasesSubmitted": 0
+}

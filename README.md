@@ -1,6 +1,10 @@
 # Pixiu Academic Assistant
 
-Pixiu Academic Assistant 是一个面向学术论文阅读的 AI 工作台。它把 PDF 解析、单论文阅读辅助、证据化分析，以及新的多论文 Agent 研究工作区整合在同一个项目里。
+Pixiu Academic Assistant 是一个面向新手的任务式学术论文助手。每个任务统一组织论文、对话、学习记录、笔记与成果，通过可收起的导航、阅读和对话三栏完成阅读与研究。
+
+自然语言和六个斜杠命令统一调用精读、补课、自测、批判、比较与研究；翻译、划词解释和标注留在原文附近。结果优先，依据按需展开，成果支持搜索、编辑、版本恢复和导出。重构重点及验证范围见 [重构总览](docs/UNIFIED_REFACTOR_SUMMARY.md)。
+
+统一任务界面已成为默认入口：`http://localhost:5173/`。阶段0–7按当前设计范围验收，操作与运行说明见 [统一任务指南](docs/UNIFIED_TASK_GUIDE.md)，范围和限制见 [完整验收台账](docs/STAGE7_ACCEPTANCE.md)及[正式入口验收](docs/STAGE7_FINAL_RELEASE.md)。`?unified=0`保留旧界面回退；下方旧入口能力介绍不扩大新版验收范围。
 
 ## 非开发用户快速开始
 
@@ -153,11 +157,13 @@ Java 网关源码里已经包含 Agent 转发接口，但本地运行时可能�
 
 根目录 `.env` 主要供 Docker Compose 和 Python 服务使用：
 
+官方 Flash API 的当前名称为 `deepseek-flash`。旧的 `deepseek-v4-flash` 名称仍由官方兼容路由到当前 Flash 模型；已有显式配置不会被代码改写。研究中的问题解析、证据提取和相关性评估也使用 `DEEPSEEK_TRANSLATION_MODEL`，其余研究角色沿用主模型。名称维护不代表供应商故障已恢复，未知请求仍保留暂停且不自动重发。参见 [DeepSeek 官方调用说明](https://api-docs.deepseek.com/zh-cn/)。
+
 ```env
 DEEPSEEK_API_KEY=
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-pro
-DEEPSEEK_TRANSLATION_MODEL=deepseek-v4-flash
+DEEPSEEK_TRANSLATION_MODEL=deepseek-flash
 DEEPSEEK_THINKING_TYPE=enabled
 DEEPSEEK_REASONING_EFFORT=high
 

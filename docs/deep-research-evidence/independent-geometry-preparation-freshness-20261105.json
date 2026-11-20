@@ -1,0 +1,22 @@
+{
+  "papers": {
+    "arxiv:2404.10772": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    },
+    "arxiv:2406.06521": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    }
+  },
+  "indexIdentityHits": [],
+  "indexBodyTitleMentions": {
+    "Gaussian Opacity Fields": 1,
+    "Planar-based Gaussian Splatting": 0,
+    "PGSR": 0
+  },
+  "indexRows": 1215,
+  "providerCalls": 0,
+  "writes": 0,
+  "scope": "Read-only candidate freshness before definition; body mentions are recorded separately from owned-paper acquisition or prior focal model cases."
+}

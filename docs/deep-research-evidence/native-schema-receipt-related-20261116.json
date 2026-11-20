@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "f5e9502fecd4ce40acf3c07259c76de23850bead",
+  "newTests": 16,
+  "counts": {
+    "tests": 90,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit": {
+    "path": "tmp/native-schema-receipt-related-final-20261116.xml",
+    "sha256": "ebe1a639b3a46de58b4f07f98f0592e9b9fffd106191e054b360d9a8a47f3657"
+  },
+  "scope": [
+    "Actual HTTP/ledger result records local schema compliance without resend",
+    "Valid schema receipt is not provider enforcement or scientific approval",
+    "Numeric strings are rejected without conversion; raw content/usage retained",
+    "Truncation, malformed raw JSON, invalid schema and local/remote references are distinct",
+    "External schema retrieval prohibited; error paths bounded and no source values included",
+    "Legacy/cache payloads and existing unit/scientific checks unchanged"
+  ],
+  "scientificContentAccepted": false,
+  "productionReloaded": false
+}

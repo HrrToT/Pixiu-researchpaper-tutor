@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v17",
+  "sourceCommit": "d1bff93",
+  "sourceCallsSha256": "ec2846955cccc4562ab332f98dde6f7d9a50aa8639e479c2f5af432aeb125fe9",
+  "oldOutcome": "failed/none; invalid_verification_response",
+  "format": "Complete JSON array, missing only the closing Markdown fence.",
+  "unchangedFailedVerdict": [
+    {
+      "claimId": "s1",
+      "status": "failed",
+      "reason": "步骤未指定数据划分规则、种子数量与用途、评估视角选择规则，且基础层训练10000步后添加增强层时未定义增强层初始化的具体形状/数值（仅给N=10000和初始不透明度0.1，缺少位置、尺度、旋转、颜色的初始化分布或来源），无法执行。",
+      "designAudit": {
+        "baseline_acquisition": {
+          "quotes": [
+            {
+              "claimId": "s1",
+              "quote": "训练基础层10000步"
+            },
+            {
+              "claimId": "b1",
+              "quote": "基线：重新训练，最多10000优化步"
+            }
+          ]
+        },
+        "group_pairing": {
+          "quotes": [
+            {
+              "claimId": "s1",
+              "quote": "复制基础层和增强层状态到两组"
+            }
+          ]
+        },
+        "saved_artifacts": {
+          "quotes": [
+            {
+              "claimId": "s1",
+              "quote": "记录所有配置、检查点和指标"
+            }
+          ]
+        },
+        "data_isolation": null,
+        "component_creation": null,
+        "seed_pairing": null,
+        "checkpoint_selection": {
+          "quotes": [
+            {
+              "claimId": "s1",
+              "quote": "训练基础层10000步"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "fixtureDispatches": 1,
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "tests": {
+    "passed": 1679,
+    "warnings": 1,
+    "seconds": 56.33,
+    "log": "tmp/pytest-dr106-full.log"
+  },
+  "guards": [
+    "Complete JSON root required",
+    "No bracket/quote repair",
+    "No substring salvage for unclosed fences",
+    "All target verdicts still required",
+    "Length-truncated responses still rejected"
+  ],
+  "boundary": "Exact saved response replay; failed verdict stays failed. Does not rerun the whole graph, change the original failed run, or prove scientific/content acceptance."
+}

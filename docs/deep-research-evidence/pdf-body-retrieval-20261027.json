@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-27",
+  "sourceCase": "D1-v38",
+  "scopeEvidenceContractVersion": 1,
+  "embeddingModel": "intfloat/multilingual-e5-small",
+  "scope": "isolated ephemeral collections; simulated owned-PDF read; no production index writes",
+  "sourceReportSha256": "d8fc3d28a7d57bb2d04d9801a01093ada62a3b82854e39067b257ba76607e3ce",
+  "oldChunks": 55,
+  "newChunks": 112,
+  "restoredIntroductionRanks": {
+    "mapping3D": 1,
+    "independentStorage": 1
+  },
+  "restoredIntroductionPhysicalPage": 2,
+  "actualObligationQueries": [
+    "LightGaussian compression image quality PSNR SSIM LPIPS",
+    "LightGaussian evaluation datasets scenes compression rate"
+  ],
+  "conditionQuerySelectedBefore": [
+    {
+      "chunkIndex": 0,
+      "page": 1,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 38,
+      "page": 6,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 37,
+      "page": 6,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 52,
+      "page": 17,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_requested_row"
+    },
+    {
+      "chunkIndex": 45,
+      "page": 9,
+      "conditionFact": true,
+      "conditionDecline": true,
+      "retrievalMode": "indexed_scope_condition"
+    }
+  ],
+  "conditionQuerySelectedAfter": [
+    {
+      "chunkIndex": 0,
+      "page": 1,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 86,
+      "page": 6,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 85,
+      "page": 6,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_hybrid"
+    },
+    {
+      "chunkIndex": 100,
+      "page": 17,
+      "conditionFact": false,
+      "conditionDecline": false,
+      "retrievalMode": "indexed_requested_row"
+    },
+    {
+      "chunkIndex": 93,
+      "page": 9,
+      "conditionFact": true,
+      "conditionDecline": true,
+      "retrievalMode": "indexed_scope_condition"
+    }
+  ],
+  "tableCaptionRawFusedRankForFirstQuery": {
+    "before": 2,
+    "after": 6
+  },
+  "allQueriesRewriteDisabled": true,
+  "localEmbeddingOnly": true,
+  "deepseekCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Does not establish general ranking improvement or answer quality. The condition-obligation final selection retains the parameter/quality evidence despite raw ranking changes."
+}

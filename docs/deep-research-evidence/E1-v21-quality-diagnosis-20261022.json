@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "09782ac7",
+  "case": "E1-v21",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "independentCredit": 0,
+  "providerCallsDuringDiagnosis": 0,
+  "productionWritesDuringDiagnosis": 0,
+  "nativeReviewItemsResponses": 4,
+  "actualPlanningDraftFingerprintsMatched": 2,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "inputBytes": 24267,
+      "actualFingerprintMatched": true
+    },
+    {
+      "node": "synthesize",
+      "inputBytes": 30494,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "verifiedSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "repair": {
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 17634,
+      "used": 19115
+    },
+    "submittedRepairCalls": 0
+  },
+  "confirmedReviewerMismatch": {
+    "claimId": "c4",
+    "actualInputPath": "executionSpec.seeds",
+    "actualValue": [
+      0
+    ],
+    "incorrectReason": "数据选择未通过：场景成员资格证据不足，相机划分未提供实际相机索引或总数，帧窗口选择规则未绑定到具体帧ID，种子值未提供。",
+    "boundary": "Value presence is proved, but purpose and other data/availability constraints still need review. This does not approve c4."
+  },
+  "remainingDraftDefects": [
+    "Internal evidence IDs in c2/c3 prose triggered unchanged hard checks.",
+    "c6 uses opaque aggregate state arrays rather than complete compatible Gaussian and network states; preserve real acquisition/initialization requirements.",
+    "c7 contains no typed measurement protocol; concrete reference/units/aggregation/timing and byte-storage boundaries remain incomplete.",
+    "c5 shared baseline budget combines first-frame model and per-frame NTC phases without distinct finite phase definitions."
+  ],
+  "next": [
+    "Define complete executable state and per-phase acquisition/training choices before broad review.",
+    "Review exact fields/values and distinguish missing from present-but-invalid; do not auto-pass contradicted model judgements.",
+    "Reduce repeated review/repair envelope cost under the original total budget while retaining required inputs.",
+    "Then fresh bounded content validation and untouched independent replacements."
+  ],
+  "boundary": "Correct transport and terminated execution only;0/9accepted, experiment not usable. No legacy result upgrade and no automatic retry."
+}

@@ -1,0 +1,162 @@
+{
+  "date": "2026-10-19",
+  "case": "H2F-v7",
+  "sourceCommit": "c02c5a63",
+  "promptVersion": "dr-v2.20261019.185",
+  "runId": "dr_run_0a2a110dbf6a56779bf3d0ec1ecebe46",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 14,
+  "settledTokens": 73480,
+  "elapsedSeconds": 292.37,
+  "cost": null,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 4
+  },
+  "findings": [
+    "Actual new synthesis supplied20 unchanged evidence rows within23980bytes, with zero missing criterion/source premise bundles. Both initial3k and subsequent joint-training stages are in one own quote; per-frame two-stage operations and carryover are also supplied. Exact actual Provider fingerprint reconstructed.",
+    "Published final claims correctly compare the multiview/per-frame versus monocular/time/pose inputs and the NTC versus canonical-Gaussian deformation representation. All seven final citations were manually checked against their own quotes/context; the proposed overclaims below were not published.",
+    "Initial training claim reports whole-sequence offline fitting on the basis of training iteration/order alone. That compound reported assertion lacks its own input/time-fitting premise or a properly bounded inference, and is correctly rejected. Supplying training stages is not automatic proof of the stronger mode label.",
+    "Initial FPS claim now uses the actual N3DV primary-table caption and the Deformable point-count experiment, rather than the old MeetRoom profiling table. It still treats unknown dataset/protocol/scale alignment as established differences. The whole-claim review correctly rejects that overreach; arithmetic or a sound no-ranking conclusion would not license false premises.",
+    "No new numeric-dimension false rejection or global-pool absence assertion is published. However training-mode and FPS obligations remain explicitly incomplete; this is not an accepted comparison.",
+    "Repair is skipped before sending because its17763-byte input exceeds the10263-byte capacity under the remaining frozen reservation. There is no hidden retry, token-limit increase or extra generation. Next compact source-aware factual repair instructions while retaining exact own premises, rejected checks, frozen coverage requirements and independent re-verification.",
+    "14 model calls settled73480tokens; single retired development submission, no independent credit. Original first-five0/5 and all historical outcomes remain unchanged."
+  ],
+  "actualSynthesisInputBytes": 23980,
+  "actualSynthesisEvidenceCount": 20,
+  "missingPremiseBundles": 0,
+  "correctlyPublishedAspects": [
+    "paper inputs",
+    "time representation"
+  ],
+  "unresolvedAspects": [
+    "training mode",
+    "FPS comparability"
+  ],
+  "repairStatus": "skipped_budget",
+  "repairInputBytes": 17763,
+  "repairInputCapacity": 10263,
+  "inputAudit": "deep-research-evidence/H2F-v7-synthesis-input-audit-20261019.json",
+  "nextFix": "Compact the factual repair envelope and bind complete inference premises within existing budgets; keep genuine semantic failures rejected. No unchanged paid retry.",
+  "report": "## 比较结论\n\n- 3DGStream使用多视角视频流逐帧输入；Deformable 3D Gaussians使用单目动态场景图像集，含时间标签和相机位姿。 [1](#research-evidence-ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd) [2](#research-evidence-ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb)\n- 3DGStream通过神经变换缓存（NTC）将前一帧3D高斯变换到当前帧，并自适应添加新高斯；Deformable方法解耦3D高斯与变形场，变形场以位置和时间t为输入输出位移、旋转、缩放。 [3](#research-evidence-ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90) [4](#research-evidence-ev_8a6c0872104d7a1786b40986fd0c84d1d219d439b0b5bb16bc650123bd1ef13b) [5](#research-evidence-ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0) [6](#research-evidence-ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322) [7](#research-evidence-ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 3DGStream v4和Deformable 3D Gaussians v2的训练模式分别是逐帧在线还是整体离线？：最终回答尚未完整回应这一问题\n- 指出为何不能凭各自主表FPS给出同条件速度排名：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> 3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.\n\n**[2] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Specifically, we first train the initial 3DGs on the multi-view frames at timestep 0.\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.(2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 4 页 · 全文片段\n\n> Firstly (Sec.\n> 4.1), a Neural Transformation Cache (NTC) is trained to model the transformation for each 3DG.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> In Stage 1, we transform the 3DGs from the previous frame by NTC and then render with them. The parameters of the NTC is optimized by the loss between the rendered image and the ground truth.\n\n**[6] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 第 4 页 · 全文片段\n\n> To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.\n\n**[7] Deformable 3D Gaussians for High-Fidelity Monocular Dynamic Scene Reconstruction** · 全文片段\n\n> The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.\n\n</details>",
+  "draft": {
+    "sections": [
+      {
+        "title": "比较结论",
+        "claimIds": [
+          "c1",
+          "c2",
+          "c3",
+          "c4"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "3DGStream使用多视角视频流逐帧输入；Deformable 3D Gaussians使用单目动态场景图像集，含时间标签和相机位姿。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+          "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "source_specific",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c2",
+        "text": "3DGStream通过神经变换缓存（NTC）将前一帧3D高斯变换到当前帧，并自适应添加新高斯；Deformable方法解耦3D高斯与变形场，变形场以位置和时间t为输入输出位移、旋转、缩放。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90",
+          "ev_8a6c0872104d7a1786b40986fd0c84d1d219d439b0b5bb16bc650123bd1ef13b",
+          "ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0",
+          "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+          "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "source_specific",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c3",
+        "text": "3DGStream逐帧在线训练：初始帧训练后，每帧以前一帧为初始化两阶段优化；Deformable方法先在初始3k迭代仅训练3D高斯，随后联合训练变形场，整体离线优化。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+          "ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90",
+          "ev_5ccf0b5319669d4ab319cce157abc4d4e5af3b246ef5129eec2dccad801c26b4"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "source_specific",
+        "tableBindings": []
+      },
+      {
+        "claimId": "c4",
+        "text": "两者主表FPS不能直接排名：3DGStream主结果表（Table 1）报告渲染FPS，基于多视角N3DV数据集；Deformable的表4为FPS随高斯数量变化的消融，在3090 GPU且点云数<250k时实时，非同一主对比协议，数据集、输入模态及高斯规模不同。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_40d29ebaa60fd7e863e38762f5f8b32309617f1a0a79bdb579b426a9f6cdf70b",
+          "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_4"
+        ],
+        "detailLevel": "bounded_inference",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairChecks": null,
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v7.json",
+      "sha256": "6a018667aa4403a39214f1ceb0fb443aab8102b2e08d372c9333fbaffdbe8157"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v7.payload.json",
+      "sha256": "1c6acf6ecd3e4005b45eca30b31312443e4c91e30935e2610a53d0f6271e0f4e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v7.calls.json",
+      "sha256": "67b6a7b7dd36c7b40c44c0f610b49d459763ebc4f9062a63cdfef97ce0858760"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v7.result.json",
+      "sha256": "026f4c75cc4ef3d32607561778a76e8237f292ba8f158ce46ecc226c8318813b"
+    }
+  ],
+  "boundary": "One fixed retired development case, no automatic retry or independent credit. Original first-five scores and historical outcomes remain unchanged."
+}

@@ -1,0 +1,13 @@
+{
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261114.441",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all375OldRunsExact": true,
+  "all9432CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

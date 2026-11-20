@@ -1,0 +1,17 @@
+{
+  "case": "AD1N-v15 C1",
+  "mode": "offline complete checker factory with one exact saved malformed review response",
+  "baselineCommit": "c7e314d6",
+  "oldRequestAndVerdictMatchFrozenBaseline": true,
+  "newRequestDiffOnlyPrimaryResponseSchema": true,
+  "claimsEvidenceVersionsAliasesOptionsExact": true,
+  "sameMissingFieldReplyStillRejected": true,
+  "emptyArrayNotInserted": true,
+  "replayDispatchesPerVariant": 1,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "rawPayloadSha256": "a39905fbf97ab70da6ddda0fc39259365297f6995250fd2132fa8bcd215d10b5",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Proves schema consistency and unchanged rejection, not that a new model response will include the field or be scientifically correct."
+}

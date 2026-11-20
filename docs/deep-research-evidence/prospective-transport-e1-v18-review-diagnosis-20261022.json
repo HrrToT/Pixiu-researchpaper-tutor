@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v18",
+  "sourceCommit": "17498220",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 2,
+  "requests": [
+    {
+      "callId": "224cfa0793894782fa600f21722d5f08",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c7"
+      ],
+      "inputBytes": 7847,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c2"
+      ]
+    },
+    {
+      "callId": "53debecbec8a2995304d2ed27596f2fa",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 20831,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c7"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c7"
+      ],
+      "fullInputBytes": 7847,
+      "fixedInputBytes": 7847,
+      "maxInputBytes": 32000,
+      "referencedRows": 0,
+      "selectedRows": 0,
+      "selectedInputBytes": 7847,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 20831,
+      "fixedInputBytes": 12536,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 20831,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "allFiveEligibleTargetsSent": true,
+  "repairSkippedBeforeModel": "skipped_budget",
+  "repairAdmission": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 25870
+  },
+  "boundary": "Exact archived request/response replay. Review capacity refusals are distinct from model scientific rejections. No change to original failed content acceptance."
+}

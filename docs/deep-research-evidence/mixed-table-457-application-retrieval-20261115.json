@@ -1,0 +1,176 @@
+{
+  "pythonPromptVersion": "dr-v2.20261115.457",
+  "javaSourceCommit": "004914eabd9875bce9e33f99a79cddba25e89d24",
+  "javaJarSha256": "228b8822df091abaac54adf834248597f46c687cefd169407350e1bd07a9cd2e",
+  "materialReparseSubmissions": 2,
+  "automaticOverviewRequested": false,
+  "bothPapersReady": true,
+  "actualOwnedRetriever": true,
+  "all105TaskPayloadsExact": true,
+  "all385RunPayloadsExact": true,
+  "all9647CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "rawDirectory": "tmp/vq-table-reparse-457-20261115",
+  "retrievalRaw": "tmp/owned-metric-retrieval-457-reparsed-20261115/result.json",
+  "retrieval": [
+    {
+      "contractVersion": 3,
+      "obligationId": "ob-trade-a",
+      "returnedRows": 5,
+      "verifiedTablePackets": 0,
+      "tables": []
+    },
+    {
+      "contractVersion": 3,
+      "obligationId": "ob-trade-b",
+      "returnedRows": 3,
+      "verifiedTablePackets": 0,
+      "tables": []
+    },
+    {
+      "contractVersion": 4,
+      "obligationId": "ob-trade-a",
+      "returnedRows": 5,
+      "verifiedTablePackets": 2,
+      "tables": [
+        {
+          "sourceId": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf-vc1968b2202766660-chunk-78",
+          "location": {
+            "page": 5,
+            "chunk": 78,
+            "section": "Table 1",
+            "table": "pdf-page-5-table-1",
+            "tableColumnMappingUnverified": true
+          },
+          "groups": [
+            [
+              "Mip-NeRF360",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Tanks&Temples",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Deep Blending",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Avg",
+              [
+                "FPS",
+                "Mem"
+              ]
+            ]
+          ],
+          "rowCount": 1
+        },
+        {
+          "sourceId": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf-vc1968b2202766660-chunk-77",
+          "location": {
+            "page": 5,
+            "chunk": 77,
+            "section": "Table 1",
+            "table": "pdf-page-5-table-1",
+            "tableColumnMappingUnverified": true
+          },
+          "groups": [
+            [
+              "Mip-NeRF360",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Tanks&Temples",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Deep Blending",
+              [
+                "SSIM",
+                "PSNR",
+                "LPIPS"
+              ]
+            ],
+            [
+              "Avg",
+              [
+                "FPS",
+                "Mem"
+              ]
+            ]
+          ],
+          "rowCount": 6
+        }
+      ]
+    },
+    {
+      "contractVersion": 4,
+      "obligationId": "ob-trade-b",
+      "returnedRows": 3,
+      "verifiedTablePackets": 1,
+      "tables": [
+        {
+          "sourceId": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf-v4c6463d2d2f82021-chunk-54",
+          "location": {
+            "page": 6,
+            "chunk": 54,
+            "section": "Table 1",
+            "table": "pdf-page-6-table-1",
+            "tableColumnMappingUnverified": true
+          },
+          "groups": [
+            [
+              "3D Gaussian Splatting",
+              [
+                "PSNR",
+                "SSIM",
+                "LPIPS",
+                "SIZE"
+              ]
+            ],
+            [
+              "Ours",
+              [
+                "PSNR",
+                "SSIM",
+                "LPIPS",
+                "SIZE"
+              ]
+            ],
+            [
+              "",
+              [
+                "Compression Ratio"
+              ]
+            ]
+          ],
+          "rowCount": 5
+        }
+      ]
+    }
+  ],
+  "boundary": "Only listed numeric rows are verified. Section-level unverified status remains for raw/unverified rows; actual answer generation not yet accepted."
+}

@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-16",
+  "promptVersion": "dr-v2.20261016.112",
+  "adaptiveResearchContractVersion": 1,
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "cases": [
+    {
+      "case": "H5R-v19",
+      "sourcePayloadSha256": "82e09544b090f14f37e91439f2195e1018f9d3060de02ffb7119ab54229b5685",
+      "request": {
+        "node": "assess_relevance",
+        "inputBytes": 7095,
+        "outputLimit": 1536,
+        "selectedPairs": 4,
+        "allSelectedQuotesAndContextKept": true
+      },
+      "oldUnknownRunUnchanged": true,
+      "cachedReviewHasNoDispatch": true,
+      "gapsRetained": 4,
+      "extractionStopRoutesThroughAssessment": true,
+      "noFurtherAcquisitionAfterBudgetStop": true
+    },
+    {
+      "case": "H3R-v15",
+      "sourcePayloadSha256": "3511700bee0bd653f577d414ea08bca82f0068a8ca8fe18f01de1d105f1d26bb",
+      "request": {
+        "node": "assess_relevance",
+        "inputBytes": 8044,
+        "outputLimit": 1536,
+        "selectedPairs": 5,
+        "allSelectedQuotesAndContextKept": true
+      },
+      "oldUnknownRunUnchanged": true,
+      "cachedReviewHasNoDispatch": true,
+      "gapsRetained": 2,
+      "extractionStopRoutesThroughAssessment": true,
+      "noFurtherAcquisitionAfterBudgetStop": true
+    }
+  ],
+  "boundary": "Counterfactual new-contract replay of saved .110 inputs with false relevance fixtures. No live run resumed, no source/claim approved, no actual content score. Independent final-answer verification and original DR0-DR5 release gates remain.",
+  "sourceCommit": "b77af79",
+  "tests": {
+    "passed": 1844,
+    "warnings": 1,
+    "seconds": 70.81,
+    "sourceCommit": "b77af79",
+    "log": "tmp/pytest-dr112-full-first.log",
+    "scope": "Research/reading/PDF table/config; no frontend or Java source changes."
+  }
+}

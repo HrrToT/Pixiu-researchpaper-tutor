@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v15",
+  "runId": "dr_run_91ab3cec14fe58bf922a4959c2d50c95",
+  "promptVersion": "dr-v2.20261015.100",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 12,
+    "maxModelCalls": 18,
+    "tokens": 62860,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 114.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "raw": "tmp/dr-acceptance-receipts/H5R-v15.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v15.calls.json",
+  "review": {
+    "status": "not_accepted",
+    "acceptedRoles": [
+      "hypothesis",
+      "groups",
+      "metrics",
+      "analysis",
+      "limits",
+      "data",
+      "budget",
+      "controls"
+    ],
+    "rejected": [
+      {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.creation.parameters_required",
+        "revisionRejection": {
+          "claimId": "c6",
+          "reason": "incomplete_experiment_workflow",
+          "detail": "workflow.creation.parameters_required"
+        }
+      }
+    ],
+    "answerCoverage": {
+      "status": "budget_exhausted",
+      "invalidAspectObligations": [],
+      "invalidCriterionObligations": [],
+      "budgetLimit": {
+        "kind": "coveragePromptBytes",
+        "limit": 16472,
+        "used": 17784
+      }
+    },
+    "improved": [
+      "Real extraction now includes original opacity-mechanism passages, not only benchmark/data quotes.",
+      "The report and revision return the new typed workflow with exact sibling references.",
+      "Missing creation parameters are rejected before a paid semantic verdict; the incomplete workflow is not published.",
+      "Revision aligns the typed baseline mode with the train-baseline budget."
+    ],
+    "findings": [
+      "The enhancement creator still says to copy enhancement parameters from the baseline, without defining how that new state exists or is created.",
+      "Rendering names a framework and resolution but does not identify the actual Gaussian rendering setup.",
+      "Accepted data prose asserts a paper-wide omission from selected passages and leaks an internal E1 alias.",
+      "Final audit cannot fit the remaining ordinary token pool: fixed input 17784 bytes exceeds the 16472-byte allowance; no final request is sent.",
+      "Descriptive effects are retained, but one scene cannot establish generality; blanket refusal of all causal interpretation is also too broad."
+    ],
+    "methodEvidenceRefs": [
+      "ev_032496562befd08e6dbc1b9ac739e01bf3c4614dd4b22297fdc3273e2ed06353",
+      "ev_8380c106e0d42a51f68886a269292e13d8514c3c898dc1f66914e4d991029a35",
+      "ev_016441c77fc593f4e38ea2c6c92bb424ced4761db82231391d6b828814593f16"
+    ],
+    "boundary": "Each case submitted once. Structural rejection and real mechanism extraction are verified improvements; eight accepted labels do not establish executable or scientifically accepted content. No automatic retry."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-23",
+  "transport": "deepseek_responses",
+  "schemaName": "private_experiment_columns_v1",
+  "schemaSha256": "12eb74ed95beb3ecca5710f15e5e29981b235782c25cf2671585110f6e06ca42",
+  "schemaOverheadBytes": 2181,
+  "syntheticOnly": true,
+  "paperContentSent": false,
+  "requestsSubmitted": 1,
+  "callsSettled": 1,
+  "usage": {
+    "total_tokens": 1375,
+    "input_tokens": 1130,
+    "output_tokens": 245
+  },
+  "validPrivateStructure": true,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "rawResultPath": "tmp/deepseek-planning-schema-probe/result.json",
+  "rawResultSha256": "58b1da4c3deb36ba940d9a8c93b661a61a2e22992116f2075c1af5ed181c864d",
+  "ledgerPath": "tmp/deepseek-planning-schema-probe/ledger.sqlite3",
+  "boundary": "One complete-schema compatibility request, including bare-arithmetic bait, returned valid typed private structure. No paper/scientific quality or general enforcement credit."
+}

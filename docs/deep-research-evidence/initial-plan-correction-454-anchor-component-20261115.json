@@ -1,0 +1,207 @@
+{
+  "sourceCommit": "b00cfa02578852d23c17086644d731a1c40de65f",
+  "sourceCase": "D2-VQ-v1-v1",
+  "componentOnly": true,
+  "originalRequestDigestExact": true,
+  "correctionRequestDigestExact": true,
+  "actualResultFrom": "tmp/plan-correction-454-component-20261115/result.json",
+  "newModelCalls": 0,
+  "originalComponentCalls": 1,
+  "originalComponentTokens": 4453,
+  "originalComponentSeconds": 6.829,
+  "actualPlanNodeResult": {
+    "plan_ids": [
+      "cmp-conclusion",
+      "cmp-table",
+      "cmp-recommendation"
+    ],
+    "assess_inherited": false,
+    "plan_revision": 0
+  },
+  "planFormatCorrection": {
+    "version": 1,
+    "status": "validated",
+    "originalPromptSha256": "a1769fa3d192b3a7056e893475d637782b1567be003bbaae4cb30c9edeea04e4",
+    "originalResponseSha256": "e666292e85a45510c4bbd3d952fe2f792df9e8aeae6990e63342a0ad288ab4d3",
+    "correctionPromptSha256": "e05c4f1fb34260f872133f7b3d40205e8b88676faaa6a85e5676393e7564b2bf",
+    "reason": "Plan response is not a JSON array",
+    "maximumCorrectionCalls": 1,
+    "scientificApproval": false
+  },
+  "quoteContextNormalization": {
+    "version": 1,
+    "changes": [
+      {
+        "path": [
+          0,
+          "obligations",
+          0,
+          "requestExcerpt"
+        ],
+        "original": "先给结论",
+        "originalSpan": [
+          26,
+          30
+        ],
+        "expanded": "先给结论，再用一",
+        "expandedSpan": [
+          26,
+          34
+        ]
+      }
+    ]
+  },
+  "finalPlan": [
+    {
+      "itemId": "cmp-conclusion",
+      "question": "Based only on the two provided v1 papers, what conclusion can be stated for constrained-device deployment, and which reported results are usable as reference versus not fairly rankable on current evidence?",
+      "obligations": [
+        {
+          "obligationId": "cmp-conclusion-1",
+          "question": "What conclusion do the two papers' own reported content support for constrained-device deployment, stated first as requested?",
+          "requiredSources": [
+            "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+            "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf"
+          ],
+          "searchQuery": "Gaussian splatting compression constrained device deployment comparison vector quantization",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "先给结论，再用一",
+          "completionCriteria": [
+            {
+              "criterionId": "cmp-conclusion-1-c1",
+              "requirement": "State a conclusion for constrained-device deployment explicitly bounded to what the two provided v1 papers report, without external material.",
+              "responseType": "explanation"
+            },
+            {
+              "criterionId": "cmp-conclusion-1-c2",
+              "requirement": "Identify which reported results can serve as reference points and which cannot be fairly ranked on current evidence, without deriving speed or quality advantage from compression ratios.",
+              "responseType": "identification"
+            }
+          ]
+        },
+        {
+          "obligationId": "cmp-conclusion-2",
+          "question": "明确哪些结果可作参考、哪些不能据现有证据公平排名",
+          "requiredSources": [
+            "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+            "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf"
+          ],
+          "searchQuery": "Gaussian splatting compression evaluation setup comparability storage quality rendering speed",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "明确哪些结果可作参考、哪些不能据现有证据公平排名",
+          "completionCriteria": [
+            {
+              "criterionId": "human_aspect_1",
+              "requirement": "明确哪些结果可作参考",
+              "responseType": "identification"
+            },
+            {
+              "criterionId": "human_aspect_2",
+              "requirement": "哪些不能据现有证据公平排名",
+              "responseType": "identification"
+            }
+          ]
+        }
+      ],
+      "searchQuery": "Compact3D vector quantization Gaussian splatting vs compressed 3D Gaussian splatting accelerated rendering",
+      "dependencies": [],
+      "priority": 1,
+      "status": "pending"
+    },
+    {
+      "itemId": "cmp-table",
+      "question": "How do the two methods compare in a concise table on compression mechanism, training or compression cost, storage versus quality trade-off, and rendering speed?",
+      "obligations": [
+        {
+          "obligationId": "cmp-table-1",
+          "question": "比较压缩机制、训练或压缩代价",
+          "requiredSources": [
+            "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+            "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf"
+          ],
+          "searchQuery": "Gaussian splatting compression mechanism training cost vector quantization",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "比较压缩机制、训练或压缩代价",
+          "completionCriteria": [
+            {
+              "criterionId": "human_aspect_1",
+              "requirement": "比较压缩机制、训练或压缩代价",
+              "responseType": "explanation"
+            }
+          ]
+        },
+        {
+          "obligationId": "cmp-table-2",
+          "question": "What storage versus quality trade-off and rendering speed does each paper report?",
+          "requiredSources": [
+            "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+            "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf"
+          ],
+          "searchQuery": "Gaussian splatting compression storage size quality rendering speed reported results",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "存储与画质取舍、渲染速度",
+          "completionCriteria": [
+            {
+              "criterionId": "cmp-table-2-c1",
+              "requirement": "For each paper, report the stated storage-size and quality outcomes and the conditions under which they were measured.",
+              "responseType": "identification"
+            },
+            {
+              "criterionId": "cmp-table-2-c2",
+              "requirement": "For each paper, report the stated rendering speed outcomes and conditions, without converting compression ratio into a speed claim.",
+              "responseType": "identification"
+            }
+          ]
+        }
+      ],
+      "searchQuery": "Compact3D vector quantization storage quality rendering speed; Compressed 3D Gaussian Splatting accelerated novel view synthesis",
+      "dependencies": [
+        "cmp-conclusion"
+      ],
+      "priority": 2,
+      "status": "pending"
+    },
+    {
+      "itemId": "cmp-recommendation",
+      "question": "给出有条件的选择建议",
+      "obligations": [
+        {
+          "obligationId": "cmp-recommendation-1",
+          "question": "给出有条件的选择建议",
+          "requiredSources": [
+            "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+            "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf"
+          ],
+          "searchQuery": "Gaussian splatting compression deployment selection trade-off storage quality speed",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "给出有条件的选择建议",
+          "completionCriteria": [
+            {
+              "criterionId": "human_aspect_1",
+              "requirement": "给出有条件的选择建议",
+              "responseType": "explanation"
+            }
+          ]
+        }
+      ],
+      "searchQuery": "Gaussian splatting compression conditional deployment recommendation evidence limits",
+      "dependencies": [
+        "cmp-conclusion",
+        "cmp-table"
+      ],
+      "priority": 3,
+      "status": "pending"
+    }
+  ],
+  "allOtherPlanFieldsUnchangedByQuoteNormalization": true,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Exact recorded original failure and actual component correction are passed through final current graph; same prompts/options/digests. Only unique short human-goal quotes gain adjacent original context. All plan checks remain. No paper read, comparative report or independent acceptance.",
+  "rawArtifactHashes": {
+    "tmp\\plan-correction-454-component-20261115\\captured.json": "d20711e54ba34322237931de309eb3a8c647aae5ca01415e175577020a555e11",
+    "tmp\\plan-correction-454-component-20261115\\intent.json": "8c74a41df9044993fa4f71267e00bc3399e75ed8a41d34bed973391f371d1c7e",
+    "tmp\\plan-correction-454-component-20261115\\result.json": "505fc751b5a616e01dc879011055d54eb276279ed3e88e8adf921fae881442f2",
+    "tmp\\plan-correction-454-component-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

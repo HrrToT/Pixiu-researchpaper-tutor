@@ -1,0 +1,16 @@
+{
+  "status": "DeepResearchError",
+  "code": "workflow_blueprint_input_capacity",
+  "wouldCallProvider": false,
+  "savedStatus": "not_started_capacity",
+  "inputBytes": 38117,
+  "scientificApproval": false,
+  "newModelCalls": 0,
+  "promptVersion": "dr-v2.20261115.461",
+  "sourceResponseDigest": "62363bf303b194cd84ee9666fd3576d2f88e2b247287aff82eb55f7eea2af348",
+  "wholeRunBudgetChanged": false,
+  "maximumInputBytes": 32000,
+  "rawProbe": "tmp\\metadata-envelope-461-repair-probe.json",
+  "rawProbeSha256": "91a979ceca1a7dd09cf72b8761531c4969b6e129196fc4499e2e9d4ab2240fde",
+  "boundary": "Offline replay of original full source, actual failed response and exact production revision builder; no provider dispatch."
+}

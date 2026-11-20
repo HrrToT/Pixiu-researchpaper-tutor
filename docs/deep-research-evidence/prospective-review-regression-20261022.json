@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "8a87a2ff",
+  "promptVersion": "dr-v2.20261022.240",
+  "reviewEnvelope": 8,
+  "repairInput": 2,
+  "fullRegression": {
+    "files": 229,
+    "passed": 4217,
+    "seconds": 232.38,
+    "warnings": 1
+  },
+  "focusedPassed": 102,
+  "legacyReplayScripts": 38,
+  "additionalActualReviewFingerprints": 3,
+  "providerCalls": 0,
+  "independentCredit": 0,
+  "boundary": "Offline regression and source-preserving request construction; no proof of improved model judgement."
+}

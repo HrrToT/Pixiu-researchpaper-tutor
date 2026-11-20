@@ -1,0 +1,45 @@
+{
+  "promptVersion": "dr-v2.20261115.465",
+  "sourceCommit": "df8298d68811e9400ab94f5168439dd0f5151e12",
+  "isolatedExplicitEditRepairOnly": true,
+  "productionPrepareAndCompilerUsed": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "actualCallSeconds": 6.0,
+  "inputBytes": 33039,
+  "usage": {
+    "total_tokens": 10453,
+    "input_tokens": 10173,
+    "output_tokens": 280
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "savedStatus": "invalid_response",
+  "unitErrors": [
+    "unit.metadata_edit.unresolved"
+  ],
+  "modelEditCount": 0,
+  "reportedUnresolved": [
+    "Step 4 measurement reads for group 00 reference quantization-only assets (sh_codebook, sh_assignment_indices, scale_rotation_codebook, scale_rotation_assignment_indices) whose appliesTo excludes group 00; the intervention-off arm has no valid codebook or index state to read, and no alternative reserved state exists for those reads without changing component appliesTo or adding components, which is outside the allowed edit scope.",
+    "Cannot replace the four flagged reads with valid {state,selector} or {result,selector} values because the only available reserved inputs for group 00 are shared_base_3dgs and dc_color_policy; quantization codebooks and assignment indices are not defined for the off arm, and inventing a non-quantized substitute would alter the authored experiment semantics.",
+    "Removing the four reads would drop required measurement inputs for group 00 and change the measurement step, which is not permitted by the edit constraints; therefore no single remove or replace edit preserves the required 2x2 experiment as authored."
+  ],
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "rawResult": "tmp\\workflow-metadata-edits-465-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "20f76011231a1d0ad5806c934c737dc37c85c5e265a66982791a412c883fd6a3",
+  "publicAudit": "tmp\\workflow-metadata-edits-465-public-review-20261115\\audit.json",
+  "publicAuditSha256": "1dc0f9cc3388fd739e00d8bd9af75b1765d57633e2cb9c27547fa3618568fe94",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Clarify measurement/output preservation versus invalid dependency preservation; retain unresolved path and all original scope/evidence."
+}

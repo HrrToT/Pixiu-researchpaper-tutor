@@ -1,0 +1,137 @@
+{
+  "sourceReceiptSha256": "d4302a3143c890767e1afc67aee00b49a8f1702e37730ff0c1e27a2995b8a4d2",
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "receipts": [
+    {
+      "profile": 4,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31990,
+          "requestDigest": "75211a917f9a5e19509d2b58fb3bdb0faf3bd1dde37ee60880117edf23825968",
+          "matchesSavedRequest": true
+        }
+      ],
+      "compiledPoints": 4,
+      "compileErrors": [],
+      "wireAudit": {
+        "version": 1,
+        "status": "compiled_unverified",
+        "errors": [
+          {
+            "targetId": "table_0_0",
+            "reason": "invalid_answer_target_goals"
+          },
+          {
+            "targetId": "table_1_0",
+            "reason": "invalid_answer_target_goals"
+          },
+          {
+            "targetId": "table_2_0",
+            "reason": "invalid_answer_target_goals"
+          },
+          {
+            "targetId": "table_2_1",
+            "reason": "invalid_answer_source_permission"
+          },
+          {
+            "targetId": "table_3_0",
+            "reason": "invalid_answer_target_goals"
+          },
+          {
+            "targetId": "table_3_1",
+            "reason": "invalid_answer_source_permission"
+          }
+        ],
+        "tableReferenceCount": 40,
+        "scientificApproval": false
+      },
+      "authoring": {
+        "version": 1,
+        "readerExpression": "first_draft",
+        "verification": "unchecked"
+      },
+      "controlledFixture": null,
+      "missingNavigationBundles": 0,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true
+    },
+    {
+      "profile": 5,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31984,
+          "requestDigest": "109a649cada280da39a56ecc5b613d9c8a4a45c34d8073960d6fa2a16ba5304b",
+          "matchesSavedRequest": false
+        }
+      ],
+      "compiledPoints": 1,
+      "compileErrors": [],
+      "wireAudit": {
+        "version": 2,
+        "status": "compiled_unverified",
+        "errors": [],
+        "tableReferenceCount": 40,
+        "scientificApproval": false
+      },
+      "authoring": {
+        "version": 1,
+        "readerExpression": "first_draft",
+        "verification": "unchecked"
+      },
+      "controlledFixture": {
+        "targetId": "table_3_0",
+        "rowNumber": 10,
+        "metric": "FPS",
+        "value": "237",
+        "quotedSource": "E12",
+        "tableReference": "Vdb6c5475adb0ac3f",
+        "targetCount": 10
+      },
+      "missingNavigationBundles": 0,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true
+    }
+  ],
+  "boundary": "Legacy uses actual v11 replies unchanged. New profile uses one explicit server-reference fixture with all other targets unresolved; no new model response or content acceptance.",
+  "actualAdviceHardCheck": {
+    "claimId": "cmp_conclusion_1",
+    "legacyCandidateIds": [
+      "cmp_conclusion_1"
+    ],
+    "newRejections": [
+      {
+        "claimId": "cmp_conclusion_1",
+        "reason": "missing_table_bindings"
+      }
+    ],
+    "networkRequests": 0,
+    "scientificApproval": false,
+    "boundary": "Exact saved recommendation and own evidence unchanged; no semantic verdict replayed as approval."
+  },
+  "baseCommit": "b8a3909db",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_capacity.py": "b215b2cfa3a15f8467c8f47339c5bbd9f6522fb45964a038dbf563bef8fd08a6",
+    "ai-service-python/services/deep_research/comparison_cells.py": "a9b476aad6475827e6ead32772cba5369ff888bafcffd3382ef9d67593c28581",
+    "ai-service-python/services/deep_research/comparison_generation.py": "c464d9e851e392d30549ad0a3eccca445ce000aea0b9645c8809d1b21535ec89",
+    "ai-service-python/services/deep_research/comparison_intent.py": "ba982d186c16e45c51f2ced9e756b902530c8d0ca28862fac0f138868376cf2c",
+    "ai-service-python/services/deep_research/comparison_wire.py": "7407f0b9fd82261a3b12d7a1cecf0b77a0c449af5cb9775020e77fabd2e5f3ba",
+    "ai-service-python/services/deep_research/facade.py": "ce5017c59d2def1dcec2bce56831c285840ee6a9372cdbb2d03633b0bdbbbd48",
+    "ai-service-python/services/deep_research/graph.py": "3a212b91fd189150448ea94568a2d07d4349b05d35805deb03e289a7482ef48f",
+    "ai-service-python/services/deep_research/table_bindings.py": "ed2653e1ae6d781c9c22d6af0048a1fd932d6154829f8f8f8a11a05d9ded1fb0",
+    "ai-service-python/services/deep_research/verification.py": "507aa99b3c06536732620eb34bdf0ab246cc27f5b618ec0756c35d97cf81d8d4"
+  },
+  "relatedChecks": {
+    "tests": 479,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": 22,
+    "runId": "comparison-goal-facts-related-v3-20261118"
+  },
+  "fullRegressionCompleted": false,
+  "newRuntimeLoaded": false
+}

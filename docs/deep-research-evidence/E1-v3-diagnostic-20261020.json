@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-20",
+  "case": "E1-v3",
+  "split": "development",
+  "sourceCommit": "0de41ea7",
+  "promptVersion": "dr-v2.20261020.201",
+  "runId": "dr_run_bba9374b126f532a8230e2ff621fc371",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "frozenCaseCommit": "a023b204",
+  "questionAndCriteriaUnchanged": true,
+  "settledModelCalls": 11,
+  "settledTokens": 47446,
+  "unknownNewCalls": 0,
+  "elapsedSeconds": 80.764,
+  "planning": {
+    "status": "ready",
+    "actualFingerprintMatched": true,
+    "finishReason": "stop",
+    "compactResponseBytes": 1779,
+    "maxPrivateBytesUnchanged": 2500,
+    "actualOptions": {
+      "max_tokens": 6144,
+      "temperature": 0.0,
+      "thinking": {
+        "type": "disabled"
+      },
+      "reasoning_effort": "none",
+      "response_format": {
+        "type": "json_object"
+      }
+    },
+    "inputBytes": 13962,
+    "suppliedEvidenceRows": 7,
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E14"
+    ],
+    "fullConfigurationSent": true,
+    "measuredInputTokens": 3206,
+    "measuredOutputTokens": 462
+  },
+  "actualDefinitionEvidence": [
+    {
+      "evidenceId": "E1",
+      "quote": "Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.",
+      "source": "P1",
+      "sourceContext": {},
+      "resultRoleHintOnly": "profiling",
+      "location": {
+        "section": "Neural Transformation Cache"
+      },
+      "conditions": {
+        "stage": "Stage 1 NTC",
+        "input": "multi-resolution hash encoding",
+        "output": "7-dimensional (3 translation + 4 quaternion rotation)"
+      },
+      "obligations": [
+        "experiment_deliverable",
+        "ob_1"
+      ],
+      "accessLevel": "fulltext",
+      "contextOmitted": true
+    }
+  ],
+  "fullConfigurationInputBytes": 23257,
+  "actualFullConfigurationClaims": 9,
+  "designRoles": [
+    "hypothesis",
+    "groups",
+    "controls",
+    "data",
+    "budget",
+    "steps",
+    "metrics",
+    "analysis",
+    "limits"
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c5",
+        "reason": "incomplete_budget_spec",
+        "detail": "recovery: matched 模式要求所有组的预算值相等"
+      },
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "假设声称执行第2阶段会提高重建质量，但证据E2仅表明跳过第2阶段无法捕捉新出现物体，并未证明执行第2阶段必然提高PSNR/SSIM；且假设未明确存储和训练开销的具体度量方式，无法验证。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "干预水平未指定具体操作参数：Group B执行第2阶段自适应新增高斯，但未给出新增高斯的数量控制策略、评分阈值或算法细节，无法复现。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "渲染设置仅指定分辨率为原始、设备为单GPU，未指定具体渲染器或评估器；优化器设置中学习率0.001等数值未在论文中证实，且未说明与论文原设置的关系；其他干预未明确禁用量化、占用控制等。"
+      },
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "数据可用性未满足：证据E4仅提及N3DV数据集，未明确包含'flame salmon'场景名称；E1/E2虽提及该场景但未证明其属于N3DV数据集。此外，相机划分规则'每隔5个相机索引作为评估视图'未指定起始索引，且未验证评估视图非空。"
+      },
+      {
+        "claimId": "c6",
+        "reason": "semantic_unresolved",
+        "detail": "基线获取未指定有限训练预算或停止规则；组件初始化仅给出形状和均匀分布，未定义3DGS所需全部状态（如颜色、不透明度等）；检查点选择模式为固定预算但未给出具体预算值；配对分组未明确如何配对。"
+      },
+      {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "速度协议不完整：训练开销测量未指定设备、分辨率、预热、同步方法、计时区域和重复次数。存储协议未明确包含的文件或模型表示及计量边界。"
+      },
+      {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "分析仅描述性比较，但未指定视图聚合方式（如逐帧平均后如何跨视图聚合）和配对决策规则（如如何判断差异方向），且未明确存储和训练开销的度量单位。"
+      },
+      {
+        "claimId": "c9",
+        "reason": "semantic_unresolved",
+        "detail": "限制声明未具体说明失效条件（如新内容未出现时如何处理）和混淆因素（如相机划分对结果的影响），仅泛泛提及风险。"
+      }
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 19967,
+    "used": 25192
+  },
+  "findings": [
+    "The new2500byte private protocol/index schema actually returns ready without larger output/budget, and both actual NTC architecture/output evidence and named emergence evidence reach planning. Full configuration is actually sent and returned.",
+    "Nine generated design roles are present, but none is accepted. A deterministic matched-budget mismatch is genuine; reviewer findings include missing executable addition/initialization/rendering/timing/storage definitions and data/split details. Fields and transport are not scientific completion.",
+    "The c1 semantic rejection demands proven quality improvement for a prospective hypothesis. Audit that review policy issue separately from genuine missing configuration; do not waive all independent review or promote the hypothesis by fiat.",
+    "Repair is not sent: fixed repair envelope25192bytes exceeds actual19967byte capacity. Next fix must losslessly reduce duplicate rendered configuration/metadata while preserving actual original prose, complete specs, source quotes, permissions and rejection reasons. No output/run budget increase or hidden retry.",
+    "Private protocol and full configuration still need faithful per-frame Stage1 state propagation and complete initialization; do not treat frame0 NTC phrasing as reproduction proof."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v3.json",
+      "sha256": "1bc6d9d2d8f0ff3fe27675d47103f9acc170b113befcae6025fd864f20c59d16"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v3.payload.json",
+      "sha256": "b179ee4b141c65e3737b7b28dbc2a3226369cb40d3741da5e5fef07186da3e58"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v3.calls.json",
+      "sha256": "3841d1b7bf1e45a21ba40d27c71f4fec1fac6e4f4862b606daeab0b333640dd9"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v3.result.json",
+      "sha256": "f608e27076d619329f4890225a4d03c83e1e14986bc5ffe13e5a22b765153f27"
+    }
+  ],
+  "boundary": "One post-fix submission, all11calls settled, no automatic retry or unknown bypass. Actual planning/full drafting progress does not upgrade inconclusive content, E1-v1/v2 failures or independent0/5. No provider calls during diagnostics."
+}

@@ -1,0 +1,43 @@
+{
+  "case": "D2-VQ-v1-v7",
+  "runId": "dr_run_8611ceebde8756818fd9fbf5d6d05176",
+  "sourceCommit": "5fcc9da41160768b2022e43cf0bc96cbea68cdb7",
+  "comparisonCellsContractVersion": 1,
+  "status": "failed",
+  "outcome": "none",
+  "modelCalls": 2,
+  "tokens": 3637,
+  "wallSeconds": 2790.0,
+  "budgetPassed": false,
+  "allModelCallsSucceededSettled": true,
+  "reachedCellGeneration": false,
+  "acceptedClaims": 0,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "errorCode": "execution_failed",
+  "exception": "KeyError: comparisonCellDraft after synthesis could not proceed",
+  "powerEventsObserved": [
+    {
+      "time": "2026-11-16T20:13:04+08:00",
+      "id": 42,
+      "provider": "Microsoft-Windows-Kernel-Power"
+    },
+    {
+      "time": "2026-11-16T20:58:03+08:00",
+      "id": 1,
+      "provider": "Microsoft-Windows-Power-Troubleshooter"
+    }
+  ],
+  "diagnosis": "Host sleep/wake overlaps the long wall-clock gap. Requests after resume were refused by the unchanged 360-second admission limit; missing-draft fallback then crashed. This run cannot evaluate comparison quality or active execution latency.",
+  "runtimeRestored": true,
+  "currentRecordsPreservedDuringRestore": true,
+  "rawSha256": {
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v7.json": "1694f03399490918e41286ff69686a1609ee026743fab6e5ff5b7d15dc0efde7",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v7.payload.json": "610ed23349e28a0b8e75db7a944052227147e819d1ec9570490f9552d41b9686",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v7.calls.json": "8026d8fcfc7ef308f32bf23e1b37b8dbd1edd6b9c675cb79c6c5477c85c4f698",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v7.result.json": "715b8dab53de9dc21fe1cabe0e48a5bb0de1def319f8f9b3104062cefd4c1902",
+    "tmp\\dr-acceptance-receipts\\D2-VQ-v1-v7.runtime.log": "39f7e09476a67041dca4c97224aaadef7150ec65df4a480cd8cf51c9eaba8b2a"
+  },
+  "next": "Fix missing-draft fallback; complete offline regression before any new real attempt. Do not retry original run or alter wall-clock accounting."
+}

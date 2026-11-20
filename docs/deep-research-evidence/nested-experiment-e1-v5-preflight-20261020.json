@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v5",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualPreflightFailureReproduced": {
+    "kind": "repairEvidenceBytes",
+    "limit": 23599,
+    "used": 24249
+  },
+  "batches": [
+    {
+      "targets": [
+        "c4",
+        "c5"
+      ],
+      "oldInputOrMandatoryBytes": 23565,
+      "newInputBytes": 23570,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    },
+    {
+      "targets": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "oldInputOrMandatoryBytes": 24249,
+      "newInputBytes": 23557,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    },
+    {
+      "targets": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "oldInputOrMandatoryBytes": 23508,
+      "newInputBytes": 23481,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    }
+  ],
+  "newPreflightAllBatchesFit": true,
+  "outputCapUnchanged": 4096,
+  "originalDigest": "bac6ced3415fff33d9b80b72c0f3e35fe6df90cd691f8f49f68524d8ccb00fca",
+  "boundary": "Read-only replay of actual failed E1-v5 input and static remaining allowance. Lossless nested config arrays plus concise instructions make every initial batch preflight fit. No model dispatch, patch response, scientific content acceptance or proof all batches would remain affordable after measured usage; ordinary per-dispatch live admission still applies. Historical E1-v5 partial is unchanged.",
+  "sourceCommit": "f78f6bee"
+}

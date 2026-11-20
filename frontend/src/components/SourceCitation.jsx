@@ -184,18 +184,19 @@ export const SourceList = ({ sources, onJumpToSource, emptyText = '', variant = 
 
   return (
     <div className={`source-list space-y-2 ${variant === 'agent' ? 'agent-body' : ''}`}>
-      {normalizedSources.map((source) => {
+      {normalizedSources.map((source, index) => {
         const isExpanded = expandedSourceIds.includes(source.sourceId);
         const isExternal = source?.isExternal;
         return (
-          <div key={source.sourceId} className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
+          <div key={source.sourceId} className="source-list-item min-w-0">
+            <div className="source-list-actions flex flex-wrap items-center gap-2">
+              <span className="source-list-number" aria-hidden="true">{index + 1}</span>
               <SourceChip source={source} onJumpToSource={onJumpToSource} onShowDetails={toggleDetails} />
               {((source.canJumpToSource && source.text) || isExternal) && (
                 <button
                   type="button"
                   onClick={() => toggleDetails(source)}
-                  className="theme-text-muted inline-flex items-center gap-1 text-[10px] font-semibold"
+                  className="source-list-toggle theme-text-muted inline-flex items-center gap-1 text-[10px] font-semibold"
                 >
                   {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                   {isExpanded ? (isExternal ? '收起详情' : '收起片段') : (isExternal ? '查看详情' : '查看片段')}
@@ -203,7 +204,7 @@ export const SourceList = ({ sources, onJumpToSource, emptyText = '', variant = 
               )}
             </div>
             {isExpanded && (
-              <div className={`mt-2 rounded-xl border px-3 py-2 text-[11px] leading-6 ${variant === 'agent' ? 'agent-card-soft' : 'theme-card-soft theme-border'}`}>
+              <div className={`source-list-excerpt mt-2 rounded-xl border px-3 py-2 text-[11px] leading-6 ${variant === 'agent' ? 'agent-card-soft' : 'theme-card-soft theme-border'}`}>
                 {isExternal ? (
                   <ExternalSourceExpanded source={source} />
                 ) : (

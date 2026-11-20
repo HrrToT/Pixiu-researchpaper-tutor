@@ -1,0 +1,48 @@
+{
+  "observedAtUtc": "2026-10-15T02:24:08.587275+00:00",
+  "officialIncident": {
+    "url": "https://status.deepseek.com/incidents/7116348214287",
+    "httpStatus": 200,
+    "state": "Identified",
+    "severityDisplayed": "Full Outage",
+    "reportedStartUtc": "2026-10-15T00:11:00Z",
+    "latestDisplayedUpdateUtc": "2026-10-15T01:08:00Z",
+    "affectedComponents": [
+      "DeepSeek V4 Pro API Service",
+      "DeepSeek V4.1 Flash API Service"
+    ],
+    "message": "The cause has been identified and a fix is being implemented."
+  },
+  "readOnlyConnectivity": {
+    "modelsEndpoint": "https://api.deepseek.com/models",
+    "status": 200,
+    "elapsedSeconds": 0.694,
+    "modelIds": [
+      "deepseek-flash",
+      "deepseek-v4-pro"
+    ],
+    "statusPageRootHttpStatus": 200
+  },
+  "configurationInspection": {
+    "routineThinking": "disabled",
+    "routineReasoningEffort": "none",
+    "proxyEnvironmentVariablesPresent": false,
+    "providerParameters": "thinking disabled and reasoning_effort none supported by current official Chat Completions documentation"
+  },
+  "boundary": "The official incident is consistent with the observed generation timeouts, but does not prove execution, usage or billing of any individual unknown request. Successful model listing is not successful generation. No model calls added during this check.",
+  "remainingWork": [
+    {
+      "gate": "D1/D2/D3/D5 content quality",
+      "dependency": "Actual source-bounded answers with complete comparison/experiment/continuation conditions and per-claim review"
+    },
+    {
+      "gate": "Fresh independent acceptance",
+      "dependency": "First real results for H2R/H3R/H4R/H5R and reconciliation of H1R2 unknown; do not reissue unknown automatically"
+    },
+    {
+      "gate": "Final live product checks",
+      "dependency": "Valid new result for citation lookup, edit, save and find-again; fixtures do not prove generated result quality"
+    }
+  ],
+  "resumePolicy": "Re-check official incident before a single distinct, previously unsubmitted real case. Keep all unknown receipts and reservations; do not reroute or create attempts to bypass them. Do not declare finished or merge the draft PR."
+}

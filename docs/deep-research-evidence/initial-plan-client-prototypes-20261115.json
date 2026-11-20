@@ -1,0 +1,94 @@
+{
+  "componentOnly": true,
+  "sourceCase": "D2-VQ-v1-v1",
+  "sameOriginalPrompt": true,
+  "prototypes": [
+    {
+      "directory": "tmp\\plan-main-454c-20261115",
+      "calls": 1,
+      "allSettled": true,
+      "seconds": 6.81,
+      "usage": {
+        "total_tokens": 1978,
+        "input_tokens": 1245,
+        "output_tokens": 733
+      },
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "strictActualNodeResult": {
+        "error_code": "invalid_plan_response",
+        "outcome": "none",
+        "plan_ids": []
+      },
+      "formatValidation": {
+        "status": "rejected",
+        "reason": "Invalid initial plan criteria"
+      },
+      "promptSha256": "a1769fa3d192b3a7056e893475d637782b1567be003bbaae4cb30c9edeea04e4",
+      "requestDigest": "5b803d4aa3225d4fd05cb468659a249608cce9edbea767faa6c540e8afeb8116",
+      "scientificAcceptance": false,
+      "applicationWrites": 0,
+      "automaticRetry": false,
+      "rawArtifactHashes": {
+        "tmp\\plan-main-454c-20261115\\captured.json": "cc8d3df083ba38d1c7e8b0080ca984f2e8852c156076d00b63c1650baa5cb793",
+        "tmp\\plan-main-454c-20261115\\intent.json": "53bbd8dc14911265d7057ed7da3170e6686cb2543687118b6b6ce3c244d9b258",
+        "tmp\\plan-main-454c-20261115\\result.json": "9b3f5af36846316b2d0c1a1cc339997befbe82aedfce7334907f8db7e507082f",
+        "tmp\\plan-main-454c-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "directory": "tmp\\plan-main-low-454-20261115",
+      "calls": 1,
+      "allSettled": true,
+      "seconds": 47.272,
+      "usage": {
+        "total_tokens": 6245,
+        "input_tokens": 1245,
+        "output_tokens": 5000
+      },
+      "model": "deepseek-v4-pro",
+      "finishReason": "length",
+      "strictActualNodeResult": {
+        "error_code": "invalid_plan_response",
+        "outcome": "none",
+        "plan_ids": []
+      },
+      "formatValidation": {
+        "status": "rejected",
+        "reason": "Plan response was truncated"
+      },
+      "promptSha256": "a1769fa3d192b3a7056e893475d637782b1567be003bbaae4cb30c9edeea04e4",
+      "requestDigest": "6d08fcea0e85cea7efbffbde14130825188fc30c667c2679997fa473e5518c6c",
+      "scientificAcceptance": false,
+      "applicationWrites": 0,
+      "automaticRetry": false,
+      "rawArtifactHashes": {
+        "tmp\\plan-main-low-454-20261115\\captured.json": "35f7ba6c65df8bd9e8a7faed59ba36f4995c2109f109a857c343c9c8eb91fb01",
+        "tmp\\plan-main-low-454-20261115\\intent.json": "1332506549454f5425703d710ba6bd3e9ccefc2f10151800a61b8313098e9d2e",
+        "tmp\\plan-main-low-454-20261115\\result.json": "d4a801cd6ef2e68634bcf9bd4b6c5ed4846dd878baaca19e92033554c2839dba",
+        "tmp\\plan-main-low-454-20261115\\stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "modelCalls": 2,
+  "applicationWrites": 0,
+  "deployed": false,
+  "scientificAcceptance": false,
+  "findings": [
+    "Main nonthinking planning returned valid JSON but6criteria under one obligation; strict4criterion contract rejected it.",
+    "Main low reasoning hit unchanged5000 output cap and strict node rejected truncation. Merely changing model or reasoning is not a sufficient fix; neither candidate was deployed.",
+    "Next design: bounded audited plan-format correction for a known invalid response, preserving original raw output and all existing semantic/scope/DAG/criterion limits, within original run budget. Unknown calls must retain their identities and never trigger corrective resends. No runtime repair implemented by this proof."
+  ],
+  "localHarnessFailures": [
+    {
+      "directory": "tmp/plan-main-454-20261115",
+      "stage": "fingerprint omitted existing response-contract identity; local assertion before subprocess",
+      "modelCalls": 0
+    },
+    {
+      "directory": "tmp/plan-main-454b-20261115",
+      "stage": "normal planning incorrectly used finalization reserve; journal0calls",
+      "modelCalls": 0
+    }
+  ]
+}

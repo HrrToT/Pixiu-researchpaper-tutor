@@ -1,0 +1,56 @@
+{
+  "sourceCase": "AD1N-v30",
+  "sourceCommit": "be80d57fc3ef744bd21f9fbc19e54f35ee44de7b",
+  "componentOnly": true,
+  "modelCalls": 1,
+  "seconds": 5.571,
+  "tokens": 2000,
+  "finishReason": "stop",
+  "newBudget": {
+    "totalCharacters": 300,
+    "currentCompleteCharacters": 362,
+    "fixedDisplayAndAcceptedCharacters": 21,
+    "currentScopeReserveCharacters": 119,
+    "ordinaryProseSharedCharactersIfScopeUnchanged": 160,
+    "pointMeasurements": [
+      {
+        "claimId": "c1",
+        "kind": "prose",
+        "currentCharactersAboveFixed": 222
+      },
+      {
+        "claimId": "c2",
+        "kind": "scope",
+        "currentCharactersAboveFixed": 119
+      }
+    ]
+  },
+  "ordinaryProseCharacters": 198,
+  "trace": [
+    {
+      "finalLine": 198,
+      "hasCompiledCandidate": true,
+      "compiledVisibleCharacters": 338,
+      "limit": 300
+    }
+  ],
+  "parsedBodyAndScopeConstraints": true,
+  "within300Characters": false,
+  "finalParserOutcome": "invalid",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "isolatedRunStatus": "completed",
+  "scientificAcceptance": false,
+  "noviceAcceptance": false,
+  "rawResultSha256": "8573a27a14a6ec587bd8541b27e00d1d35b5ec66c67662f915b48ffaa5b6e748",
+  "findings": [
+    "The model used the requested authored-body shape and preserved the existing scope structure, but did not honor the160-character shared prose allowance. The unchanged final rendered-length guard rejected it.",
+    "The measured budget metadata is correct; this one component call does not show a practical length improvement or scientific acceptance.",
+    "Next inspect the editing policy: its instruction to keep all existing facts may conflict with removing incidental/repeated prose. This is a hypothesis to test, not a proved cause. Preserve requested distinctions, source ownership, scope predicates and final independent checks."
+  ],
+  "all103TasksExact": true,
+  "all379ApplicationRunsExact": true,
+  "all9526ApplicationCallRowsExact": true,
+  "historicalPaused": 15,
+  "activeApplicationRuns": 0
+}

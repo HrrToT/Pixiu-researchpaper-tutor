@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "71362f2d8ff1b8c74bd0633de48a2c594dc02666",
+  "sourceReceiptSha256": "a64b83637f562b3fd42c8260431c4c1da2c0184d717c816b6e2c0ae777119bba",
+  "providerRequests": 0,
+  "sourceReceiptUnchanged": true,
+  "results": [
+    {
+      "authoringEnabled": false,
+      "preparationEvents": [
+        {
+          "targetIds": [
+            "cmp_0_0",
+            "cmp_1_0",
+            "cmp_2_0",
+            "cmp_3_0",
+            "cmp_4_0",
+            "cmp_5_0",
+            "cmp_6_0",
+            "cmp_7_0",
+            "cmp_conclusion_0",
+            "cmp_conclusion_1"
+          ],
+          "limit": 21428,
+          "fits": false,
+          "refusal": {
+            "kind": "repairEvidenceBytes",
+            "limit": 21428,
+            "used": 27744
+          }
+        },
+        {
+          "targetIds": [
+            "cmp_0_0",
+            "cmp_1_0",
+            "cmp_2_0",
+            "cmp_3_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21420,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_4_0",
+            "cmp_5_0",
+            "cmp_6_0",
+            "cmp_7_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21386,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_conclusion_0",
+            "cmp_conclusion_1"
+          ],
+          "limit": 21428,
+          "inputBytes": 21418,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_0_0",
+            "cmp_1_0",
+            "cmp_2_0",
+            "cmp_3_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21420,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_4_0",
+            "cmp_5_0",
+            "cmp_6_0",
+            "cmp_7_0"
+          ],
+          "limit": 18134,
+          "inputBytes": 18090,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_conclusion_0",
+            "cmp_conclusion_1"
+          ],
+          "limit": 12090,
+          "fits": false,
+          "refusal": {
+            "kind": "repairEvidenceBytes",
+            "limit": 12090,
+            "used": 14230
+          }
+        }
+      ],
+      "fixtureRequests": [
+        {
+          "inputBytes": 21420,
+          "outputReservation": 5120
+        },
+        {
+          "inputBytes": 18090,
+          "outputReservation": 5120
+        }
+      ],
+      "repairBatches": [
+        [
+          "cmp_0_0",
+          "cmp_1_0",
+          "cmp_2_0",
+          "cmp_3_0"
+        ],
+        [
+          "cmp_4_0",
+          "cmp_5_0",
+          "cmp_6_0",
+          "cmp_7_0"
+        ],
+        [
+          "cmp_conclusion_0",
+          "cmp_conclusion_1"
+        ]
+      ],
+      "stop": {
+        "batch": 2,
+        "kind": "repairEvidenceBytes",
+        "limit": 12090,
+        "used": 14230
+      },
+      "outcomeAudit": null,
+      "verifiedClaimCount": 0
+    },
+    {
+      "authoringEnabled": true,
+      "preparationEvents": [
+        {
+          "targetIds": [
+            "cmp_0_0",
+            "cmp_2_0",
+            "cmp_4_0",
+            "cmp_6_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21428,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_1_0",
+            "cmp_3_0",
+            "cmp_5_0",
+            "cmp_7_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21418,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_conclusion_0",
+            "cmp_conclusion_1"
+          ],
+          "limit": 21428,
+          "inputBytes": 21363,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_0_0",
+            "cmp_2_0",
+            "cmp_4_0",
+            "cmp_6_0"
+          ],
+          "limit": 21428,
+          "inputBytes": 21428,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_1_0",
+            "cmp_3_0",
+            "cmp_5_0",
+            "cmp_7_0"
+          ],
+          "limit": 18134,
+          "inputBytes": 18071,
+          "fits": true
+        },
+        {
+          "targetIds": [
+            "cmp_conclusion_0",
+            "cmp_conclusion_1"
+          ],
+          "limit": 12090,
+          "inputBytes": 12081,
+          "fits": true
+        }
+      ],
+      "fixtureRequests": [
+        {
+          "inputBytes": 21428,
+          "outputReservation": 5120
+        },
+        {
+          "inputBytes": 18071,
+          "outputReservation": 5120
+        },
+        {
+          "inputBytes": 12081,
+          "outputReservation": 4096
+        }
+      ],
+      "repairBatches": [
+        [
+          "cmp_0_0",
+          "cmp_2_0",
+          "cmp_4_0",
+          "cmp_6_0"
+        ],
+        [
+          "cmp_1_0",
+          "cmp_3_0",
+          "cmp_5_0",
+          "cmp_7_0"
+        ],
+        [
+          "cmp_conclusion_0",
+          "cmp_conclusion_1"
+        ]
+      ],
+      "stop": null,
+      "outcomeAudit": {
+        "0": {
+          "version": 1,
+          "targets": [
+            {
+              "claimId": "cmp_0_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_2_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_4_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_6_0",
+              "status": "not_revised"
+            }
+          ],
+          "scientificApproval": false
+        },
+        "1": {
+          "version": 1,
+          "targets": [
+            {
+              "claimId": "cmp_1_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_3_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_5_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_7_0",
+              "status": "not_revised"
+            }
+          ],
+          "scientificApproval": false
+        },
+        "2": {
+          "version": 1,
+          "targets": [
+            {
+              "claimId": "cmp_conclusion_0",
+              "status": "not_revised"
+            },
+            {
+              "claimId": "cmp_conclusion_1",
+              "status": "not_revised"
+            }
+          ],
+          "scientificApproval": false
+        }
+      },
+      "verifiedClaimCount": 0
+    }
+  ],
+  "stressCharges": [
+    6366,
+    7068
+  ],
+  "scientificAcceptance": false,
+  "providerCostOrTimeFitEstablished": false,
+  "boundary": "Controlled resumption from saved snapshot, not original request identity replay. Original first-two charges are an offline stress scenario; empty responses do not prove model quality, third-request cost, independent recheck or whole-answer capacity."
+}

@@ -1,0 +1,232 @@
+{
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "requests": [
+    {
+      "matchesSavedRequest": true,
+      "requestDigest": "f1855b146e718e76922caa0d9e30a8dd3a07dea852aa111f1cb3f6d10c0c7bb9",
+      "inputBytes": 31958,
+      "targetCount": 11,
+      "paperTargetCount": 8,
+      "suppliedEvidenceCount": 20,
+      "tableCatalogCount": 0,
+      "tableDataOmittedEvidenceIds": [
+        "E9",
+        "E10",
+        "E13"
+      ],
+      "targetSourcePermissions": {
+        "table_0_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16",
+          "E19"
+        ],
+        "table_0_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E17",
+          "E18",
+          "E20"
+        ],
+        "table_1_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16",
+          "E19"
+        ],
+        "table_1_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E17",
+          "E18",
+          "E20"
+        ],
+        "table_2_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16",
+          "E19"
+        ],
+        "table_2_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E17",
+          "E18",
+          "E20"
+        ],
+        "table_3_0": [
+          "E4",
+          "E1",
+          "E5",
+          "E7",
+          "E9",
+          "E11",
+          "E15",
+          "E16",
+          "E19"
+        ],
+        "table_3_1": [
+          "E2",
+          "E3",
+          "E6",
+          "E8",
+          "E10",
+          "E12",
+          "E13",
+          "E14",
+          "E17",
+          "E18",
+          "E20"
+        ],
+        "joint_ob_6911642554432323f4639076": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18",
+          "E19",
+          "E20"
+        ],
+        "joint_ob_4fd595ec34487dd6040828b6": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18",
+          "E19",
+          "E20"
+        ],
+        "joint_ob_8c4c8d300d4e7867006a2dc6": [
+          "E2",
+          "E3",
+          "E4",
+          "E1",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18",
+          "E19",
+          "E20"
+        ]
+      },
+      "scientificApproval": false
+    }
+  ],
+  "originalEvidenceCount": 64,
+  "originalTypedEvidenceCount": 4,
+  "wireAudit": {
+    "version": 2,
+    "status": "compiled_unverified",
+    "errors": [
+      {
+        "targetId": "table_0_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_0_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_1_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_1_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_2_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_2_1",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_3_0",
+        "reason": "invalid_answer_source_permission"
+      },
+      {
+        "targetId": "table_3_1",
+        "reason": "invalid_answer_source_permission"
+      }
+    ],
+    "tableReferenceCount": 0,
+    "scientificApproval": false
+  },
+  "compiledPoints": 3,
+  "missingNavigationBundleCount": 4,
+  "boundary": "Exact bad response and exact generation request replay only. No approval or new generation."
+}

@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-05",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independence": "Development regression only. RaDe-GS was retired after X5H-v1; v1 is already cached from version component. No unseen-material or uncached-network credit.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2406.01467v1",
+        "reference": "https://arxiv.org/html/2406.01467v1",
+        "sections": [
+          "3.2",
+          "3.3",
+          "3.4",
+          "4.1.1"
+        ],
+        "expected": "Retains general 3D Gaussians, rasterizes depth and normal maps. Depth/normal regularizers support geometric training; training-view depth maps are fused with TSDF to extract meshes. Distinguish this method from forcing planar primitives. Method objectives and reported tested results are not universal guarantees; no performance ranking required."
+      }
+    ],
+    "hardFailures": [
+      "摘要冒充正文",
+      "指定v1被替换",
+      "把RaDe-GS说成强制二维圆盘",
+      "把TSDF网格提取误写成直接融合高斯或必须同时融合法线图",
+      "无依据保证所有场景重建准确",
+      "超出18调用/100000Token/360秒"
+    ],
+    "transportChecks": [
+      "pinned_version_matches",
+      "exact_cached_v1_source_identity",
+      "source_add_and_first_index_separate_acceptance"
+    ]
+  },
+  "cases": [
+    {
+      "id": "X5R",
+      "split": "development",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网读取 RaDe-GS: Rasterizing Depth in Gaussian Splatting（arXiv:2406.01467v1）的原文。面向了解3DGS概念的新手，解释它是否把3D高斯改成2D圆盘、为什么要渲染深度和表面法线，以及这些图怎样用于几何重建。限350字，区分方法设计与已验证效果，不做跨论文速度排名或实验设计。",
+      "required": [
+        "实际获取并引用v1全文",
+        "保留一般3D高斯而非强制二维圆盘",
+        "解释深度和法线图为几何优化提供的作用",
+        "区分训练正则化与深度图TSDF融合提取网格",
+        "350字以内新手可读且无普遍效果保证"
+      ],
+      "forbidden": [
+        "v1被其他版本替代",
+        "把模型当2DGS平面高斯",
+        "无依据跨论文性能排名",
+        "摘要冒充全文",
+        "把优化目标当作所有场景必然实现的结果"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "X5R": "781b52165fa9a119f2450aedd7f05c1eab0d2fc74569869309c4fca293b09e16"
+  }
+}

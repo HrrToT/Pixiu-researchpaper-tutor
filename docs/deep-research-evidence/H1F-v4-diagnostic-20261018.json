@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v4",
+  "runId": "dr_run_446bfd17a61c59e086b57ee96c913709",
+  "sourceCommit": "4bd2a7d3",
+  "promptVersion": "dr-v2.20261018.135",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": false,
+  "modelCalls": 11,
+  "settledTokens": 30872,
+  "elapsedSeconds": 65.379,
+  "cost": null,
+  "report": "## 判断\n\n- NTC预测每个3D高斯的位置移动（平移）和转动（旋转，用四元数表示）。它把前一帧的高斯位置作为输入，通过多分辨率哈希编码和一个小型MLP输出这7个变化量。 [2](#research-evidence-ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891)\n- 前一帧的高斯表示被用作NTC的输入：每个高斯的位置经过多分辨率哈希编码，再送入MLP，输出该高斯的平移和旋转。 [2](#research-evidence-ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891)\n- 当遇到初始帧中不存在的物体（如火焰、烟雾或倒出的液体）时，仅靠变换现有高斯无法表示这些新出现的物体，因为3D高斯是非结构化的显式表示，必须添加新的高斯来建模它们。 [1](#research-evidence-ev_9c77ecc67f69278101c2f3c013b1a9dd7977363a104239b5abbec8ff2b2d6841)\n  适用条件：1：objects not present in the initial frame\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.\n\n</details>",
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 3,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "requestedPointCount": 3,
+  "displayedPointCount": 3,
+  "methodPremiseReachedSemantics": true,
+  "necessaryReasonPreserved": true,
+  "findings": [
+    "The new method-premise rule works: the new-object explanation reaches independent semantic review and is accepted, rather than rejected by the publication-absence heuristic.",
+    "All three requested answer points remain visible after repair, within the body/condition character limit. These mechanical fixes are observed in a real run.",
+    "The first two points repeat NTC input/output prose rather than explaining reuse/application of the previous representation. Their sole cited passage identifies the hash/MLP output, but does not establish the previous-frame temporal input.",
+    "Initial semantic review correctly rejected that missing input premise. Repair shortened wording without adding the missing source; re-verification accepted the still-unsupported premise by invoking implied NTC context. This is not an accepted source-grounded repair.",
+    "The needed initialization passage was already read (chunk 17) but was not extracted before relevance closure. A compound obligation was treated as covered after its output detail alone.",
+    "Technical terms remain unexplained and an English condition repeats the Chinese text. Neutral criteria still include user-unprovided attribute examples. Full novice/content quality remains below the frozen threshold."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v4.json",
+      "sha256": "5e5fb467113459bbfdf3632a15b1c578a31c2a061ebc51d871fb4780e2b229e7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v4.payload.json",
+      "sha256": "0582146abc534ca4944e998f0da5e0cc7c9a897b29a83ce0e79072e9af3c9425"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v4.calls.json",
+      "sha256": "21f9159b192ab2c8f8c072f36b7374a75e579e8dac6b2fc47beb6dc776a381b9"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v4.result.json",
+      "sha256": "37dd067abeb6de27cc47f7f5c1ec9fc0c8b5bd62bdc01a87c1ccb756b7df791f"
+    }
+  ],
+  "boundary": "One submission under the original frozen question/materials/budget, with all 11 model calls settled. No unknown resend, first-result rewrite or independent pass. Machine complete is not manual content acceptance."
+}

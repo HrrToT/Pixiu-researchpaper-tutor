@@ -1,0 +1,26 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2311.18159v1",
+      "reference": "https://arxiv.org/abs/2311.18159v1",
+      "pdfUrl": "https://arxiv.org/pdf/2311.18159v1",
+      "maxBytes": 33554432,
+      "headStatus": 200,
+      "declaredBytes": 22544872,
+      "withinDeclaredCap": true
+    },
+    {
+      "arxivVersion": "2401.02436v1",
+      "reference": "https://arxiv.org/abs/2401.02436v1",
+      "pdfUrl": "https://arxiv.org/pdf/2401.02436v1",
+      "maxBytes": 33554432,
+      "headStatus": 200,
+      "declaredBytes": 25519387,
+      "withinDeclaredCap": true
+    }
+  ],
+  "modelCalls": 0,
+  "pdfBodiesDownloaded": 0,
+  "automaticRetry": false,
+  "proxy": "current Windows system proxy; credentials not recorded"
+}

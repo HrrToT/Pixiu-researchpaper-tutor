@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-30",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independence": "First case on new paper, no prior manifest or payload matches. Retire from holdout if used for implementation tuning.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2403.17888v3",
+        "reference": "https://arxiv.org/html/2403.17888v3",
+        "sections": [
+          "4.1",
+          "5"
+        ],
+        "expected": "2DGS represents 3D scene surfaces with oriented planar Gaussian disks, not 2D image-only reconstruction. Depth distortion concentrates ray-contributing primitives in a tight depth interval; normal consistency aligns rendered disk normals with normals from rendered depth gradients. Neither term establishes a guarantee of perfect geometry."
+      }
+    ],
+    "hardFailures": [
+      "摘要冒充正文",
+      "v3被替换",
+      "把2D说成仅处理平面图像",
+      "混淆深度畸变和法线一致性",
+      "虚构几何无误保证",
+      "超出18调用/100000Token/360秒"
+    ],
+    "transportChecks": [
+      "fresh_discovery_and_fulltext_network",
+      "no_cache_or_index_before",
+      "pinned_version_matches",
+      "idempotent_source_add",
+      "first_parse_and_index_without_AI_overview"
+    ]
+  },
+  "cases": [
+    {
+      "id": "X4H",
+      "split": "holdout",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网读取 2D Gaussian Splatting for Geometrically Accurate Radiance Fields（arXiv:2403.17888v3）的原文。面向了解3DGS概念的新手，解释这里的“2D”为什么仍能表示三维场景，以及第5节中深度畸变和法线一致性两个约束分别在约束什么。限350字，依据实际取得的正文区分两种作用，不做性能排名或实验设计。",
+      "required": [
+        "真实获取并引用v3正文",
+        "2D是三维空间中有朝向的平面高斯圆盘",
+        "深度畸变约束同一光线上基元深度分散",
+        "法线一致性对齐圆盘渲染法线与渲染深度导出法线",
+        "350字以内新手可读"
+      ],
+      "forbidden": [
+        "把2D等同于平面图像任务",
+        "混淆两种约束",
+        "保证所有场景完美几何",
+        "摘要冒充正文"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "X4H": "c86d78413c0a625f7429365d9c54d4039807582f02a5af184ad160d41a770663"
+  }
+}

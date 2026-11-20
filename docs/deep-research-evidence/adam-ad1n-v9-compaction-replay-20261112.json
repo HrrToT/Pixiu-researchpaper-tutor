@@ -1,0 +1,38 @@
+{
+  "case": "AD1N-v9",
+  "replay": "saved received synthesis and compaction plus durable received audience edit",
+  "result": {
+    "error_code": "invalid_synthesis_response"
+  },
+  "rawCharacters": 292,
+  "visibleCharacters": 314,
+  "options": {
+    "authored_body": true,
+    "compact_layout": true,
+    "joint_layout": true
+  },
+  "compactionRejected": true,
+  "requests": [
+    {
+      "node": "synthesize",
+      "options": {
+        "max_tokens": 4000,
+        "temperature": 0.2,
+        "_short_factual_reasoning": true,
+        "_short_factual_direct_repair": true,
+        "_short_factual_direct_synthesis": true
+      }
+    },
+    {
+      "node": "synthesize_compact",
+      "options": {
+        "max_tokens": 2000,
+        "temperature": 0.0
+      }
+    }
+  ],
+  "newModelCalls": 0,
+  "originalPayloadUnchanged": true,
+  "originalPayloadSha256": "f73769697a78b95c02ae45a1a4b3b52f2da77707f136dbada8d3981e4c9c6eb9",
+  "boundary": "Exact failure reproduction only. No accepted content, no changed output, no quality credit."
+}

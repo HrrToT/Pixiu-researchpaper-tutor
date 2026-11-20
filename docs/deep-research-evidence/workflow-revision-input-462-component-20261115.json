@@ -1,0 +1,203 @@
+{
+  "promptVersion": "dr-v2.20261115.462",
+  "sourceCommit": "ae0adcf02b4001d4bbdaa6de7b12b3f7729b7a6f",
+  "isolatedMetadataRevisionOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "actualCallSeconds": 18.0,
+  "tokens": 15089,
+  "usage": {
+    "total_tokens": 15089,
+    "input_tokens": 12064,
+    "output_tokens": 3025
+  },
+  "finishReason": "stop",
+  "inputBytes": 38117,
+  "unitValid": false,
+  "unitErrors": [
+    "unit.sourceRefs"
+  ],
+  "detailedFeedback": {
+    "codes": [
+      "unit.sourceRefs"
+    ],
+    "issues": [
+      {
+        "code": "unit.sourceRefs",
+        "path": "/sourceRefs/9",
+        "actual": "15",
+        "expected": "one distinct evidence alias from allowedSourceRefs; not a paper ID"
+      },
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/4/reads/4",
+        "actualPresent": true,
+        "sourceGroups": [
+          "01",
+          "11"
+        ],
+        "consumerGroups": [
+          "00"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "measurement",
+        "consumerStepIndex": 4,
+        "consumerOutputStage": "measurement",
+        "actual": {
+          "state": "scale_rotation_codebook",
+          "selector": "codebook_entries"
+        }
+      },
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/4/reads/2",
+        "actualPresent": true,
+        "sourceGroups": [
+          "10",
+          "11"
+        ],
+        "consumerGroups": [
+          "00"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "measurement",
+        "consumerStepIndex": 4,
+        "consumerOutputStage": "measurement",
+        "actual": {
+          "state": "sh_codebook",
+          "selector": "codebook_entries"
+        }
+      },
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/4/reads/5",
+        "actualPresent": true,
+        "sourceGroups": [
+          "01",
+          "11"
+        ],
+        "consumerGroups": [
+          "00"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "measurement",
+        "consumerStepIndex": 4,
+        "consumerOutputStage": "measurement",
+        "actual": {
+          "state": "scale_rotation_assignment_indices",
+          "selector": "per_gaussian_indices"
+        }
+      },
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/4/reads/3",
+        "actualPresent": true,
+        "sourceGroups": [
+          "10",
+          "11"
+        ],
+        "consumerGroups": [
+          "00"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "measurement",
+        "consumerStepIndex": 4,
+        "consumerOutputStage": "measurement",
+        "actual": {
+          "state": "sh_assignment_indices",
+          "selector": "per_gaussian_indices"
+        }
+      }
+    ],
+    "declaredComponentIds": [
+      "shared_base_3dgs",
+      "sh_codebook",
+      "sh_assignment_indices",
+      "scale_rotation_codebook",
+      "scale_rotation_assignment_indices",
+      "dc_color_policy"
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 8,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "shared_base_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "sh_codebook",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "sh_assignment_indices",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 3,
+        "componentId": "scale_rotation_codebook",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 4,
+        "componentId": "scale_rotation_assignment_indices",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 5,
+        "componentId": "dc_color_policy",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      }
+    ],
+    "allowedSourceRefs": [
+      "E1",
+      "E10",
+      "E11",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E19",
+      "E2",
+      "E20",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ]
+  },
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "rawResult": "tmp\\workflow-revision-input-462-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "8b88bc301ee8b785ea46b7c7e519fd1180fccb3561970372f1f55cb4470bbbbb",
+  "publicAudit": "tmp\\workflow-revision-input-462-public-review-20261115\\audit.json",
+  "publicAuditSha256": "0bb5453a4070279c89d4c643c2992574d4a64a78d711d1938c32221beded327e",
+  "originalResponseRetained": true,
+  "automaticRetry": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "thinking": {
+    "type": "disabled"
+  },
+  "diagnosis": "Complete revision is now dispatched, but it mistypes E15 as 15 and preserves the four cross-arm reads in control00. Reject; no automatic repair or acceptance.",
+  "next": "Review feedback presentation and bounded semantic reasoning for repair; no unchanged resend."
+}

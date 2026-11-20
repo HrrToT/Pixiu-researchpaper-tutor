@@ -1,0 +1,70 @@
+{
+  "asOf": "2026-11-16",
+  "case": "SHARED-REPRESENTATION-LABELLED-SLOTS-v1",
+  "implementationSourceCommit": "a97459c89",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "requestDigest": "d142a025410c2e71384c66dbc9e7d2298b9bd602f77b9c5a7b47065c1aa288b4",
+  "inputBytes": 31901,
+  "originalEvidenceRows": 17,
+  "allOriginalSourceDataUnchanged": true,
+  "providerCalls": 1,
+  "attempt": 1,
+  "callStatus": "succeeded",
+  "settled": true,
+  "finishReason": "length",
+  "usage": {
+    "total_tokens": 16157,
+    "input_tokens": 10013,
+    "output_tokens": 6144
+  },
+  "recordedCallSeconds": 55.0,
+  "requestBudget": {
+    "calls": 1,
+    "tokens": 50000,
+    "wallSeconds": 180,
+    "maxOutputTokens": 6144,
+    "requestDeadlineSeconds": 90
+  },
+  "unitValid": false,
+  "unitErrors": [
+    {
+      "code": "representation.output_status",
+      "path": ""
+    }
+  ],
+  "compactCanonicalBytes": null,
+  "variablesPerTarget": null,
+  "rawResponseBytes": 25552,
+  "nativeSchemaReceiptComputedOffline": {
+    "version": 1,
+    "schemaName": "workflow_representation_v4",
+    "schemaDigest": "b6e8137ce8719e4a3bd2f10a937c0d7da8e083ca81b2f34bf905187e0b9a893c",
+    "providerSchemaEnforcementVerified": false,
+    "scientificApproval": false,
+    "status": "not_checked_output_status"
+  },
+  "nativeReceiptReplayedByNewCodeNotAddedToOriginalResult": true,
+  "manualContentReview": {
+    "accepted": false,
+    "observations": [
+      "Response truncated at 6144 output tokens; no complete canonical value exists.",
+      "Four complete variable groups in the raw fragment each list the same six Gaussian fields; the fourth metadata target is sh_codebook.",
+      "Partial groups are analysis-only and were not repaired, frozen, initialized or published."
+    ]
+  },
+  "isolatedSchemaOverride": false,
+  "productWireChanged": false,
+  "automaticRetry": false,
+  "frozen": false,
+  "followupInitializationCalls": 0,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "applicationDataUnchanged": true,
+  "artifacts": {
+    "tmp/shared-representation-labelled-slots-v1-result-20261116/result.json": "1f160a6fced5560daa893048a53f94929b879c5acddf5a81430f25b96aff5450",
+    "tmp/shared-representation-labelled-slots-v1-public-review-20261116/reviewed-request.json": "1920dc5b4745d8dad0cbc012448c6384aa07a3af1808206143b83d41acf20eb4"
+  },
+  "boundary": "One isolated declaration diagnostic; not a complete experiment, application activation or independent content acceptance."
+}

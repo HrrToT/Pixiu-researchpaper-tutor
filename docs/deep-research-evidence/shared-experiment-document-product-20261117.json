@@ -1,0 +1,68 @@
+{
+  "scope": "Compiled shared experiment document, exact citations and product component/Java contracts; not a live browser-to-database acceptance",
+  "pythonRelated": {
+    "passed": 112,
+    "junit": "tmp/shared-document-publication-v1-20261117.xml"
+  },
+  "frontend": {
+    "passed": 43,
+    "failed": 0,
+    "report": "tmp/shared-document-ui-final-20261117.json",
+    "reportSha256": "271306a6f228f0eef5f5263e4dea3fd4da9b7d60388e2ddcffd53df14fd8b800",
+    "fixtureKind": "Synthetic, generated through real compiler/audit/publication code with mocked model verdicts"
+  },
+  "java": {
+    "passed": 56,
+    "failed": 0,
+    "reports": [
+      {
+        "class": "controller.TaskResearchArtifactOwnershipTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "4814878bd5d7a4acce9cc9092273a23a87a55508a923e76848174a3544bd2e95"
+      },
+      {
+        "class": "service.TaskResearchReadProjectionTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "d83dacaa4ffd07872855b2e3ba393d3b532a4568ab26f8e1cf2c0eb8fab0ce0e"
+      },
+      {
+        "class": "controller.TaskResearchV2ControllerTest",
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "f5edc169ede4d3455c076caaf77fcfa5948b86050e807d9e5ad9c004cac3fceb"
+      }
+    ],
+    "jdkMajor": 21,
+    "offline": true,
+    "database": "H2 in-memory test profile",
+    "agent": "Existing cached Byte Buddy preloaded at JVM startup; dynamic self-attach wait ended in prior test attempt"
+  },
+  "fixed": [
+    "Full document heading/table structure no longer wrapped as a suggestion list item",
+    "Source facts link directly to exact saved evidence identities",
+    "Local citation popup closes after source jump, matching external source behavior"
+  ],
+  "verified": [
+    "Edited document retains original text version, report/run identity and citation metadata",
+    "Existing Java publication ownership, deduplication and edited-copy preservation contracts"
+  ],
+  "modelRequests": 0,
+  "productionWrites": 0,
+  "scientificContentCredit": false,
+  "runtimeLoaded": false,
+  "fullOfflineRegressionPending": false,
+  "fullOfflineRegression": {
+    "passed": 9379,
+    "baselineRetained": 9375,
+    "sourceUnchanged": true,
+    "proof": "deep-research-evidence/shared-experiment-document-full-20261117.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "9f539cfe",
+  "promptVersion": "dr-v2.20261022.227",
+  "fullOffline": {
+    "passed": 3985,
+    "files": 219,
+    "warnings": 1,
+    "seconds": 244.23,
+    "log": "tmp/pytest-dr227-full.log",
+    "sha256": "c6f15bbb4658ef93a7bcf6b64c9ec9a654109b13c5ec2d02e4ebffff212ac058"
+  },
+  "focusedPassed": 98,
+  "focusedOverlap": true,
+  "newTests": 25,
+  "legacyScripts": 28,
+  "legacyActualFingerprintsMatched": 84,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "New-run producer decisions and exact declared-field pointers only. No scientific approval; old immutable requests/budgets/parsers preserved."
+}

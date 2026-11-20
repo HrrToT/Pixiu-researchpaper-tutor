@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v9",
+  "runId": "dr_run_9f11ba4844f25e0cad728279b8706475",
+  "promptVersion": "dr-v2.20261015.84",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "eligibility": "Retired development case; no independent holdout credit",
+  "reviewer": "Primary Codex reviewing original source excerpts, final claims and raw verifier responses; not an independent human study",
+  "modelCalls": 12,
+  "settledTokens": 59562,
+  "cost": null,
+  "findings": [
+    "The requested Hotdog row and Synthetic Blender caption are now acquired from the owned index; missing named-scene retrieval is fixed. Table column mapping remains unverified and gains no numeric approval.",
+    "Initial controls still say same renderer/resolution/optimizer/enhancement initialization without executable choices; these are correctly rejected.",
+    "Data is rejected partly because original view counts/IDs are unavailable, although the user asks for a prospective descriptive experiment. The plan/audit also demand author-specific benchmark details and a motivation explanation that are not the primary requested deliverable.",
+    "The proposed split needs an explicit operational nonempty precheck/stop rule; that must not be confused with inventing or requiring an original-paper view count.",
+    "A received malformed repair-verifier response activates the new retention behavior in a real run: seven prior checked claims are saved as partial, while both unchecked revisions are excluded. All 12 model calls are known and settled.",
+    "Finite baseline/matched recovery budgets and bounded descriptive analysis are present, but initialization/control completeness, overbroad causal disclaimers and duplicated protocol presentation remain quality failures."
+  ],
+  "scoresOutOfFive": {
+    "goal": 2,
+    "evidence": 3,
+    "conditions": 2,
+    "synthesis": 3,
+    "executability": 2,
+    "readability": 2
+  },
+  "report": "## 假设\n\n- 待验证假设：在LapisGS v2的hotdog场景中，训练同一增强层时继续优化旧层透明度与冻结旧层透明度相比，在PSNR和LPIPS上产生非零的配对差异。\n\n拟议假设与判断范围（尚未验证）\n\n假设陈述：\"在hotdog场景中，训练同一增强层时继续优化旧层透明度与冻结旧层透明度相比，在PSNR和LPIPS上产生非零的配对差异。\"\n\n关注效应：\n  - \"psnr_diff\"\n  - \"lpips_diff\"\n\n本假设用于探索：报告估计值和可提供的不确定性说明，但不做显著性或等价性判定。 [1](#research-evidence-ev_a06c6f0bbd20050100b947e2cc6e5407e03545f615913ceffab312eab0c9464c) [2](#research-evidence-ev_f0f48bb246770992b7ddacbbc7da838b889444988a3c7518d1b757138dd56c81)\n  适用条件：context：这是未执行的假设，仅针对hotdog单场景的描述性比较；不声称已有结果或保证新颖。\n\n## 分组表\n\n- 实验建议：两组单因素设计：对照组冻结旧层透明度，处理组继续优化旧层透明度；两组共享相同的增强层初始化、训练预算和评估视图。\n\n拟议分组（尚未执行）：\n- 因素：\"旧层透明度优化\"\n  - 对照组操作：\"冻结旧层透明度参数\"\n    - 参数：未设置\n  - 实验组操作：\"继续优化旧层透明度参数\"\n    - 参数：未设置 [1](#research-evidence-ev_a06c6f0bbd20050100b947e2cc6e5407e03545f615913ceffab312eab0c9464c)\n  适用条件：context：未执行；分组为提议方案。\n\n## 固定条件\n\n- 实验建议：预算：两组均训练增强层1000步；对照组冻结旧层透明度，处理组继续优化旧层透明度；恢复阶段两组预算匹配。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多1000优化步\n- 停止规则：\"达到最大步数即停止\"\n- 恢复预算：各组匹配\n  - 0组：1000优化步\n  - 1组：1000优化步 [1](#research-evidence-ev_a06c6f0bbd20050100b947e2cc6e5407e03545f615913ceffab312eab0c9464c)\n  适用条件：context：未执行；步数为提议值。\n\n## 执行步骤\n\n- 实验建议：执行步骤：先训练基础层得到共享初始化；再分别训练对照组和处理组的增强层，保存两组检查点；最后在相同评估视图上渲染并记录PSNR和LPIPS。 [1](#research-evidence-ev_a06c6f0bbd20050100b947e2cc6e5407e03545f615913ceffab312eab0c9464c)\n  适用条件：context：未执行；步骤为提议方案。\n\n## 指标\n\n- 实验建议：指标：PSNR（越高越好）和LPIPS（越低越好），在评估视图上逐视图计算后取平均。 [3](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：未执行；指标方向为通用定义。\n\n## 结果解释\n\n- 实验建议：分析：对每个指标计算处理组减对照组的配对差异，报告点差异和描述性边界；不进行推断性检验。\n\n拟议配置（尚未执行）：\n\n效应定义：\n\n- psnr_diff：处理组PSNR - 对照组PSNR\n- lpips_diff：处理组LPIPS - 对照组LPIPS\n\n不确定性：描述性分析，边界为报告点差异，不计算置信区间\n\n判定逻辑：描述性判断，边界为仅描述差异方向与大小，不判定显著性 [3](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：未执行；单场景仅支持描述性比较。\n\n## 风险\n\n- 实验建议：风险：单场景单种子无法排除场景特异性或随机波动；结果不能推广到其他场景或证明因果关系。 [3](#research-evidence-ev_fd65514c9d534ca9ca30f55eb9eb6295060557c828ea9c60d0308673b7abc3aa)\n  适用条件：context：未执行；局限性为设计固有。\n\n<details>\n<summary>还有 5 项未完成</summary>\n\n- 拟议实验可使用哪些现有数据集或论文子集？核对实际场景/样本名称或数量、训练与评估划分；沿用其他论文子集时回查该来源，不以整个数据集替代子集。：最终回答尚未完整回应这一问题\n- LapisGS v2在训练增强层时，旧层（已训练层）的透明度参数是否继续参与优化？其训练流程中增强层与旧层透明度的更新关系是什么？：最终回答尚未完整回应这一问题\n- LapisGS v2论文中hotdog场景的评估使用了哪些数据单元（图像数量、分辨率、视角数）和评价指标？：最终回答尚未完整回应这一问题\n- 补齐实验方案：固定条件：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。补充核验未完成；已保留此前核实的内容。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 全文片段\n\n> During the training of each level in LapisGS, we focus on optimizing the enhancement layer ∆G i while maintaining the parameters of the preceding layers {G 0 , ∆G 1 , . . . , ∆G i−1 } as fixed, except for their opacity values.\n\n**[2] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 第 4 页 · 全文片段\n\n> The decision to optimize only the opacity values of the previous layers, rather than other parameters, is based on the balance between efficient layer integration and visual coherence.\n\n**[3] LapisGS: Layered Progressive 3D Gaussian Splatting for Adaptive Streaming** · 全文片段\n\n> Table caption: Table 6 . Per-scene size and quality difference in percentage of LapisGS on synthetic Blender dataset [18] at different quality levels, compared to the Freeze method.SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓ ∆ SSIM ↑ ∆ LPIPS ↓ ∆ Size ↓\n> Table row 1: Scene ∆ Lego 0.21% [cols=2, rows=1] | L 1 -16.43% | -113.78% | 0.65% | L 2 -40.72% | -121.51% | 1.19% | L 3 43.6% | -232.51%\n> Table row 2: Hotdog | 0.25% | -7.87% | -128.50% | 0.31% | -9.39% | -62.31% | 0.18% | 8.85% | -87.35%\n\n</details>",
+  "rawPayloadSha256": "691b5f9f675dc1f8dd6fc9ead8d666d375de637fe5e54a7a5fce5b8c80d6f17d",
+  "rawLedgerSha256": "10669f80ef653441042c307564c1865ecb2313b6cc77609c6866d698f443d810",
+  "rawArchive": "tmp/dr-acceptance-receipts/H5R-v9.payload.json",
+  "boundary": "One explicit submission, no retry. Machine outcome and literal support do not substitute for scientific/content acceptance; historical responses are not rewritten."
+}

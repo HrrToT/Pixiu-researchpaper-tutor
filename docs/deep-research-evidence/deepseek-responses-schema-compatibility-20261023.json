@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-23",
+  "provider": "deepseek",
+  "capability": "Responses API accepts JSON Schema format",
+  "syntheticOnly": true,
+  "paperContentSent": false,
+  "requestsSubmitted": 1,
+  "callsSettled": 1,
+  "tokens": {
+    "total_tokens": 93,
+    "input_tokens": 83,
+    "output_tokens": 10
+  },
+  "result": {
+    "shape": [
+      65536,
+      8
+    ]
+  },
+  "schemaConformingInThisBenignExample": true,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "preflightAttempt": {
+    "requestsSubmitted": 0,
+    "reason": "normal pool reserved; corrected isolated reserve-pool admission before first dispatch"
+  },
+  "rawResultPath": "tmp/deepseek-schema-probe/result.json",
+  "rawResultSha256": "4a79717701e863c35e5f3bd5c42934ee1c0866049aa078fefaa86c79869e63de",
+  "ledgerPath": "tmp/deepseek-schema-probe/ledger.sqlite3",
+  "ledgerSha256": "264121f46cce406a41d8d1c3d03f6af8c82982199020370b7108e090a34816fb",
+  "documentation": [
+    "https://api-docs.deepseek.com/api/create-response/",
+    "https://api-docs.deepseek.com/guides/json_mode/"
+  ],
+  "boundary": "One benign compatibility example verifies endpoint acceptance and this conforming output only. Does not prove general schema enforcement, paper content quality or new planning adapter implementation."
+}

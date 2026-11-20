@@ -1,0 +1,76 @@
+{
+  "sourceCase": "X5H-v1",
+  "sourcePayloadSha256": "0431b154a0044a2a9a0ebba97df0cbf581ef298186f1a285b00010c61532dcf2",
+  "candidateContract": {
+    "exactDiscoveryContractVersion": 2,
+    "promptVersion": "dr-v2.20261105.383"
+  },
+  "requestedSourceRevisions": {
+    "arxiv:2406.01467": [
+      "arxiv:2406.01467v1"
+    ]
+  },
+  "candidateResult": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "requested_version_mismatch",
+        "requestedSourceRevisions": {
+          "arxiv:2406.01467": [
+            "arxiv:2406.01467v1"
+          ]
+        },
+        "observedSourceRevisions": [
+          {
+            "evidenceId": "ev_6fa979f8982f24ee21f79bcc10b6a3cea39cf48fbd84248796a34dfd66b2bb6f",
+            "sourceVersionId": "arxiv:2406.01467v2"
+          }
+        ],
+        "detail": "本条引用使用了与用户明确指定修订不一致的论文版本；不能改写来源标签或改kind绕过，需取得指定版本的原文。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "requested_version_mismatch",
+        "requestedSourceRevisions": {
+          "arxiv:2406.01467": [
+            "arxiv:2406.01467v1"
+          ]
+        },
+        "observedSourceRevisions": [
+          {
+            "evidenceId": "ev_c51d55dccaf571cdf354f219e2c0d00e8efa6627b48b1c654c743e1a8bed182a",
+            "sourceVersionId": "arxiv:2406.01467v2"
+          },
+          {
+            "evidenceId": "ev_6fa979f8982f24ee21f79bcc10b6a3cea39cf48fbd84248796a34dfd66b2bb6f",
+            "sourceVersionId": "arxiv:2406.01467v2"
+          }
+        ],
+        "detail": "本条引用使用了与用户明确指定修订不一致的论文版本；不能改写来源标签或改kind绕过，需取得指定版本的原文。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "requested_version_mismatch",
+        "requestedSourceRevisions": {
+          "arxiv:2406.01467": [
+            "arxiv:2406.01467v1"
+          ]
+        },
+        "observedSourceRevisions": [
+          {
+            "evidenceId": "ev_0622d2f00f0807cb3d5cf07264264a50ffd63644674769066a774e89cdafb2cb",
+            "sourceVersionId": "arxiv:2406.01467v2"
+          }
+        ],
+        "detail": "本条引用使用了与用户明确指定修订不一致的论文版本；不能改写来源标签或改kind绕过，需取得指定版本的原文。"
+      }
+    ]
+  },
+  "semanticCallbacks": 0,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalRecordUnchanged": true,
+  "oldRunNotRejudged": true,
+  "independentCredit": 0
+}

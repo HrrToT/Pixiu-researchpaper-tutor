@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-20",
+  "case": "H2F-v9",
+  "sourceCommit": "6a7b8105",
+  "runId": "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+  "actualSynthesisFingerprintMatched": true,
+  "inputBytes": 23953,
+  "evidenceSupplied": 20,
+  "premiseAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+      "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+      "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+      "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+      "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+      "ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_18341071290c2c9fc9d7c052d23743f1aa449b8990d04fc48b716ba63fb43cc8",
+      "ev_5dac12b0ecea4362fadbea06047abcf612755e45a38f83d1532abd13f5680dcf",
+      "ev_40d29ebaa60fd7e863e38762f5f8b32309617f1a0a79bdb579b426a9f6cdf70b",
+      "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd",
+      "ev_22d5ddcf5076557bfebe52c39dfd5019553e59271b70a5adbba18bbe7bcf9c1b",
+      "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654",
+      "ev_3c20ff62598e243c2c6a15320e28c6cdfb1609f4d4adeae2b88d40cbd9fc823d",
+      "ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0",
+      "ev_6e995bb58ce52876d8e2cd8446bf5add400e4defc3b850cdc75a4a07c1a0c2eb",
+      "ev_536c387dd86100e31328c11f25f627d50b599bd62089909369afee1e3f00dbf2"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+      "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+      "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+      "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+      "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+      "ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_18341071290c2c9fc9d7c052d23743f1aa449b8990d04fc48b716ba63fb43cc8",
+      "ev_5dac12b0ecea4362fadbea06047abcf612755e45a38f83d1532abd13f5680dcf",
+      "ev_40d29ebaa60fd7e863e38762f5f8b32309617f1a0a79bdb579b426a9f6cdf70b",
+      "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd",
+      "ev_22d5ddcf5076557bfebe52c39dfd5019553e59271b70a5adbba18bbe7bcf9c1b",
+      "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+      "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed",
+      "ev_c3b6e83df4b17b21cd7fd3592d655492af22aeb570eb01b557d0338e9cfcaf31",
+      "ev_aded98ac12364573c93f606baab45ff4098ebcacab3e67293f00d8d229448654",
+      "ev_3c20ff62598e243c2c6a15320e28c6cdfb1609f4d4adeae2b88d40cbd9fc823d",
+      "ev_26ff8ade007b890b8a9f3d2952389d5b7703f3c6f556f471cbc86ebcd3e6c8e0",
+      "ev_6e995bb58ce52876d8e2cd8446bf5add400e4defc3b850cdc75a4a07c1a0c2eb",
+      "ev_536c387dd86100e31328c11f25f627d50b599bd62089909369afee1e3f00dbf2"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23953,
+    "fixedInputBytes": 13018,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "wire": [
+    {
+      "evidenceId": "E1",
+      "quote": "3DGStream constructs photo-realistic FVV streams from multi-view video streams on-the-fly using a per-frame training paradigm.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E2",
+      "quote": "The input to our method is a set of images of a monocular dynamic scene, together with the time label and the corresponding camera poses calibrated by SfM[37]which also produces a sparse point cloud.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E3",
+      "quote": "We initiate the process by training 3DGs[26]at timestep 0.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E4",
+      "quote": "To model the dynamic 3D Gaussians that vary over time, we decouple the 3D Gaussians and the deformation field.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E5",
+      "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E6",
+      "quote": "Specifically, we first train the initial 3DGs on the multi-view frames at timestep 0.\nThen, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.(2)Then in the Stage 2, we use an adaptive 3DG addition strategy to handle emerging objects by spawning frame-specific additional 3DGs near these objects and optimize them along with periodic splitting and pruning.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E7",
+      "quote": "After the two-stage pipeline concludes, we use both the 3DGs transformed by the NTC and the additional 3DGs for rendering at the current timestep i, with only the former carrying over for initialization of the subsequent timestep.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E8",
+      "quote": "For training, we conducted training for a total of 40k iterations.\nDuring the initial 3k iterations, we solely trained the 3D Gaussians to attain relatively stable positions and shapes.\nSubsequently, we jointly train the 3D Gaussians and the deformation field.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E9",
+      "quote": "For optimization, a single Adam optimizer[17]is used but with a different learning rate for each component: the learning rate of 3D Gaussians is exactly the same as the official implementation, while the learning rate of the deformation network undergoes exponential decay, ranging from 8e-4 to 1.6e-6.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E10",
+      "quote": "Table row 1: Category Method [cols=2, rows=1] | PSNR↑ (dB) | Storage↓ (MB) | Train↓ Render↑ Streamable (mins) (FPS) [cols=3, rows=1]",
+      "source": "P1",
+      "resultRoleHintOnly": "quantitative_comparison",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E11",
+      "quote": "The results of the experiments demonstrate that our method is capable of real-time rendering on a 3090 GPU when the number of point clouds is less than 250k.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E12",
+      "quote": "The excessively high number of 3D Gaussians in HyperNeRF reflects the critical importance of the camera pose accuracy for the convergence of our method.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E13",
+      "quote": "For subsequent timesteps, we employ the previous timestep's 3DGs as an initialization and pass them to a two-stage pipeline.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E14",
+      "quote": "The deformation field takes the positions of the 3D Gaussians and the current time t as inputs, outputting δx, δr, and δs.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E15",
+      "quote": "The 3D Gaussians and deformation network are optimized jointly through the fast backward pass by tracking accumulated α values, together with the adaptive control of the Gaussian density.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E16",
+      "quote": "Experimental results show that after 30k training iterations, the shape of the 3D Gaussians stabilizes, as does the canonical space, which indirectly proves the efficacy of our design.",
+      "source": "P2",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E17",
+      "quote": "where µ denotes the mean of the input 3DG. We transform the 3DGs based on dµ and dq. Specifically, the following parameters of the transformed 3DGs are given as:\n• Mean: µ ′ = µ + dµ, where µ ′ is the new mean and + represents vector addition. • Rotation: q ′ = norm(q) × norm(dq), where q ′ is the new roation, × indicates quaternion multiplication and norm denotes normalization.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E18",
+      "quote": "In Stage 1, we transform the 3DGs from the previous frame by NTC and then render with them. The parameters of the NTC is optimized by the loss between the rendered image and the ground truth.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E19",
+      "quote": "This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    },
+    {
+      "evidenceId": "E20",
+      "quote": "Given multi-resolution hash encoding coupled with MLP, our NTC is formalized as:",
+      "source": "P1",
+      "resultRoleHintOnly": "unspecified",
+      "tableDataOmitted": false
+    }
+  ],
+  "claims": [
+    {
+      "claimId": "c1",
+      "text": "3DGStream v4输入多视角视频流，按逐帧在线训练；时间变化由神经变换缓存（NTC）预测3D高斯平移和旋转偏移。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+        "ev_66ed9db0a929c67a7f2044d80c26750fd5878ccae70642a3c5bbe41afa784531",
+        "ev_54b28714074fbc667fdd101b613bafa8fddb849b73df2ac070b7845b8bd8ce90",
+        "ev_ac78892b03667f013a7ab023f8ee141856e6e6b1e1d412266f3faa1d17ef5c8b",
+        "ev_3c20ff62598e243c2c6a15320e28c6cdfb1609f4d4adeae2b88d40cbd9fc823d",
+        "ev_6e995bb58ce52876d8e2cd8446bf5add400e4defc3b850cdc75a4a07c1a0c2eb"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1",
+        "ob_2",
+        "ob_3"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c2",
+      "text": "Deformable 3D Gaussians v2输入单目动态场景图像、时间标签和SfM相机位姿；时间变化由形变场输出位置/旋转/缩放偏移；训练总40k迭代，初始3k仅训3D高斯，之后联合训形变场，可推断为整体离线训练。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+        "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+        "ev_48631b8d24cdb007f4bb3a1a0cfd7dd02c194626d71880b8eb6a3da38dff7a86",
+        "ev_18341071290c2c9fc9d7c052d23743f1aa449b8990d04fc48b716ba63fb43cc8",
+        "ev_d5b7e7b5bea0edc9a1f7941ef30c58f08952ae6e2e1ed3edb034af0f2ffcc7ed"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1",
+        "ob_2",
+        "ob_3"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c3",
+      "text": "两者输入模态不同（多视图 vs 单目），时间表示分别为NTC变换和形变场偏移，训练策略逐帧在线 vs 整体离线。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_29e325e167454a4f9c1a78a962a3a447163b5e5d804acd3b761ce733857152cd",
+        "ev_e28ec6485011e1fc99874afce43b3041e486be74d12db4b3de4cb80e586f79fb",
+        "ev_6eedea527444f94603173bcdab681b0ed1dc3aba84873cbc4f6a19a9eccb2322",
+        "ev_18341071290c2c9fc9d7c052d23743f1aa449b8990d04fc48b716ba63fb43cc8",
+        "ev_3c20ff62598e243c2c6a15320e28c6cdfb1609f4d4adeae2b88d40cbd9fc823d"
+      ],
+      "conditions": {},
+      "obligationIds": [],
+      "detailLevel": "concise",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c4",
+      "text": "P1的FPS表未提供硬件与点云条件，P2的FPS实验指定3090 GPU且点云<250k；现有证据未建立同条件对齐，故不能凭各自FPS做同条件速度排名。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_40d29ebaa60fd7e863e38762f5f8b32309617f1a0a79bdb579b426a9f6cdf70b",
+        "ev_4954c60dac32eec0145fc1e71da3fa818a9ab7f9a0fadd72de0521ff1f7568fd"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_4"
+      ],
+      "detailLevel": "concise",
+      "tableBindings": []
+    }
+  ],
+  "boundary": "Exact actual synthesis request reconstruction and supplied-premise inventory; no new Provider calls or content approval."
+}

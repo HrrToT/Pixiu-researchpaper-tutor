@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v27",
+  "sourceCommit": "9587f6bb",
+  "status": "failed",
+  "errorCode": "invalid_experiment_planning_response",
+  "finalReportGenerated": false,
+  "rawCompactBytes": 3980,
+  "originalPlanCap": 4000,
+  "allSourceRefsKnownE": true,
+  "actualEnglishPrivateOutput": true,
+  "observedBlocks": [
+    "Stage1_NTC_MLP",
+    "Transformed_3DGs",
+    "Added_3DGs"
+  ],
+  "phaseUnits": [
+    "steps",
+    "epochs",
+    "epochs",
+    "epochs"
+  ],
+  "phaseTrainablesTypes": [
+    "list",
+    "list",
+    "list",
+    "list"
+  ],
+  "observedStop": "Private contract4 expects string trainables and canonical optimizer_steps; raw response has name lists and steps. Response is preserved and old failure remains unchanged.",
+  "contentCautions": [
+    "Initial frame acquisition is described through already trained iteration15000 weights; this does not establish a released checkpoint or complete fresh initialization.",
+    "Proposed step/epoch-to-time estimates are not measured conversion rates and cannot alone prove a hard whole-run experimental cap.",
+    "Explicit layer/table names still require compatible input axes,normalization,initialization and training/evaluation isolation."
+  ],
+  "scientificApproval": false,
+  "providerCallsByDiagnosis": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "One archived observation; English brevity and known citations are not a valid executable experiment or broad quality claim."
+}

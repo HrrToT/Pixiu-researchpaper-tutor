@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v31",
+  "sourceCommit": "8a87a2ff",
+  "actualPlanningFingerprintMatched": true,
+  "actualPlanningInputBytes": 25674,
+  "actualRawResponseBytes": 5173,
+  "newColumnPlanningInputBytes": 25674,
+  "maxInputBytes": 32000,
+  "originalQuestionEvidenceSourceTablesRequirementsIdentical": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Actual ready6-shared-plan/private-transport12 request reconstructed exactly. No new planning body is generated. Exact replay of the archived version6/native12 request; not validation of version6/native12."
+}

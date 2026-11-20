@@ -1,0 +1,38 @@
+{
+  "sourceReceiptSha256": "1082d609e9f260a007de66ebe87b3795f6955d8700ba18e994f7e61e37368769",
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "scientificApproval": false,
+  "results": [
+    {
+      "stage": "P1_joint",
+      "inputBytes": 31768,
+      "maxInputBytes": 32000,
+      "evidenceRows": 20,
+      "requiredBundles": 21,
+      "missingBundles": 0,
+      "tableCatalogs": 1,
+      "tableCells": 40,
+      "targetCount": 7,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    },
+    {
+      "stage": "P2_joint",
+      "inputBytes": 31922,
+      "maxInputBytes": 32000,
+      "evidenceRows": 20,
+      "requiredBundles": 21,
+      "missingBundles": 0,
+      "tableCatalogs": 2,
+      "tableCells": 90,
+      "targetCount": 7,
+      "quoteStringsUnchanged": true,
+      "sourcePermissionsExact": true,
+      "scientificApproval": false
+    }
+  ],
+  "boundary": "Offline monkeypatched input prototypes only. Candidate retention moved before per-stage fitting. No production change, model output, timing estimate, end-to-end cost fit or content acceptance."
+}

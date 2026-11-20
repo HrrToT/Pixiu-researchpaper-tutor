@@ -1,0 +1,53 @@
+{
+  "candidateCommit": "c93a928d6",
+  "stage": "P1",
+  "originalCase": "D2-BASELINE-COMPRESSION-v23",
+  "model": "deepseek-v4-pro",
+  "trials": [
+    {
+      "case": "comparison-v11-P1-isolated",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 6619,
+        "output_tokens": 824,
+        "total_tokens": 7443,
+        "estimated": false
+      },
+      "drafts": 4,
+      "tableReferenceUses": 14,
+      "evidencePermissionsMatched": true,
+      "peerPaperNamed": false,
+      "scopeRead": "same saved v23 P1 raw evidence and wire targets",
+      "singleModelCall": true,
+      "savedRecordSHA256": {
+        "intent": "9ecbb46936e2e1c488b65e935be1619e04bb8e60bb7e7515d4042301c892547c",
+        "request": "367155ea71440aa909f6c7fbc0b47e010b1d38c0e53e637746e6d2ad9c71a861",
+        "response": "479c616e3a6ef9f6d286ceeaaa5c0041275d1221a68a9389abc70c98e88dde46"
+      }
+    },
+    {
+      "case": "comparison-v11-P1-assigned-example",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 6725,
+        "output_tokens": 557,
+        "total_tokens": 7282,
+        "estimated": false
+      },
+      "drafts": 4,
+      "tableReferenceUses": 0,
+      "evidencePermissionsMatched": true,
+      "peerPaperNamed": false,
+      "scopeRead": "same saved v23 P1 raw evidence and wire targets",
+      "singleModelCall": true,
+      "savedRecordSHA256": {
+        "intent": "9ab9a5281df1b586189f52af7b0fbb01500148735e9a4c78ebb259451b7bf086",
+        "request": "3fff32a2fa41e583dcc13b1c3e48c6bf97e91cd2e10d76499f2263afb5f04d42",
+        "response": "7c5bd11faa96bd34e2c5c12490338d3540b941b16e3f5267d3f33b8c49e6301c"
+      }
+    }
+  ],
+  "runtimeWrites": 0,
+  "retryCount": 0,
+  "acceptanceBoundary": "One generated paper-column, still unverified. No joint report, factual review, publication, or scientific acceptance."
+}

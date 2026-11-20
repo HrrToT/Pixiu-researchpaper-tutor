@@ -1,0 +1,101 @@
+{
+  "case": "AD1N-v29",
+  "runId": "dr_run_927ca3b673e059519edc3442cf7e2a96",
+  "sourceCommit": "0fddb52287bf07170cd95d451138f32cedbf84a9",
+  "promptVersion": "dr-v2.20261114.444",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "actualModelCalls": 13,
+  "allCallsSettled": true,
+  "tokens": 69776,
+  "elapsedSeconds": 174.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "actualReferenceSegments": 9,
+  "reviewDecisions": [
+    {
+      "node": "verify",
+      "claimId": "c1",
+      "supported": false
+    },
+    {
+      "node": "verify",
+      "claimId": "c2",
+      "supported": true
+    },
+    {
+      "node": "verify_repair",
+      "claimId": "c1",
+      "supported": true
+    }
+  ],
+  "automaticAcceptedClaims": 2,
+  "automaticRejectedClaims": 0,
+  "answerCoverageStatus": "checked",
+  "answerGaps": [
+    {
+      "obligationId": "ob_33995ad90eb136e77fd2adcf",
+      "stage": "answer",
+      "missingAspects": [
+        "偏差校正如何参与参数更新"
+      ]
+    }
+  ],
+  "repairActuallyReached": true,
+  "focusedVerifiedTextRepairReached": false,
+  "researchAssessmentStatus": "unchecked",
+  "textAndConditionsCharacters": 239,
+  "visibleCharacters": 260,
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 27,
+    "ledgerRows": 9501,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "feedbackTruncation": {
+    "fullReasonCharacters": 695,
+    "repairDetailCharacters": 400,
+    "detailIsExactFirst400": true,
+    "specificObjectionStartsAt": 417,
+    "counterexampleMissingFromRepairDetail": true,
+    "disputedWordingRetained": true,
+    "boundary": "Initial review rejects the from-zero factor clause using first applied step t=1; the 400-character prefix cuts off that objection. The repair retains the disputed clause and later review differs, so the objection was not proven resolved. No scientific acceptance is granted."
+  },
+  "findings": [
+    "New field references were used by real review and did not produce the previous excerpt-binding failure.",
+    "Final automated factual checks accepted2claims, but parameter-update explanation remains incomplete and research premises remain unchecked. This is partial, not content acceptance.",
+    "A concrete initial rejection was cut out of repair detail by the existing400-character truncation; repair barely changed the draft and retained the disputed from-zero factor wording. Full review feedback needs a versioned lossless path."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v29.json": "d36f0d2c9f5c84051e8107adcf03b229696795b33a12a69b02df89075327eb61",
+    "tmp\\dr-acceptance-receipts\\AD1N-v29.payload.json": "6df28db7e5b08ade49c8bb171d65a9241e513b2ce8f5a363a3dd9b353381d3fb",
+    "tmp\\dr-acceptance-receipts\\AD1N-v29.calls.json": "5a9133bfa1d18ccb1f0eb8d631f27a6bab91b593f4f02b24329a1d66a37d7b5a",
+    "tmp\\dr-acceptance-receipts\\AD1N-v29.preservation.json": "c367105bdcb73043fa8ac9b634dc0c2e20b81437cec3f6def4952bfebe21185f"
+  }
+}

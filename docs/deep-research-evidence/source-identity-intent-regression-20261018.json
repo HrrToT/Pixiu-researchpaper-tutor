@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "d64d6704",
+  "promptVersion": "dr-v2.20261018.178",
+  "offline": {"passed": 2878, "warnings": 1, "seconds": 194.79, "log": "tmp/pytest-dr178-full.log"},
+  "changes": [
+    "Source precision4 ranks owned input/temporal/training operations without requiring both compared paper names in a paragraph. Exact predecessor, ownership, index version, source identity and slot cap remain.",
+    "Extraction priority5 balances the actual requested operation per paper. No query context is stripped, source text rewritten or factual support auto-approved.",
+    "Original byte-verified local PDF first-page revision metadata flows through acquire/read/extract to synthesis/repair/verification. Technical material IDs remain unchanged; revision is identity metadata, not body evidence.",
+    "Audience6 permits only parameter identifiers established in each own literal citation to remain symbols; uncited identifiers and measured quantities still reject. Journal records applied/rejected edits and the reason, without retries."
+  ],
+  "replay": "docs/deep-research-evidence/source-identity-intent-legacy-replay-20261018.json",
+  "actualIndexProbe": "docs/deep-research-evidence/owned-method-intent-selection-20261018.json",
+  "boundary": "Eight archived actual Provider fingerprints match. Current owned-index probe selects formerly missing operations, but real extraction/content acceptance still needs bounded cases. No old score upgraded; this commit is not yet separately loaded."
+}

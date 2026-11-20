@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-27",
+  "caseId": "D1-v33",
+  "runId": "dr_run_bc3d0a2c45075c1bba931ce56c0d3d8a",
+  "promptVersion": "dr-v2.20261026.305",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 55912,
+  "elapsedSeconds": 197.211,
+  "cost": null,
+  "sourceCommit": "749c018c",
+  "indexVersion": "ebe6b0693a86127a",
+  "oldDataPreservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 18,
+    "ledgerRows": 7308,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647"
+    ]
+  },
+  "readChunks": [
+    26,
+    35,
+    37,
+    38,
+    39,
+    52
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "结论范围或必要条件尚未核实：scope_premises_not_bound"
+    }
+  ],
+  "repairedRejected": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "结论范围或必要条件尚未核实：scope_premises_not_bound",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "断言主体为 LightGaussian 的评估设置与压缩设置，证据 E1 和 E2 支持这些设置（E1 提到剪枝、SH 压缩、向量量化码本大小 8192；E2 表格显示 Mip-NeRF 360 和 Tank&Temple 数据集）。但断言进一步声称这些引用不足以证明在其他数据集或更高压缩比下压缩后图像质量接近原始 3DGS。证据仅报告了在特定数据集和压缩设置下的结果，未提供其他数据集或更高压缩比下的测试，因此无法从证据中推断出这些未验证范围的结论。该断言将证据的有限范围误认为对未验证范围的否定性结论，属于过度推断。"
+      }
+    }
+  ],
+  "acceptedClaimCount": 1,
+  "boundary": "Development content failure, not independent acceptance. No reading-priority failure established: all acquired sources were read. Incorrect reviewer reasoning does not automatically approve the rejected claim.",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.json",
+      "sha256": "857341af683542ca4e8ddb038ad625dfeddff4db64ed981d84bc9a5d2eb64bd7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.plan.json",
+      "sha256": "a0b5bd1a554c1d33ecba7031b62c2ed3f0a6445a7f32ef63bd51b2fc4919d993"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.result.json",
+      "sha256": "2484aea1fd8a4b381f822ef7b2232f3233ac817dce2aad23b93c50b348be7910"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.payload.json",
+      "sha256": "b54163d711227045e9abc1c4ade2456bd3aaa31ab65705c62141be2d62fac849"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.calls.json",
+      "sha256": "76341445dabb207edff6c8c7280773653145d76de34e71f50a68a3c2bae5aadf"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v33.preservation.json",
+      "sha256": "9b0ab3979800902ed3fcb432e20092b6bc2be2cfed6ab62617f0624d9d0491e7"
+    }
+  ]
+}

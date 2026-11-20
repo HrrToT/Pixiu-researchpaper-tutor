@@ -1,0 +1,39 @@
+{
+  "scope": "Full review input capacity with all saved public premises and a handwritten interface plan; NOT real generated/scientifically accepted content",
+  "inputArtifacts": {
+    "run": {
+      "path": "tmp\\dr-acceptance-receipts\\D3-VQ-FACTORIAL-v6.payload.json",
+      "sha256": "6e39c9f26c8bd49c6de0274820d00b59b63060060179509bb925c1e0199b16a1"
+    },
+    "input": {
+      "path": "tmp\\initialization-readable-483-public-review-20261116\\reviewed-request.json",
+      "sha256": "ed4e233eeb13dca7da14c685d0afc39a40e38519b23b309cb9c832743a98b7cc"
+    },
+    "fixture": {
+      "path": "ai-service-python\\tests\\test_deep_research_shared_experiment_plan.py",
+      "sha256": "c6c7de6cbd8836691f0d8270bc9bc2782c2f93ae341c6853f11f14dbfcae215d"
+    }
+  },
+  "syntheticProposalOnly": true,
+  "syntheticProposalBytes": 7207,
+  "all17OriginalEvidenceRowsAndContextsExact": true,
+  "questionRequirementsSourcesTablesExact": true,
+  "inputBytes": 31110,
+  "limitBytes": 32000,
+  "headroomBytes": 890,
+  "reviewTargets": 18,
+  "hardPrecheckIssues": [],
+  "trackedInputAdmissionPassed": true,
+  "requestDigestMatchesTrackedInvoker": true,
+  "estimatedReservation": {
+    "modelCalls": 1,
+    "tokens": 36230
+  },
+  "noRealGeneratedPlanFitClaim": true,
+  "wholeRunTokensAndTimeFitEstablished": false,
+  "modelCalls": 0,
+  "budgetReservations": 0,
+  "applicationWrites": 0,
+  "scientificCredit": 0,
+  "originalArtifactsUnchanged": true
+}

@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "caseId": "D2-BASELINE-COMPRESSION-v5",
+  "runId": "dr_run_67b4e3df18b95a4baccad52c85b5f55d",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "modelCalls": 11,
+    "maxModelCalls": 18,
+    "tokens": 56331,
+    "maxTokens": 100000,
+    "elapsedSeconds": 323.0
+  },
+  "modelCalls": [
+    {
+      "node": "resolve_brief",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:30:20Z",
+      "completedAt": "2026-11-17T09:30:22Z",
+      "durationSeconds": 2.0
+    },
+    {
+      "node": "plan",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:30:23Z",
+      "completedAt": "2026-11-17T09:30:29Z",
+      "durationSeconds": 6.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:31:05Z",
+      "completedAt": "2026-11-17T09:31:06Z",
+      "durationSeconds": 1.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:31:30Z",
+      "completedAt": "2026-11-17T09:31:31Z",
+      "durationSeconds": 1.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:31:54Z",
+      "completedAt": "2026-11-17T09:31:55Z",
+      "durationSeconds": 1.0
+    },
+    {
+      "node": "assess_relevance",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:32:09Z",
+      "completedAt": "2026-11-17T09:32:10Z",
+      "durationSeconds": 1.0
+    },
+    {
+      "node": "synthesize",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:32:12Z",
+      "completedAt": "2026-11-17T09:32:43Z",
+      "durationSeconds": 31.0
+    },
+    {
+      "node": "verify_advice",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:32:45Z",
+      "completedAt": "2026-11-17T09:32:50Z",
+      "durationSeconds": 5.0
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:32:52Z",
+      "completedAt": "2026-11-17T09:33:38Z",
+      "durationSeconds": 46.0
+    },
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:33:39Z",
+      "completedAt": "2026-11-17T09:35:23Z",
+      "durationSeconds": 104.0
+    },
+    {
+      "node": "verify_answer_coverage",
+      "status": "succeeded",
+      "startedAt": "2026-11-17T09:35:24Z",
+      "completedAt": "2026-11-17T09:35:36Z",
+      "durationSeconds": 12.0
+    }
+  ],
+  "acceptedClaimCount": 1,
+  "rejectedClaims": [
+    {
+      "claimId": "cmp_3_0",
+      "reason": "numeric_mismatch",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_conclusion_0",
+      "reason": "absence_not_established",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_0_0",
+      "reason": "semantic_unresolved",
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "cmp_1_0",
+      "reason": "semantic_unresolved",
+      "executionState": null
+    },
+    {
+      "claimId": "cmp_2_0",
+      "reason": "semantic_unresolved",
+      "executionState": "not_started"
+    }
+  ],
+  "coverageStatus": "invalid_response",
+  "repairStatus": "skipped_time",
+  "repairDraftCount": 0,
+  "contentAccepted": false,
+  "interpretation": [
+    "completed is lifecycle status; partial is not complete scientific acceptance",
+    "proposal verification label is not evidence of bypass: verify_advice actually executed",
+    "call duration alone does not establish remote queue or reasoning cause"
+  ],
+  "privateArtifacts": "raw source, prompts, responses and full local receipts are not published"
+}

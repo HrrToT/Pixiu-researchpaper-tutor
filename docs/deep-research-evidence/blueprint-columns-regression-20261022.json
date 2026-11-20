@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "138f0f75",
+  "promptVersion": "dr-v2.20261022.233",
+  "experimentPlanEncodingContractVersion": 4,
+  "fullOffline": {
+    "passed": 4128,
+    "files": 225,
+    "warnings": 1,
+    "seconds": 205.02,
+    "log": "tmp/pytest-dr233-complete-native.log",
+    "sha256": "cfd1d96890795105dc9bddba24d294dc3479f4fc782c55c85ab7a79a6ad20503"
+  },
+  "newTests": 17,
+  "newTestsAcrossTurn": 61,
+  "focusedPassed": 144,
+  "focusedOverlap": true,
+  "legacyScripts": 33,
+  "legacyPhysicalFingerprintsMatched": 97,
+  "providerCalls": 0,
+  "productionWritesByTests": 0,
+  "independentCredit": 0,
+  "boundary": "Exact column expansion only; original source aliases, invalid rows/nesting/types and scientific gates remain checked. Raw compact response AND actual tuple remain<=4000bytes; expanded canonical state is internal only. No global cap increase or implicit source mapping."
+}

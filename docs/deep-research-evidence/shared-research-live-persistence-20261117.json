@@ -1,0 +1,94 @@
+{
+  "boundary": "Synthetic upstream + actual Java publication/H2/browser; no scientific or model quality credit",
+  "runId": "research-document-live-20261117-v4",
+  "productionWrites": 0,
+  "modelRequests": 0,
+  "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+  "browserPassed": true,
+  "restartPersistenceVerified": true,
+  "taskCount": 1,
+  "exitCode": 0,
+  "ownedJavaStopped": true,
+  "fixtureUpstreamCalls": [
+    {
+      "method": "POST",
+      "path": "/api/research-tasks",
+      "bodyKeys": [
+        "budgetProfile",
+        "contractVersion",
+        "deferStart",
+        "engineVersion",
+        "expectedTaskRevision",
+        "focusPaperIds",
+        "materialSelection",
+        "materialSnapshot",
+        "operationKey",
+        "outputKind",
+        "question",
+        "requestId",
+        "sourcePolicy",
+        "workspaceTaskId"
+      ],
+      "contentLength": null,
+      "transferEncoding": "chunked"
+    },
+    {
+      "method": "POST",
+      "path": "/api/research-tasks/dr_run_synthetic_shared_report/resume",
+      "bodyKeys": [
+        "expectedRunRevision",
+        "requestId"
+      ],
+      "contentLength": null,
+      "transferEncoding": "chunked"
+    },
+    {
+      "method": "GET",
+      "path": "/api/research-tasks/dr_run_synthetic_shared_report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-operations/isolated-shared-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/research-tasks/capabilities"
+    },
+    {
+      "method": "GET",
+      "path": "/api/research-tasks/dr_run_synthetic_shared_report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-operations/isolated-shared-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/research-tasks/capabilities"
+    },
+    {
+      "method": "GET",
+      "path": "/api/research-tasks/dr_run_synthetic_shared_report"
+    }
+  ],
+  "allOwnedPortsClosed": true,
+  "visualReview": {
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "document": "deep-research-evidence/shared-research-live-published-document.png",
+    "citation": "deep-research-evidence/shared-research-live-exact-evidence.png",
+    "reviewed": true
+  },
+  "browserReportSha256": "3682f5d1691fca7d060e0e08d3569e297403eddc6b43dffe5efbcbd295b0ff25",
+  "driverSha256": "5ac2dda144549e9c8282c6a355e04261cf5a8bea90c0475b0de99960d7bec442",
+  "testSha256": "892acd756ea4ef490fdfcd8d66016f5fdf6800cf4a83aed5bea5d11f5c974b0b",
+  "notEstablished": [
+    "Real model content quality",
+    "External discovery or fulltext acquisition",
+    "Full source PDF opening",
+    "Paid follow-up execution",
+    "Production rollout or production fault rollback"
+  ]
+}

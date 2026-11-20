@@ -1,0 +1,20 @@
+{
+  "providerCalls": 0,
+  "archivedRawRepliesReplayed": true,
+  "initialGenerationPromptByteIdenticalToFormat2": true,
+  "oldEditableCharacters": 79,
+  "newSharedEditableCharacters": 292,
+  "humanLimit": 300,
+  "sameInitialClaimIds": [
+    "c1",
+    "c2"
+  ],
+  "newCompactionRequestContainsBothOrdinaryAndScopePoints": true,
+  "scopeArraysAndQuantifiersPreservedByContract": true,
+  "oldOneRowResponseRejectedWithoutAutofill": true,
+  "automaticFallbackCalls": 0,
+  "storedEvidenceUnchanged": true,
+  "frozenCriteriaUnchanged": true,
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

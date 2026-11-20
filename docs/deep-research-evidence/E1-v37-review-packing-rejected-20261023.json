@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v37",
+  "sourceCommit": "0683aaf1",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 4,
+  "requests": [
+    {
+      "controlledNewEnvelope": true,
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 22505,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c2",
+        "c3",
+        "c6"
+      ]
+    },
+    {
+      "controlledNewEnvelope": true,
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 31475,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c9",
+        "c4",
+        "c5",
+        "c7",
+        "c3",
+        "c6",
+        "c8"
+      ]
+    },
+    {
+      "controlledNewEnvelope": true,
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3"
+      ],
+      "inputBytes": 24142,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c9",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2",
+        "c6",
+        "c8"
+      ]
+    },
+    {
+      "controlledNewEnvelope": true,
+      "node": "verify_design_science",
+      "targetIds": [
+        "c6",
+        "c8"
+      ],
+      "inputBytes": 29386,
+      "actualEnvelopeVersion": 10,
+      "contextIds": [
+        "c9",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2",
+        "c3"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 22505,
+      "fixedInputBytes": 19870,
+      "maxInputBytes": 32000,
+      "referencedRows": 2,
+      "selectedRows": 2,
+      "selectedInputBytes": 22505,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 31475,
+      "fixedInputBytes": 21140,
+      "maxInputBytes": 32000,
+      "referencedRows": 9,
+      "selectedRows": 9,
+      "selectedInputBytes": 31475,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c3"
+      ],
+      "fullInputBytes": 24142,
+      "fixedInputBytes": 21303,
+      "maxInputBytes": 32000,
+      "referencedRows": 2,
+      "selectedRows": 2,
+      "selectedInputBytes": 24142,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c6",
+        "c8"
+      ],
+      "fullInputBytes": 29386,
+      "fixedInputBytes": 22552,
+      "maxInputBytes": 32000,
+      "referencedRows": 5,
+      "selectedRows": 5,
+      "selectedInputBytes": 29386,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 15423,
+    "used": 20214
+  },
+  "boundary": "Controlled lossless envelope10 input using archived failed verdict fixtures, no new judgement. No new model judgement, approval or change to the archived run. All source/context rows retained; full inputs within32KB.",
+  "adopted": false,
+  "conclusion": "Existing lossless nested/context codecs did not reduce four callbacks for this case and increased inputs by79..86 bytes. Do not activate this candidate or treat it as a capacity fix."
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "Source-bound comparison presentation, final coverage input and publication identity",
+  "targeted": {
+    "tests": 66,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "priorTargetedFailures": {
+    "tests": 66,
+    "failures": 2,
+    "cause": "New fixture omitted layout obligation/question; budget assertion used wrong existing detail key. Corrected fixtures, no weakened runtime rule."
+  },
+  "artifacts": {
+    "tmp/comparison-presentation-audit-20261116.xml": "dece508ea3489d3d0c03f3f858cae7f4312b51e6fb8ffaf5b138db44a4f1930f",
+    "tmp/comparison-presentation-audit-confirmed-20261116.xml": "80016f1f3c59fd94d5434918319ef2f91c7b0d1d208ef9648e07ad1f71b6b19e"
+  },
+  "runtimeDefault": 0,
+  "newRealModelCalls": 0,
+  "scientificContentAccepted": false,
+  "fullRegression": "Pending current-source full run; old aff24567b result does not cover this implementation.",
+  "invariants": [
+    "Only supplied verified claims enter publication table",
+    "Comparison layout is admitted inside final coverage byte budget",
+    "Layout/title/version/current table changes invalidate old comparison audit",
+    "Existing source support, numeric, coherence and overall coverage gates remain",
+    "Legacy response cannot inject trusted comparison metadata"
+  ],
+  "next": "Freeze source and run full offline regression before one controlled real comparison case."
+}

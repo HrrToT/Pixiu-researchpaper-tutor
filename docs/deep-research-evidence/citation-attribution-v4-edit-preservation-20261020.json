@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v4",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualEditRequestFingerprintMatched": true,
+  "oldActualCompleteDraftsReconstructed": 9,
+  "oldInputBytes": 23591,
+  "newInputBytes": 23536,
+  "actualInputCap": 23626,
+  "outputCapUnchanged": 4096,
+  "completeReservation": 28656,
+  "allOriginalProseSpecsConditionsAndCitationsPreserved": true,
+  "allOriginalReasonsDetailsPreserved": true,
+  "allRequiredQuoteContextsAndTablesPreserved": true,
+  "writableTargets": 9,
+  "schemaFeedback": {
+    "rules": {
+      "budget.matched": "matched requires equal whole-group recovery amounts. For a requested whole-stage cost comparison, unmatched requires an honest nonblank note and cannot claim an isolated parameter effect. Choose according to the objective, not merely to pass validation.",
+      "groups.fields": "executionSpec has exactly factors:[{name,control:{action,parameters},treatment:{action,parameters}}]. Preserve the intended operations; choose actual parameters, not schema placeholders.",
+      "states.shape": "At most 16 dimensions: positive integer (not bool) or exact {inputIndex,axis}; inputIndex names an existing declared input and axis is a nonnegative integer. Scalar shape is [].",
+      "workflow.baseline_mode_conflict": "baselineMode must equal the referenced budget baseline.mode. Repair linked choices consistently; do not invent an available checkpoint or drop required baseline training."
+    },
+    "targets": {
+      "c2": [
+        [
+          "/executionSpec",
+          "groups.fields"
+        ]
+      ],
+      "c5": [
+        [
+          "/executionSpec/recovery",
+          "budget.matched"
+        ]
+      ],
+      "c6": [
+        [
+          "/executionSpec/baselineMode",
+          "workflow.baseline_mode_conflict"
+        ],
+        [
+          "/executionSpec/componentInitializations/0/stateDefinitions/0/shape/0",
+          "states.shape"
+        ]
+      ]
+    }
+  },
+  "actualPostRepairSchemaFeedback": {
+    "rules": {
+      "controls.initialization": "Exact {workflowClaimId:steps ID}; no checkpoint/state/extra keys. The referenced workflow alone defines initialization and must remain consistent with the budget.",
+      "states.shape": "At most 16 dimensions: positive integer (not bool) or exact {inputIndex,axis}; inputIndex names an existing declared input and axis is a nonnegative integer. Scalar shape is [].",
+      "workflow.baseline_mode_conflict": "baselineMode must equal the referenced budget baseline.mode. Repair linked choices consistently; do not invent an available checkpoint or drop required baseline training."
+    },
+    "targets": {
+      "c3": [
+        [
+          "/executionSpec/initialization",
+          "controls.initialization"
+        ]
+      ],
+      "c6": [
+        [
+          "/executionSpec/baselineMode",
+          "workflow.baseline_mode_conflict"
+        ],
+        [
+          "/executionSpec/componentInitializations/0/stateDefinitions/0/shape/0",
+          "states.shape"
+        ]
+      ]
+    }
+  },
+  "originalDigest": "692b8e4d482e37cbdd51bae4f3e11af094d4b7483b982cdcf53d186cd1ed4e89",
+  "boundary": "Read-only replay of actual settled E1-v4 originals and remaining input allowance. New feedback identifies zero dimension, baseline/budget conflict and malformed post-repair initialization reference; no scientific values are chosen and no verdict is changed. No new real model execution or content/independent acceptance.",
+  "sourceCommit": "75af6bae"
+}

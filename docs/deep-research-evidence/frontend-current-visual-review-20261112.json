@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "c0bd84adf3a2b64b4f11984450f89df170fd96a8",
+  "screenshots": {
+    "docs\\deep-research-evidence\\frontend-current-20261112\\report-1366x768.png": "49fa0c00ea1e66391c83ce2429a148173774c1e55469c86b0bb3164a633af162",
+    "docs\\deep-research-evidence\\frontend-current-20261112\\card-1093x614.png": "576c5023b745b1e330af6f801cfb572f90ff9c68e89f9e5ec81045d68c576ea4"
+  },
+  "inspected": true,
+  "observations": [
+    "1366x768 report has visible content, folded evidence section and unobstructed composer.",
+    "1093x614 uses task/reading/chat tabs; result card and composer remain within viewport."
+  ],
+  "viewportsAutomaticallyChecked": [
+    "1366x768",
+    "1440x900",
+    "1093x614",
+    "1152x720"
+  ],
+  "source": "closed API fixtures from the current real workbench",
+  "contentAcceptance": false,
+  "actualUserLearningAcceptance": false,
+  "newModelCalls": 0,
+  "productionWrites": 0
+}

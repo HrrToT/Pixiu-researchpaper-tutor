@@ -1,0 +1,33 @@
+{
+  "asOf": "2026-11-16",
+  "sourceCommit": "cdae14df6191c80e27f63304c93bb766eca5dd19",
+  "representationSourceCommit": "7dd19857a3d7136a7acc14e2474c34d94f8b8caa",
+  "sharedRepresentationVersion": 3,
+  "serverDefault": 0,
+  "productionEnabled": false,
+  "newTests": 41,
+  "representationRelatedChecks": 230,
+  "finalizationRelatedChecks": 110,
+  "fullRegression": 8860,
+  "baselineCasesRetained": 8855,
+  "initialFullRegression": 8855,
+  "initialBaselineRetained": 8819,
+  "fullRegressionProof": "deep-research-evidence/shared-representation-input-first-final-20261116.json",
+  "realProof": "deep-research-evidence/shared-representation-inputs-v3-real-20261116.json",
+  "preservationProof": "deep-research-evidence/shared-representation-input-first-preservation-20261116.json",
+  "inputBytes": 31115,
+  "evidenceRows": 17,
+  "oldV2SchemaDigest": "45a8b0bcc41428cc01921b7025ce1d2f471da0823d9c691e7a9769f74c1fc618",
+  "newProviderCalls": 1,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "budgetFix": "Register shared declaration as an existing finalization role; use spare normal capacity after protected call slots are exhausted, within unchanged total caps. Nominal reserveTokens is not a separate protected-spend hard cap.",
+  "boundary": "Input/variable wire and budget integration tested; real declaration rejected, no full experiment or release acceptance.",
+  "next": [
+    "Metadata-bound exact target slots and available-source choices",
+    "Keep raw-format guard separate from unchanged semantic content and token budgets",
+    "Complete model-authored representation/renderer semantics",
+    "Whole-run initialization and final scientific-review budget feasibility",
+    "Fresh full experiment and independent holdout"
+  ]
+}

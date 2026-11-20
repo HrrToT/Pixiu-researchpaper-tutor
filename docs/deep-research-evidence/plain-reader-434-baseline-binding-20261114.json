@@ -1,0 +1,12 @@
+{
+  "sourceCase": "AD1N-v20",
+  "sourcePayloadSha256": "f0c8d8f359692a1bca4177aef30ed89ee9bfc1d687015964bdea46aa214272e0",
+  "machineReportedProcessCovered": true,
+  "serverDowngradeReason": "overlapping_process_roles",
+  "reviewBindingOnlyClassification": true,
+  "factualClaimsAccepted": 2,
+  "allOriginalGatesPreserved": true,
+  "manualNoviceAcceptance": false,
+  "modelCalls": 0,
+  "boundary": "Partial does not prove factual error or missing operation. Review span binding remained invalid; human readability was also inadequate. New wording cannot bypass existing audit."
+}

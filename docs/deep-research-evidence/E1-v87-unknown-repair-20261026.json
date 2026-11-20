@@ -1,0 +1,51 @@
+{
+  "case": "E1-v87",
+  "runId": "dr_run_8be639c866c35ea092c735a04781b647",
+  "promptVersion": "dr-v2.20261026.298",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "elapsedSeconds": 168,
+  "settledModelCalls": 7,
+  "settledTokens": 29673,
+  "unknownModelCalls": 1,
+  "actualTotalTokens": null,
+  "unknownProviderCharge": null,
+  "reportedBudgetTokens": 76960,
+  "reportedBudgetIncludesReservation": true,
+  "repairOptions": {
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_tokens": 16384,
+    "timeout_seconds": 90
+  },
+  "repairStatus": "pending",
+  "responseReceived": false,
+  "unknownRequestResent": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "rollbackNewDefault": {
+    "promptVersion": "dr-v2.20261026.299",
+    "workflowMetadataRepairContractVersion": 32
+  },
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v87.json",
+      "sha256": "efe1376c0e38317074fefa418e1e7db5ab5591dae6cf14cb6a2d80c41ba17f10"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v87.payload.json",
+      "sha256": "ca60fd2a300827ed6c2f4bbdc7761c8b5182939f9c731d928c77752ad51d8ad6"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v87.calls.json",
+      "sha256": "24adc3de3ba40f4b015a9570e98fa1373d947daa49675eb3812ccd9b51d7308a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v87.result.json",
+      "sha256": "35aa08e2a1cc138f537c2b8be952f7a052e1aedd2d6feb172d774bcdf6af5144"
+    }
+  ],
+  "boundary": "One request became unknown at its deadline. Usage/charge for that request cannot be inferred from reservation; do not resend or fabricate settlement. Configuration is not adopted as the new default; no conclusion about reasoning quality."
+}

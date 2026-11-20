@@ -1,0 +1,11 @@
+{
+  "promptVersion": "dr-v2.20261114.432",
+  "allDeepResearchModuleHashesMatch": true,
+  "all103TasksExact": true,
+  "all367OldRunsExact": true,
+  "all9269CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

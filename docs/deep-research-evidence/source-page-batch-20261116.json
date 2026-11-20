@@ -1,0 +1,60 @@
+{
+  "scope": "Batch-scoped physical-page reuse with live validation before checkpoint",
+  "baselineSourceCommit": "6f2307f9b",
+  "before": {
+    "label": "before",
+    "seconds": 2.344,
+    "quotes": 32,
+    "ownerAuthorizationCalls": 64,
+    "batchAuthorizationCalls": 1,
+    "checkpoints": 1,
+    "physicalPages": 26,
+    "modelCalls": 0,
+    "httpCalls": 0,
+    "applicationWrites": 0,
+    "outputSha256": "3c4070d8cadc02681a6a66a91b2a498f6d88fdd680be7b7be6f77219586276d4"
+  },
+  "after": {
+    "label": "after",
+    "seconds": 1.562,
+    "quotes": 32,
+    "ownerAuthorizationCalls": 4,
+    "batchAuthorizationCalls": 2,
+    "checkpoints": 1,
+    "physicalPages": 26,
+    "modelCalls": 0,
+    "httpCalls": 0,
+    "applicationWrites": 0,
+    "outputSha256": "3c4070d8cadc02681a6a66a91b2a498f6d88fdd680be7b7be6f77219586276d4"
+  },
+  "fullEvidenceAndJournalBytesIdentical": true,
+  "authorizationChecksBefore": 65,
+  "authorizationChecksAfter": 6,
+  "beforeAndAfterUseTheSame26ParsedPhysicalPages": true,
+  "checks": {
+    "passed": 99,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1
+  },
+  "safety": [
+    "Permission is not cached across batches or later reads/model sends",
+    "Owner and frozen PDF hash both identify pages",
+    "Failed loads are not cached",
+    "Exceptions clear batch pages",
+    "Revoked final authorization discards all new batch evidence before its single checkpoint",
+    "Existing glyph and literal/page identity checks remain"
+  ],
+  "boundary": "Local counting authorizer and cached real PDF parser pages; no HTTP/model/application writes. Timings are profiled fixture execution only, not measured live latency or scientific quality.",
+  "scientificContentAccepted": false,
+  "productionLoaded": false,
+  "artifacts": {
+    "tmp/profile-source-page-batch-20261116.py": "05e92e27e3e76583f517b494eea53b1e9cd492ad0c14f1bc63969075fded6d45",
+    "tmp/source-page-batch-before-20261116.json": "3c4070d8cadc02681a6a66a91b2a498f6d88fdd680be7b7be6f77219586276d4",
+    "tmp/source-page-batch-after-20261116.json": "3c4070d8cadc02681a6a66a91b2a498f6d88fdd680be7b7be6f77219586276d4",
+    "tmp/source-page-batch-before-20261116.profile.txt": "fd31f395fd02ba31663f740660c5f9c067a3f5ae39422c973e472690699417ac",
+    "tmp/source-page-batch-after-20261116.profile.txt": "4771465ac04df63b50aa19fa0942cb6afab467624987d3a09f3355a0bef4e18c",
+    "tmp/source-page-batch-confirmed-20261116.xml": "a96ad3630a6b47fe873cf8ee699d0c2dfa1ae849470b98eacc02dd01aec2c145"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "fullRun": "docs/deep-research-evidence/mapped-source-431-host-20261114.json",
+  "fullRunPassed": 7439,
+  "fullRunFailed": 1,
+  "failure": "Lifecycle expected old .430 version after intentional .431 activation",
+  "followupPassed": 8,
+  "followupFailures": 0,
+  "onlyChangedInputSinceFullRun": [
+    "ai-service-python/tests/test_deep_research_workflow_lifecycle_profile.py"
+  ],
+  "productSourceUnchanged": true,
+  "allOriginalResearchModulesRetained": 414,
+  "boundary": "Full run retained its failure; targeted follow-up verifies updated profile and legacy immutability. This is combined evidence, not a claim of a new all-green full run.",
+  "followupJUnit": "tmp/mapped-source-profile-431-20261114.xml",
+  "followupJUnitSha256": "57b4ca734b08da07f34e63d81e5e49dd37eef24e76f38657e2d06d133c0a56ec"
+}

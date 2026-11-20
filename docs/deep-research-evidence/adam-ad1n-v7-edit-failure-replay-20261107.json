@@ -1,0 +1,34 @@
+{
+  "case": "AD1N-v7",
+  "payloadSha256": "3acb486c795839b5cf4a4f964f02a0eb9d4d671166560c8dab3998642c9c5978",
+  "rawUnchanged": true,
+  "replayOverrides": {
+    "startedAt": "current time for admission only"
+  },
+  "events": [
+    "synthesize",
+    "synthesize_compact"
+  ],
+  "sameFailureReproduced": true,
+  "originalCharacters": 330,
+  "proposedCharacters": 343,
+  "fixedScopeCharacters": 95,
+  "editableCharactersAvailableBeforeOtherOverhead": 205,
+  "readerEditOutcome": "rejected",
+  "firstRejectedReason": "character_limit",
+  "protectedScopeC2AlsoChanged": true,
+  "compactionEffectiveModelOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.0,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low"
+  },
+  "diagnosis": "Joint scoped compaction still enables low reasoning under factualReasoning7-10. Existing received reader edit is over length and also changes protected scope. Truncated compaction then reproduces the failure. No inference about provider internal reasoning token breakdown.",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "nextAction": "Separate plain wording/length editing from scientific reasoning and expose the actual editable length budget while merging protected scope on the server. Keep all scientific, source and global-budget checks."
+}

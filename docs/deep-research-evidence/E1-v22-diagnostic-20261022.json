@@ -1,0 +1,308 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "9f539cfe",
+  "promptVersion": "dr-v2.20261022.227",
+  "case": "E1-v22",
+  "split": "development",
+  "runId": "dr_run_25ba0bc7623154b7accdd9ac7c983828",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 137.766,
+  "observedElapsedSeconds": 137.0,
+  "settledModelCalls": 13,
+  "settledTokens": 67436,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 30346,
+    "encodedInputBytes": 30077,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "9cbab4f587a0296493c0f398f6a2e32875b1102a10a6016c40e9c3f755ec33cc",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_ed3f594d3d93660e693304c329a1853c445e83554bb0be9238611c5393aecf71",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_738dab09c571f347db7f784894e5d1145c5a484dfeddd463475f82a9b7ba1d31",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_d56d2839a6e15634f59781a63eed4a51443f2d9d9307bea1e80da75a11be2a22",
+      "ev_a283d83a5c59038a2f00fb444e3a7157f921279d5c25b76c0e5c6b579ffb3660",
+      "ev_9dbe5a8c5b420da2d339dd8936ed83308182ac85db84b59d2f521476ce2df61f",
+      "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd",
+      "ev_9184604295133cf3428f9634aee6fb39b632b3e6bc7a2f63b08b7e08db82bec0",
+      "ev_3ca7ba9b8b6f76f5c254c7d72f6106fb0ee2e334a67324978bcc9b37ef473049"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_eea706cbd96a822dae9adf0cdc055c4e86d4f30b38582a4af6ff41a671a74c1f",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_ed3f594d3d93660e693304c329a1853c445e83554bb0be9238611c5393aecf71",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_cd0fb52a8f6322f1840a2c415f4ffe76ebd603aa54c4f8b78c84c3bcf5b89c9c",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_e170758337c27ad6170e1fa6a17452fc4c94fe6f45d288316af34c321da687de",
+      "ev_738dab09c571f347db7f784894e5d1145c5a484dfeddd463475f82a9b7ba1d31",
+      "ev_e7943b9c3dc9222268585187471b66293d178a702b3834bb256ccdf46fba44fc",
+      "ev_d56d2839a6e15634f59781a63eed4a51443f2d9d9307bea1e80da75a11be2a22",
+      "ev_a283d83a5c59038a2f00fb444e3a7157f921279d5c25b76c0e5c6b579ffb3660",
+      "ev_9dbe5a8c5b420da2d339dd8936ed83308182ac85db84b59d2f521476ce2df61f",
+      "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd",
+      "ev_9184604295133cf3428f9634aee6fb39b632b3e6bc7a2f63b08b7e08db82bec0",
+      "ev_3ca7ba9b8b6f76f5c254c7d72f6106fb0ee2e334a67324978bcc9b37ef473049"
+    ]
+  },
+  "repairStatus": "response_received",
+  "repairAdmission": null,
+  "planEncodingAudit": {
+    "rawBytes": 2322,
+    "wireBytes": 2213,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": true,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape"
+    },
+    {
+      "claimId": "c9",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "假设未通过：c1 链接到分析 c8，但 c8 仅提供描述性统计，未提供有效的区间不确定性或等价性容差，无法支持假设中的方向性比较；且 c1 的 effectKeys 与 c8 的 effects 键匹配但未定义具体统计决策。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "组构建未通过：干预水平未完全绑定。c2 的 factors 中 treatment 参数包含 optimization_iterations=200，但未提供优化器、损失函数、渲染设置等完整执行细节；且未绑定到任何 workflow 步骤。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "共同初始化与固定条件未完全绑定：paired_initialization 引用的 workflowClaimId c6 的初始化定义不完整（workflow.states.shape 被拒绝），且未提供第0帧模型的具体参数；渲染设置和优化器设置未绑定到具体证据或可执行配置；其他干预未明确。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "数据选择未通过：场景名称'flame salmon'在E1和E2中均有原文支持，但帧窗口1–30为拟议选择，未提供具体帧ID枚举或预检规则；相机划分'每隔一个相机索引'未指定具体相机索引或验证方法，且未提供实际相机数量或ID；种子[0]未说明用途；独立单元'frame'未与相机划分明确关联。",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "预算未通过：第1阶段每帧500次迭代和第2阶段每帧200次迭代为拟议选择，但未提供具体优化器步骤定义或停止规则；总预算计算正确，但未明确每帧窗口范围（30帧）是否与数据选择一致；Group A跳过第2阶段，无额外训练，但未说明第1阶段训练是否包含在总预算中。",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "incomplete_budget_spec",
+        "detail": "spec: 存在多余键 'optimizerStepDefinition', spec: 存在多余键 'stoppingRule', baseline: 存在多余键 'frameWindow', baseline: 存在多余键 'perFrame', baseline: 存在多余键 'phase', baseline: 存在多余键 'totalBudget', recovery: 存在多余键 'frameWindow', recovery: 存在多余键 'perFrame', recovery: 存在多余键 'phase', recovery: 存在多余键 'totalBudgetGroupB'"
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "指标未通过：PSNR和SSIM方向正确，但未指定图像/视图聚合级别（先逐视图计算再平均到帧，最后窗口平均）；存储指标未列出具体文件或模型表示，仅说明'序列化模型文件大小'；训练开销测量设备、分辨率、预热、同步、重复次数等细节在条件中提及，但未在指标定义中明确。"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "结果解释未完全绑定：effects 中的 psnr_diff、ssim_diff、storage_diff、time_diff 未绑定到具体测量定义；uncertainty 和 decision_rule 未绑定到具体描述性统计边界。"
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v22.json",
+      "sha256": "a09714a0c96e75debe47b12c2f3981e9bf87b4006176f8f988153641854ae02e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v22.payload.json",
+      "sha256": "9799e7dfd092505bc1624a9a03cbd7b1e30ddb3bd8dfc7e7f7c8397abab9b6ad"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v22.calls.json",
+      "sha256": "af253cf8e66747ed2cd6ea812add2877315e04619aeafa364a00a8fb8b95e690"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v22.result.json",
+      "sha256": "34580e97188f140e5a772632d3f9ecc453d6644df8cd10ed64c35bf983e85349"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}
