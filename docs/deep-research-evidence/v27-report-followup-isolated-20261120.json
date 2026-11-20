@@ -1,0 +1,14 @@
+{
+  "runId": "dr_run_e7f077f205f65179ac9240d60aa603d3",
+  "childRunId": "dr_run_be73ed0efee55f89b66be58e3c3e6afc",
+  "workflow": ["create_deferred", "activation_intercepted_after_binding"],
+  "childStatus": "queued",
+  "frozenSourceIds": 2,
+  "inheritedEvidenceCount": 48,
+  "inheritedSourceCount": 26,
+  "parentReportAsUnverifiedContext": true,
+  "parentAndLiveWorkspaceUnchanged": true,
+  "newModelCalls": 0,
+  "frontendCommit": "e9f20c64c",
+  "boundary": "Existing partial report, live workspace reads only, real frontend and Java routes, isolated H2 and Python repository, isolated graph activation intercepted. Inherited evidence requires relevance and fact checks in the new run."
+}
