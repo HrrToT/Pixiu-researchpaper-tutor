@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "69d29f51d",
+  "case": "D2-BASELINE-COMPRESSION-v27",
+  "runId": "dr_run_e7f077f205f65179ac9240d60aa603d3",
+  "outcome": "partial",
+  "browser": {
+    "liveSavedArtifact": true,
+    "tableVisible": true,
+    "citationExcerptMatched": true,
+    "reopenedAfterReload": true,
+    "backendSnapshotIdentical": true,
+    "modelCalls": 0,
+    "writes": 0,
+    "exactPdfPageJumpVerified": false
+  },
+  "publishedCitationLocations": {"exact": 0, "unresolved": 10},
+  "runningImageReplay": {
+    "bothMaterialHashesMatched": true,
+    "bothFailedWithModule": "pypdf",
+    "failureType": "ModuleNotFoundError"
+  },
+  "isolatedImageReplay": {
+    "image": "pixiu-research-pdf-proof:20261120",
+    "manifestDigest": "sha256:db9a6032bed0ba758353d9e29d2a83a091d2080b701f899329a6a7f207ba945a",
+    "network": "none",
+    "pypdf": "6.21.4",
+    "fonttools": "4.68.0",
+    "materials": [
+      {"sha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11", "pages": 14, "exact": 1, "unresolved": 6},
+      {"sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634", "pages": 19, "exact": 2, "unresolved": 1}
+    ],
+    "changedRunningDeployment": false
+  },
+  "scientificAcceptance": false
+}
