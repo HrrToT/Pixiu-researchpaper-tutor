@@ -26,12 +26,17 @@ def presentation(version=3):
 
 
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
-          compact_checks=False):
+          compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
         assert node == 'verify_answer_coverage' and kwargs == {'use_reserve':True}
         data = decode(prompt); sent.append(data)
+        if dispatches is not None:
+            dispatches.append((len(prompt.encode('utf-8')), options['max_tokens']))
+        if mutation == 'admission':
+            from services.deep_research.contracts import BudgetExhaustedError
+            raise BudgetExhaustedError('tokens', 100, 101)
         rows = response(data['requirements'])
         for row, obligation in zip(rows, data['requirements']):
             for check, required in zip(row['checks'], obligation['checks']):
@@ -78,7 +83,8 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
         literal_limits=True,comparison_cells=comparison,compact_comparison_layout=compact_layout,
-        compact_comparison_checks=compact_checks,
+        compact_comparison_checks=compact_checks,budget=budget,
+        fit_compact_comparison_budget=fit_compact_budget,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, CLAIMS, evidence)
     return result, sent
@@ -121,6 +127,28 @@ def test_oversized_required_context_stops_without_adapter_call():
     result, sent = audit(evidence=ev)
     assert not sent and result['status'] == 'budget_exhausted'
     assert result['budgetLimit']['kind'] == 'coveragePromptBytes'
+
+
+def test_compact_audit_reallocates_only_output_capacity_before_dispatch():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True)
+    roomy = []
+    with patch('services.deep_research.final_coverage.coverage_output_tokens', return_value=5402):
+        reference, inputs = audit(**options, dispatches=roomy, fit_compact_budget=True)
+        size, output = roomy[0]
+        assert output == 5402
+        budget = {'maxTokens': size + 1024 + 3500, 'maxModelCalls': 1, 'reserveModelCalls': 1}
+        legacy, sent = audit(**options, budget=budget)
+        assert legacy['status'] == 'budget_exhausted' and not sent
+        limited = []
+        result, sent = audit(**options, budget=budget, fit_compact_budget=True, dispatches=limited)
+        assert sent == inputs and result == reference
+        assert limited == [(size, 3500)]
+        denied, sent = audit(**options, budget={**budget, 'maxTokens': budget['maxTokens'] - 1}, fit_compact_budget=True)
+        assert denied['status'] == 'budget_exhausted' and not sent
+        truncated, sent = audit('truncated', **options, budget=budget, fit_compact_budget=True)
+        assert truncated['status'] == 'invalid_response' and len(sent) == 1
+        refused, sent = audit('admission', **options, budget=budget, fit_compact_budget=True)
+        assert refused['status'] == 'budget_exhausted' and len(sent) == 1
 
 
 @pytest.mark.parametrize('mode',['valid','root_coherence'])
