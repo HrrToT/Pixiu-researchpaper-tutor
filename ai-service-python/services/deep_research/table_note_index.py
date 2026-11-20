@@ -6,6 +6,9 @@ from services.deep_research.table_evidence import visible_table_packet
 
 _GROUPS=(('*','∗','⋆'),('†',),('‡',))
 _CUE=re.compile(r'\b(?:marked|denot\w*|indicat\w*|asterisk|dagger|symbol)\b|星号|标记|标注|表示',re.I)
+_MATCHED_RETRAINING = re.compile(
+    r'(?<!not )(?<!never )\b(?:re[-\s]?train\w*)\b[^.!?]{0,330}\b(?:our|same|identical)\s+(?:\w+\s+){0,3}(?:platform|gpu|hardware)\b'
+    r'[^.!?]{0,140}\b(?:marked|denoted|indicated)\s+(?:by|with)\b', re.I)
 GUIDANCE="""
 Keep exact dataset/group and method row labels beside metric/value. A readable name
 may precede the literal row label, never replace it. Preserve variant markers, dropping
@@ -74,3 +77,23 @@ def build(rows,owners,*,literal_ids,permissions=None):
             for t in tables if t['tableEvidenceId'] in refs and any(e in refs for e in t['candidateNoteEvidenceIds'])]
             for cid,refs in permissions.items() if isinstance(cid,str) and isinstance(refs,list)}
     return deepcopy(result)
+
+
+def matched_protocols(rows, owners):
+    """Link only unambiguous, explicit same-platform retraining notes."""
+    candidates = build(rows, owners, literal_ids=set(owners))
+    by_id = {row['evidenceId']: row for row in rows}
+    result = {}
+    for table in candidates['tables']:
+        # A marker appearing in a general note is insufficient to select it.
+        if len(table['markedRows']) != 1:
+            continue
+        marked, = table['markedRows']
+        symbols = next(group for group in _GROUPS if marked['marker'] in group)
+        suffix = r'\s*[' + re.escape(''.join(symbols)) + r']'
+        explicit = [note for note in table['candidateNoteEvidenceIds']
+                    if re.search(_MATCHED_RETRAINING.pattern + suffix, by_id[note].get('quote', ''), re.I)]
+        if len(explicit) == 1:
+            result[table['tableEvidenceId']] = {'rowNumber': marked['rowNumber'],
+                                               'noteEvidenceId': explicit[0]}
+    return result

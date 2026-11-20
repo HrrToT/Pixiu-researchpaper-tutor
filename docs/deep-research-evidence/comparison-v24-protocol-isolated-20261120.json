@@ -1,0 +1,52 @@
+{
+  "base": "D2-BASELINE-COMPRESSION-v24",
+  "authoringContractVersion": 15,
+  "requiredEvidenceRows": 7,
+  "jointRequestBytes": 23865,
+  "unmarkedReplayRejected": true,
+  "probes": [
+    {
+      "name": "comparison-v15-v24-protocol",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 7410,
+        "output_tokens": 681,
+        "total_tokens": 8091,
+        "estimated": false
+      },
+      "matchedTableRows": [
+        9,
+        10
+      ],
+      "tableAndNoteCited": true,
+      "receiptSHA256": {
+        "intent": "99d2396ca73b73fa46ef8a7594447e5775589657be59091988f402e26e263401",
+        "request": "a971cb5521745bbfaa04665af248bfd9c0772eb6d443108ae6c542297a4ba7bc",
+        "response": "089ee565f060a1a8038fdc2b40b414496ae6bf2482a943da16c176b1c93b4874"
+      }
+    },
+    {
+      "name": "comparison-v15-v24-scoped-protocol",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 7453,
+        "output_tokens": 1784,
+        "total_tokens": 9237,
+        "estimated": false
+      },
+      "matchedTableRows": [
+        9,
+        10
+      ],
+      "tableAndNoteCited": true,
+      "receiptSHA256": {
+        "intent": "8ded2936e5b9744113c285274e3a661e2e0902b3c8e38d89d197886d76229a1c",
+        "request": "69e6aee45de9e3a527ad4d9b45979bbb92ec21dadc56a7949db3315a24ca3ff1",
+        "response": "962a666963fd2a03a45c6f40c5fd023698f8ef56f52c6889ddf121f115d520fd"
+      }
+    }
+  ],
+  "publishedClaims": 0,
+  "scientificAcceptance": false,
+  "manualFinding": "Both responses select the starred retraining baseline and cite the explicit A6000 footnote. The second advice cites sources but still adds paper-wide GPU memory absence claims. No whole-report trial was run during these isolated calls."
+}

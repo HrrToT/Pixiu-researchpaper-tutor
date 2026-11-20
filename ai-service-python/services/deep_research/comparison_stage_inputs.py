@@ -34,7 +34,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     if type(merge_joint) is not bool:
         raise ValueError('Invalid comparison stage merge policy')
     from services.deep_research.comparison_measurement_display import (
-        isolated, ISOLATED_INPUT_BYTES, joint_comparison_delivery, separate_joint_deliverables)
+        isolated, ISOLATED_INPUT_BYTES, joint_comparison_delivery, paired_protocol_notes, separate_joint_deliverables)
     if isolated(record):
         # Fixed at creation by the frozen authoring profile, never shrunk with
         # current usage. Mandatory bundles/context must still fit in full.
@@ -53,6 +53,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['measurement_display'] = True
     if separate_joint_deliverables(record):
         plan_options['separate_joint_deliverables'] = True
+    if paired_protocol_notes(record):
+        plan_options['paired_protocol_notes'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
     by_id = {r['evidenceId']: r for r in rows}

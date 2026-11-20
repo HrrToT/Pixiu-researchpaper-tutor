@@ -76,6 +76,34 @@ def test_joint_example_rejects_a_mixed_table_pair_and_advice_rejects_reported_ki
         resolve_point(point, advice, registry)
 
 
+def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
+    from services.deep_research.comparison_wire import resolve_point
+
+    plan, payload, _ = fixture()
+    plan['pairedProtocolNotes'] = True
+    source = plan['evidence']['E1']
+    source['quote'] += '\nTable row 7: Ours-7K | 160 | 6m25s\nTable row 9: Ours-30K * | 145 | 42m'
+    source['tableData']['rows'].append([9, 'Ours-30K *', ['145', '42m']])
+    plan['evidence']['E3'] = {'evidenceId':'E3', 'source':'P1', 'obligations':[],
+                            'quote':'We re-trained the baseline on our platform, with results marked by ∗.'}
+    point = deepcopy(payload['answers'][0]['point'])
+    registry, catalog = table_catalog(plan, {})
+    assert catalog[0]['matchedProtocol'] == {'rowNumber':9,'noteEvidenceId':'E3'}
+    fps = {cell['binding']['rowNumber']: ref for ref, cell in registry.items()
+           if cell['binding']['evidenceId']=='E1' and cell['binding']['metric']=='FPS'}
+    target = {'evidenceIds': ['E1','E3'], 'deliverable':'matched_example'}
+    for refs, pair in [(['E1','E3'], [7, 8]), (['E1'], [7, 9])]:
+        with pytest.raises(ValueError, match='marked_baseline_and_protocol_note'):
+            resolve_point({**point,'evidenceRefs':refs,'cellRefs':[fps[i] for i in pair]}, target, registry)
+    result = resolve_point({**point,'evidenceRefs':['E1','E3'],'cellRefs':[fps[7],fps[9]]},target,registry)
+    assert [row['rowNumber'] for row in result['tableBindings']] == [7, 9]
+    plan['evidence']['E3']['quote'] = 'The baseline was not re-trained on our platform, with results marked by ∗.'
+    assert 'matchedProtocol' not in table_catalog(plan, {})[1][0]
+    plan['evidence']['E3']['quote'] = 'We re-trained the baseline on our platform, with results marked by ∗.'
+    plan['evidence']['E3']['source'] = 'P2'
+    assert 'matchedProtocol' not in table_catalog(plan, {})[1][0]
+
+
 def _display_fixture():
     from services.deep_research.comparison_wire import goal_catalog
     plan, payload, registry = fixture()
@@ -293,7 +321,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
         assert r['comparisonPlanningContractVersion']==6
-        assert r['comparisonAuthoringContractVersion']==14
+        assert r['comparisonAuthoringContractVersion']==15
         with pytest.raises(ValueError, match='Immutable run field'):
             repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': 1})
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}

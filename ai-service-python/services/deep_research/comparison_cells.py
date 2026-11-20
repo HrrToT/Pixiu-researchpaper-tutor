@@ -22,12 +22,14 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
     if type(separate_joint_deliverables) is not bool or separate_joint_deliverables and not (joint_reports and local_goal_refs):
         raise ValueError('Separate joint deliverables require the joint local-goal wire')
+    if type(paired_protocol_notes) is not bool or paired_protocol_notes and not separate_joint_deliverables:
+        raise ValueError('Paired protocol notes require separate joint deliverables')
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
         raise ValueError('Shared axes require the exact user question')
@@ -125,6 +127,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
     if separate_joint_deliverables:
         from services.deep_research.comparison_joint_reports import split_joint_deliverables
         result['jointDeliverables'] = split_joint_deliverables(roles, requirements, question)
+    if paired_protocol_notes and result.get('jointDeliverables'):
+        result['pairedProtocolNotes'] = True
     return result
 
 

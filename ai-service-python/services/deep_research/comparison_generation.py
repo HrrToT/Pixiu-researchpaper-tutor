@@ -22,7 +22,7 @@ def planning_options(record, question):
     from services.deep_research.comparison_intent import enabled as intent_enabled
     if intent_enabled(record):
         from services.deep_research.comparison_measurement_display import enabled as measurement_display
-        from services.deep_research.comparison_measurement_display import separate_joint_deliverables
+        from services.deep_research.comparison_measurement_display import paired_protocol_notes, separate_joint_deliverables
         from services.deep_research.comparison_joint_reports import enabled as joint_reports_enabled
         from services.deep_research.comparison_review_batches import current_profile
         return {'shared_axes':True,'typed_roles':True,'question':question,
@@ -32,6 +32,7 @@ def planning_options(record, question):
                 **({'measurement_display':True} if measurement_display(record) else {}),
                 **({'literal_axes':True} if current_profile(record) else {}),
                 **({'separate_joint_deliverables':True} if separate_joint_deliverables(record) else {}),
+                **({'paired_protocol_notes':True} if paired_protocol_notes(record) else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.
     return ({'shared_axes': True, 'question': question}

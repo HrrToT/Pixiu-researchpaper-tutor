@@ -88,6 +88,7 @@ def goal_catalog(plan):
 def table_catalog(plan, tables):
     """Give each actually quoted typed cell an exact reference; never guess geometry."""
     registry, catalog = {}, []
+    note_rows = []
     for eid, evidence in plan['evidence'].items():
         source = evidence['source']
         packet = evidence.get('tableData')
@@ -99,6 +100,8 @@ def table_catalog(plan, tables):
                 raise ValueError('Invalid source-local table registry')
             packet = shared.get('tableData')
         packet = visible_table_packet(packet, evidence.get('quote', ''))
+        if plan.get('pairedProtocolNotes'):
+            note_rows.append({**evidence, 'tableData': packet})
         if not packet:
             continue
         if (len({r[0] for r in packet['rows']}) != len(packet['rows'])
@@ -130,6 +133,19 @@ def table_catalog(plan, tables):
             rows.append([number, method, cells])
         catalog.append({'evidenceId': eid, 'source': source,
                         'groups': deepcopy(packet['groups']), 'rows': rows})
+    if note_rows:
+        from services.deep_research.table_note_index import matched_protocols
+        owners = {row['evidenceId']: (plan['sources'][row['source']].get('workId', plan['sources'][row['source']].get('sourceWorkId')),
+                                      plan['sources'][row['source']].get('versionId', plan['sources'][row['source']].get('sourceVersionId')))
+                  for row in note_rows}
+        protocols = matched_protocols(note_rows, owners)
+        for entry in registry.values():
+            protocol = protocols.get(entry['binding']['evidenceId'])
+            if protocol:
+                entry['matchedProtocol'] = protocol
+        for table in catalog:
+            if table['evidenceId'] in protocols:
+                table['matchedProtocol'] = protocols[table['evidenceId']]
     return registry, catalog
 
 
@@ -173,6 +189,10 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                                 if registry[ref]['method'] == method} for method in methods}
             if len(groups) != 1 or len(methods) != 2 or len(set(map(frozenset, metrics.values()))) != 1:
                 raise ValueError('joint_example_requires_one_matched_table_group')
+            protocol = registry[cells[0]].get('matchedProtocol')
+            if protocol and (protocol['noteEvidenceId'] not in refs or not any(
+                    b['rowNumber'] == protocol['rowNumber'] for b in bindings)):
+                raise ValueError('joint_example_requires_marked_baseline_and_protocol_note')
     def strings(value):
         if isinstance(value, str):
             yield value
@@ -351,6 +371,17 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'file size, and do not repeat the numbers in that advice. An empty '
                            'deviceMemoryMeasurementEvidenceIds array requires test-first advice. Describe how to '
                            'measure peak device memory and choose after measuring; give no method preference.\n')
+            if plan.get('pairedProtocolNotes'):
+                policy += ('When a table shows matchedProtocol, use its marked baseline row and the compared '
+                           'method from the same dataset, cite both table and note, and state the measurement '
+                           'platform from that note. Do not substitute the unmarked row. If the comparison '
+                           'cannot be established from original evidence, leave the matched_example unresolved. '
+                           'Every non-null point needs at least one allowed evidenceRef, including test-first '
+                           'advice. Cite a visible benchmark setup or reported proxy as its motivation. '
+                           'For cross-paper comparability, state only the conditions supported by the cited '
+                           'passages and explain which alignment cannot be established from those citations. '
+                           'Do not claim a paper never reports a setting or that the settings differ merely '
+                           'because the current citations do not establish alignment.\n')
         if not data['jointTargets'] and isolate_paper_assignment(record):
             from services.deep_research.audience_rewrite import beginner_requested
             from services.deep_research.comparison_joint_reports import has_single_numeric_example, joint_numeric_example
