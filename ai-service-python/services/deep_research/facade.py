@@ -403,7 +403,7 @@ class ResearchFacade:
             "identificationLocatorContractVersion": 1,
             "requestCoverageContractVersion": 5,
             "claimCheckContractVersion": 9,
-            "scopeObservationContractVersion": 2,
+            "scopeObservationContractVersion": 3 if self._comparison_cells_version == 1 else 2,
             "scopeExpressionReviewContractVersion": 4,
             "scopeEvidenceContractVersion": 1,
             "factualDecisionContractVersion": 2,

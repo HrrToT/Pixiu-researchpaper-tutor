@@ -94,6 +94,28 @@ def test_formal_or_even_invalid_design_fields_cannot_select_advice_path(field):
     assert not eligible(c)
 
 
+@pytest.mark.parametrize('preference, duplicate, approved', [
+    ('', False, True),
+    (' 仍然推荐采用压缩方案。', False, False),
+    ('', True, False),
+])
+def test_v26_advice_replay_checks_exact_test_first_decision_returned_at_verdict_root(preference, duplicate, approved):
+    c, e = fixture()
+    c['text'] = ('显存受限时，应先在相同条件下测量两种方法的峰值显存占用，再根据测量结果选择。'
+                 '当前引用未提供峰值显存测量，无法直接比较。' + preference)
+    row = verdict(purpose='research_navigation')
+    row['deviceMemory'] = {'mode': 'test_first'}
+    if duplicate:
+        row['adviceAudit']['deviceMemory'] = {'mode': 'measured'}
+    checker = BudgetedSemanticChecker(Mock(return_value={'content': json.dumps([row])}), 'r',
+                                      general_advice_review=True, device_memory_advice=True)
+    result = checker([c], [e])[0]
+    assert (result['status'] == 'passed') is approved
+    if approved:
+        assert result['adviceAudit']['deviceMemory'] == {'mode': 'test_first'}
+        assert 'deviceMemory' not in result
+
+
 def test_hypotheses_and_experiment_objectives_keep_scientific_path():
     c,_=fixture();c['kind']='hypothesis';assert not eligible(c)
     assert not enabled({'recommendationReviewContractVersion':1,'state':{'outputKind':'experiment_design'}})

@@ -14,7 +14,7 @@ def enabled(record):
 
 def assertions_enabled(record):
     version=record.get('scopeObservationContractVersion')
-    return (2 if version==2 else True) if type(version) is int and version in (1,2) else False
+    return (version if version>=2 else True) if type(version) is int and version in (1,2,3) else False
 
 
 def consistent_premises_enabled(record):
@@ -51,9 +51,12 @@ def review(checker, claim, expression, evidence, node):
     """
     policy = checker._scope_observation_assertions
     policy = policy() if callable(policy) else policy
-    literal = type(policy) is int and policy==2
+    atomic_comparison = type(policy) is int and policy == 3
+    literal = type(policy) is int and policy in (2, 3)
     assertions = policy is True or literal
     observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
+    review_options = {'scope_observations': True} if atomic_comparison else {}
+    observation_metadata = {'observationContractVersion': policy if literal else 1} if assertions else {}
     failure_policy=getattr(checker,'_known_single_review_failure',False)
     failure_policy=(failure_policy() if callable(failure_policy) else failure_policy) is True
     isolation=checker._isolate_factual_claims
@@ -64,7 +67,7 @@ def review(checker, claim, expression, evidence, node):
         from services.deep_research.review_response_failure import invalid as invalid_response
         checked=[]
         for index,observation in enumerate(observations):
-            rows=checker._check([observation],evidence,[],node)
+            rows=checker._check([observation],evidence,[],node,**review_options)
             if (len(rows)!=1 or rows[0].get('claimId')!=observation['claimId']
                     or rows[0].get('status') not in ('passed','failed')):
                 raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
@@ -72,7 +75,7 @@ def review(checker, claim, expression, evidence, node):
             if invalid_response(rows[0].get('reviewResponseAudit')):
                 audit={'version':2,'observedSettings':checked,'notEstablished':[],
                     'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
-                    **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+                    **observation_metadata}
                 if short_circuit:
                     audit.update(observationSchedulingVersion=1,
                         stoppedAfterObservationId=observation['claimId'],
@@ -88,20 +91,20 @@ def review(checker, claim, expression, evidence, node):
                     'stoppedAfterObservationId':observation['claimId'],
                     'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
                     'unreviewedPropositionCount':len(expression['notEstablished']),
-                    **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+                    **observation_metadata}
                 return {'claimId':claim['claimId'],'status':'failed',
                     'reason':'观察条件尚未通过事实核查：'+str(rows[0].get('reason','')),
                     'partitionedScopeAudit':audit,
                     **{k:rows[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity',
                         'reviewDiagnosticAudit','reviewResponseAudit') if k in rows[0]}}
     else:
-        checked = checker._check(observations, evidence, [], node) if observations else []
+        checked = checker._check(observations, evidence, [], node, **review_options) if observations else []
     expected = [c['claimId'] for c in observations]
     if ([c.get('claimId') for c in checked] != expected
             or any(c.get('status') not in ('passed','failed') for c in checked)):
         raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
     audit = {'version':2, 'observedSettings':checked, 'notEstablished':[],
-             **({'observationContractVersion':2 if literal else 1} if assertions else {})}
+             **observation_metadata}
     failed = [c for c in checked if c['status'] != 'passed']
     if failed:
         return {'claimId':claim['claimId'], 'status':'failed',

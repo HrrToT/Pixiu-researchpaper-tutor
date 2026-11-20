@@ -2,7 +2,7 @@
 from copy import deepcopy
 import json
 import pytest
-from services.deep_research.comparison_reasoning import audit_prompt,validate_audit,enabled
+from services.deep_research.comparison_reasoning import audit_prompt,validate_audit,enabled,normalize_audit_scope
 from services.deep_research.verification_aliases import restore_verdict_evidence
 from services.deep_research.tools import BudgetedSemanticChecker
 from test_deep_research_comparison_reasoning import inputs,audit,difference
@@ -42,6 +42,39 @@ def test_demonstrated_conditions_require_both_own_literal_values_and_independent
     assert validate_audit(c,{'comparisonAudit':bad},e,version=4)==['comparison_premise_not_established']
     c2,e2=inputs();bad=condition_audit(e2,'different',[difference(e2,right_value='Device X')])
     assert validate_audit(c2,{'comparisonAudit':bad},e2,version=4)==['comparison_values_not_different']
+
+
+@pytest.mark.parametrize('case, accepted', [
+    ('repeated', True), ('foreign', False), ('missing_value', False),
+    ('distinct_references', False), ('unaligned', False), ('missing_table_premise', False),
+])
+def test_v26_table_audit_ignores_only_an_identical_bound_condition_reference(case, accepted):
+    c, e = inputs()
+    e[1] = {**e[1], 'sourceWorkId': e[0]['sourceWorkId'], 'sourceVersionId': e[0]['sourceVersionId']}
+    table, note = (item['evidenceId'] for item in e)
+    c.update(kind='reported', tableBindings=[
+        {'evidenceId': table, 'rowNumber': 1}, {'evidenceId': table, 'rowNumber': 2}])
+    side = {'evidenceId': note, 'path': ['quote'], 'value': 'Device X'}
+    a = condition_audit(e, 'established')
+    a.update(scope='within_study', premises=[{'evidenceId': table, 'path': ['quote']}],
+             conditionDifferences=[{'dimension': 'GPU platform', 'left': side, 'right': dict(side)}])
+    if case == 'foreign':
+        a['conditionDifferences'][0]['left']['evidenceId'] = 'foreign'
+        a['conditionDifferences'][0]['right']['evidenceId'] = 'foreign'
+    elif case == 'missing_value':
+        for field in ('left', 'right'):
+            a['conditionDifferences'][0][field]['value'] = 'Device Z'
+    elif case == 'distinct_references':
+        a['conditionDifferences'][0]['right']['evidenceId'] = table
+    elif case == 'unaligned':
+        a['alignment'] = 'not_established'
+    elif case == 'missing_table_premise':
+        a['premises'][0]['evidenceId'] = note
+    original = {'comparisonAudit': a}
+    before = deepcopy(original)
+    normalized = normalize_audit_scope(c, original, e, version=4)
+    assert (not validate_audit(c, normalized, e, version=4, source_field_bindings=True)) is accepted
+    assert original == before
 
 
 def test_checker_restores_new_condition_source_aliases_without_rewriting_values_or_accepting_failed_verdict():

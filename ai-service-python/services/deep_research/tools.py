@@ -809,7 +809,7 @@ class BudgetedSemanticChecker:
                    and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
         return self._check(claims, evidence, context, 'verify_repair')
 
-    def _check(self, claims, evidence, accepted_context, node):
+    def _check(self, claims, evidence, accepted_context, node, *, scope_observations=False):
         if not claims:
             return []
         # Config checks retain operational definitions and explicit dependencies;
@@ -874,7 +874,8 @@ class BudgetedSemanticChecker:
         batch_policy=(batch_policy() if callable(batch_policy) else batch_policy) is True
         if batch_policy and isolated and facts:
             from services.deep_research.comparison_review_batches import groups
-            fact_batches=groups(facts,lambda batch:self._check_batch(batch,evidence,[],node=node,_preview=True))
+            fact_batches=groups(facts,lambda batch:self._check_batch(batch,evidence,[],node=node,_preview=True,
+                                                                   scope_observations=scope_observations))
         batches = proposal_batches + [(batch, node) for batch in fact_batches]
         verdicts = [*quantity_failures,*premise_failures]
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
@@ -898,7 +899,8 @@ class BudgetedSemanticChecker:
                            if c['claimId'] in context_states else {})
                        for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
             try:
-                verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node))
+                verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node,
+                                                  scope_observations=scope_observations))
             except BudgetExhaustedError as exc:
                 policy = self._preserve_initial_review_budget
                 policy = policy() if callable(policy) else policy
@@ -925,7 +927,7 @@ class BudgetedSemanticChecker:
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
 
-    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False) -> list[dict]:
+    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False, scope_observations=False) -> list[dict]:
         from services.deep_research.general_advice import NODES as ADVICE_NODES
         advice_mode=node in ADVICE_NODES
         byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
@@ -1334,7 +1336,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                 # unrelated field-binding schemas for other roles.
                 if required_slots:
                     prompt += audit_prompt
-        comparison_enabled=(self._comparison_reasoning() if callable(self._comparison_reasoning)
+        # Projected settings are ordinary facts. The parent scope review
+        # checks cross-paper entailment against the complete evidence set.
+        comparison_enabled=not scope_observations and (self._comparison_reasoning() if callable(self._comparison_reasoning)
                             else self._comparison_reasoning) is True
         if comparison_enabled:
             from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
@@ -1526,7 +1530,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                         'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
                         'hypothesisContractVersion','protocolContractVersion','workflowContractVersion') if key in c
                 } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
-                verdicts.extend(self._check_batch(batch, evidence, context, node=node))
+                verdicts.extend(self._check_batch(batch, evidence, context, node=node,
+                                                  scope_observations=scope_observations))
             return verdicts
 
         if _preview:
@@ -1632,6 +1637,7 @@ The dataAvailability object is an internal audit, not new experimental results.
             parsed = [restore_verdict_evidence(v, reverse_aliases,
                 **({'reporting_ownership':True} if reporting_enabled else {}),
                 **({'advice':True} if advice_mode else {}),
+                **({'device_memory':True} if advice_mode and device_memory else {}),
                 **({'scope_expression':True} if expression_context else {})) for v in parsed]
             by_id = {c['claimId']: c for c in claims}
             if diagnostic_policy:

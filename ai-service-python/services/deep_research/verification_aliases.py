@@ -36,10 +36,16 @@ def restore_visible_evidence(rows, reverse):
     return restored
 
 
-def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=False,reporting_ownership=False):
+def restore_verdict_evidence(verdict, reverse, *, scope_expression=False,advice=False,reporting_ownership=False,
+                             device_memory=False):
     restored = deepcopy(verdict)
     if advice:
         audit=restored.get('adviceAudit')
+        if (device_memory and isinstance(audit, dict) and 'deviceMemory' not in audit
+                and restored.get('deviceMemory') == {'mode': 'test_first'}):
+            # The provider supplied the decision at the verdict root. Move it
+            # intact; advice validation still checks the text and its premises.
+            audit['deviceMemory'] = restored.pop('deviceMemory')
         for row in audit.get('premises',[]) if isinstance(audit,dict) and isinstance(audit.get('premises'),list) else []:
             if isinstance(row,dict) and isinstance(row.get('evidenceId'),str):
                 row['evidenceId']=reverse.get(row['evidenceId'],row['evidenceId'])

@@ -69,6 +69,45 @@ def test_failed_fact_is_never_upgraded_by_an_epistemic_operator():
     assert result['status']=='failed' and 'Fact unsupported' in result['reason'] and len(calls)==1
 
 
+@pytest.mark.parametrize('version, relation, passed', [
+    (2, 'not_entailed', False), (3, 'not_entailed', True), (3, 'entailed', False),
+])
+def test_comparison_boundary_checks_source_facts_separately_from_cross_paper_entailment(version, relation, passed):
+    claim, expression, record, evidence = inputs()
+    claim['evidenceRefs'].append('second')
+    evidence[0].update(sourceWorkId='paper-a', sourceVersionId='v1')
+    evidence.append({'evidenceId': 'second', 'quote': 'Method B uses a different data split.',
+                     'sourceWorkId': 'paper-b', 'sourceVersionId': 'v1'})
+    calls = []
+    child = observation_claims(claim, expression, assertions=True, literal=True)[0]
+
+    def invoke(**kwargs):
+        prompt = kwargs['prompt']
+        calls.append(prompt)
+        if 'Review evidence ENTAILMENT' in prompt:
+            row = boundary_row(expression['notEstablished'][0])
+            row.update(relation=relation)
+        else:
+            row = {'claimId': child['claimId'], 'status': 'passed', 'reason': 'Own source supports this setting.',
+                   'scopeAudit': {'claimStrength': 'bounded', 'evidenceStrength': 'bounded',
+                                  'supported': True, 'statementPath': ['text'],
+                                  'premises': [{'evidenceId': 'E1', 'path': ['quote']}]}}
+        return {'content': json.dumps([row]), 'finishReason': 'stop'}
+
+    checker = BudgetedSemanticChecker(invoke, 'r', partitioned_scope_review=True,
+        scope_observation_assertions=version, comparison_reasoning=True, factual_scope=True,
+        complete_factual_scope=True, audit_source_fields=True, audit_target_fields=True,
+        scope_expression_context=lambda _targets: {'c': expression})
+    result = checker([claim], evidence)[0]
+    assert (result['status'] == 'passed') is passed
+    assert 'Scope-strength audit' in calls[0]
+    assert ('passed verdict MUST also include comparisonAudit' in calls[0]) is (version == 2)
+    if version == 3:
+        assert len(calls) == 2 and 'Method B uses a different data split' in calls[1]
+    else:
+        assert len(calls) == 1
+
+
 @pytest.mark.parametrize('node', ['verify', 'verify_repair'])
 def test_direct_comparison_boundary_review_preserves_request_and_entailment_checks(node):
     from services.deep_research.factual_review import DIRECT_REVIEW_OPTION, OPTION, REPAIR_OUTPUT_OPTION

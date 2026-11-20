@@ -98,7 +98,7 @@ do not invent an audit or cite irrelevant quotations to satisfy the schema.
 
 
 def normalize_audit_scope(claim, verdict, evidence, *, version=1):
-    """Normalize only a redundant enum annotation, never a scientific judgement.
+    """Normalize redundant audit fields without modifying scientific judgements.
 
     The raw provider response remains in the ledger. A valid target-scope token
     followed by a colon is unambiguous only if its suffix contains no other scope
@@ -109,14 +109,37 @@ def normalize_audit_scope(claim, verdict, evidence, *, version=1):
     audit = verdict.get('comparisonAudit')
     scope = audit_scope(claim, evidence)
     value = audit.get('scope') if isinstance(audit, dict) else None
-    if not scope or not isinstance(value, str):
-        return verdict
-    match = re.fullmatch(r'(cross_study|within_study)\s*[:：]\s*([^\n]{1,300})', value)
-    if (not match or match[1] != scope or not match[2].strip()
-            or re.search(r'cross_study|within_study', match[2])):
-        return verdict
-    return {**verdict, 'comparisonAudit': {**audit, 'scope': scope},
-            'comparisonAuditNormalization': {'field': 'scope', 'original': value, 'normalized': scope}}
+    if scope and isinstance(value, str):
+        match = re.fullmatch(r'(cross_study|within_study)\s*[:：]\s*([^\n]{1,300})', value)
+        if (match and match[1] == scope and match[2].strip()
+                and not re.search(r'cross_study|within_study', match[2])):
+            audit = {**audit, 'scope': scope}
+            verdict = {**verdict, 'comparisonAudit': audit,
+                       'comparisonAuditNormalization': {'field': 'scope', 'original': value, 'normalized': scope}}
+    if (version == 4 and scope == 'within_study' and claim.get('kind') == 'reported'
+            and isinstance(audit, dict) and audit.get('scope') == scope
+            and audit.get('alignment') == 'established' and audit.get('supportsClaim') is True):
+        differences = audit.get('conditionDifferences')
+        if isinstance(differences, list) and differences:
+            own = {item['evidenceId']: item for item in evidence
+                   if item.get('evidenceId') in claim['evidenceRefs']}
+            distinct = [row for row in differences if not _repeated_condition_reference(row, own)]
+            if len(distinct) != len(differences):
+                verdict = {**verdict, 'comparisonAudit': {**audit, 'conditionDifferences': distinct}}
+    return verdict
+
+
+def _repeated_condition_reference(row, own):
+    if (not isinstance(row, dict) or set(row) != {'dimension', 'left', 'right'}
+            or not isinstance(row['dimension'], str) or not row['dimension'].strip()):
+        return False
+    side = row['left']
+    if (not isinstance(side, dict) or side != row['right'] or set(side) != {'evidenceId', 'path', 'value'}
+            or not isinstance(side['value'], str) or not side['value'].strip()):
+        return False
+    from services.deep_research.audit_source_fields import resolve
+    resolved = resolve(side, own, with_value=True)
+    return bool(resolved and _normalized(side['value']) in _normalized(resolved[1]))
 
 
 def _normalized(text):
