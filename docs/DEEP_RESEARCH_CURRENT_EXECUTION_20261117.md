@@ -476,6 +476,27 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 
 用户已省略旧项目导入、完整新手流程与独立Edge恢复；不重新加入。后续不调用Qoder，不因测试通过而缩小原设计边界。开发指导见[完成开发指导](DEEP_RESEARCH_COMPLETION_GUIDANCE_20261118.md)。
 
+## 第 19 节案例验收核对
+
+按原设计记录固定题适用范围。历史人工通过只覆盖所列的开发题和源码版本。完整回归、浏览器交互和隔离启动各保留自身的证据范围。
+
+| 案例 | 当前适用证据 | 剩余验收 |
+| --- | --- | --- |
+| D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
+| D2 两论文比较 | 开发题 v27 有一组同表重训对照，发布部分成果，科学内容未通过。 [记录](deep-research-evidence/baseline-comparison-v27-real-20261120.json) | 真实生成完整比较，人工核对双方维度、身份、可比条件和建议。v29 尚未提交。 |
+| D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
+| D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
+| D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
+| D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。完整研究库副本冷启动核对历史状态。 [完整回归](deep-research-evidence/citation-pdf-typography-host-full-20261120.json) · [副本冷启动](deep-research-evidence/v29-full-research-copy-20261120.json) | 保留离线集成结论。切换时复核现用任务与数据，历史未知请求保持冻结。 |
+| H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 真实生成并核查新手解释和关键结论。 |
+| H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对研究义务覆盖、版本与比较条件。 |
+| H3 外部补查 | [H3-STREAMING 定义](DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json)已冻结。现用容器缺少 PDF 回退解析依赖，隔离候选开发样本解析通过。 | 从空材料任务实际发现、获取并阅读指定版本正文，核对摘要与正文标签和解释。 |
+| H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对来源版本、证据冲突与差异适用条件。 |
+| H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对假设依据、对照组、资源预算、指标与结论边界。 |
+| H6 外部失败或预算耗尽 | 5 条离线故障链首次执行均通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。 [记录](deep-research-evidence/h6-fault-chain-first-20261112.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
+
+各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
+
 ## D3-v7 未确认结果的只读复验
 
 2026-11-20，从实际工作区打开 D3-v7，运行版本 112 仍为 `paused/unresolved_unknown`。浏览器显示「请求结果待确认」，提供「查询状态」，不显示继续研究、补查或重试。点查询按钮和刷新页面只读取原运行，三次状态 GET 均使用同一运行 ID。工作区、研究接口响应和原始回执 SHA-256 均与复验前一致，零写入、零模型调用。服务端允许停止，未在此复验中执行。
