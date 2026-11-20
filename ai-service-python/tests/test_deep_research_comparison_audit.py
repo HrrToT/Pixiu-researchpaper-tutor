@@ -26,7 +26,8 @@ def presentation(version=3):
 
 
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
-          compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None):
+          compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
+          comparison=None, claims=CLAIMS, require_joint=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -74,19 +75,20 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
             data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}
             return normalize(node,{'content':json.dumps(data)})
         return {'content':json.dumps(rows)}
-    before = deepcopy((PLAN, CLAIMS, evidence))
-    comparison = presentation()
+    before = deepcopy((PLAN, claims, evidence))
+    comparison = presentation() if comparison is None else deepcopy(comparison)
     if explicit_shapes:
         comparison['checkOutputShapeVersion'] = 1
-    result = audit_final_answer('r',QUESTION,PLAN,CLAIMS,evidence,invoke,json.loads,
+    result = audit_final_answer('r',QUESTION,PLAN,claims,evidence,invoke,json.loads,
         request_contract=5, diagnostics=True,literal_dimensions=True, coherence=True,
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
         literal_limits=True,comparison_cells=comparison,compact_comparison_layout=compact_layout,
         compact_comparison_checks=compact_checks,budget=budget,
         fit_compact_comparison_budget=fit_compact_budget,
+        require_joint_conclusions=require_joint,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
-    assert before == (PLAN, CLAIMS, evidence)
+    assert before == (PLAN, claims, evidence)
     return result, sent
 
 
@@ -149,6 +151,23 @@ def test_compact_audit_reallocates_only_output_capacity_before_dispatch():
         assert truncated['status'] == 'invalid_response' and len(sent) == 1
         refused, sent = audit('admission', **options, budget=budget, fit_compact_budget=True)
         assert refused['status'] == 'budget_exhausted' and len(sent) == 1
+
+
+def test_joint_deliverable_cannot_be_closed_by_checked_paper_cells():
+    comparison = presentation()
+    comparison['jointGoals'] = [{'obligationId': 'o', 'question': QUESTION}]
+    claims = [{**c, 'obligationIds': ['o']} for c in CLAIMS]
+    options = dict(wire_mode='object_v1', compact_checks=True, comparison=comparison, claims=claims)
+    prior, _ = audit(**options)
+    assert prior['status'] == 'checked' and not prior['gaps']
+    guarded, _ = audit(**options, require_joint=True)
+    assert guarded['status'] == 'checked' and guarded['verdicts'] == prior['verdicts']
+    assert guarded['gaps'] == [{'obligationId':'o', 'question':QUESTION, 'stage':'answer',
+                                'missingJointConclusion':True,
+                                'missingEvidence':'尚未形成通过核验的联合比较结论'}]
+    comparison['layout'][0]['claimIds'].remove('b')
+    delivered, _ = audit(**options, require_joint=True)
+    assert delivered['status'] == 'checked' and not delivered['gaps']
 
 
 @pytest.mark.parametrize('mode',['valid','root_coherence'])

@@ -394,3 +394,15 @@ def test_missing_joint_comparison_does_not_withhold_unrelated_verified_local_fac
     assert (report,verification,audit)==snapshot  # The missing answer stays missing in its audit.
     audit['gaps'][0]['obligationId']='local'
     assert prepare_coverage_repair(report,verification,audit,bound_comparison_targets=True)['rejected']
+
+
+def test_structurally_missing_joint_conclusion_does_not_repurpose_bound_paper_cell():
+    from services.deep_research.coverage_repair import prepare_coverage_repair
+
+    cell = {'claimId':'cell', 'kind':'reported', 'text':'单篇论文的证据。', 'obligationIds':['joint']}
+    joint = {'claimId':'joint-draft', 'kind':'inference', 'text':'尚未支持的比较结论。', 'obligationIds':['joint']}
+    verification = {'accepted':[cell], 'rejected':[{'claimId':'joint-draft', 'reason':'semantic_unresolved'}]}
+    audit = {'gaps':[{'obligationId':'joint', 'question':'比较两个条件', 'missingJointConclusion':True}],
+             'verdicts':[{'obligationId':'joint', 'bindings':[{'claimId':'cell'}]}]}
+    assert prepare_coverage_repair({'claims':[cell, joint]}, verification, audit,
+                                   bound_comparison_targets=True) == verification

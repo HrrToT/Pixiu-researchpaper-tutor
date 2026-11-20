@@ -56,6 +56,14 @@ def revalidate_audit(audit, value, claims):
             'gaps': [*audit.get('gaps', []), gap]}
 
 
+def missing_joint_conclusions(value, claims):
+    """A paper cell cannot stand in for a required joint deliverable."""
+    cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
+    delivered = {oid for claim in claims if claim['claimId'] not in cell_ids
+                 for oid in claim.get('obligationIds', [])}
+    return [goal for goal in value['jointGoals'] if goal['obligationId'] not in delivered]
+
+
 def metadata(draft):
     version = draft.get('layoutVersion',1)
     shared = type(version) is int and version in (2,3)

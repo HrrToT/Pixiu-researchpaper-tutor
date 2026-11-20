@@ -276,7 +276,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         task = ('Complete ONLY the supplied paper targets and jointTargets in clear Chinese. '
                 'The full human request in requestContext is context; each target defines this stage contribution.')
     from services.deep_research.comparison_measurement_display import (
-        compact_stage_prompt, explicit_stage_schema, isolate_paper_assignment, local_contributions)
+        compact_stage_prompt, explicit_stage_schema, isolate_paper_assignment,
+        joint_comparison_delivery, local_contributions)
     projected = source_scope is not None and local_contributions(record)
     if projected:
         # Frozen questions/criteria remain intact in one global catalogue.
@@ -297,9 +298,16 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         length = limit or 'concise, no explicit maximum'
         envelope = EXPLICIT_STAGE_ENVELOPE if explicit_stage_schema(record) else STAGE_ENVELOPE
         policy = STAGE_POLICY
+        deliver_joint = joint_comparison_delivery(record)
+        if deliver_joint and data['jointTargets']:
+            policy += ('Use actual method names in joint prose, conditions and boundary subjects. '
+                       'Keep P/E/V labels out of all answer strings except the designated reference arrays. '
+                       'Choose a genuinely matched numerical example, using exact cells from a permitted '
+                       'source when it reports both methods under the same settings. Do not invent an '
+                       'alignment, or use disk size as evidence of GPU memory.\n')
         if not data['jointTargets'] and isolate_paper_assignment(record):
             from services.deep_research.audience_rewrite import beginner_requested
-            from services.deep_research.comparison_joint_reports import has_single_numeric_example
+            from services.deep_research.comparison_joint_reports import has_single_numeric_example, joint_numeric_example
             # The assembled report and joint step still receive the original
             # request. A paper cell supplies evidence about its assigned method.
             data['requestContext'] = {
@@ -317,7 +325,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
                        'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                        'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
-            if has_single_numeric_example(plan['roles']):
+            one_example = (joint_numeric_example(plan['roles'], question) if deliver_joint
+                           else has_single_numeric_example(plan['roles']))
+            if one_example:
                 data['requestContext']['numericExample'] = 'one joint example for the entire report'
                 policy += ('The joint stage owns the sole benchmark number example. Describe storage, quality '
                            'and rendering observations qualitatively in these cells. Keep exact quantities '

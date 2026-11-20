@@ -13,7 +13,7 @@ ISOLATED_INPUT_BYTES = 24000
 def enabled(record):
     return (record.get('state', {}).get('outputKind') == 'paper_comparison'
             and type(record.get('comparisonAuthoringContractVersion')) is int
-            and record['comparisonAuthoringContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+            and record['comparisonAuthoringContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
             and type(record.get('comparisonPlanningContractVersion')) is int
             and record['comparisonPlanningContractVersion'] == 6
             and type(record.get('comparisonReviewBatchContractVersion')) is int
@@ -22,46 +22,50 @@ def enabled(record):
 
 def isolated(record):
     """New runs physically separate paper evidence from cross-paper drafting."""
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 
 
 def local_contributions(record):
     """New snapshots separate global goals from per-paper assignments."""
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 
 
 def direct_scope_review(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 
 
 def repair_profile(record):
     if not enabled(record):
         return False
-    return {5: 2, 6: 3, 7: 3, 8: 3, 9: 3, 10: 3, 11: 4, 12: 4}.get(record['comparisonAuthoringContractVersion'], True)
+    return {5: 2, 6: 3, 7: 3, 8: 3, 9: 3, 10: 3, 11: 4, 12: 4, 13: 4}.get(record['comparisonAuthoringContractVersion'], True)
 
 
 def compact_stage_prompt(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (7, 8, 9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (7, 8, 9, 10, 11, 12, 13)
 
 
 def explicit_stage_schema(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (8, 9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (8, 9, 10, 11, 12, 13)
 
 
 def compact_factual_review(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (9, 10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (9, 10, 11, 12, 13)
 
 
 def compact_coverage_checks(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (10, 11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (10, 11, 12, 13)
 
 
 def isolate_paper_assignment(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] in (11, 12)
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (11, 12, 13)
 
 
 def fit_compact_audit_budget(record):
-    return enabled(record) and record['comparisonAuthoringContractVersion'] == 12
+    return enabled(record) and record['comparisonAuthoringContractVersion'] in (12, 13)
+
+
+def joint_comparison_delivery(record):
+    return enabled(record) and record['comparisonAuthoringContractVersion'] == 13
 
 
 def attach(point, selected):

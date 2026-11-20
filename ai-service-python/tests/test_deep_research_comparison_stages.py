@@ -142,6 +142,29 @@ def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
     assert 'numericExample' not in packet(snapshot['stages'][-1])['requestContext']
 
 
+def test_joint_stage_prioritizes_typed_table_when_literal_anchor_only_names_advice():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(question=QUESTION + '。数字只选一组来源和口径明确的基线对照作例子',
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=12)
+    joint = next(o for o in p['requirements'] if o['comparisonRole']['kind'] == 'joint')
+    joint['question'] += '，给出一组数字示例。'
+    table = rows[0]
+    text = {k: v for k, v in table.items() if k != 'tableData'}
+    text.update(evidenceId='E99', quote='Supplemental discussion without a typed result table. ' * 40)
+    rows.insert(0, text)
+    aliases['E99'] = 'original-E99'
+    bundles = [b for b in bundles if 'original-' + table['evidenceId'] not in b['evidenceIds']]
+    historical = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    r['comparisonAuthoringContractVersion'] = 13
+    current = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    old_joint, new_joint = historical['stages'][-1], current['stages'][-1]
+    assert old_joint['requiredEvidenceIds'] == new_joint['requiredEvidenceIds']
+    assert old_joint['suppliedEvidenceIds'].index('E99') < old_joint['suppliedEvidenceIds'].index(table['evidenceId'])
+    assert new_joint['suppliedEvidenceIds'].index(table['evidenceId']) < new_joint['suppliedEvidenceIds'].index('E99')
+    assert all('numericExample' in packet(stage)['requestContext'] for stage in current['stages'][:-1])
+
+
 def test_compact_stage_policy_preserves_the_full_packet_and_request_checkpoint():
     r, p, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,

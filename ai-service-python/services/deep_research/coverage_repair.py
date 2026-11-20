@@ -146,6 +146,10 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     # questions that implicated it.
     targets = {}
     for gap in active_gaps:
+        if bound_comparison_targets and gap.get('missingJointConclusion') is True:
+            # Failed joint drafts are already queued for repair by identity.
+            # A missing joint slot cannot transfer its requirements to a cell.
+            continue
         obligation_id = gap.get("obligationId")
         question = gap.get("question")
         details = gap.get('missingAspects')

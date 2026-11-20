@@ -39,7 +39,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False):
+    if type(require_joint_conclusions) is not bool or require_joint_conclusions and not comparison_audit_envelope:
+        raise ValueError('Joint conclusion validation requires typed comparison presentation')
     if type(fit_compact_comparison_budget) is not bool or fit_compact_comparison_budget and not compact_comparison_checks:
         raise ValueError('Adaptive audit capacity requires compact comparison checks')
     if type(compact_comparison_checks) is not bool or compact_comparison_checks and not comparison_audit_envelope:
@@ -379,6 +381,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 gap.update(auditStatus='binding_unresolved',missingEvidence='回答完整性尚未核验：审核定位无效')
         if identity and gap.get('obligationId') == identity:
             gap['wholeQuestion'] = True
+    if require_joint_conclusions:
+        from services.deep_research.comparison_presentation import missing_joint_conclusions
+        gap_by_id = {gap['obligationId']: gap for gap in gaps}
+        for goal in missing_joint_conclusions(comparison_cells, claims):
+            oid = goal['obligationId']
+            if oid not in gap_by_id:
+                gap_by_id[oid] = {'obligationId': oid, 'question': goal['question'], 'stage': 'answer'}
+                gaps.append(gap_by_id[oid])
+            gap_by_id[oid].update(missingJointConclusion=True,
+                                  missingEvidence='尚未形成通过核验的联合比较结论')
     from services.deep_research.completion_criteria import completion_contract_digest
     audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),

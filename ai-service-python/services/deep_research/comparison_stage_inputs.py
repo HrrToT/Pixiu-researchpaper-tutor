@@ -33,7 +33,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         raise ValueError('Invalid comparison stage input window')
     if type(merge_joint) is not bool:
         raise ValueError('Invalid comparison stage merge policy')
-    from services.deep_research.comparison_measurement_display import isolated, ISOLATED_INPUT_BYTES
+    from services.deep_research.comparison_measurement_display import isolated, ISOLATED_INPUT_BYTES, joint_comparison_delivery
     if isolated(record):
         # Fixed at creation by the frozen authoring profile, never shrunk with
         # current usage. Mandatory bundles/context must still fit in full.
@@ -92,6 +92,12 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     def build_stage(scope, members):
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]
+        if include_joint and joint_comparison_delivery(record):
+            from services.deep_research.comparison_joint_reports import joint_numeric_example
+            if joint_numeric_example(full_plan['roles'], question):
+                # Mandatory premise bundles are fitted first. Give typed
+                # result passages the first remaining slots ahead of prose.
+                own = sorted(own, key=lambda row: not (row.get('tableData') or row.get('tableDataRef')))
         target_ids = [key for member in members
                       for key in (joint_targets if member == 'joint' else paper_targets[member])]
         required = [bundle for member in members for bundle in assigned[member]]

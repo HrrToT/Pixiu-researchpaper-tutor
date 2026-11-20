@@ -2200,7 +2200,7 @@ def make_verify_node(
                                  if cell_enabled(record) and saved.get('comparisonCellDraft') is not None else {})
         from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
         from services.deep_research.comparison_measurement_display import (
-            compact_coverage_checks, direct_scope_review, fit_compact_audit_budget)
+            compact_coverage_checks, direct_scope_review, fit_compact_audit_budget, joint_comparison_delivery)
         if comparison_audit_args and direct_scope_review(record):
             comparison_audit_args['compact_comparison_layout'] = True
         if comparison_envelope(record) and comparison_audit_args:
@@ -2209,6 +2209,8 @@ def make_verify_node(
                 comparison_audit_args['compact_comparison_checks'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
+                if joint_comparison_delivery(record):
+                    comparison_audit_args['require_joint_conclusions'] = True
         from services.deep_research.comparison_review_batches import current_profile
         if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
             comparison_audit_args['empty_missing_limits']=True

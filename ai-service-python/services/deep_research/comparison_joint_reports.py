@@ -16,6 +16,17 @@ def has_single_numeric_example(roles):
                for role in roles.values())
 
 
+def joint_numeric_example(roles, question):
+    """Recover a joint example when another part of its goal supplies the literal anchor."""
+    if has_single_numeric_example(roles):
+        return True
+    layers = getattr(question, 'instruction_layers', (str(question),))
+    return (any(_SINGLE_NUMERIC_EXAMPLE.search(layer) for layer in layers)
+            and any(role['kind'] == 'joint' and re.search(
+                r'数字|数值|定量|\bnumeric(?:al)?\b|\bquantitative\b', role['question'], re.I)
+                    for role in roles.values()))
+
+
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
