@@ -21,6 +21,9 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource,
       onClick={event => { trigger.current = event.currentTarget; setSelected(resolved); }}>{children}</button>;
   } }), [sources]);
   const external = selected?.sourceKind === 'arxiv' || selected?.sourceKind === 'external';
+  const pageIndex = Number.isInteger(selected?.page) && selected.page > 0 ? selected.page - 1
+    : Number.isInteger(selected?.pageIndex) && selected.pageIndex >= 0 ? selected.pageIndex : undefined;
+  const openSourceLabel = pageIndex === undefined ? '打开论文' : '跳到引用页';
   return <>
     <MarkdownContent components={components}>{text}</MarkdownContent>
     {selected && <div className="research-citation-backdrop" onClick={close}>
@@ -37,19 +40,19 @@ export default function ResearchReportText({ text, sources = [], onJumpToSource,
       <div className="research-citation-heading"><strong>{selected.title || '引用依据'}</strong><button type="button" onClick={close}>关闭</button></div>
       {selected.unavailable ? <p>这条引用暂不能恢复，请查看报告中保存的原文依据。</p> : <>
         {selected.quote && <blockquote>{selected.quote}</blockquote>}
-        <p className="theme-text-muted">{selected.accessLevel === 'abstract' ? '仅摘要' : selected.page ? `第 ${selected.page} 页`
+        <p className="theme-text-muted">{selected.accessLevel === 'abstract' ? '仅摘要' : pageIndex !== undefined ? `第 ${pageIndex + 1} 页`
           : selected.location?.pageResolution === 'ambiguous' ? '引文出现在多页，页码未唯一确定'
           : selected.location?.pageResolution === 'unresolved' ? '原文引文已保存，页码暂未定位' : '论文来源'}</p>
         {external && /^https:\/\/arxiv\.org\/abs\//u.test(selected.url || '') && <a href={selected.url} target="_blank" rel="noopener noreferrer">查看来源页面</a>}
         {external && selected.accessLevel === 'fulltext' && selected.sourceId && researchContext?.runId && onJumpToSource && <button type="button" onClick={() => {
           onJumpToSource({ ...selected, researchTaskId: researchContext.taskId, researchRunId: researchContext.runId,
-            pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex });
+            pageIndex });
           close();
-        }}>查看论文原文</button>}
+        }}>{openSourceLabel}</button>}
         {!external && selected.pdfId && onJumpToSource && <button type="button" onClick={() => {
-          onJumpToSource({ ...selected, pageIndex: selected.page != null ? selected.page - 1 : selected.pageIndex });
+          onJumpToSource({ ...selected, pageIndex });
           close();
-        }}>查看论文原文</button>}
+        }}>{openSourceLabel}</button>}
       </>}
     </section></div>}
   </>;

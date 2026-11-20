@@ -18,7 +18,7 @@ it('opens the published experiment as a document and restores its exact evidence
   const dialog = screen.getByRole('dialog', { name: '引用依据' });
   const id = fixture.sources[0].evidenceIds[0];
   expect(within(dialog).getByText(fixture.sources[0].evidenceQuotes[id].quote)).toBeInTheDocument();
-  fireEvent.click(within(dialog).getByRole('button', { name: '查看论文原文' }));
+  fireEvent.click(within(dialog).getByRole('button', { name: '打开论文' }));
   expect(jump).toHaveBeenCalledWith(expect.objectContaining({ pdfId: fixture.sources[0].pdfId, evidenceId: id }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   view.unmount();

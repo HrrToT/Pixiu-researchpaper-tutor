@@ -10,7 +10,7 @@ describe('research citations', () => {
       sources={[{ sourceId: 's', sourceKind: 'arxiv', evidenceIds: ['e'], title: 'External work', accessLevel: 'fulltext',
         evidenceQuotes: { e: { quote: 'Exact quote', location: { page: 5 } } }, url: 'https://arxiv.org/abs/2601.00001v2' }]} />);
     fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
-    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    fireEvent.click(screen.getByRole('button', { name: '跳到引用页' }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ researchTaskId: 't', researchRunId: 'r', sourceId: 's', pageIndex: 4 }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -18,7 +18,7 @@ describe('research citations', () => {
     render(<ResearchReportText text="结论 [1](#research-evidence-e)" researchContext={{ taskId: 't', runId: 'r' }} onJumpToSource={vi.fn()}
       sources={[{ sourceId: 's', sourceKind: 'arxiv', evidenceIds: ['e'], quote: 'Abstract', accessLevel: 'abstract' }]} />);
     fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
-    expect(screen.queryByRole('button', { name: '查看论文原文' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /跳到引用页|打开论文/ })).not.toBeInTheDocument();
   });
   it.each(['unresolved', 'ambiguous'])('does not inherit another quotation page when %s', pageResolution => {
     const jump = vi.fn();
@@ -28,7 +28,8 @@ describe('research citations', () => {
     ]} onJumpToSource={jump} />);
     fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
     expect(screen.queryByText('第 1 页')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    expect(screen.queryByRole('button', { name: '跳到引用页' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '打开论文' }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ evidenceId: 'ours', page: undefined, pageIndex: undefined }));
   });
   it('resolves by evidence identity and jumps to the source page, independent of source ordering', () => {
@@ -42,7 +43,7 @@ describe('research citations', () => {
     const dialog = screen.getByRole('dialog', { name: '引用依据' });
     expect(dialog).toHaveFocus();
     expect(screen.queryByText('wrong quote')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    fireEvent.click(screen.getByRole('button', { name: '跳到引用页' }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ pdfId: 'correct', pageIndex: 3 }));
     fireEvent.keyDown(dialog, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -52,7 +53,7 @@ describe('research citations', () => {
     render(<ResearchReportText text="结论 [1](#research-evidence-missing)" sources={[{ pdfId: 'other', evidenceIds: ['e'] }]} />);
     fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
     expect(screen.getByText(/这条引用暂不能恢复/)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '查看论文原文' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /跳到引用页|打开论文/ })).not.toBeInTheDocument();
   });
   it('selects the exact quotation when one source owns several evidence rows', () => {
     const jump = vi.fn();
@@ -64,7 +65,7 @@ describe('research citations', () => {
     fireEvent.click(screen.getByRole('button', { name: /查看引用/ }));
     expect(screen.getByText('Exact author row')).toBeInTheDocument();
     expect(screen.queryByText('Baseline row')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '查看论文原文' }));
+    fireEvent.click(screen.getByRole('button', { name: '跳到引用页' }));
     expect(jump).toHaveBeenCalledWith(expect.objectContaining({ evidenceId: 'ours', pageIndex: 6 }));
   });
   it('does not substitute the first quotation for ambiguous historical evidence', () => {
