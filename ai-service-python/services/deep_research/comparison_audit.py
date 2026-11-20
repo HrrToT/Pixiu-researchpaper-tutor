@@ -1,7 +1,7 @@
 """One complete input and concise instructions for typed comparison audits.
 
-Uses existing lossless input sharing; output and all acceptance validators stay
-unchanged. Only the server-compiled comparison presentation v3 selects this path.
+Uses existing lossless input sharing and keeps the scientific acceptance checks.
+Only the server-compiled comparison presentation v3 selects this path.
 """
 from copy import deepcopy
 
@@ -110,7 +110,8 @@ INTERNAL_METADATA = (
 
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
-             literal_limits=False, coherence=False, object_envelope=False, compact_layout=False):
+             literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
+             compact_checks=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -129,6 +130,12 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
     if type(object_envelope) is not bool or object_envelope and not coherence:
         raise ValueError('Object envelope requires coherence audit')
     policy = CORE + LAYOUT
+    base_check_fields = ['checkId', 'status', 'bindings', 'reason']
+    if compact_checks:
+        base_check_fields.remove('reason')
+        policy = policy.replace(',"reason":"1-800 characters"', '').replace(
+            'Reasons state actual coverage/gap, not absence assertions or repair commands.',
+            'Ordinary checks contain only verdicts, bindings, and the declared extra fields.')
     if object_envelope:
         policy=policy.replace('Return ONLY {"items":[ROWS]}, one ordinary ROW per fixed obligationId:',
             'items: one ordinary ROW per fixed obligationId:')
@@ -149,7 +156,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         shapes = [
             {'obligationId': row['obligationId'],
              'checks': [{'checkId': check['checkId'],
-                         'fields': ['checkId', 'status', 'bindings', 'reason']
+                         'fields': base_check_fields
                                    + (['processLinks'] if process_explanations
                                       and check.get('processRequired') is True else [])
                                    + (['limitSpans'] if literal_limits
@@ -157,14 +164,15 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
                         for check in row['checks']]}
             for row in requirements]
         if compact_layout:
+            base_size = len(base_check_fields)
             data['extraCheckFields'] = {
-                row['obligationId']: {check['checkId']: check['fields'][4:]
-                                      for check in row['checks'] if len(check['fields']) > 4}
-                for row in shapes if any(len(check['fields']) > 4 for check in row['checks'])}
+                row['obligationId']: {check['checkId']: check['fields'][base_size:]
+                                      for check in row['checks'] if len(check['fields']) > base_size}
+                for row in shapes if any(len(check['fields']) > base_size for check in row['checks'])}
             policy += COMPACT_SHAPES
         else:
             data['checkOutputShapes'] = shapes
-            policy += SHAPES
+            policy += SHAPES.replace('bindings, reason and', 'bindings and') if compact_checks else SHAPES
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))

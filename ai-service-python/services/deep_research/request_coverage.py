@@ -91,7 +91,7 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -136,12 +136,14 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
             if (empty_missing_limits and limitation and 'limitSpans' not in c
                     and c.get('status')=='missing' and c.get('bindings')==[]):
                 c={**c,'limitSpans':[]}
-            expected_keys={'checkId','status','bindings','reason'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
+            expected_keys={'checkId','status','bindings'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
+            if not compact_checks:
+                expected_keys.add('reason')
             if set(c)!=expected_keys:
                 return fail('invalid_check_fields',obligation_id=required['obligationId'],check_id=fixed['checkId'],
                             missing=expected_keys-set(c),unexpected=set(c)-expected_keys)
             if (c['status'] not in ('covered','partial','missing') or not isinstance(c['bindings'],list)
-                    or not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800
+                    or not compact_checks and (not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800)
                     or c['status']=='missing' and c['bindings']):return fail('invalid_check_value',obligation_id=required['obligationId'],check_id=fixed['checkId'])
             binding=deepcopy(c['bindings']);check_status=c['status']
             if limitation:
@@ -165,7 +167,8 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
             if 'criterionId' in fixed:
                 criteria.append({'criterionId':fixed['criterionId'],'responseType':fixed['responseType'],
                                  'status':check_status,'bindings':deepcopy(binding)})
-            reasons.append({'checkId':fixed['checkId'],'reason':c['reason']})
+            if not compact_checks:
+                reasons.append({'checkId':fixed['checkId'],'reason':c['reason']})
         status=('covered' if all(a['status']=='covered' for a in aspects) else
                 'missing' if all(a['status']=='missing' for a in aspects) else 'partial')
         result={'obligationId':row['obligationId'],'status':status,'bindings':bindings,

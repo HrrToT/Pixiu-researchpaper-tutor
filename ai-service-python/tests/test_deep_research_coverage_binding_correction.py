@@ -62,6 +62,34 @@ def test_valid_role_correction_rechecks_same_requirements_and_preserves_answer()
     data=json.loads(sent[1][1].split('Frozen review inputs:\n',1)[1]);assert data['acceptedAnswer'][0]['text']==CLAIMS[0]['text']
 
 
+def test_role_correction_preserves_compact_check_schema():
+    from services.deep_research.request_coverage import contract, normalize
+
+    requirements = contract(PLAN, Q, process_explanations=True)
+    raw = [{'obligationId': requirement['obligationId'], 'checks': [
+        {'checkId': check['checkId'], 'status': 'covered', 'bindings': [{'claimId': 'c', 'field': 'text'}],
+         'processLinks': links('生成深度')}
+        for check in requirement['checks']]} for requirement in requirements]
+    options = dict(claims=CLAIMS, process_explanations=True, distinct_roles=True,
+                   literal_limits=True, compact_checks=True)
+    normalized = normalize(raw, requirements, **options)
+
+    def invoke(_run, _node, prompt, _options, **_kwargs):
+        data = json.loads(prompt.split('Frozen review inputs:\n')[1])
+        return {'content': json.dumps([
+            {'obligationId': target['obligationId'], 'checkId': target['checkId'], 'status': 'covered',
+             'processLinks': links(), 'reason': 'The operation connects the input and output.'}
+            for target in data['targets']])}
+
+    corrected, checked, note = correct('r', raw, normalized, requirements, CLAIMS, invoke, json.loads,
+                                      max_bytes=10000, output_tokens=1000, compact_checks=True)
+    assert note['status'] == 'corrected'
+    assert checked == normalize(corrected, requirements, **options)
+    assert all(row['status'] == 'covered' for row in checked)
+    assert all('reason' not in check for row in corrected for check in row['checks'])
+    assert raw[0]['checks'][0]['processLinks'] == links('生成深度')
+
+
 @pytest.mark.parametrize('mode',['foreign','unbound','extra','wrong_id','overlap','purpose','malformed','missing','truncated'])
 def test_invalid_correction_keeps_uncertain_gap_without_another_call_or_prose_rewrite(mode):
     result,sent=run(mode);assert result['gaps'] and len(sent)==2 and result['processBindingCorrection']['status']=='invalid_response'

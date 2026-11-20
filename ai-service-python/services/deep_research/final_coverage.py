@@ -36,7 +36,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False):
+    if type(compact_comparison_checks) is not bool or compact_comparison_checks and not comparison_audit_envelope:
+        raise ValueError('Compact comparison checks require the comparison audit envelope')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
         raise ValueError('Empty missing limits require literal limit validation')
     if type(reasoned_process_bindings) is not bool or reasoned_process_bindings and not correct_process_bindings:
@@ -238,7 +240,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     comparison_cells, catalog=catalog, task_sources=task_sources,
                     request_semantics=request_semantics, process_explanations=True,
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
-                    compact_layout=compact_comparison_layout)
+                    compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks)
             fixed_bytes = len(render([]).encode('utf-8'))
             if limit <= 0 or fixed_bytes > limit:
                 raise BudgetExhaustedError('coveragePromptBytes', limit, fixed_bytes)
@@ -261,6 +263,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     from services.deep_research.request_coverage import normalize
                     raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
+                        compact_checks=compact_comparison_checks,
                         **({'empty_missing_limits':True} if empty_missing_limits else {}),
                         **({'response_errors':request_response_errors} if diagnostics else {}),
                         **({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
@@ -268,7 +271,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = None
             if correct_process_bindings and isinstance(verdicts,list):
                 from services.deep_research.coverage_binding_correction import correct
-                raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens,**({'reasoning':True} if reasoned_process_bindings else {}))
+                raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens,**({'reasoning':True} if reasoned_process_bindings else {}),**({'compact_checks':True,'empty_missing_limits':empty_missing_limits} if compact_comparison_checks else {}))
             status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
             if isinstance(verdicts, list):
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)

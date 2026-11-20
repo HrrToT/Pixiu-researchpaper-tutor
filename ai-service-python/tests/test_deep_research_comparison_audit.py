@@ -25,7 +25,8 @@ def presentation(version=3):
                                        'axisId':'axis', 'axisTitle':'结果与条件', 'claimIds':['a','b']}]}
 
 
-def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False):
+def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
+          compact_checks=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -46,6 +47,13 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         elif mutation == 'waive':rows[0] = {'obligationId':rows[0]['obligationId'], 'notRequired':{
             'reason':'The actual answer requirement is allegedly unnecessary.',
             'requestExcerpt':QUESTION,'bindings':[{'claimId':'a','field':'text'}]}}
+        if compact_checks:
+            assert '"reason":"1-800 characters"' not in prompt
+            for row in rows:
+                for ordinary_check in row.get('checks', []):
+                    ordinary_check.pop('reason')
+            if mutation == 'legacy_reason':
+                check['reason'] = 'Unexpected free-form explanation.'
         rows.append({'auditType':'answer_coherence','coherent':mutation != 'incoherent',
             'issues':[] if mutation != 'incoherent' else [{'kind':'contradiction',
               'bindings':[{'claimId':'a','field':'text'}], 'reason':'Fixture joint contradiction.'}]})
@@ -53,7 +61,10 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
             from services.deep_research.structured_output import normalize
             if wire_mode=='object_v1':
                 assert 'Root coherence fields (never items)' in prompt
-                return normalize(node,{'content':json.dumps({'items':rows[:-1],**rows[-1]})},comparison_audit_envelope=True)
+                reply = {'content':json.dumps({'items':rows[:-1],**rows[-1]})}
+                if mutation == 'truncated':
+                    reply['finishReason'] = 'length'
+                return normalize(node,reply,comparison_audit_envelope=True)
             assert 'Return ONLY {"items":[ROWS]}' in prompt and 'INSIDE items (NEVER at root)' in prompt
             data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}
             return normalize(node,{'content':json.dumps(data)})
@@ -67,6 +78,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
         literal_limits=True,comparison_cells=comparison,compact_comparison_layout=compact_layout,
+        compact_comparison_checks=compact_checks,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, CLAIMS, evidence)
     return result, sent
@@ -126,6 +138,22 @@ def test_object_envelope_keeps_all_existing_content_checks(mutation):
     if mutation is None:assert result['status']=='checked' and not result['gaps']
     else:assert result['gaps']
     if mutation=='incoherent':assert result['answerCoherence']['coherent'] is False
+
+
+@pytest.mark.parametrize('mutation', [None, 'legacy_reason', 'truncated', 'foreign', 'drop',
+                                     'limit', 'partial', 'incoherent', 'waive'])
+def test_compact_checks_preserve_strict_audit_without_free_form_check_reasons(mutation):
+    result, [inputs] = audit(mutation, wire_mode='object_v1', explicit_shapes=True,
+                             compact_layout=True, compact_checks=True)
+    assert any('limitSpans' in fields for checks in inputs['extraCheckFields'].values()
+               for fields in checks.values())
+    if mutation is None:
+        assert result['status'] == 'checked' and not result['gaps']
+        assert all(not row['requestCheckReasons'] for row in result['verdicts'])
+    else:
+        assert result['gaps']
+        if mutation in ('legacy_reason', 'truncated', 'foreign', 'drop', 'waive'):
+            assert result['status'] == 'invalid_response'
 
 
 @pytest.mark.parametrize('version',[1,2])
