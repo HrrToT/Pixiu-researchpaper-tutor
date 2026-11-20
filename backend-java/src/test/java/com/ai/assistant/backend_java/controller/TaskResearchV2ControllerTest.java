@@ -547,6 +547,40 @@ class TaskResearchV2ControllerTest {
         org.junit.jupiter.api.Assertions.assertTrue(hasSourceResearchId, "sourceResearchId must be stored");
     }
 
+    @Test
+    void publishedArtifactsRetainPerEvidencePageLocationsWhenReopened() throws Exception {
+        String runId = "run-citation-pages";
+        tasks.attachResearchRun("work", workspace.get("revision"), v2RunBinding(runId, 1L, "running"));
+        Map<String, Object> state = v2CompletedState(runId, "partial", "citation-version", "摘要",
+                "[1](#research-evidence-first) [2](#research-evidence-second) [3](#research-evidence-unlocated)");
+        state.put("sources", List.of(Map.of("pdfId", "A", "accessLevel", "fulltext", "page", 4,
+                "evidenceIds", List.of("first", "second", "unlocated"), "evidenceQuotes", Map.of(
+                        "first", Map.of("quote", "First quotation", "location", Map.of("pageResolution", "exact", "page", 4, "pageIndex", 3)),
+                        "second", Map.of("quote", "Second quotation", "location", Map.of("pageResolution", "exact", "page", 7, "pageIndex", 6)),
+                        "unlocated", Map.of("quote", "Unlocated quotation", "location", Map.of("pageResolution", "unresolved"))))));
+        when(research.getV2ResearchTask(runId)).thenReturn(ResponseEntity.ok(Map.of("status", "success", "task", state)));
+
+        String runPath = "/api/task-workspaces/work/research/" + runId;
+        mvc.perform(get(runPath)).andExpect(status().isOk());
+        mvc.perform(get(runPath)).andExpect(status().isOk());
+
+        var reopened = mvc.perform(get("/api/task-workspaces/work"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.artifacts.length()").value(2))
+                .andExpect(jsonPath("$.artifacts[0].origin").value("machine"))
+                .andExpect(jsonPath("$.artifacts[1].origin").value("latest"));
+        for (int index = 0; index < 2; index++) {
+            String source = "$.artifacts[" + index + "].sources[0]";
+            String evidence = source + ".evidenceQuotes";
+            reopened.andExpect(jsonPath(source + ".pdfId").value("A"))
+                    .andExpect(jsonPath(evidence + ".first.location.page").value(4))
+                    .andExpect(jsonPath(evidence + ".second.quote").value("Second quotation"))
+                    .andExpect(jsonPath(evidence + ".second.location.page").value(7))
+                    .andExpect(jsonPath(evidence + ".second.location.pageIndex").value(6))
+                    .andExpect(jsonPath(evidence + ".unlocated.location.pageResolution").value("unresolved"))
+                    .andExpect(jsonPath(evidence + ".unlocated.location.page").doesNotExist());
+        }
+    }
+
     // === No hardcoded status when missing ===
 
     @Test
