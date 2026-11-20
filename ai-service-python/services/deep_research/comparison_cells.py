@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
@@ -126,7 +126,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
     if measurement_display:result['measurementDisplayVersion']=1
     if separate_joint_deliverables:
         from services.deep_research.comparison_joint_reports import split_joint_deliverables
-        result['jointDeliverables'] = split_joint_deliverables(roles, requirements, question)
+        result['jointDeliverables'] = split_joint_deliverables(roles, requirements, question,
+                                                               classify_standalone=classify_standalone_joint)
     if paired_protocol_notes and result.get('jointDeliverables'):
         result['pairedProtocolNotes'] = True
     return result

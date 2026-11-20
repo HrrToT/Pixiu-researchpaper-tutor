@@ -74,6 +74,39 @@ def test_supporting_role_is_retained_without_becoming_a_table_or_conclusion_targ
     assert compile_cells(payload,cp,max_claims=5)['errors'][0]['reason']=='invalid_conclusion_obligations'
 
 
+def test_planning_retains_explicit_numeric_example_omitted_by_model():
+    from services.deep_research.graph import make_plan_node
+    from services.deep_research.coverage import validate_plan
+    from services.deep_research.comparison_joint_reports import preserve_requested_numeric_example, split_joint_deliverables
+
+    current = record()
+    current.update(runId='r', question=QUESTION + '数字只选一组来源明确的基线对照作例子。',
+                   comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=16,
+                   comparisonReviewBatchContractVersion=2)
+    planned = plan()
+
+    def update(_rid, callback, **_kw):
+        nonlocal current
+        current = callback(deepcopy(current))
+        return deepcopy(current)
+
+    model = Mock(return_value={'content':json.dumps({'items':planned})})
+    run = make_plan_node(model, update, validate_plan)({'run_id':'r'})
+    assert not run.get('error_code')
+    model.assert_called_once()
+    frozen = current['state']['plan']
+    obligations = [o for item in frozen for o in item['obligations']]
+    numeric = next(o for o in obligations if o['obligationId']=='requested_numeric_example')
+    assert set(numeric['requiredSources']) == {'left','right'}
+    assert numeric['requestExcerpt'] in current['question']
+    assert preserve_requested_numeric_example(frozen, current['question']) is frozen
+    assert preserve_requested_numeric_example(planned, QUESTION) is planned
+    roles = {o['obligationId']:{**o['comparisonRole'],'question':o['question']} for o in obligations}
+    categorized = split_joint_deliverables(roles, obligations, current['question'], classify_standalone=True)
+    assert categorized['requested_numeric_example'][0]['kind'] == 'matched_example'
+    assert categorized['choice'][0]['kind'] == 'conditional_advice'
+
+
 @pytest.mark.parametrize('server_profile',[0,1])
 def test_comparison_role_contract_is_server_selected_and_frozen(tmp_path,server_profile):
     from services.deep_research.facade import ResearchFacade

@@ -465,6 +465,10 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             if comparison_intent_enabled(record):
                 try:validate_comparison_plan(validated,question)
                 except ValueError as exc:return invalid_plan(exc)
+                from services.deep_research.comparison_measurement_display import preserve_numeric_example
+                if preserve_numeric_example(record):
+                    from services.deep_research.comparison_joint_reports import preserve_requested_numeric_example
+                    validated = validate_plan(preserve_requested_numeric_example(validated, question))
 
             plan_ids = [item["itemId"] for item in validated]
             from services.deep_research.continuation import rebind_inherited_state

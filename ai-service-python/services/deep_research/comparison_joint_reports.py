@@ -1,4 +1,5 @@
 """Allow source-reported joint contrasts without relabeling them as inference."""
+from copy import deepcopy
 import re
 
 
@@ -30,7 +31,37 @@ def joint_numeric_example(roles, question):
                     for role in roles.values()))
 
 
-def split_joint_deliverables(roles, requirements, question):
+def preserve_requested_numeric_example(plan, question):
+    """Keep an explicit example the model omitted from its joint obligations."""
+    layers = getattr(question, 'instruction_layers', (str(question),))
+    exact = next((m.group() for layer in layers for m in _SINGLE_NUMERIC_EXAMPLE.finditer(layer)), None)
+    if not exact or exact not in question:
+        return plan
+    obligations = [o for item in plan for o in item['obligations']]
+    joint = [o for o in obligations if o.get('comparisonRole', {}).get('kind') == 'joint']
+    if (not joint or any(_NUMERIC.search(' '.join([o['question'], o['comparisonRole']['requestExcerpt'],
+                    *[c['requirement'] for c in o.get('completionCriteria', [])]])) for o in joint)):
+        return plan
+    # Keep the acquired/search source scope inside the existing joint plan.
+    sources = list(dict.fromkeys(s for o in joint for s in o.get('requiredSources', [])))
+    oid = 'requested_numeric_example'
+    identities = {o['obligationId'] for o in obligations}
+    while oid in identities:
+        oid += '_'
+    result = deepcopy(plan)
+    step = next(item for item in result if any(o.get('comparisonRole', {}).get('kind') == 'joint'
+                                               for o in item['obligations']))
+    requirement = '给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。'
+    step['obligations'].append({'obligationId': oid, 'question': requirement, 'requestExcerpt': exact,
+        'searchQuery':'baseline benchmark results evaluation protocol dataset hardware',
+        'purpose':'answer_requirement','requiredSources':sources,
+        'comparisonRole': {'kind':'joint','label':'同口径数字示例','requestExcerpt':exact},
+        'completionCriteria':[{'criterionId':'matched_example','requirement':requirement,
+                               'responseType':'identification'}]})
+    return result
+
+
+def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False):
     """Split a mixed goal only when its frozen criteria distinguish both deliverables."""
     if not joint_numeric_example(roles, question):
         return {}
@@ -38,15 +69,21 @@ def split_joint_deliverables(roles, requirements, question):
     for obligation in requirements:
         oid = obligation['obligationId']
         criteria = obligation.get('completionCriteria', [])
-        if roles[oid]['kind'] != 'joint' or len(criteria) != 2:
+        if roles[oid]['kind'] != 'joint':
             continue
         numeric = [c for c in criteria if _NUMERIC.search(c['requirement']) and not _ADVICE.search(c['requirement'])]
         advice = [c for c in criteria if _ADVICE.search(c['requirement']) and not _NUMERIC.search(c['requirement'])]
-        if len(numeric) == len(advice) == 1:
+        if len(criteria) == 2 and len(numeric) == len(advice) == 1:
             result[oid] = [
                 {'kind': 'matched_example', 'requirement': numeric[0]['requirement']},
                 {'kind': 'conditional_advice', 'requirement': advice[0]['requirement']},
             ]
+        elif classify_standalone:
+            anchor = roles[oid]['requestExcerpt']
+            if _SINGLE_NUMERIC_EXAMPLE.search(anchor) and numeric and not advice:
+                result[oid] = [{'kind':'matched_example','requirement':obligation['question']}]
+            elif _ADVICE.search(anchor) and advice and not numeric:
+                result[oid] = [{'kind':'conditional_advice','requirement':obligation['question']}]
     return result
 
 
