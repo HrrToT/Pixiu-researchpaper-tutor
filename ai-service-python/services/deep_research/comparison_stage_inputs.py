@@ -50,6 +50,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                         question=question, literal_axes=True, fixed_slots=True,
                         unified_answers=True, local_goal_refs=True)
     from services.deep_research.comparison_measurement_display import enabled as measurement_display
+    from services.deep_research.comparison_joint_reports import benchmark_example_owner
+    from services.deep_research.measurement_table_navigation import benchmark_metric
     if measurement_display(record):
         plan_options['measurement_display'] = True
     if separate_joint_deliverables(record):
@@ -60,6 +62,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['classify_standalone_joint'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
+    example_owner = benchmark_example_owner(record, full_plan)
     by_id = {r['evidenceId']: r for r in rows}
     wire_bundles = []
     for original in bundles:
@@ -104,7 +107,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets)
-                         if record.get('comparisonJointReportsContractVersion') == 4 else set())
+                         if record.get('comparisonJointReportsContractVersion') in (4, 5) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.
@@ -134,7 +137,9 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                  'requiredEvidenceIds': sorted({eid for b in required for eid in b['evidenceIds']}),
                  'allowedEvidenceByTarget': permissions,
                  'allowedCellsByTarget': {key: [ref for ref, value in visible_cells.items()
-                                               if value['binding']['evidenceId'] in allowed]
+                                               if value['binding']['evidenceId'] in allowed
+                                               and (example_owner is None or key == example_owner
+                                                    or not benchmark_metric(value['binding']['metric']))]
                                           for key, allowed in permissions.items()},
                  'scientificApproval': False}
         stage['inputDigest'] = digest(stage)

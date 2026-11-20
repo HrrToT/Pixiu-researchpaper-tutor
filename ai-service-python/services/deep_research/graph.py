@@ -1248,7 +1248,7 @@ def make_synthesize_node(
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
-                   and record['comparisonJointReportsContractVersion'] in (3, 4) else {}),
+                   and record['comparisonJointReportsContractVersion'] in (3, 4, 5) else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),

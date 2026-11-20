@@ -21,6 +21,12 @@ def _key(text):
     return re.sub(r'[^a-z0-9]', '', text.casefold())
 
 
+def benchmark_metric(label):
+    """Recognize the same literal result headers used in table retrieval."""
+    key = _key(label)
+    return any(key in metrics for metrics, _ in _DOMAINS)
+
+
 def planned_query_priority(query):
     """Rank frozen retrieval queries by the number of named measurement domains."""
     return sum(bool(re.search(pattern, query, re.I) or any(

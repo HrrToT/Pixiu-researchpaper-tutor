@@ -319,7 +319,7 @@ class ResearchFacade:
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 2 if self._comparison_cells_version == 1 else 0,
-            "comparisonJointReportsContractVersion": 4 if self._comparison_cells_version == 1 else 0,
+            "comparisonJointReportsContractVersion": 5 if self._comparison_cells_version == 1 else 0,
             "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
                 r'(?<!\d)2\s*[xX×*]\s*2(?!\d)',str(request.get('question',''))) else 0,
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,

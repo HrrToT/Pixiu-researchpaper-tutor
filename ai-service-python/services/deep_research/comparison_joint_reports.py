@@ -97,11 +97,23 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4))
+            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5))
 
 
 def resource_allocation_enabled(record):
-    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4)
+    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5)
+
+
+def benchmark_example_owner(record, plan):
+    """Limit benchmark table output only when the request has one matched target."""
+    if type(record.get('comparisonJointReportsContractVersion')) is not int or record['comparisonJointReportsContractVersion'] != 5:
+        return None
+    matches = [(oid, part['kind']) for oid, parts in plan.get('jointDeliverables', {}).items()
+               for part in parts if part['kind'] == 'matched_example']
+    if len(matches) == 1:
+        oid, kind = matches[0]
+        return f'joint_{oid}_{kind}'
+    return None
 
 
 def comparison_protocol_priority(rows, targets):

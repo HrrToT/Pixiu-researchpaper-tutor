@@ -410,6 +410,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'and rendering observations qualitatively in these cells. Keep exact quantities '
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
+        from services.deep_research.comparison_joint_reports import benchmark_example_owner
+        example_owner = benchmark_example_owner(record, plan)
+        if example_owner:
+            data['requestContext']['benchmarkExampleOwner'] = example_owner
+            policy += ('Only benchmarkExampleOwner may publish numerical benchmark cells. '
+                       'Other targets may cite the same tables for qualitative trends and use exact '
+                       'method settings, protocol details and processing costs when needed. '
+                       'Do not copy a benchmark metric value into prose or conditions outside the example.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

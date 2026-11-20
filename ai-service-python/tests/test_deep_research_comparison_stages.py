@@ -192,6 +192,39 @@ def test_joint_stage_prioritizes_typed_table_when_literal_anchor_only_names_advi
     assert all('numericExample' in packet(stage)['requestContext'] for stage in current['stages'][:-1])
 
 
+def test_explicit_benchmark_example_restricts_table_output_without_hiding_evidence():
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(question=QUESTION + '。数字只选一组明确的基线对照作例子',
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16)
+    goal = next(o for o in plan['requirements'] if o['comparisonRole']['kind'] == 'joint')
+    goal['question'] += '，给出一组数字示例和显存受限建议。'
+    goal['completionCriteria'] = [
+        {'criterionId': 'example', 'requirement': '给出一组同口径的数字对照。', 'responseType': 'identification'},
+        {'criterionId': 'advice', 'requirement': '给出显存受限的条件建议。', 'responseType': 'explanation'},
+    ]
+    legacy, updated = [
+        prepare({**r, 'comparisonJointReportsContractVersion': version}, plan['requirements'],
+                plan['sources'], rows, {}, bundles, aliases) for version in (4, 5)
+    ]
+    owner = 'joint_' + goal['obligationId'] + '_matched_example'
+    for old_stage, stage in zip(legacy['stages'], updated['stages'], strict=True):
+        assert stage['requiredEvidenceIds'] == old_stage['requiredEvidenceIds']
+        data = packet(stage)
+        assert data['requestContext']['benchmarkExampleOwner'] == owner
+        tables = [table for paper in data['papers'] for table in paper['tableCatalog']]
+        assert tables
+        fps_refs = {ref for table in tables for _, _, cells in table['rows'] for ref, _ in cells[::2]}
+        train_refs = {ref for table in tables for _, _, cells in table['rows'] for ref, _ in cells[1::2]}
+        for target, refs in stage['allowedCellsByTarget'].items():
+            if target == owner:
+                assert fps_refs.intersection(refs)
+            else:
+                assert not fps_refs.intersection(refs)
+                assert train_refs.intersection(refs)
+                assert fps_refs.intersection(old_stage['allowedCellsByTarget'][target])
+
+
 def test_mixed_joint_goal_gets_two_wire_targets_under_original_obligation():
     r, p, rows, aliases, bundles = fixture()
     r.update(question=QUESTION + '。数字只选一组明确的基线对照作例子',
