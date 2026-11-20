@@ -511,8 +511,10 @@ class TrackedLLMInvoker:
             response["reportedModel"] = reported_model
         if structured:
             from services.deep_research.structured_output import normalize
-            from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
-            response = normalize(node, response,**({'comparison_audit_envelope':True} if comparison_envelope(transport_record,node) else {}),**({'initial_plan_response':True} if initial_plan_response else {}),**({'factual_singleton':True}
+            from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope, uses_correction_envelope
+            full_comparison_audit = comparison_envelope(transport_record, node) and not uses_correction_envelope(
+                transport_record, node, prompt)
+            response = normalize(node, response,**({'comparison_audit_envelope':True} if full_comparison_audit else {}),**({'initial_plan_response':True} if initial_plan_response else {}),**({'factual_singleton':True}
                 if type(transport_record.get('factualEnvelopeContractVersion')) is int
                 and transport_record['factualEnvelopeContractVersion'] in (1,2)
                 and type(transport_record.get('factualDecisionContractVersion')) is int

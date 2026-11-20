@@ -4,7 +4,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from services.deep_research.comparison_audit_envelope import decode, enabled, POLICY
+from services.deep_research.comparison_audit_envelope import CORRECTION_POLICY, decode, enabled, POLICY
+from services.deep_research.coverage_binding_correction import GUIDANCE
 from services.deep_research.structured_output import normalize, messages_for_record
 
 
@@ -54,9 +55,9 @@ def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,
             'outputKind':'paper_comparison'},start_async=False)
         rid=run['runId']
         run=repo.update_run(rid,lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
-        assert enabled(run) and run['comparisonAuditEnvelopeContractVersion']==1
+        assert enabled(run) and run['comparisonAuditEnvelopeContractVersion']==2
         assert messages_for_record(run,'verify_answer_coverage','prompt')[0]['content']==POLICY
-        for version in [None,0,True,2]:
+        for version in [None,0,True,3]:
             old={**run,'comparisonAuditEnvelopeContractVersion':version}
             assert not enabled(old)
             assert messages_for_record(old,'verify_answer_coverage','prompt')[0]['content']!=POLICY
@@ -78,4 +79,21 @@ def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,
         assert result['structuredOutput']['receivedShape']=='comparison_audit_v1'
         cached=invoke(rid,'verify_answer_coverage','prompt',{'max_tokens':200})
         assert cached==result and len(sends)==1
+
+        correction_prompt = GUIDANCE + '\nFrozen review inputs:\n{}'
+        old_run = {**run, 'comparisonAuditEnvelopeContractVersion': 1}
+        assert messages_for_record(old_run, 'verify_answer_coverage', correction_prompt)[0]['content'] == POLICY
+        rows = [{'obligationId': 'o', 'checkId': 'criterion:C2', 'status': 'partial',
+                 'processLinks': [], 'reason': 'Only one of the two papers is described.'}]
+        for shape, payload in [('items', {'items': rows}), ('array_compat', rows)]:
+            raw = json.dumps(payload)
+            http.json.return_value['choices'][0]['message']['content'] = raw
+            prompt = correction_prompt + '\n' + shape
+            corrected = invoke(rid, 'verify_answer_coverage', prompt, {'max_tokens': 200})
+            assert sends[-1]['messages'][0]['content'] == CORRECTION_POLICY
+            assert 'Return ONLY {"items":[...]}' in sends[-1]['messages'][1]['content']
+            assert corrected['rawContent'] == raw and json.loads(corrected['content']) == rows
+            assert corrected['structuredOutput']['receivedShape'] == shape
+            assert invoke(rid, 'verify_answer_coverage', prompt, {'max_tokens': 200}) == corrected
+        assert len(sends) == 3
     finally:facade.shutdown()
