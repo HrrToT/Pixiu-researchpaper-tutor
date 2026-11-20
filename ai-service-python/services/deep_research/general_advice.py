@@ -105,6 +105,9 @@ _PREFERENCE_OR_BENEFIT = re.compile(
 _MEMORY_VALUE = re.compile(r'\d+(?:[.,]\d+)?\s*(?:KiB|MiB|GiB|KB|MB|GB|字节)\b', re.I)
 _NONMEASUREMENT = re.compile(
     r'未测|未报告|\b(?:not measured|not reported|unmeasured|not provided|was not recorded)\b', re.I)
+_MEASURED_CHOICE_RULE = re.compile(
+    r'(?:根据|依据|按)(?:上述|实际)?(?:实测|测量|测试)(?:结果|值)(?:来)?选择(?:峰值)?显存(?:占用)?更(?:低|少)的(?:方法|方案)'
+    r'(?=[。；;！？.!?，,\n]|$)')
 
 
 def _device_memory_supported(claim, audit, own):
@@ -113,15 +116,7 @@ def _device_memory_supported(claim, audit, own):
         return 'deviceMemory' not in audit
     memory = audit.get('deviceMemory')
     if memory == {'mode': 'test_first'}:
-        if not _MEASURE_FIRST.search(text):
-            return False
-        for clause in re.split(r'[。；;.!?\n]|但是|然而|不过|(?<![不])但|\b(?:but|however)\b', text, flags=re.I):
-            for match in _PREFERENCE_OR_BENEFIT.finditer(clause):
-                prefix = clause[max(0, match.start() - 36):match.start()]
-                if not re.search(r'(?:不能|无法|不足以|不可|不应|不要|未证明|尚未证实|'
-                                 r'\b(?:cannot|does not|do not|no evidence)\b)', prefix, re.I):
-                    return False
-        return True
+        return device_memory_test_first(text)
     if not isinstance(memory, dict) or set(memory) != {'mode', 'premise', 'excerpt'} or memory['mode'] != 'measured':
         return False
     from services.deep_research.audit_source_fields import resolve
@@ -132,9 +127,32 @@ def _device_memory_supported(claim, audit, own):
     source = own.get(premise.get('evidenceId'))
     resolved = resolve(premise, own)
     return bool(source and source.get('accessLevel') == 'fulltext' and resolved
-                and excerpt in resolved[1] and not _NONMEASUREMENT.search(excerpt)
-                and any(_GPU_MEMORY.search(part) and _MEMORY_VALUE.search(part)
-                        for part in re.split(r'[。；;\n]|(?<=[.!?])\s+', excerpt)))
+                and excerpt in resolved[1] and has_device_memory_measurement(excerpt))
+
+
+def has_device_memory_measurement(text):
+    return (not _NONMEASUREMENT.search(text)
+            and any(_GPU_MEMORY.search(part) and _MEMORY_VALUE.search(part)
+                    for part in re.split(r'[。；;\n]|(?<=[.!?])\s+', text)))
+
+
+def requests_device_memory(text):
+    return bool(_GPU_MEMORY.search(text))
+
+
+def device_memory_test_first(text):
+    if not _MEASURE_FIRST.search(text):
+        return False
+    # A generic criterion for a future measurement does not pick a winner.
+    # Scan the rest independently so added named preferences still fail.
+    text = _MEASURED_CHOICE_RULE.sub('。', text)
+    for clause in re.split(r'[。；;.!?\n]|但是|然而|不过|(?<![不])但|\b(?:but|however)\b', text, flags=re.I):
+        for match in _PREFERENCE_OR_BENEFIT.finditer(clause):
+            prefix = clause[max(0, match.start() - 36):match.start()]
+            if not re.search(r'(?:不能|无法|不足以|不可|不应|不要|未证明|尚未证实|'
+                             r'\b(?:cannot|does not|do not|no evidence)\b)', prefix, re.I):
+                return False
+    return True
 
 
 def validate(claim,verdict,evidence, *, device_memory=False):

@@ -391,6 +391,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 gaps.append(gap_by_id[oid])
             gap_by_id[oid].update(missingJointConclusion=True,
                                   missingEvidence='尚未形成通过核验的联合比较结论')
+            if goal.get('missingDeliverables'):
+                gap_by_id[oid]['missingAspects'] = list(dict.fromkeys([
+                    *gap_by_id[oid].get('missingAspects', []), *goal['missingDeliverables']]))
     from services.deep_research.completion_criteria import completion_contract_digest
     audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),

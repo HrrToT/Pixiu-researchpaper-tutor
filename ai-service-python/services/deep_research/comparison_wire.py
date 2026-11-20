@@ -60,10 +60,23 @@ def targets(plan):
     for oid, role in plan['roles'].items():
         if role['kind'] != 'joint':
             continue
-        result.append({'targetId': 'joint_' + oid, 'role': 'joint', 'question': role['question'],
-                       'allowedObligationIds': [oid], 'sources': role['sourceAliases'],
-                       'evidenceIds': [eid for eid, row in plan['evidence'].items()
-                                       if row['source'] in role['sourceAliases']]})
+        target = {'targetId': 'joint_' + oid, 'role': 'joint', 'question': role['question'],
+                  'allowedObligationIds': [oid], 'sources': role['sourceAliases'],
+                  'evidenceIds': [eid for eid, row in plan['evidence'].items()
+                                  if row['source'] in role['sourceAliases']]}
+        deliverables = plan.get('jointDeliverables', {}).get(oid)
+        if deliverables:
+            for part in deliverables:
+                part_target = {**target, 'targetId': target['targetId'] + '_' + part['kind'],
+                               'question': part['requirement'], 'deliverable': part['kind']}
+                from services.deep_research.general_advice import has_device_memory_measurement, requests_device_memory
+                if part['kind'] == 'conditional_advice' and requests_device_memory(part['requirement']):
+                    part_target['deviceMemoryMeasurementEvidenceIds'] = [
+                        eid for eid in target['evidenceIds']
+                        if has_device_memory_measurement(plan['evidence'][eid].get('quote', ''))]
+                result.append(part_target)
+        else:
+            result.append(target)
     return result
 
 
@@ -137,6 +150,29 @@ def resolve_point(point, target, registry, *, measurement_display=False):
         if entry is None or entry['binding']['evidenceId'] not in refs:
             raise ValueError('unknown_or_uncited_table_reference')
         bindings.append(deepcopy(entry['binding']))
+    deliverable = target.get('deliverable')
+    if deliverable == 'conditional_advice':
+        if point['kind'] not in ('proposal', 'suggestion'):
+            raise ValueError('joint_advice_requires_advice_kind')
+        if ('deviceMemoryMeasurementEvidenceIds' in target
+                and not set(refs).intersection(target['deviceMemoryMeasurementEvidenceIds'])):
+            from services.deep_research.general_advice import device_memory_test_first
+            prose = point['body'].get('prose') if isinstance(point['body'], dict) else None
+            if not isinstance(prose, dict) or not isinstance(prose.get('text'), str) or not device_memory_test_first(
+                    prose['text'] + '\n' + json.dumps(prose.get('conditions', {}), ensure_ascii=False)):
+                raise ValueError('joint_advice_requires_device_memory_test_first')
+    if deliverable == 'matched_example':
+        if point['kind'] != 'reported':
+            raise ValueError('joint_example_requires_reported_kind')
+        if not cells and any(entry['binding']['evidenceId'] in target['evidenceIds'] for entry in registry.values()):
+            raise ValueError('joint_example_requires_typed_table_cells')
+        if cells:
+            groups = {(b['evidenceId'], b['groupIndex']) for b in bindings}
+            methods = {registry[ref]['method'] for ref in cells}
+            metrics = {method: {registry[ref]['binding']['metric'] for ref in cells
+                                if registry[ref]['method'] == method} for method in methods}
+            if len(groups) != 1 or len(methods) != 2 or len(set(map(frozenset, metrics.values()))) != 1:
+                raise ValueError('joint_example_requires_one_matched_table_group')
     def strings(value):
         if isinstance(value, str):
             yield value
@@ -305,6 +341,16 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                        'Choose a genuinely matched numerical example, using exact cells from a permitted '
                        'source when it reports both methods under the same settings. Do not invent an '
                        'alignment, or use disk size as evidence of GPU memory.\n')
+            if plan.get('jointDeliverables'):
+                policy += ('For matched_example return one reported point with paired measurements for exactly '
+                           'two methods, using the same metrics from one source table and dataset group when '
+                           'using cells. Put no recommendation in that point. For conditional_advice use '
+                           'proposal or suggestion and discuss the actual requested resource. If the permitted '
+                           'sources do not measure peak GPU memory, give a test-first choice: measure both under '
+                           'the same conditions, then choose from those results. Do not predict a winner from '
+                           'file size, and do not repeat the numbers in that advice. An empty '
+                           'deviceMemoryMeasurementEvidenceIds array requires test-first advice. Describe how to '
+                           'measure peak device memory and choose after measuring; give no method preference.\n')
         if not data['jointTargets'] and isolate_paper_assignment(record):
             from services.deep_research.audience_rewrite import beginner_requested
             from services.deep_research.comparison_joint_reports import has_single_numeric_example, joint_numeric_example

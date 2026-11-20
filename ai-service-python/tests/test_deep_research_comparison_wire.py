@@ -43,6 +43,39 @@ def test_uniform_local_and_joint_answers_compile_exact_server_cells_without_appr
     assert 'choice' in draft['unresolvedObligationIds'] and (plan, payload)==before
 
 
+def test_joint_example_rejects_a_mixed_table_pair_and_advice_rejects_reported_kind():
+    from services.deep_research.comparison_wire import resolve_point
+
+    plan, payload, registry = fixture()
+    point = deepcopy(payload['answers'][0]['point'])
+    evidence = list(plan['evidence'])
+    target = {'evidenceIds': evidence, 'deliverable': 'matched_example'}
+    source = point['evidenceRefs'][0]
+    plan['evidence'][source]['quote'] += '\nTable row 7: Ours-7K | 160 | 6m25s'
+    registry, _ = table_catalog(plan, {})
+    pair = [key for key, cell in registry.items() if cell['binding']['evidenceId'] == source
+            and cell['binding']['metric'] == 'FPS']
+    assert len(resolve_point({**point, 'cellRefs': pair}, target, registry)['tableBindings']) == 2
+    foreign = next(key for key, cell in registry.items() if cell['binding']['evidenceId'] != source)
+    with pytest.raises(ValueError, match='one_matched_table_group'):
+        resolve_point({**point, 'evidenceRefs': evidence, 'cellRefs': [pair[0], foreign]}, target, registry)
+    with pytest.raises(ValueError, match='typed_table_cells'):
+        resolve_point({**point, 'cellRefs': []}, target, registry)
+    with pytest.raises(ValueError, match='requires_advice_kind'):
+        resolve_point(point, {'evidenceIds': evidence, 'deliverable': 'conditional_advice'}, registry)
+
+    advice = {'evidenceIds': evidence, 'deliverable': 'conditional_advice', 'deviceMemoryMeasurementEvidenceIds': []}
+    point.update(kind='proposal', cellRefs=[])
+    point['body']['prose']['text'] = '模型文件更小，因此显存受限时建议优先选择它。'
+    with pytest.raises(ValueError, match='device_memory_test_first'):
+        resolve_point(point, advice, registry)
+    point['body']['prose']['text'] = '先实测同一场景下两种方法的峰值显存，再根据测量结果选择显存占用更低的方法。'
+    assert resolve_point(point, advice, registry)['kind'] == 'proposal'
+    point['body']['prose']['text'] += '模型更小，因此建议优先使用该方法。'
+    with pytest.raises(ValueError, match='device_memory_test_first'):
+        resolve_point(point, advice, registry)
+
+
 def _display_fixture():
     from services.deep_research.comparison_wire import goal_catalog
     plan, payload, registry = fixture()
@@ -260,7 +293,7 @@ def test_facade_selects_duration_policy_only_for_new_comparison_run(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':QUESTION,'deferStart':True},start_async=False)
         assert r['comparisonPlanningContractVersion']==6
-        assert r['comparisonAuthoringContractVersion']==13
+        assert r['comparisonAuthoringContractVersion']==14
         with pytest.raises(ValueError, match='Immutable run field'):
             repo.update_run(r['runId'], lambda value: {**value, 'comparisonAuthoringContractVersion': 1})
         old={**r,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':3}

@@ -22,10 +22,12 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
+    if type(separate_joint_deliverables) is not bool or separate_joint_deliverables and not (joint_reports and local_goal_refs):
+        raise ValueError('Separate joint deliverables require the joint local-goal wire')
     if (type(shared_axes) is not bool or type(typed_roles) is not bool
             or (shared_axes or typed_roles) and not isinstance(question, str)):
         raise ValueError('Shared axes require the exact user question')
@@ -120,6 +122,9 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
         result=apply_slots(result,question)
     if unified_answers:result['answerWireVersion']=2 if local_goal_refs else 1
     if measurement_display:result['measurementDisplayVersion']=1
+    if separate_joint_deliverables:
+        from services.deep_research.comparison_joint_reports import split_joint_deliverables
+        result['jointDeliverables'] = split_joint_deliverables(roles, requirements, question)
     return result
 
 
@@ -229,6 +234,7 @@ def compile_cells(payload, plan, *, max_claims, table_registry=None):
     return {**({'answerWireAudit':wire_audit} if wire_audit is not None else {}),**({'layoutVersion': plan['version']} if plan['version'] in (2,3) else {}),
             **({'fixedSlots':True} if plan.get('fixedSlots') is True else {}),
             **({'jointReports':True} if typed and plan.get('jointReports') is True else {}),
+            **({'jointDeliverables':deepcopy(plan['jointDeliverables'])} if plan.get('jointDeliverables') else {}),
             **({'jointGoals': [deepcopy(role) for role in plan['roles'].values() if role['kind'] == 'joint']}
                if typed else {}),
             'report': {'sections': sections, 'claims': claims}, 'layout': layout,

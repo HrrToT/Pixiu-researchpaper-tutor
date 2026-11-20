@@ -170,6 +170,24 @@ def test_joint_deliverable_cannot_be_closed_by_checked_paper_cells():
     assert delivered['status'] == 'checked' and not delivered['gaps']
 
 
+def test_numeric_joint_claim_cannot_satisfy_separate_advice_delivery():
+    comparison = presentation()
+    comparison['layout'][0]['claimIds'] = []
+    comparison['jointGoals'] = [{'obligationId': 'o', 'question': QUESTION}]
+    comparison['jointDeliverables'] = {'o': [
+        {'kind':'matched_example','requirement':'给出同口径数字对照。'},
+        {'kind':'conditional_advice','requirement':'给出有条件的建议。'},
+    ]}
+    claims = [{**CLAIMS[0], 'obligationIds': ['o']}, CLAIMS[1]]
+    options = dict(wire_mode='object_v1', compact_checks=True, comparison=comparison, require_joint=True)
+    checked, _ = audit(**options, claims=claims)
+    assert checked['status'] == 'checked'
+    assert checked['gaps'][0]['missingAspects'] == ['给出有条件的建议。']
+    claims = [claims[0], {**claims[1], 'kind':'suggestion','obligationIds':['o']}]
+    completed, _ = audit(**options, claims=claims)
+    assert completed['status'] == 'checked' and completed['gaps'] == []
+
+
 @pytest.mark.parametrize('mode',['valid','root_coherence'])
 def test_actual_native_envelope_accepts_only_coherence_inside_items(mode):
     result,sent=audit(wire_mode=mode)

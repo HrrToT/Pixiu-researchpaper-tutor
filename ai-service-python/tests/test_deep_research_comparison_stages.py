@@ -165,6 +165,26 @@ def test_joint_stage_prioritizes_typed_table_when_literal_anchor_only_names_advi
     assert all('numericExample' in packet(stage)['requestContext'] for stage in current['stages'][:-1])
 
 
+def test_mixed_joint_goal_gets_two_wire_targets_under_original_obligation():
+    r, p, rows, aliases, bundles = fixture()
+    r.update(question=QUESTION + '。数字只选一组明确的基线对照作例子',
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=14)
+    goal = next(o for o in p['requirements'] if o['comparisonRole']['kind'] == 'joint')
+    goal['question'] += '，给出一组数字示例和显存受限建议。'
+    goal['completionCriteria'] = [
+        {'criterionId':'example','requirement':'给出一组同口径的数字对照。','responseType':'identification'},
+        {'criterionId':'advice','requirement':'给出显存受限的条件建议。','responseType':'explanation'},
+    ]
+    current = prepare(r, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert current['requirements'] == p['requirements']
+    joint = current['stages'][-1]
+    parts = [target for target in packet(joint)['jointTargets'] if 'deliverable' in target]
+    assert [x['deliverable'] for x in parts] == ['matched_example','conditional_advice']
+    assert parts[0]['targetId'] != parts[1]['targetId'] and parts[0]['goalChoices'] == parts[1]['goalChoices']
+    assert len(joint['targetIds']) == 3 and joint['maxPoints'] == 3
+
+
 def test_compact_stage_policy_preserves_the_full_packet_and_request_checkpoint():
     r, p, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,

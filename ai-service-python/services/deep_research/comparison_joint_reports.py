@@ -10,6 +10,10 @@ _SINGLE_NUMERIC_EXAMPLE = re.compile(
 )
 
 
+_NUMERIC = re.compile(r'数字|数值|定量|\bnumeric(?:al)?\b|\bquantitative\b', re.I)
+_ADVICE = re.compile(r'建议|推荐|(?:有条件|如何|怎样)选择|\b(?:recommend\w*|advice|conditional choice)\b', re.I)
+
+
 def has_single_numeric_example(roles):
     """Route an explicitly quoted one-example limit to its joint target."""
     return any(role['kind'] == 'joint' and _SINGLE_NUMERIC_EXAMPLE.search(role['requestExcerpt'])
@@ -22,9 +26,28 @@ def joint_numeric_example(roles, question):
         return True
     layers = getattr(question, 'instruction_layers', (str(question),))
     return (any(_SINGLE_NUMERIC_EXAMPLE.search(layer) for layer in layers)
-            and any(role['kind'] == 'joint' and re.search(
-                r'数字|数值|定量|\bnumeric(?:al)?\b|\bquantitative\b', role['question'], re.I)
+            and any(role['kind'] == 'joint' and _NUMERIC.search(role['question'])
                     for role in roles.values()))
+
+
+def split_joint_deliverables(roles, requirements, question):
+    """Split a mixed goal only when its frozen criteria distinguish both deliverables."""
+    if not joint_numeric_example(roles, question):
+        return {}
+    result = {}
+    for obligation in requirements:
+        oid = obligation['obligationId']
+        criteria = obligation.get('completionCriteria', [])
+        if roles[oid]['kind'] != 'joint' or len(criteria) != 2:
+            continue
+        numeric = [c for c in criteria if _NUMERIC.search(c['requirement']) and not _ADVICE.search(c['requirement'])]
+        advice = [c for c in criteria if _ADVICE.search(c['requirement']) and not _NUMERIC.search(c['requirement'])]
+        if len(numeric) == len(advice) == 1:
+            result[oid] = [
+                {'kind': 'matched_example', 'requirement': numeric[0]['requirement']},
+                {'kind': 'conditional_advice', 'requirement': advice[0]['requirement']},
+            ]
+    return result
 
 
 def enabled(record):

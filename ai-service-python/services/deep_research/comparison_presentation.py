@@ -36,6 +36,7 @@ def audit_view(value, claims):
     return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
             'sections': sections(value, claims), 'table': table,
             **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {}),
+            **({'jointDeliverables':deepcopy(value['jointDeliverables'])} if value.get('jointDeliverables') else {}),
             **({'jointReports':True} if value.get('jointReports') is True else {}),**joint_binding}
 
 
@@ -59,9 +60,21 @@ def revalidate_audit(audit, value, claims):
 def missing_joint_conclusions(value, claims):
     """A paper cell cannot stand in for a required joint deliverable."""
     cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
-    delivered = {oid for claim in claims if claim['claimId'] not in cell_ids
-                 for oid in claim.get('obligationIds', [])}
-    return [goal for goal in value['jointGoals'] if goal['obligationId'] not in delivered]
+    kinds = {}
+    for claim in claims:
+        if claim['claimId'] not in cell_ids:
+            for oid in claim.get('obligationIds', []):
+                kinds.setdefault(oid, set()).add(claim.get('kind'))
+    missing = []
+    for goal in value['jointGoals']:
+        oid = goal['obligationId']
+        accepted = kinds.get(oid, set())
+        deliverables = value.get('jointDeliverables', {}).get(oid, [])
+        missing_parts = [part['requirement'] for part in deliverables if accepted.isdisjoint(
+            {'reported'} if part['kind'] == 'matched_example' else {'proposal', 'suggestion'})]
+        if not accepted or missing_parts:
+            missing.append({**goal, **({'missingDeliverables': missing_parts} if missing_parts else {})})
+    return missing
 
 
 def metadata(draft):
@@ -74,6 +87,7 @@ def metadata(draft):
                and type(draft.get('answerWireAudit',{}).get('version')) is int
                and draft['answerWireAudit']['version']==2 else {}),
             **({'jointReports':True} if version==3 and draft.get('jointReports') is True else {}),
+            **({'jointDeliverables':deepcopy(draft['jointDeliverables'])} if draft.get('jointDeliverables') else {}),
             **({'jointGoals':deepcopy(draft['jointGoals'])} if version==3 else {}), 'sources': deepcopy(draft['sources']),
             'layout': [{k: deepcopy(row[k]) for k in
                         (*fields, *(['obligationIds'] if 'obligationIds' in row else []))}
