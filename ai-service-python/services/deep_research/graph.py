@@ -1248,7 +1248,7 @@ def make_synthesize_node(
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
-                   and record['comparisonJointReportsContractVersion'] in (3, 4, 5) else {}),
+                   and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6) else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
@@ -1858,10 +1858,12 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.comparison_cells import plan_cells, compile_cells, ComparisonDraftOverflow
             from services.deep_research.comparison_generation import planning_options
             try:
-                comparison_cell_draft = compile_cells(parsed,
-                    plan_cells(draft_obligations, source_registry, evidence_summaries,
-                               **planning_options(record, question)), max_claims=claim_limit,
+                comparison_plan = plan_cells(draft_obligations, source_registry, evidence_summaries,
+                                             **planning_options(record, question))
+                comparison_cell_draft = compile_cells(parsed, comparison_plan, max_claims=claim_limit,
                     **({'table_registry':table_registry} if record.get('comparisonPlanningContractVersion') in (4,5,6) else {}))
+                from services.deep_research.comparison_joint_reports import bind_benchmark_example
+                bind_benchmark_example(record, comparison_cell_draft, comparison_plan)
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 parsed = comparison_cell_draft['report']

@@ -260,6 +260,14 @@ def partition_source_bound_claims(claims, draft, evidence):
     goals = {cid: cell.get('obligationIds',[cell['obligationId']]) for cell in draft['layout'] for cid in cell['claimIds']} if typed else {}
     retained, rejected = [], []
     for claim in claims:
+        if 'benchmarkExampleClaimId' in draft:
+            from services.deep_research.comparison_joint_reports import benchmark_binding_error
+            error = benchmark_binding_error(claim, draft)
+            if error:
+                rejected.append({'claimId': claim['claimId'], 'reason': error,
+                    'detail': ('基准数字只放在一个同表配对示例中。分栏保留原文支持的定性结论；'
+                               '配对示例只使用同一数据组内两行的同名指标。')})
+                continue
         alias = owners.get(claim['claimId'])
         if alias is None:
             if typed:

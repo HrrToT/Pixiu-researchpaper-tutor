@@ -88,6 +88,30 @@ def test_reported_kind_preserves_numeric_and_independent_semantic_checks(mutatio
     assert not verify_claims([c],[ev],checker,table_references_version=4)['accepted']
 
 
+@pytest.mark.parametrize(('mutation', 'expected'), [
+    ('unchanged', None), ('another_claim', 'comparison_benchmark_example_scope'),
+    ('another_group', 'comparison_benchmark_example_pair'),
+    ('asymmetric_metrics', 'comparison_benchmark_example_pair'),
+])
+def test_benchmark_owner_and_pair_survive_repair_and_publication_checks(mutation, expected):
+    from services.deep_research.comparison_joint_reports import bind_benchmark_example
+    plan, draft, claim, evidence, _ = compiled()
+    plan['jointDeliverables'] = {'example': [{'kind': 'matched_example', 'requirement': '一组基准数字'}]}
+    bind_benchmark_example({'comparisonJointReportsContractVersion': 5}, draft, plan)
+    assert 'benchmarkExampleClaimId' not in draft
+    bind_benchmark_example({'comparisonJointReportsContractVersion': 6}, draft, plan)
+    assert draft['benchmarkExampleClaimId'] == claim['claimId']
+    if mutation == 'another_claim':
+        claim['claimId'] = 'revised_other_claim'
+    elif mutation == 'another_group':
+        claim['tableBindings'][0]['groupIndex'] = 1
+    elif mutation == 'asymmetric_metrics':
+        claim['tableBindings'].pop()
+    kept, rejected = partition_source_bound_claims([claim], draft, [evidence])
+    assert (rejected[0]['reason'] if rejected else None) == expected
+    assert kept == ([] if expected else [claim])
+
+
 @pytest.mark.parametrize('mutation',['policy','kind','text','binding','reference'])
 def test_reported_policy_and_joint_fact_are_bound_to_final_audit_digest(mutation):
     _,draft,c,_,_=compiled();meta=metadata(draft)
@@ -110,7 +134,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
-        assert r['comparisonJointReportsContractVersion']==5
+        assert r['comparisonJointReportsContractVersion']==6
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         for value in [0,None,True]:

@@ -24,6 +24,8 @@ v27 原始联合请求缺 LightGaussian 自身评估条件，重训基线说明�
 
 该写作校验版本全量通过 9755 项，旧 9754 项全部保留，包括上轮误将版本 16 当未知版本的测试。[全量回归](deep-research-evidence/comparison-example-output-host-full-20261120.json)
 
+新版在编译草稿时保存配对示例的声明身份，修订复核和最终发布都检查基准单元格的归属。示例有表格绑定时，仍须保留同一张表、同一数据组、两行同名指标。重放 v27 已发布的五条结论，额外表格数字被拒，原配对示例保留。无表格绑定的原文数字仍由原有引文和语义审核处理。
+
 修复候选全量离线 9746 项通过，旧 9734 项全部保留。以相同两篇和固定问题真实提交一次，16 次调用全部结算，79,248 Token、180 秒。报告发布了一组包含双方存储、画质和 FPS 的同表重训对照；仍为 `partial`，未通过科学验收。原服务、任务、运行及调用记录均核对恢复。[全量回归](deep-research-evidence/comparison-bounded-review-host-full-20261120.json) · [候选装载](deep-research-evidence/comparison-bounded-review-candidate-load-20261120.json) · [运行记录](deep-research-evidence/baseline-comparison-v27-real-20261120.json)
 
 联合 FPS 结论的设置子项现在进入本篇事实审核。审核指出所引 A6000 段落证明的是重训基线的硬件，不能证明 LightGaussian 自身的运行平台；实际证据集中另有 LightGaussian 评估设备的原文，这条结论没有引用它。先测显存再选择的建议被审核器当作正式实验，要求已有实测值。发布表格另列了 LightGaussian 的两组数字，未满足只选一组的呈现约束。机制和处理成本也有未核验项，且修订在复核前因预算停止。

@@ -97,22 +97,63 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5))
+            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5, 6))
 
 
 def resource_allocation_enabled(record):
-    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5)
+    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5, 6)
+
+
+def benchmark_example_obligation(record, plan):
+    """Identify a requested single example from server-owned deliverable metadata."""
+    version = record.get('comparisonJointReportsContractVersion')
+    if type(version) is not int or version not in (5, 6):
+        return None
+    matches = [oid for oid, parts in plan.get('jointDeliverables', {}).items()
+               for part in parts if part['kind'] == 'matched_example']
+    return matches[0] if len(matches) == 1 else None
 
 
 def benchmark_example_owner(record, plan):
-    """Limit benchmark table output only when the request has one matched target."""
-    if type(record.get('comparisonJointReportsContractVersion')) is not int or record['comparisonJointReportsContractVersion'] != 5:
+    oid = benchmark_example_obligation(record, plan)
+    return f'joint_{oid}_matched_example' if oid is not None else None
+
+
+def bind_benchmark_example(record, draft, plan):
+    if record.get('comparisonJointReportsContractVersion') != 6:
+        return
+    oid = benchmark_example_obligation(record, plan)
+    if oid is None:
+        return
+    cells = {cid for row in draft['layout'] for cid in row['claimIds']}
+    matches = [claim['claimId'] for claim in draft['report']['claims']
+               if claim['claimId'] not in cells and claim['kind'] == 'reported'
+               and claim['obligationIds'] == [oid]]
+    draft['benchmarkExampleClaimId'] = matches[0] if len(matches) == 1 else None
+
+
+def benchmark_binding_error(claim, draft):
+    """Recheck typed benchmark ownership and the one paired table group after edits."""
+    from services.deep_research.measurement_table_navigation import benchmark_metric
+    bindings = claim.get('tableBindings') or []
+    if claim['claimId'] != draft['benchmarkExampleClaimId']:
+        if any(isinstance(binding, dict) and isinstance(binding.get('metric'), str)
+               and benchmark_metric(binding['metric']) for binding in bindings):
+            return 'comparison_benchmark_example_scope'
         return None
-    matches = [(oid, part['kind']) for oid, parts in plan.get('jointDeliverables', {}).items()
-               for part in parts if part['kind'] == 'matched_example']
-    if len(matches) == 1:
-        oid, kind = matches[0]
-        return f'joint_{oid}_{kind}'
+    if not bindings:
+        return None  # A prose-only example still requires ordinary source and semantic verification.
+    methods = {}
+    groups = set()
+    for binding in bindings:
+        if (not isinstance(binding, dict) or not isinstance(binding.get('evidenceId'), str)
+                or type(binding.get('groupIndex')) is not int or type(binding.get('rowNumber')) is not int
+                or not isinstance(binding.get('metric'), str)):
+            return 'comparison_benchmark_example_pair'
+        groups.add((binding['evidenceId'], binding['groupIndex']))
+        methods.setdefault(binding['rowNumber'], set()).add(binding['metric'])
+    if len(groups) != 1 or len(methods) != 2 or len({frozenset(metrics) for metrics in methods.values()}) != 1:
+        return 'comparison_benchmark_example_pair'
     return None
 
 
