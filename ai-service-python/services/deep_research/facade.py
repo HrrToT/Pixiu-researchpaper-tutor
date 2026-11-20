@@ -432,7 +432,7 @@ class ResearchFacade:
             "answerFormatContractVersion": 3,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 4,
-            "recommendationReviewContractVersion": 2,
+            "recommendationReviewContractVersion": 3 if self._comparison_cells_version == 1 else 2,
             "recommendationRepairContractVersion": 1,
             "requestSemanticsContractVersion": 2,
             "answerPreservationContractVersion": 1,
@@ -1357,7 +1357,7 @@ class ResearchFacade:
             workflow_representation_context=lambda claims, context: representation_review_context(
                 self._repo.require_run(run_id), claims, context),
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),
-            device_memory_advice=lambda: self._repo.require_run(run_id).get('recommendationReviewContractVersion') == 2,
+            device_memory_advice=lambda: self._repo.require_run(run_id).get('recommendationReviewContractVersion'),
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)

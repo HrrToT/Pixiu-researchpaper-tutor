@@ -15,7 +15,7 @@ def eligible(claim):
 
 def enabled(record):
     return (type(record.get('recommendationReviewContractVersion')) is int
-        and record['recommendationReviewContractVersion'] in (1, 2)
+        and record['recommendationReviewContractVersion'] in (1, 2, 3)
         and record.get('state',{}).get('outputKind') in
             {'direction_survey','paper_comparison','claim_verification','research_entry'})
 
@@ -49,7 +49,7 @@ revision still requires normal factual, advice-purpose, scope and coverage check
 '''
 
 
-def prompt(claims_text, question, evidence_marker, *, device_memory=False):
+def prompt(claims_text, question, evidence_marker, *, device_memory=False, deployment_preflight=False):
     base = f'''Review the actual targets as NONEXPERIMENTAL recommendations.
 Question (goal, never evidence): {json.dumps(question,ensure_ascii=False)}
 Targets: {claims_text}
@@ -76,6 +76,20 @@ misclassification; do not rewrite the target or silently convert an experiment.
 '''
     if not device_memory:
         return base
+    if deployment_preflight:
+        base = base.replace(
+            'or experimental configuration disguised as ordinary advice. Do not approve it as\n'
+            'advice; it requires the scientific-design path.',
+            'or experimental configuration disguised as ordinary advice. The exception is a\n'
+            'deployment preflight: advising a reader to measure peak VRAM on the target device\n'
+            'before selecting a method, with like-for-like settings for a fair check. This is\n'
+            'other_nonexperimental advice when it predicts no result and claims no method wins.\n'
+            'Formal scientific protocols still require the scientific-design path.',
+        )
+        base += ('For a deployment preflight, matching device/data/resolution and recording the peak '
+                 'describe how to make the future check fair. A past numeric measurement is not required '
+                 'for test_first. Preserve all checks on embedded paper facts and premises. Put '
+                 'deviceMemory inside adviceAudit, not alongside it.\n')
     return base + '''
 For targets about GPU memory, VRAM, or 显存, add adviceAudit.deviceMemory.
 If the advice favors a method for GPU memory or predicts a GPU memory benefit,

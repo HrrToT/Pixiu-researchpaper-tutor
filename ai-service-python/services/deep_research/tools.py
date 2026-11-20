@@ -1436,8 +1436,10 @@ The dataAvailability object is an internal audit, not new experimental results.
         if advice_mode:
             from services.deep_research.general_advice import prompt as advice_prompt
             policy = self._device_memory_advice
-            device_memory = (policy() if callable(policy) else policy) is True
-            prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory)
+            policy = policy() if callable(policy) else policy
+            device_memory = policy is True or type(policy) is int and policy in (2, 3)
+            prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory,
+                                 deployment_preflight=type(policy) is int and policy == 3)
         version_policy=self._source_version_review
         version_policy=(version_policy() if callable(version_policy) else version_policy) is True
         if version_policy:

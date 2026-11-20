@@ -116,6 +116,24 @@ def test_v26_advice_replay_checks_exact_test_first_decision_returned_at_verdict_
         assert 'deviceMemory' not in result
 
 
+@pytest.mark.parametrize('version', [2, 3])
+def test_v27_deployment_preflight_is_distinguished_from_scientific_design(version):
+    c, e = fixture()
+    c.update(text='显存受限时，建议先在同一平台和相同数据集上测量两种方法的峰值显存，再按实测结果选择。',
+             conditions={'measurement': 'same platform, data, and resolution'})
+    row = verdict(purpose='other_nonexperimental')
+    row['adviceAudit']['deviceMemory'] = {'mode': 'test_first'}
+    invoke = Mock(return_value={'content': json.dumps([row])})
+    checker = BudgetedSemanticChecker(invoke, 'r', general_advice_review=True, device_memory_advice=version)
+    assert checker([c], [e])[0]['status'] == 'passed'
+    prompt = invoke.call_args.kwargs['prompt']
+    assert ('deployment preflight: advising' in prompt) is (version == 3)
+    assert ('past numeric measurement is not required' in prompt) is (version == 3)
+    row['adviceAudit']['purpose'] = 'scientific_design'
+    invoke.return_value = {'content': json.dumps([row])}
+    assert checker([c], [e])[0]['status'] == 'failed'
+
+
 def test_hypotheses_and_experiment_objectives_keep_scientific_path():
     c,_=fixture();c['kind']='hypothesis';assert not eligible(c)
     assert not enabled({'recommendationReviewContractVersion':1,'state':{'outputKind':'experiment_design'}})
