@@ -6,6 +6,12 @@
 
 第 16 版在锁定研究计划前核对用户是否明确只要一组数字示例。模型漏掉该联合义务时，补入用户原文锚点和原有联合来源范围，并进入正常检索和证据审核。独立数字示例和显存建议采用各自的结构校验。回放 v25 的保存计划与已获取证据，联合阶段恢复三个目标，原 8 条必需证据全部保留，请求为 23965 字节。109 项针对性回归通过，尚未用新规则提交整链路真实比较。
 
+## v27 同表实例发布与剩余缺口
+
+修复候选全量离线 9746 项通过，旧 9734 项全部保留。以相同两篇和固定问题真实提交一次，16 次调用全部结算，79,248 Token、180 秒。报告发布了一组包含双方存储、画质和 FPS 的同表重训对照；仍为 `partial`，未通过科学验收。原服务、任务、运行及调用记录均核对恢复。[全量回归](deep-research-evidence/comparison-bounded-review-host-full-20261120.json) · [候选装载](deep-research-evidence/comparison-bounded-review-candidate-load-20261120.json) · [运行记录](deep-research-evidence/baseline-comparison-v27-real-20261120.json)
+
+联合 FPS 结论的设置子项现在进入本篇事实审核。审核指出所引 A6000 段落证明的是重训基线的硬件，不能证明 LightGaussian 自身的运行平台；实际证据集中另有 LightGaussian 评估设备的原文，这条结论没有引用它。先测显存再选择的建议被审核器当作正式实验，要求已有实测值。发布表格另列了 LightGaussian 的两组数字，未满足只选一组的呈现约束。机制和处理成本也有未核验项，且修订在复核前因预算停止。
+
 ## v26 比较终态与审核协议
 
 第 16 版全量离线回归通过 9,734 项。独立候选只提交一次，17 次模型调用全部结算，共 83,978 Token、188 秒。原服务已恢复，既有任务、运行与调用记录逐项一致。数字示例进入计划和草稿，报告发布 6 条分栏事实，整轮仍为 `partial`，科学验收未通过。[全量回归](deep-research-evidence/comparison-preserved-example-host-full-20261120.json) · [候选装载](deep-research-evidence/comparison-preserved-example-candidate-load-20261120.json) · [运行记录](deep-research-evidence/baseline-comparison-v26-real-20261120.json)
