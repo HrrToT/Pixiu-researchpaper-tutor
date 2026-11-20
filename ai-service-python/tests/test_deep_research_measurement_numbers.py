@@ -1,7 +1,7 @@
 """Quantity spellings in reported facts cannot weaken the evidence gate."""
 import pytest
 
-from services.deep_research.verification import make_evidence, verify_claims
+from services.deep_research.verification import make_evidence, precheck_claims, verify_claims
 
 
 def check(quote, text, semantic=True):
@@ -66,3 +66,29 @@ def test_saved_training_claim_can_reach_semantic_check_without_source_rewriting(
     quote = 'We take 3 samples per ray. LPIPS is introduced after 150,000 steps; total training is 300,000 steps.'
     result, evidence = check(quote, '每条射线采样3次，15万步后加入LPIPS损失')
     assert result['accepted'] and evidence['quote'] == quote
+
+
+@pytest.mark.parametrize(('quote', 'text', 'candidate'), [
+    ('We start at 4 times smaller image resolution and upsample twice after 250 and 500 iterations.',
+     '从4倍小的图像分辨率开始，并在250和500次迭代后各上采样一次。', True),
+    ('We start at 4 times smaller image resolution and upsample twice after 250 and 500 iterations.',
+     '从5倍小的图像分辨率开始，并在250和500次迭代后各上采样一次。', False),
+    ('We start at 4 times smaller image resolution and upsample twice after 250 and 500 iterations.',
+     '从4倍小的图像分辨率开始，并在250和600次迭代后各上采样一次。', False),
+    ('We ran this 4 times and started at a smaller image resolution.',
+     '从4倍小的图像分辨率开始。', False),
+    ('We start at 4 times smaller image resolution and may upsample after 250 and 500 iterations.',
+     '从4倍小的图像分辨率开始，并在250和500次迭代后各上采样一次。', False),
+])
+def test_saved_resolution_warmup_translation_keeps_exact_checked_quantities(quote, text, candidate):
+    ev = make_evidence({'workId': 'paper', 'versionId': 'v1', 'contentHash': 'hash',
+                        'accessLevel': 'fulltext'}, quote, quote, location={'page': 5}, obligation_ids=[])
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text, 'evidenceRefs': [ev['evidenceId']]}
+    assert precheck_claims([claim], [ev], quantity_spelling_version=15)['rejected'][0]['reason'] == 'numeric_mismatch'
+    result = precheck_claims([claim], [ev], quantity_spelling_version=16)
+    assert (not result['rejected']) is candidate
+    if candidate:
+        def reject(claims, evidence):
+            assert claims[0]['text'] == text and evidence[0]['quote'] == quote
+            return [{'claimId': 'c1', 'status': 'failed', 'reason': 'Semantic check remains required.'}]
+        assert not verify_claims([claim], [ev], reject, quantity_spelling_version=16)['accepted']

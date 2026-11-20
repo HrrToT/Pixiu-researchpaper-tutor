@@ -14,6 +14,11 @@ _NUMBER = re.compile(
 _VALID_NUMBER = re.compile(
     r'(?P<sign>[-+]?)(?P<integer>\d+|\d{1,3}(?:,\d{3})+)'
     r'(?:\.(?P<fraction>\d+))?(?:[eE](?P<exponent>[-+]?\d+))?\Z')
+_ENGLISH_FACTOR_SUFFIX = re.compile(r'(?<=\d)\s+times(?=\s+(?:smaller|larger|higher|lower|wider|narrower)\b)', re.I)
+_ENGLISH_UPSAMPLE_SCHEDULE = re.compile(
+    r'\b(upsampl(?:e|es|ed|ing)\s+)twice(?=\s+after\s+\d+\s+and\s+\d+\s+iterations?\b)', re.I)
+_DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
+    r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
 _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
     r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
@@ -221,6 +226,19 @@ def number_display(identity):
     if len(coefficient) <= 24 and len(exponent) <= 3 and -6 <= int(exponent) <= 8:
         return format(Decimal(coefficient + 'e' + exponent), 'f') + unit
     return identity
+
+
+def normalize_explicit_quantity_phrases(text):
+    """Normalize number checks only. Preserve original quotes for semantic review."""
+    text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
+    text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
+
+    def distribute(match):
+        if match['first'] == match['second']:
+            return match[0]
+        return f"{match['first']}和{match['second']}次迭代后分别上采样，共两次"
+
+    return _DISTRIBUTED_UPSAMPLE_SCHEDULE.sub(distribute, text)
 
 
 def measurement_numbers(text: str, *, word_counts=False, relative_references=False,

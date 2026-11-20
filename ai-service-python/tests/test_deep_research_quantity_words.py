@@ -107,9 +107,10 @@ def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, rep
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释三个分量',
             'deferStart': True, 'quantitySpellingContractVersion': replacement}, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 15
+        assert run['quantitySpellingContractVersion'] == 16
+        changed = 15 if replacement == 16 else replacement
         with pytest.raises(ValueError, match='Immutable'):
-            repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': replacement})
+            repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': changed})
         c, ev = setup('前3个输出表示平移。')
         check = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
         assert facade._get_verify_claims(run['runId'])([c], [ev], check)['accepted']
