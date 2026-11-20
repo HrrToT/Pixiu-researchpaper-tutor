@@ -8,6 +8,8 @@
 
 ## 联合写作的评估条件取证
 
+v28 候选源码全量回归通过 9749 项，旧 9746 项全部保留，容器装载的源码哈希及既有记录核对一致。真实任务提交一次，首次 `resolve_brief` 失败，终态为 `failed / provider_payment_rejected`，没有已结算模型回复及报告。账本计入 4632 个预算单位，账本未收到提供方用量。用原服务配置只读查询官方账户接口确认账户暂不可用，未重试该任务。原服务与全部现有记录已核对恢复。[全量回归](deep-research-evidence/comparison-protocol-priority-host-full-20261120.json) · [候选装载](deep-research-evidence/comparison-protocol-priority-candidate-load-20261120.json) · [v28 回执摘要](deep-research-evidence/baseline-comparison-v28-real-20261120.json)
+
 v27 原始联合请求缺 LightGaussian 自身评估条件，重训基线说明仍在。新建比较运行在有独立速度比较目标时，优先给每个有关来源保留一条正文评估条件候选。必要证据仍先满足，候选仍受 20 条和 24,000 字节限制，来源权限及原文核验沿用原流程。用 v27 保存的阶段输入和必要证据回放，两个平台语境均处于各自可引用的原文，联合请求为 23,993 字节，8 条必需证据及数字示例的表格单元保留。129 项针对性回归通过，真实生成和最终报告仍待复验。
 
 ## v27 同表实例发布与剩余缺口

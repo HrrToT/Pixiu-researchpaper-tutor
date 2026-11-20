@@ -1,0 +1,53 @@
+{
+  "sourceCommit": "cbe95b6fcd658e2c8b834b77fb97f0afd33e7523",
+  "case": "D2-BASELINE-COMPRESSION-v28",
+  "split": "development",
+  "runId": "dr_run_ab3450ca0fed57f5950a7add82629f72",
+  "comparisonAuthoringContractVersion": 16,
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "provider_payment_rejected",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "reservedModelCalls": 0,
+    "tokens": 4632,
+    "elapsedSeconds": 4.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "totalModelCalls": 1
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {},
+  "otherCallsByState": {
+    "failed": 1
+  },
+  "evidenceCount": 0,
+  "draftCount": 0,
+  "preReleaseAcceptedBySystem": 0,
+  "reportClaimCount": 0,
+  "rejectedByReason": {},
+  "finalAuditStatus": null,
+  "finalAuditGapCount": 0,
+  "finalAuditLimit": null,
+  "auditTransport": [],
+  "repairTransport": [],
+  "repairStatus": null,
+  "releaseStatus": null,
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "6ec8afc3fbfb2ece9051c58b729ea6296b01be3c76c34bac19877a10db2eb909",
+    "calls": "90351e610d28c572f0ddf5bc62bd6423a5aed28ead07894e1fa0fb7160bcbfbc",
+    "result": "23a3c2ba3e462d1f5efe154c6356eac05eaac9263fdf7177afa1d567f5ee0d6b",
+    "execution": "f7d60ecc31091856c23a2143f854ef1008847667ef1d6d37e578944467289755"
+  }
+}
