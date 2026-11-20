@@ -6,6 +6,47 @@ REPAIR_OUTPUT_OPTION='_bounded_factual_repair_output'
 DIRECT_REVIEW_OPTION='_direct_comparison_review'
 
 
+def compact_comparison_prompt(targets):
+    """The complete current comparison audit, with one source-path rule."""
+    import json
+    return '\nComparative targets and exact scopes: ' + json.dumps(targets, separators=(',', ':')) + '''
+A supported comparative target requires comparisonAudit:
+{"scope":"cross_study|within_study","alignment":"established|not_established|different",
+ "supportsClaim":true,"premises":[{"evidenceId":"own E ID","path":["quote"]}],
+ "conditionDifferences":[{"dimension":"actual evaluation condition",
+  "left":{"evidenceId":"own E ID","path":["quote"],"value":"literal setting"},
+  "right":{"evidenceId":"own E ID","path":["quote"],"value":"literal setting"}}]}.
+Copy the exact scope enum. Bind each required source/version for cross_study. A name,
+table cell or shared hardware label alone does not establish alignment or a causal effect.
+Use different only for distinct literal values of the same relevant condition, bound
+on both sides. Otherwise return conditionDifferences=[]. Unknown remains not_established.
+Distinguish arithmetic, bounded system comparisons and controlled method effects.
+A within-table observation can be bounded to that evaluation. Preserve original versus
+re-trained baseline, relevant variants, datasets and direction. Do not rank across
+unknown settings or claim comparison is inherently impossible. A why-question or
+speculative confounder supplies no premise. A judgement needs its actual conditions
+and limits; a cell inventory is not a judgement. If the actual conclusion or reason
+lacks support, set scopeAudit.supported=false.
+'''
+
+
+COMPACT_SCOPE_PROMPT = '''
+Every factual target requires scopeAudit:
+{"claimStrength":"bounded|exclusive|universal","evidenceStrength":"bounded|exclusive|universal",
+ "supported":true,"statementPath":["text"],"premises":[{"evidenceId":"own E ID","path":["quote"]}]}.
+Review the whole text AND conditions, including ownership, table purpose and every clause.
+Only applies/works at X asserts necessity; these citations only support X limits knowledge.
+Finite observations or failures do not establish exclusivity or universality. The cited
+premises must establish the actual strength and scope of the assertion. Do not turn a
+profiling/ablation result into a main-table or original baseline result, or weaken text.
+Use supported=false for any unsupported clause. The server independently checks all gates.
+Bind scopeAudit/comparisonAudit to exact visible own source fields using evidenceId and
+path only: ["quote"], ["sourceContext"] for string context, or ["sourceContext","before"]
+/ ["sourceContext","after"] when supplied. Condition sides also need the literal value
+present in that field. No retyped, omitted or foreign text. Paths are not scientific proof.
+'''
+
+
 def cell_review_enabled(record):
     """Review independent comparison points, regardless of total answer length."""
     from services.deep_research.comparison_generation import enabled as cells_enabled

@@ -746,6 +746,7 @@ class BudgetedSemanticChecker:
         preserve_initial_review_budget=False,
         direct_comparison_review=False,
         direct_comparison_scope_review=False,
+        compact_factual_review=False,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -794,6 +795,7 @@ class BudgetedSemanticChecker:
         self._preserve_initial_review_budget = preserve_initial_review_budget
         self._direct_comparison_review = direct_comparison_review
         self._direct_comparison_scope_review = direct_comparison_scope_review
+        self._compact_factual_review = compact_factual_review
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -1096,6 +1098,17 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
         prompt += '\n' + SCIENTIFIC_TERMINOLOGY
         question = self._research_question() if callable(self._research_question) else self._research_question
+        comparison_version = (self._comparison_audit_version() if callable(self._comparison_audit_version)
+                              else self._comparison_audit_version)
+        scope_source_paths = (self._scope_source_paths() if callable(self._scope_source_paths)
+                              else self._scope_source_paths) is True
+        comparison_source_paths = (self._comparison_source_paths() if callable(self._comparison_source_paths)
+                                   else self._comparison_source_paths) is True
+        compact_policy = self._compact_factual_review
+        compact_review = (node in {'verify', 'verify_repair'} and single_decision
+            and source_field_references and scope_source_paths and comparison_source_paths
+            and type(comparison_version) is int and comparison_version == 4
+            and (compact_policy() if callable(compact_policy) else compact_policy) is True)
         experiment_policy = (self._experiment_intent_review() if callable(self._experiment_intent_review)
                              else self._experiment_intent_review)
         experiment_intent = experiment_policy is True or (type(experiment_policy) is int and experiment_policy in (1,2,3))
@@ -1105,7 +1118,9 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
                 policy_version=experiment_policy if type(experiment_policy) is int and experiment_policy in (2,3) else 1)
         if isinstance(question, str) and question.strip():
             prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
-            prompt += ('\nCheck that each target fulfills its role in answering this actual objective. '
+            prompt += ('\nJudge this target in its actual role; the research question supplies no scientific premise.'
+                       if compact_review else
+                       '\nCheck that each target fulfills its role in answering this actual objective. '
                        'A limitation warning does not make a design capable of identifying the requested effect. '
                        'If the user asks to isolate intervention effects, the primary comparison must hold '
                        'recovery/optimization budgets and other interventions fixed. Unmatched native-pipeline '
@@ -1319,29 +1334,31 @@ The dataAvailability object is an internal audit, not new experimental results.
                     prompt += audit_prompt
         comparison_enabled=(self._comparison_reasoning() if callable(self._comparison_reasoning)
                             else self._comparison_reasoning) is True
-        comparison_version=(self._comparison_audit_version() if callable(self._comparison_audit_version)
-                            else self._comparison_audit_version)
-        comparison_source_paths=(self._comparison_source_paths() if callable(self._comparison_source_paths)
-                                 else self._comparison_source_paths) is True
         if comparison_enabled:
             from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
             comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
             if comparison_targets:
-                prompt+=comparison_audit_prompt(comparison_targets, comparison_version,
-                    **({'source_paths':True} if comparison_source_paths else {}),
-                    **({'single_decision':True} if single_decision else {}))
+                if compact_review:
+                    from services.deep_research.factual_review import compact_comparison_prompt
+                    prompt += compact_comparison_prompt(comparison_targets)
+                else:
+                    prompt+=comparison_audit_prompt(comparison_targets, comparison_version,
+                        **({'source_paths':True} if comparison_source_paths else {}),
+                        **({'single_decision':True} if single_decision else {}))
         scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
         complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
                         else self._complete_factual_scope) is True
-        scope_source_paths=(self._scope_source_paths() if callable(self._scope_source_paths)
-                            else self._scope_source_paths) is True
         if scope_enabled:
             from services.deep_research.factual_scope import audit_prompt as scope_prompt
             targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
             if targets:
-                prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}),
-                    **({'single_decision':True} if single_decision else {}),
-                    **({'source_paths':True} if scope_source_paths else {}))
+                if compact_review:
+                    from services.deep_research.factual_review import COMPACT_SCOPE_PROMPT
+                    prompt += COMPACT_SCOPE_PROMPT
+                else:
+                    prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}),
+                        **({'single_decision':True} if single_decision else {}),
+                        **({'source_paths':True} if scope_source_paths else {}))
         expression_context = (self._scope_expression_context(claims)
                               if callable(self._scope_expression_context) else {})
         if expression_context:
@@ -1365,7 +1382,7 @@ The dataAvailability object is an internal audit, not new experimental results.
         target_bindings=(self._audit_target_fields() if callable(self._audit_target_fields)
                          else self._audit_target_fields) is True
         has_factual_targets=any(c.get('kind') in {'reported','inference'} for c in claims)
-        if field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
+        if not compact_review and field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
             from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
             if scope_source_paths:
                 source_field_guidance=source_field_guidance.replace(
@@ -1377,7 +1394,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                     'For scopeAudit and comparisonAudit premises/condition sides use evidenceId+path, never retype a quotation; condition sides retain their literal value.')
             prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
                 if type(comparison_version) is int and comparison_version==4 else source_field_guidance)
-        if target_bindings and scope_enabled and has_factual_targets:
+        if not compact_review and target_bindings and scope_enabled and has_factual_targets:
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
         from services.deep_research.prospective_review import enabled as prospective_review_enabled, policy as prospective_review_policy

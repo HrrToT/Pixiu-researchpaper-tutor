@@ -108,3 +108,38 @@ def test_saved_v15_pressure_admits_bounded_next_request_without_larger_budget(tm
     assert budget['tokens'] == 96142
     assert budget['reservedModelCalls'] == 5 and budget['modelCalls'] == 7
     assert call['status'] == 'pending'
+
+
+@pytest.mark.parametrize('mutation', [None, 'foreign_scope_source', 'missing_comparison'])
+def test_compact_review_keeps_exact_inputs_and_all_independent_verdict_gates(mutation):
+    import json
+    from test_deep_research_factual_decision import evidence, target
+    from test_deep_research_review_source_fields import reference_row, run
+
+    claim, sources = target(), evidence()
+    claim['evidenceRefs'].append('peer')
+    sources.append({'evidenceId': 'peer', 'quote': 'Another work also reports setting 12.',
+                    'sourceWorkId': 'other', 'sourceVersionId': 'v2'})
+    raw = reference_row()
+    raw['comparisonAudit'] = {'scope': 'cross_study', 'alignment': 'established',
+                              'supportsClaim': True, 'conditionDifferences': [],
+                              'premises': [{'evidenceId': eid, 'path': ['quote']} for eid in ('E1', 'E2')]}
+    if mutation == 'foreign_scope_source':
+        raw['scopeAudit']['premises'][0]['evidenceId'] = 'foreign'
+    elif mutation == 'missing_comparison':
+        raw.pop('comparisonAudit')
+    flags = {'comparison_reasoning': True, 'comparison_audit_version': 4,
+             'scope_source_paths': True, 'comparison_source_paths': True}
+    old, [old_request] = run(raw, sources, claim, **flags)
+    new, [new_request] = run(raw, sources, claim, **flags, compact_factual_review=True)
+    assert new == old
+    assert new['status'] == ('passed' if mutation is None else 'failed')
+    old_prompt, new_prompt = (request['prompt'] for request in (old_request, new_request))
+
+    def inputs(prompt):
+        text = prompt.split('\nClaims:\n', 1)[1]
+        claim_data, evidence_data = text.split('\nEvidence:\n', 1)
+        return json.loads(claim_data), json.JSONDecoder().raw_decode(evidence_data)[0]
+
+    assert inputs(new_prompt) == inputs(old_prompt)
+    assert len(new_prompt.encode()) < len(old_prompt.encode()) - 4000
