@@ -1,6 +1,14 @@
 # 当前执行状态与剩余交付
 
-更新：2026-11-19。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
+更新：2026-11-20。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
+
+## v21 写作格式与核验准入
+
+候选 3c14b8676 通过 9708 项全量离线回归，全部 9706 项旧用例保留。旧 v20 的三个写作请求逐字可复现。v21 只提交一次，13 次模型调用、71917 Token、134 秒，三阶段均完成写作。两个论文阶段各四条格式有效草稿，v20 的论文阶段类型和表格数组错误未复现。联合阶段仍有一条表格引用被拦截。
+
+五个原始初审请求身份在离线回放中全部匹配。下一请求预留 32047 Token，若准入则投影总量 103964，超过 100000；普通池投影 66944，超过可用 62980。原错误显示 `modelCalls`，真实阻断为预留容量。系统保留逐条判定，但没有完成整答审核，结果为 inconclusive，无可发布科学结论。两条暂时通过逐条核验的草稿仍有跨论文表述和测量含义需要人工核对。
+
+原服务已恢复，当前任务、运行和调用记录一致。[全量回归](deep-research-evidence/comparison-explicit-stage-host-full-20261119.json) · [装载核对](deep-research-evidence/comparison-explicit-stage-candidate-load-20261119.json) · [v21 运行与准入回放](deep-research-evidence/baseline-comparison-v21-real-20261120.json)
 
 ## v20 写作输出格式回放
 
