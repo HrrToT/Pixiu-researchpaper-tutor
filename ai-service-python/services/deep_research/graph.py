@@ -2567,7 +2567,7 @@ def make_verify_node(
                         merged_audit = audit_accepted(merged.get('accepted', []), current.get('budget'))
                         from services.deep_research.comparison_measurement_display import repair_profile
                         from services.deep_research.comparison_repair import can_retain_audited_answer
-                        if repair_profile(record) == 3 and can_retain_audited_answer(
+                        if repair_profile(record) in (3, 4) and can_retain_audited_answer(
                                 answer_coverage, merged_audit, effective_question(record),
                                 verification_result.get('accepted', []), comparison_audit_args.get('comparison_cells')):
                             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),

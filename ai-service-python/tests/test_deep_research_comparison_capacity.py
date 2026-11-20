@@ -122,13 +122,21 @@ def test_production_verify_always_audits_after_deferred_repair_even_when_it_fail
 
 
 def test_exhausted_repair_audit_keeps_the_previously_checked_comparison():
+    _assert_previously_checked_comparison_survives(6)
+
+
+def test_named_condition_repair_keeps_the_previously_checked_comparison():
+    _assert_previously_checked_comparison_survives(11)
+
+
+def _assert_previously_checked_comparison_survives(authoring_version):
     from unittest.mock import Mock, patch
     from services.deep_research.answer_coherence import identity
     from services.deep_research.comparison_presentation import audit_digest
     from services.deep_research.graph import make_verify_node
 
     r = populated_factual_record()
-    r.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=6)
+    r.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=authoring_version)
     from services.deep_research.authored_body import decode
     claims = [decode(c) for c in r['state']['reportBody']['claims']]
     rejected_id = claims[0]['claimId']
