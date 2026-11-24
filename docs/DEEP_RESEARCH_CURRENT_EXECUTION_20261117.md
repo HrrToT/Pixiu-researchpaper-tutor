@@ -14,6 +14,10 @@ H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,5
 
 v46 获得了带标记的基线表，但获取结果没有包含解释重训标记的同页原文。将 v45 实际读取的同版本第 6 页原文加入离线回放后，联合目标由零个可选配对变为 10 个，每个配对绑定同一数据组的 10 个单元格，引用原表与说明。新版在明确要求一组数字示例、且本机已检索到带标记表格时，从同页同版本的候选中保留至多一条说明，仍在原材料权限及读取上限内。577 项定向回归通过。实际获取与整题报告尚需复验。 [回放与回归记录](deep-research-evidence/comparison-benchmark-protocol-acquisition-replay-20261125.json)
 
+用 v46 已授权材料的真实索引复验三条原查询。前两条原先在五个槽位中只留下表格和其他片段，第三条原已包含说明。调整后，前两条都能在五个槽位内带回第 6 页说明，全部原表身份保留。此项使用独立进程，核对了当前材料权限，未调模型或写入研究账本。 [真实索引核对](deep-research-evidence/comparison-benchmark-protocol-local-index-20261125.json)
+
+`8eddf3738` 完成 501 个模块、9,822 项离线回归，保留原有 9,818 项，零失败、零错误、零跳过。同页说明替换普通检索片段的最终调整在其后另行核验。 [离线回归](deep-research-evidence/comparison-benchmark-protocol-loopback-full-20261125.json)
+
 ## 2026-11-24 v45 真实比较
 
 候选源码与通过 9,814 项回归的快照一致，装载前历史记录核对一致。v45 单次提交，调用模型 16 次，消耗 86,594 Token，用时 153 秒，外部检索为零。7 条主张通过单项核验，含由 10 个原表单元格支持的同口径数字示例。全答审核正常返回，但仅返回两项义务，义务身份检查未通过。原服务已恢复，历史数据核对一致。恢复后可从工作区读取该次运行的部分报告，发布队列已确认交付，同一报告版本在 Java 保存了机器存档和可编辑版本。运行快照中的 `published` 初始标记仍为 `false`。这次没有获得完整报告验收。 [候选装载](deep-research-evidence/comparison-cross-paper-boundary-candidate-load-20261124.json) · [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json)
@@ -615,10 +619,10 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。完整研究库副本冷启动核对历史状态。 [完整回归](deep-research-evidence/citation-pdf-typography-host-full-20261120.json) · [副本冷启动](deep-research-evidence/v29-full-research-copy-20261120.json) | 保留离线集成结论。切换时复核现用任务与数据，历史未知请求保持冻结。 |
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
-| H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对研究义务覆盖、版本与比较条件。 |
+| H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已冻结，两篇论文分别完成 112、114 个本地索引片段。 | 核对研究义务覆盖、版本与比较条件。 |
 | H3 外部补查 | [H3-STREAMING 定义](DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json)已冻结。首次独立提交在外部发现阶段失败，未读取正文。 | 用开发样本验证获取修复，再用新冻结的独立任务从空材料开始，核对指定版本正文、引用和解释。 |
-| H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对来源版本、证据冲突与差异适用条件。 |
-| H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对假设依据、对照组、资源预算、指标与结论边界。 |
+| H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)已冻结，两个版本均完成本地索引。 | 核对来源版本、证据冲突与差异适用条件。 |
+| H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)已冻结，两篇论文均完成本地索引。 | 核对假设依据、对照组、资源预算、指标与结论边界。 |
 | H6 外部失败或预算耗尽 | 5 条离线故障链首次执行均通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。 [记录](deep-research-evidence/h6-fault-chain-first-20261112.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
