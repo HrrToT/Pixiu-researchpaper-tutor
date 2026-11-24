@@ -11,7 +11,41 @@ from services.deep_research.experiment_planning import remaining_seconds
 from services.deep_research.factual_reasoning import request_options
 from services.deep_research.request_context import effective_question
 from services.deep_research.comparison_measurement_display import explicit_stage_schema
-from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS
+from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS, TABLE_EXAMPLE_BODY
+
+
+def bind_stage_point(point, pairs, *, setting_references=False):
+    """Compile explicit choices without changing the journaled provider response."""
+    body = point.get('body')
+    if pairs:
+        pair_id = body.get('tableExample') if isinstance(body, dict) and set(body) == {'tableExample'} else None
+        if (point.get('kind') != 'reported' or not isinstance(pair_id, str) or pair_id not in pairs
+                or point.get('evidenceRefs') != [] or point.get('cellRefs') != []):
+            raise ValueError('stage_matched_example_pair')
+        selected = pairs[pair_id]
+        return {**point, 'body': TABLE_EXAMPLE_BODY, 'evidenceRefs': selected['evidenceRefs'],
+                'cellRefs': selected['cellRefs']}
+    if not setting_references or not isinstance(body, dict) or set(body) != {'boundary'}:
+        return point
+    boundary = body['boundary']
+    settings = boundary.get('observedSettings') if isinstance(boundary, dict) else None
+    if not isinstance(settings, list) or not any(isinstance(s, dict) and 'evidenceRefs' in s for s in settings):
+        return point
+    refs = point.get('evidenceRefs')
+    if not isinstance(refs, list):
+        raise ValueError('stage_boundary_setting_evidence')
+    for setting in settings:
+        if not isinstance(setting, dict):
+            raise ValueError('stage_boundary_setting_evidence')
+        if 'evidenceRefs' not in setting:
+            continue
+        setting_refs = setting['evidenceRefs']
+        if (not isinstance(setting_refs, list) or not setting_refs
+                or any(not isinstance(ref, str) or ref not in refs for ref in setting_refs)
+                or len(set(setting_refs)) != len(setting_refs)):
+            raise ValueError('stage_boundary_setting_evidence')
+    return {**point, 'body': {'boundary': {**boundary,
+            'observedSettings': [{k: v for k, v in setting.items() if k != 'evidenceRefs'} for setting in settings]}}}
 
 
 def recorded_response(record, prompt, options, calls):
@@ -43,6 +77,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         raise DeepResearchError('invalid_comparison_stage_input', '比较输入身份不一致。')
     record = current()
     check_kind = explicit_stage_schema(record)
+    setting_references = record.get('comparisonJointReportsContractVersion') == 15
     saved = deepcopy(record.get('state',{}).get('comparisonStageGeneration'))
     expected = [s['stageId'] for s in snapshot['stages']]
     if len(set(expected)) != len(expected):
@@ -124,6 +159,14 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
             point = row.get('point')
             reason = None
             if isinstance(point,dict):
+                pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
+                try:
+                    point = bind_stage_point(point, pairs,
+                                             setting_references=setting_references and stage['stageId'] == 'joint')
+                except ValueError as exc:
+                    isolated.append({'targetId':row['targetId'],'reason':str(exc)})
+                    admitted.append({'targetId':row['targetId'],'goalRefs':[],'point':None})
+                    continue
                 evidence = point.get('evidenceRefs')
                 cells = point.get('cellRefs')
                 if (not isinstance(evidence,list) or any(not isinstance(ref,str)
@@ -139,7 +182,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 isolated.append({'targetId':row['targetId'],'reason':reason})
                 admitted.append({'targetId':row['targetId'],'goalRefs':[],'point':None})
             else:
-                admitted.append(deepcopy(row))
+                admitted.append(deepcopy({**row, 'point':point} if isinstance(point,dict) else row))
         # Negative isolation mirrors the ordinary wire compiler. The exact raw
         # response stays journaled; no guessed citation or positive fact is added.
         entry['isolatedTargets'] = isolated

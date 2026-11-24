@@ -160,6 +160,11 @@ def test_audit_can_show_exact_display_paper_of_each_accepted_claim():
     prompt = renderer(QUESTION, [], CLAIMS, {}, comparison, source_labels=True)([])
     assert decode(prompt)['paperByClaim'] == {'a':'Paper','b':'Second paper'}
     assert 'Titles identify sources only' in prompt
+    inline = decode(renderer(QUESTION, [], CLAIMS, {}, comparison,
+                             source_labels=True, inline_paper_labels=True)([]))
+    assert [claim['displayedUnderPaper'] for claim in inline['claims']] == ['Paper','Second paper']
+    assert [{k: v for k, v in claim.items() if k != 'displayedUnderPaper'} for claim in inline['claims']] == CLAIMS
+    assert 'paperByClaim' not in inline
 
 
 def test_shorter_audit_keeps_decision_packet_and_coverage_validators():

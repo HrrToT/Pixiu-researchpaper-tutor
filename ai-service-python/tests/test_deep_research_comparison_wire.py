@@ -137,6 +137,42 @@ def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
     assert 'matchedProtocol' not in table_catalog(plan, {})[1][0]
 
 
+def test_matched_pair_choice_binds_one_group_and_exact_note_without_guessing():
+    from services.deep_research.comparison_stage_generation import bind_stage_point
+    from services.deep_research.comparison_wire import example_pairs
+
+    table = {'evidenceId':'E1', 'matchedProtocol':{'rowNumber':9,'noteEvidenceId':'E2'},
+             'groups':[['Group A',['FPS']],['Group B',['FPS']]],
+             'rows':[[8,'Baseline',[['V1','99'],['V2','88']]],
+                     [9,'Baseline *',[['V3','100'],['V4','90']]],
+                     [10,'Compressed',[['V5','140'],['V6','130']]]]}
+    assert example_pairs([table], ['E1']) == {}
+    pairs = example_pairs([table], ['E1','E2'])
+    assert [pair['cellRefs'] for pair in pairs.values()] == [['V3','V5'],['V4','V6']]
+    raw = {'kind':'reported','body':{'tableExample':'B1'},'evidenceRefs':[],'cellRefs':[]}
+    assert bind_stage_point(raw, pairs) == {'kind':'reported','body':{'tableExample':'selected_cells'},
+                                             'evidenceRefs':['E1','E2'],'cellRefs':['V3','V5']}
+    assert raw['body']=={'tableExample':'B1'} and not raw['cellRefs']
+    for changed in ({'body':{'tableExample':'B3'}}, {'cellRefs':['V1']}, {'evidenceRefs':['E2']}):
+        with pytest.raises(ValueError, match='stage_matched_example_pair'):
+            bind_stage_point({**raw,**changed}, pairs)
+
+
+def test_boundary_accepts_only_setting_refs_already_explicitly_cited_by_the_point():
+    from services.deep_research.comparison_stage_generation import bind_stage_point
+
+    setting = {'subject':'Original','attribute':'hardware','value':'A6000'}
+    boundary = {'observedSettings':[{**setting,'evidenceRefs':['E1']}],'notEstablished':[]}
+    raw = {'kind':'inference','body':{'boundary':boundary},'evidenceRefs':['E1','E2'],'cellRefs':[]}
+    assert bind_stage_point(raw, None) is raw
+    normalized = bind_stage_point(raw, None, setting_references=True)
+    assert normalized['body']['boundary']['observedSettings'] == [setting]
+    assert normalized['evidenceRefs']==['E1','E2'] and boundary['observedSettings'][0]['evidenceRefs']==['E1']
+    boundary['observedSettings'][0]['evidenceRefs']=['E3']
+    with pytest.raises(ValueError, match='stage_boundary_setting_evidence'):
+        bind_stage_point(raw, None, setting_references=True)
+
+
 def _display_fixture():
     from services.deep_research.comparison_wire import goal_catalog
     plan, payload, registry = fixture()
