@@ -64,6 +64,11 @@
     "resultVisible": true,
     "matchingReportArtifactCount": 2,
     "pythonPublicationFlag": false,
-    "outcome": "partial"
+    "outcome": "partial",
+    "downstreamPublicationAcknowledged": true,
+    "artifactOrigins": [
+      "machine",
+      "latest"
+    ]
   }
 }
