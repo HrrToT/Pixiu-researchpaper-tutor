@@ -1,0 +1,69 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v45",
+  "sourceCommit": "87b7267bb7ed4a36ec079b9f3b4e2cd6e3384b5f",
+  "runId": "dr_run_caacc04392395f44aba71ba123c837d6",
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "paidModelCalls": 16,
+  "budget": {
+    "tokens": 86594,
+    "elapsedSeconds": 153.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0
+  },
+  "stages": {
+    "P1": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    "P2": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    "joint": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    }
+  },
+  "crossPaperTargets": {},
+  "compileAndVerifyCounts": {
+    "compiled": 11,
+    "initiallyVerified": 7,
+    "individuallyVerified": 7
+  },
+  "initialRejections": {
+    "missing_table_bindings": 1,
+    "semantic_unresolved": 1,
+    "comparison_benchmark_example_scope": 2
+  },
+  "benchmarkExampleIndividuallyVerified": true,
+  "audit": {
+    "status": "invalid_response",
+    "bindingErrors": [
+      {
+        "code": "obligation_identity_mismatch"
+      }
+    ],
+    "answerCoherent": true,
+    "verdicts": {}
+  },
+  "published": false,
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "independentCredit": 0,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "fc1127241f763d49568f5be015a5d9c51b387716911e10010f98b7da5cdb610a",
+    ".calls.json": "472c6efa87a987c2b7afd06a17f9320333fb4c7ace580cc04a19edc9b4822bfd",
+    ".result.json": "7bcef5af7afaa0ba0ef8688b9e57d7e996fc97b9bd1ce46e14e691d85b62b10e",
+    ".execution.json": "78c2024e86e2c130ad30edd51261556aa359f50cc40b2612fac14376cf23e047",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "postRestoreWorkspace": {
+    "resultVisible": true,
+    "matchingReportArtifactCount": 2,
+    "pythonPublicationFlag": false,
+    "outcome": "partial"
+  }
+}

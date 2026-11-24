@@ -2,6 +2,12 @@
 
 更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
+## 2026-11-24 v45 真实比较
+
+候选源码与通过 9,814 项回归的快照一致，装载前历史记录核对一致。v45 单次提交，调用模型 16 次，消耗 86,594 Token，用时 153 秒，外部检索为零。7 条主张通过单项核验，含由 10 个原表单元格支持的同口径数字示例。全答审核正常返回，但仅返回两项义务，义务身份检查未通过。原服务已恢复，历史数据核对一致。恢复后可从工作区读取该次运行的部分报告，Java 返回的两个成果均关联该运行和报告版本，Python 账本的发布标志仍为 `false`。这次没有获得完整报告验收。 [候选装载](deep-research-evidence/comparison-cross-paper-boundary-candidate-load-20261124.json) · [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json)
+
+该次计划把跨论文速度可比性与显存受限建议写成同一义务，旧路由只生成显存建议目标。新版同时检查用户原始问题和两个独立验收项，拆分速度边界和显存建议。使用 v45 保存计划离线重放后，新增的比较目标绑定两篇论文，原有目标与原始验收条件都保留。129 项定向回归通过，覆盖有和没有数字示例的提问。修复后的真实端到端输出仍待验收。 [混合目标重放](deep-research-evidence/comparison-v45-mixed-speed-advice-replay-20261124.json)
+
 ## 2026-11-24 H3 首次独立执行
 
 H3 从空材料、外部材料专用任务开始，候选运行前未命中本地缓存或历史正文。首次提交以 `external_discovery_unavailable` 结束。完成一次外部发现尝试，未发出全文获取请求。模型调用两次，消耗 2,506 Token，用时 11 秒，未发布报告。原服务和历史记录恢复并核对一致。本案例没有获得独立验收通过。 [候选装载](deep-research-evidence/h3-streaming-holdout-candidate-load-20261124.json) · [真实执行](deep-research-evidence/streaming-external-h3-first-real-20261124.json)
@@ -18,7 +24,7 @@ H3 从空材料、外部材料专用任务开始，候选运行前未命中本�
 
 跨论文帧率比较的真实草稿引用了三段材料，但都来自同一篇论文，主体也写成了该论文表中的方法行。新版将明确要求跨论文比较速度的目标绑定到冻结的论文身份。边界陈述需引用各篇论文，硬件或分辨率等设置须逐条关联各自论文的证据。重放旧草稿时只隔离该比较项，使用两篇来源的测试草稿则可编译进入后续核验。该重放未调用模型或确认比较结论。 [跨论文边界重放](deep-research-evidence/comparison-v44-cross-paper-boundary-replay-20261124.json)
 
-此前全量离线回归保留 9,793 项基线用例，实际 9,804 项通过、6 项失败。失败集中在外部检索的旧适配器，新版先判断备用功能是否启用，再读取其需要的字段。隔离副本回归的 175 项通过，包括这六项及新的跨论文范围检查。完整修复后的全量回归仍需确认。 [此前全量回归](deep-research-evidence/comparison-row-premise-host-full-20261124.json)
+此前全量离线回归保留 9,793 项基线用例，实际 9,804 项通过、6 项失败。失败集中在外部检索的旧适配器，新版先判断备用功能是否启用，再读取其需要的字段。隔离副本回归的 175 项通过，包括这六项及新的跨论文范围检查。 [此前全量回归](deep-research-evidence/comparison-row-premise-host-full-20261124.json)
 
 修复后 501 个模块的全量离线回归通过 9,814 项，上一轮 9,810 个用例全部保留，零失败、零错误、零跳过。此次使用了现有两篇论文的既定开发案例所需源码，真实比较仍单独记录。 [通过的全量回归](deep-research-evidence/cross-paper-boundary-host-full-20261124.json)
 
@@ -583,7 +589,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v27 发布部分成果。v43 在真实调用中完成先修订后复核的顺序，七条主张通过单项核验，最终审核因必需包超出可用预算未发出，报告未发布。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v43](deep-research-evidence/baseline-comparison-v43-real-20261124.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
+| D2 两论文比较 | v45 通过七条主张的单项核验，包括同口径数字示例。全答审核缺义务，应用展示部分报告。跨论文速度条件与显存建议的拆分已离线重放。 [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json) · [混合目标重放](deep-research-evidence/comparison-v45-mixed-speed-advice-replay-20261124.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
 | D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
