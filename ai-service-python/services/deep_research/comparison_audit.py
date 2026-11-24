@@ -161,6 +161,9 @@ exact spans 8–240, reason 1–600. Compare same entity and scope, including jo
 Distinct settings and repetition alone are no conflict. Omission belongs to ordinary checks.
 '''
 
+LOCAL_CHECK_FIELDS = ('Include every requiredOutput field even for partial/missing; omit elsewhere. '
+                      'Per-paper checks need each requested paper.')
+
 # These versions select server validators. They are not part of the displayed answer.
 INTERNAL_METADATA = (
     'requestSemanticsContractVersion',
@@ -174,11 +177,14 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              task_sources=False, request_semantics=0, process_explanations=False,
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
-             inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False):
+             inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
+             local_check_fields=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
         raise ValueError('Typed comparison presentation required')
+    if local_check_fields and not (rendered_packet and comparison.get('checkOutputShapeVersion') == 1):
+        raise ValueError('Local check fields require the rendered comparison output shape')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
     if compact_layout:
@@ -306,6 +312,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         if not bounded_packet:
             raise ValueError('Rendered comparison audit requires the bounded policy')
         policy = RENDERED_CHECKS
+        if local_check_fields:
+            policy = policy.replace('Add only extraCheckFields.', LOCAL_CHECK_FIELDS)
         if has_process:
             policy += EXACT_PROCESS
         if any(c.get('responseType') == 'limitation' for r in requirements for c in r['checks']):
@@ -322,6 +330,12 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             for check in row['checks']:
                 if check.get('criterionId') and check['checkId'] == 'criterion:' + check['criterionId']:
                     del check['criterionId']
+                if local_check_fields:
+                    fields = data['extraCheckFields'].get(row['obligationId'], {}).get(check['checkId'])
+                    if fields:
+                        check['requiredOutput'] = fields
+        if local_check_fields:
+            del data['extraCheckFields']
         if catalog is not None and len(catalog['catalogs']) == 1:
             common = [{'obligationId': row['obligationId'], 'checks': [
                 {'checkId': check['checkId'], 'catalogIndex': 0} for check in row['checks']]}

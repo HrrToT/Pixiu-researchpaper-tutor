@@ -91,7 +91,7 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False,empty_missing_process=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False,empty_missing_process=False,diagnose_unanchored_limits=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -100,6 +100,8 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
         raise ValueError('Empty missing process links require process validation')
     if response_errors is not None and not isinstance(response_errors,list):
         raise ValueError('Invalid coverage response diagnostic sink')
+    if diagnose_unanchored_limits and not (literal_limits and isinstance(response_errors, list)):
+        raise ValueError('Unanchored limit diagnostics require literal checks and a diagnostic sink')
     def fail(code, *, obligation_id=None, check_id=None, missing=(), unexpected=()):
         # Server-owned locations only: do not copy reviewer prose, source text or
         # arbitrary returned keys into repair instructions or published reports.
@@ -144,6 +146,13 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
             expected_keys={'checkId','status','bindings'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
             if not compact_checks:
                 expected_keys.add('reason')
+            if (diagnose_unanchored_limits and limitation and c.get('status') in ('covered', 'partial')
+                    and set(c) == expected_keys - {'limitSpans'}):
+                # Retain actionable check diagnostics even when the reviewer
+                # omits its proof. The caller invalidates the audit and holds release.
+                fail('unanchored_limit_check', obligation_id=required['obligationId'],
+                     check_id=fixed['checkId'], missing={'limitSpans'})
+                c = {**c, 'limitSpans': []}
             if set(c)!=expected_keys:
                 return fail('invalid_check_fields',obligation_id=required['obligationId'],check_id=fixed['checkId'],
                             missing=expected_keys-set(c),unexpected=set(c)-expected_keys)

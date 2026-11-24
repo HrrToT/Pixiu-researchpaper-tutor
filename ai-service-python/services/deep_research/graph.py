@@ -2213,21 +2213,24 @@ def make_verify_node(
             comparison_audit_args['comparison_audit_envelope']=True
             if compact_coverage_checks(record):
                 comparison_audit_args['compact_comparison_checks'] = True
-                if record['comparisonAuditEnvelopeContractVersion'] in (3, 4, 5, 6, 7):
+                audit_version = record['comparisonAuditEnvelopeContractVersion']
+                if audit_version >= 3:
                     comparison_audit_args['compact_comparison_instructions'] = True
-                if record['comparisonAuditEnvelopeContractVersion'] in (4, 5, 6, 7):
+                if audit_version >= 4:
                     comparison_audit_args['comparison_coherence_excerpts'] = True
-                if record['comparisonAuditEnvelopeContractVersion'] in (5, 6, 7):
+                if audit_version >= 5:
                     comparison_audit_args['comparison_source_labels'] = True
                     comparison_audit_args['empty_missing_process'] = True
                     if record.get('comparisonJointReportsContractVersion') in (15, 16):
                         comparison_audit_args['inline_comparison_paper_labels'] = True
                     if record.get('comparisonJointReportsContractVersion') == 16:
                         comparison_audit_args['scoped_comparison_coherence'] = True
-                if record['comparisonAuditEnvelopeContractVersion'] in (6, 7):
+                if audit_version >= 6:
                     comparison_audit_args['bounded_comparison_packet'] = True
-                if record['comparisonAuditEnvelopeContractVersion'] == 7:
+                if audit_version >= 7:
                     comparison_audit_args['rendered_comparison_packet'] = True
+                if audit_version == 8:
+                    comparison_audit_args['local_comparison_check_fields'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                 if joint_comparison_delivery(record):

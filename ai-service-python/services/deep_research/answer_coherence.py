@@ -95,8 +95,11 @@ def revalidate(audit, question, claims):
 def publication_release(audit, question, claims):
     """Whole-answer release only; retain scientific verdicts and raw drafts."""
     checked=revalidate(audit,question,claims)['answerCoherence']
-    released=checked.get('status')=='checked' and checked.get('coherent') is True
+    unanchored = any(error.get('code') == 'unanchored_limit_check'
+                     for error in (audit.get('requestResponseErrors') or []) if isinstance(error, dict))
+    released=checked.get('status')=='checked' and checked.get('coherent') is True and not unanchored
     return {'contractVersion':2,'answerDigest':identity(question,claims),
             'status':'released' if released else 'held',
             'heldClaimIds':[] if released else [c['claimId'] for c in claims],
-            'reason':None if released else 'inconsistent_answer' if checked.get('status')=='checked' else 'coherence_unconfirmed'}
+            'reason':None if released else 'limit_proof_missing' if unanchored and checked.get('coherent') is True
+            else 'inconsistent_answer' if checked.get('status')=='checked' else 'coherence_unconfirmed'}

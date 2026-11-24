@@ -40,7 +40,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False):
     if rendered_comparison_packet and not bounded_comparison_packet:
         raise ValueError('Rendered comparison audit requires a bounded packet')
     if type(bounded_comparison_packet) is not bool or bounded_comparison_packet and not compact_comparison_instructions:
@@ -264,7 +264,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
                     compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
-                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet)
+                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -322,6 +322,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                         **({'empty_missing_limits':True} if empty_missing_limits else {}),
                         **({'empty_missing_process':True} if empty_missing_process else {}),
                         **({'response_errors':request_response_errors} if diagnostics else {}),
+                        **({'diagnose_unanchored_limits':True} if local_comparison_check_fields and diagnostics and literal_limits else {}),
                         **({'literal_limits':True} if literal_limits else {}),**({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
             except (ValueError, TypeError):
                 verdicts = None
@@ -329,7 +330,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.coverage_binding_correction import correct
                 raw_review,verdicts,correction_note=correct(run_id,raw_review,verdicts,fixed_requirements,wire_claims,invoke,parse,max_bytes=limit,output_tokens=output_tokens,**({'reasoning':True} if reasoned_process_bindings else {}),**({'compact_checks':True,'empty_missing_limits':empty_missing_limits} if compact_comparison_checks else {}),
                     **({'empty_missing_process':True} if empty_missing_process else {}))
-            status = 'checked' if isinstance(verdicts, list) else 'invalid_response'
+            status = 'checked' if isinstance(verdicts, list) and not request_response_errors else 'invalid_response'
             if isinstance(verdicts, list):
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
                 rows = restore_visible_evidence(rows, reverse_aliases)

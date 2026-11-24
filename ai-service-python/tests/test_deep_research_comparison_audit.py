@@ -28,7 +28,7 @@ def presentation(version=3):
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
           comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False,
-          rendered_packet=False, plan=PLAN):
+          rendered_packet=False, plan=PLAN, local_check_fields=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -51,6 +51,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         elif mutation == 'extra':check['unrequested'] = True
         elif mutation == 'partial':check.update(status='partial',reason='The answer is only partial.')
         elif mutation == 'limit':rows[0]['checks'][1]['limitSpans'][0]['excerpt'] = 'not in answer'
+        elif mutation == 'omit_limit':rows[0]['checks'][1].pop('limitSpans')
         elif mutation == 'waive':rows[0] = {'obligationId':rows[0]['obligationId'], 'notRequired':{
             'reason':'The actual answer requirement is allegedly unnecessary.',
             'requestExcerpt':QUESTION,'bindings':[{'claimId':'a','field':'text'}]}}
@@ -94,6 +95,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         compact_comparison_instructions=compact_instructions,
         bounded_comparison_packet=bounded_packet,
         rendered_comparison_packet=rendered_packet,
+        local_comparison_check_fields=local_check_fields,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (plan, claims, evidence)
     return result, sent
@@ -226,6 +228,30 @@ def test_rendered_comparison_audit_preserves_claims_citations_conditions_and_bin
         (c['claimId'], c['text'], c['conditions'], c['evidenceRefs']) for c in old['claims']]
     rejected, _ = audit('foreign', **options, evidence=source, rendered_packet=True)
     assert rejected['status'] != 'checked' or rejected['gaps']
+
+
+def test_rendered_limit_output_is_declared_on_its_check_and_still_required():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True,
+                   compact_checks=True, compact_instructions=True, bounded_packet=True, rendered_packet=True)
+    prior, [old] = audit(**options)
+    after, [new] = audit(**options, local_check_fields=True)
+    assert after == prior
+    assert 'extraCheckFields' not in new
+    for old_row, new_row in zip(old['requirements'], new['requirements'], strict=True):
+        for old_check, new_check in zip(old_row['checks'], new_row['checks'], strict=True):
+            required = old['extraCheckFields'].get(old_row['obligationId'], {}).get(old_check['checkId'])
+            assert new_check.get('requiredOutput') == required
+            assert {k: v for k, v in new_check.items() if k != 'requiredOutput'} == old_check
+    rejected, _ = audit('omit_limit', **options, local_check_fields=True)
+    assert rejected['status'] == 'invalid_response'
+    assert any(row.get('missingFields') == ['limitSpans'] for row in rejected['requestResponseErrors'])
+    limitation = next(c for c in rejected['verdicts'][0]['criteria'] if c['responseType'] == 'limitation')
+    assert limitation['status'] == 'partial'
+    from services.deep_research.answer_coherence import publication_release
+    assert rejected['answerCoherence']['coherent'] is True
+    assert publication_release(rejected, QUESTION, CLAIMS)['reason'] == 'limit_proof_missing'
+    invalid_span, _ = audit('limit', **options, local_check_fields=True)
+    assert invalid_span['gaps']
 
 
 def test_compact_audit_reallocates_only_output_capacity_before_dispatch():
