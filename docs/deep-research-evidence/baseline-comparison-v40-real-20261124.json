@@ -1,0 +1,57 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v40",
+  "sourceCommit": "9e7cb50941bc55cfd2ae5580a7e4ca77cc0679e6",
+  "runId": "dr_run_4af8ad5a997b5d96a6e93b6aa585d9cc",
+  "sourcePolicy": "task_only",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 17,
+  "modelTokens": 83129,
+  "elapsedSeconds": 207.0,
+  "externalSearches": 0,
+  "compiledDraftClaims": 11,
+  "initialAcceptedClaims": 6,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 4,
+    "semantic_unresolved": 1
+  },
+  "individuallyVerifiedClaimsAfterRepair": 6,
+  "wholeAnswerAudit": {
+    "callSucceeded": true,
+    "auditEnvelopeVersion": 6,
+    "status": "checked",
+    "verdicts": {
+      "O1a": "partial",
+      "O1b": "partial",
+      "O2a": "partial",
+      "O2b": "partial",
+      "O3a": "covered",
+      "O3b": "partial",
+      "answer_scope": "covered"
+    },
+    "budgetLimit": null,
+    "diagnosticErrors": [],
+    "answerCoherent": false,
+    "coherenceIssueKinds": [
+      "scope_ambiguity"
+    ]
+  },
+  "repairBudgetStop": {
+    "batch": 2,
+    "kind": "normalTokens",
+    "limit": 50000,
+    "used": 69988
+  },
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "1ff997c56b64f69bd8b5460a81aab2d94f0589f5fda4fc437a2bc92a8589667d",
+    ".calls.json": "940aac4456bb91de027684ebe6342ea0702fd2f0caaa089bd4f56db52df4f621",
+    ".result.json": "6603726c1c41c66bb4132a3d3273ef531d04291fa0dadd0f91faa9c4bcea7226",
+    ".execution.json": "8b440eb0b02a4a8387ab28471053ed2e3e1c0dd512d3078db68bae9e863a460e",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
