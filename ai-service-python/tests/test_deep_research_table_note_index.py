@@ -82,6 +82,9 @@ def test_explicit_benchmark_example_retains_and_reads_same_page_protocol():
     ranked = retain_local_protocol_note([table, prose], [other, different_page, note],
                                         record, 'rendering speed', 2)
     assert ranked == [table, note]
+    condition = {**prose, 'sourceId': 'condition', 'retrievalMode': 'indexed_scope_condition'}
+    assert retain_local_protocol_note([prose, table, condition], [note],
+                                      record, 'rendering speed', 3) == [note, table, condition]
     allowed = {'o': {'obligationId': 'o', 'question': 'Rendering speed', 'requiredSources': ['work']}}
     assert select_read_sources(ranked, allowed, 2, protocol_note=True)[0] == note
     denied = {'o': {**allowed['o'], 'requiredSources': ['another-paper']}}

@@ -155,6 +155,7 @@ def retain_local_protocol_note(rows, candidates, record, query, limit):
         return rows
     if len(rows) < limit:
         return [*rows, note]
-    replace = next((i for i in range(len(rows) - 1, 0, -1)
+    # A generic hit can occupy the first slot; keep tables and targeted premises.
+    replace = next((i for i in range(len(rows) - 1, -1, -1)
                     if not rows[i].get('tableData') and rows[i].get('retrievalMode') == 'indexed_hybrid'), None)
     return [*rows[:replace], note, *rows[replace + 1:]] if replace is not None else rows
