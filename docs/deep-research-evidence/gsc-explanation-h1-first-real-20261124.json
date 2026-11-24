@@ -1,0 +1,72 @@
+{
+  "case": "H1-GSC-v1",
+  "sourceCommit": "26c3d76601540f008b153c3418c1c6c5a19df5c1",
+  "runId": "dr_run_6ead597a2d875ce88f9d8370c282ba29",
+  "status": "completed",
+  "outcome": "complete",
+  "reportVersionId": "report_dr_run_6ead597a2d875ce88f9d8370c282ba29_v1",
+  "javaArtifactOrigins": [
+    "machine",
+    "latest"
+  ],
+  "outboxAcknowledged": true,
+  "internalCoverageStatus": "checked",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 41516,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 205.0,
+    "cost": null
+  },
+  "sourceMode": "task_only",
+  "citedVersion": "arxiv:2411.16187v1",
+  "citedPhysicalPages": [
+    2,
+    1,
+    1,
+    12
+  ],
+  "manualReview": {
+    "referencePhysicalPages": [
+      5,
+      6,
+      9
+    ],
+    "findings": {
+      "initialSharedKnowledge": "missing",
+      "dynamicKeypointUpdates": "present",
+      "conditionedImageGenerationFollowedByNerf": "incomplete",
+      "wirelessNoise": "present",
+      "otAndResidualLowSnrBoundary": "missing"
+    },
+    "applicableScores": {
+      "goalResponse": 3,
+      "evidenceSupport": 3,
+      "conditions": 2,
+      "synthesis": 3,
+      "readability": 4
+    },
+    "minimumScore": 4,
+    "notApplicable": [
+      "actionability"
+    ]
+  },
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "futureRetriesEligibleForIndependentCredit": false,
+  "automaticRetry": false,
+  "originalServiceRestored": true,
+  "priorOtherTaskDigestsExact": true,
+  "priorRunDigestsExact": true,
+  "receiptSha256": {
+    ".payload.json": "02c9f4b6eeaf22852ff559bdec823dfab94e21c309d066aaa76109e463e94ee0",
+    ".calls.json": "25e5225c039c7c957f4c52b72980870a302be0768ae342ee361731483ac81c60",
+    ".result.json": "8bf84e56163c85ac30892e55666090fc0d2b2ad97928fedff98fa85e571c30c8",
+    ".execution.json": "12ef19076f2ee7b3aeba1e4fa6552d152a35ed4dffd84079d901e36b6e6f1f82",
+    ".restore-verified.json": "48e00a878560c63b4403c4e5e91e50c1d876ebcfe0d2db8a999099727205bdce"
+  }
+}

@@ -1,8 +1,12 @@
 # 当前执行状态与剩余交付
 
-更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
+更新：2026-11-25。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
 限制原句绑定和数字示例范围的组合版本完成 501 个模块、9,818 项全量离线回归，保留上一轮 9,817 个用例，零失败、零错误、零跳过。 [组合版本全量回归](deep-research-evidence/comparison-inline-limit-host-full-20261124.json)
+
+## 2026-11-25 H1 首次独立执行
+
+H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,516 Token，用时 205 秒。系统标为 `complete`，发布账本确认交付，工作区可见机器存档和可编辑版本。按第 5、6、9 页原文复核，回答写到了动态关键点、重建与噪声，遗漏初始共享知识、条件图像生成的关键环节和低信噪比下去噪后的残余偏差。人工验收未通过，独立通过数为 0。首次恢复检查发现验收任务如预期增加了报告，对这一项核对后完成原服务恢复，其他历史任务与旧运行保持一致。 [候选装载](deep-research-evidence/comparison-inline-limit-h1-candidate-load-20261124.json) · [首次执行与人工核对](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json)
 
 ## 2026-11-24 v46 真实比较
 
@@ -608,7 +612,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。完整研究库副本冷启动核对历史状态。 [完整回归](deep-research-evidence/citation-pdf-typography-host-full-20261120.json) · [副本冷启动](deep-research-evidence/v29-full-research-copy-20261120.json) | 保留离线集成结论。切换时复核现用任务与数据，历史未知请求保持冻结。 |
-| H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已冻结。论文按哈希核对后已在本机解析并完成 127 个证据片段的索引，未提交研究。 | 真实生成并核查新手解释和关键结论。 |
+| H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对研究义务覆盖、版本与比较条件。 |
 | H3 外部补查 | [H3-STREAMING 定义](DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json)已冻结。首次独立提交在外部发现阶段失败，未读取正文。 | 用开发样本验证获取修复，再用新冻结的独立任务从空材料开始，核对指定版本正文、引用和解释。 |
 | H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)已冻结，尚无验收结果。 | 核对来源版本、证据冲突与差异适用条件。 |
