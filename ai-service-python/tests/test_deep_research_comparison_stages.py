@@ -636,7 +636,7 @@ def test_unknown_stage_never_resends_and_exact_readonly_recovery_can_continue():
     assert len(json.loads(response['content'])['answers'])==10
 
 
-@pytest.mark.parametrize('mutation',['foreign_target','duplicate','truncated','malformed'])
+@pytest.mark.parametrize('mutation',['foreign_target','duplicate','truncated','malformed','legacy_null','truncated_null'])
 def test_invalid_stage_response_is_durable_and_never_retried(mutation):
     r,snapshot=prepared()
     def current():return deepcopy(r)
@@ -645,6 +645,11 @@ def test_invalid_stage_response_is_durable_and_never_retried(mutation):
     if mutation=='foreign_target':body['answers'][0]['targetId']=snapshot['stages'][1]['targetIds'][0]
     elif mutation=='duplicate':body['answers'].append(deepcopy(body['answers'][0]))
     elif mutation=='truncated':response['finishReason']='length'
+    elif mutation in ('legacy_null', 'truncated_null'):
+        body = None
+        if mutation == 'truncated_null':
+            r['comparisonStageAbstentionContractVersion'] = 1
+            response['finishReason'] = 'length'
     else:body={'items':[]}
     response['content']=json.dumps(body)
     with pytest.raises(DeepResearchError):
@@ -760,7 +765,7 @@ def test_readonly_ledger_lookup_requires_exact_native_request_identity():
     assert recorded_response(r,prompt,options,[row]) is None
 
 
-def graph_fixture(tmp_path, *, authoring=None):
+def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.verification import make_evidence
     r,p,_,_,_=fixture()
@@ -776,6 +781,8 @@ def graph_fixture(tmp_path, *, authoring=None):
     r['state'].update(plan=[{'itemId':'p','obligations':p['requirements']}],evidence=evidence)
     if authoring is not None:
         r['comparisonAuthoringContractVersion'] = authoring
+    if stage_abstention:
+        r['comparisonStageAbstentionContractVersion'] = 1
     repo=DeepResearchRepository(tmp_path/'graph.sqlite3');repo.initialize();repo.create_run(r)
     return r,repo
 
@@ -793,6 +800,41 @@ def graph_response(prompt):
         'draftingBasis':{'premiseStatus':'established','observations':[{'evidenceId':e['evidenceId'],'quote':e['quote']}],
                          'scopeDecision':'reported_case','unresolved':''}})
     return {'content':json.dumps({'answers':answers}),'finishReason':'stop'}
+
+
+def test_settled_null_stage_leaves_its_cells_unresolved_and_keeps_verified_path(tmp_path):
+    from services.deep_research.graph import make_synthesize_node, make_verify_node, make_publish_node
+    from services.deep_research.verification import verify_claims
+
+    r, repo = graph_fixture(tmp_path, stage_abstention=True)
+    sent = []
+    empty_response = {'content': 'null', 'finishReason': 'stop'}
+
+    def invoke(rid, node, prompt, options, **kwargs):
+        assert node == 'synthesize'
+        sent.append(prompt)
+        return empty_response if len(sent) == 1 else graph_response(prompt)
+
+    state = {'run_id': r['runId']}
+    synth = make_synthesize_node(invoke, repo.update_run, scope_validator=lambda *_: True)(state)
+    saved = repo.require_run(r['runId'])['state']
+    assert len(sent) == 2 and len(saved['reportBody']['claims']) == 1
+    first_stage = saved['comparisonStageInput']['stages'][0]
+    empty_stage = saved['comparisonStageGeneration']['stages'][first_stage['stageId']]
+    assert empty_stage['response'] == empty_response
+    targets = first_stage['targetIds']
+    assert empty_stage['isolatedTargets'] == [{'targetId': target, 'reason': 'stage_returned_null'} for target in targets]
+    empty_cells = [row for row in saved['comparisonCellDraft']['layout'] if row['source'] == first_stage['stageId']]
+    assert empty_cells and all(row['unresolved'] is True and not row['claimIds'] for row in empty_cells)
+    blocked = Mock(side_effect=AssertionError('Do not resend a settled null stage.'))
+    make_synthesize_node(blocked, repo.update_run, scope_validator=lambda *_: True)(state)
+    blocked.assert_not_called()
+
+    make_verify_node(verify_claims, None, repo.update_run)({**state, **synth})
+    publish = Mock(return_value=({'publicationId': 'fixture-publication'}, True))
+    make_publish_node(publish, repo.update_run, scope_validator=lambda *_: True)({**state, **synth})
+    payload = publish.call_args.kwargs['payload']
+    assert payload['outcome'] != 'complete' and payload['claims'] == []
 
 
 @pytest.mark.parametrize('fixture_accepts_facts',[False,True])

@@ -86,6 +86,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         raise DeepResearchError('invalid_comparison_stage_input', '比较输入身份不一致。')
     record = current()
     check_kind = explicit_stage_schema(record)
+    abstention_version = record.get('comparisonStageAbstentionContractVersion')
+    allow_stage_abstention = type(abstention_version) is int and abstention_version == 1
     setting_references = record.get('comparisonJointReportsContractVersion') in (15, 16)
     saved = deepcopy(record.get('state',{}).get('comparisonStageGeneration'))
     expected = [s['stageId'] for s in snapshot['stages']]
@@ -145,6 +147,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         response = entry['response']
         if entry['status'] == 'invalid_response':
             raise DeepResearchError('invalid_comparison_stage_response', '比较阶段响应无效，原结果已保留。')
+        isolated = []
         try:
             if (not isinstance(response,dict)
                     or response.get('finishReason',response.get('finish_reason')) != 'stop'
@@ -152,6 +155,11 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                     or len(response['content'].encode('utf-8')) > 100000):
                 raise ValueError('Invalid or truncated response')
             payload = json.loads(response['content'])
+            if payload is None and allow_stage_abstention:
+                # A settled null response contains no claims. Preserve every
+                # frozen target as unresolved without changing the raw reply.
+                isolated = [{'targetId': target, 'reason': 'stage_returned_null'} for target in stage['targetIds']]
+                payload = {'answers': [{'targetId': target, 'goalRefs': [], 'point': None} for target in stage['targetIds']]}
             if not isinstance(payload,dict) or set(payload) != {'answers'} or not isinstance(payload['answers'],list):
                 raise ValueError('Invalid comparison stage envelope')
             ids = [a.get('targetId') if isinstance(a,dict) else None for a in payload['answers']]
@@ -163,7 +171,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
             checkpoint(deepcopy(saved))
             raise DeepResearchError('invalid_comparison_stage_response', '比较阶段响应无效，原结果已保留。') from None
         entry['status'] = 'compiled_unverified'
-        admitted, isolated = [], []
+        admitted = []
         for row in payload['answers']:
             point = row.get('point')
             reason = None

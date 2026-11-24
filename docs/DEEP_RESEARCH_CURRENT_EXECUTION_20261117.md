@@ -6,6 +6,8 @@
 
 比较修订流程通过 9,788 项全量离线回归，保留全部 9,785 项基线用例。v42 仅提交一次，调用模型 7 次、消耗 27,037 Token、耗时 76 秒，外部检索为零。第一篇论文的生成调用正常结束，响应正文只有 JSON `null`。旧阶段解析要求 `answers` 对象，因此拒绝整段响应，并在发送第二篇或联合阶段前终止。此次未进入事实核验、修订或终审，报告未发布。原服务已恢复，任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-facts-first-repair-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-facts-first-repair-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v42-real-20261124.json)
 
+新版将正常结束且正文为 JSON `null` 的响应记为该阶段全部目标未解决，原始响应与请求身份保留。v42 保存输入重放时，第一篇的四个目标未生成主张，第二篇和联合阶段可继续，未重发首个阶段。后续两步使用空的离线测试响应。集成测试另覆盖后续阶段返回候选主张、首篇缺口保留、独立事实核验和完整发布门槛。截断、身份错误和结果未确认仍按既有校验流程处理。 [阶段空响应重放](deep-research-evidence/comparison-v42-stage-abstention-replay-20261124.json)
+
 ## 2026-11-24 v41 真实比较
 
 合并帧率范围与数量级区间修复后的全量验收通过 9,785 项，保留全部 9,774 项基线用例。v41 仅提交一次，在仅任务材料范围内调用模型 15 次，消耗 83,325 Token，耗时 229 秒。帧率范围检查在真实运行中拒绝一条越界主张。全答终审成功返回，其中三项部分覆盖、两项缺失，两个通过单项核验的表述仍有适用范围歧义。前两批修订取得响应，第三批的必需证据包为 13,143 字节，超出当时剩余的 11,555 字节额度，未发送。最终两条主张保持单项已核验，报告未发布。原服务已恢复，任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-range-and-rate-verified-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-range-and-rate-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v41-real-20261124.json)
