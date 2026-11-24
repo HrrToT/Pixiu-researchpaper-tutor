@@ -1462,6 +1462,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
+        if scope_observations and source_field_references:
+            prompt += ('\nFor reasonParts and scopeAudit.premises, copy a path exactly from '
+                       'availableSourcePaths for the cited evidence ID. Use a nonempty string leaf.\n')
         if representation_context:
             from services.deep_research.workflow_representation_review import POLICY as representation_review_policy
             prompt += '\n' + representation_review_policy + '\nExact unapproved shared representation:\n' + json.dumps(
@@ -1490,6 +1493,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                        if key not in (*source_keys, 'evidenceId', 'publicationIdentity')}, 'source': alias}
             view = {'sources': {key: value for key, value in source_registry.items() if key in used},
                     'evidence': packed}
+            if scope_observations and source_field_references:
+                from services.deep_research.review_source_fields import visible_paths
+                view['availableSourcePaths'] = {row['evidenceId']: visible_paths(row) for row in rows}
             if type(experiment_policy) is int and experiment_policy == 3:
                 from services.deep_research.membership_candidates import named_membership_candidates
                 candidates = named_membership_candidates(wire_claims,

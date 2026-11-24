@@ -26,6 +26,14 @@ whole-claim semantic decision, all scope/condition/source/numerical audits and n
 decisions remain unchanged. Missing support must remain unresolved.'''
 
 
+def visible_paths(evidence):
+    """List only nonempty string fields from the fitted source packet."""
+    candidates = (['quote'], ['sourceContext'], ['sourceContext', 'before'], ['sourceContext', 'after'])
+    own = {evidence['evidenceId']: evidence}
+    return [path for path in candidates
+            if resolve({'evidenceId': evidence['evidenceId'], 'path': path}, own) is not None]
+
+
 def valid_reference(part):
     return (isinstance(part,dict) and set(part)=={'text','evidenceId','path'}
             and isinstance(part['text'],str) and bool(part['text'].strip())

@@ -63,7 +63,7 @@ def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
 
 
 @pytest.mark.parametrize('variant, error', [
-    ('grounded', None), ('one_paper', 'stage_cross_paper_evidence'),
+    ('grounded', None), ('unknown_setting', None), ('one_paper', 'stage_cross_paper_evidence'),
     ('method_rows', 'stage_cross_paper_subjects'), ('misattributed', 'stage_cross_paper_setting_owner'),
 ])
 def test_cross_paper_target_requires_publications_and_source_owned_settings(variant, error):
@@ -90,6 +90,10 @@ def test_cross_paper_target_requires_publications_and_source_owned_settings(vari
     body = {'boundary': {'observedSettings': [{'subject': papers[0], 'attribute': '硬件',
         'value': 'GPU X', 'evidenceRefs': [refs[1] if variant == 'misattributed' else refs[0]]}],
         'notEstablished': [{'type': 'comparison_evidence', 'subjects': subjects, 'quantity': 'FPS 排名'}]}}
+    if variant == 'unknown_setting':
+        body['boundary']['observedSettings'].insert(0, {
+            'subject': papers[1], 'attribute': '硬件平台', 'value': '未在引用证据中明确说明',
+            'evidenceRefs': [refs[1]]})
     response = {'targetId': target, 'goalRefs': [], 'point': {'kind':'inference','body':body,
         'evidenceRefs': refs[:1] if variant == 'one_paper' else refs, 'cellRefs': [], 'detailLevel': 'fulltext'}}
     def invoke(_, prompt, __):
@@ -108,6 +112,7 @@ def test_cross_paper_target_requires_publications_and_source_owned_settings(vari
         assert compiled['notEstablished'][0]['subjects'] == [plan['sources'][paper]['title'] for paper in papers]
         assert compiled['observedSettings'][0]['subject'] == plan['sources'][papers[0]]['title']
         assert compiled['observedSettings'][0]['value'] == 'GPU X'
+        assert len(compiled['observedSettings']) == 1
         assert admitted['point']['evidenceRefs'] == refs
 
 

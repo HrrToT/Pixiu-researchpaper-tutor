@@ -59,6 +59,25 @@ def test_checker_resolves_the_actual_bounded_context_on_its_request(side):
     assert json.dumps(expected,ensure_ascii=False) in calls[0]['prompt']
 
 
+def test_scope_observation_offers_leaf_paths_and_rejects_the_context_object():
+    ev = evidence()
+    ev[0]['sourceContext'] = 'Before setting 12. ' + ev[0]['quote'] + ' After setting 12.'
+    raw = reference_row()
+    raw['reasonParts'][0]['path'] = ['sourceContext', 'before']
+    calls = []
+
+    def invoke(**kwargs):
+        calls.append(kwargs)
+        return {'content': json.dumps([raw]), 'finishReason': 'stop'}
+
+    verifier = checker(invoke, **opts(), review_source_fields=True)
+    assert verifier._check([target()], ev, [], 'verify', scope_observations=True)[0]['status'] == 'passed'
+    assert '"availableSourcePaths":{"E1":[["quote"],["sourceContext","before"],["sourceContext","after"]]}' in calls[0]['prompt']
+    raw['reasonParts'][0]['path'] = ['sourceContext']
+    with pytest.raises(DeepResearchError):
+        verifier._check([target()], ev, [], 'verify', scope_observations=True)
+
+
 @pytest.mark.parametrize('mutation',['foreign','sibling','metadata','missing','empty','omitted','wrong_type','bad_path','blank_id','null_id','list_id'])
 def test_source_permissions_and_missing_fields_are_never_guessed(mutation):
     raw=reference_row();part=raw['reasonParts'][0];ev=evidence()

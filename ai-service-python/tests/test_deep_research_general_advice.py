@@ -129,6 +129,7 @@ def test_v27_deployment_preflight_is_distinguished_from_scientific_design(versio
     prompt = invoke.call_args.kwargs['prompt']
     assert ('deployment preflight: advising' in prompt) is (version == 3)
     assert ('past numeric measurement is not required' in prompt) is (version == 3)
+    assert ('even when every cited source lacks a peak-memory value' in prompt) is (version == 3)
     row['adviceAudit']['purpose'] = 'scientific_design'
     invoke.return_value = {'content': json.dumps([row])}
     assert checker([c], [e])[0]['status'] == 'failed'

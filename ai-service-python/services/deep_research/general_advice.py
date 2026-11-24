@@ -88,7 +88,11 @@ misclassification; do not rewrite the target or silently convert an experiment.
         )
         base += ('For a deployment preflight, matching device/data/resolution and recording the peak '
                  'describe how to make the future check fair. A past numeric measurement is not required '
-                 'for test_first. Preserve all checks on embedded paper facts and premises. Put '
+                 'for test_first. Use relevant own passages to check the proposed setup and any embedded '
+                 'paper facts. A relevant, feasible same-settings measurement followed by a conditional '
+                 'choice can pass with test_first even when every cited source lacks a peak-memory value. '
+                 'If that procedure fails, identify the unsupported statement or practical problem '
+                 'in the procedure itself. Preserve all checks on embedded paper facts and premises. Put '
                  'deviceMemory inside adviceAudit, not alongside it.\n')
     return base + '''
 For targets about GPU memory, VRAM, or 显存, add adviceAudit.deviceMemory.

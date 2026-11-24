@@ -8,10 +8,17 @@ from services.deep_research.source_labels import source_display_title
 
 CROSS_PAPER = re.compile(r'跨论文|(?:两|二|2)篇|不同论文|\bcross[- ](?:paper|study)\b|'
                          r'\b(?:both|two|different)\s+(?:papers|studies)\b|\bacross (?:the )?(?:papers|studies)\b', re.I)
+_UNKNOWN_SETTING = re.compile(
+    r'未在(?:当前|所引|引用|提供的)?证据中(?:明确)?(?:说明|报告|给出)'
+    r'|not (?:specified|reported|stated) in (?:the )?(?:cited|supplied|provided) (?:evidence|sources)',
+    re.I,
+)
 POLICY = ('For targets with paperSubjects, compare those publication IDs, not method-row labels. '
           'Cite evidence owned by each paper. In body.boundary use the exact paper IDs as '
           'observedSettings.subject and comparison_evidence.subjects. Each setting needs its own evidenceRefs '
-          'from that paper. The app displays their publication titles. If the citations do establish alignment, '
+          'from that paper. List only source-supported settings in observedSettings. Leave unknown settings out '
+          'of that list and explain the comparison the citations cannot establish in notEstablished. '
+          'The app displays their publication titles. If the citations do establish alignment, '
           'answer with evidence-backed prose instead of asserting a gap. If there is no grounded answer, use null.\n')
 
 
@@ -69,6 +76,11 @@ def compile_point(point, papers, sources, evidence_owners):
         if (not isinstance(paper, str) or paper not in labels or not isinstance(anchors, list) or not anchors
                 or any(not isinstance(ref, str) or ref not in refs or evidence_owners.get(ref) != paper for ref in anchors)):
             raise ValueError('stage_cross_paper_setting_owner')
+        value = setting.get('value')
+        if (set(setting) == {'subject', 'attribute', 'value', 'evidenceRefs'}
+                and isinstance(setting['attribute'], str) and setting['attribute'].strip()
+                and isinstance(value, str) and _UNKNOWN_SETTING.fullmatch(value.strip().rstrip('。.!'))):
+            continue  # Explicit evidence gaps are not paper-reported settings.
         resolved_settings.append({**setting, 'subject': labels[paper]})
     resolved_limits = []
     for limit in limits:
