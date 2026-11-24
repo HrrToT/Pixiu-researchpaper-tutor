@@ -12,6 +12,8 @@ H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,5
 
 H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次，消耗 70,170 Token，用时 121 秒。十条候选均未通过事实核验，其中七条数值未与引用对齐、两条语义未确认、一条未能证明所述缺失。运行以 `inconclusive` 结束，工作区保存未完成说明，独立通过数为 0。恢复原服务后，核对了旧运行、其他任务及发布账本。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-h2-candidate-load-20261125.json) · [首次执行](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json)
 
+回查 H2 的保存输入，30 个来源和 71 个全文证据片段均无结构化表格单元格。DoRA 候选使用视觉语言实验的表格文本回答下游语言任务，表格未进入待审的单元格绑定。LoRA 两条候选所述倍数可在同版的其他已提取证据找到，但对应主张没有引用这些片段。部署候选的英文引文包含单次模型前向传播的上限表述，数值初审仍拒绝中文表达。开发题需分别验证任务范围、主张引用和计数表达，并保留现有的证据门槛。此次 H2 记录作为后续故障回放材料。
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
@@ -21,6 +23,8 @@ v46 获得了带标记的基线表，但获取结果没有包含解释重训标�
 用 v46 已授权材料的真实索引复验三条原查询。前两条原先在五个槽位中只留下表格和其他片段，第三条原已包含说明。调整后，前两条都能在五个槽位内带回第 6 页说明，全部原表身份保留。此项使用独立进程，核对了当前材料权限，未调模型或写入研究账本。 [真实索引核对](deep-research-evidence/comparison-benchmark-protocol-local-index-20261125.json)
 
 `8eddf3738` 完成 501 个模块、9,822 项离线回归，保留原有 9,818 项，零失败、零错误、零跳过。同页说明替换普通检索片段的最终调整在其后另行核验。 [离线回归](deep-research-evidence/comparison-benchmark-protocol-loopback-full-20261125.json)
+
+包含最终取证名额修复的 `717e2c51e` 通过 501 个模块、9,822 项全量离线回归，保留前一版本全部用例，零失败、零错误、零跳过。 [最新版离线回归](deep-research-evidence/comparison-benchmark-protocol-slot-full-20261125.json)
 
 ## 2026-11-24 v45 真实比较
 
