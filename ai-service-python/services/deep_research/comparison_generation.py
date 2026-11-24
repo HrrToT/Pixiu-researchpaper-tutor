@@ -118,7 +118,7 @@ def render(record, question, requirements, sources, evidence, tables, limit, max
                 'other cells give the qualitative tradeoff without repeating its numbers.\n')
     joint_answer_rule = ('For a judgement/advice goal, cells contain relevant own-paper premises; put the joint judgement in\n'
                          'conclusions, kind inference/proposal/suggestion, with its actual goal IDs and own joint premises.')
-    if plan.get('jointReports') is True and type(record.get('comparisonJointReportsContractVersion')) is int and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8):
+    if plan.get('jointReports') is True and type(record.get('comparisonJointReportsContractVersion')) is int and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8, 9):
         joint_answer_rule = ('Answer EACH joint target once in conclusions, with actual goal IDs and own evidence: '
             'reported for source-reported contrasts, inference for judgements, proposal/suggestion for advice. '
             'A single numeric example does not replace qualitative entries in the other paper cells.')

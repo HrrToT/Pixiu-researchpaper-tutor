@@ -6,6 +6,7 @@ measurement interpretation, comparison or coverage of a research requirement.
 from copy import deepcopy
 import hashlib
 import json
+import re
 
 from services.deep_research.table_evidence import visible_table_packet
 
@@ -200,6 +201,37 @@ def table_catalog(plan, tables):
     return registry, catalog
 
 
+def stage_table_catalog(catalog, *, joint, reserved_benchmark):
+    """Expose only usable typed choices; underlying source quotes stay complete."""
+    from services.deep_research.measurement_table_navigation import benchmark_metric
+
+    result = []
+    for table in catalog:
+        rows = table['rows']
+        groups = table['groups']
+        protocol = table.get('matchedProtocol')
+        if joint and protocol:
+            marked = next(row for row in rows if row[0] == protocol['rowNumber'])
+            strip_marker = lambda label: ' '.join(re.sub(r'[*∗⋆†‡]', '', label).split())
+            baseline = strip_marker(marked[1])
+            rows = [row for row in rows if row[0] == marked[0] or strip_marker(row[1]) != baseline]
+        if not joint and reserved_benchmark:
+            columns, remaining_groups = [], []
+            offset = 0
+            for name, metrics in groups:
+                selected = [(offset + i, metric) for i, metric in enumerate(metrics) if not benchmark_metric(metric)]
+                offset += len(metrics)
+                if selected:
+                    columns.extend(index for index, _ in selected)
+                    remaining_groups.append([name, [metric for _, metric in selected]])
+            if not columns:
+                continue
+            groups = remaining_groups
+            rows = [[number, method, [values[i] for i in columns]] for number, method, values in rows]
+        result.append({**table, 'groups': groups, 'rows': rows})
+    return result
+
+
 def resolve_point(point, target, registry, *, measurement_display=False):
     required = {'kind', 'body', 'evidenceRefs', 'cellRefs'}
     if (not isinstance(point, dict) or not required <= set(point)
@@ -332,6 +364,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
     from services.deep_research.authored_body import guidance, reasoning_enabled
     from services.deep_research.factual_scope import DRAFTING_SCHEMA
     from services.deep_research.shared_strings import input_text
+    from services.deep_research.comparison_joint_reports import benchmark_example_owner
+    version = record.get('comparisonJointReportsContractVersion')
     body_guidance = guidance(record, 'paper_comparison')
     from services.deep_research.comparison_measurement_display import isolated
     if isolated(record):
@@ -364,6 +398,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
+        if version == 9:
+            data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
+                reserved_benchmark=benchmark_example_owner(record, plan) is not None)
         data = {'requirements': data['requirements'],
                 'papers': [{'source': alias, 'identity': owner,
                             'targets': [t for t in data['targets']
@@ -461,10 +498,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'and rendering observations qualitatively in these cells. Keep exact quantities '
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
-        from services.deep_research.comparison_joint_reports import benchmark_example_owner
         example_owner = benchmark_example_owner(record, plan)
-        version = record.get('comparisonJointReportsContractVersion')
-        literal_targets = version in (7, 8)
+        literal_targets = version in (7, 8, 9)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -482,7 +517,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version == 8 and deliver_joint and scopes == ('joint',):
+        if version in (8, 9) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
@@ -490,6 +525,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             policy = JOINT_DELIVERY_POLICY
             if example_owner:
                 policy += BENCHMARK_OWNER_POLICY
+            if version == 9:
+                body_guidance += ('Nesting example: "point":{"kind":"inference","body":{"boundary":'
+                                  '{"observedSettings":[],"notEstablished":[P]}},"evidenceRefs":["E_ID"],"cellRefs":[]}.\n')
+                for target in data['jointTargets']:
+                    if target.get('deviceMemoryMeasurementEvidenceIds') == []:
+                        target['decisionMode'] = 'measure_both_before_recommending_either'
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

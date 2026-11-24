@@ -8,7 +8,7 @@ from math import ceil
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.comparison_cells import plan_cells
-from services.deep_research.comparison_wire import render, targets, table_catalog
+from services.deep_research.comparison_wire import render, targets, table_catalog, stage_table_catalog
 from services.deep_research.request_context import effective_question
 from services.deep_research.synthesis_evidence import fit_premises
 
@@ -107,7 +107,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets)
-                         if record.get('comparisonJointReportsContractVersion') in (4, 5, 6, 7, 8) else set())
+                         if record.get('comparisonJointReportsContractVersion') in (4, 5, 6, 7, 8, 9) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.
@@ -128,7 +128,12 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                                     '完整比较阶段证据超出输入窗口，尚未发送。')
         supplied = [r['evidenceId'] for r in selected]
         selected_plan = plan_cells(requirements, sources, selected, **plan_options)
-        visible_cells, _ = table_catalog(selected_plan, tables)
+        visible_cells, catalog = table_catalog(selected_plan, tables)
+        if record.get('comparisonJointReportsContractVersion') == 9:
+            projected = stage_table_catalog(catalog, joint=include_joint,
+                                            reserved_benchmark=example_owner is not None)
+            visible_refs = {ref for table in projected for row in table['rows'] for ref, _ in row[2]}
+            visible_cells = {ref: value for ref, value in visible_cells.items() if ref in visible_refs}
         permissions = {t['targetId']: t['evidenceIds'] for t in targets(selected_plan)
                        if t['targetId'] in target_ids}
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),

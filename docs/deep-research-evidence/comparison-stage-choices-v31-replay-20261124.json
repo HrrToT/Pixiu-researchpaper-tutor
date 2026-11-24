@@ -1,0 +1,40 @@
+{
+  "receiptSha256": "6147fc03d673c7123e4d7ada5b156124f602e2383b15dab07a068411f7e3b6b0",
+  "stages": [
+    {
+      "stage": "P1",
+      "oldBytes": 23979,
+      "newBytes": 23988,
+      "targetCount": 4,
+      "mandatoryBundles": 8,
+      "oldVisibleCells": 90,
+      "newVisibleCells": 15,
+      "requiredQuotesAndMandatoryContextsRetained": true
+    },
+    {
+      "stage": "P2",
+      "oldBytes": 23994,
+      "newBytes": 23339,
+      "targetCount": 4,
+      "mandatoryBundles": 8,
+      "oldVisibleCells": 80,
+      "newVisibleCells": 0,
+      "requiredQuotesAndMandatoryContextsRetained": true
+    },
+    {
+      "stage": "joint",
+      "oldBytes": 23874,
+      "newBytes": 23993,
+      "targetCount": 3,
+      "mandatoryBundles": 8,
+      "oldVisibleCells": 134,
+      "newVisibleCells": 124,
+      "requiredQuotesAndMandatoryContextsRetained": true
+    }
+  ],
+  "unmarkedDuplicateBaselineExcluded": true,
+  "markedBaselineAndPeerReferencesAdmitted": true,
+  "gpuAdviceMode": "measure_both_before_recommending_either",
+  "actualModelRequests": 0,
+  "scientificContentAccepted": false
+}

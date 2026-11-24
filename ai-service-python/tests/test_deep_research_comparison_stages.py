@@ -116,6 +116,26 @@ def null_response(stage):
                                            for key in stage['targetIds']]}),'finishReason':'stop'}
 
 
+def test_stage_table_choices_exclude_unmatched_baseline_and_reserved_benchmark_cells():
+    from services.deep_research.comparison_wire import stage_table_catalog
+
+    original = [{
+        'evidenceId': 'E1', 'source': 'P1', 'matchedProtocol': {'rowNumber': 2, 'noteEvidenceId': 'E2'},
+        'groups': [['Room', ['FPS', 'Training time']]],
+        'rows': [[1, 'Baseline [1]', [['V1', '10'], ['V2', '20']]],
+                 [2, 'Baseline * [1]', [['V3', '11'], ['V4', '20']]],
+                 [3, 'Ours', [['V5', '21'], ['V6', '30']]]],
+    }]
+    frozen = deepcopy(original)
+    joint, = stage_table_catalog(original, joint=True, reserved_benchmark=True)
+    assert joint['rows'] == original[0]['rows'][1:]
+    assert joint['matchedProtocol'] == frozen[0]['matchedProtocol']
+    paper, = stage_table_catalog(original, joint=False, reserved_benchmark=True)
+    assert paper['groups'] == [['Room', ['Training time']]]
+    assert [row[2] for row in paper['rows']] == [[['V2', '20']], [['V4', '20']], [['V6', '30']]]
+    assert original == frozen
+
+
 def test_local_contributions_keep_global_goals_but_do_not_assign_peer_questions_to_paper():
     r, p, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
