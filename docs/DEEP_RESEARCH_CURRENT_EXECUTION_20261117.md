@@ -6,6 +6,8 @@
 
 合并帧率范围与数量级区间修复后的全量验收通过 9,785 项，保留全部 9,774 项基线用例。v41 仅提交一次，在仅任务材料范围内调用模型 15 次，消耗 83,325 Token，耗时 229 秒。帧率范围检查在真实运行中拒绝一条越界主张。全答终审成功返回，其中三项部分覆盖、两项缺失，两个通过单项核验的表述仍有适用范围歧义。前两批修订取得响应，第三批的必需证据包为 13,143 字节，超出当时剩余的 11,555 字节额度，未发送。最终两条主张保持单项已核验，报告未发布。原服务已恢复，任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-range-and-rate-verified-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-range-and-rate-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v41-real-20261124.json)
 
+旧版将含普通条件建议的报告排除在先修订后终审的流程之外。新版在比较单元齐全且存在可修复硬核验错误时，允许普通建议与事实共用该顺序。冻结输入重放确认首个后续请求由终审改为修订。按历史调用账本扣除 7,882 Token 的提前终审消耗后，原先被拒的第三批可在 19,437 字节的提示词预算内形成 19,367 字节的待发送请求。这是容量重放，真实修订、语义核验和最终发布仍待验证。修订指令同时继承指定数值示例的范围，并要求保留有依据的观察及条件，避免把引文未覆盖的数值表述为整篇论文未报告。 [修订顺序与容量重放](deep-research-evidence/comparison-v41-repair-flow-replay-20261124.json)
+
 ## 2026-11-24 v40 真实比较
 
 审核包版本 6 通过 9,774 项全量离线回归，保留全部 9,773 项基线用例。候选服务通过源码哈希、PDF 解析依赖和历史记录一致性检查。v40 仅提交一次，调用模型 17 次、消耗 83,129 Token、耗时 207 秒，外部检索为零。全答终审已成功发出并返回七项判定，五项仅部分覆盖。终审发现 FPS 的适用范围有歧义，第二批修订触及普通 Token 预算。单项核验保留六条结果，本次未发布报告。原服务已恢复，任务、运行和调用记录与切回前逐项一致。 [全量回归](deep-research-evidence/comparison-bounded-audit-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-bounded-audit-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v40-real-20261124.json)

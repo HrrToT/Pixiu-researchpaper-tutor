@@ -15,7 +15,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
-                    metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False,
+                    metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False, benchmark_example=None,
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     if (type(comparison_authoring) is not bool and not (type(comparison_authoring) is int and comparison_authoring in (2, 3, 4)) or comparison_authoring and
@@ -607,6 +607,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             intentions={k:v for k,v in (answer_intents or {}).items() if k in originals},
             inference_ids=inference_ids,required_scope_ids=required_scope_ids,has_tables=has_tables,
             **({'comparison_authoring':comparison_authoring} if comparison_authoring else {}),
+            **({'benchmark_example':benchmark_example} if benchmark_example is not None else {}),
             **({'compact_policy':compact_repair_policy} if compact_repair_policy else {}))
     condition_marker=None
     if type(claim_check) is int and claim_check in (7,8,9):
@@ -934,7 +935,7 @@ def factual_redraft_eligible(report):
 def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
-                    released_finalization=False, comparison_authoring=False,
+                    released_finalization=False, comparison_authoring=False, benchmark_example=None,
                     source_aware_redraft=False,comparison_reasoning=False,question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,strict_response=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,scheduling_version=0,answer_intents=None,scope_expression=False,defer_length_filter=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
     """One bounded revision round, split before dispatch when evidence cannot fit.
 
@@ -1068,6 +1069,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         identity=digest({'inputDigest':identity,'releasedFinalizationInputVersion':1})
     if comparison_authoring:
         identity=digest({'inputDigest':identity,'comparisonAuthoringContractVersion':int(comparison_authoring)})
+    if benchmark_example is not None:
+        identity = digest({'inputDigest': identity, 'benchmarkExample': benchmark_example})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1081,6 +1084,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
             **({'comparison_authoring':comparison_authoring} if comparison_authoring else {}),
+            **({'benchmark_example':benchmark_example} if benchmark_example is not None else {}),
             **({'compact_repair_policy':compact_repair_policy} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
             **({'consolidated_instructions':True} if consolidated_instructions else {}),

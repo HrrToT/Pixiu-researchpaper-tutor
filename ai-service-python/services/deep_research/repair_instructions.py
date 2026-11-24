@@ -73,7 +73,7 @@ All original source, scope, factual, coverage, length and independent checks rem
 
 def render(*, question, length_contract, requirements, source_context, targets,
            checks, questions, permissions_marker, evidence_marker, schema, goals,
-           hints, intentions, inference_ids, required_scope_ids, has_tables, compact_policy=False, comparison_scopes=None, comparison_authoring=False):
+           hints, intentions, inference_ids, required_scope_ids, has_tables, compact_policy=False, comparison_scopes=None, comparison_authoring=False, benchmark_example=None):
     enc=lambda x:json.dumps(x,ensure_ascii=False,separators=(',',':'))
     table_rule=('Only source-local tableData/tableDataRef defines typed cells. Bind each retained '
         'measurement to its own evidenceId, original rowNumber, zero-based groupIndex, exact '
@@ -125,6 +125,13 @@ def render(*, question, length_contract, requirements, source_context, targets,
         core = COMPACT_CORE if compact_policy else CORE
     if comparison_authoring not in (3, 4):
         routing = ('\ncomparisonScopes limits a source-local cell to its paper and dimension; whole frozen goals are shared context, not a demand to repeat other cells. Joint conclusions retain their full goals. These scopes grant no facts or evidence permissions.\n' if compact_policy == 2 else '')
+    if benchmark_example is not None:
+        data['benchmarkExample'] = benchmark_example
+        routing += ('Only benchmarkExample.claimId may include numerical benchmark results, including FPS '
+                    'ranges in text or conditions. Use the cited qualitative result and its setup elsewhere. '
+                    'Keep necessary, directly cited method settings and processing costs. When a figure '
+                    'lacks a supporting passage, remove the figure and keep the supported observation; '
+                    'do not claim that the paper did not report it.\n')
     return (core+routing+table_rule+scope+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)
         +'\nAllowed evidence IDs by target (permissions, not support):\n'+permissions_marker

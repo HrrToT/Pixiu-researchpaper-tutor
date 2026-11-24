@@ -2330,6 +2330,7 @@ def make_verify_node(
             from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
             from services.deep_research.finalization_pool import comparison_repair_can_use_release
             from services.deep_research.comparison_measurement_display import local_contributions
+            from services.deep_research.comparison_capacity import repair_flow_enabled
             def invoke_repair(prompt, output_limit=None):
                 # Admit the rewrite and its independent verification as a pair.
                 # Do not spend the final seconds on wording that cannot be checked.
@@ -2408,8 +2409,12 @@ def make_verify_node(
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
                     from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, repair_profile
+                    comparison_draft = saved.get('comparisonCellDraft') or {}
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
+                        **({'benchmark_example': {'claimId': comparison_draft['benchmarkExampleClaimId']}}
+                           if repair_flow_enabled(record) and 'benchmarkExampleClaimId' in comparison_draft
+                           and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible else {}),
                         **({'comparison_authoring':repair_profile(record)} if comparison_authoring_enabled(record)
                            and compact_repair and unified_repair_eligible else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int

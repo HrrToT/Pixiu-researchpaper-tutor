@@ -97,6 +97,11 @@ def after_synthesis(record):
             'tokensAndTimeFitEstablished': False, 'scientificApproval': False}
 
 
+def repair_flow_enabled(record):
+    version = record.get('comparisonRepairFlowContractVersion')
+    return type(version) is int and version == 1
+
+
 def defer_initial_audit(record, verification):
     """Repair a populated factual draft before auditing its known broken form.
 
@@ -107,7 +112,14 @@ def defer_initial_audit(record, verification):
     from services.deep_research.comparison_review_batches import current_profile
     from services.deep_research.repair import factual_redraft_eligible
     state=record.get('state',{})
-    if not current_profile(record) or not factual_redraft_eligible(state.get('reportBody',{})):
+    if not current_profile(record):
+        return False
+    report = state.get('reportBody', {})
+    eligible = factual_redraft_eligible(report)
+    if not eligible and repair_flow_enabled(record):
+        from services.deep_research.general_advice import repair_enabled, repair_eligible
+        eligible = repair_enabled(record) and repair_eligible(report)
+    if not eligible:
         return False
     layout=(state.get('comparisonCellDraft') or {}).get('layout',[])
     if not layout or any(not row.get('claimIds') or row.get('unresolved') is not False for row in layout):

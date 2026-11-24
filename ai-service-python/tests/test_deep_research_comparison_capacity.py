@@ -71,6 +71,20 @@ def test_initial_audit_deferral_requires_populated_factual_cells_and_an_actionab
     assert not defer_initial_audit(r,v)
 
 
+@pytest.mark.parametrize(('advice_fields', 'can_defer'), [({}, True), ({'executionSpec': {'groups': []}}, False)])
+def test_new_comparison_flow_defers_audit_for_facts_and_ordinary_advice(advice_fields, can_defer):
+    from services.deep_research.comparison_capacity import defer_initial_audit
+
+    record = populated_factual_record()
+    record.update(recommendationReviewContractVersion=3, recommendationRepairContractVersion=1)
+    record['state']['reportBody']['claims'].append({'claimId': 'advice', 'kind': 'proposal', **advice_fields})
+    verification = {'rejected': [{'claimId': 'cmp_0_0', 'reason': 'numeric_mismatch'}]}
+    assert not defer_initial_audit(record, verification)
+    assert defer_initial_audit({**record, 'comparisonRepairFlowContractVersion': 1}, verification) == can_defer
+    verification['rejected'][0]['reason'] = 'semantic_unresolved'
+    assert not defer_initial_audit({**record, 'comparisonRepairFlowContractVersion': 1}, verification)
+
+
 @pytest.mark.parametrize('repair_outcome',['changed','empty','unchanged','budget','invalid','unknown','audit_budget'])
 def test_production_verify_always_audits_after_deferred_repair_even_when_it_fails(repair_outcome):
     from unittest.mock import Mock,patch

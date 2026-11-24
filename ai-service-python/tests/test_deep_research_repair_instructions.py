@@ -38,6 +38,20 @@ def test_comparison_repair_omits_deletion_declarations_but_keeps_originals_and_e
     assert len(new['prompt'].encode()) < len(old['prompt'].encode())
 
 
+def test_comparison_repair_carries_the_frozen_benchmark_owner_and_preserves_sources():
+    report, verification, ev, opts = comparison_fixture()
+    opts['comparison_authoring'] = 4
+    question = 'Explain the operation.'
+    old = _prepare_repair(report, verification, ev, question, **opts)
+    new = _prepare_repair(report, verification, ev, question, **opts, benchmark_example={'claimId': 'joint_example'})
+    assert 'benchmarkExample.claimId' not in old['prompt']
+    assert 'Only benchmarkExample.claimId may include numerical benchmark results' in new['prompt']
+    assert 'do not claim that the paper did not report it' in new['prompt']
+    assert 'joint_example' in new['prompt']
+    for field in ('allowed', 'originals', 'aliases', 'comparisonDisplayEvidence'):
+        assert new[field] == old[field]
+
+
 def test_repair_resolves_visible_cells_and_leaves_prose_without_coordinates():
     from services.deep_research.repair import _parse_repair_response
     report, verification, ev, opts = comparison_fixture()
