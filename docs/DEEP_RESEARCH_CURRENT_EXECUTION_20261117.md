@@ -12,6 +12,10 @@
 
 拆分混合目标后的全量离线回归通过 9,816 项，保留上一轮 9,814 项。短编号终审变更通过 140 项定向离线测试，包含漏项、检查串项和截断响应，整套新源码另行验证。 [拆分目标全量回归](deep-research-evidence/comparison-mixed-speed-host-full-20261124.json)
 
+终审进一步将限制原句与主张引用写在同一条绑定内。服务端把提交的原句还原到既有限制证据校验，错引或引用正文中没有的片段仍不能关闭限制检查。隔离真实复测返回全部七项，8,411 Token，全部义务均正常进入核验，无响应结构错误。终审仍发现原表数字示例的适用范围表述不够清楚，报告未发布。新版数字示例在正文中明确限于所列数据组和原表测量条件，离线重放保留十个真实单元格、全部来源和展示条件，并通过硬检查。两项变更共通过 276 项定向离线测试，组合后的整题真实验收待完成。 [原句绑定与数字范围重放](deep-research-evidence/comparison-v45-inline-limits-and-example-scope-20261124.json)
+
+短编号终审版本的 501 个模块已通过 9,817 项全量离线回归，上一轮 9,816 个用例全部保留，零失败、零错误、零跳过。新组合版本在此基线上另行验证。 [短编号终审全量回归](deep-research-evidence/comparison-audit-labels-host-full-20261124.json)
+
 ## 2026-11-24 H3 首次独立执行
 
 H3 从空材料、外部材料专用任务开始，候选运行前未命中本地缓存或历史正文。首次提交以 `external_discovery_unavailable` 结束。完成一次外部发现尝试，未发出全文获取请求。模型调用两次，消耗 2,506 Token，用时 11 秒，未发布报告。原服务和历史记录恢复并核对一致。本案例没有获得独立验收通过。 [候选装载](deep-research-evidence/h3-streaming-holdout-candidate-load-20261124.json) · [真实执行](deep-research-evidence/streaming-external-h3-first-real-20261124.json)
