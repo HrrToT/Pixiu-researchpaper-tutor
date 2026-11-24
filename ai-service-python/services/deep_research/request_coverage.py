@@ -91,11 +91,13 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False,empty_missing_process=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
         raise ValueError('Empty missing limits require literal limit validation')
+    if type(empty_missing_process) is not bool or empty_missing_process and not process_explanations:
+        raise ValueError('Empty missing process links require process validation')
     if response_errors is not None and not isinstance(response_errors,list):
         raise ValueError('Invalid coverage response diagnostic sink')
     def fail(code, *, obligation_id=None, check_id=None, missing=(), unexpected=()):
@@ -136,6 +138,9 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
             if (empty_missing_limits and limitation and 'limitSpans' not in c
                     and c.get('status')=='missing' and c.get('bindings')==[]):
                 c={**c,'limitSpans':[]}
+            if (empty_missing_process and process and 'processLinks' not in c
+                    and c.get('status')=='missing' and c.get('bindings')==[]):
+                c={**c,'processLinks':[]}
             expected_keys={'checkId','status','bindings'}|({'processLinks'} if process else set())|({'limitSpans'} if limitation else set())
             if not compact_checks:
                 expected_keys.add('reason')

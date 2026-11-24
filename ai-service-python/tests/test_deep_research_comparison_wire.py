@@ -118,6 +118,18 @@ def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
             resolve_point({**point,'evidenceRefs':refs,'cellRefs':[fps[i] for i in pair]}, target, registry)
     result = resolve_point({**point,'evidenceRefs':['E1','E3'],'cellRefs':[fps[7],fps[9]]},target,registry)
     assert [row['rowNumber'] for row in result['tableBindings']] == [7, 9]
+    typed = {**point, 'evidenceRefs':['E1','E3'], 'cellRefs':[fps[7],fps[9]],
+             'body':{'tableExample':'selected_cells'}}
+    selectable = {**target, 'exampleMode':'server_renders_selected_cells'}
+    rendered = resolve_point(typed, selectable, registry, measurement_display=True)
+    prose = rendered['body']['prose']
+    assert '表注说明' in prose['text'] and 'P1' not in prose['text']
+    assert 'Ours-7K：FPS 160' in prose['conditions']['原表测量']
+    assert 'Ours-30K *：FPS 145' in prose['conditions']['原表测量']
+    with pytest.raises(ValueError, match='marked_baseline_and_protocol_note'):
+        resolve_point({**typed, 'evidenceRefs':['E1']}, selectable, registry, measurement_display=True)
+    with pytest.raises(ValueError, match='invalid_structured_table_example'):
+        resolve_point(typed, target, registry, measurement_display=True)
     plan['evidence']['E3']['quote'] = 'The baseline was not re-trained on our platform, with results marked by ∗.'
     assert 'matchedProtocol' not in table_catalog(plan, {})[1][0]
     plan['evidence']['E3']['quote'] = 'We re-trained the baseline on our platform, with results marked by ∗.'

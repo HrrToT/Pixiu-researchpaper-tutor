@@ -1,0 +1,17 @@
+{
+  "sameObservedTableReferences": true,
+  "internalAliasAbsentInCompiledProse": true,
+  "originalInputReproduced": true,
+  "oldJointBytes": 24000,
+  "pairedStageBytes": 23949,
+  "protocolNote": "E16",
+  "table": "E11",
+  "keptBaselineRow": 9,
+  "removedUnmatchedDuplicateRow": 8,
+  "mandatoryEvidenceAndTargetsUnchanged": true,
+  "counterfactualTypedPairCompiled": true,
+  "counterfactualTestFirstAdviceCompiled": true,
+  "scientificContentAccepted": false,
+  "savedRunSha256": "23fc96ab9833e4eea977dc8fc3ccff8e9cc96c36de7bc1a468ccb3df658f4b1c",
+  "actualModelCalls": 0
+}

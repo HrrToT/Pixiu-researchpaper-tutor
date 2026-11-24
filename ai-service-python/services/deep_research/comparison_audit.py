@@ -144,7 +144,7 @@ INTERNAL_METADATA = (
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
-             compact_checks=False, compact_instructions=False, coherence_excerpts=False):
+             compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -227,6 +227,12 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             'B binds all involved fields with an exact 8–240 character excerpt in each binding. Omitted topics\n'
             'belong only in ordinary checks. Explicitly separate settings and repetition are not conflicts.\n'
             'True requires issues:[].')
+    if source_labels:
+        sources = data['comparisonPresentation']['sources']
+        data['paperByClaim'] = {cid: sources[row['source']]['title']
+                                for row in data['comparisonPresentation']['layout'] for cid in row['claimIds']}
+        policy += ('paperByClaim gives the displayed paper of each table cell. Read each claim under that '
+                   'paper heading. Distinct paper scopes alone do not conflict. Titles identify sources only.\n')
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))

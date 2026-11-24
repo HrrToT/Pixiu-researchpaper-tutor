@@ -135,6 +135,33 @@ def test_oversized_required_context_stops_without_adapter_call():
     assert result['budgetLimit']['kind'] == 'coveragePromptBytes'
 
 
+def test_missing_process_links_are_empty_only_for_an_explicit_unbound_gap():
+    from services.deep_research.request_coverage import normalize
+
+    requirement = {'obligationId':'o', 'question':QUESTION, 'purpose':'answer_requirement',
+                   'checks':[{'checkId':'method','requirement':'解释步骤','processRequired':True}]}
+    check = {'checkId':'method','status':'missing','bindings':[]}
+    reply = [{'obligationId':'o','checks':[check]}]
+    args = dict(process_explanations=True, compact_checks=True)
+    assert normalize(reply, [requirement], **args) is None
+    results = normalize(reply, [requirement], empty_missing_process=True, **args)
+    assert results[0]['status']=='missing' and results[0]['processAudits'][0]['links']==[]
+    assert 'processLinks' not in check
+    for status in ('partial','covered'):
+        check.update(status=status, bindings=[{'claimId':'a','field':'text'}])
+        assert normalize(reply, [requirement], empty_missing_process=True, **args) is None
+
+
+def test_audit_can_show_exact_display_paper_of_each_accepted_claim():
+    comparison = presentation()
+    comparison['sources']['P2'] = {'title':'Second paper','workId':'second','versionId':'v2'}
+    comparison['layout'][0]['claimIds'] = ['a']
+    comparison['layout'].append({**comparison['layout'][0], 'source':'P2','claimIds':['b']})
+    prompt = renderer(QUESTION, [], CLAIMS, {}, comparison, source_labels=True)([])
+    assert decode(prompt)['paperByClaim'] == {'a':'Paper','b':'Second paper'}
+    assert 'Titles identify sources only' in prompt
+
+
 def test_shorter_audit_keeps_decision_packet_and_coverage_validators():
     options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True)
     prior_calls, new_calls = [], []

@@ -27,6 +27,7 @@ from each selected cell pair. Rows, [V ID, value] pairs and nested arrays are in
 
 COMPARISON_POINT_KINDS = frozenset({'reported', 'inference', 'hypothesis', 'proposal', 'suggestion'})
 TEST_FIRST_BODY = {'deviceMemoryAdvice': 'measure_then_choose'}
+TABLE_EXAMPLE_BODY = {'tableExample': 'selected_cells'}
 TEST_FIRST_TEXT = ('先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。'
                    '根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。'
                    '若两种方法都超过显存上限，应调整设置后再比较。')
@@ -132,6 +133,8 @@ def targets(plan):
                         if has_device_memory_measurement(plan['evidence'][eid].get('quote', ''))]
                     if plan.get('structuredTestFirst') and not part_target['deviceMemoryMeasurementEvidenceIds']:
                         part_target['decisionMode'] = 'measure_both_before_recommending_either'
+                if part['kind'] == 'matched_example' and plan.get('structuredTableExample'):
+                    part_target['exampleMode'] = 'server_renders_selected_cells'
                 result.append(part_target)
         else:
             result.append(target)
@@ -268,6 +271,10 @@ def resolve_point(point, target, registry, *, measurement_display=False):
         bindings.append(deepcopy(entry['binding']))
     deliverable = target.get('deliverable')
     body = point['body']
+    table_example = isinstance(body, dict) and 'tableExample' in body
+    if table_example and (deliverable != 'matched_example' or target.get('exampleMode') != 'server_renders_selected_cells'
+                          or body != TABLE_EXAMPLE_BODY or not cells or not measurement_display):
+        raise ValueError('invalid_structured_table_example')
     if isinstance(body, dict) and 'deviceMemoryAdvice' in body:
         if (target.get('decisionMode') != 'measure_both_before_recommending_either'
                 or body != TEST_FIRST_BODY or point['kind'] not in ('proposal', 'suggestion') or cells):
@@ -301,6 +308,11 @@ def resolve_point(point, target, registry, *, measurement_display=False):
             if protocol and (protocol['noteEvidenceId'] not in refs or not any(
                     b['rowNumber'] == protocol['rowNumber'] for b in bindings)):
                 raise ValueError('joint_example_requires_marked_baseline_and_protocol_note')
+            if table_example:
+                text = '原表在同一数据组中报告了以下两种方法的结果。'
+                if protocol:
+                    text += '表注说明带标记的基线在同一平台上重新训练。'
+                point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
     def strings(value):
         if isinstance(value, str):
             yield value
@@ -423,7 +435,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
-        if version in (9, 10, 11):
+        if version in (9, 10, 11, 12):
             data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
                 reserved_benchmark=benchmark_example_owner(record, plan) is not None, known_protocols=known_protocols)
         data = {'requirements': data['requirements'],
@@ -524,7 +536,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
         example_owner = benchmark_example_owner(record, plan)
-        literal_targets = version in (7, 8, 9, 10, 11)
+        literal_targets = version in (7, 8, 9, 10, 11, 12)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -542,7 +554,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version in (8, 9, 10, 11) and deliver_joint and scopes == ('joint',):
+        if version in (8, 9, 10, 11, 12) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
@@ -556,11 +568,16 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 for target in data['jointTargets']:
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
-            if version == 11:
+            if version in (11, 12):
                 body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
                                   'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
                                   'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
                                   'Put evidence-comparison bounds inside point.body.boundary.\n')
+            if version == 12:
+                body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
+                                  'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
+                                  'cellRefs. The app renders the values. Boundary observedSettings items have only '
+                                  'subject, attribute, value; use actual method names and keep E IDs in evidenceRefs.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

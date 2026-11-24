@@ -1,0 +1,11 @@
+{
+  "oldResponseStatus": "invalid_response",
+  "newResponseStatus": "checked",
+  "unchangedSavedResponse": true,
+  "missingProcessLinksInferredOnlyForMissingWithoutBindings": true,
+  "explicitPaperTitlesByClaim": true,
+  "trackedCoherenceStillHeld": true,
+  "auditBytes": 23581,
+  "modelRequests": 0,
+  "scientificContentAccepted": false
+}
