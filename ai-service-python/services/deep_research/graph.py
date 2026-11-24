@@ -2244,11 +2244,11 @@ def make_verify_node(
         from services.deep_research.comparison_review_batches import current_profile
         if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
             comparison_audit_args['empty_missing_limits']=True
-        def audit_accepted(accepted, budget):
+        def audit_accepted(accepted, budget, **options):
             return audit_final_answer(run_id, effective_question(record),
                     saved.get('plan', []), accepted,
                     evidence, llm_invoke, _safe_parse_json, budget=budget,
-                    **comparison_audit_args,
+                    **comparison_audit_args, **options,
                     **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                     **({'claim_check':True} if claim_check_enabled(record) else {}),
                     **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
@@ -2403,6 +2403,18 @@ def make_verify_node(
                     released_finalization = (comparison_repair_can_use_release(current) if local_contributions(record)
                                              else comparison_operations_enabled(record))
                     repair_input_options={'released_finalization':True} if released_finalization else {}
+                    audit_reservation = 0
+                    if (comparison_audit_args.get('fit_compact_comparison_budget')
+                            and answer_coverage.get('status') == 'deferred_factual_repair'):
+                        audit_reservation = audit_accepted(verification_result.get('accepted', []),
+                                                          current.get('budget'), measure_reservation=True)
+
+                    def budget_for_repair(snapshot):
+                        budget = snapshot.get('budget', {})
+                        if audit_reservation and 'maxTokens' in budget:
+                            return {**budget, 'maxTokens': max(0, budget['maxTokens'] - audit_reservation)}
+                        return budget
+
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
@@ -2438,7 +2450,7 @@ def make_verify_node(
                            and not comparison_authoring_enabled(record)
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
-                        max_prompt_bytes=repair_prompt_byte_limit(current.get('budget', {}),**repair_input_options),
+                        max_prompt_bytes=repair_prompt_byte_limit(budget_for_repair(current),**repair_input_options),
                         **({'released_finalization':True} if released_finalization else {}),
                         metric_domains=record.get('state', {}).get('metricDomains'),
                         **({'factual_prompt_version':record['factualRepairPromptContractVersion']} if type(record.get('factualRepairPromptContractVersion')) is int
@@ -2451,7 +2463,7 @@ def make_verify_node(
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
                         **({'process_explanations':True} if process_framing_enabled(record) else {}),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
-                        current_budget=lambda: repo_update(run_id, lambda r: r, expected_revision=None).get('budget', {}),
+                        current_budget=lambda: budget_for_repair(repo_update(run_id, lambda r: r, expected_revision=None)),
                         invoke_request=invoke_repair,
                         **({'defer_length_filter':True} if repair_compaction_enabled(record) else {}),
                         **({'table_identity_context':2 if record.get('tableIdentityContextContractVersion')==2 and saved.get('outputKind')!='experiment_design' else True} if table_identity_enabled(record) else {}),

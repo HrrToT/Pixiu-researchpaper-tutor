@@ -30,6 +30,8 @@ v46 获得了带标记的基线表，但获取结果没有包含解释重训标�
 
 单次执行，16 次模型调用，83,696 Token，141 秒。运行取得同页重训说明，联合目标提供 10 个候选配对，所选一组数字绑定原表 10 个单元格并通过单项核验。共六条主张通过。全答审核需要 12,830 字节，剩余额度允许的审核输入为 11,780 字节，审核在发出前停止。运行返回 `inconclusive`，工作区保存部分报告。原服务及历史记录已核对恢复，发布账本已确认交付。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-v47-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v47-real-20261125.json)
 
+比较流程进入可选修订前，使用真实审核渲染器测算当前已核验答案与全部引用证据所需的最低额度，并从修订可用额度中预留。以 v47 第三批修订前的已结算账本作反事实回放，最低预留为 17,354 Token，下一批可选修订无法进入，模拟审核可在原 100,000 Token 上限内保留全部 6 项义务、原主张及 7 条引用证据。首轮与修订后的真实内容审核仍需验收。150 项定向回归通过，回放没有外部模型调用。 [预算回放](deep-research-evidence/comparison-v47-audit-reservation-replay-20261125.json)
+
 ## 2026-11-24 v45 真实比较
 
 候选源码与通过 9,814 项回归的快照一致，装载前历史记录核对一致。v45 单次提交，调用模型 16 次，消耗 86,594 Token，用时 153 秒，外部检索为零。7 条主张通过单项核验，含由 10 个原表单元格支持的同口径数字示例。全答审核正常返回，但仅返回两项义务，义务身份检查未通过。原服务已恢复，历史数据核对一致。恢复后可从工作区读取该次运行的部分报告，发布队列已确认交付，同一报告版本在 Java 保存了机器存档和可编辑版本。运行快照中的 `published` 初始标记仍为 `false`。这次没有获得完整报告验收。 [候选装载](deep-research-evidence/comparison-cross-paper-boundary-candidate-load-20261124.json) · [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json)

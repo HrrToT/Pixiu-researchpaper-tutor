@@ -31,6 +31,22 @@ def test_audit_checks_final_answer_and_original_question_in_one_reserved_call():
     assert TEXT in invoke.call_args.args[2] and '完整问题' in invoke.call_args.args[2]
 
 
+def test_measure_reservation_keeps_cited_evidence_and_does_not_invoke_model():
+    invoke = Mock(return_value={'content': '[]'})
+    required = {'evidenceId': 'e', 'quote': TEXT, 'sourceWorkId': 'p', 'accessLevel': 'fulltext'}
+    optional = {**required, 'evidenceId': 'optional', 'quote': 'Optional extra passage.'}
+    args = ('r', '完整问题', PLAN, CLAIMS, [required, optional], invoke, json.loads)
+    reserved = audit_final_answer(*args, diagnostics=True, measure_reservation=True)
+    invoke.assert_not_called()
+    budget = {'maxTokens': reserved, 'maxModelCalls': 1}
+    result = audit_final_answer(*args, diagnostics=True, budget=budget)
+    assert result['status'] == 'invalid_response'
+    invoke.assert_called_once()
+    prompt, options = invoke.call_args.args[2:4]
+    assert TEXT in prompt and optional['quote'] not in prompt
+    assert reserved == len(prompt.encode('utf-8')) + options['max_tokens'] + 1024
+
+
 def test_plan_coverage_alone_cannot_hide_omitted_user_requirement():
     invoke = Mock(return_value={'content': json.dumps(verdicts()[:1])})
     result = audit_final_answer('r', '包括预算的新问题', PLAN, CLAIMS, [], invoke, json.loads)

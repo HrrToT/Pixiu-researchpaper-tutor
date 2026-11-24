@@ -139,6 +139,49 @@ def test_exhausted_repair_audit_keeps_the_previously_checked_comparison():
     _assert_previously_checked_comparison_survives(6)
 
 
+def test_deferred_audit_reservation_restricts_optional_repair_budget(monkeypatch):
+    from unittest.mock import Mock
+    from services.deep_research.graph import make_verify_node
+
+    record = populated_factual_record()
+    record.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=16,
+                  comparisonAuditEnvelopeContractVersion=10, answerCoherenceContractVersion=2)
+    budget = {'maxTokens': 100000, 'tokens': 78438, 'normalTokens': 42500}
+    record['budget'].update(budget)
+    calls = []
+
+    def update(_, fn, **kwargs):
+        nonlocal record
+        record = fn(deepcopy(record))
+        return deepcopy(record)
+
+    def verify(claims, evidence, checker):
+        return {'accepted': claims[1:], 'rejected': [
+            {'claimId': claims[0]['claimId'], 'reason': 'numeric_mismatch'}]}
+
+    def audit(*args, **kwargs):
+        assert kwargs['budget']['maxTokens'] == budget['maxTokens']
+        if kwargs.get('measure_reservation'):
+            calls.append('measure')
+            return 17354
+        calls.append('audit')
+        return {'status': 'checked', 'gaps': []}
+
+    def repair(*args, **kwargs):
+        calls.append('repair_fit')
+        adjusted = kwargs['current_budget']()
+        assert adjusted['maxTokens'] == 82646
+        assert adjusted['tokens'] == budget['tokens']
+        assert kwargs['max_prompt_bytes'] == 0
+        return []
+
+    monkeypatch.setattr('services.deep_research.final_coverage.audit_final_answer', audit)
+    monkeypatch.setattr('services.deep_research.repair.repair_rejected', repair)
+    make_verify_node(verify, None, update, llm_invoke=Mock())({'run_id': 'r'})
+    assert calls == ['measure', 'repair_fit', 'audit']
+    assert record['budget']['maxTokens'] == 100000
+
+
 def test_named_condition_repair_keeps_the_previously_checked_comparison():
     _assert_previously_checked_comparison_survives(11)
 
