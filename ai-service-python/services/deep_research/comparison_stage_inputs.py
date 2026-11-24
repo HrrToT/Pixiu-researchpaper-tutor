@@ -126,6 +126,12 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     if joint_targets:
         stage_ids.append('joint')
     assigned = {key: [] for key in stage_ids}
+    version = record.get('comparisonJointReportsContractVersion')
+    known_protocols = None
+    if version == 10 and joint_targets and paired_protocol_notes(record):
+        _, catalog = table_catalog(full_plan, tables)
+        known_protocols = {table['evidenceId']: table['matchedProtocol'] for table in catalog
+                           if 'matchedProtocol' in table}
     for bundle in wire_bundles:
         role = full_plan['roles'][bundle['obligationId']]['kind']
         owners = {by_id[eid]['source'] for eid in bundle['evidenceIds']}
@@ -149,7 +155,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets)
-                         if record.get('comparisonJointReportsContractVersion') in (4, 5, 6, 7, 8, 9) else set())
+                         if version in (4, 5, 6, 7, 8, 9, 10) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.
@@ -160,20 +166,25 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         target_ids = [key for member in members
                       for key in (joint_targets if member == 'joint' else paper_targets[member])]
         required = [bundle for member in members for bundle in assigned[member]]
+        visible_protocols = known_protocols if include_joint else None
+        optional_pairs = [(protocol['noteEvidenceId'], table_id)
+                          for table_id, protocol in (visible_protocols or {}).items()]
         def render_stage(selected):
             plan = plan_cells(requirements, sources, selected, **plan_options)
-            return render(record, question, plan, tables, character_limit, len(target_ids), source_scope=tuple(members))
+            return render(record, question, plan, tables, character_limit, len(target_ids),
+                          source_scope=tuple(members), known_protocols=visible_protocols)
         prompt, selected, missing = fit_premises(own, render_stage, required,
-            max_bytes=max_input_bytes, omit_optional_table_data=False, required_contexts=contexts)
+            max_bytes=max_input_bytes, omit_optional_table_data=False, required_contexts=contexts,
+            optional_bundles=optional_pairs)
         if missing or not selected:
             raise DeepResearchError('comparison_stage_evidence_capacity',
                                     '完整比较阶段证据超出输入窗口，尚未发送。')
         supplied = [r['evidenceId'] for r in selected]
         selected_plan = plan_cells(requirements, sources, selected, **plan_options)
         visible_cells, catalog = table_catalog(selected_plan, tables)
-        if record.get('comparisonJointReportsContractVersion') == 9:
+        if version in (9, 10):
             projected = stage_table_catalog(catalog, joint=include_joint,
-                                            reserved_benchmark=example_owner is not None)
+                reserved_benchmark=example_owner is not None, known_protocols=visible_protocols)
             visible_refs = {ref for table in projected for row in table['rows'] for ref, _ in row[2]}
             visible_cells = {ref: value for ref, value in visible_cells.items() if ref in visible_refs}
         permissions = {t['targetId']: t['evidenceIds'] for t in targets(selected_plan)

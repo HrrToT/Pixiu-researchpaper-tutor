@@ -169,6 +169,29 @@ def test_stage_table_choices_exclude_unmatched_baseline_and_reserved_benchmark_c
     assert paper['groups'] == [['Room', ['Training time']]]
     assert [row[2] for row in paper['rows']] == [[['V2', '20']], [['V4', '20']], [['V6', '30']]]
     assert original == frozen
+    without_note = {key: value for key, value in original[0].items() if key != 'matchedProtocol'}
+    assert not stage_table_catalog([without_note], joint=True, reserved_benchmark=True,
+                                   known_protocols={'E1': original[0]['matchedProtocol']})
+    assert not stage_table_catalog([without_note], joint=True, reserved_benchmark=True,
+                                   known_protocols={})
+    assert stage_table_catalog(original, joint=True, reserved_benchmark=True,
+                               known_protocols={'E1': original[0]['matchedProtocol']}) == [joint]
+
+
+def test_table_and_note_get_a_joint_fit_before_individual_optional_rows():
+    from services.deep_research.synthesis_evidence import fit_premises
+
+    rows = [{'evidenceId': name, 'quote': quote}
+            for name, quote in [('required', '1'), ('other', '1234'), ('note', '12'), ('table', '123')]]
+    render = lambda selection: ''.join(row['quote'] for row in selection)
+    required = [{'evidenceIds': ['required']}]
+    def selected(limit):
+        _, fit, missing = fit_premises(rows, render, required, max_bytes=limit,
+                                       optional_bundles=[('note', 'table')])
+        assert not missing
+        return [row['evidenceId'] for row in fit]
+    assert selected(6) == ['required', 'note', 'table']
+    assert selected(5) == ['required', 'other']
 
 
 def test_local_contributions_keep_global_goals_but_do_not_assign_peer_questions_to_paper():

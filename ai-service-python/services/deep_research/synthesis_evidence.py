@@ -153,7 +153,8 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
     return chosen[:limit],bundles
 
 
-def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False,required_contexts=None,prompt_byte_size=None):
+def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_data=False,required_contexts=None,
+                 prompt_byte_size=None,optional_bundles=()):
     """Keep whole premise bundles before optional rows/context; no quote clipping."""
     def size(value):
         measured=prompt_byte_size(value) if prompt_byte_size is not None else len(value.encode('utf8'))
@@ -191,6 +192,13 @@ def fit_premises(rows,render,bundles,max_bytes=24000, *, omit_optional_table_dat
                 selected=trial;seen.update(ids)
             else:
                 missing.append(bundle)
+    for group in optional_bundles:
+        if not all(eid in by_id for eid in group):
+            continue
+        additions = [by_id[eid] for eid in dict.fromkeys(group) if eid not in seen]
+        if additions and len(selected)+len(additions)<=20 and size(render([*selected,*additions]))<=max_bytes:
+            selected.extend(additions)
+            seen.update(group)
     for row in compact:
         if row['evidenceId'] not in seen and len(selected)<20 and size(render([*selected,row]))<=max_bytes:
             selected.append(row);seen.add(row['evidenceId'])
