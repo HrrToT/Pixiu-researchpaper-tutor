@@ -2,6 +2,12 @@
 
 更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
+## 2026-11-24 v35 真实比较
+
+仅依据任务中的两篇论文提交固定案例一次。共 9 次模型调用、44,057 Token、196 秒。两篇单论文草稿均通过结构编译，联合阶段收到的原始 JSON 缺少闭合括号，校验拒绝该响应，未进入终审，也未发布结论。原服务已恢复，任务、运行和调用记录核对一致。
+
+计划保留了「只选一组数字示例」的原话，但英文标准 `baseline comparison example` 未被识别为专用数字示例。需要分别追踪同口径数字示例和证据允许的可比条件。 [候选装载证据](deep-research-evidence/comparison-structured-example-candidate-load-20261124.json) · [真实执行证据](deep-research-evidence/baseline-comparison-v35-real-20261124.json)
+
 ## 2026-11-24 v29 真实比较
 
 DeepSeek 账户恢复可用。正常恢复 Docker、既有 Java 和原 Python 服务，RAG 与 GROBID 健康检查均通过。候选装载后核对后端源码、旧任务、运行及账本，确认 PDF 依赖可导入。提交固定案例 v29 一次，8 次模型调用均已结算，共 43,140 Token、255 秒，未联网搜论文。终态为 `failed/invalid_comparison_stage_response`，无新报告。原服务已恢复，当前任务、运行和调用记录核对一致。 [装载证据](deep-research-evidence/comparison-example-repair-candidate-load-20261120.json) · [真实执行证据](deep-research-evidence/baseline-comparison-v29-real-20261120.json)

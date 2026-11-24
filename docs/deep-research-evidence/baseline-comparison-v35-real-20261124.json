@@ -1,0 +1,60 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v35",
+  "runId": "dr_run_6e70a54f7e2a5c58a98f4a514820a185",
+  "sourceCommit": "4f3d322b39b2c219f73494fcb377d5c69b6e063f",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_comparison_stage_response",
+  "actualModelCalls": 9,
+  "modelCallsByStep": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3
+  },
+  "providerReportedTokens": 44057,
+  "elapsedSeconds": 196.0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 23993,
+      "requiredBundles": 8,
+      "targets": 4,
+      "responseStatus": "compiled_unverified"
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23931,
+      "requiredBundles": 8,
+      "targets": 4,
+      "responseStatus": "compiled_unverified"
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23836,
+      "requiredBundles": 10,
+      "targets": 3,
+      "responseStatus": "invalid_response"
+    }
+  ],
+  "rawProviderJsonFailure": {
+    "line": 25,
+    "column": 5,
+    "reason": "Expecting property name enclosed in double quotes"
+  },
+  "rawProviderFinishReason": "stop",
+  "normalizedResult": "null",
+  "literalNumericExamplePresentInJointGoal": true,
+  "numericExampleTargetPresent": false,
+  "wholeAnswerAuditCalled": false,
+  "visibleVerifiedConclusions": 0,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptHashes": {
+    ".payload.json": "c61fbd58f808d3a09f7b253ec11e79e249e8b4614d7d2217c7956e2cc4286c9e",
+    ".calls.json": "aaa305801fea394a1428a623772feda74664a9092c534c3994b4c2610d56d255",
+    ".result.json": "b8567245fd2f83a68b8cc325061f144b653eac3ee4ae997c6a01e71ddc90c294",
+    ".execution.json": "cf8f38b425ea7021d55f7a98a2c5c9cb1fedae2c378924f754e227640288fb36"
+  }
+}
