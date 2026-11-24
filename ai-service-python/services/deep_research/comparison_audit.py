@@ -178,13 +178,15 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
              inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
-             local_check_fields=False):
+             local_check_fields=False, check_labels=None):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
         raise ValueError('Typed comparison presentation required')
     if local_check_fields and not (rendered_packet and comparison.get('checkOutputShapeVersion') == 1):
         raise ValueError('Local check fields require the rendered comparison output shape')
+    if check_labels is not None and not local_check_fields:
+        raise ValueError('Short check labels require the rendered comparison output shape')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
     if compact_layout:
@@ -352,10 +354,18 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             if isinstance(publication, dict) and publication.get('displayId'):
                 source.pop('versionId', None)
                 publication.pop('workId', None)  # Already carried in the enclosing paper.
+    checklist = ''
+    if check_labels is not None:
+        from services.deep_research.comparison_audit_labels import project
+        import json
+        expected = project(data, check_labels)
+        checklist = ('\nRequired output rows and their check IDs: '
+                     + json.dumps(expected, separators=(',', ':'))
+                     + '. Include all rows. Mark unsupported checks missing; do not omit them.\n')
     def render(evidence):
         if source_aliases:
             evidence = [{**row, 'source': source_aliases.get(row['source'], row['source'])}
                         for row in evidence]
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
-                + input_text({**data, 'evidence':evidence}))
+                + input_text({**data, 'evidence':evidence}) + checklist)
     return render

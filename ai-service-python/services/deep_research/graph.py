@@ -2229,8 +2229,10 @@ def make_verify_node(
                     comparison_audit_args['bounded_comparison_packet'] = True
                 if audit_version >= 7:
                     comparison_audit_args['rendered_comparison_packet'] = True
-                if audit_version == 8:
+                if audit_version >= 8:
                     comparison_audit_args['local_comparison_check_fields'] = True
+                if audit_version == 9:
+                    comparison_audit_args['label_comparison_checks'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                 if joint_comparison_delivery(record):

@@ -28,7 +28,7 @@ def presentation(version=3):
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
           comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False,
-          rendered_packet=False, plan=PLAN, local_check_fields=False):
+          rendered_packet=False, plan=PLAN, local_check_fields=False, label_checks=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -52,6 +52,9 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         elif mutation == 'partial':check.update(status='partial',reason='The answer is only partial.')
         elif mutation == 'limit':rows[0]['checks'][1]['limitSpans'][0]['excerpt'] = 'not in answer'
         elif mutation == 'omit_limit':rows[0]['checks'][1].pop('limitSpans')
+        elif mutation == 'omit_row':rows.pop()
+        elif mutation == 'foreign_obligation':rows[0]['obligationId'] = 'foreign'
+        elif mutation == 'foreign_check':rows[0]['checks'][0]['checkId'] = rows[1]['checks'][0]['checkId']
         elif mutation == 'waive':rows[0] = {'obligationId':rows[0]['obligationId'], 'notRequired':{
             'reason':'The actual answer requirement is allegedly unnecessary.',
             'requestExcerpt':QUESTION,'bindings':[{'claimId':'a','field':'text'}]}}
@@ -96,6 +99,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         bounded_comparison_packet=bounded_packet,
         rendered_comparison_packet=rendered_packet,
         local_comparison_check_fields=local_check_fields,
+        label_comparison_checks=label_checks,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (plan, claims, evidence)
     return result, sent
@@ -252,6 +256,22 @@ def test_rendered_limit_output_is_declared_on_its_check_and_still_required():
     assert publication_release(rejected, QUESTION, CLAIMS)['reason'] == 'limit_proof_missing'
     invalid_span, _ = audit('limit', **options, local_check_fields=True)
     assert invalid_span['gaps']
+
+
+def test_short_audit_labels_restore_full_review_without_approving_missing_rows():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True,
+                   compact_checks=True, compact_instructions=True, bounded_packet=True,
+                   rendered_packet=True, local_check_fields=True)
+    original, [old] = audit(**options)
+    result, [new] = audit(**options, label_checks=True)
+    assert result == original
+    assert new['requirements'][0]['obligationId'] == 'R1'
+    assert new['requirements'][0]['checks'][0]['checkId'] == 'K1'
+    assert len(old['requirements']) == len(new['requirements'])
+    for mutation in ('omit_row', 'drop', 'foreign_obligation', 'foreign_check', 'truncated'):
+        invalid, _ = audit(mutation, **options, label_checks=True)
+        assert invalid['status'] == 'invalid_response'
+        assert not invalid['verdicts']
 
 
 def test_compact_audit_reallocates_only_output_capacity_before_dispatch():

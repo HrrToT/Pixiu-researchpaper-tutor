@@ -40,7 +40,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False):
     if rendered_comparison_packet and not bounded_comparison_packet:
         raise ValueError('Rendered comparison audit requires a bounded packet')
     if type(bounded_comparison_packet) is not bool or bounded_comparison_packet and not compact_comparison_instructions:
@@ -245,12 +245,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             from services.deep_research.shared_strings import input_text
             render = lambda selected_rows: template.replace(evidence_marker,
                 input_text(selected_rows) if shared_evidence_context else json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
+            check_labels = None
             if (comparison_cells is not None and type(comparison_cells.get('version')) is int
                     and comparison_cells['version'] == 3 and consolidated_instructions
                     and type(request_contract) is int and request_contract == 5
                     and shared_decision_inputs and shared_evidence_context and diagnostics
                     and (catalog is None or scoped_catalog)):
                 from services.deep_research.comparison_audit import renderer
+                if label_comparison_checks:
+                    from services.deep_research.comparison_audit_labels import labels
+                    check_labels = labels(fixed_requirements)
                 renderer_metadata = display_metadata
                 if rendered_comparison_packet and 'sourceAccessRecords' in display_metadata:
                     access = {reverse_aliases[row['evidenceId']]: row['accessLevel'] for row in rows
@@ -264,7 +268,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
                     compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
-                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields)
+                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields, check_labels=check_labels)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -316,6 +320,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     verdicts,coherence_result=extract(verdicts, question, claims, require_excerpts=comparison_coherence_excerpts)
                 if request_contract:
                     from services.deep_research.request_coverage import normalize
+                    if check_labels is not None and verdicts is not None:
+                        from services.deep_research.comparison_audit_labels import restore
+                        verdicts = restore(verdicts, check_labels)
                     raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
                         compact_checks=compact_comparison_checks,
