@@ -20,6 +20,8 @@ H3 从空材料、外部材料专用任务开始，候选运行前未命中本�
 
 此前全量离线回归保留 9,793 项基线用例，实际 9,804 项通过、6 项失败。失败集中在外部检索的旧适配器，新版先判断备用功能是否启用，再读取其需要的字段。隔离副本回归的 175 项通过，包括这六项及新的跨论文范围检查。完整修复后的全量回归仍需确认。 [此前全量回归](deep-research-evidence/comparison-row-premise-host-full-20261124.json)
 
+修复后 501 个模块的全量离线回归通过 9,814 项，上一轮 9,810 个用例全部保留，零失败、零错误、零跳过。此次使用了现有两篇论文的既定开发案例所需源码，真实比较仍单独记录。 [通过的全量回归](deep-research-evidence/cross-paper-boundary-host-full-20261124.json)
+
 ## 2026-11-24 v43 真实比较
 
 阶段空响应处理通过 9,791 项全量离线回归，保留全部 9,788 项基线用例。v43 仅提交一次，调用模型 15 次、消耗 77,818 Token、耗时 154 秒，外部检索为零。三段生成均结束并编译 10 条候选主张，初始单项核验通过六条。提前终审已延后，两批修订均返回，事实复核新通过一条主张，该条来自第二批。最终审核仍未发出，其完整必需包为 24,255 字节，比当时剩余的 17,658 字节上限多 6,597 字节。原服务已恢复，任务、运行和调用记录逐项一致。报告未发布。 [全量回归](deep-research-evidence/comparison-stage-abstention-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-stage-abstention-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v43-real-20261124.json)
