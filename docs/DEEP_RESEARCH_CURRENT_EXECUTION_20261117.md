@@ -26,6 +26,12 @@ v46 获得了带标记的基线表，但获取结果没有包含解释重训标�
 
 包含最终取证名额修复的 `717e2c51e` 通过 501 个模块、9,822 项全量离线回归，保留前一版本全部用例，零失败、零错误、零跳过。 [最新版离线回归](deep-research-evidence/comparison-benchmark-protocol-slot-full-20261125.json)
 
+## 2026-11-25 v48 真实比较
+
+`6eb82ccf0` 的 501 个模块、9,826 项离线测试通过，9,824 项基线用例全部保留。候选装载核对了源码指纹、PDF 解析依赖及既有任务、运行、调用记录。 [全量回归](deep-research-evidence/comparison-review-roles-full-20261125.json) · [候选装载](deep-research-evidence/comparison-review-roles-v48-candidate-load-20261124.json)
+
+单次真实执行消耗 16 次模型调用、78,569 Token、140 秒，无外部搜索或全文获取。最终覆盖审核返回全部六项，但四项部分满足、两项缺失。先在同设置测峰值显存再选方案的建议获得核验。同页重训说明和 10 组候选仍进入生成，所选数字示例未通过核验。接受的四条主张主要覆盖原始 3DGS 与测试建议，LightGaussian 机制、对应数字及跨论文比较边界仍有实质缺口。后续可选修订所需 9,630 字节，高于允许的 6,757 字节。工作区机器版本与最新版本均读到部分报告，原服务及历史记录恢复并核对一致。D2 维持 `inconclusive`，无自动重试。 [真实执行](deep-research-evidence/baseline-comparison-v48-real-20261125.json)
+
 ## 2026-11-25 v47 真实比较
 
 单次执行，16 次模型调用，83,696 Token，141 秒。运行取得同页重训说明，联合目标提供 10 个候选配对，所选一组数字绑定原表 10 个单元格并通过单项核验。共六条主张通过。全答审核需要 12,830 字节，剩余额度允许的审核输入为 11,780 字节，审核在发出前停止。运行返回 `inconclusive`，工作区保存部分报告。原服务及历史记录已核对恢复，发布账本已确认交付。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-v47-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v47-real-20261125.json)
