@@ -1,0 +1,35 @@
+{
+  "originalReceiptSha256": "0be02e28393f80fdfc1429d49675f6594c38747398a88267f304aba1d1902627",
+  "priorContract": 6,
+  "candidateContract": 7,
+  "sameDecodedInputContentIgnoringEmptyOptionalContextMarker": true,
+  "sameTargetPermissions": true,
+  "actualBadIdStillRejected": true,
+  "correctIdCounterfactualStructurallyAdmitted": true,
+  "limitBytes": 24000,
+  "stages": [
+    {
+      "stage": "P1",
+      "priorBytes": 23820,
+      "candidateBytes": 23820,
+      "frozenPremiseBundles": 9,
+      "suppliedEvidence": 12
+    },
+    {
+      "stage": "P2",
+      "priorBytes": 23993,
+      "candidateBytes": 23993,
+      "frozenPremiseBundles": 9,
+      "suppliedEvidence": 15
+    },
+    {
+      "stage": "joint",
+      "priorBytes": 24000,
+      "candidateBytes": 23974,
+      "frozenPremiseBundles": 8,
+      "suppliedEvidence": 11
+    }
+  ],
+  "actualProviderRequests": 0,
+  "scientificAcceptance": false
+}

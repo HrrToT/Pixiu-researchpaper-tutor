@@ -412,17 +412,31 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'benchmark metric values or inventories here.\n')
         from services.deep_research.comparison_joint_reports import benchmark_example_owner
         example_owner = benchmark_example_owner(record, plan)
+        literal_targets = record.get('comparisonJointReportsContractVersion') == 7
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
-            policy += ('Only benchmarkExampleOwner may publish numerical benchmark cells. '
-                       'Other targets may cite the same tables for qualitative trends and use exact '
-                       'method settings, protocol details and processing costs when needed. '
-                       'Do not copy a benchmark metric value into prose or conditions outside the example.\n')
+            if literal_targets and data['jointTargets']:
+                policy += ('Only benchmarkExampleOwner may report benchmark values. Keep them out of prose '
+                           'and conditions elsewhere. Other targets may cite trends from those tables and '
+                           'give exact method settings, protocols and processing costs.\n')
+            else:
+                policy += ('Only benchmarkExampleOwner may publish numerical benchmark cells. '
+                           'Other targets may cite the same tables for qualitative trends and use exact '
+                           'method settings, protocol details and processing costs when needed. '
+                           'Do not copy a benchmark metric value into prose or conditions outside the example.\n')
+        literal_ids = set()
+        if literal_targets:
+            # The response validator uses these IDs verbatim. Do not make the
+            # model recover them from shared strings or infer them from a goal.
+            literal_ids.update(t['targetId'] for t in data['jointTargets'])
+            literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
+            if example_owner:
+                literal_ids.add(example_owner)
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'
                 + 'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n'
-                + input_text(data) + '\n')
+                + input_text(data, literal_strings=literal_ids) + '\n')
     prompt = f'''{task}
 Maximum {max_claims} points; complete answer character limit: {limit or 'concise, no explicit maximum'}.
 Return ONLY {{"answers":[{{"targetId":"exact supplied ID","obligationIds":["allowed goal ID"],"point":POINT_OR_NULL}}]}}.

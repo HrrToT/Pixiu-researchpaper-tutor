@@ -8,7 +8,7 @@ def _size(value):
     return len(json.dumps(value, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode('utf8'))
 
 
-def pack(value):
+def pack(value, *, literal_strings=()):
     counts = Counter()
     def visit(item):
         if isinstance(item, str): counts[item] += 1
@@ -19,7 +19,10 @@ def pack(value):
     visit(value)
     strings = []
     for string, count in counts.items():
-        if count > 1 and count * (_size(string) - _size({'$': len(strings)})) > _size(string) + 20:
+        if count < 2 or string in literal_strings:
+            continue
+        literal_size = _size(string)
+        if count * (literal_size - _size({'$': len(strings)})) > literal_size + 20:
             strings.append(string)
     indices = {string: i for i, string in enumerate(strings)}
     def encode(item):
@@ -61,11 +64,11 @@ LEGEND = ('Input sharing only: {"$":i} restores strings[i] as an exact string VA
           'Restore all original values before interpreting them. Output uses ordinary schema values, not references.')
 
 
-def input_text(value):
+def input_text(value, *, literal_strings=()):
     from services.deep_research.nested_tables import pack as tables, unpack as untables
     from services.deep_research.contracts import digest
     encode = lambda v: json.dumps(v, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
-    wire = pack(tables(value))
+    wire = pack(tables(value), literal_strings=literal_strings)
     if digest(untables(unpack(wire))) != digest(value):
         raise ValueError('Shared input failed its lossless round trip')
     shared = encode(wire) + '\n' + LEGEND

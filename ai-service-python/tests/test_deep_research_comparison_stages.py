@@ -83,6 +83,29 @@ def packet(stage):
     return untables(unpack(data)) if set(data)=={'strings','value'} else data
 
 
+def test_benchmark_owner_is_literal_in_new_joint_stage_and_old_packet_still_decodes():
+    from services.deep_research.comparison_joint_reports import preserve_requested_numeric_example
+
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16)
+    r['question'] += '数字只选一组来源明确的同口径基线对照。'
+    plan_items = preserve_requested_numeric_example([{'obligations': plan['requirements']}], r['question'])
+    requirements = [goal for item in plan_items for goal in item['obligations']]
+    result = [prepare({**r, 'comparisonJointReportsContractVersion': version}, requirements,
+                      plan['sources'], rows, {}, bundles, aliases) for version in (6, 7)]
+    old, new = [next(s for s in value['stages'] if s['stageId'] == 'joint') for value in result]
+    target = 'joint_requested_numeric_example_matched_example'
+    marker = 'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n'
+    old_wire, new_wire = [json.JSONDecoder().raw_decode(s['prompt'].split(marker, 1)[1])[0] for s in (old, new)]
+    assert target in old_wire['strings'] and target not in new_wire['strings']
+    assert f'"targetId":"{target}"' in new['prompt']
+    assert f'"benchmarkExampleOwner":"{target}"' in new['prompt']
+    assert packet(old) == packet(new)
+    assert old['allowedEvidenceByTarget'] == new['allowedEvidenceByTarget']
+    assert old['allowedCellsByTarget'] == new['allowedCellsByTarget']
+
+
 def null_response(stage):
     return {'content':json.dumps({'answers':[{'targetId':key,'goalRefs':[],'point':None}
                                            for key in stage['targetIds']]}),'finishReason':'stop'}
