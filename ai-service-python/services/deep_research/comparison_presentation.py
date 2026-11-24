@@ -61,17 +61,24 @@ def missing_joint_conclusions(value, claims):
     """A paper cell cannot stand in for a required joint deliverable."""
     cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
     kinds = {}
+    comparison_boundaries = set()
     for claim in claims:
         if claim['claimId'] not in cell_ids:
-            for oid in claim.get('obligationIds', []):
+            obligations = claim.get('obligationIds', [])
+            for oid in obligations:
                 kinds.setdefault(oid, set()).add(claim.get('kind'))
+            scope = claim.get('scopeExpression')
+            if claim.get('kind') == 'inference' and isinstance(scope, dict):
+                comparison_boundaries.update(obligations)
     missing = []
+    required_kinds = {'matched_example': {'reported'}, 'conditional_advice': {'proposal', 'suggestion'}}
     for goal in value['jointGoals']:
         oid = goal['obligationId']
         accepted = kinds.get(oid, set())
         deliverables = value.get('jointDeliverables', {}).get(oid, [])
-        missing_parts = [part['requirement'] for part in deliverables if accepted.isdisjoint(
-            {'reported'} if part['kind'] == 'matched_example' else {'proposal', 'suggestion'})]
+        missing_parts = [part['requirement'] for part in deliverables
+                         if (oid not in comparison_boundaries if part['kind'] == 'comparability'
+                             else accepted.isdisjoint(required_kinds[part['kind']]))]
         if not accepted or missing_parts:
             missing.append({**goal, **({'missingDeliverables': missing_parts} if missing_parts else {})})
     return missing

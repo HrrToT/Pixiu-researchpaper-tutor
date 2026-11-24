@@ -134,7 +134,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
-        assert r['comparisonJointReportsContractVersion']==12
+        assert r['comparisonJointReportsContractVersion']==13
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         for value in [0,None,True]:

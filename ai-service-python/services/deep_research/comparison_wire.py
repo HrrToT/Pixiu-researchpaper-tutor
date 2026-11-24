@@ -313,6 +313,9 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                 if protocol:
                     text += '表注说明带标记的基线在同一平台上重新训练。'
                 point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
+    if deliverable == 'comparability' and (point['kind'] != 'inference' or cells
+            or not isinstance(body, dict) or set(body) != {'boundary'}):
+        raise ValueError('joint_comparability_requires_boundary')
     def strings(value):
         if isinstance(value, str):
             yield value
@@ -435,7 +438,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
-        if version in (9, 10, 11, 12):
+        if version in (9, 10, 11, 12, 13):
             data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
                 reserved_benchmark=benchmark_example_owner(record, plan) is not None, known_protocols=known_protocols)
         data = {'requirements': data['requirements'],
@@ -536,7 +539,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
         example_owner = benchmark_example_owner(record, plan)
-        literal_targets = version in (7, 8, 9, 10, 11, 12)
+        literal_targets = version in (7, 8, 9, 10, 11, 12, 13)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -554,7 +557,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version in (8, 9, 10, 11, 12) and deliver_joint and scopes == ('joint',):
+        if version in (8, 9, 10, 11, 12, 13) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
@@ -568,16 +571,20 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 for target in data['jointTargets']:
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
-            if version in (11, 12):
+            if version in (11, 12, 13):
                 body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
                                   'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
                                   'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
                                   'Put evidence-comparison bounds inside point.body.boundary.\n')
-            if version == 12:
+            if version in (12, 13):
                 body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
                                   'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
                                   'cellRefs. The app renders the values. Boundary observedSettings items have only '
                                   'subject, attribute, value; use actual method names and keep E IDs in evidenceRefs.\n')
+            if version == 13:
+                body_guidance += ('For deliverable=comparability, explain what the evidence supports and what it '
+                                  'cannot establish using kind="inference", body.boundary and cellRefs:[]. '
+                                  'Keep the selected measurements in the separate matched_example point.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

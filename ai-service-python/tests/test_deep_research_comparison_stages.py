@@ -151,6 +151,44 @@ def null_response(stage):
                                            for key in stage['targetIds']]}),'finishReason':'stop'}
 
 
+def test_v35_english_example_keeps_distinct_comparability_target_and_historical_packet():
+    from services.deep_research.comparison_presentation import missing_joint_conclusions
+
+    r, plan, rows, aliases, bundles = fixture()
+    anchor = '数字只选一组来源和口径明确的基线对照作例子'
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, question=r['question'] + '。' + anchor)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    oid = goal['obligationId']
+    example = 'Present one baseline comparison example with its source and metric stated, not an inventory across all datasets.'
+    limits = 'Explain what the example supports about what can and cannot be compared between the two papers.'
+    goal.update(question='What single baseline comparison example with explicit source and metric can be drawn?',
+                requestExcerpt=anchor, comparisonRole={**goal['comparisonRole'], 'requestExcerpt':anchor},
+                completionCriteria=[{'criterionId':'C1','requirement':example,'responseType':'identification'},
+                                    {'criterionId':'C2','requirement':limits,'responseType':'explanation'}])
+    snapshots = [prepare({**r, 'comparisonJointReportsContractVersion':version}, plan['requirements'],
+                         plan['sources'], rows, {}, bundles, aliases, merge_joint=False) for version in (12, 13)]
+    old, new = [next(stage for stage in snapshot['stages'] if stage['stageId'] == 'joint') for snapshot in snapshots]
+    joint_id = 'joint_' + oid
+    assert joint_id in old['targetIds']
+    specs = {target['targetId']:target for target in packet(new)['jointTargets']}
+    assert set(specs) == set(old['targetIds']) - {joint_id} | {joint_id + '_matched_example', joint_id + '_comparability'}
+    assert specs[joint_id + '_matched_example']['question'] == example
+    assert specs[joint_id + '_comparability']['question'] == limits
+    assert new['requiredEvidenceIds'] == old['requiredEvidenceIds']
+    assert new['allowedEvidenceByTarget'][joint_id + '_comparability'] == old['allowedEvidenceByTarget'][joint_id]
+    value = {'jointGoals':[{'obligationId':oid}], 'layout':[], 'jointDeliverables':{
+        oid:[{'kind':'matched_example','requirement':example},{'kind':'comparability','requirement':limits}]}}
+    reported = {'claimId':'example', 'kind':'reported', 'obligationIds':[oid]}
+    inference = {'claimId':'limits', 'kind':'inference', 'obligationIds':[oid]}
+    assert missing_joint_conclusions(value, [reported])[0]['missingDeliverables'] == [limits]
+    assert missing_joint_conclusions(value, [reported, inference])[0]['missingDeliverables'] == [limits]
+    boundary = {**inference, 'scopeExpression': {'observedSettings':[], 'notEstablished':[
+        {'type':'comparison_evidence','subjects':['Baseline','Variant'],'quantity':'GPU memory usage'}]}}
+    assert missing_joint_conclusions(value, [boundary])[0]['missingDeliverables'] == [example]
+    assert not missing_joint_conclusions(value, [reported, boundary])
+
+
 def test_stage_table_choices_exclude_unmatched_baseline_and_reserved_benchmark_cells():
     from services.deep_research.comparison_wire import stage_table_catalog
 
