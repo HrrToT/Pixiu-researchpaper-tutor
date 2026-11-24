@@ -1,0 +1,25 @@
+{
+  "savedPayloadSha256": "7147615a9fc04e950e75d5822dcbd43e03d41cfadb75e156d486431e6bb2353a",
+  "contractVersion": 14,
+  "case": "D2-BASELINE-COMPRESSION-v36",
+  "mode": "offline_fixture_using_actual_saved_evidence",
+  "exampleTargetId": "joint_O4_matched_example",
+  "tableEvidenceId": "E14",
+  "protocolEvidenceId": "E24",
+  "rowNumbers": [
+    9,
+    10
+  ],
+  "metricGroup": "Mip-NeRF 360 Datasets",
+  "metrics": [
+    "FPS",
+    "Size"
+  ],
+  "exactBindingsCompiled": 4,
+  "comparisonCriteriaPreserved": 2,
+  "noInternalIdentifiersInPublicText": true,
+  "missingProtocolNoteRejected": true,
+  "otherClaimsSynthesized": 0,
+  "actualModelCalls": 0,
+  "scientificContentAccepted": false
+}
