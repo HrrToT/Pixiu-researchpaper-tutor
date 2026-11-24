@@ -12,6 +12,8 @@ H3 从空材料、外部材料专用任务开始，候选运行前未命中本�
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)
 
+新版将必填证明字段放到固定检查项旁。复用 v44 三条已核验主张与全部六条必引证据，在隔离账本执行了 1 次终审，消耗 5,141 Token，正常结束。模型仍把已报告的参数当作未量化成本的说明，省略了原句绑定。离线重放保存响应时，服务端将这一项明确判为部分满足，保留可定位的缺口，终审维持无效并拦截发布。此次未重跑完整案例，离线重放没有新增付费调用。同一预算内总证据从 10 条降到 9 条，减少的是辅助上下文。 [终审复测和诊断重放](deep-research-evidence/comparison-v44-local-checks-audit-replay-20261124.json)
+
 ## 2026-11-24 v43 真实比较
 
 阶段空响应处理通过 9,791 项全量离线回归，保留全部 9,788 项基线用例。v43 仅提交一次，调用模型 15 次、消耗 77,818 Token、耗时 154 秒，外部检索为零。三段生成均结束并编译 10 条候选主张，初始单项核验通过六条。提前终审已延后，两批修订均返回，事实复核新通过一条主张，该条来自第二批。最终审核仍未发出，其完整必需包为 24,255 字节，比当时剩余的 17,658 字节上限多 6,597 字节。原服务已恢复，任务、运行和调用记录逐项一致。报告未发布。 [全量回归](deep-research-evidence/comparison-stage-abstention-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-stage-abstention-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v43-real-20261124.json)

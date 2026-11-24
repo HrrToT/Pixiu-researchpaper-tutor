@@ -1,0 +1,46 @@
+{
+  "savedPayloadSha256": "7d6de918200ac6f611acb44f6a4f682afe4daf912718e77aaff76215e79cd4ca",
+  "v7PromptBytes": 14105,
+  "v8PromptBytes": 14109,
+  "v7OutputLimit": 3500,
+  "v8OutputLimit": 3500,
+  "citedRowsPreserved": 6,
+  "acceptedClaimsPreserved": 3,
+  "checksPreserved": 11,
+  "allEvidenceRowsV7": 10,
+  "allEvidenceRowsV8": 9,
+  "sameInvalidPositiveResponseRejected": true,
+  "actualModelCalls": 0,
+  "liveAuditCall": {
+    "actualModelCalls": 1,
+    "providerStatus": "succeeded",
+    "providerUsage": {
+      "total_tokens": 5141,
+      "input_tokens": 4153,
+      "output_tokens": 988
+    },
+    "finishReason": "stop",
+    "responseErrors": [
+      {
+        "code": "invalid_check_fields",
+        "obligationId": "ob-1-2",
+        "checkId": "criterion:c-1-2-2",
+        "missingFields": [
+          "limitSpans"
+        ]
+      }
+    ]
+  },
+  "savedLiveResponseReplayedWithoutNetwork": true,
+  "finalAuditStatus": "invalid_response",
+  "diagnosedCriterion": {
+    "obligationId": "ob-1-2",
+    "criterionId": "c-1-2-2",
+    "status": "partial",
+    "errors": [
+      "missing_explicit_limit_span"
+    ]
+  },
+  "publicationStatus": "held",
+  "publishableClaims": 0
+}
