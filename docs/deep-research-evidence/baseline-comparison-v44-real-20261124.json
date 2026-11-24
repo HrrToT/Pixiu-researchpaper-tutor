@@ -1,0 +1,75 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v44",
+  "sourceCommit": "af71dcf1257f2d6b01afa3456fb4129bd5f16998",
+  "runId": "dr_run_7e91dfd411c55104bd224790fe733780",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": null,
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 17,
+  "modelTokens": 86518,
+  "elapsedSeconds": 179.0,
+  "externalSearches": 0,
+  "compiledDraftClaims": 11,
+  "initialAcceptedClaims": 3,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 1,
+    "missing_table_bindings": 1,
+    "semantic_unresolved": 4,
+    "comparison_benchmark_example_scope": 2
+  },
+  "individuallyVerifiedClaimsAfterRepair": 3,
+  "wholeAnswerAuditCallStatuses": [
+    "succeeded"
+  ],
+  "wholeAnswerAuditResponse": {
+    "finishReason": "stop",
+    "inputTokens": 4207,
+    "outputTokens": 959,
+    "schemaRejections": [
+      {
+        "code": "invalid_check_fields",
+        "obligationId": "ob-1-2",
+        "checkId": "criterion:c-1-2-2",
+        "missingFields": ["limitSpans"]
+      }
+    ]
+  },
+  "repairCallsBeforeFirstWholeAnswerAudit": 2,
+  "repairStartedBeforeAudit": true,
+  "repairReviewCalls": [],
+  "repairHardRejectionReasons": {},
+  "initialWholeAnswerAudit": {
+    "status": "deferred_factual_repair",
+    "verdicts": {},
+    "budgetLimit": null,
+    "answerCoherent": null,
+    "coherenceIssueKinds": []
+  },
+  "finalWholeAnswerAudit": {
+    "status": "invalid_response",
+    "verdicts": {},
+    "budgetLimit": null,
+    "answerCoherent": false,
+    "coherenceIssueKinds": [
+      "scope_ambiguity"
+    ]
+  },
+  "repairBudgetStop": {
+    "batch": 2,
+    "kind": "normalTokens",
+    "limit": 50000,
+    "used": 68272
+  },
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "7d6de918200ac6f611acb44f6a4f682afe4daf912718e77aaff76215e79cd4ca",
+    ".calls.json": "008d394d44cddd2721200b1e65dce3ad94e18192fd19e7621170feb2cf5ba02a",
+    ".result.json": "ae32d11c7a5236a32be71418cf9e65d1533ea7d62d67c1f2ae7c8ed62ae2b85b",
+    ".execution.json": "b2f5c41436622b9cd0950a65000a2f9e69917d4a739a752386eb5b48c94af4cf",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
