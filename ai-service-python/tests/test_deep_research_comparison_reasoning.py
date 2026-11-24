@@ -189,9 +189,9 @@ def test_new_policy_does_not_add_audit_or_calls_to_a_single_source_noncomparativ
     assert audit_scope({**c,'kind':'proposal'},e) is None
 
 
-@pytest.mark.parametrize('version',[None,False,True,0,'1',6])
+@pytest.mark.parametrize('version',[None,False,True,0,'1',5,6])
 def test_server_contract_version_is_strict(version):
-    assert not enabled({'comparisonReasoningContractVersion':version})
+    assert enabled({'comparisonReasoningContractVersion':version}) is (version == 5)
     assert enabled({'comparisonReasoningContractVersion':1})
 
 
