@@ -1,0 +1,34 @@
+{
+  "case": "H3-STREAMING-v1",
+  "runId": "dr_run_b1fde53e3c7e5611929c3f9abf70a0cf",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "external_discovery_unavailable",
+  "published": false,
+  "modelCalls": 2,
+  "modelTokens": 2506,
+  "elapsedSeconds": 11.0,
+  "externalSearches": 1,
+  "fulltextFetches": 0,
+  "acquisitionLedger": [
+    {
+      "kind": "external_discover",
+      "status": "failed",
+      "items": [],
+      "pages": 0
+    }
+  ],
+  "publishedClaimCount": 0,
+  "sourceVersions": [],
+  "originalRestoredWithRecordsMatching": true,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "receiptSha256": {
+    ".payload.json": "69a3a4927bd03893f40af7766580a8f9bb2943e668f45d3554698c551459c2ce",
+    ".calls.json": "fd2877e254f57ee7b15cc91f9ff1271bee7529fb4f303be7444930b1adb57cc9",
+    ".result.json": "e4aa2a929f8b75ce9bfc62a567873971cb6d041fe6c6d15312d631b41ceae370",
+    ".execution.json": "fbd6ff72ece2dc5a0db96212e6aaee42d2e2031a66982262953f2a1b11fe801d",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
