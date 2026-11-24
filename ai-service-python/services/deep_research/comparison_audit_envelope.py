@@ -6,7 +6,7 @@ def enabled(record, node='verify_answer_coverage'):
     from services.deep_research.comparison_intent import operations_enabled
     return (node == 'verify_answer_coverage' and operations_enabled(record)
         and type(record.get('comparisonAuditEnvelopeContractVersion')) is int
-        and record['comparisonAuditEnvelopeContractVersion'] in (1, 2, 3, 4, 5)
+        and record['comparisonAuditEnvelopeContractVersion'] in (1, 2, 3, 4, 5, 6)
         and type(record.get('answerCoherenceContractVersion')) is int
         and record['answerCoherenceContractVersion'] in (1, 2))
 
@@ -26,7 +26,7 @@ CORRECTION_POLICY = ('Return exactly one JSON object with only the key "items", 
 
 def uses_correction_envelope(record, node, prompt):
     from services.deep_research.coverage_binding_correction import GUIDANCE
-    return (enabled(record, node) and record['comparisonAuditEnvelopeContractVersion'] in (2, 3, 4, 5)
+    return (enabled(record, node) and record['comparisonAuditEnvelopeContractVersion'] in (2, 3, 4, 5, 6)
             and prompt.startswith(GUIDANCE + '\nFrozen review inputs:\n'))
 
 

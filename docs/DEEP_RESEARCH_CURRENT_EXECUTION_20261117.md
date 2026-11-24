@@ -2,6 +2,12 @@
 
 更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
+## 2026-11-24 v39 真实比较
+
+比较版本 16 全量离线回归 9,773 项通过，原有用例全部保留。固定案例 v39 提交一次，16 次模型调用、85,028 Token、168 秒，未进行外部搜索。三个阶段共编译 11 条草稿，数字示例和可比条件均通过结构与硬检查，语义判定尚未通过。4 条其他主张通过单项核验。全答审核在发送前因载荷大小被拒绝，最终无已核验报告发布。原服务和既有记录已核对。 [全量回归](deep-research-evidence/comparison-scoped-verification-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-scoped-verification-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v39-real-20261124.json)
+
+审核包版本 6 精简重复的审核说明、目标目录和版面元数据。用 v39 终审前的调用账本和答案复现旧版超限，旧版需 22,955 字节，上限 21,320 字节。新版在同一上限内生成 21,318 字节的完整包，全部 13 条必引证据逐字段一致，报告检查项、主张和发布校验不变。此次仅在本地截获待发包，未取得真实终审判定。 [预算准入重放](deep-research-evidence/comparison-v39-bounded-audit-replay-20261124.json)
+
 ## 2026-11-24 v38 真实比较
 
 版本 15 全量离线回归 9,773 项通过，原有 9,771 项全部保留。v38 固定案例提交一次，14 次模型调用、80,686 Token、151 秒，未搜网页。三阶段编译 11 条草稿，没有结构错误。模型从系统提供的选项中选中同一数据组的第 9、10 行，绑定 10 个单元格；可比条件也成功编译。4 条单独核验通过，修订未新增通过项，全答审核暂扣已通过主张，最终没有发布已核验结论。原服务已恢复，任务、运行和调用记录核对一致。 [全量回归](deep-research-evidence/comparison-matched-pair-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-matched-pair-candidate-load-20261124.json) · [真实验收与硬检查重放](deep-research-evidence/baseline-comparison-v38-real-20261124.json)
@@ -527,7 +533,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v27 发布部分成果；v37、v38 均完成三个生成阶段。v38 编译出成对数字示例和可比条件，未发布已核验结论。版本 16 已通过实际输入的确定性重放。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v38](deep-research-evidence/baseline-comparison-v38-real-20261124.json) · [版本 16 重放](deep-research-evidence/comparison-v38-scoped-verification-replay-20261124.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
+| D2 两论文比较 | v27 发布部分成果；v39 已编译成对示例和可比条件，终审前预算准入失败。新版在保存输入中通过同一预算的准入。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v39](deep-research-evidence/baseline-comparison-v39-real-20261124.json) · [终审准入重放](deep-research-evidence/comparison-v39-bounded-audit-replay-20261124.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
 | D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |

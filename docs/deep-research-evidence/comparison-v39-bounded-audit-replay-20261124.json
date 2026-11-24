@@ -1,0 +1,22 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v39",
+  "savedPayloadSha256": "dc8c445d320795e5da8d0e97b441db36a98fa34f7a10a2d2991f3556bb1af397",
+  "beforeAuditActualModelCalls": 14,
+  "beforeAuditActualModelTokens": 74156,
+  "oldAdmission": {
+    "kind": "coveragePromptBytes",
+    "limit": 21320,
+    "used": 22955
+  },
+  "newPacket": {
+    "citations": 13,
+    "limit": 21320,
+    "mandatoryPacketBytes": 21007,
+    "promptBytes": 21318,
+    "outputAllowance": 3500
+  },
+  "requiredEvidenceFieldsExactlyPreserved": true,
+  "fixtureResponseWasNotAccepted": true,
+  "actualModelCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -39,7 +39,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False):
+    if type(bounded_comparison_packet) is not bool or bounded_comparison_packet and not compact_comparison_instructions:
+        raise ValueError('Bounded comparison packets require compact audit instructions')
     if type(comparison_coherence_excerpts) is not bool or comparison_coherence_excerpts and not compact_comparison_instructions:
         raise ValueError('Coherence excerpts require the compact comparison audit')
     if type(compact_comparison_instructions) is not bool or compact_comparison_instructions and not compact_comparison_checks:
@@ -253,7 +255,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
                     compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
-                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence)
+                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:

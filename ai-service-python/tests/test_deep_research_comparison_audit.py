@@ -27,7 +27,7 @@ def presentation(version=3):
 
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
-          comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False):
+          comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -91,6 +91,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         fit_compact_comparison_budget=fit_compact_budget,
         require_joint_conclusions=require_joint,
         compact_comparison_instructions=compact_instructions,
+        bounded_comparison_packet=bounded_packet,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, claims, evidence)
     return result, sent
@@ -183,6 +184,23 @@ def test_shorter_audit_keeps_decision_packet_and_coverage_validators():
     assert new_calls[0][1] == prior_calls[0][1]
     refused, _ = audit('foreign', **options, compact_instructions=True)
     assert refused['status'] != 'checked' or refused['gaps']
+
+
+def test_bounded_comparison_preserves_exact_checks_cited_context_and_release_digest():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True,
+                   compact_instructions=True)
+    source = deepcopy(EVIDENCE)
+    source[0]['sourceContext'] = 'Required condition. ' + source[0]['quote'] + ' Adjacent restriction.'
+    calls, compact_calls = [], []
+    prior, before = audit(**options, evidence=source, dispatches=calls)
+    current, after = audit(**options, evidence=source, dispatches=compact_calls, bounded_packet=True)
+    assert compact_calls[0][0] < calls[0][0]
+    assert prior == current
+    for field in ('question','requirements','claims','evidence','bindingCatalog','extraCheckFields'):
+        assert before[0][field] == after[0][field]
+    assert before[0]['comparisonPresentation']['layout'] == after[0]['comparisonPresentation']['layout']
+    assert 'renderedTextSha256' in before[0]['comparisonPresentation']['table']
+    assert 'renderedTextSha256' not in after[0]['comparisonPresentation']['table']
 
 
 def test_compact_audit_reallocates_only_output_capacity_before_dispatch():

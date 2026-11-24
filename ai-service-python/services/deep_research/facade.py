@@ -318,7 +318,7 @@ class ResearchFacade:
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
-            "comparisonAuditEnvelopeContractVersion": 5 if self._comparison_cells_version == 1 else 0,
+            "comparisonAuditEnvelopeContractVersion": 6 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 16 if self._comparison_cells_version == 1 else 0,
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
             and self._comparison_review_batch_version == 1 else 0,

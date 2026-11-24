@@ -55,9 +55,9 @@ def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,
             'outputKind':'paper_comparison'},start_async=False)
         rid=run['runId']
         run=repo.update_run(rid,lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
-        assert enabled(run) and run['comparisonAuditEnvelopeContractVersion']==5
+        assert enabled(run) and run['comparisonAuditEnvelopeContractVersion']==6
         assert messages_for_record(run,'verify_answer_coverage','prompt')[0]['content']==POLICY
-        for version in [None,0,True,6]:
+        for version in [None,0,True,7]:
             old={**run,'comparisonAuditEnvelopeContractVersion':version}
             assert not enabled(old)
             assert messages_for_record(old,'verify_answer_coverage','prompt')[0]['content']!=POLICY
