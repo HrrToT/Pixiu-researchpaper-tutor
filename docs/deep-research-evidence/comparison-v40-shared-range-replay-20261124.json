@@ -1,0 +1,19 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v40",
+  "savedPayloadSha256": "1ff997c56b64f69bd8b5460a81aab2d94f0589f5fda4fc437a2bc92a8589667d",
+  "previousPolicyVersion": 16,
+  "candidatePolicyVersion": 17,
+  "beforeMissingReportedNumbers": [
+    "5e6"
+  ],
+  "claimNowEligibleForSemanticReview": "cmp_5_0",
+  "otherNumericRejectionsUnchanged": [
+    "cmp_0_0",
+    "cmp_2_0",
+    "cmp_4_0"
+  ],
+  "alteredUpperBoundRejected": true,
+  "originalReceiptUnchanged": true,
+  "modelCalls": 0,
+  "scientificContentAccepted": false
+}

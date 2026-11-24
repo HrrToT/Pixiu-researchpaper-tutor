@@ -53,7 +53,7 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import measurement_numbers, normalize_explicit_quantity_phrases
     if explicit_quantity_phrases:
-        text = normalize_explicit_quantity_phrases(text)
+        text = normalize_explicit_quantity_phrases(text, shared_range_scale=explicit_quantity_phrases == 17)
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
@@ -111,7 +111,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 16 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 17 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3
@@ -121,7 +121,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     enumeration_labels = min(spelling, 9) if spelling >= 7 else False
     surface_labels = 4 if spelling >= 15 else 3 if spelling >= 13 else 2 if spelling >= 11 else spelling == 10
     geometric_articles = 2 if spelling >= 14 else spelling in (12, 13)
-    explicit_quantity_phrases = spelling == 16
+    explicit_quantity_phrases = spelling if spelling >= 16 else False
     concurrent_feedback = type(feedback_version) is int and feedback_version == 2
     for claim in claims:
         claim_id = claim.get("claimId")

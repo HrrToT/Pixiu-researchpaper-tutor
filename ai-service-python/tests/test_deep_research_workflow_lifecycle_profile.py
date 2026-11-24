@@ -68,7 +68,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['answerCoherenceContractVersion']==2
         assert first['identificationLocatorContractVersion']==1
         assert first['recommendationReviewContractVersion']==2
-        assert first['quantitySpellingContractVersion']==16
+        assert first['quantitySpellingContractVersion']==17
         assert first['tableReferencesContractVersion']==4
         assert first['scientificOutlineContractVersion']==1
         assert first['workflowMetadataRowsContractVersion']==2

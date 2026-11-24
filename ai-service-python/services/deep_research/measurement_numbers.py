@@ -20,6 +20,13 @@ _ENGLISH_UPSAMPLE_SCHEDULE = re.compile(
 _DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
     r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
+_RANGE_SCALE = re.compile(
+    r'(?<![A-Za-z0-9_.,+\-−])(?P<low>[0-9]+(?:\.[0-9]+)?)'
+    r'(?:-|\s*(?:[–—~～]|至|到|\bto\b)\s*)'
+    r'(?P<high>[0-9]+(?:\.[0-9]+)?)\s*'
+    r'(?P<scale>(?>thousand\b|million\b|billion\b|万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千|百|十))'
+    r'(?!分之|[万亿千百十]|\s*[%％×倍]|[-‐‑]fold\b)', re.I | re.ASCII)
+_ENGLISH_SCALES = {'thousand': 3, 'million': 6, 'billion': 9}
 _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
     r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
     r'[\s\-‐‑–]+(?:dimensions?|dimensional|components?|channels?|outputs?|views?|frames?|images?|'
@@ -228,7 +235,7 @@ def number_display(identity):
     return identity
 
 
-def normalize_explicit_quantity_phrases(text):
+def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
@@ -238,7 +245,16 @@ def normalize_explicit_quantity_phrases(text):
             return match[0]
         return f"{match['first']}和{match['second']}次迭代后分别上采样，共两次"
 
-    return _DISTRIBUTED_UPSAMPLE_SCHEDULE.sub(distribute, text)
+    text = _DISTRIBUTED_UPSAMPLE_SCHEDULE.sub(distribute, text)
+    if not shared_range_scale:
+        return text
+
+    def expand_range_scale(match):
+        scale = match['scale'].lower()
+        exponent = _ENGLISH_SCALES[scale] if scale in _ENGLISH_SCALES else _SCALES[scale]
+        return f"{match['low']}e{exponent} 到 {match['high']}e{exponent}"
+
+    return _RANGE_SCALE.sub(expand_range_scale, text)
 
 
 def measurement_numbers(text: str, *, word_counts=False, relative_references=False,

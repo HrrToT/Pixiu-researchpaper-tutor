@@ -8,6 +8,8 @@
 
 新版在仅允许一个数值示例的比较中，将带明确单位的帧率数值和范围约束到指定的对照项。两栏可报告带场景或设置的定性结果，并保留必要的处理成本和方法参数。用 v40 原始记录重放时，两条越界帧率主张进入修订，其余九条候选主张及引用逐项一致。三个生成阶段保留全部必需证据且均在 24,000 字节内。历史版本的生成输入逐项一致。此重放未调用模型，仍需复验两栏定性内容、证据覆盖和终审结果。 [帧率范围重放](deep-research-evidence/comparison-v40-frame-rate-scope-replay-20261124.json)
 
+数值核验版本 17 识别共用数量级的区间写法。v40 的 `1–5百万` 与原文 `1-5 million` 均解析为一百万至五百万，仅恢复该条候选的语义复核资格。将上界改为六百万仍会被拒绝，其余三条数值拒绝逐项保留。原引文与历史记录保持原样。 [区间核验重放](deep-research-evidence/comparison-v40-shared-range-replay-20261124.json)
+
 ## 2026-11-24 v39 真实比较
 
 比较版本 16 全量离线回归 9,773 项通过，原有用例全部保留。固定案例 v39 提交一次，16 次模型调用、85,028 Token、168 秒，未进行外部搜索。三个阶段共编译 11 条草稿，数字示例和可比条件均通过结构与硬检查，语义判定尚未通过。4 条其他主张通过单项核验。全答审核在发送前因载荷大小被拒绝，最终无已核验报告发布。原服务和既有记录已核对。 [全量回归](deep-research-evidence/comparison-scoped-verification-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-scoped-verification-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v39-real-20261124.json)

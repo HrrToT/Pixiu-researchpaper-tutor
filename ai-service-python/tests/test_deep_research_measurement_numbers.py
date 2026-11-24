@@ -92,3 +92,30 @@ def test_saved_resolution_warmup_translation_keeps_exact_checked_quantities(quot
             assert claims[0]['text'] == text and evidence[0]['quote'] == quote
             return [{'claimId': 'c1', 'status': 'failed', 'reason': 'Semantic check remains required.'}]
         assert not verify_claims([claim], [ev], reject, quantity_spelling_version=16)['accepted']
+
+
+def test_shared_scale_range_preserves_both_endpoints_and_requires_semantic_review():
+    quote = 'The resulting representation contains 1-5 million Gaussians for the tested scenes.'
+    evidence = make_evidence({'workId': 'paper', 'versionId': 'v1', 'contentHash': 'hash',
+                              'accessLevel': 'fulltext'}, quote, quote, location={'page': 5}, obligation_ids=[])
+    text = '测试场景的表示包含1–5百万个高斯。'
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text, 'evidenceRefs': [evidence['evidenceId']]}
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=16)['rejected']
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=17)['candidates'] == [claim]
+
+    for bad_text in ('测试场景包含1–6百万个高斯。', '测试场景恰好包含1个高斯。'):
+        modified = {**claim, 'text': bad_text}
+        assert precheck_claims([modified], [evidence], quantity_spelling_version=17)['rejected'][0]['reason'] == 'numeric_mismatch'
+
+    def reject(claims, evidence_rows):
+        assert claims[0]['text'] == text and evidence_rows[0]['quote'] == quote
+        return [{'claimId': 'c1', 'status': 'failed', 'reason': 'The source scope must still be checked.'}]
+
+    assert not verify_claims([claim], [evidence], reject, quantity_spelling_version=17)['accepted']
+
+
+@pytest.mark.parametrize('text', ['1 - 5 million', '-1–5 million', '1–5 million%', '1–5百万分之一'])
+def test_shared_scale_normalization_leaves_ambiguous_arithmetic_and_units(text):
+    from services.deep_research.measurement_numbers import normalize_explicit_quantity_phrases
+
+    assert normalize_explicit_quantity_phrases(text, shared_range_scale=True) == text
