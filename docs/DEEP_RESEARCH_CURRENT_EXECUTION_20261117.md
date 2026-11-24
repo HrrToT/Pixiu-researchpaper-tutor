@@ -1,6 +1,14 @@
 # 当前执行状态与剩余交付
 
-更新：2026-11-20。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
+更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
+
+## 2026-11-24 v29 真实比较
+
+DeepSeek 账户恢复可用。正常恢复 Docker、既有 Java 和原 Python 服务，RAG 与 GROBID 健康检查均通过。候选装载后核对后端源码、旧任务、运行及账本，确认 PDF 依赖可导入。提交固定案例 v29 一次，8 次模型调用均已结算，共 43,140 Token、255 秒，未联网搜论文。终态为 `failed/invalid_comparison_stage_response`，无新报告。原服务已恢复，当前任务、运行和调用记录核对一致。 [装载证据](deep-research-evidence/comparison-example-repair-candidate-load-20261120.json) · [真实执行证据](deep-research-evidence/baseline-comparison-v29-real-20261120.json)
+
+拒绝发生在第三个比较写作阶段。两篇论文的各自阶段均保存了通过结构检查的回复。综合阶段返回完整 JSON，前两个目标 ID 合法，数字示例的 ID 被模型写成 `joint_ob-2-2_matched_example`，与冻结的 `joint_requested_numeric_example_matched_example` 不符。该正确 ID 在实际请求的目标行中被压缩为 `{"$":10}`，明文只出现在共享字符串表。当前保护拒绝了第三阶段，未进入科学审核。下一处修复应让输出必须逐字复制的目标 ID 保持明文，同时用保存请求校验容量、权限与历史请求身份。原回复不改判、不重发。
+
+实体 PDF 定位在实际研究中已运行。两批共 36 条取证，15 条精确定位、21 条未定位，无 PDF 解析进程失败。由于未发布新报告，本次不能验证最终报告页码保存。v29 提交前的历史准备记录如下。
 
 ## 真实报告读取与 PDF 引用定位
 
@@ -483,7 +491,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 开发题 v27 有一组同表重训对照，发布部分成果，科学内容未通过。 [记录](deep-research-evidence/baseline-comparison-v27-real-20261120.json) | 真实生成完整比较，人工核对双方维度、身份、可比条件和建议。v29 尚未提交。 |
+| D2 两论文比较 | 开发题 v27 发布一组同表重训对照的部分成果。v29 综合回复的目标 ID 无效，未发布。两次均未通过科学验收。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v29](deep-research-evidence/baseline-comparison-v29-real-20261120.json) | 先用保存的 v29 请求修复目标 ID 的呈现，再真实生成完整比较并核对双方维度、身份、可比条件与建议。 |
 | D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
