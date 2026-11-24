@@ -1,0 +1,12 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v44",
+  "payloadSha256": "7d6de918200ac6f611acb44f6a4f682afe4daf912718e77aaff76215e79cd4ca",
+  "target": "joint_ob-2-2",
+  "requiredPublicationCount": 2,
+  "realSavedResponsePublicationCount": 1,
+  "realSavedResponseRejected": "stage_cross_paper_evidence",
+  "constructedFixtureBoundPublications": 2,
+  "fixtureIsUnverified": true,
+  "actualModelCalls": 0,
+  "scientificContentAccepted": false
+}
