@@ -491,7 +491,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v27 发布部分成果。v29 因联合目标 ID 无效而未发布。修复后 v30 在生成前因联合证据超出窗口而停止。同一批 v30 证据回放需要 27,303 字节，窗口为 24,000 字节。旧版请求也超过窗口。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v29](deep-research-evidence/baseline-comparison-v29-real-20261120.json) · [v30](deep-research-evidence/baseline-comparison-v30-real-20261124.json) | 先保证联合阶段在容量内保留必要证据，再验证真实生成、双方维度、身份、可比条件与建议。 |
+| D2 两论文比较 | v27 发布部分成果。v29 因联合目标 ID 无效而停止，v30 在联合证据容量检查前后未进入生成。v31 三个阶段带齐目标 ID 返回，联合输入为 23,874 字节。联合草稿未通过正文结构、显存建议和同口径示例检查，终审输入超过 24,000 字节，最终保留待核验状态。 [v27](deep-research-evidence/baseline-comparison-v27-real-20261120.json) · [v29](deep-research-evidence/baseline-comparison-v29-real-20261120.json) · [v30](deep-research-evidence/baseline-comparison-v30-real-20261124.json) · [v31](deep-research-evidence/baseline-comparison-v31-real-20261124.json) | 用 v31 保存输入修复终审容量及联合成稿的结构与证据绑定，再核对双方维度、可比条件与建议。 |
 | D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
