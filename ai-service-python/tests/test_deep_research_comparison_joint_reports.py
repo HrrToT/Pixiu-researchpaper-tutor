@@ -135,6 +135,34 @@ def test_only_joint_example_can_use_numerical_frame_rate(text, conditions, block
     assert benchmark_binding_error({**claim, 'claimId': example['claimId']}, draft) is None
 
 
+@pytest.mark.parametrize(('attribute', 'value', 'suffix', 'expected'), [
+    ('GPU', 'RTX A6000', '', None),
+    ('FPS', '200', '', 'comparison_benchmark_example_scope'),
+    ('GPU', 'RTX A6000', '第一篇实测 200 FPS。', 'comparison_benchmark_example_scope'),
+])
+def test_boundary_keeps_paper_title_out_of_frame_rate_check(attribute, value, suffix, expected):
+    from services.deep_research.comparison_joint_reports import benchmark_binding_error
+    from services.deep_research.scope_expression import materialize
+
+    title = 'A Paper with 200+ FPS'
+    boundary = {
+        'observedSettings': [{'subject': title, 'attribute': attribute, 'value': value}],
+        'notEstablished': [
+            {'type': 'comparison_evidence', 'subjects': [title, 'Second paper'], 'quantity': 'FPS排名'}
+        ],
+    }
+    claim = {'claimId': 'boundary', 'kind': 'inference', 'text': '', 'conditions': {},
+             'scopeExpression': boundary, 'tableBindings': []}
+    claim, _ = materialize(claim, 5)
+    claim['text'] += suffix
+    draft = {
+        'benchmarkExampleClaimId': None, 'benchmarkSpeedScopeVersion': 1,
+        'sources': {'P1': {'title': title}, 'P2': {'title': 'Second paper'}},
+        'report': {'claims': [{'claimId': 'boundary', 'body': {'boundary': boundary}}]},
+    }
+    assert benchmark_binding_error(claim, draft) == expected
+
+
 @pytest.mark.parametrize('mutation',['policy','kind','text','binding','reference'])
 def test_reported_policy_and_joint_fact_are_bound_to_final_audit_digest(mutation):
     _,draft,c,_,_=compiled();meta=metadata(draft)

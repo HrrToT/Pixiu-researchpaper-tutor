@@ -189,6 +189,38 @@ _NUMERIC_FRAME_RATE = re.compile(
     r'|(?:\bfps|帧率)\s*[:：=]\s*[<>≤≥~≈+-]?\s*\d)', re.I)
 
 
+def _benchmark_scope_text(claim, draft):
+    text = str(claim.get('text', ''))
+    authored = next((row for row in draft.get('report', {}).get('claims', [])
+                     if row['claimId'] == claim['claimId']), {})
+    boundary = authored.get('body', {}).get('boundary')
+    if boundary is None or claim.get('kind') != 'inference':
+        return text
+
+    from services.deep_research.scope_expression import materialize
+    source_titles = {source.get('title') for source in draft.get('sources', {}).values()}
+    canonical = {**claim, 'text': '', 'conditions': {}, 'scopeExpression': boundary}
+    try:
+        rendered, _ = materialize(canonical, 5)
+        if rendered['text'] != text:
+            return text
+
+        # A publisher's title can contain a frame rate. Mask only literal titles
+        # in subject positions of an unchanged, application-rendered boundary.
+        masked = deepcopy(boundary)
+        for setting in masked['observedSettings']:
+            if setting['subject'] in source_titles:
+                setting['subject'] = '论文'
+        for proposition in masked['notEstablished']:
+            if proposition.get('type') == 'comparison_evidence':
+                proposition['subjects'] = [f'论文{i}' if subject in source_titles else subject
+                                           for i, subject in enumerate(proposition['subjects'], 1)]
+        rendered, _ = materialize({**canonical, 'scopeExpression': masked}, 5)
+        return rendered['text']
+    except ValueError:
+        return text
+
+
 def benchmark_binding_error(claim, draft):
     """Recheck typed benchmark ownership and the one paired table group after edits."""
     from services.deep_research.measurement_table_navigation import benchmark_metric
@@ -199,7 +231,7 @@ def benchmark_binding_error(claim, draft):
             return 'comparison_benchmark_example_scope'
         if draft.get('benchmarkSpeedScopeVersion') == 1:
             conditions = claim.get('conditions')
-            fields = [str(claim.get('text', ''))]
+            fields = [_benchmark_scope_text(claim, draft)]
             if isinstance(conditions, dict):
                 fields.extend(f'{key}: {value}' for key, value in conditions.items())
             if any(_NUMERIC_FRAME_RATE.search(field) for field in fields):
