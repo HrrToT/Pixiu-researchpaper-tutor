@@ -2,6 +2,12 @@
 
 更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
+## 2026-11-24 v37 真实比较
+
+版本 14 全量离线回归 9,771 项通过，原有 9,770 项全部保留。v37 固定案例提交一次，14 次模型调用、75,341 Token、163 秒，未搜网页。三个草稿阶段均通过输入检查并返回可解析结果，共编译 9 条草稿，其中 4 条通过单项核验。修订未新增通过项。全答审核发现来源表述存在歧义，暂扣 4 条已通过的主张，最终结果无用户可见的已核验结论。原服务已恢复，现有记录核对一致。 [全量回归](deep-research-evidence/comparison-joint-catalog-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-joint-catalog-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v37-real-20261124.json)
+
+数字示例获得专用输出。模型在同一张表上选了标记基线一行中的两个数据组，缺少既有方法与压缩方法的成对行，校验拒绝了示例。可比条件在单个设置内多写了证据引用字段，违反该结构的现有契约；另有 5 条单论文内容在数值核对或单元格绑定处被拒绝。下一阶段需从已绑定的表格建立可选择的成对数据组选项，验证可比条件的引用关联，并让全答核验使用论文列的正式归属。完整比较仍待验证。
+
 ## 2026-11-24 v36 真实比较
 
 版本 13 的全量离线回归通过，9,770 项且保留原有 9,769 项。候选已核对源码、PDF 解析和既有记录。v36 固定案例提交一次，7 次模型调用、21,691 Token、159 秒，外部搜索为零。联合阶段的必需证据未能装入输入窗口，综合请求未发送，报告未发布。原服务已恢复，任务、运行和调用记录核对一致。 [全量回归](deep-research-evidence/comparison-example-boundary-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-example-boundary-candidate-load-20261124.json) · [真实执行及重放](deep-research-evidence/baseline-comparison-v36-real-20261124.json)
