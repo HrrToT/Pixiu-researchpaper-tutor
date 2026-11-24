@@ -10,6 +10,7 @@ from pathlib import Path
 from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.tools import ExternalAcademicAdapter
 from services.deep_research_academic import AcademicPolicy, AcademicSourceClient
+from services.deep_research.source_revisions import work_id
 
 
 def capabilities():
@@ -22,10 +23,13 @@ def capabilities():
 
 
 class AcademicAcquisition:
-    def __init__(self, repo, complete_call, *, client_factory=None):
+    def __init__(self, repo, complete_call, *, client_factory=None, fallback_search=None,
+                 direct_pinned_fallback=False):
         self.repo = repo
         self.complete_call = complete_call
         self.client_factory = client_factory or self._client
+        self.fallback_search = fallback_search
+        self.direct_pinned_fallback = direct_pinned_fallback
 
     def _client(self, record):
         from core.config import settings
@@ -41,6 +45,7 @@ class AcademicAcquisition:
         if record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
             return []
         client = self.client_factory(record)
+        allow_fallback = client.policy.enabled and client.policy.allow_fulltext
         diagnostics=type(record.get('externalDiagnosticsContractVersion')) is int and record['externalDiagnosticsContractVersion']==1
         adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call,
             **({'transport_diagnostics':True} if diagnostics else {}))
@@ -68,17 +73,36 @@ class AcademicAcquisition:
             # Editing the question cannot turn a pinned paper into topic search.
             candidates = (adapter.lookup(run_id, identities, limit=max(3, len(identities)))
                           if identities else adapter.discover(run_id, query, limit=3))
+            if (allow_fallback and (self.direct_pinned_fallback or self.fallback_search)
+                    and adapter.discovery_outcomes[-1] != 'not_dispatched'):
+                request_ids = identities or client.discovery_request(query, 3).get('id_list', '').split(',')
+                request_ids = [identity for identity in request_ids if identity]
+                if request_ids and self.direct_pinned_fallback:
+                    found = {candidate['arxivId'] for candidate in candidates}
+                    # Exact, already validated revisions can go straight to the
+                    # canonical PDF when the metadata host misses them.
+                    candidates = [*candidates, *(
+                        {'arxivId': identity, 'workId': 'arxiv:' + work_id(identity),
+                         'versionId': 'arxiv:' + identity, 'title': 'arXiv:' + identity,
+                         'url': 'https://arxiv.org/abs/' + identity, 'discoveryProvider': 'pinned_arxiv_pdf'}
+                        for identity in request_ids if work_id(identity) != identity and identity not in found)]
+                elif not request_ids and not candidates and self.fallback_search:
+                    candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query)
             for candidate in candidates:
                 identity = candidate.get("versionId")
                 if not identity:
                     continue
                 if identity not in materials:
                     fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
-                    if record.get('exactDiscoveryContractVersion')==2 and fulltext and any(fulltext.get(key)!=candidate.get(key) for key in ('workId','versionId','arxivId')):
+                    needs_pdf = bool(candidate.get('discoveryProvider'))
+                    if needs_pdf and not fulltext:
+                        continue
+                    if (needs_pdf or record.get('exactDiscoveryContractVersion') == 2) and fulltext and any(
+                            fulltext.get(key) != candidate.get(key) for key in ('workId', 'versionId', 'arxivId')):
                         raise DeepResearchError('external_version_mismatch','取得的全文与所选论文版本不一致，未替换指定版本。')
                     # Cache acquisition, not the passages selected for one question.
                     materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", ""),
-                                           "discoveredAt": candidate.get('retrievedAt')}
+                                           "discoveredAt": candidate.get('retrievedAt', fulltext.get('retrievedAt'))}
                 material = materials[identity]
                 pages = material.get("pages") or [{"text": material.get("abstract", "")}]
                 question = str(target.get('question') or '')

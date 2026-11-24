@@ -431,7 +431,12 @@ def initialize_runtime():
                            shared_experiment_http_observation_version=int(shared_observation_profile),
                            source_reader=lambda rid, sid: read_acquired_source(repo, rid, sid))
     from services.deep_research.external import AcademicAcquisition
-    facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call)
+    fallback_search = None
+    if settings.deep_research_deepseek_search_enabled and settings.deepseek_api_key:
+        from services.deep_research.deepseek_search import DeepSeekAcademicSearch
+        fallback_search = DeepSeekAcademicSearch(settings.deepseek_api_key)
+    facade._external_acquire = AcademicAcquisition(repo, facade._complete_tracked_call,
+        fallback_search=fallback_search, direct_pinned_fallback=settings.deep_research_pinned_pdf_fallback_enabled)
     from services.deep_research.publication import PublicationDispatcher
     facade._publication_dispatcher = PublicationDispatcher(repo, origin=scope.origin)
     facade._publication_dispatcher.start()
