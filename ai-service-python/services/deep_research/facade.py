@@ -418,7 +418,7 @@ class ResearchFacade:
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 4,
             "repairEvidencePriorityVersion": 1,
-            "comparisonReasoningContractVersion": 4,
+            "comparisonReasoningContractVersion": 5,
             "namedRowIdentityContractVersion": 1,
             "requestGroundingContractVersion": 4,
             "factRedraftContractVersion": 3,

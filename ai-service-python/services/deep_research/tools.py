@@ -1117,7 +1117,7 @@ Do not require an unexecuted experiment to have results. Do not judge context cl
         compact_policy = self._compact_factual_review
         compact_review = (node in {'verify', 'verify_repair'} and single_decision
             and source_field_references and scope_source_paths and comparison_source_paths
-            and type(comparison_version) is int and comparison_version == 4
+            and type(comparison_version) is int and comparison_version in (4,5)
             and (compact_policy() if callable(compact_policy) else compact_policy) is True)
         experiment_policy = (self._experiment_intent_review() if callable(self._experiment_intent_review)
                              else self._experiment_intent_review)
@@ -1405,7 +1405,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                     'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.',
                     'For scopeAudit and comparisonAudit premises/condition sides use evidenceId+path, never retype a quotation; condition sides retain their literal value.')
             prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
-                if type(comparison_version) is int and comparison_version==4 else source_field_guidance)
+                if type(comparison_version) is int and comparison_version in (4,5) else source_field_guidance)
         if not compact_review and target_bindings and scope_enabled and has_factual_targets:
             from services.deep_research.audit_source_fields import TARGET_GUIDANCE
             prompt+='\n'+TARGET_GUIDANCE
@@ -1697,7 +1697,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                     from services.deep_research.comparison_reasoning import validate_audit
                     comparison_errors=validate_audit(target,verdict,visible_evidence,
                         source_field_bindings=field_bindings,version=comparison_version)
-                    if comparison_errors:
+                    if comparison_errors and not (comparison_version == 5 and scope_enabled and field_bindings
+                            and comparison_errors == ['comparison_row_premise_missing']):
                         verdict['status']='failed'
                         verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(comparison_errors)
                         continue
@@ -1711,6 +1712,16 @@ The dataAvailability object is an internal audit, not new experimental results.
                         verdict['status']='failed'
                         verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)
                         continue
+                if comparison_enabled and comparison_errors:
+                    from services.deep_research.comparison_reasoning import comparison_with_verified_row_premises
+                    reuse = comparison_with_verified_row_premises(target, verdict, visible_evidence)
+                    remaining = validate_audit(target,reuse,visible_evidence,
+                        source_field_bindings=field_bindings,version=comparison_version)
+                    if remaining:
+                        verdict['status']='failed'
+                        verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(remaining)
+                        continue
+                    verdict.update(reuse)
                 if attribution_enabled:
                     from services.deep_research.result_attribution import validate_audit as validate_attribution
                     attribution_errors=validate_attribution(target,verdict,visible_evidence)

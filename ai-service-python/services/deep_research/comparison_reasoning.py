@@ -9,7 +9,7 @@ import re
 
 
 def enabled(record):
-    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion'] in (1,2,3,4)
+    return type(record.get('comparisonReasoningContractVersion')) is int and record['comparisonReasoningContractVersion'] in (1,2,3,4,5)
 
 
 GUIDANCE='''For a requested comparison/check, lead with the qualified judgement, then the
@@ -78,14 +78,14 @@ For metric comparisons check direction and each group, not only numerical closen
 If no supported audit is possible return status=failed with the specific missing premise;
 do not invent an audit or cite irrelevant quotations to satisfy the schema.
 '''
-    if type(version) is int and version in (2,3,4):
+    if type(version) is int and version in (2,3,4,5):
         prompt += ('\nThe scope field is an ENUM, not an explanation. Copy exactly the target value '
                    'cross_study or within_study, without a colon, suffix or dataset name. '
                    'Put explanations only in reason; keep evidence IDs and quotations unchanged.\n')
-    if type(version) is int and version in (3,4):
+    if type(version) is int and version in (3,4,5):
         from services.deep_research.comparison_methodology import REFERENCE
         prompt+='\n'+REFERENCE
-    if type(version) is int and version == 4:
+    if type(version) is int and version in (4,5):
         prompt=prompt.replace('differences','conditionDifferences')
         prompt+='\nconditionDifferences records only empirically established differences in relevant evaluation\nconditions (for example dataset, resolution, timing protocol or hardware). It does NOT list\nthe identities of the methods being compared, or their measured outcomes. Two different\nmethod names are expected in a method comparison and do not establish misaligned conditions.\nFor a reported within-table comparison, bind the actual rows and restrict the conclusion to\nthat reported evaluation; established means aligned for THIS bounded comparison, not a proof\nthat every possible setting is controlled. Use conditionDifferences=[] when no relevant\ncondition difference is demonstrated. Unknown conditions remain not_established; do not\ninvent matching conditions or erase a genuine condition difference to satisfy this rule.\nAn intentional whole-system comparison may include different hardware: a supported bounded\nsystem comparison is distinct from an isolated method-effect claim. Decide supportsClaim\nfrom the actual conclusion, comparison type and evidence, never from method labels alone.\n'
     if source_paths:
@@ -104,7 +104,7 @@ def normalize_audit_scope(claim, verdict, evidence, *, version=1):
     followed by a colon is unambiguous only if its suffix contains no other scope
     token. Every premise, quotation, alignment and support check still runs.
     """
-    if type(version) is not int or version not in (2,3,4):
+    if type(version) is not int or version not in (2,3,4,5):
         return verdict
     audit = verdict.get('comparisonAudit')
     scope = audit_scope(claim, evidence)
@@ -116,7 +116,7 @@ def normalize_audit_scope(claim, verdict, evidence, *, version=1):
             audit = {**audit, 'scope': scope}
             verdict = {**verdict, 'comparisonAudit': audit,
                        'comparisonAuditNormalization': {'field': 'scope', 'original': value, 'normalized': scope}}
-    if (version == 4 and scope == 'within_study' and claim.get('kind') == 'reported'
+    if (version in (4,5) and scope == 'within_study' and claim.get('kind') == 'reported'
             and isinstance(audit, dict) and audit.get('scope') == scope
             and audit.get('alignment') == 'established' and audit.get('supportsClaim') is True):
         differences = audit.get('conditionDifferences')
@@ -146,12 +146,34 @@ def _normalized(text):
     return re.sub(r'\s+',' ',text).strip()
 
 
+def comparison_with_verified_row_premises(claim, verdict, evidence):
+    """Reuse only a table quotation already selected by a passed scope audit."""
+    audit = verdict['comparisonAudit']
+    scope = verdict.get('scopeAudit') or {}
+    if (claim.get('kind') != 'reported' or audit.get('scope') != 'within_study'
+            or audit.get('alignment') != 'established' or audit.get('conditionDifferences') != []
+            or scope.get('claimStrength') != 'bounded' or scope.get('evidenceStrength') != 'bounded'):
+        return verdict
+    own = {item['evidenceId']: _identity(item) for item in evidence if item['evidenceId'] in claim['evidenceRefs']}
+    if set(own) != set(claim['evidenceRefs']) or len(set(own.values())) != 1 or not all(next(iter(own.values()))):
+        return verdict
+    # The caller has checked the claim's table bindings and both audit shapes.
+    # A citation in the claim or a bound table cell alone cannot supply a premise.
+    required = {binding['evidenceId'] for binding in claim['tableBindings']}
+    missing = required - {row['evidenceId'] for row in audit['premises']}
+    additions = [row for row in scope['premises'] if row['evidenceId'] in missing and row.get('path') == ['quote']]
+    if len(additions) != len(missing) or {row['evidenceId'] for row in additions} != missing:
+        return verdict
+    return {**verdict, 'comparisonAudit': {**audit, 'premises': [*audit['premises'], *additions]},
+            'comparisonRowPremiseReuse': sorted(missing)}
+
+
 def validate_audit(claim,verdict,evidence, *, source_field_bindings=False, version=1):
     scope=audit_scope(claim,evidence)
     if scope is None:
         return []
     audit=verdict.get('comparisonAudit')
-    difference_field='conditionDifferences' if type(version) is int and version==4 else 'differences'
+    difference_field='conditionDifferences' if type(version) is int and version in (4,5) else 'differences'
     if (not isinstance(audit,dict) or set(audit)!={'scope','alignment','supportsClaim','premises',difference_field}
             or audit.get('scope')!=scope or audit.get('alignment') not in {'established','not_established','different'}
             or audit.get('supportsClaim') is not True):

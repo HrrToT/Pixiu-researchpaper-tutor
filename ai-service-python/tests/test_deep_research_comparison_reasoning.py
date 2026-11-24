@@ -136,6 +136,51 @@ def test_two_table_rows_from_one_work_have_a_separate_bounded_audit():
     assert not verify_claims([wrong],[ev],lambda *_:[result])['accepted']
 
 
+@pytest.mark.parametrize('variant, expected', [
+    ('reuse', 'passed'), ('legacy', 'failed'), ('scope_missing_row', 'failed'),
+    ('scope_invalid_row', 'failed'), ('unaligned', 'failed'), ('comparison_failed', 'failed'),
+    ('cross_version', 'failed'), ('missing_identity', 'failed'),
+])
+def test_reported_table_can_reuse_only_the_reviewed_own_row_premise(variant, expected):
+    source = {'workId':'paper','versionId':'v1','contentHash':'hash','accessLevel':'fulltext'}
+    text = 'Table row 1: Baseline | 20\nTable row 2: Ours | 30'
+    note_text = 'The rows use the same evaluation platform.'
+    table = make_evidence(source,text,text,location={'table':'t1'},obligation_ids=['o'])
+    table['tableData'] = {'groups': [['Dataset A', ['FPS']]], 'rows': [[1, 'Baseline', ['20']], [2, 'Ours', ['30']]]}
+    note = make_evidence(source,note_text,note_text,location={'page':2},obligation_ids=['o'])
+    if variant == 'cross_version':
+        note['sourceVersionId'] = 'v2'
+    if variant == 'missing_identity':
+        note.pop('sourceVersionId')
+    claim = {'claimId':'c','kind':'reported','text':'Dataset A 的Baseline：FPS20；Ours：FPS30。',
+             'evidenceRefs':[table['evidenceId'],note['evidenceId']],'tableBindings':[
+                 {'evidenceId':table['evidenceId'],'rowNumber':number,'groupIndex':0,'metric':'FPS','value':value}
+                 for number, value in [(1,'20'),(2,'30')]]}
+    def invoke(**_):
+        scope_rows = [{'evidenceId':'E1','path':['quote']}, {'evidenceId':'E2','path':['quote']}]
+        if variant == 'scope_missing_row':
+            scope_rows.pop(0)
+        if variant == 'scope_invalid_row':
+            scope_rows[0]['path'] = ['sourceContext','unknown']
+        verdict = {'claimId':'c','status':'passed','reason':'Independent fixture review.',
+                   'scopeAudit':{'claimStrength':'bounded','evidenceStrength':'bounded','supported':True,
+                                 'statementPath':['text'],'premises':scope_rows},
+                   'comparisonAudit':{'scope':'within_study','alignment':'not_established' if variant == 'unaligned' else 'established',
+                                      'supportsClaim':variant != 'comparison_failed',
+                                      'premises':[{'evidenceId':'E2','path':['quote']}],'conditionDifferences':[]}}
+        return {'content':json.dumps([verdict])}
+
+    checker = BudgetedSemanticChecker(invoke,'r',comparison_reasoning=True,factual_scope=True,
+        audit_source_fields=True,audit_target_fields=True,comparison_audit_version=4 if variant=='legacy' else 5)
+    decision, = checker([claim],[table,note])
+    assert decision['status'] == expected
+    if expected == 'passed':
+        assert decision['comparisonRowPremiseReuse'] == [table['evidenceId']]
+        assert verify_claims([claim],[table,note],lambda *_: [decision])['accepted']
+        altered = {**claim,'tableBindings':[claim['tableBindings'][0],{**claim['tableBindings'][1],'value':'99'}]}
+        assert not verify_claims([altered],[table,note],lambda *_: [decision],table_references_version=1)['accepted']
+
+
 def test_new_policy_does_not_add_audit_or_calls_to_a_single_source_noncomparative_fact():
     c,e=inputs();c['evidenceRefs']=c['evidenceRefs'][:1]
     result,sent=check(c,e)
@@ -144,7 +189,7 @@ def test_new_policy_does_not_add_audit_or_calls_to_a_single_source_noncomparativ
     assert audit_scope({**c,'kind':'proposal'},e) is None
 
 
-@pytest.mark.parametrize('version',[None,False,True,0,'1',5])
+@pytest.mark.parametrize('version',[None,False,True,0,'1',6])
 def test_server_contract_version_is_strict(version):
     assert not enabled({'comparisonReasoningContractVersion':version})
     assert enabled({'comparisonReasoningContractVersion':1})
@@ -167,7 +212,7 @@ def test_client_cannot_disable_contract_and_runtime_checker_uses_frozen_server_v
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'one','question':'比较实验条件','materials':[],
                           'comparisonReasoningContractVersion':0},start_async=False)
-        assert repo.require_run(p['runId'])['comparisonReasoningContractVersion']==4
+        assert repo.require_run(p['runId'])['comparisonReasoningContractVersion']==5
         checker=facade._build_semantic_checker(p['runId'],lambda **_:None)
         assert checker._comparison_reasoning() is True
     finally:
