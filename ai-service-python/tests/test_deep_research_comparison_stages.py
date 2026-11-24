@@ -62,6 +62,55 @@ def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
     assert note['quote'] in current['prompt']
 
 
+@pytest.mark.parametrize('variant, error', [
+    ('grounded', None), ('one_paper', 'stage_cross_paper_evidence'),
+    ('method_rows', 'stage_cross_paper_subjects'), ('misattributed', 'stage_cross_paper_setting_owner'),
+])
+def test_cross_paper_target_requires_publications_and_source_owned_settings(variant, error):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonCrossPaperBoundaryContractVersion=1)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    question = '为什么不能直接拿两篇的FPS排名？'
+    r['question'] += question
+    goal.update(question=question, comparisonRole={**goal['comparisonRole'], 'requestExcerpt': question})
+    target = 'joint_' + goal['obligationId']
+    snapshot = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    stage = next(stage for stage in snapshot['stages'] if stage['stageId'] == 'joint')
+    papers = stage['paperSubjectsByTarget'][target]
+    assert next(t for t in packet(stage)['jointTargets'] if t['targetId'] == target)['paperSubjects'] == papers
+    legacy = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion': 0}, plan['requirements'],
+                     plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    assert [s for s in snapshot['stages'] if s['stageId'] != 'joint'] == [
+        s for s in legacy['stages'] if s['stageId'] != 'joint']
+    refs = [next(row['evidenceId'] for row in rows if row['source'] == paper
+                 and row['evidenceId'] in stage['allowedEvidenceByTarget'][target]) for paper in papers]
+    subjects = ['Baseline', 'Ours'] if variant == 'method_rows' else papers
+    body = {'boundary': {'observedSettings': [{'subject': papers[0], 'attribute': '硬件',
+        'value': 'GPU X', 'evidenceRefs': [refs[1] if variant == 'misattributed' else refs[0]]}],
+        'notEstablished': [{'type': 'comparison_evidence', 'subjects': subjects, 'quantity': 'FPS 排名'}]}}
+    response = {'targetId': target, 'goalRefs': [], 'point': {'kind':'inference','body':body,
+        'evidenceRefs': refs[:1] if variant == 'one_paper' else refs, 'cellRefs': [], 'detailLevel': 'fulltext'}}
+    def invoke(_, prompt, __):
+        rows = [response] if prompt == stage['prompt'] else []
+        return {'content':json.dumps({'answers':rows}), 'finishReason':'stop'}
+    checkpoints = []
+    result = generate(snapshot,current=lambda: r,checkpoint=checkpoints.append,invoke=invoke)
+    admitted, = json.loads(result['content'])['answers']
+    journal = checkpoints[-1]['stages']['joint']
+    assert json.loads(journal['response']['content'])['answers'] == [response]
+    if error:
+        assert admitted['point'] is None
+        assert journal['isolatedTargets'] == [{'targetId':target,'reason':error}]
+    else:
+        compiled = admitted['point']['body']['boundary']
+        assert compiled['notEstablished'][0]['subjects'] == [plan['sources'][paper]['title'] for paper in papers]
+        assert compiled['observedSettings'][0]['subject'] == plan['sources'][papers[0]]['title']
+        assert compiled['observedSettings'][0]['value'] == 'GPU X'
+        assert admitted['point']['evidenceRefs'] == refs
+
+
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():
     r,p,rows,aliases,bundles=fixture()
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases)

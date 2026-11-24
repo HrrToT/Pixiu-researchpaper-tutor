@@ -8,6 +8,7 @@ from math import ceil
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.comparison_cells import plan_cells
+from services.deep_research.comparison_cross_paper_boundary import scopes as paper_scopes
 from services.deep_research.comparison_wire import example_pairs, render, targets, table_catalog, stage_table_catalog
 from services.deep_research.request_context import effective_question
 from services.deep_research.synthesis_evidence import fit_premises
@@ -114,6 +115,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['classify_standalone_joint'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
+    paper_subjects = paper_scopes(record, full_plan, all_targets)
     example_owner = benchmark_example_owner(record, full_plan)
     by_id = {r['evidenceId']: r for r in rows}
     wire_bundles = []
@@ -201,6 +203,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                        if t['targetId'] in target_ids}
         pairs = (example_pairs(projected, permissions[example_owner])
                  if version in (15, 16) and scope == 'joint' and example_owner in permissions else {})
+        stage_papers = {key: paper_subjects[key] for key in target_ids if key in paper_subjects}
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,
@@ -212,6 +215,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                                                     or not benchmark_metric(value['binding']['metric']))]
                                           for key, allowed in permissions.items()},
                  **({'examplePairsByTarget': {example_owner: pairs}} if pairs else {}),
+                 **({'paperSubjectsByTarget': stage_papers} if stage_papers else {}),
                  'scientificApproval': False}
         stage['inputDigest'] = digest(stage)
         return stage

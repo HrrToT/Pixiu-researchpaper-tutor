@@ -538,6 +538,11 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                             paper['tableCatalog'] = stage_table_catalog(paper['tableCatalog'], joint=False,
                                                                          reserved_benchmark=True)
     if projected and compact_stage_prompt(record):
+        from services.deep_research.comparison_cross_paper_boundary import POLICY as paper_boundary_policy, scopes as cross_paper_scopes
+        paper_subjects = cross_paper_scopes(record, plan, targets(plan))
+        scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
+        for target in scoped_joint:
+            target['paperSubjects'] = paper_subjects[target['targetId']]
         length = limit or 'concise, no explicit maximum'
         envelope = EXPLICIT_STAGE_ENVELOPE if explicit_stage_schema(record) else STAGE_ENVELOPE
         policy = STAGE_POLICY
@@ -663,7 +668,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                   'resolution. Keep measured FPS, storage and quality values in the example only. '
                                   'Use notEstablished for comparisons the cited protocols cannot establish.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
-                + envelope + policy + body_guidance
+                + envelope + policy + body_guidance + (paper_boundary_policy if scoped_joint else '')
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'
                 + 'Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n'
                 + input_text(data, literal_strings=literal_ids) + '\n')

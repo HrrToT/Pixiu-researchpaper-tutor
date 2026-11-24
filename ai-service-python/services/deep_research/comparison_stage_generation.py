@@ -12,6 +12,7 @@ from services.deep_research.factual_reasoning import request_options
 from services.deep_research.request_context import effective_question
 from services.deep_research.comparison_measurement_display import explicit_stage_schema
 from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS, TABLE_EXAMPLE_BODY
+from services.deep_research.comparison_cross_paper_boundary import compile_point as compile_paper_boundary
 
 
 def bind_stage_point(point, pairs, *, setting_references=False, protocol_settings_only=False):
@@ -101,6 +102,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
             or not isinstance(saved.get('stages'),dict) or set(saved['stages']) - set(expected)):
         raise DeepResearchError('invalid_comparison_stage_state', '比较阶段状态或输入身份已改变。')
     answers = []
+    evidence_owners = {row['evidenceId']: row['source'] for row in snapshot.get('rows', [])}
     for stage in snapshot['stages']:
         if digest({k:v for k,v in stage.items() if k != 'inputDigest'}) != stage.get('inputDigest'):
             raise DeepResearchError('invalid_comparison_stage_input', '比较阶段输入已改变。')
@@ -178,8 +180,11 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
             if isinstance(point,dict):
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
+                    papers = stage.get('paperSubjectsByTarget', {}).get(row['targetId'])
+                    if papers:
+                        point = compile_paper_boundary(point, papers, snapshot['sources'], evidence_owners)
                     point = bind_stage_point(point, pairs,
-                                             setting_references=setting_references and stage['stageId'] == 'joint',
+                                             setting_references=setting_references and (stage['stageId'] == 'joint' or bool(papers)),
                                              protocol_settings_only=(record.get('comparisonJointReportsContractVersion') == 16
                                                                      and bool(stage.get('examplePairsByTarget'))))
                 except ValueError as exc:
