@@ -38,7 +38,8 @@ def planning_options(record, question):
                 **({'separate_example_boundary':True} if record.get('comparisonJointReportsContractVersion') in (13, 14, 15, 16) else {}),
                 **({'group_example_criteria':True} if record.get('comparisonJointReportsContractVersion') in (14, 15, 16) else {}),
                 **({'split_speed_and_advice':True} if record.get('comparisonCrossPaperBoundaryContractVersion') == 2 else {}),
-                **({'scoped_example_text':True} if record.get('comparisonJointReportsContractVersion') == 16 else {}),
+                **({'scoped_example_text':2 if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 2 else True}
+                   if record.get('comparisonJointReportsContractVersion') == 16 else {}),
                 **({'classify_standalone_joint':True} if preserve_numeric_example(record) else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.

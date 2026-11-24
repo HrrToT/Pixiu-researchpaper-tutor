@@ -137,7 +137,7 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
     if structured_table_example and result.get('jointDeliverables'):
         result['structuredTableExample'] = True
         if scoped_example_text:
-            result['scopedExampleText'] = True
+            result['scopedExampleText'] = scoped_example_text
     return result
 
 

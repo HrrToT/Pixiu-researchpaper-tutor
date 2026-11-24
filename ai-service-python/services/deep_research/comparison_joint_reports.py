@@ -181,7 +181,7 @@ def bind_benchmark_example(record, draft, plan):
 
 def strict_benchmark_speed_scope(record):
     version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
-    return type(version) is int and version == 1
+    return type(version) is int and version in (1, 2)
 
 
 _NUMERIC_FRAME_RATE = re.compile(

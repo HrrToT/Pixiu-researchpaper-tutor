@@ -143,7 +143,7 @@ def targets(plan):
                 if part['kind'] == 'matched_example' and plan.get('structuredTableExample'):
                     part_target['exampleMode'] = 'server_renders_selected_cells'
                     if plan.get('scopedExampleText'):
-                        part_target['scopedExampleText'] = True
+                        part_target['scopedExampleText'] = plan['scopedExampleText']
                 result.append(part_target)
         else:
             result.append(target)
@@ -350,6 +350,8 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                         else '原表在同一数据组中报告了以下两种方法的结果。')
                 if protocol:
                     text += '表注说明带标记的基线在同一平台上重新训练。'
+                if target.get('scopedExampleText') == 2:
+                    text += '这些结果限于下列数据组和原表测量条件，其他数据组或设置不在这组对照范围内。'
                 point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
     if deliverable == 'comparability' and (point['kind'] != 'inference' or cells
             or not isinstance(body, dict) or set(body) != {'boundary'}):

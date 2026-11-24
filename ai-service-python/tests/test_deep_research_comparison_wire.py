@@ -131,6 +131,10 @@ def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
     assert '两种' in prose['text'] and '两种' not in scoped['body']['prose']['text']
     assert scoped['tableBindings'] == rendered['tableBindings'] and scoped['evidenceRefs'] == rendered['evidenceRefs']
     assert scoped['body']['prose']['conditions'] == prose['conditions']
+    bounded = resolve_point(typed, {**selectable,'scopedExampleText':2}, registry, measurement_display=True)
+    assert '其他数据组或设置不在这组对照范围内' in bounded['body']['prose']['text']
+    assert bounded['tableBindings'] == scoped['tableBindings'] and bounded['evidenceRefs'] == scoped['evidenceRefs']
+    assert bounded['body']['prose']['conditions'] == prose['conditions']
     with pytest.raises(ValueError, match='marked_baseline_and_protocol_note'):
         resolve_point({**typed, 'evidenceRefs':['E1']}, selectable, registry, measurement_display=True)
     with pytest.raises(ValueError, match='invalid_structured_table_example'):

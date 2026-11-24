@@ -178,7 +178,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
              inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
-             local_check_fields=False, check_labels=None):
+             local_check_fields=False, check_labels=None, inline_limit_bindings=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -187,6 +187,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         raise ValueError('Local check fields require the rendered comparison output shape')
     if check_labels is not None and not local_check_fields:
         raise ValueError('Short check labels require the rendered comparison output shape')
+    if inline_limit_bindings and (check_labels is None or not literal_limits):
+        raise ValueError('Inline limits require short labels and literal validation')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
     if compact_layout:
@@ -318,7 +320,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             policy = policy.replace('Add only extraCheckFields.', LOCAL_CHECK_FIELDS)
         if has_process:
             policy += EXACT_PROCESS
-        if any(c.get('responseType') == 'limitation' for r in requirements for c in r['checks']):
+        if not inline_limit_bindings and any(c.get('responseType') == 'limitation'
+                                             for r in requirements for c in r['checks']):
             policy += EXACT_LIMITS
         display = data['comparisonPresentation']
         for key in ('table', 'jointReportedClaimsSha256', 'jointDeliverables', 'jointReports'):
@@ -334,6 +337,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
                     del check['criterionId']
                 if local_check_fields:
                     fields = data['extraCheckFields'].get(row['obligationId'], {}).get(check['checkId'])
+                    if inline_limit_bindings and fields:
+                        fields = [field for field in fields if field != 'limitSpans']
                     if fields:
                         check['requiredOutput'] = fields
         if local_check_fields:
@@ -362,6 +367,14 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         checklist = ('\nRequired output rows and their check IDs: '
                      + json.dumps(expected, separators=(',', ':'))
                      + '. Include all rows. Mark unsupported checks missing; do not omit them.\n')
+        if inline_limit_bindings:
+            limit_checks = [check['checkId'] for row in data['requirements'] for check in row['checks']
+                            if check.get('responseType') == 'limitation']
+            if limit_checks:
+                checklist += ('Limit checks ' + ','.join(limit_checks)
+                    + ' use bindings:[{claimId,field,excerpt}]. Copy the shortest exact answer wording '
+                      'that states the requested limit. For related text with no limit excerpt use null. '
+                      'Without an explicit limit choose partial/missing. Other bindings omit excerpt.\n')
     def render(evidence):
         if source_aliases:
             evidence = [{**row, 'source': source_aliases.get(row['source'], row['source'])}
