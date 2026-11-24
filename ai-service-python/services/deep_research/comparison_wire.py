@@ -539,7 +539,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                                                          reserved_benchmark=True)
     if projected and compact_stage_prompt(record):
         from services.deep_research.comparison_cross_paper_boundary import POLICY as paper_boundary_policy, scopes as cross_paper_scopes
-        paper_subjects = cross_paper_scopes(record, plan, targets(plan))
+        paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
         for target in scoped_joint:
             target['paperSubjects'] = paper_subjects[target['targetId']]

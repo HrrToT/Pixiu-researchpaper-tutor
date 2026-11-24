@@ -111,11 +111,13 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['group_example_criteria'] = True
     if record.get('comparisonJointReportsContractVersion') == 16:
         plan_options['scoped_example_text'] = True
+    if record.get('comparisonCrossPaperBoundaryContractVersion') == 2:
+        plan_options['split_speed_and_advice'] = True
     if preserve_numeric_example(record):
         plan_options['classify_standalone_joint'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
-    paper_subjects = paper_scopes(record, full_plan, all_targets)
+    paper_subjects = paper_scopes(record, full_plan, all_targets, question=question)
     example_owner = benchmark_example_owner(record, full_plan)
     by_id = {r['evidenceId']: r for r in rows}
     wire_bundles = []

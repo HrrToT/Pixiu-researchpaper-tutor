@@ -15,8 +15,15 @@ POLICY = ('For targets with paperSubjects, compare those publication IDs, not me
           'answer with evidence-backed prose instead of asserting a gap. If there is no grounded answer, use null.\n')
 
 
-def scopes(record, plan, targets):
-    if type(record.get('comparisonCrossPaperBoundaryContractVersion')) is not int or record['comparisonCrossPaperBoundaryContractVersion'] != 1:
+def explicitly_requests_cross_paper_speed(question):
+    layers = getattr(question, 'instruction_layers', (str(question),))
+    return any(CROSS_PAPER.search(clause) and _SPEED.search(clause)
+               for layer in layers for clause in re.split(r'[。！？!?；;\n]', layer))
+
+
+def scopes(record, plan, targets, *, question=None):
+    version = record.get('comparisonCrossPaperBoundaryContractVersion')
+    if type(version) is not int or version not in (1, 2):
         return {}
     result = {}
     for target in targets:
@@ -25,7 +32,10 @@ def scopes(record, plan, targets):
         role, = (plan['roles'][oid] for oid in target['allowedObligationIds'])
         request = role['requestExcerpt']
         papers = target['sources']
-        if len(papers) >= 2 and CROSS_PAPER.search(request) and _SPEED.search(request):
+        local_speed = CROSS_PAPER.search(request) and _SPEED.search(request)
+        split_speed = (version == 2 and target.get('deliverable') == 'comparability'
+                       and _SPEED.search(target['question']) and explicitly_requests_cross_paper_speed(question))
+        if len(papers) >= 2 and (local_speed or split_speed):
             result[target['targetId']] = papers
     return result
 

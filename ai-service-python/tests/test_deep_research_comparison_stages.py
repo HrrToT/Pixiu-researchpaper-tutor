@@ -111,6 +111,38 @@ def test_cross_paper_target_requires_publications_and_source_owned_settings(vari
         assert admitted['point']['evidenceRefs'] == refs
 
 
+@pytest.mark.parametrize('with_example', [True, False])
+def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advice(with_example):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonCrossPaperBoundaryContractVersion=2)
+    cross = '为什么不能直接拿两篇的FPS排名'
+    advice = '显存受限时的有条件选择建议'
+    example = '数字只选一组来源和口径明确的基线对照作例子'
+    r['question'] += f'{cross}，并给出{advice}。'
+    joint = [row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint']
+    mixed, numeric = joint[:2]
+    mixed.update(question=cross + advice, comparisonRole={**mixed['comparisonRole'], 'requestExcerpt':advice},
+        completionCriteria=[{'criterionId':'C1','requirement':'说明可比较的维度与不可直接比较的原因，特别是FPS排名。','responseType':'limitation'},
+                            {'criterionId':'C2','requirement':f'给出{advice}。','responseType':'explanation'}])
+    if with_example:
+        r['question'] += example + '。'
+        numeric.update(question=example, comparisonRole={**numeric['comparisonRole'], 'requestExcerpt':example},
+            completionCriteria=[{'criterionId':'C1','requirement':'给出一组基线对照数字。','responseType':'identification'}])
+    old = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion':1}, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    new = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    anchor = 'joint_' + mixed['obligationId']
+    joint_stage = next(s for s in new['stages'] if s['stageId'] == 'joint')
+    legacy_stage = next(s for s in old['stages'] if s['stageId'] == 'joint')
+    assert (anchor + '_conditional_advice' if with_example else anchor) in legacy_stage['targetIds']
+    assert anchor + '_comparability' not in legacy_stage['targetIds']
+    assert joint_stage['paperSubjectsByTarget'] == {anchor + '_comparability': list(plan['sources'])}
+    assert anchor + '_conditional_advice' in joint_stage['targetIds']
+    assert new['requirements'] == old['requirements']
+    assert packet(joint_stage)['jointTargets']
+
+
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():
     r,p,rows,aliases,bundles=fixture()
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases)

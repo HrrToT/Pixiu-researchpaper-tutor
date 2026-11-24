@@ -75,15 +75,31 @@ def preserve_requested_numeric_example(plan, question):
 
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,
-                             separate_example_boundary=False, group_example_criteria=False):
+                             separate_example_boundary=False, group_example_criteria=False,
+                             split_speed_and_advice=False):
     """Assign distinct outputs without losing or duplicating any frozen criterion."""
-    if not joint_numeric_example(roles, question):
+    from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+    split_speed_and_advice = split_speed_and_advice and explicitly_requests_cross_paper_speed(question)
+    numeric_example = joint_numeric_example(roles, question)
+    if not (numeric_example or split_speed_and_advice):
         return {}
     result = {}
     for obligation in requirements:
         oid = obligation['obligationId']
         criteria = obligation.get('completionCriteria', [])
         if roles[oid]['kind'] != 'joint':
+            continue
+        if split_speed_and_advice and len(criteria) == 2:
+            speed = [c for c in criteria if _SPEED.search(c['requirement'])
+                     and (_COMPARABILITY.search(c['requirement'])
+                          or re.search(r'排名|排行|排序|\brank\w*\b', c['requirement'], re.I))
+                     and not _ADVICE.search(c['requirement'])]
+            advice = [c for c in criteria if _ADVICE.search(c['requirement'])]
+            if len(speed) == len(advice) == 1:
+                result[oid] = [{'kind':'comparability','requirement':speed[0]['requirement']},
+                               {'kind':'conditional_advice','requirement':advice[0]['requirement']}]
+                continue
+        if not numeric_example:
             continue
         if separate_example_boundary and _SINGLE_NUMERIC_EXAMPLE.search(roles[oid]['requestExcerpt']):
             identified = {}
