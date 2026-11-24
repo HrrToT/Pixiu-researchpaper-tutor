@@ -13,6 +13,9 @@ _SINGLE_NUMERIC_EXAMPLE = re.compile(
 
 _NUMERIC = re.compile(r'数字|数值|定量|\bnumeric(?:al)?\b|\bquantitative\b', re.I)
 _BASELINE_EXAMPLE = re.compile(r'\bbaseline\s+(?:comparison\s+)?example\b|基线(?:比较|对照)?(?:示例|例子)', re.I)
+_EXAMPLE_CRITERION = re.compile(r'\b(?:one|single|a single)\s+baseline comparison\b|'
+                                r'\b(?:chosen|selected|paired)\s+(?:numbers|measurements|values)\b|'
+                                r'\b(?:one|single)\s+bounded example\b|所选(?:数字|结果)', re.I)
 _COMPARABILITY = re.compile(r'可比|能否比较|能比较|不能比较|比较(?:边界|条件)|\bcomparab\w*\b|'
                             r'\bwhat\s+(?:can|cannot)\b[^.!?]{0,60}\bbe compared\b', re.I)
 _ADVICE = re.compile(r'建议|推荐|(?:有条件|如何|怎样)选择|\b(?:recommend\w*|advice|conditional choice)\b', re.I)
@@ -72,8 +75,8 @@ def preserve_requested_numeric_example(plan, question):
 
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,
-                             separate_example_boundary=False):
-    """Split a mixed goal only when its frozen criteria distinguish both deliverables."""
+                             separate_example_boundary=False, group_example_criteria=False):
+    """Assign distinct outputs without losing or duplicating any frozen criterion."""
     if not joint_numeric_example(roles, question):
         return {}
     result = {}
@@ -90,14 +93,20 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
                     kind = 'conditional_advice'
                 elif _COMPARABILITY.search(requirement):
                     kind = 'comparability'
-                elif _NUMERIC.search(requirement) or _BASELINE_EXAMPLE.search(requirement):
+                elif (_NUMERIC.search(requirement) or _BASELINE_EXAMPLE.search(requirement)
+                      or group_example_criteria and _EXAMPLE_CRITERION.search(requirement)):
                     kind = 'matched_example'
                 else:
                     break
+                if kind in identified:
+                    if kind != 'matched_example' or not group_example_criteria:
+                        break
+                    requirement = identified[kind]['requirement'] + '\n' + requirement
                 identified[kind] = {'kind': kind, 'requirement': requirement}
-            if len(identified) == len(criteria) and 'matched_example' in identified:
-                result[oid] = list(identified.values())
-                continue
+            else:
+                if 'matched_example' in identified:
+                    result[oid] = list(identified.values())
+                    continue
         numeric = [c for c in criteria if _NUMERIC.search(c['requirement']) and not _ADVICE.search(c['requirement'])]
         advice = [c for c in criteria if _ADVICE.search(c['requirement']) and not _NUMERIC.search(c['requirement'])]
         if len(criteria) == 2 and len(numeric) == len(advice) == 1:
@@ -117,17 +126,17 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13))
+            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
 
 
 def resource_allocation_enabled(record):
-    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
 
 
 def benchmark_example_obligation(record, plan):
     """Identify a requested single example from server-owned deliverable metadata."""
     version = record.get('comparisonJointReportsContractVersion')
-    if type(version) is not int or version not in (5, 6, 7, 8, 9, 10, 11, 12, 13):
+    if type(version) is not int or version not in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
         return None
     matches = [oid for oid, parts in plan.get('jointDeliverables', {}).items()
                for part in parts if part['kind'] == 'matched_example']
@@ -140,7 +149,7 @@ def benchmark_example_owner(record, plan):
 
 
 def bind_benchmark_example(record, draft, plan):
-    if record.get('comparisonJointReportsContractVersion') not in (6, 7, 8, 9, 10, 11, 12, 13):
+    if record.get('comparisonJointReportsContractVersion') not in (6, 7, 8, 9, 10, 11, 12, 13, 14):
         return
     oid = benchmark_example_obligation(record, plan)
     if oid is None:

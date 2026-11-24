@@ -104,6 +104,13 @@ both under aligned conditions, and recommend a method only conditional on measur
 current preference or inferred memory ranking from storage; do not repeat the benchmark numbers in advice.
 '''
 
+JOINT_COMPACT_DELIVERY_POLICY = '''For matched_example use one reported point. Select the same metrics for two methods in one table/dataset.
+Keep variant, conditions and units. For matchedProtocol, use the marked row and its stated platform.
+Cite table and note. Leave unsupported matches unresolved. Keep advice out of the example and its
+numbers out of other points. Cite advice premises. Distinguish file size, peak device memory and speed.
+With no direct GPU memory measurement, use test-first advice under aligned settings without a predicted winner.
+'''
+
 BENCHMARK_OWNER_POLICY = ('Only benchmarkExampleOwner may report benchmark values. Keep them out of prose and '
                           'conditions elsewhere. Other targets may cite trends from those tables and give exact '
                           'method settings, protocols and processing costs.\n')
@@ -438,7 +445,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
-        if version in (9, 10, 11, 12, 13):
+        if version in (9, 10, 11, 12, 13, 14):
             data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
                 reserved_benchmark=benchmark_example_owner(record, plan) is not None, known_protocols=known_protocols)
         data = {'requirements': data['requirements'],
@@ -478,6 +485,15 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     'scope': 'own_paper_only'}
                 target['goalChoices'] = [{'goalRef': choice['goalRef']}
                                          for choice in target['goalChoices']]
+        if version == 14 and scopes == ('joint',):
+            joint_refs = {choice['goalRef'] for target in data['jointTargets'] for choice in target['goalChoices']}
+            goals = data['requestContext']['researchGoals']
+            data['requestContext']['researchGoals'] = [goal for goal in goals if goal['goalRef'] in joint_refs]
+            for target in data['jointTargets']:
+                target['goalChoices'] = [{'goalRef': choice['goalRef']} for choice in target['goalChoices']]
+            for paper in data['papers']:
+                for row in paper['evidence']:
+                    row['obligations'] = [ref for ref in row['obligations'] if ref in joint_refs]
     if projected and compact_stage_prompt(record):
         length = limit or 'concise, no explicit maximum'
         envelope = EXPLICIT_STAGE_ENVELOPE if explicit_stage_schema(record) else STAGE_ENVELOPE
@@ -539,7 +555,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
         example_owner = benchmark_example_owner(record, plan)
-        literal_targets = version in (7, 8, 9, 10, 11, 12, 13)
+        literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -557,12 +573,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version in (8, 9, 10, 11, 12, 13) and deliver_joint and scopes == ('joint',):
+        if version in (8, 9, 10, 11, 12, 13, 14) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
                 body_guidance += JOINT_REASONING_POLICY
-            policy = JOINT_DELIVERY_POLICY
+            policy = JOINT_COMPACT_DELIVERY_POLICY if version == 14 else JOINT_DELIVERY_POLICY
             if example_owner:
                 policy += BENCHMARK_OWNER_POLICY
             if version in (9, 10):
@@ -571,17 +587,17 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 for target in data['jointTargets']:
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
-            if version in (11, 12, 13):
+            if version in (11, 12, 13, 14):
                 body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
                                   'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
                                   'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
                                   'Put evidence-comparison bounds inside point.body.boundary.\n')
-            if version in (12, 13):
+            if version in (12, 13, 14):
                 body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
                                   'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
                                   'cellRefs. The app renders the values. Boundary observedSettings items have only '
                                   'subject, attribute, value; use actual method names and keep E IDs in evidenceRefs.\n')
-            if version == 13:
+            if version in (13, 14):
                 body_guidance += ('For deliverable=comparability, explain what the evidence supports and what it '
                                   'cannot establish using kind="inference", body.boundary and cellRefs:[]. '
                                   'Keep the selected measurements in the separate matched_example point.\n')

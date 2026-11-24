@@ -1,0 +1,47 @@
+{
+  "olderContractReproduced": "comparison_stage_evidence_capacity",
+  "savedPayloadSha256": "7147615a9fc04e950e75d5822dcbd43e03d41cfadb75e156d486431e6bb2353a",
+  "newContractVersion": 14,
+  "actualModelCalls": 0,
+  "retainedRequiredBundles": 44,
+  "stageInputs": [
+    {
+      "stageId": "P1",
+      "inputBytes": 23978,
+      "targetIds": [
+        "table_0_0",
+        "table_1_0",
+        "table_2_0",
+        "table_3_0"
+      ],
+      "requiredBundleCount": 14
+    },
+    {
+      "stageId": "P2",
+      "inputBytes": 23996,
+      "targetIds": [
+        "table_0_1",
+        "table_1_1",
+        "table_2_1",
+        "table_3_1"
+      ],
+      "requiredBundleCount": 14
+    },
+    {
+      "stageId": "joint",
+      "inputBytes": 23965,
+      "targetIds": [
+        "joint_O4_matched_example",
+        "joint_O6",
+        "joint_O7_conditional_advice"
+      ],
+      "requiredBundleCount": 16
+    }
+  ],
+  "remainingModelCalls": 11,
+  "stageCallFloor": 11,
+  "jointGoalCount": 3,
+  "bothExampleCriteriaPreserved": true,
+  "matchedTableAndProtocolPresent": true,
+  "scientificContentAccepted": false
+}

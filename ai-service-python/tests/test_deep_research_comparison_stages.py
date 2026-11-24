@@ -189,6 +189,44 @@ def test_v35_english_example_keeps_distinct_comparability_target_and_historical_
     assert not missing_joint_conclusions(value, [reported, boundary])
 
 
+def test_v36_uses_one_example_target_for_both_criteria_with_a_joint_only_goal_catalog():
+    r, plan, rows, aliases, bundles = fixture()
+    anchor = '数字只选一组来源和口径明确的基线对照作例子'
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, question=r['question'] + '。' + anchor)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    goal_id = goal['obligationId']
+    find_baseline = 'Identify one baseline comparison reported in the sources, naming the source, the metric and the setting or dataset used.'
+    limit_numbers = 'Present the chosen numbers as a single bounded example, not as an inventory across all datasets.'
+    criteria = [{'criterionId':'C1','requirement':find_baseline,'responseType':'identification'},
+                {'criterionId':'C2','requirement':limit_numbers,'responseType':'explanation'}]
+    goal.update(question='Which single baseline comparison can be presented as the numerical example?',
+                requestExcerpt=anchor, comparisonRole={**goal['comparisonRole'],'requestExcerpt':anchor},
+                completionCriteria=criteria)
+    snapshots = [prepare({**r, 'comparisonJointReportsContractVersion':version}, plan['requirements'],
+                         plan['sources'], rows, {}, bundles, aliases) for version in (13, 14)]
+    prior, current = [snapshot['stages'][-1] for snapshot in snapshots]
+    old_id = 'joint_' + goal_id
+    new_id = old_id + '_matched_example'
+    assert old_id in prior['targetIds'] and new_id in current['targetIds']
+    assert len(prior['targetIds']) == len(current['targetIds'])
+    assert current['requiredEvidenceIds'] == prior['requiredEvidenceIds']
+    assert current['allowedEvidenceByTarget'][new_id] == prior['allowedEvidenceByTarget'][old_id]
+    old_wire, new_wire = packet(prior), packet(current)
+    target = next(t for t in new_wire['jointTargets'] if t['targetId'] == new_id)
+    assert target['question'] == find_baseline + '\n' + limit_numbers
+    assert target['exampleMode'] == 'server_renders_selected_cells'
+    refs = {choice['goalRef'] for t in new_wire['jointTargets'] for choice in t['goalChoices']}
+    old_goals = old_wire['requestContext']['researchGoals']
+    assert [g for g in old_goals if g['goalRef'] in refs] == new_wire['requestContext']['researchGoals']
+    assert len(refs) < len(old_goals)
+    assert next(g for g in snapshots[1]['requirements'] if g['obligationId'] == goal_id)['completionCriteria'] == criteria
+    for p_old, p_new in zip(old_wire['papers'],new_wire['papers'],strict=True):
+        assert p_new['identity'] == p_old['identity']
+        assert [e['quote'] for e in p_new['evidence']] == [e['quote'] for e in p_old['evidence']]
+        assert all(set(e['obligations']) <= refs for e in p_new['evidence'])
+
+
 def test_stage_table_choices_exclude_unmatched_baseline_and_reserved_benchmark_cells():
     from services.deep_research.comparison_wire import stage_table_catalog
 
