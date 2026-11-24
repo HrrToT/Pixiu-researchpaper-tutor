@@ -159,6 +159,18 @@ def bind_benchmark_example(record, draft, plan):
                if claim['claimId'] not in cells and claim['kind'] == 'reported'
                and claim['obligationIds'] == [oid]]
     draft['benchmarkExampleClaimId'] = matches[0] if len(matches) == 1 else None
+    if strict_benchmark_speed_scope(record):
+        draft['benchmarkSpeedScopeVersion'] = 1
+
+
+def strict_benchmark_speed_scope(record):
+    version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
+    return type(version) is int and version == 1
+
+
+_NUMERIC_FRAME_RATE = re.compile(
+    r'(?:\d\s*\+?\s*(?:fps\b|frames?\s*(?:/|per\s+)\s*(?:s\b|seconds?\b)|帧\s*(?:/|每)\s*秒)'
+    r'|(?:\bfps|帧率)\s*[:：=]\s*[<>≤≥~≈+-]?\s*\d)', re.I)
 
 
 def benchmark_binding_error(claim, draft):
@@ -169,6 +181,13 @@ def benchmark_binding_error(claim, draft):
         if any(isinstance(binding, dict) and isinstance(binding.get('metric'), str)
                and benchmark_metric(binding['metric']) for binding in bindings):
             return 'comparison_benchmark_example_scope'
+        if draft.get('benchmarkSpeedScopeVersion') == 1:
+            conditions = claim.get('conditions')
+            fields = [str(claim.get('text', ''))]
+            if isinstance(conditions, dict):
+                fields.extend(f'{key}: {value}' for key, value in conditions.items())
+            if any(_NUMERIC_FRAME_RATE.search(field) for field in fields):
+                return 'comparison_benchmark_example_scope'
         return None
     if not bindings:
         return None  # A prose-only example still requires ordinary source and semantic verification.

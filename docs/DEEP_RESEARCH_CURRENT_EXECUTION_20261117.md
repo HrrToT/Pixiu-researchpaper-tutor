@@ -6,6 +6,8 @@
 
 审核包版本 6 通过 9,774 项全量离线回归，保留全部 9,773 项基线用例。候选服务通过源码哈希、PDF 解析依赖和历史记录一致性检查。v40 仅提交一次，调用模型 17 次、消耗 83,129 Token、耗时 207 秒，外部检索为零。全答终审已成功发出并返回七项判定，五项仅部分覆盖。终审发现 FPS 的适用范围有歧义，第二批修订触及普通 Token 预算。单项核验保留六条结果，本次未发布报告。原服务已恢复，任务、运行和调用记录与切回前逐项一致。 [全量回归](deep-research-evidence/comparison-bounded-audit-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-bounded-audit-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v40-real-20261124.json)
 
+新版在仅允许一个数值示例的比较中，将带明确单位的帧率数值和范围约束到指定的对照项。两栏可报告带场景或设置的定性结果，并保留必要的处理成本和方法参数。用 v40 原始记录重放时，两条越界帧率主张进入修订，其余九条候选主张及引用逐项一致。三个生成阶段保留全部必需证据且均在 24,000 字节内。历史版本的生成输入逐项一致。此重放未调用模型，仍需复验两栏定性内容、证据覆盖和终审结果。 [帧率范围重放](deep-research-evidence/comparison-v40-frame-rate-scope-replay-20261124.json)
+
 ## 2026-11-24 v39 真实比较
 
 比较版本 16 全量离线回归 9,773 项通过，原有用例全部保留。固定案例 v39 提交一次，16 次模型调用、85,028 Token、168 秒，未进行外部搜索。三个阶段共编译 11 条草稿，数字示例和可比条件均通过结构与硬检查，语义判定尚未通过。4 条其他主张通过单项核验。全答审核在发送前因载荷大小被拒绝，最终无已核验报告发布。原服务和既有记录已核对。 [全量回归](deep-research-evidence/comparison-scoped-verification-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-scoped-verification-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v39-real-20261124.json)

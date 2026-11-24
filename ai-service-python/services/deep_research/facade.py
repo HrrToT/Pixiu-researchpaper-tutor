@@ -320,6 +320,7 @@ class ResearchFacade:
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
             "comparisonAuditEnvelopeContractVersion": 6 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 16 if self._comparison_cells_version == 1 else 0,
+            "comparisonBenchmarkSpeedScopeContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
             and self._comparison_review_batch_version == 1 else 0,
             "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(

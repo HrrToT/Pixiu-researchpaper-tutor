@@ -604,10 +604,17 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             if literal_targets and data['jointTargets']:
                 policy += BENCHMARK_OWNER_POLICY
             else:
-                policy += ('Only benchmarkExampleOwner may publish numerical benchmark cells. '
-                           'Other targets may cite the same tables for qualitative trends and use exact '
-                           'method settings, protocol details and processing costs when needed. '
-                           'Do not copy a benchmark metric value into prose or conditions outside the example.\n')
+                from services.deep_research.comparison_joint_reports import strict_benchmark_speed_scope
+                if strict_benchmark_speed_scope(record):
+                    policy += ('Keep every supported dimension. For speed, describe the reported qualitative '
+                               'result with its actual scene or setup. No FPS values or ranges in prose or '
+                               'conditions outside the joint example. Keep exact method settings and '
+                               'processing costs when needed.\n')
+                else:
+                    policy += ('Only benchmarkExampleOwner may publish numerical benchmark cells. '
+                               'Other targets may cite the same tables for qualitative trends and use exact '
+                               'method settings, protocol details and processing costs when needed. '
+                               'Do not copy a benchmark metric value into prose or conditions outside the example.\n')
         literal_ids = set()
         if literal_targets:
             # The response validator uses these IDs verbatim. Do not make the

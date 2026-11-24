@@ -112,6 +112,29 @@ def test_benchmark_owner_and_pair_survive_repair_and_publication_checks(mutation
     assert kept == ([] if expected else [claim])
 
 
+@pytest.mark.parametrize(('text', 'conditions', 'blocked'), [
+    ('两个合成场景上达到 180–300 FPS。', {}, True),
+    ('渲染速度见测试条件。', {'fps': 200}, True),
+    ('渲染速度超过 200 帧/秒。', {}, True),
+    ('渲染速度约 200 frames per second。', {}, True),
+    ('论文报告在该合成场景下可实时渲染。', {}, False),
+    ('以 FPS 衡量速度，额外训练 5 分钟。', {'硬件': 'RTX 4090'}, False),
+])
+def test_only_joint_example_can_use_numerical_frame_rate(text, conditions, blocked):
+    from services.deep_research.comparison_joint_reports import benchmark_binding_error, bind_benchmark_example
+
+    plan, draft, example, _, _ = compiled()
+    plan['jointDeliverables'] = {'example': [{'kind': 'matched_example', 'requirement': '一组基准数字'}]}
+    claim = {'claimId': 'paper_cell', 'text': text, 'conditions': conditions, 'tableBindings': []}
+    record = {'comparisonJointReportsContractVersion': 16}
+    bind_benchmark_example(record, draft, plan)
+    assert benchmark_binding_error(claim, draft) is None
+    bind_benchmark_example({**record, 'comparisonBenchmarkSpeedScopeContractVersion': 1}, draft, plan)
+    assert draft['benchmarkExampleClaimId'] == example['claimId']
+    assert benchmark_binding_error(claim, draft) == ('comparison_benchmark_example_scope' if blocked else None)
+    assert benchmark_binding_error({**claim, 'claimId': example['claimId']}, draft) is None
+
+
 @pytest.mark.parametrize('mutation',['policy','kind','text','binding','reference'])
 def test_reported_policy_and_joint_fact_are_bound_to_final_audit_digest(mutation):
     _,draft,c,_,_=compiled();meta=metadata(draft)
@@ -135,11 +158,15 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
+        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 1
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         for value in [0,None,True]:
             with pytest.raises(ValueError,match='Immutable'):
                 repo.update_run(r['runId'],lambda current:{**current,'comparisonJointReportsContractVersion':value})
+            with pytest.raises(ValueError, match='Immutable'):
+                repo.update_run(r['runId'], lambda current: {
+                    **current, 'comparisonBenchmarkSpeedScopeContractVersion': value})
     finally:facade.shutdown()
 
 
