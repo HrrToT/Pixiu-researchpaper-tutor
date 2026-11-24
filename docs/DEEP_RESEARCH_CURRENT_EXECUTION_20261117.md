@@ -10,6 +10,8 @@
 
 版本 13 的离线重放精确复现了旧版输入，并将新版联合阶段拆出数字示例、可比条件两个目标。必需证据保留，一条可选证据因载荷调整退出。用实际表格及表注编译了两条模拟响应。最低调用数仍为 11 次，案例进入合成时有 12 次额度。新版还需真实生成、独立核验与完整发布。 [输入重放记录](deep-research-evidence/comparison-example-boundary-v35-replay-20261124.json)
 
+提交前检查已核对 v36 和 H1–H5 冻结定义、材料大小及 SHA-256。v36 保持仅用任务中的两篇论文，H3 保持空任务材料且只从联网获取，供验收者核对的 PDF 留在应用之外。通过本地接口确认既有 35 次 D2 尝试全部已有明确终态，现用研究服务健康检查通过。此次检查没有新增提交。 [只读准备记录](deep-research-evidence/comparison-v36-holdout-readiness-20261124.json)
+
 ## 2026-11-24 v29 真实比较
 
 DeepSeek 账户恢复可用。正常恢复 Docker、既有 Java 和原 Python 服务，RAG 与 GROBID 健康检查均通过。候选装载后核对后端源码、旧任务、运行及账本，确认 PDF 依赖可导入。提交固定案例 v29 一次，8 次模型调用均已结算，共 43,140 Token、255 秒，未联网搜论文。终态为 `failed/invalid_comparison_stage_response`，无新报告。原服务已恢复，当前任务、运行和调用记录核对一致。 [装载证据](deep-research-evidence/comparison-example-repair-candidate-load-20261120.json) · [真实执行证据](deep-research-evidence/baseline-comparison-v29-real-20261120.json)
