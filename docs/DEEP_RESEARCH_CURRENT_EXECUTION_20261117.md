@@ -4,6 +4,10 @@
 
 限制原句绑定和数字示例范围的组合版本完成 501 个模块、9,818 项全量离线回归，保留上一轮 9,817 个用例，零失败、零错误、零跳过。 [组合版本全量回归](deep-research-evidence/comparison-inline-limit-host-full-20261124.json)
 
+## 2026-11-24 v46 真实比较
+
+组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
+
 ## 2026-11-24 v45 真实比较
 
 候选源码与通过 9,814 项回归的快照一致，装载前历史记录核对一致。v45 单次提交，调用模型 16 次，消耗 86,594 Token，用时 153 秒，外部检索为零。7 条主张通过单项核验，含由 10 个原表单元格支持的同口径数字示例。全答审核正常返回，但仅返回两项义务，义务身份检查未通过。原服务已恢复，历史数据核对一致。恢复后可从工作区读取该次运行的部分报告，发布队列已确认交付，同一报告版本在 Java 保存了机器存档和可编辑版本。运行快照中的 `published` 初始标记仍为 `false`。这次没有获得完整报告验收。 [候选装载](deep-research-evidence/comparison-cross-paper-boundary-candidate-load-20261124.json) · [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json)
