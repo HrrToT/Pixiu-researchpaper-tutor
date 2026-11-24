@@ -1,0 +1,57 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v42",
+  "sourceCommit": "624b46f9c562f32700f36079381b63d666863cfd",
+  "runId": "dr_run_7da2413574b65f02b0d02fbadc6201ba",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_comparison_stage_response",
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 7,
+  "modelTokens": 27037,
+  "elapsedSeconds": 76.0,
+  "externalSearches": 0,
+  "compiledDraftClaims": null,
+  "firstSynthesisStage": {
+    "stage": "P1",
+    "providerCallStatus": "succeeded",
+    "finishReason": "stop",
+    "responseJsonKind": "null",
+    "responseBytes": 4,
+    "frozenTargets": 4,
+    "laterStagesDispatched": false
+  },
+  "initialAcceptedClaims": 0,
+  "initialRejectedReasons": {},
+  "individuallyVerifiedClaimsAfterRepair": 0,
+  "wholeAnswerAuditCallStatuses": [],
+  "repairCallsBeforeFirstWholeAnswerAudit": null,
+  "repairStartedBeforeAudit": false,
+  "repairReviewCalls": [],
+  "repairHardRejectionReasons": {},
+  "initialWholeAnswerAudit": {
+    "status": null,
+    "verdicts": {},
+    "budgetLimit": null,
+    "answerCoherent": null,
+    "coherenceIssueKinds": []
+  },
+  "finalWholeAnswerAudit": {
+    "status": null,
+    "verdicts": {},
+    "budgetLimit": null,
+    "answerCoherent": null,
+    "coherenceIssueKinds": []
+  },
+  "repairBudgetStop": null,
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "7df68dbe708d1d2e78627cae5a59fbaa8dc7990bf000ea6a06f7d1ca87ed6709",
+    ".calls.json": "45ec072fed50b93969fc0b94be13f5c7d4a63c3398536263ad5046b3d982fa1a",
+    ".result.json": "89dcdf9a2acd641fd822e75970e1a5691aff8c07bb0c0d8cc429e2ff4aa7058b",
+    ".execution.json": "5bf45a1339bebc802b19bc6dc23f81829693b4e3e5dd435f39917fd88bdb3f3f",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
