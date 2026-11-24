@@ -2,6 +2,12 @@
 
 更新：2026-11-24。完整目标仍为《DEEP_RESEARCH_DESIGN_20261012.md》的 DR0—DR5 及第 19 节验收。整体尚未完成，PR #1 保持草稿。
 
+## 2026-11-24 v38 真实比较
+
+版本 15 全量离线回归 9,773 项通过，原有 9,771 项全部保留。v38 固定案例提交一次，14 次模型调用、80,686 Token、151 秒，未搜网页。三阶段编译 11 条草稿，没有结构错误。模型从系统提供的选项中选中同一数据组的第 9、10 行，绑定 10 个单元格；可比条件也成功编译。4 条单独核验通过，修订未新增通过项，全答审核暂扣已通过主张，最终没有发布已核验结论。原服务已恢复，任务、运行和调用记录核对一致。 [全量回归](deep-research-evidence/comparison-matched-pair-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-matched-pair-candidate-load-20261124.json) · [真实验收与硬检查重放](deep-research-evidence/baseline-comparison-v38-real-20261124.json)
+
+数值检查把系统示例导语中的“两种”当作原文数值。用保存的实际主张只调整该处导语，原有 10 个绑定及引用保留，示例通过确定性硬检查；改动任一表格绑定值仍被拒绝。可比条件虽然结构有效，但在观察设置里跨数据组再列 FPS，触发缺少表格绑定。全答审核仍把分别归属两篇来源的处理描述判为冲突。完整报告需要继续修复这两个链路，并进行真实语义核验。
+
 ## 2026-11-24 v37 真实比较
 
 版本 14 全量离线回归 9,771 项通过，原有 9,770 项全部保留。v37 固定案例提交一次，14 次模型调用、75,341 Token、163 秒，未搜网页。三个草稿阶段均通过输入检查并返回可解析结果，共编译 9 条草稿，其中 4 条通过单项核验。修订未新增通过项。全答审核发现来源表述存在歧义，暂扣 4 条已通过的主张，最终结果无用户可见的已核验结论。原服务已恢复，现有记录核对一致。 [全量回归](deep-research-evidence/comparison-joint-catalog-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-joint-catalog-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v37-real-20261124.json)
