@@ -45,7 +45,8 @@ class AcademicAcquisition:
         if record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
             return []
         client = self.client_factory(record)
-        allow_fallback = client.policy.enabled and client.policy.allow_fulltext
+        allow_fallback = ((self.direct_pinned_fallback or self.fallback_search)
+                          and client.policy.enabled and client.policy.allow_fulltext)
         diagnostics=type(record.get('externalDiagnosticsContractVersion')) is int and record['externalDiagnosticsContractVersion']==1
         adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call,
             **({'transport_diagnostics':True} if diagnostics else {}))
@@ -73,8 +74,7 @@ class AcademicAcquisition:
             # Editing the question cannot turn a pinned paper into topic search.
             candidates = (adapter.lookup(run_id, identities, limit=max(3, len(identities)))
                           if identities else adapter.discover(run_id, query, limit=3))
-            if (allow_fallback and (self.direct_pinned_fallback or self.fallback_search)
-                    and adapter.discovery_outcomes[-1] != 'not_dispatched'):
+            if allow_fallback and adapter.discovery_outcomes[-1] != 'not_dispatched':
                 request_ids = identities or client.discovery_request(query, 3).get('id_list', '').split(',')
                 request_ids = [identity for identity in request_ids if identity]
                 if request_ids and self.direct_pinned_fallback:
