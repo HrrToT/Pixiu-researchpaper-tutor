@@ -126,6 +126,11 @@ def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
     assert '表注说明' in prose['text'] and 'P1' not in prose['text']
     assert 'Ours-7K：FPS 160' in prose['conditions']['原表测量']
     assert 'Ours-30K *：FPS 145' in prose['conditions']['原表测量']
+    scoped = resolve_point(typed, {**selectable,'scopedExampleText':True}, registry, measurement_display=True)
+    assert scoped['body']['prose']['text'].startswith('以下是原表同一数据组中的对照结果。')
+    assert '两种' in prose['text'] and '两种' not in scoped['body']['prose']['text']
+    assert scoped['tableBindings'] == rendered['tableBindings'] and scoped['evidenceRefs'] == rendered['evidenceRefs']
+    assert scoped['body']['prose']['conditions'] == prose['conditions']
     with pytest.raises(ValueError, match='marked_baseline_and_protocol_note'):
         resolve_point({**typed, 'evidenceRefs':['E1']}, selectable, registry, measurement_display=True)
     with pytest.raises(ValueError, match='invalid_structured_table_example'):
@@ -168,6 +173,11 @@ def test_boundary_accepts_only_setting_refs_already_explicitly_cited_by_the_poin
     normalized = bind_stage_point(raw, None, setting_references=True)
     assert normalized['body']['boundary']['observedSettings'] == [setting]
     assert normalized['evidenceRefs']==['E1','E2'] and boundary['observedSettings'][0]['evidenceRefs']==['E1']
+    assert bind_stage_point(raw, None, setting_references=True, protocol_settings_only=True) == normalized
+    measured = {**setting,'attribute':'FPS','value':'120','evidenceRefs':['E1']}
+    with pytest.raises(ValueError, match='stage_boundary_repeats_benchmark'):
+        bind_stage_point({**raw,'body':{'boundary':{**boundary,'observedSettings':[measured]}}}, None,
+                         setting_references=True, protocol_settings_only=True)
     boundary['observedSettings'][0]['evidenceRefs']=['E3']
     with pytest.raises(ValueError, match='stage_boundary_setting_evidence'):
         bind_stage_point(raw, None, setting_references=True)

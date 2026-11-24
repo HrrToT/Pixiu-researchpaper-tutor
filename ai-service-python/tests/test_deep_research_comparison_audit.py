@@ -165,6 +165,11 @@ def test_audit_can_show_exact_display_paper_of_each_accepted_claim():
     assert [claim['displayedUnderPaper'] for claim in inline['claims']] == ['Paper','Second paper']
     assert [{k: v for k, v in claim.items() if k != 'displayedUnderPaper'} for claim in inline['claims']] == CLAIMS
     assert 'paperByClaim' not in inline
+    scoped = renderer(QUESTION, [], CLAIMS, {}, comparison, source_labels=True,
+                       inline_paper_labels=True, scoped_coherence=True)([])
+    assert decode(scoped) == inline
+    assert 'incompatible assertions about the same entity under the same scope' in scoped
+    assert 'explicit cross-paper assertion inconsistent with a cell' in scoped
 
 
 def test_shorter_audit_keeps_decision_packet_and_coverage_validators():

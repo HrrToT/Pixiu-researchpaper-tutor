@@ -100,14 +100,16 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['separate_joint_deliverables'] = True
     if paired_protocol_notes(record):
         plan_options['paired_protocol_notes'] = True
-    if record.get('comparisonJointReportsContractVersion') in (11, 12, 13, 14, 15):
+    if record.get('comparisonJointReportsContractVersion') in (11, 12, 13, 14, 15, 16):
         plan_options['structured_test_first'] = True
-    if record.get('comparisonJointReportsContractVersion') in (12, 13, 14, 15):
+    if record.get('comparisonJointReportsContractVersion') in (12, 13, 14, 15, 16):
         plan_options['structured_table_example'] = True
-    if record.get('comparisonJointReportsContractVersion') in (13, 14, 15):
+    if record.get('comparisonJointReportsContractVersion') in (13, 14, 15, 16):
         plan_options['separate_example_boundary'] = True
-    if record.get('comparisonJointReportsContractVersion') in (14, 15):
+    if record.get('comparisonJointReportsContractVersion') in (14, 15, 16):
         plan_options['group_example_criteria'] = True
+    if record.get('comparisonJointReportsContractVersion') == 16:
+        plan_options['scoped_example_text'] = True
     if preserve_numeric_example(record):
         plan_options['classify_standalone_joint'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
@@ -136,7 +138,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     assigned = {key: [] for key in stage_ids}
     version = record.get('comparisonJointReportsContractVersion')
     known_protocols = None
-    if version in (10, 11, 12, 13, 14, 15) and joint_targets and paired_protocol_notes(record):
+    if version in (10, 11, 12, 13, 14, 15, 16) and joint_targets and paired_protocol_notes(record):
         _, catalog = table_catalog(full_plan, tables)
         known_protocols = {table['evidenceId']: table['matchedProtocol'] for table in catalog
                            if 'matchedProtocol' in table}
@@ -163,7 +165,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets)
-                         if version in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) else set())
+                         if version in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.
@@ -190,7 +192,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         supplied = [r['evidenceId'] for r in selected]
         selected_plan = plan_cells(requirements, sources, selected, **plan_options)
         visible_cells, catalog = table_catalog(selected_plan, tables)
-        if version in (9, 10, 11, 12, 13, 14, 15):
+        if version in (9, 10, 11, 12, 13, 14, 15, 16):
             projected = stage_table_catalog(catalog, joint=include_joint,
                 reserved_benchmark=example_owner is not None, known_protocols=visible_protocols)
             visible_refs = {ref for table in projected for row in table['rows'] for ref, _ in row[2]}
@@ -198,7 +200,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         permissions = {t['targetId']: t['evidenceIds'] for t in targets(selected_plan)
                        if t['targetId'] in target_ids}
         pairs = (example_pairs(projected, permissions[example_owner])
-                 if version == 15 and scope == 'joint' and example_owner in permissions else {})
+                 if version in (15, 16) and scope == 'joint' and example_owner in permissions else {})
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,

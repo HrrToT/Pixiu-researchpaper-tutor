@@ -14,7 +14,7 @@ from services.deep_research.comparison_measurement_display import explicit_stage
 from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS, TABLE_EXAMPLE_BODY
 
 
-def bind_stage_point(point, pairs, *, setting_references=False):
+def bind_stage_point(point, pairs, *, setting_references=False, protocol_settings_only=False):
     """Compile explicit choices without changing the journaled provider response."""
     body = point.get('body')
     if pairs:
@@ -29,7 +29,16 @@ def bind_stage_point(point, pairs, *, setting_references=False):
         return point
     boundary = body['boundary']
     settings = boundary.get('observedSettings') if isinstance(boundary, dict) else None
-    if not isinstance(settings, list) or not any(isinstance(s, dict) and 'evidenceRefs' in s for s in settings):
+    if not isinstance(settings, list):
+        return point
+    if protocol_settings_only:
+        from services.deep_research.measurement_table_navigation import benchmark_metric
+        literal_headers = {'帧率', '渲染速度', '渲染耗时', '模型体积', '存储大小', '峰值显存', '压缩比'}
+        for setting in settings:
+            attribute = setting.get('attribute') if isinstance(setting, dict) else None
+            if isinstance(attribute, str) and (benchmark_metric(attribute) or attribute.strip() in literal_headers):
+                raise ValueError('stage_boundary_repeats_benchmark')
+    if not any(isinstance(s, dict) and 'evidenceRefs' in s for s in settings):
         return point
     refs = point.get('evidenceRefs')
     if not isinstance(refs, list):
@@ -77,7 +86,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         raise DeepResearchError('invalid_comparison_stage_input', '比较输入身份不一致。')
     record = current()
     check_kind = explicit_stage_schema(record)
-    setting_references = record.get('comparisonJointReportsContractVersion') == 15
+    setting_references = record.get('comparisonJointReportsContractVersion') in (15, 16)
     saved = deepcopy(record.get('state',{}).get('comparisonStageGeneration'))
     expected = [s['stageId'] for s in snapshot['stages']]
     if len(set(expected)) != len(expected):
@@ -162,7 +171,9 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
                     point = bind_stage_point(point, pairs,
-                                             setting_references=setting_references and stage['stageId'] == 'joint')
+                                             setting_references=setting_references and stage['stageId'] == 'joint',
+                                             protocol_settings_only=(record.get('comparisonJointReportsContractVersion') == 16
+                                                                     and bool(stage.get('examplePairsByTarget'))))
                 except ValueError as exc:
                     isolated.append({'targetId':row['targetId'],'reason':str(exc)})
                     admitted.append({'targetId':row['targetId'],'goalRefs':[],'point':None})

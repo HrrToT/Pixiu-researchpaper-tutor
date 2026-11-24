@@ -126,17 +126,17 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get('comparisonJointReportsContractVersion')) is int
-            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))
+            and record['comparisonJointReportsContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16))
 
 
 def resource_allocation_enabled(record):
-    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+    return enabled(record) and record['comparisonJointReportsContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
 
 
 def benchmark_example_obligation(record, plan):
     """Identify a requested single example from server-owned deliverable metadata."""
     version = record.get('comparisonJointReportsContractVersion')
-    if type(version) is not int or version not in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15):
+    if type(version) is not int or version not in (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16):
         return None
     matches = [oid for oid, parts in plan.get('jointDeliverables', {}).items()
                for part in parts if part['kind'] == 'matched_example']
@@ -149,7 +149,7 @@ def benchmark_example_owner(record, plan):
 
 
 def bind_benchmark_example(record, draft, plan):
-    if record.get('comparisonJointReportsContractVersion') not in (6, 7, 8, 9, 10, 11, 12, 13, 14, 15):
+    if record.get('comparisonJointReportsContractVersion') not in (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16):
         return
     oid = benchmark_example_obligation(record, plan)
     if oid is None:

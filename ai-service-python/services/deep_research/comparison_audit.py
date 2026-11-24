@@ -145,7 +145,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              task_sources=False, request_semantics=0, process_explanations=False,
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
-             inline_paper_labels=False):
+             inline_paper_labels=False, scoped_coherence=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -236,9 +236,17 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             for claim in data['claims']:
                 if claim['claimId'] in paper_by_claim:
                     claim['displayedUnderPaper'] = paper_by_claim[claim['claimId']]
-            policy += ('Read each cell under displayedUnderPaper, its user-visible column heading. A separate '
-                       'heading disambiguates authorship without repeating the paper name in the cell text. '
-                       'Judge actual contradictions and unresolved scopes in the displayed answer.\n')
+            if scoped_coherence:
+                policy += ('For coherence, read each cell as “According to [displayedUnderPaper], [text]”. '
+                           'A paper heading supplies attribution even if cell prose omits the name. A contradiction '
+                           'requires incompatible assertions about the same entity under the same scope, or an '
+                           'explicit cross-paper assertion inconsistent with a cell. Different procedures in separate '
+                           'columns are differences, not contradictions. In reason identify the shared entity, scope '
+                           'and incompatible assertions. Keep genuinely ambiguous or contradictory claims blocked.\n')
+            else:
+                policy += ('Read each cell under displayedUnderPaper, its user-visible column heading. A separate '
+                           'heading disambiguates authorship without repeating the paper name in the cell text. '
+                           'Judge actual contradictions and unresolved scopes in the displayed answer.\n')
         else:
             data['paperByClaim'] = paper_by_claim
             policy += ('paperByClaim gives the displayed paper of each table cell. Read each claim under that '

@@ -1,0 +1,18 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v38",
+  "savedPayloadSha256": "2a81d6b23c143753d074066f3a07957821951913f49e3aade2b390d167cfaf4b",
+  "newContractVersion": 16,
+  "legacyStagesExact": true,
+  "requiredEvidenceUnchanged": true,
+  "jointPromptBytes": 23987,
+  "benchmarkEvidenceAndBindingsUnchanged": true,
+  "benchmarkHardPrecheckPassed": true,
+  "changedBindingRejected": true,
+  "benchmarkBindingCount": 10,
+  "oldBoundaryRepeatsBenchmarkIsolated": true,
+  "fixtureScopeOnlyBoundaryCompiled": true,
+  "auditInputsIdenticalAndSharedScopeRequired": true,
+  "liveCoherenceDecisionRetested": false,
+  "actualModelCalls": 0,
+  "scientificContentAccepted": false
+}

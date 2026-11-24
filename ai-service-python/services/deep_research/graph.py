@@ -1248,7 +1248,7 @@ def make_synthesize_node(
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
-                   and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) else {}),
+                   and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
@@ -2220,8 +2220,10 @@ def make_verify_node(
                 if record['comparisonAuditEnvelopeContractVersion'] == 5:
                     comparison_audit_args['comparison_source_labels'] = True
                     comparison_audit_args['empty_missing_process'] = True
-                    if record.get('comparisonJointReportsContractVersion') == 15:
+                    if record.get('comparisonJointReportsContractVersion') in (15, 16):
                         comparison_audit_args['inline_comparison_paper_labels'] = True
+                    if record.get('comparisonJointReportsContractVersion') == 16:
+                        comparison_audit_args['scoped_comparison_coherence'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                 if joint_comparison_delivery(record):

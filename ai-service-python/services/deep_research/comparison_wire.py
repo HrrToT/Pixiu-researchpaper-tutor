@@ -142,6 +142,8 @@ def targets(plan):
                         part_target['decisionMode'] = 'measure_both_before_recommending_either'
                 if part['kind'] == 'matched_example' and plan.get('structuredTableExample'):
                     part_target['exampleMode'] = 'server_renders_selected_cells'
+                    if plan.get('scopedExampleText'):
+                        part_target['scopedExampleText'] = True
                 result.append(part_target)
         else:
             result.append(target)
@@ -344,7 +346,8 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                     b['rowNumber'] == protocol['rowNumber'] for b in bindings)):
                 raise ValueError('joint_example_requires_marked_baseline_and_protocol_note')
             if table_example:
-                text = '原表在同一数据组中报告了以下两种方法的结果。'
+                text = ('以下是原表同一数据组中的对照结果。' if target.get('scopedExampleText')
+                        else '原表在同一数据组中报告了以下两种方法的结果。')
                 if protocol:
                     text += '表注说明带标记的基线在同一平台上重新训练。'
                 point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
@@ -456,7 +459,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         refs = {row['obligationId']: ref for ref, row in goals.items()}
         data['requirements'] = [{**{k: v for k, v in row.items() if k != 'obligationId'},
                                  'goalRef': ref} for ref, row in goals.items()]
-        data['targets'] = [{**{k: v for k, v in target.items() if k != 'allowedObligationIds'},
+        data['targets'] = [{**{k: v for k, v in target.items() if k not in {'allowedObligationIds', 'scopedExampleText'}},
                             'paper': (plan['sources'][target['source']].get('title')
                                       if target['role'] == 'paper_cell' else 'cross-paper'),
                             'goalChoices': [{'goalRef': refs[oid], 'question': goals[refs[oid]]['question']}
@@ -473,7 +476,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
-        if version in (9, 10, 11, 12, 13, 14, 15):
+        if version in (9, 10, 11, 12, 13, 14, 15, 16):
             data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
                 reserved_benchmark=benchmark_example_owner(record, plan) is not None, known_protocols=known_protocols)
         data = {'requirements': data['requirements'],
@@ -513,7 +516,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     'scope': 'own_paper_only'}
                 target['goalChoices'] = [{'goalRef': choice['goalRef']}
                                          for choice in target['goalChoices']]
-        if version in (14, 15) and scopes == ('joint',):
+        if version in (14, 15, 16) and scopes == ('joint',):
             joint_refs = {choice['goalRef'] for target in data['jointTargets'] for choice in target['goalChoices']}
             goals = data['requestContext']['researchGoals']
             data['requestContext']['researchGoals'] = [goal for goal in goals if goal['goalRef'] in joint_refs]
@@ -522,7 +525,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             for paper in data['papers']:
                 for row in paper['evidence']:
                     row['obligations'] = [ref for ref in row['obligations'] if ref in joint_refs]
-        if version == 15 and scopes == ('joint',):
+        if version in (15, 16) and scopes == ('joint',):
             for target in data['jointTargets']:
                 if target['targetId'] == benchmark_example_owner(record, plan):
                     catalog = [table for paper in data['papers'] for table in paper['tableCatalog']]
@@ -595,7 +598,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
         example_owner = benchmark_example_owner(record, plan)
-        literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15)
+        literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -613,12 +616,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version in (8, 9, 10, 11, 12, 13, 14, 15) and deliver_joint and scopes == ('joint',):
+        if version in (8, 9, 10, 11, 12, 13, 14, 15, 16) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
                 body_guidance += JOINT_REASONING_POLICY
-            policy = JOINT_COMPACT_DELIVERY_POLICY if version in (14, 15) else JOINT_DELIVERY_POLICY
+            policy = JOINT_COMPACT_DELIVERY_POLICY if version in (14, 15, 16) else JOINT_DELIVERY_POLICY
             if example_owner:
                 policy += BENCHMARK_OWNER_POLICY
             if version in (9, 10):
@@ -627,27 +630,31 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 for target in data['jointTargets']:
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
-            if version in (11, 12, 13, 14, 15):
+            if version in (11, 12, 13, 14, 15, 16):
                 body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
                                   'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
                                   'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
                                   'Put evidence-comparison bounds inside point.body.boundary.\n')
-            if version in (12, 13, 14, 15):
+            if version in (12, 13, 14, 15, 16):
                 body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
                                   'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
                                   'cellRefs. The app renders the values. Boundary observedSettings items have only '
                                   'subject, attribute, value; use actual method names and keep E IDs in evidenceRefs.\n')
-            if version in (13, 14, 15):
+            if version in (13, 14, 15, 16):
                 body_guidance += ('For deliverable=comparability, explain what the evidence supports and what it '
                                   'cannot establish using kind="inference", body.boundary and cellRefs:[]. '
                                   'Keep the selected measurements in the separate matched_example point.\n')
-            if version == 15 and any('exampleChoices' in target for target in data['jointTargets']):
+            if version in (15, 16) and any('exampleChoices' in target for target in data['jointTargets']):
                 body_guidance += ('For exampleChoices [ID,dataset,methods,table], choose one applicable ID as '
                                   'body={"tableExample":"B_ID"}, kind="reported", with empty evidenceRefs and '
                                   'cellRefs. The app binds the exact table, note and paired cells. Otherwise use null.\n')
-            if version == 15:
+            if version in (15, 16):
                 body_guidance += ('If a setting includes evidenceRefs, every referenced E ID must also be in '
                                   'the point evidenceRefs. The cited evidence still undergoes factual review.\n')
+            if version == 16 and example_owner:
+                body_guidance += ('Boundary observedSettings are protocol settings, e.g. hardware, dataset or '
+                                  'resolution. Keep measured FPS, storage and quality values in the example only. '
+                                  'Use notEstablished for comparisons the cited protocols cannot establish.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'
