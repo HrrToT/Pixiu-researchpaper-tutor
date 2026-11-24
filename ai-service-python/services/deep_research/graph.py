@@ -759,12 +759,14 @@ def make_read_node(
             from services.deep_research.source_continuity import enabled as continuity_enabled,method_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_enabled
             from services.deep_research.comparison_measurement_display import local_contributions
+            from services.deep_research.table_note_index import prefers_protocol_note
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             table_navigation = {}
             if record['readingPriorityContractVersion'] == 9 and local_contributions(record):
                 table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'protocol_note': True} if prefers_protocol_note(record) else {}),
                 **({'table_navigation_obligations': table_navigation} if table_navigation else {}),
                 **({'processing_cost':True} if cost_enabled(record) else {}),
                 **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10,8:10,9:10}[record['readingPriorityContractVersion']]}

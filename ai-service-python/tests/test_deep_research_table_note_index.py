@@ -56,6 +56,38 @@ def test_visible_context_can_supply_a_candidate_but_omitted_table_data_cannot():
     assert build(rows,owners,literal_ids=lit)['tables']==[]
 
 
+def test_explicit_benchmark_example_retains_and_reads_same_page_protocol():
+    from services.deep_research.reading_priority import select_read_sources
+    from services.deep_research.table_note_index import retain_local_protocol_note
+
+    location = {'page': 6}
+    metadata = {'id': 'work', 'index_version': 'v1',
+                'text_source': 'pdf_page_text', 'body_extraction_version': 1}
+    base = {'workId': 'work', 'versionId': 'v1', 'ownerMaterialId': 'work',
+            'metadata': metadata, 'location': location, 'accessLevel': 'fulltext',
+            'retrievalMode': 'indexed_hybrid'}
+    table = {**base, 'sourceId': 'table', 'text': 'Table row 1: Baseline * | 20',
+             'tableData': {'groups': [['Dataset', ['FPS']]], 'rows': [[1, 'Baseline *', ['20']]]}}
+    prose = {**base, 'sourceId': 'prose', 'text': 'The complete method is evaluated for rendering.'}
+    note = {**base, 'sourceId': 'note',
+            'text': 'We re-trained the baseline on our platform, with results marked by ∗.'}
+    other = {**note, 'sourceId': 'other', 'metadata': {**metadata, 'index_version': 'v2'}}
+    different_page = {**note, 'sourceId': 'elsewhere', 'location': {'page': 7}}
+    record = {'question': '数字只选一组对照作例子。', 'state': {'outputKind': 'paper_comparison'},
+              'comparisonJointReportsContractVersion': 16}
+    assert retain_local_protocol_note([table, prose], [other, different_page],
+                                      record, 'rendering speed', 2) == [table, prose]
+    assert retain_local_protocol_note([table, prose], [note], {**record, 'question': '对比两篇。'},
+                                      'rendering speed', 2) == [table, prose]
+    ranked = retain_local_protocol_note([table, prose], [other, different_page, note],
+                                        record, 'rendering speed', 2)
+    assert ranked == [table, note]
+    allowed = {'o': {'obligationId': 'o', 'question': 'Rendering speed', 'requiredSources': ['work']}}
+    assert select_read_sources(ranked, allowed, 2, protocol_note=True)[0] == note
+    denied = {'o': {**allowed['o'], 'requiredSources': ['another-paper']}}
+    assert select_read_sources(ranked, denied, 2, protocol_note=True) == []
+
+
 def evidence_packet():
     rows,owners,lit=packet()
     for row in rows:row.update(sourceWorkId='work',sourceVersionId='v1',accessLevel='fulltext',obligationIds=['o'],verification={'literal':'passed'})

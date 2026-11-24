@@ -1,0 +1,19 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v46",
+  "priorReceipt": "D2-BASELINE-COMPRESSION-v45",
+  "originalPairCount": 0,
+  "counterfactualPairCount": 10,
+  "notePhysicalPage": 6,
+  "samePaperVersion": true,
+  "cellsPerPair": 10,
+  "eachPairCitesOriginalProtocolNote": true,
+  "originalReceiptsUnchanged": true,
+  "payloadSha256": {
+    "v45": "fc1127241f763d49568f5be015a5d9c51b387716911e10010f98b7da5cdb610a",
+    "v46": "fde8ae2323199df4372739959713c7ce3381e2de2c02fb625187e7e86b2a6901"
+  },
+  "targetedOfflineTestsPassed": 577,
+  "modelCalls": 0,
+  "liveAcquisitionVerified": false,
+  "scientificApproval": false
+}

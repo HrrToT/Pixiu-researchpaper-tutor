@@ -9,6 +9,7 @@ _CUE=re.compile(r'\b(?:marked|denot\w*|indicat\w*|asterisk|dagger|symbol)\b|星�
 _MATCHED_RETRAINING = re.compile(
     r'(?<!not )(?<!never )\b(?:re[-\s]?train\w*)\b[^.!?]{0,330}\b(?:our|same|identical)\s+(?:\w+\s+){0,3}(?:platform|gpu|hardware)\b'
     r'[^.!?]{0,140}\b(?:marked|denoted|indicated)\s+(?:by|with)\b', re.I)
+_MATCHED_MARKER = re.compile(_MATCHED_RETRAINING.pattern + r'\s*([*∗⋆†‡])', re.I)
 GUIDANCE="""
 Keep exact dataset/group and method row labels beside metric/value. A readable name
 may precede the literal row label, never replace it. Preserve variant markers, dropping
@@ -97,3 +98,63 @@ def matched_protocols(rows, owners):
             result[table['tableEvidenceId']] = {'rowNumber': marked['rowNumber'],
                                                'noteEvidenceId': explicit[0]}
     return result
+
+
+def prefers_protocol_note(record):
+    from services.deep_research.comparison_joint_reports import _SINGLE_NUMERIC_EXAMPLE
+    from services.deep_research.request_context import effective_question
+
+    if (record.get('comparisonJointReportsContractVersion') != 16
+            or record.get('state', {}).get('outputKind') != 'paper_comparison'):
+        return False
+    question = effective_question(record)
+    return any(_SINGLE_NUMERIC_EXAMPLE.search(layer)
+               for layer in getattr(question, 'instruction_layers', (str(question),)))
+
+
+def has_protocol_note(text):
+    return isinstance(text, str) and bool(_MATCHED_MARKER.search(text))
+
+
+def retain_local_protocol_note(rows, candidates, record, query, limit):
+    """Keep one original note when the local results already contain a marked table."""
+    from services.deep_research.measurement_table_navigation import planned_query_priority
+
+    if limit < 2 or len(rows) > limit or not prefers_protocol_note(record) or not planned_query_priority(query):
+        return rows
+
+    def page_identity(row):
+        metadata = row.get('metadata') or {}
+        return (metadata.get('id') or row.get('pdfId'), metadata.get('index_version') or row.get('versionId'),
+                (row.get('location') or {}).get('page'))
+
+    markers_by_page = {}
+    for row in rows:
+        identity = page_identity(row)
+        if all(identity):
+            for _, label, _ in (row.get('tableData') or {}).get('rows', []):
+                for group in _GROUPS:
+                    if any(symbol in label for symbol in group):
+                        markers_by_page.setdefault(identity, set()).update(group)
+    if not markers_by_page:
+        return rows
+
+    def matches(row):
+        text = row.get('text')
+        match = _MATCHED_MARKER.search(text) if isinstance(text, str) else None
+        metadata = row.get('metadata') or {}
+        return (match and match[1] in markers_by_page.get(page_identity(row), ())
+                and not row.get('tableData') and (not metadata or
+                    (metadata.get('text_source') == 'pdf_page_text' and metadata.get('body_extraction_version') == 1)))
+
+    if any(matches(row) for row in rows):
+        return rows
+    note = next((row for row in candidates if matches(row)
+                 and row['sourceId'] not in {source['sourceId'] for source in rows}), None)
+    if note is None:
+        return rows
+    if len(rows) < limit:
+        return [*rows, note]
+    replace = next((i for i in range(len(rows) - 1, 0, -1)
+                    if not rows[i].get('tableData') and rows[i].get('retrievalMode') == 'indexed_hybrid'), None)
+    return [*rows[:replace], note, *rows[replace + 1:]] if replace is not None else rows

@@ -136,10 +136,12 @@ class LocalTaskRetriever:
         from services.deep_research.scope_evidence import enabled,include_scope_evidence
         record=self.repo.require_run(self.run_id)
         from services.deep_research.processing_cost_sources import include_processing_cost
+        from services.deep_research.table_note_index import retain_local_protocol_note
         if not enabled(record):
             from services.deep_research.mechanism_sources import prefer_sources
             result=prefer_sources(rows,candidates,record,query,pdf_id,limit)
-            return include_processing_cost(result,candidates,record,query,pdf_id,limit)
+            result=include_processing_cost(result,candidates,record,query,pdf_id,limit)
+            return retain_local_protocol_note(result,candidates,record,query,limit)
         if not self.validate(self.run_id,pdf_id):
             raise DeepResearchError('scope_revoked','论文范围已变更')
         material=next((m for m in record.get('materials',[]) if m.get('materialId')==pdf_id),{})
@@ -153,7 +155,8 @@ class LocalTaskRetriever:
         result=prefer_sources(result,candidates,record,query,pdf_id,limit)
         from services.deep_research.section_context import include_section_context
         result=include_section_context(result,candidates,record,pdf_id,limit)
-        return include_processing_cost(result,candidates,record,query,pdf_id,limit)
+        result=include_processing_cost(result,candidates,record,query,pdf_id,limit)
+        return retain_local_protocol_note(result,candidates,record,query,limit)
 
 
     def _stamp_identity(self, rows, pdf_id):

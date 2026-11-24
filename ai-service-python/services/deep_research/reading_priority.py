@@ -5,7 +5,7 @@ from services.deep_research.source_continuity import needs_preceding_context,met
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None, protocol_note=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -30,6 +30,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                       measurement_tables=measurement_tables,processing_cost=processing_cost)
     else:
         ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
+    preferred = []
     if measurement_tables and table_navigation_obligations:
         from services.deep_research.reading_roles import quality, requests
         from services.deep_research.measurement_table_navigation import score
@@ -47,7 +48,16 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                 best_by_paper[identity] = (match, source)
         # Keep most read slots available for the active step's own role queues.
         preferred = [source for _, source in list(best_by_paper.values())[:limit // 2]]
-        ordered = [*preferred, *ordered]
+    if protocol_note and limit > 1:
+        from services.deep_research.table_note_index import has_protocol_note
+        extracted = set(extracted)
+        note = next((source for source in ordered
+                     if source.get('accessLevel') == 'fulltext'
+                     and (source['sourceId'], source.get('contentHash')) not in extracted
+                     and has_protocol_note(source.get('text'))), None)
+        if note is not None:
+            preferred.append(note)
+    ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:
         if source['sourceId'] in used:
