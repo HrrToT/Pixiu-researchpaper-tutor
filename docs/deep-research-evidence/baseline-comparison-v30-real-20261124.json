@@ -1,0 +1,91 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v30",
+  "runId": "dr_run_0f872b9ea3ac56bca0a879c5b9fad2c4",
+  "sourceCommit": "c107fd04c1637bdee2e7e0fe9efd9f0002b16f52",
+  "receiptSha256": "7c0fa94a3f435b2708f2b02d2434ab5cbf9a015ea5b61e4e59c6bad1e7321db7",
+  "status": "failed",
+  "errorCode": "comparison_stage_evidence_capacity",
+  "reportPublished": false,
+  "comparisonGenerationReached": false,
+  "modelCalls": 6,
+  "ledgerTokens": 19624,
+  "elapsedSeconds": 106.0,
+  "automaticRetry": false,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "actualInputCapacityReplays": [
+    {
+      "version": 6,
+      "outcome": "comparison_stage_evidence_capacity",
+      "stages": [
+        {
+          "stagesMeasured": 1,
+          "mandatoryRows": 6,
+          "totalRows": 22,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 14567,
+          "requiredContexts": 4
+        },
+        {
+          "stagesMeasured": 2,
+          "mandatoryRows": 9,
+          "totalRows": 33,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 17216,
+          "requiredContexts": 6
+        },
+        {
+          "stagesMeasured": 3,
+          "mandatoryRows": 11,
+          "totalRows": 55,
+          "mandatoryBundles": 18,
+          "missingBundles": 4,
+          "window": 24000,
+          "allMandatoryBytes": 27347,
+          "requiredContexts": 2
+        }
+      ]
+    },
+    {
+      "version": 7,
+      "outcome": "comparison_stage_evidence_capacity",
+      "stages": [
+        {
+          "stagesMeasured": 1,
+          "mandatoryRows": 6,
+          "totalRows": 22,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 14567,
+          "requiredContexts": 4
+        },
+        {
+          "stagesMeasured": 2,
+          "mandatoryRows": 9,
+          "totalRows": 33,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 17216,
+          "requiredContexts": 6
+        },
+        {
+          "stagesMeasured": 3,
+          "mandatoryRows": 11,
+          "totalRows": 55,
+          "mandatoryBundles": 18,
+          "missingBundles": 4,
+          "window": 24000,
+          "allMandatoryBytes": 27303,
+          "requiredContexts": 2
+        }
+      ]
+    }
+  ],
+  "replayModelRequests": 0,
+  "scientificContentAccepted": false
+}
