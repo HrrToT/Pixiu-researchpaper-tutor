@@ -77,6 +77,41 @@ def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_
     assert snapshot['admission']['callLowerBound']==10
 
 
+def test_atomic_exploration_preserves_the_full_plan_call_floor(tmp_path):
+    from services.deep_research.comparison_stage_inputs import exploration_completion_calls
+    from services.deep_research.repository import DeepResearchRepository
+
+    record, plan, rows, aliases, bundles = fixture()
+    record.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+                  comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=9,
+                  comparisonExplorationContractVersion=1, materials=list(plan['sources'].values()))
+    record['state']['plan'] = [{'obligations': plan['requirements']}]
+    allotted = prepare(record, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    floor = allotted['admission']['callLowerBound']
+    assert floor == exploration_completion_calls(record)
+    assert exploration_completion_calls({**record, 'comparisonExplorationContractVersion': True}) == 0
+    maximum = record['budget']['maxModelCalls']
+    record['budget']['modelCalls'] = maximum - floor - 1
+    repo = DeepResearchRepository(str(tmp_path/'comparison.sqlite3'))
+    repo.initialize()
+    repo.create_run(record)
+    run_id = record['runId']
+    reserve = dict(run_id=run_id, node='assess_relevance', tool='llm_invoke',
+                   budget_delta={'modelCalls':1,'tokens':100})
+    repo.reserve_call(**reserve, args_digest='last-admitted-assessment')
+    before = repo.require_run(run_id)
+    assert before['budget']['modelCalls'] == maximum - floor
+    with pytest.raises(BudgetExhaustedError) as error:
+        repo.reserve_call(**reserve, args_digest='would-consume-generation-budget')
+    assert error.value.details == {'kind':'comparisonExplorationCalls',
+                                   'limit':maximum-floor,'used':maximum-floor+1}
+    assert repo.require_run(run_id) == before
+    with pytest.raises(ValueError, match='Immutable'):
+        repo.update_run(run_id, lambda current: {**current, 'comparisonExplorationContractVersion':0})
+    reserve['node'] = 'synthesize'
+    repo.reserve_call(**reserve, args_digest='generation-can-use-its-capacity')
+
+
 def packet(stage):
     text=stage['prompt'].split('Exact question obligations, source permissions, unchanged quotations/context, and visible typed cells:\n',1)[1]
     data=json.JSONDecoder().raw_decode(text)[0]

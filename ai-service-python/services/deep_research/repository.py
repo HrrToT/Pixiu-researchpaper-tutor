@@ -346,7 +346,8 @@ class DeepResearchRepository:
                 if (updated.get(observation_policy) != current.get(observation_policy)
                         or type(updated.get(observation_policy)) is not type(current.get(observation_policy))):
                     raise ValueError(f'Immutable run field changed: {observation_policy}')
-                for batch_policy in ('comparisonReviewBatchContractVersion', 'comparisonAuthoringContractVersion'):
+                for batch_policy in ('comparisonReviewBatchContractVersion', 'comparisonAuthoringContractVersion',
+                                     'comparisonExplorationContractVersion'):
                     if (updated.get(batch_policy) != current.get(batch_policy)
                             or type(updated.get(batch_policy)) is not type(current.get(batch_policy))
                             or (batch_policy in updated) != (batch_policy in current)):
@@ -623,7 +624,12 @@ class DeepResearchRepository:
                         from services.deep_research.contracts import check_exploration_headroom
                         exhausted = check_budget_limits(run_record["budget"], allow_released_reserve=allow_released)
                         if not exhausted and not use_reserve and int(delta.get('modelCalls') or 0) > 0:
-                            headroom = check_exploration_headroom(run_record["budget"], normalized_node)
+                            completion_calls = 0
+                            if normalized_node in {'extract', 'assess_relevance'}:
+                                from services.deep_research.comparison_stage_inputs import exploration_completion_calls
+                                completion_calls = exploration_completion_calls(run_record)
+                            headroom = check_exploration_headroom(run_record["budget"], normalized_node,
+                                                                 completion_calls=completion_calls)
                             if headroom:
                                 from services.deep_research.contracts import BudgetExhaustedError
                                 raise BudgetExhaustedError(*headroom)

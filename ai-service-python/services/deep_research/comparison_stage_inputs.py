@@ -22,6 +22,48 @@ def enabled(record):
             and comparison_enabled(record))
 
 
+def minimum_completion_calls(stage_count, target_count):
+    # Generation, factual-review batches, a whole-answer audit, and one
+    # edit/recheck/re-audit cycle. Additional advice or review may need more.
+    return stage_count + ceil(target_count / 3) + 1 + 3
+
+
+def exploration_completion_calls(record):
+    """Estimate the stage admission floor from the full plan, before acquiring more evidence."""
+    from services.deep_research.comparison_generation import planning_options
+    from services.deep_research.comparison_measurement_display import isolated
+    from services.deep_research.design_drafting import synthesis_obligations
+
+    version = record.get('comparisonExplorationContractVersion')
+    if type(version) is not int or version != 1:
+        return 0
+    if not enabled(record) or not isolated(record):
+        return 0
+    state = record.get('state', {})
+    requirements = synthesis_obligations(state.get('plan', []))
+    if not requirements:
+        return 0
+    identities = {}
+    for material in record.get('materials', []):
+        work = material.get('workId') or material.get('materialId')
+        if work:
+            identities[(work, material.get('versionId', ''))] = material.get('title', '')
+    if record.get('sourcePolicy', {}).get('mode') in ('academic_external', 'external_only'):
+        for source in state.get('evidence', []):
+            work = source.get('sourceWorkId')
+            if work:
+                identities.setdefault((work, source.get('sourceVersionId', '')), source.get('sourceTitle', ''))
+    if not identities:
+        return 0
+    sources = {f'P{i}': {'workId': work, 'versionId': version, 'title': title}
+               for i, ((work, version), title) in enumerate(identities.items(), start=1)}
+    question = effective_question(record)
+    planned = targets(plan_cells(requirements, sources, [], **planning_options(record, question)))
+    paper_stages = {target['source'] for target in planned if target['role'] == 'paper_cell'}
+    joint_stage = any(target['role'] == 'joint' for target in planned)
+    return minimum_completion_calls(len(paper_stages) + joint_stage, len(planned)) if planned else 0
+
+
 def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             max_input_bytes=32000, character_limit=None, merge_joint=True):
     """Retain all candidates until separate <=20-row stage allocations finish.
@@ -178,10 +220,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
            for k in ('maxModelCalls', 'modelCalls', 'reservedModelCalls')):
         raise ValueError('Invalid comparison stage call budget')
     remaining = budget['maxModelCalls'] - budget['modelCalls'] - budget['reservedModelCalls']
-    # Initial generation + factual-review batch floor + complete-answer audit.
-    # Three more calls are the MINIMUM edit/recheck/re-audit reserve, not a
-    # guarantee that every rejection fits one recheck or advice shares a batch.
-    call_floor = len(stages) + ceil(len(all_targets) / 3) + 1 + 3
+    call_floor = minimum_completion_calls(len(stages), len(all_targets))
     snapshot = {'version': 1, 'maxInputBytes':max_input_bytes, 'question': str(question),
                 'questionLayers': list(getattr(question,'instruction_layers',(str(question),))),
                 'requirements': deepcopy(requirements),

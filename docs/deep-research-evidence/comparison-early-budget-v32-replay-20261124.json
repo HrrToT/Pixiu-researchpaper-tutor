@@ -1,0 +1,23 @@
+{
+  "savedRunSha256": "e1a391312b9b8c7ee93c49cb5fe27d5bc020c7f4a455d4d51ecfcbec1a3f9907",
+  "explorationPolicyVersion": 1,
+  "originalTerminalModelCalls": 8,
+  "replayBeforeLastAssessmentCalls": 7,
+  "estimatedCompletionCalls": 11,
+  "blockedAssessmentReservation": {
+    "kind": "comparisonExplorationCalls",
+    "limit": 7,
+    "used": 8
+  },
+  "budgetAndRecordUnchangedAfterDenial": true,
+  "mandatoryPremisesRetained": true,
+  "newStageInputsBytes": {
+    "P1": 23993,
+    "P2": 23989,
+    "joint": 23982
+  },
+  "reachedOfflineDispatch": true,
+  "actualModelRequests": 0,
+  "scientificContentAccepted": false,
+  "boundary": "Saved final evidence is held fixed during this capacity replay; the observed provider run was not re-executed."
+}

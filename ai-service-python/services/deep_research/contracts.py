@@ -506,15 +506,22 @@ def check_budget_limits(budget: dict[str, Any], *, allow_released_reserve=True) 
     return None
 
 
-def check_exploration_headroom(budget: dict[str, Any], node: str) -> tuple[str, int, int] | None:
-    """Keep one normal call and its token allowance for bounded claim repair.
+def check_exploration_headroom(budget: dict[str, Any], node: str, *,
+                               completion_calls: int = 0) -> tuple[str, int, int] | None:
+    """Keep repair capacity and the staged comparison's minimum call budget.
 
     Applied to the proposed reservation, inside the repository transaction.
     This is an earlier exploration stop, never an increase to the total budget.
     """
     if node not in {'extract', 'assess_relevance'}:
         return None
-    calls = max(0, int(budget.get('maxModelCalls') or 0) - int(budget.get('reserveModelCalls') or 0))
+    maximum = int(budget.get('maxModelCalls') or 0)
+    if maximum > 0 and completion_calls:
+        exploration_limit = max(0, maximum - completion_calls)
+        proposed = int(budget.get('modelCalls') or 0) + int(budget.get('reservedModelCalls') or 0)
+        if proposed > exploration_limit:
+            return ('comparisonExplorationCalls', exploration_limit, proposed)
+    calls = max(0, maximum - int(budget.get('reserveModelCalls') or 0))
     if calls > 1 and int(budget.get('modelCalls') or 0) > calls - 1:
         return ('explorationModelCalls', calls - 1, int(budget.get('modelCalls') or 0))
     tokens = max(0, int(budget.get('maxTokens') or 0) - int(budget.get('reserveTokens') or 0))
