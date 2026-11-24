@@ -1,0 +1,15 @@
+{
+  "originalInputReproduced": true,
+  "oldJointBytes": 23819,
+  "pairedStageBytes": 23810,
+  "protocolNote": "E16",
+  "table": "E9",
+  "keptBaselineRow": 9,
+  "removedUnmatchedDuplicateRow": 8,
+  "mandatoryEvidenceAndTargetsUnchanged": true,
+  "counterfactualTypedPairCompiled": true,
+  "counterfactualTestFirstAdviceCompiled": true,
+  "scientificContentAccepted": false,
+  "savedRunSha256": "6861238f49d8183885fe612ffd2ca467f87e54c7cf684f4df9500a54b431c172",
+  "actualModelCalls": 0
+}

@@ -76,6 +76,27 @@ def test_joint_example_rejects_a_mixed_table_pair_and_advice_rejects_reported_ki
         resolve_point(point, advice, registry)
 
 
+def test_typed_memory_advice_compiles_a_method_neutral_measurement_rule():
+    from services.deep_research.comparison_wire import resolve_point
+    from services.deep_research.general_advice import device_memory_test_first
+
+    target = {'deliverable':'conditional_advice','evidenceIds':['E1'],'deviceMemoryMeasurementEvidenceIds':[],
+              'decisionMode':'measure_both_before_recommending_either'}
+    point = {'kind':'proposal','body':{'deviceMemoryAdvice':'measure_then_choose'},
+             'evidenceRefs':['E1'],'cellRefs':[]}
+    copy = deepcopy(point)
+    compiled = resolve_point(point, target, {})
+    assert compiled['evidenceRefs'] == ['E1'] and compiled['tableBindings'] == []
+    assert device_memory_test_first(compiled['body']['prose']['text'])
+    assert point == copy
+    with pytest.raises(ValueError, match='invalid_joint_device_memory_advice'):
+        resolve_point(point, {**target,'decisionMode':None}, {})
+    with pytest.raises(ValueError, match='invalid_joint_device_memory_advice'):
+        resolve_point({**point,'body':{**point['body'],'winner':'one method'}}, target, {})
+    with pytest.raises(ValueError, match='invalid_answer_source_permission'):
+        resolve_point({**point,'evidenceRefs':['foreign']}, target, {})
+
+
 def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
     from services.deep_research.comparison_wire import resolve_point
 

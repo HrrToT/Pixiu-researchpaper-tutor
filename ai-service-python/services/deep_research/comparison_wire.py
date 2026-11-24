@@ -26,6 +26,10 @@ from each selected cell pair. Rows, [V ID, value] pairs and nested arrays are in
 '''
 
 COMPARISON_POINT_KINDS = frozenset({'reported', 'inference', 'hypothesis', 'proposal', 'suggestion'})
+TEST_FIRST_BODY = {'deviceMemoryAdvice': 'measure_then_choose'}
+TEST_FIRST_TEXT = ('先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。'
+                   '根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。'
+                   '若两种方法都超过显存上限，应调整设置后再比较。')
 
 STAGE_POLICY = '''Return every supplied target once. null means unresolved. Select goalRefs from each
 target's goalChoices by the goal actually answered. The server binds targets and permissions.
@@ -126,6 +130,8 @@ def targets(plan):
                     part_target['deviceMemoryMeasurementEvidenceIds'] = [
                         eid for eid in target['evidenceIds']
                         if has_device_memory_measurement(plan['evidence'][eid].get('quote', ''))]
+                    if plan.get('structuredTestFirst') and not part_target['deviceMemoryMeasurementEvidenceIds']:
+                        part_target['decisionMode'] = 'measure_both_before_recommending_either'
                 result.append(part_target)
         else:
             result.append(target)
@@ -261,6 +267,14 @@ def resolve_point(point, target, registry, *, measurement_display=False):
             raise ValueError('unknown_or_uncited_table_reference')
         bindings.append(deepcopy(entry['binding']))
     deliverable = target.get('deliverable')
+    body = point['body']
+    if isinstance(body, dict) and 'deviceMemoryAdvice' in body:
+        if (target.get('decisionMode') != 'measure_both_before_recommending_either'
+                or body != TEST_FIRST_BODY or point['kind'] not in ('proposal', 'suggestion') or cells):
+            raise ValueError('invalid_joint_device_memory_advice')
+        # Compile the requested procedure as advice; cited premises still
+        # enter the ordinary source, semantic and whole-answer review.
+        point = {**point, 'body': {'prose': {'text': TEST_FIRST_TEXT, 'conditions': {}}}}
     if deliverable == 'conditional_advice':
         if point['kind'] not in ('proposal', 'suggestion'):
             raise ValueError('joint_advice_requires_advice_kind')
@@ -409,7 +423,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         include_joint = 'joint' in scopes
         paper_scopes = set(scopes) - {'joint'}
         allowed = set(plan['sources']) if include_joint else paper_scopes
-        if version in (9, 10):
+        if version in (9, 10, 11):
             data['tableCatalog'] = stage_table_catalog(data['tableCatalog'], joint=include_joint,
                 reserved_benchmark=benchmark_example_owner(record, plan) is not None, known_protocols=known_protocols)
         data = {'requirements': data['requirements'],
@@ -510,7 +524,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
         example_owner = benchmark_example_owner(record, plan)
-        literal_targets = version in (7, 8, 9, 10)
+        literal_targets = version in (7, 8, 9, 10, 11)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
             if literal_targets and data['jointTargets']:
@@ -528,7 +542,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             literal_ids.update(t['targetId'] for paper in data['papers'] for t in paper['targets'])
             if example_owner:
                 literal_ids.add(example_owner)
-        if version in (8, 9, 10) and deliver_joint and scopes == ('joint',):
+        if version in (8, 9, 10, 11) and deliver_joint and scopes == ('joint',):
             envelope = JOINT_STAGE_POLICY
             body_guidance = JOINT_BODY_POLICY
             if reasoning_enabled(record, 'paper_comparison'):
@@ -542,6 +556,11 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 for target in data['jointTargets']:
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
+            if version == 11:
+                body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
+                                  'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
+                                  'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
+                                  'Put evidence-comparison bounds inside point.body.boundary.\n')
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + body_guidance
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

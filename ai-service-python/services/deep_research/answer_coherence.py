@@ -1,5 +1,6 @@
 """Bound a joint-answer consistency decision to exact accepted answer fields."""
 from copy import deepcopy
+import json
 from services.deep_research.contracts import digest
 
 
@@ -29,8 +30,9 @@ def identity(question, claims):
     return digest({'question':str(question),'claims':[{k:c[k] for k in keys if k in c} for c in claims]})
 
 
-def extract(rows, question, claims):
-    value={'contractVersion':1,'status':'invalid_response','answerDigest':identity(question,claims)}
+def extract(rows, question, claims, *, require_excerpts=False):
+    version = 2 if require_excerpts else 1
+    value={'contractVersion':version,'status':'invalid_response','answerDigest':identity(question,claims)}
     if not isinstance(rows,list):return rows,value
     found=[r for r in rows if isinstance(r,dict) and r.get('auditType')=='answer_coherence']
     ordinary=[r for r in rows if not (isinstance(r,dict) and r.get('auditType')=='answer_coherence')]
@@ -47,29 +49,36 @@ def extract(rows, question, claims):
                 or not isinstance(issue['reason'],str) or not 1<=len(issue['reason'].strip())<=600
                 or not isinstance(issue['bindings'],list) or not 1<=len(issue['bindings'])<=8):return ordinary,value
         seen=set()
+        binding_fields = {'claimId','field','excerpt'} if require_excerpts else {'claimId','field'}
         for binding in issue['bindings']:
-            if (not isinstance(binding,dict) or set(binding)!={'claimId','field'}
+            if (not isinstance(binding,dict) or set(binding)!=binding_fields
                     or not isinstance(binding.get('claimId'),str) or binding['claimId'] not in known
                     or binding.get('field') not in ('text','conditions','executionSpec')):return ordinary,value
             key=(binding['claimId'],binding['field']);field=known[binding['claimId']].get(binding['field'])
             if key in seen or not (isinstance(field,str) and field.strip() or isinstance(field,dict) and field):return ordinary,value
+            if require_excerpts:
+                excerpt = binding['excerpt']
+                source = field if isinstance(field, str) else json.dumps(field, ensure_ascii=False, separators=(',', ':'))
+                if not isinstance(excerpt, str) or not 8 <= len(excerpt.strip()) <= 240 or excerpt not in source:
+                    return ordinary, value
             seen.add(key)
     return ordinary,{**value,'status':'checked','coherent':row['coherent'],'issues':deepcopy(row['issues'])}
 
 
 def revalidate(audit, question, claims):
     value=audit.get('answerCoherence',{})
-    valid=(isinstance(value,dict) and value.get('contractVersion')==1
+    valid=(isinstance(value,dict) and value.get('contractVersion') in (1, 2)
            and type(value.get('contractVersion')) is int and value.get('answerDigest')==identity(question,claims))
+    version = value.get('contractVersion') if valid else 1
     if valid and value.get('status')=='checked':
         _,checked=extract([{'auditType':'answer_coherence','coherent':value.get('coherent'),
-                            'issues':value.get('issues')}],question,claims)
+                            'issues':value.get('issues')}],question,claims,require_excerpts=version==2)
         valid=checked['status']=='checked'
     else:valid=False
     if not valid:
         status=(value.get('status') if isinstance(value,dict) and value.get('answerDigest')==identity(question,claims)
                 and value.get('status') in ('not_checked','invalid_response') else 'invalidated' if value else 'not_checked')
-        value={'contractVersion':1,'status':status,
+        value={'contractVersion':version,'status':status,
                'answerDigest':identity(question,claims)}
     gaps=[g for g in audit.get('gaps',[]) if not isinstance(g,dict) or not g.get('coherenceGap')]
     if not valid or value.get('coherent') is not True:

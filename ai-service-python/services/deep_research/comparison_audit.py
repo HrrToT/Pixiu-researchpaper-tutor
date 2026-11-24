@@ -144,7 +144,7 @@ INTERNAL_METADATA = (
 def renderer(question, requirements, claims, metadata, comparison, *, catalog=None,
              task_sources=False, request_semantics=0, process_explanations=False,
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
-             compact_checks=False, compact_instructions=False):
+             compact_checks=False, compact_instructions=False, coherence_excerpts=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -218,6 +218,15 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
             policy += EXACT_PROCESS
         if literal_limits:
             policy += EXACT_LIMITS
+    if coherence_excerpts:
+        if not compact_instructions:
+            raise ValueError('Comparison coherence excerpts require compact audit instructions')
+        policy = policy.replace(
+            'B covers all involved existing text, conditions or executionSpec fields. Separate explicit\n'
+            'settings and repetition alone do not conflict. True requires issues:[].',
+            'B binds all involved fields with an exact 8–240 character excerpt in each binding. Omitted topics\n'
+            'belong only in ordinary checks. Explicitly separate settings and repetition are not conflicts.\n'
+            'True requires issues:[].')
     def render(evidence):
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'
                 + input_text({**data, 'evidence':evidence}))

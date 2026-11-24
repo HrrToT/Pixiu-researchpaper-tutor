@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False, structured_test_first=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
@@ -130,6 +130,8 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
                                                                classify_standalone=classify_standalone_joint)
     if paired_protocol_notes and result.get('jointDeliverables'):
         result['pairedProtocolNotes'] = True
+    if structured_test_first and result.get('jointDeliverables'):
+        result['structuredTestFirst'] = True
     return result
 
 

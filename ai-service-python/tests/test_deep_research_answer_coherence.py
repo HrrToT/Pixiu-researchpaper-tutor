@@ -66,6 +66,27 @@ def test_modified_answer_or_question_cannot_inherit_a_successful_consistency_dec
     assert not revalidate(audit,'q',CLAIMS)['gaps']
 
 
+def test_witnessed_conflict_requires_exact_excerpt_and_keeps_coverage_separate():
+    from services.deep_research.answer_coherence import publication_release
+
+    claims = [{'claimId':'c','text':'This answer asserts incompatible scopes in one sentence.'}]
+    issue = row(False)
+    issue['issues'][0]['reason'] = 'The response leaves out part of the question.'
+    ordinary, missing = extract(verdicts()+[issue], 'q', claims, require_excerpts=True)
+    assert missing['status'] == 'invalid_response' and ordinary == verdicts()
+    report = {'verdicts': ordinary, 'gaps': [], 'answerCoherence':missing}
+    assert publication_release(report,'q',claims)['reason'] == 'coherence_unconfirmed'
+    binding = issue['issues'][0]['bindings'][0]
+    issue['issues'][0]['reason'] = 'The sentence combines incompatible scopes.'
+    binding['excerpt'] = 'incompatible scopes'
+    ordinary, witnessed = extract(verdicts()+[issue], 'q', claims, require_excerpts=True)
+    assert witnessed['contractVersion'] == 2 and witnessed['status'] == 'checked'
+    report.update(answerCoherence=witnessed)
+    assert publication_release(report,'q',claims)['reason'] == 'inconsistent_answer'
+    witnessed['issues'][0]['bindings'][0]['excerpt'] = 'not contained in the accepted claim'
+    assert publication_release(report,'q',claims)['reason'] == 'coherence_unconfirmed'
+
+
 def test_old_audits_and_empty_answers_do_not_create_extra_model_calls():
     send=Mock(return_value={'content':json.dumps(verdicts())})
     old=audit_final_answer('r','q',PLAN,CLAIMS,[],send,json.loads)
