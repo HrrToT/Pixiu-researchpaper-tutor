@@ -1,0 +1,36 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v47",
+  "sourcePayloadSha256": "4d1ea9a12eeeb85168622038c0475bfe3f18f132f90cfe96d7f4ef35044f3325",
+  "originalBudget": 100000,
+  "projectedSpendingBeforeAudit": 78438,
+  "checkOnly": false,
+  "requestBytes": 14555,
+  "maximumReservation": 21431,
+  "modelCalls": 1,
+  "ledgerStatus": "succeeded",
+  "usage": {
+    "total_tokens": 5135,
+    "input_tokens": 4384,
+    "output_tokens": 751
+  },
+  "finishReason": "stop",
+  "status": "checked",
+  "responseErrors": [],
+  "verdicts": {
+    "ob-1-1": "covered",
+    "ob-1-2": "partial",
+    "ob-2-1": "covered",
+    "ob-2-2": "missing",
+    "requested_numeric_example": "covered",
+    "answer_scope": "covered"
+  },
+  "gaps": [
+    "ob-1-2",
+    "ob-2-2",
+    "ob-2-1"
+  ],
+  "scientificAcceptanceEstablished": false,
+  "productionRunAndReportChanged": false,
+  "rawResponseSha256": "d8143eb77e44a35820c43e257f2a400bb541f7c56cdbe1c4b3aecae0004d6e98",
+  "projectedSpendingAfterAudit": 83573
+}
