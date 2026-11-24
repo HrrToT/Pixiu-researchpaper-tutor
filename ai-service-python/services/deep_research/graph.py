@@ -2213,6 +2213,8 @@ def make_verify_node(
             comparison_audit_args['comparison_audit_envelope']=True
             if compact_coverage_checks(record):
                 comparison_audit_args['compact_comparison_checks'] = True
+                if record['comparisonAuditEnvelopeContractVersion'] == 3:
+                    comparison_audit_args['compact_comparison_instructions'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                 if joint_comparison_delivery(record):

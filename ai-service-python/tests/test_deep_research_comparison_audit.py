@@ -27,7 +27,7 @@ def presentation(version=3):
 
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
-          comparison=None, claims=CLAIMS, require_joint=False):
+          comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -66,7 +66,10 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         if wire_mode is not None:
             from services.deep_research.structured_output import normalize
             if wire_mode=='object_v1':
-                assert 'Root coherence fields (never items)' in prompt
+                if compact_instructions:
+                    assert '"items":ROWS,"auditType":"answer_coherence"' in prompt
+                else:
+                    assert 'Root coherence fields (never items)' in prompt
                 reply = {'content':json.dumps({'items':rows[:-1],**rows[-1]})}
                 if mutation == 'truncated':
                     reply['finishReason'] = 'length'
@@ -87,6 +90,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         compact_comparison_checks=compact_checks,budget=budget,
         fit_compact_comparison_budget=fit_compact_budget,
         require_joint_conclusions=require_joint,
+        compact_comparison_instructions=compact_instructions,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (PLAN, claims, evidence)
     return result, sent
@@ -129,6 +133,19 @@ def test_oversized_required_context_stops_without_adapter_call():
     result, sent = audit(evidence=ev)
     assert not sent and result['status'] == 'budget_exhausted'
     assert result['budgetLimit']['kind'] == 'coveragePromptBytes'
+
+
+def test_shorter_audit_keeps_decision_packet_and_coverage_validators():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True)
+    prior_calls, new_calls = [], []
+    prior, prior_packets = audit(**options, dispatches=prior_calls)
+    current, new_packets = audit(**options, compact_instructions=True, dispatches=new_calls)
+    assert current == prior
+    assert new_packets == prior_packets
+    assert new_calls[0][0] < prior_calls[0][0]
+    assert new_calls[0][1] == prior_calls[0][1]
+    refused, _ = audit('foreign', **options, compact_instructions=True)
+    assert refused['status'] != 'checked' or refused['gaps']
 
 
 def test_compact_audit_reallocates_only_output_capacity_before_dispatch():

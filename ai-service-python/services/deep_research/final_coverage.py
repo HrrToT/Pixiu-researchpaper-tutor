@@ -39,7 +39,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False):
+    if type(compact_comparison_instructions) is not bool or compact_comparison_instructions and not compact_comparison_checks:
+        raise ValueError('Compact audit instructions require compact comparison checks')
     if type(require_joint_conclusions) is not bool or require_joint_conclusions and not comparison_audit_envelope:
         raise ValueError('Joint conclusion validation requires typed comparison presentation')
     if type(fit_compact_comparison_budget) is not bool or fit_compact_comparison_budget and not compact_comparison_checks:
@@ -247,7 +249,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     comparison_cells, catalog=catalog, task_sources=task_sources,
                     request_semantics=request_semantics, process_explanations=True,
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
-                    compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks)
+                    compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
+                    compact_instructions=compact_comparison_instructions)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
