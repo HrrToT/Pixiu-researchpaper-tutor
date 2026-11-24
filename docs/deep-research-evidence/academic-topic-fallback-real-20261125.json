@@ -1,0 +1,57 @@
+{
+  "mode": "external_only",
+  "cacheEnabled": false,
+  "persistentResearchWrites": 0,
+  "standaloneSearchRequests": 1,
+  "modelCalls": 0,
+  "metadataFailureInjected": true,
+  "candidateArxivIds": [
+    "2311.17245v6",
+    "2311.17245"
+  ],
+  "pdfRequests": [
+    "/pdf/2311.17245v6"
+  ],
+  "passages": 7,
+  "pages": [
+    1,
+    2,
+    10
+  ],
+  "versions": [
+    "arxiv:2311.17245v6"
+  ],
+  "contentHashes": [
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634"
+  ],
+  "callOutcomes": [
+    {
+      "tool": "external_discover",
+      "status": "failed"
+    },
+    {
+      "tool": "external_discover",
+      "status": "succeeded"
+    },
+    {
+      "tool": "external_fulltext",
+      "status": "succeeded"
+    }
+  ],
+  "error": null,
+  "independentCredit": 0,
+  "parserImage": "sha256:db9a6032bed0ba758353d9e29d2a83a091d2080b701f899329a6a7f207ba945a",
+  "sharedDataMounted": false,
+  "runtimeSourceCommit": "6901ae65f",
+  "frozenPdfHashMatched": true,
+  "selectionBoundary": "The isolated probe selected one explicitly versioned result from the designated public development work.",
+  "checksAfterAliasFilter": {
+    "passed": 50,
+    "modules": [
+      "test_deep_research_deepseek_search.py",
+      "test_deep_research_academic.py",
+      "test_deep_research_source_revisions.py"
+    ]
+  },
+  "receiptSha256": "067c6ee6f95685bd2f0e93481665c834e2d0cb82b91e5bf0a6e778e43d90294f"
+}

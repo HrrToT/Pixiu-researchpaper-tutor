@@ -15,7 +15,8 @@ PAPER = '2403.17888v3'
 @pytest.mark.parametrize('mode, fulltext, pinned, results, pdf_available, expect_download', [
     ('external_only', True, True, ['2403.17888v1'], True, True),
     ('external_only', True, True, ['2403.17888v1'], False, True),
-    ('external_only', True, False, [PAPER], True, True),
+    ('external_only', True, False, ['2403.17888', PAPER], True, True),
+    ('external_only', True, False, ['2403.17888'], True, False),
     ('external_only', True, False, [], True, False),
     ('external_only', False, False, [PAPER], True, False),
     ('task_only', True, False, [PAPER], True, False),

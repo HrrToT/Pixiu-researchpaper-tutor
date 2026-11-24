@@ -7,6 +7,7 @@ from time import monotonic, time
 
 import requests
 
+from services.deep_research.source_revisions import work_id
 from services.deep_research_academic import AcademicAccessError, checked_arxiv_id
 
 
@@ -55,10 +56,14 @@ class DeepSeekAcademicSearch:
                 identity = checked_arxiv_id(match[1].removesuffix('.pdf'))
             except AcademicAccessError:
                 continue
+            work = work_id(identity)
+            # A search result pointing to latest cannot identify the revision read.
+            if work == identity:
+                continue
             title = item.get('title')
             candidates.setdefault(identity, {
                 'arxivId': identity,
-                'workId': 'arxiv:' + re.sub(r'v\d+$', '', identity),
+                'workId': 'arxiv:' + work,
                 'versionId': 'arxiv:' + identity,
                 'url': 'https://arxiv.org/abs/' + identity,
                 'title': title[:1000] if isinstance(title, str) else identity,

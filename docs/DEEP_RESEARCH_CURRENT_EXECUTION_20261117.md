@@ -64,6 +64,8 @@ H3 从空材料、外部材料专用任务开始，候选运行前未命中本�
 
 对开发样本测试了两条备用路径。通过同一隔离账本模拟 arXiv 元数据请求失败后，已知版本直接通过系统代理从 arXiv 取得 `2403.17888v3`，文件 SHA-256 与此前冻结下载一致，应用从第 1 至 3 页提取 9 个正文片段。账本包含一次元数据失败和一次全文获取成功，均无模型调用。另用公开标题关键词请求 DeepSeek Search，返回 `2312.12337v1` 候选。较早的编号查询曾只返回旧版本，另一次未给出可用候选。备用主题搜索只用于定位 arXiv 原文，正文由原 PDF 链路获取。两条路径均由独立开关控制，默认关闭。此次没有重新提交 H3，也没有做主题搜索到报告发布的真实端到端验收。 [冻结开发样本](deep-research-evidence/academic-fresh-development-parser-20261124.json)
 
+2026-11-25，在独立进程用应用获取链路模拟 arXiv 元数据故障。以 LightGaussian 公开标题查询一次 DeepSeek Search，取得 `2311.17245v6` 和一个未指定版本的链接。探针选定 v6 后经应用的系统代理下载原 PDF，哈希与冻结样本一致，从第 1、2、10 页提取 7 个带位置的正文片段。临时账本记录元数据失败、备用发现成功、全文获取成功，未挂载共享数据，未调用语言模型。适配器随后过滤未指定版本的搜索结果，50 项定向回归通过。此次验证覆盖发现到正文取证，独立 H3 与有引用的报告发布仍待验证。 [隔离取证记录](deep-research-evidence/academic-topic-fallback-real-20261125.json)
+
 ## 2026-11-24 v44 真实比较
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)
