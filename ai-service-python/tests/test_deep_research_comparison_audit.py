@@ -27,7 +27,8 @@ def presentation(version=3):
 
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
-          comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False):
+          comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False,
+          rendered_packet=False, plan=PLAN):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -66,9 +67,9 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         if wire_mode is not None:
             from services.deep_research.structured_output import normalize
             if wire_mode=='object_v1':
-                if compact_instructions:
+                if compact_instructions and not rendered_packet:
                     assert '"items":ROWS,"auditType":"answer_coherence"' in prompt
-                else:
+                elif not rendered_packet:
                     assert 'Root coherence fields (never items)' in prompt
                 reply = {'content':json.dumps({'items':rows[:-1],**rows[-1]})}
                 if mutation == 'truncated':
@@ -78,11 +79,11 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
             data={'items':rows} if wire_mode=='valid' else {'items':rows[:-1],**rows[-1]}
             return normalize(node,{'content':json.dumps(data)})
         return {'content':json.dumps(rows)}
-    before = deepcopy((PLAN, claims, evidence))
+    before = deepcopy((plan, claims, evidence))
     comparison = presentation() if comparison is None else deepcopy(comparison)
     if explicit_shapes:
         comparison['checkOutputShapeVersion'] = 1
-    result = audit_final_answer('r',QUESTION,PLAN,claims,evidence,invoke,json.loads,
+    result = audit_final_answer('r',QUESTION,plan,claims,evidence,invoke,json.loads,
         request_contract=5, diagnostics=True,literal_dimensions=True, coherence=True,
         task_sources=True,request_semantics=2,binding_catalog=True,scoped_catalog=True,
         shared_decision_inputs=True,shared_evidence_context=True,consolidated_instructions=True,
@@ -92,8 +93,9 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         require_joint_conclusions=require_joint,
         compact_comparison_instructions=compact_instructions,
         bounded_comparison_packet=bounded_packet,
+        rendered_comparison_packet=rendered_packet,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
-    assert before == (PLAN, claims, evidence)
+    assert before == (plan, claims, evidence)
     return result, sent
 
 
@@ -203,6 +205,29 @@ def test_bounded_comparison_preserves_exact_checks_cited_context_and_release_dig
     assert 'renderedTextSha256' not in after[0]['comparisonPresentation']['table']
 
 
+def test_rendered_comparison_audit_preserves_claims_citations_conditions_and_bindings():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True,
+                   compact_checks=True, compact_instructions=True, bounded_packet=True)
+    source = deepcopy(EVIDENCE)
+    source[0]['sourceKind'] = 'task_paper'
+    source[0]['sourceContext'] = 'Critical condition. ' + source[0]['quote'] + ' Adjacent restriction.'
+    before, [old] = audit(**options, evidence=source)
+    after, [new] = audit(**options, evidence=source, rendered_packet=True)
+    assert before == after and after['status'] == 'checked'
+    assert {k: v for k, v in old['evidence'][0].items() if k != 'source'} == {
+        k: v for k, v in new['evidence'][0].items() if k != 'source'}
+    alias = new['evidence'][0]['source']
+    assert new['comparisonPresentation']['sources'][alias]['workId'] == old['evidence'][0]['source']
+    assert 'sourceAccessRecords' in old['metadata']
+    assert 'sourceAccessRecords' not in new['metadata']
+    assert old['metadata']['sourceAccessSummary'] == new['metadata']['sourceAccessSummary']
+    assert new['bindingCatalog']['catalogs'] == old['bindingCatalog']['catalogs']
+    assert [(c['claimId'], c['text'], c['conditions'], c['evidenceRefs']) for c in new['claims']] == [
+        (c['claimId'], c['text'], c['conditions'], c['evidenceRefs']) for c in old['claims']]
+    rejected, _ = audit('foreign', **options, evidence=source, rendered_packet=True)
+    assert rejected['status'] != 'checked' or rejected['gaps']
+
+
 def test_compact_audit_reallocates_only_output_capacity_before_dispatch():
     options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True)
     roomy = []
@@ -223,6 +248,27 @@ def test_compact_audit_reallocates_only_output_capacity_before_dispatch():
         assert truncated['status'] == 'invalid_response' and len(sent) == 1
         refused, sent = audit('admission', **options, budget=budget, fit_compact_budget=True)
         assert refused['status'] == 'budget_exhausted' and len(sent) == 1
+
+
+def test_small_rendered_audit_can_fit_short_output_and_still_denies_truncation():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True,
+                   fit_compact_budget=True, compact_instructions=True, bounded_packet=True, rendered_packet=True)
+    plan = deepcopy(PLAN)
+    for item in plan:
+        for obligation in item['obligations']:
+            for criterion in obligation.get('completionCriteria', []):
+                if criterion['responseType'] == 'limitation':
+                    criterion['responseType'] = 'explanation'
+    options['plan'] = plan
+    roomy = []
+    reference, packets = audit(**options, dispatches=roomy)
+    size, _ = roomy[0]
+    budget = {'maxTokens': size + 1024 + 1200, 'maxModelCalls': 1, 'reserveModelCalls': 1}
+    limited = []
+    result, sent = audit(**options, budget=budget, dispatches=limited)
+    assert sent == packets and result == reference and limited == [(size, 1200)]
+    truncated, sent = audit('truncated', **options, budget=budget)
+    assert truncated['status'] == 'invalid_response' and len(sent) == 1
 
 
 def test_joint_deliverable_cannot_be_closed_by_checked_paper_cells():

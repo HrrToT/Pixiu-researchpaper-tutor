@@ -8,6 +8,8 @@
 
 用 v43 的已复核结果和实际预算重放终审，复现两次提示词准入失败。固定内容占 13,320 字节，其余部分包含 18 条必引证据。重放保留全部七条已核验主张，没有发出模型请求。后续需要在保留证据和审核义务的前提下验证终审预算。 [终审预算重放](deep-research-evidence/comparison-v43-final-audit-budget-replay-20261124.json)
 
+终审输入版本 7 将模型审核内容聚焦于用户可见的已核验主张、条件、比较位置及其必引证据。访问级别复用原证据字段，相同审核绑定目录只传一次。表格与事实检查仍使用完整原始记录。对 v43 重放时，18 条必引证据的原文和上下文、全部审核项与已核验正文均保留。审核包缩减到 19,863 字节，隔离账本在同一 10 万 Token 上限内原子预留 22,182 Token，其中 1,295 Token 用于简短结构化审核响应。离线返回的空对象被拒绝，真实终审与发布仍待验证。 [紧凑终审与账本重放](deep-research-evidence/comparison-v43-rendered-audit-packet-replay-20261124.json)
+
 ## 2026-11-24 v42 真实比较
 
 比较修订流程通过 9,788 项全量离线回归，保留全部 9,785 项基线用例。v42 仅提交一次，调用模型 7 次、消耗 27,037 Token、耗时 76 秒，外部检索为零。第一篇论文的生成调用正常结束，响应正文只有 JSON `null`。旧阶段解析要求 `answers` 对象，因此拒绝整段响应，并在发送第二篇或联合阶段前终止。此次未进入事实核验、修订或终审，报告未发布。原服务已恢复，任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-facts-first-repair-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-facts-first-repair-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v42-real-20261124.json)

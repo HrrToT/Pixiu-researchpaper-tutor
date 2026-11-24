@@ -5,6 +5,7 @@ from services.deep_research.contracts import BudgetExhaustedError
 
 
 MIN_COVERAGE_OUTPUT_TOKENS = 3500
+SHORT_COMPARISON_OUTPUT_TOKENS = 1200
 
 
 def coverage_output_tokens(plan, claims):
@@ -39,7 +40,9 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False):
+    if rendered_comparison_packet and not bounded_comparison_packet:
+        raise ValueError('Rendered comparison audit requires a bounded packet')
     if type(bounded_comparison_packet) is not bool or bounded_comparison_packet and not compact_comparison_instructions:
         raise ValueError('Bounded comparison packets require compact audit instructions')
     if type(comparison_coherence_excerpts) is not bool or comparison_coherence_excerpts and not compact_comparison_instructions:
@@ -239,7 +242,6 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
-            limit = coverage_prompt_byte_limit(budget, output_tokens)
             from services.deep_research.shared_strings import input_text
             render = lambda selected_rows: template.replace(evidence_marker,
                 input_text(selected_rows) if shared_evidence_context else json.dumps(selected_rows, ensure_ascii=False, separators=(',', ':')), 1)
@@ -249,13 +251,20 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     and shared_decision_inputs and shared_evidence_context and diagnostics
                     and (catalog is None or scoped_catalog)):
                 from services.deep_research.comparison_audit import renderer
-                render = renderer(question, fixed_requirements, wire_claims, display_metadata,
+                renderer_metadata = display_metadata
+                if rendered_comparison_packet and 'sourceAccessRecords' in display_metadata:
+                    access = {reverse_aliases[row['evidenceId']]: row['accessLevel'] for row in rows
+                              if row['evidenceId'] in reverse_aliases}
+                    records = display_metadata['sourceAccessRecords']
+                    if all(key in access and access[key] == level for key, level in records.items()):
+                        renderer_metadata = {k: v for k, v in display_metadata.items() if k != 'sourceAccessRecords'}
+                render = renderer(question, fixed_requirements, wire_claims, renderer_metadata,
                     comparison_cells, catalog=catalog, task_sources=task_sources,
                     request_semantics=request_semantics, process_explanations=True,
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
                     compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
-                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet)
+                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -266,19 +275,36 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                         {ref for c in wire_claims for ref in c.get('evidenceRefs', [])})
                 return fit_evidence_prompt(rows, render, max_bytes=byte_limit)
 
-            try:
-                prompt, rows = fit(limit)
-            except BudgetExhaustedError:
-                if not fit_compact_comparison_budget or output_tokens <= MIN_COVERAGE_OUTPUT_TOKENS:
-                    raise
-                compact_limit = coverage_prompt_byte_limit(budget, MIN_COVERAGE_OUTPUT_TOKENS)
-                if compact_limit <= limit:
-                    raise
-                # This retry only fits the local request. No provider call has
-                # occurred, and the whole answer and its cited rows still fit.
-                prompt, rows = fit(compact_limit)
-                limit = compact_limit
-                output_tokens = MIN_COVERAGE_OUTPUT_TOKENS
+            attempts = [output_tokens]
+            if fit_compact_comparison_budget and output_tokens > MIN_COVERAGE_OUTPUT_TOKENS:
+                attempts.append(MIN_COVERAGE_OUTPUT_TOKENS)
+            if fit_compact_comparison_budget and rendered_comparison_packet:
+                checks = [check for row in fixed_requirements for check in row['checks']]
+                if len(checks) <= 12 and not any(
+                        check.get('processRequired') or check.get('responseType') == 'limitation' for check in checks):
+                    attempts.append(SHORT_COMPARISON_OUTPUT_TOKENS)
+            previous_limit = -1
+            for allowance in attempts:
+                limit = coverage_prompt_byte_limit(budget, allowance)
+                if limit <= previous_limit:
+                    continue
+                previous_limit = limit
+                try:
+                    prompt, rows = fit(limit)
+                except BudgetExhaustedError as exc:
+                    admission_error = exc
+                    continue
+                output_tokens = allowance
+                if allowance == SHORT_COMPARISON_OUTPUT_TOKENS:
+                    # All checks and cited rows fit. Give unused capacity back
+                    # to the response; truncated verdicts still fail closed.
+                    spare = limit - len(prompt.encode('utf8'))
+                    extra = min(MIN_COVERAGE_OUTPUT_TOKENS - output_tokens, spare)
+                    output_tokens += extra
+                    limit -= extra
+                break
+            else:
+                raise admission_error
             result = invoke(run_id, 'verify_answer_coverage', prompt,
                             {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True)
             content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
