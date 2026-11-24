@@ -26,6 +26,10 @@ v46 获得了带标记的基线表，但获取结果没有包含解释重训标�
 
 包含最终取证名额修复的 `717e2c51e` 通过 501 个模块、9,822 项全量离线回归，保留前一版本全部用例，零失败、零错误、零跳过。 [最新版离线回归](deep-research-evidence/comparison-benchmark-protocol-slot-full-20261125.json)
 
+## 2026-11-25 v47 真实比较
+
+单次执行，16 次模型调用，83,696 Token，141 秒。运行取得同页重训说明，联合目标提供 10 个候选配对，所选一组数字绑定原表 10 个单元格并通过单项核验。共六条主张通过。全答审核需要 12,830 字节，剩余额度允许的审核输入为 11,780 字节，审核在发出前停止。运行返回 `inconclusive`，工作区保存部分报告。原服务及历史记录已核对恢复，发布账本已确认交付。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-v47-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v47-real-20261125.json)
+
 ## 2026-11-24 v45 真实比较
 
 候选源码与通过 9,814 项回归的快照一致，装载前历史记录核对一致。v45 单次提交，调用模型 16 次，消耗 86,594 Token，用时 153 秒，外部检索为零。7 条主张通过单项核验，含由 10 个原表单元格支持的同口径数字示例。全答审核正常返回，但仅返回两项义务，义务身份检查未通过。原服务已恢复，历史数据核对一致。恢复后可从工作区读取该次运行的部分报告，发布队列已确认交付，同一报告版本在 Java 保存了机器存档和可编辑版本。运行快照中的 `published` 初始标记仍为 `false`。这次没有获得完整报告验收。 [候选装载](deep-research-evidence/comparison-cross-paper-boundary-candidate-load-20261124.json) · [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json)
@@ -621,7 +625,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v45 通过七条主张的单项核验，包括同口径数字示例。全答审核缺义务，应用展示部分报告。跨论文速度条件与显存建议的拆分已离线重放。 [真实运行](deep-research-evidence/baseline-comparison-v45-real-20261124.json) · [混合目标重放](deep-research-evidence/comparison-v45-mixed-speed-advice-replay-20261124.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
+| D2 两论文比较 | v47 的原表示例及另五条主张通过单项核验。全答审核在发送前因剩余额度不足停止，应用保存部分报告。 [真实运行](deep-research-evidence/baseline-comparison-v47-real-20261125.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
 | D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |

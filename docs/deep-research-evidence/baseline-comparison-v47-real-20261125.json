@@ -1,0 +1,52 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v47",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "runId": "dr_run_c4d64f310afa5dd7a6c5c29eea88d9b8",
+  "sourceCommit": "717e2c51e301b974e3b5651e652fa390f0efbf6c",
+  "paidCalls": 16,
+  "tokens": 83696,
+  "elapsedSeconds": 141.0,
+  "externalSearches": 0,
+  "protocolNoteEvidenceAliases": [
+    "E16"
+  ],
+  "pairOptionsByTarget": {
+    "joint_requested_numeric_example_matched_example": 10
+  },
+  "compiledClaims": 11,
+  "verifiedClaims": 6,
+  "exampleIndividuallyVerified": true,
+  "exampleTableBindings": 10,
+  "finalRejections": {
+    "numeric_mismatch": 1,
+    "missing_table_bindings": 1,
+    "semantic_unresolved": 2,
+    "comparison_benchmark_example_scope": 1
+  },
+  "answerCoverageStatus": "budget_exhausted",
+  "coverageVerdicts": {},
+  "reportVersionId": "report_dr_run_c4d64f310afa5dd7a6c5c29eea88d9b8_v1",
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "4d1ea9a12eeeb85168622038c0475bfe3f18f132f90cfe96d7f4ef35044f3325",
+    ".calls.json": "8b6aa86304da3a99aecb55372214f0b1c346329265c08b7ceda968e61895ddfe",
+    ".result.json": "50973b74c73cc740107115d92be732b266f59da9d82f2d16d60975090cc9f40d",
+    ".execution.json": "83b64fc0ee47c373bbbfe1d6a201b3148659963005e95f6240bec27bf41474d2",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "wholeAnswerAuditDispatched": false,
+  "wholeAnswerAdmission": {
+    "kind": "coveragePromptBytes",
+    "limit": 11780,
+    "used": 12830
+  },
+  "outboxAcknowledged": true,
+  "reportKind": "partial_report"
+}
