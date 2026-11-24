@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-25",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "snapkv_v1": {
+      "path": "tmp/pdfs/h3-snapkv-evaluator-20261125/2404.14469v1.pdf",
+      "sha256": "cc426479949721dfe31a2319341129beba60498e95305e88b74000ab3cf7a234",
+      "bytes": 969181,
+      "pageCount": 18,
+      "arxiv": "2404.14469v1",
+      "reference": "https://arxiv.org/abs/2404.14469v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "snapkv_v1",
+        "section": "4.1 and Listing 1",
+        "check": "Use final prompt queries to score prefix positions per head; retain the full observation-window KV and gather selected prefix KV."
+      },
+      {
+        "paper": "snapkv_v1",
+        "section": "4.2 and 5.2",
+        "check": "Pool prefix attention scores before selecting positions to preserve useful nearby context; explain the ablation only if needed."
+      }
+    ],
+    "executionGates": {
+      "beforeSubmission": "Exact case and application source frozen. Verify the case reference hash, no task material, no prior case or indexed copy, and no evaluator PDF in the application cache.",
+      "discovery": "A successful real metadata discovery call establishes exact arXiv v1. Direct fetch of the explicit pin can be recorded as a fallback, separately from discovery acceptance.",
+      "fulltext": "A fresh real network PDF fetch establishes the frozen content hash and version. Inspect source excerpts and report citations against the actual parsed pages.",
+      "publication": "Read the saved machine/latest report and verify its actual source locations. Record each substantive claim's support and score all applicable dimensions."
+    },
+    "goldInputBoundary": "Only the question, empty task materials, external-only policy and standard budget enter the application. The download, anchors and grading rules are evaluator-only."
+  },
+  "cases": [
+    {
+      "id": "H3-SNAPKV",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2404.14469v1。给初学者解释 SnapKV 的观察窗口如何帮助选择要保留的前缀 KV，池化在其中做了什么，以及最后缓存保留哪些内容。写明实际取得的是摘要还是正文，引用方法原文，300 字以内。只用指定版本，查不到正文时请说明。",
+      "required": [
+        "在空材料任务中联网获取指定版本，确认正文与评审冻结哈希一致，并可回到实际正文引用位置。",
+        "说明观察窗口位于提示末尾，利用窗口查询对前缀位置的注意力评分，按注意力头选取重要的前缀位置。",
+        "说明池化作用于选取前的注意力分数，帮助保留局部上下文；说明最终拼接选中的前缀 KV 与完整观察窗口 KV。",
+        "说明实际取得摘要或正文，核对章节引用，面向初学者且不超过 300 字。"
+      ],
+      "forbidden": [
+        "把全部历史、完整前缀、模型权重微调或保证无损说成该方法的一部分。",
+        "把池化说成对缓存向量取平均，或把所有注意力头的索引当成统一固定的共用索引。",
+        "混入后续版本或本地评审材料，缓存命中冒充网络获取，仅据摘要声称检查了方法正文，伪造依据或超出预算。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H3-SNAPKV": "a3ed9ea44dc4077c6472ae5eb8d3177c79b59a5f82e601f557a5be0b4fc1e4c8"
+  }
+}

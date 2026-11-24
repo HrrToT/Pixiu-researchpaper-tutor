@@ -1,0 +1,25 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v48",
+  "bodySha256": "ca33107c9b100c49d442c145bca464ed89fa10164421c12a723b7f16af06d6e6",
+  "ledgerSha256": "8bae8760247f0704c2eebc65ff3bc29b973e717b610ff8d76741bbd24ae5e2ef",
+  "modelCalls": 0,
+  "example": {
+    "claimId": "cmp_conclusion_0",
+    "originalModelSupported": true,
+    "groupCount": 1,
+    "boundCells": 10,
+    "sourceRowNumbers": [
+      9,
+      10
+    ],
+    "diagnosticExactlyReproduced": true,
+    "unboundNewNumberCount": 2,
+    "locatorPrototypeDiagnosticPassed": true,
+    "scientificAcceptanceEstablished": false
+  },
+  "mechanism": {
+    "claimId": "cmp_1_0",
+    "reasonSegments": 17,
+    "configuredMaximum": 16
+  }
+}
