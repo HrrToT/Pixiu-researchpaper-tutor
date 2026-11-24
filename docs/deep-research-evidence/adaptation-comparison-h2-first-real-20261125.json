@@ -1,0 +1,47 @@
+{
+  "case": "H2-ADAPT-v1",
+  "sourceCommit": "8eddf37387690144e966221040911fddd5726db9",
+  "runId": "dr_run_078bd19c175f58a195f2fe23ef0b90bd",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "reportVersionId": "report_dr_run_078bd19c175f58a195f2fe23ef0b90bd_v1",
+  "artifactOrigins": [
+    "machine",
+    "latest"
+  ],
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 16,
+    "maxModelCalls": 18,
+    "tokens": 70170,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 121.0,
+    "cost": null
+  },
+  "sourceMode": "task_only",
+  "answerCoverage": "not_checked",
+  "coverageVerdicts": {},
+  "originalServiceRestored": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "receiptSha256": {
+    ".payload.json": "e9544c7ab6aa448ed7cadbaf1ba38a9c7e8758fa5c1c4c206c8f25d91fce0140",
+    ".calls.json": "b5ccaf8ea5d0ec8d78128a79ddd87be96c6c8c94bc03952698752331d0b50462",
+    ".result.json": "3097c488f64d07298f18f628d7d0a4766e30c2e359639882faf8e7f84300ce0b",
+    ".execution.json": "5d06d0ca4bcf73c19ff0123d6a8af207bcb635bcbf0e8b4494cf06e22b84c334",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "outboxAcknowledged": true,
+  "verifiedClaimCount": 0,
+  "rejections": {
+    "numeric_mismatch": 7,
+    "absence_not_established": 1,
+    "semantic_unresolved": 2
+  },
+  "futureRetriesEligibleForIndependentCredit": false,
+  "reportKind": "unresolved_result_notice"
+}
