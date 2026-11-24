@@ -107,7 +107,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets)
-                         if record.get('comparisonJointReportsContractVersion') in (4, 5, 6, 7) else set())
+                         if record.get('comparisonJointReportsContractVersion') in (4, 5, 6, 7, 8) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.
