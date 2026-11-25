@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import time
 import xml.etree.ElementTree as ET
 
@@ -71,14 +72,16 @@ def main():
     evidence = root / 'docs/deep-research-evidence' / (args.run_id + '.json')
     if evidence.exists():
         parser.error('Evidence already exists; choose a new run ID')
+    if work.exists():
+        parser.error('Run directory already exists; choose a new run ID')
     fixture_work = work
     if args.fixture_root is not None:
         fixture_root = args.fixture_root.resolve(strict=True)
         if not fixture_root.is_dir():
             parser.error('Fixture root must be an existing directory')
-        fixture_work = fixture_root / work.name
-        if fixture_work != work:
-            fixture_work.mkdir(exist_ok=False)
+        # Fixtures can create deeply nested paths. Keep the run ID in the
+        # repository evidence, and give the disposable external tree a short name.
+        fixture_work = Path(tempfile.mkdtemp(prefix='pxr-', dir=fixture_root))
     work.mkdir(exist_ok=False)
     before = source_snapshot(root)
     pytest_args = [str(tests), '-q', '-m', 'not live_llm', '--basetemp', str(fixture_work / 'pytest'),
