@@ -757,7 +757,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v49 的同表数字示例绑定 10 个单元格，4 条主张通过单项核验。全答审核已完成，三个要求得到部分回答、两个缺失，发布了部分报告。v50 已做提交预览，尚无真实回执。 [v49 实测](deep-research-evidence/baseline-comparison-v49-real-20261125.json) · [最新版离线回归](deep-research-evidence/focused-scope-boundary-retained-full-20261125.json) | 用 v50 核对双方机制、成本、同口径数字、可比条件和选择建议，并打开完整发布报告。 |
+| D2 两论文比较 | v50 单次真实运行发布部分报告。通过核验的 5 条主张含 LightGaussian 三步压缩、同表数字示例，以及同条件实测峰值显存的选择建议。原始 3DGS 表示与跨论文速度口径仍未完整回答。 [v50 实测](deep-research-evidence/baseline-comparison-v50-real-20261126.json) | 使用实际失败稿检查整份比较的提问约束、证据归属和成品覆盖，再做真实复测。 |
 | D3 四组实验 | 最近完成生成的开发运行把待准备输入声明为已有状态，并重复定义了配对克隆状态。其后修复已做离线回放，下一次真实调用在解析任务要点时收到 HTTP 402。历史未确认运行是不同 ID。 [状态归属回放](deep-research-evidence/d3-prepared-input-catalog-replay-20261125.json) · [最新单次尝试](deep-research-evidence/d3-shared-asset-catalog-real-20261125.json) · [历史记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。保留历史未确认请求的原身份与冻结状态。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | D5-v15 在 v49 的真实报告上单次追问，沿用同两篇论文及 43 条证据，父运行和两个父成果逐项不变。子结果保存机器版及最新版。10 次模型调用、45,363 Token、120 秒，外部查找和全文下载均为零。新增解释两次被拒，因为把尚未核实的场景和分辨率差异写成事实。发布回放移除了内部提示词，保留无法得出结论及未完成的用户问题，正文由 1,056 字符减至 141。旧实测报告未改写，74 项报告与一致性检查通过。 [D5-v15 实测与发布回放](deep-research-evidence/d5-v49-real-followup-20261125.json) · [历史 D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) | 仍需验证新增的可比性解释通过核验并打开真实子报告。 |
@@ -778,6 +778,8 @@ KIVI 冻结时分别取得 arXiv v1/v2 完整 PDF，核对文件哈希、版本�
 通过现用 Java 工作区 API 分别重开 H1、D2-v49 和 H3-PagedAttention 三个真实生成的既有成果。每个工作区连续读取两次结果相同，机器版和可编辑版的 ID、文档正文及来源数组逐项与保存回执一致。只读复验未写入工作区或触发模型。当前前端相关组件与交互模型 84 项、Java 工作区研究控制器及来源投影 69 项定向测试通过。浏览器端交互及科学质量仍按各自证据范围核对。 [真实成果重新读取](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
 
 由 SnapKV 报告已发布的主张解析原文证据，经现用工作区的来源文件 API 读回精确版本 PDF。返回的 18 页文件与独立评审件哈希一致，引用定位为第 7 页，读取前后工作区相同。此次验证覆盖真实报告的外部 PDF 交付及引用定位。 [原文文件读取证据](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
+
+2026-11-26，候选 `728309431` 提交一次 D2-v50，14 次模型调用、70,345 Token、174 秒，未联网。报告已保存机器版和最新版，原服务及历史记录已核对恢复。原始 3DGS 表示声明附带球谐颜色，却漏引生成请求已经给出的两段相关原文，因此该栏未通过核验。规划同时要求分别列两篇的存储、画质和速度，又保留用户指定的唯一同表数字示例，分栏生成的额外数字被硬检查拒绝。完整比较未达标。 [候选载入记录](deep-research-evidence/d3-shared-comparison-mechanism-candidate-load-20261125.json) · [v50 实测](deep-research-evidence/baseline-comparison-v50-real-20261126.json)
 
 用当前前端的生产构建在 1366×768、1024×700 两种视口分别打开实际保存的 SnapKV 成果。点击正文引用可展开原文，并跳到正确版本 PDF 第 7 页。关闭预览返回报告，刷新后可再次从任务打开。浏览器读取现有本机 API 的实际报告和 PDF，两份响应的论文哈希都与评审件一致。工作区前后保持一致，零写入、零模型调用。此项验收覆盖既有报告的阅读与找回。 [真实报告浏览器验证](deep-research-evidence/snapkv-browser-citation-20261125.json)
 
