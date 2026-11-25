@@ -1,0 +1,200 @@
+{
+  "case": "H4-LORA-VERSIONS-v1",
+  "runId": "dr_run_e7ac03fdfb9e519b85cbc5f8293ceb30",
+  "receiptSha256": {
+    "payload": "641473dbd5ad1f66ee2fa68667f4c6fc0c119e5b7b4f9b4f7e7bcfc5c90febbb",
+    "calls": "e3ce9e580dbf6e12261e5ffdaaaff4ddfc641baeffd09f8580ef78ae22c24798",
+    "result": "fddaaa679adcfde9e50d3bbdf84998ef64cfc1bff447c3b7c8ba75830f7d299f"
+  },
+  "readOnlyRuntimeMatch": {
+    "payloadExact": true,
+    "entireLedgerExact": true,
+    "ledgerEntries": 26,
+    "unknownNode": "verify",
+    "unknownCallId": "f90227fbf8a39f9e786c4357e9ba4b5b",
+    "unknownCallHasResponse": false,
+    "reservationTokens": 40984,
+    "draftReportVersionAllocated": true,
+    "publishedWorkspaceArtifacts": 0
+  },
+  "sourcePipeline": {
+    "retrievalBatches": 8,
+    "distinctRetrievedSources": 17,
+    "structuredRetrievedSources": 0,
+    "readSources": 12,
+    "structuredReadSources": 0,
+    "literalEvidence": 32,
+    "structuredEvidence": 0,
+    "versions": [
+      "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a"
+    ]
+  },
+  "scope": "read-only current database and workspace checks; table counts are scoped to historical requested candidates",
+  "providerRequests": 0,
+  "workspaceWrites": 0,
+  "currentOwnedIndexMetadata": [
+    {
+      "paperId": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0.pdf",
+      "segments": [
+        {
+          "rowCount": 112,
+          "tableMetadataKeys": {
+            "table_column_mapping_unverified": 13,
+            "table_id": 13
+          }
+        }
+      ],
+      "unverifiedFlagValuesAndCounts": [
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    {
+      "paperId": "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a.pdf",
+      "segments": [
+        {
+          "rowCount": 148,
+          "tableMetadataKeys": {
+            "table_column_mapping_unverified": 13,
+            "table_id": 13
+          }
+        }
+      ],
+      "unverifiedFlagValuesAndCounts": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          11
+        ]
+      ]
+    }
+  ],
+  "isolatedParserRecheck": [
+    {
+      "arxiv": "2106.09685v1",
+      "teiSha256": "e47b823bc75622d5d7b806e596a35d7d52b1028c62d017e9a63a5e3e00b01700",
+      "tablesDetected": 10,
+      "tablesWithRequestedBenchmarkNames": [
+        {
+          "tableId": "tab_1",
+          "physicalPage": 6,
+          "rawRows": 7,
+          "checkedRows": 0,
+          "columnMappingUnverified": true,
+          "benchmarkNamesFound": [
+            "wikisql",
+            "mnli",
+            "samsum"
+          ]
+        },
+        {
+          "tableId": "tab_4",
+          "physicalPage": 8,
+          "rawRows": 3,
+          "checkedRows": 0,
+          "columnMappingUnverified": false,
+          "benchmarkNamesFound": [
+            "wikisql"
+          ]
+        },
+        {
+          "tableId": "tab_10",
+          "physicalPage": 15,
+          "rawRows": 24,
+          "checkedRows": 0,
+          "columnMappingUnverified": false,
+          "benchmarkNamesFound": [
+            "mnli"
+          ]
+        }
+      ],
+      "totalCheckedRows": 0,
+      "anchorStructure": {
+        "tableId": "tab_1",
+        "headerColspans": [
+          1,
+          3,
+          1
+        ],
+        "dataCellCounts": [
+          5
+        ],
+        "hasSlashDelimitedResultCell": true
+      }
+    },
+    {
+      "arxiv": "2106.09685v2",
+      "teiSha256": "87d50c5103bbe02d02621dbcbf329b564712a7ea7e981da5aab7ec4b8e20479c",
+      "tablesDetected": 9,
+      "tablesWithRequestedBenchmarkNames": [
+        {
+          "tableId": "tab_2",
+          "physicalPage": 6,
+          "rawRows": 16,
+          "checkedRows": 0,
+          "columnMappingUnverified": true,
+          "benchmarkNamesFound": [
+            "mnli"
+          ]
+        },
+        {
+          "tableId": "tab_5",
+          "physicalPage": 8,
+          "rawRows": 9,
+          "checkedRows": 0,
+          "columnMappingUnverified": true,
+          "benchmarkNamesFound": [
+            "wikisql",
+            "mnli",
+            "samsum"
+          ]
+        },
+        {
+          "tableId": "tab_7",
+          "physicalPage": 10,
+          "rawRows": 5,
+          "checkedRows": 0,
+          "columnMappingUnverified": false,
+          "benchmarkNamesFound": [
+            "wikisql"
+          ]
+        },
+        {
+          "tableId": "tab_9",
+          "physicalPage": 18,
+          "rawRows": 0,
+          "checkedRows": 0,
+          "columnMappingUnverified": true,
+          "benchmarkNamesFound": [
+            "wikisql",
+            "samsum"
+          ]
+        }
+      ],
+      "totalCheckedRows": 0,
+      "anchorStructure": {
+        "tableId": "tab_5",
+        "headerColspans": [
+          1,
+          3,
+          1
+        ],
+        "dataCellCounts": [
+          5
+        ],
+        "hasSlashDelimitedResultCell": true
+      }
+    }
+  ],
+  "verifierBoundary": "Current PDF column verification admits a fixed header token vocabulary centered on rendering metrics. The benchmark tables use parameter-count and NLP result headings, including a slash-delimited result cell. Raw headings cannot safely authorize columns."
+}
