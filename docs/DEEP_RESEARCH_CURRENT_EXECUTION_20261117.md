@@ -725,17 +725,17 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v47 的原表示例及另五条主张通过单项核验。全答审核在发送前因剩余额度不足停止，应用保存部分报告。 [真实运行](deep-research-evidence/baseline-comparison-v47-real-20261125.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
-| D3 四组实验 | 原始 3DGS 单次复测采用因素引用，仍缺训练开关的创建步骤，并混淆指标和状态。未进入科学审核。D3-v7 的未确认状态及查询保护证据仍保留。 [新版实测](deep-research-evidence/d3-shared-references-real-20261125.json) · [历史记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
+| D2 两论文比较 | v49 的同表数字示例绑定 10 个单元格，4 条主张通过单项核验。全答审核已完成，三个要求得到部分回答、两个缺失，发布了部分报告。v50 已做提交预览，尚无真实回执。 [v49 实测](deep-research-evidence/baseline-comparison-v49-real-20261125.json) · [最新版离线回归](deep-research-evidence/focused-scope-boundary-retained-full-20261125.json) | 用 v50 核对双方机制、成本、同口径数字、可比条件和选择建议，并打开完整发布报告。 |
+| D3 四组实验 | 最近完成生成的开发运行把待准备输入声明为已有状态，并重复定义了配对克隆状态。其后修复已做离线回放，下一次真实调用在解析任务要点时收到 HTTP 402。历史未确认运行是不同 ID。 [状态归属回放](deep-research-evidence/d3-prepared-input-catalog-replay-20261125.json) · [最新单次尝试](deep-research-evidence/d3-shared-asset-catalog-real-20261125.json) · [历史记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。保留历史未确认请求的原身份与冻结状态。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | D5-v15 在 v49 的真实报告上单次追问，沿用同两篇论文及 43 条证据，父运行和两个父成果逐项不变。子结果保存机器版及最新版。10 次模型调用、45,363 Token、120 秒，外部查找和全文下载均为零。新增解释两次被拒，因为把尚未核实的场景和分辨率差异写成事实。发布回放移除了内部提示词，保留无法得出结论及未完成的用户问题，正文由 1,056 字符减至 141。旧实测报告未改写，74 项报告与一致性检查通过。 [D5-v15 实测与发布回放](deep-research-evidence/d5-v49-real-followup-20261125.json) · [历史 D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) | 仍需验证新增的可比性解释通过核验并打开真实子报告。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。完整研究库副本冷启动核对历史状态。 [完整回归](deep-research-evidence/citation-pdf-typography-host-full-20261120.json) · [副本冷启动](deep-research-evidence/v29-full-research-copy-20261120.json) | 保留离线集成结论。切换时复核现用任务与数据，历史未知请求保持冻结。 |
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
-| H3 外部补查 | [H3-STREAMING 定义](DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json)已冻结。首次独立提交在外部发现阶段失败，未读取正文。 | 用开发样本验证获取修复，再用新冻结的独立任务从空材料开始，核对指定版本正文、引用和解释。 |
+| H3 外部补查 | StreamingLLM 首次执行未取到正文。此后 SnapKV 和 PagedAttention 均在真实应用运行中发现精确版本并下载无缓存全文。SnapKV 发布一条可回查主张，解释未完整。PagedAttention 的两条主张因束搜索与并行采样错配而未发布。 [SnapKV 实测](deep-research-evidence/academic-snapkv-h3-first-real-20261125.json) · [PagedAttention 实测](deep-research-evidence/academic-pagedattention-h3-first-real-20261125.json) | 新冻独立题 Quest v1 待从空材料执行，核对指定版本、方法页引用及完整回答。 [Quest 定义](DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json) |
 | H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)首次执行停在事实核验结果未确认，未发布报告。 | 保留原始调用身份，核对版本表格与后续新的验收路径。 |
 | H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
-| H6 外部失败或预算耗尽 | 5 条离线故障链首次执行均通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。 [记录](deep-research-evidence/h6-fault-chain-first-20261112.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
+| H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
 
