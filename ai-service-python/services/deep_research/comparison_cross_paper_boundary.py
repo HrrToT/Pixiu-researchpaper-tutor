@@ -75,7 +75,7 @@ def compile_point(point, papers, sources, evidence_owners):
     for setting in settings:
         paper = setting.get('subject') if isinstance(setting, dict) else None
         anchors = setting.get('evidenceRefs') if isinstance(setting, dict) else None
-        if (not isinstance(paper, str) or paper not in labels or not isinstance(anchors, list) or not anchors
+        if (not isinstance(paper, str) or paper not in labels or not isinstance(anchors, list)
                 or any(not isinstance(ref, str) or ref not in refs or evidence_owners.get(ref) != paper for ref in anchors)):
             raise ValueError('stage_cross_paper_setting_owner')
         value = setting.get('value')
@@ -83,6 +83,8 @@ def compile_point(point, papers, sources, evidence_owners):
                 and isinstance(setting['attribute'], str) and setting['attribute'].strip()
                 and isinstance(value, str) and _UNKNOWN_SETTING.fullmatch(value.strip().rstrip('。.!'))):
             continue  # The gap and its parenthetical explanation supply no observed value.
+        if not anchors:
+            raise ValueError('stage_cross_paper_setting_owner')
         resolved_settings.append({**setting, 'subject': labels[paper]})
     resolved_limits = []
     for limit in limits:

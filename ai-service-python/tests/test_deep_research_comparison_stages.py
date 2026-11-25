@@ -97,7 +97,9 @@ def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
 
 
 @pytest.mark.parametrize('variant, error', [
-    ('grounded', None), ('unknown_setting', None), ('one_paper', 'stage_cross_paper_evidence'),
+    ('grounded', None), ('unknown_setting', None), ('unanchored_unknown', None),
+    ('unanchored_fact', 'stage_cross_paper_setting_owner'), ('foreign_unknown', 'stage_cross_paper_setting_owner'),
+    ('one_paper', 'stage_cross_paper_evidence'),
     ('method_rows', 'stage_cross_paper_subjects'), ('misattributed', 'stage_cross_paper_setting_owner'),
 ])
 def test_cross_paper_target_requires_publications_and_source_owned_settings(variant, error):
@@ -124,10 +126,12 @@ def test_cross_paper_target_requires_publications_and_source_owned_settings(vari
     body = {'boundary': {'observedSettings': [{'subject': papers[0], 'attribute': '硬件',
         'value': 'GPU X', 'evidenceRefs': [refs[1] if variant == 'misattributed' else refs[0]]}],
         'notEstablished': [{'type': 'comparison_evidence', 'subjects': subjects, 'quantity': 'FPS 排名'}]}}
-    if variant == 'unknown_setting':
+    if variant in ('unknown_setting', 'unanchored_unknown', 'unanchored_fact', 'foreign_unknown'):
+        unknown_refs = {'unknown_setting': [refs[1]], 'foreign_unknown': [refs[0]]}
         body['boundary']['observedSettings'].insert(0, {
-            'subject': papers[1], 'attribute': '硬件平台', 'value': '未在引用证据中明确说明',
-            'evidenceRefs': [refs[1]]})
+            'subject': papers[1], 'attribute': '硬件平台',
+            'value': 'GPU Y' if variant == 'unanchored_fact' else '未在引用证据中明确说明',
+            'evidenceRefs': unknown_refs.get(variant, [])})
     response = {'targetId': target, 'goalRefs': [], 'point': {'kind':'inference','body':body,
         'evidenceRefs': refs[:1] if variant == 'one_paper' else refs, 'cellRefs': [], 'detailLevel': 'fulltext'}}
     def invoke(_, prompt, __):

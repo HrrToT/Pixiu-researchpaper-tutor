@@ -1,0 +1,41 @@
+{
+  "receiptSha256": "3d90730f40ccf6987cf9dd4cc4692719801224fd60370abe5f6c5baa681c64ff",
+  "targetId": "joint_ob-2-1",
+  "previousIsolation": [
+    {
+      "targetId": "joint_ob-2-1",
+      "reason": "stage_cross_paper_setting_owner"
+    }
+  ],
+  "currentIsolation": [],
+  "discardedUnknownSettingCount": 1,
+  "preservedEvidenceAliases": [
+    "E7",
+    "E13",
+    "E15"
+  ],
+  "observedSettingEvidenceAliases": [
+    "E7"
+  ],
+  "boundary": {
+    "observedSettings": [
+      {
+        "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+        "attribute": "GPU",
+        "value": "NVIDIA A6000"
+      }
+    ],
+    "notEstablished": [
+      {
+        "type": "comparison_evidence",
+        "subjects": [
+          "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+          "3D Gaussian Splatting for Real-Time Radiance Field Rendering"
+        ],
+        "quantity": "FPS排名"
+      }
+    ]
+  },
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}
