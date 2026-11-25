@@ -44,6 +44,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 短路径运行完整通过 9,883 项离线回归，保留 9,876 个基线用例。D3 第五次固定开发题单次提交，3 次模型调用结算 6,782 Token，用时 15 秒。原始计划与纠正回复均给四条义务附加 `purpose_note:null`，未调用版本 5 共享方案生成。版本 5 的新运行采用初始规划版本 3，只移除义务叶子上的冗余空值字段，并保留原始响应及字段位置。两份真实回复分别重放后，各保留两项规划及规范化后的六条义务，无需额外纠正调用；必要字段为空、附注非空或子义务非空仍被拒绝。195 项定向检查通过。原服务已核对恢复，版本 5 的真实方案生成及科学审核仍待执行。 [全量回归](deep-research-evidence/shared-experiment-transport-capacity-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-transport-capacity-candidate-load-20261125.json) · [真实执行](deep-research-evidence/d3-shared-transport-capacity-real-20261125.json) · [规划回放](deep-research-evidence/d3-planner-null-fields-replay-20261125.json)
 
+初始规划版本 3 的 9,888 项全量离线回归通过，保留 9,883 个基线用例。D3 第六次固定开发题仅提交一次，结算 6 次模型调用、31,650 Token、111 秒。初始规划通过，版本 5 首次收到完整方案回复，输出 6,029 Token、23,913 字节，结束原因为 `stop`，本地模式校验通过。方案把场景图像、SfM 点云和共享检查点三个待准备资产声明为预先存在的状态，均被契约拒绝。尚未进入科学审核或发布，原服务和历史账本已核对恢复。后续需修正待准备资源与状态创建的归属，再验证完整科学方案。 [全量回归](deep-research-evidence/factorial-null-leaves-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-null-leaves-candidate-load-20261125.json) · [真实执行](deep-research-evidence/d3-shared-null-leaves-real-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
