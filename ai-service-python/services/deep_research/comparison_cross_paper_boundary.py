@@ -9,8 +9,10 @@ from services.deep_research.source_labels import source_display_title
 CROSS_PAPER = re.compile(r'跨论文|(?:两|二|2)篇|不同论文|\bcross[- ](?:paper|study)\b|'
                          r'\b(?:both|two|different)\s+(?:papers|studies)\b|\bacross (?:the )?(?:papers|studies)\b', re.I)
 _UNKNOWN_SETTING = re.compile(
-    r'未在(?:当前|所引|引用|提供的)?证据中(?:明确)?(?:说明|报告|给出)'
-    r'|not (?:specified|reported|stated) in (?:the )?(?:cited|supplied|provided) (?:evidence|sources)',
+    r'(?:未(?:在(?:当前|所引|引用|提供的)?证据中)?(?:明确)?(?:说明|报告|给出)'
+    r'|(?:not (?:specified|reported|stated)|unspecified)'
+    r'(?: in (?:the )?(?:cited|supplied|provided) (?:evidence|sources))?)'
+    r'(?:\s*(?:（[^()（）\r\n]{1,240}）|\([^()（）\r\n]{1,240}\)))?',
     re.I,
 )
 POLICY = ('For targets with paperSubjects, compare those publication IDs, not method-row labels. '
@@ -80,7 +82,7 @@ def compile_point(point, papers, sources, evidence_owners):
         if (set(setting) == {'subject', 'attribute', 'value', 'evidenceRefs'}
                 and isinstance(setting['attribute'], str) and setting['attribute'].strip()
                 and isinstance(value, str) and _UNKNOWN_SETTING.fullmatch(value.strip().rstrip('。.!'))):
-            continue  # Explicit evidence gaps are not paper-reported settings.
+            continue  # The gap and its parenthetical explanation supply no observed value.
         resolved_settings.append({**setting, 'subject': labels[paper]})
     resolved_limits = []
     for limit in limits:

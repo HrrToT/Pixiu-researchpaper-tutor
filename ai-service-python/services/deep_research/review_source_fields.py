@@ -7,7 +7,8 @@ from services.deep_research.contracts import DeepResearchError
 
 GUIDANCE='''Reviewer reasonParts encoding with original-field references:
 Return reasonParts instead of reason and diagnosticFacts. Never emit both encodings.
-Use at most16 nonempty segments, each with exactly one of these shapes:
+Use at most 16 nonempty segments. Summarize the verdict instead of restating each target clause.
+Each segment has exactly one of these shapes:
 {"text":"brief assessment derived from the target, no new source fact"}
 {"text":"source fact used in this assessment","evidenceId":"own E ID","path":["quote"]}
 The second form references the unchanged original field; do not retype formulas or

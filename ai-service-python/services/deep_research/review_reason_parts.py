@@ -2,9 +2,12 @@
 from copy import deepcopy
 from services.deep_research.contracts import DeepResearchError
 
+MAX_REASON_PARTS = 24
+
 GUIDANCE='''Reviewer reasonParts encoding:
 Return reasonParts instead of reason and diagnosticFacts. Do not return both encodings.
-reasonParts is a nonempty array of at most16 segments. A segment has either exactly
+Use a nonempty array of at most 16 segments. Summarize the verdict instead of restating each target clause.
+A segment has either exactly
 {"text":"brief assessment derived from the target, no new source fact"} or exactly
 {"text":"a source fact used in this assessment","evidenceId":"own E ID",
  "path":["quote"],"excerpt":"exact contiguous source words supporting this text"}.
@@ -22,7 +25,7 @@ source,scope,comparison,condition and numerical check still apply.'''
 def expand(row, *, field_references=False):
     if type(field_references) is not bool:raise ValueError('Invalid reviewer source-field policy')
     if (not isinstance(row,dict) or 'reason' in row or 'diagnosticFacts' in row
-            or not isinstance(row.get('reasonParts'),list) or not 1<=len(row['reasonParts'])<=16):
+            or not isinstance(row.get('reasonParts'),list) or not 1<=len(row['reasonParts'])<=MAX_REASON_PARTS):
         raise DeepResearchError('invalid_verification_response','审核说明片段缺失或存在冲突编码。',{'responseState':'received_invalid'})
     texts=[];facts=[]
     for part in row['reasonParts']:

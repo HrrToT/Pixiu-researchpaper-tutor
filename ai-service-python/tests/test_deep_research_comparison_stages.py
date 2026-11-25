@@ -116,6 +116,28 @@ def test_cross_paper_target_requires_publications_and_source_owned_settings(vari
         assert admitted['point']['evidenceRefs'] == refs
 
 
+@pytest.mark.parametrize('value, retained', [
+    ('未明确说明（仅提及使用PyTorch和自定义CUDA内核）', False),
+    ('Not reported in the cited evidence (implementation uses custom kernels)', False),
+    ('GPU X（仅用于本地评估）', True),
+    ('未使用额外加速器', True),
+])
+def test_cross_paper_settings_keep_real_values_and_drop_only_explicit_unknowns(value, retained):
+    from services.deep_research.comparison_cross_paper_boundary import compile_point
+
+    papers = ['P1', 'P2']
+    sources = {'P1': {'title': 'Paper One'}, 'P2': {'title': 'Paper Two'}}
+    point = {'evidenceRefs': ['E1', 'E2'], 'body': {'boundary': {
+        'observedSettings': [{'subject': 'P1', 'attribute': 'GPU', 'value': value, 'evidenceRefs': ['E1']}],
+        'notEstablished': [{'type': 'comparison_evidence', 'subjects': papers, 'quantity': 'FPS'}],
+    }}}
+    compiled = compile_point(point, papers, sources, {'E1': 'P1', 'E2': 'P2'})
+    boundary = compiled['body']['boundary']
+    assert [row['value'] for row in boundary['observedSettings']] == ([value] if retained else [])
+    assert boundary['notEstablished'][0]['subjects'] == ['Paper One', 'Paper Two']
+    assert compiled['evidenceRefs'] == point['evidenceRefs']
+
+
 @pytest.mark.parametrize('with_example', [True, False])
 def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advice(with_example):
     r, plan, rows, aliases, bundles = fixture()

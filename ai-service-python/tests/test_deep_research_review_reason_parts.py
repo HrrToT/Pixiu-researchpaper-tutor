@@ -25,6 +25,17 @@ def test_exact_parts_preserve_all_text_all_source_bindings_and_actual_decision(s
     assert result['scopeAudit']==raw['scopeAudit'] and result['status']==('passed' if supported else 'failed') and raw==before
 
 
+def test_seventeen_segments_preserve_the_complete_review_without_bypassing_new_fact_checks():
+    raw = row()
+    raw['reasonParts'] += [{'text': 'The cited clause is addressed.'} for _ in range(15)]
+    result = checker(lambda **_: {'content': json.dumps([raw])}, **opts())([target()], evidence())[0]
+    assert result['status'] == 'passed' and result['reviewDiagnosticAudit']['bindingCount'] == 1
+    raw['reasonParts'][-1] = {'text': 'The replacement coefficient is 0.9.'}
+    result = checker(lambda **_: {'content': json.dumps([raw])}, **opts())([target()], evidence())[0]
+    assert result['executionState'] == 'received_invalid'
+    assert result['reviewDiagnosticAudit']['unboundNewNumberCount'] == 1
+
+
 @pytest.mark.parametrize('supported',[True,False])
 def test_real_checker_uses_new_wire_then_original_diagnostic_and_scope_gates(supported):
     sent=[];raw=row(supported)
@@ -52,7 +63,7 @@ def test_ambiguous_or_lossy_encodings_cannot_be_silently_repaired(bad):
     raw=row()
     if bad=='missing':raw.pop('reasonParts')
     elif bad=='empty':raw['reasonParts']=[]
-    elif bad=='too_many':raw['reasonParts']*=9
+    elif bad=='too_many':raw['reasonParts']*=13
     elif bad=='nonobject':raw['reasonParts'][0]='text'
     elif bad=='blank':raw['reasonParts'][0]['text']=' '
     elif bad=='mixed_reason':raw['reason']='conflicting explanation'

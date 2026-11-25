@@ -43,6 +43,14 @@ def test_only_exact_cited_table_addresses_are_excluded_from_review_numbers(reaso
     assert result['status'] == 'failed'  # Navigation never reverses a failed scientific decision.
 
 
+def test_demonstrative_references_do_not_hide_actual_counts():
+    verdict, claim, ev = case('证据E2支持这一条件。')
+    assert bind(verdict, claim, ev, target_structure=True)['reviewDiagnosticAudit']['errors'] == []
+    verdict['reason'] += '只使用一个数据集。'
+    audit = bind(verdict, claim, ev, target_structure=True)['reviewDiagnosticAudit']
+    assert audit['unboundNewNumberCount'] == 1
+
+
 @pytest.mark.parametrize('reference',['前三个分句','前3个分句','第3句','最后一个分句','后两句','first three clauses','first 3 sentences','last one sentence'])
 def test_available_target_navigation_is_not_new_source_measurement(reference):
     verdict,claim,ev=case(reference+' does not establish this target.');before=deepcopy((verdict,claim,ev))

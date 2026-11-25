@@ -7,6 +7,7 @@ _REFERENCE=re.compile(r'(?P<cnlabel>最后|第|前|后)(?P<cnnumber>[0-9]{1,3}|[
     r'|\b(?P<enlabel>first|last|final|next|previous)\s+(?P<ennumber>[0-9]{1,3}|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?P<enunit>clauses?|sentences?|paragraphs?)\b',re.I)
 _SOURCE=re.compile(r'原文|论文|来源|引文|算法|表格|章节|\b(?:source|paper|passage|quote|algorithm|table|section|line|evidence|arxiv|doi)\b'
     r'|(?<![A-Za-z0-9_])(?:[EPQT]_*\d+|ev_[0-9a-f]+)(?![A-Za-z0-9_])',re.I)
+_DEMONSTRATIVE = re.compile(r'[这那](?P<word>一)(?:条件|陈述|断言|分句)')
 _TABLE_LOCATOR = re.compile(
     r'(?:^|(?<=[.!?。！？\n]))[ \t]*(?:The\s+)?tableBindings\s+(?:correctly\s+)?'
     r'(?:references?|points?\s+to)\s+(?P<alias>E[1-9]\d*)\s+rows?\s+'
@@ -44,6 +45,8 @@ def view(text,target_text):
     """
     if not isinstance(text,str) or not isinstance(target_text,str):return text,[]
     chars=list(text);references=[]
+    for match in _DEMONSTRATIVE.finditer(text):
+        chars[match.start('word')] = ' '
     for m in _REFERENCE.finditer(text):
         # A colon introduces an excerpt owned by its source alias (E1: ...).
         # Keep that owner in scope, including full evidence hash identities.

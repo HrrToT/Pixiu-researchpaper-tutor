@@ -1,0 +1,22 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v48",
+  "modelCalls": 0,
+  "mechanismReplySegmentCount": 17,
+  "decoderSafetyLimit": 24,
+  "mechanismSavedBatch": {
+    "cmp_0_0": "passed",
+    "cmp_1_0": "passed",
+    "cmp_2_0": "passed"
+  },
+  "benchmarkSavedBatch": {
+    "cmp_4_0": "passed",
+    "cmp_7_0": "failed",
+    "cmp_conclusion_0": "passed"
+  },
+  "boundaryObservedBefore": 2,
+  "boundaryObservedAfter": 1,
+  "knownGpuObservationRetained": true,
+  "aggregateBoundaryAndCitationsPreserved": true,
+  "boundarySemanticReviewRun": false,
+  "wholeReportAccepted": false
+}
