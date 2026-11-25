@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "95d5851caa47315c8c434fd1bd327cccc8d749db",
+  "fullRegression": "research-reference-and-resource-full-20261126.json",
+  "candidate": "academic-dr-research-reference-and-resource-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "pinnedPdfFallback": true,
+  "sharedExperimentProfile": 8,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}
