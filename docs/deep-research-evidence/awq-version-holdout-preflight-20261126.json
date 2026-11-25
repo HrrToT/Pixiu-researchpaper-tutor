@@ -1,0 +1,22 @@
+{
+  "case": "H4-AWQ-VERSIONS",
+  "definitionHash": "6ba74eba185002c680025bfa9392bc64409e923f3f3c6210b196dfcc9754c6cf",
+  "reviewedPages": [
+    3,
+    3
+  ],
+  "liveInventory": {
+    "runs": 470,
+    "runHits": 0,
+    "indexFields": 18164,
+    "indexHits": 0,
+    "bibliographyMentions": 4,
+    "cacheHits": 0
+  },
+  "tasksChecked": 176,
+  "priorUseMatches": 0,
+  "previewVerified": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "independentCredit": 0
+}

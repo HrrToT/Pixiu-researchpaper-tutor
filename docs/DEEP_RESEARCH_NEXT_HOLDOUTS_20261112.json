@@ -1,46 +1,60 @@
 {
   "version": 1,
-  "asOf": "2026-11-12",
+  "asOf": "2026-11-26",
   "scope": "Original H1-H6 replacements: content definitions and separately assessed operational fault case",
   "independentAccepted": 0,
   "slots": [
     {
       "id": "H1",
-      "state": "frozen_not_executed",
+      "state": "executed_content_not_accepted",
       "case": "H1-GSC",
-      "manifest": "DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json"
+      "manifest": "DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/gsc-explanation-h1-first-real-20261124.json"
     },
     {
       "id": "H2",
-      "state": "frozen_not_executed",
+      "state": "executed_content_not_accepted",
       "case": "H2-ADAPT",
-      "manifest": "DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json"
+      "manifest": "DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json"
     },
     {
       "id": "H3",
-      "state": "frozen_not_executed",
-      "case": "H3-STREAMING",
-      "manifest": "DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json"
+      "state": "executed_acquisition_passed_content_not_accepted",
+      "case": "H3-QUEST",
+      "manifest": "DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json",
+      "result": "deep-research-evidence/academic-quest-h3-first-real-20261126.json",
+      "earlierCaseManifests": [
+        "DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json",
+        "DEEP_RESEARCH_SNAPKV_EXTERNAL_HOLDOUT_20261125.json",
+        "DEEP_RESEARCH_PAGEDATTENTION_EXTERNAL_HOLDOUT_20261125.json"
+      ]
     },
     {
       "id": "H4",
-      "state": "historical_unresolved_used_for_diagnostics",
-      "case": "H4-LORA-VERSIONS",
-      "manifest": "DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json",
+      "state": "executed_content_not_accepted",
+      "case": "H4-QUAROT-VERSIONS",
+      "manifest": "DEEP_RESEARCH_QUAROT_VERSION_HOLDOUT_20261126.json",
+      "result": "deep-research-evidence/quarot-version-h4-first-real-20261126.json",
+      "earlierCaseManifests": [
+        "DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json",
+        "DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json"
+      ],
+      "earlierKiviResult": "deep-research-evidence/kivi-version-h4-first-real-20261126.json",
       "nextCandidate": {
-        "state": "local_materials_ready_research_not_submitted",
-        "case": "H4-KIVI-VERSIONS",
-        "manifest": "DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json",
-        "preflight": "deep-research-evidence/kivi-version-holdout-preflight-20261125.json",
-        "localPreparation": "deep-research-evidence/kivi-version-local-preparation-20261125.json",
+        "state": "frozen_not_executed_material_not_imported",
+        "case": "H4-AWQ-VERSIONS",
+        "manifest": "DEEP_RESEARCH_AWQ_VERSION_HOLDOUT_20261126.json",
+        "preflight": "deep-research-evidence/awq-version-holdout-preflight-20261126.json",
         "scientificContentCredit": 0
       }
     },
     {
       "id": "H5",
-      "state": "frozen_not_executed",
+      "state": "executed_content_not_accepted",
       "case": "H5-DORA-FACTORIAL",
-      "manifest": "DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json"
+      "manifest": "DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/dora-h5-first-real-20261125.json"
     },
     {
       "id": "H6",
@@ -52,7 +66,7 @@
       "liveProviderCredit": 0
     }
   ],
-  "historicalBoundary": "Original failed and retired cases are retained. The execution record tracks current attempts and settlement states. KIVI is an unsubmitted H4 candidate. H6 passed offline operational execution. Scientific acceptance remains open. Shared-source dependencies remain; H2O is excluded.",
+  "historicalBoundary": "The first receipt and frozen criteria for each attempted case remain on record. The original LoRA request retains its unresolved state. H6 passed operational fault injection. Scientific acceptance remains open for H1–H5. Shared-source dependencies remain; H2O is excluded.",
   "sharedMaterialDependencies": [
     {
       "cases": [

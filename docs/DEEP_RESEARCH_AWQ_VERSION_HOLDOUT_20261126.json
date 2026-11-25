@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-25T20:22:17.953250+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "awq_v1": {
+      "path": "tmp/pdfs/h4-awq-evaluator-20261126/2306.00978v1.pdf",
+      "bytes": 3740132,
+      "sha256": "48bdf59ea52fccf40346ae129ef49d233ec9dcfe6b9b35e06002204c8123edfb",
+      "pageCount": 15,
+      "arxiv": "2306.00978v1",
+      "reference": "https://arxiv.org/abs/2306.00978v1"
+    },
+    "awq_v2": {
+      "path": "tmp/pdfs/h4-awq-evaluator-20261126/2306.00978v2.pdf",
+      "bytes": 5607568,
+      "sha256": "b24539f859d0cf01178e06e3dafd0a07553c83460d084591f22eeb32fc681727",
+      "pageCount": 13,
+      "arxiv": "2306.00978v2",
+      "reference": "https://arxiv.org/abs/2306.00978v2"
+    }
+  },
+  "cases": [
+    {
+      "id": "H4-AWQ-VERSIONS",
+      "split": "holdout",
+      "materials": [
+        "awq_v1",
+        "awq_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只用任务中的 AWQ v1 和 v2。分别核对两版表 1 中 OPT-1.3B 和 OPT-6.7B 的 FP16、RTN 以及按激活选择 1% 权重保留 FP16 的 WikiText 困惑度。指出修订前后的数值差异，以及两版共同支持的结论。引用两版原文，400 字以内。",
+      "required": [
+        "两版均引用 PDF 第 3 页表 1。区分完整 FP16 基线、INT3 的 RTN 和按激活选择的 1% FP16 保留列，量化组大小为 128。",
+        "OPT-1.3B 的三项值 v1 为 16.41、206.5、18.51，v2 为 14.62、119.00、16.91。OPT-6.7B 的三项值 v1 为 12.29、43.16、13.02，v2 为 10.86、23.54、11.39。",
+        "相同标记的表项在两版有数值变化。两版中按激活保留 1% 都比各自的 RTN 困惑度低，并仍高于各自完整 FP16 基线。",
+        "将判断限定于表 1 涉及的模型、WikiText 指标和量化配置。证据只显示修订报告数值不同，不能据此归因或宣布跨版本算法提升。"
+      ],
+      "forbidden": [
+        "把按权重、随机选择、0.1% 或 3% 的列当成按激活选择 1%，或混入缩放实验的表 2。",
+        "把混合精度消融数值直接当作完整 AWQ 方法结果，或替论文推断数值变化的具体原因。",
+        "使用任务外来源，引用不能定位两版表 1，或超过 400 字。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题核对版本数据。"
+    },
+    "maxAnswerCharacters": 400,
+    "sourceAnchors": [
+      {
+        "paper": "awq_v1",
+        "page": 3,
+        "section": "Table 1",
+        "checks": "OPT-1.3B and OPT-6.7B WikiText perplexity for FP16, RTN, and activation-selected 1% FP16 with INT3 group 128."
+      },
+      {
+        "paper": "awq_v2",
+        "page": 3,
+        "section": "Table 1",
+        "checks": "OPT-1.3B and OPT-6.7B WikiText perplexity for FP16, RTN, and activation-selected 1% FP16 with INT3 group 128."
+      }
+    ],
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "goldInputBoundary": "应用只收到冻结问题、两份 PDF ID、任务材料范围和标准预算。"
+  },
+  "caseDefinitionHashes": {
+    "H4-AWQ-VERSIONS": "6ba74eba185002c680025bfa9392bc64409e923f3f3c6210b196dfcc9754c6cf"
+  }
+}
