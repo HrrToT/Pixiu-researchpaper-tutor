@@ -325,7 +325,7 @@ class ResearchFacade:
             "comparisonAuditEnvelopeContractVersion": 11 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 16 if self._comparison_cells_version == 1 else 0,
             "comparisonBenchmarkSpeedScopeContractVersion": 3 if self._comparison_cells_version == 1 else 0,
-            "comparisonCrossPaperBoundaryContractVersion": 2 if self._comparison_cells_version == 1 else 0,
+            "comparisonCrossPaperBoundaryContractVersion": 3 if self._comparison_cells_version == 1 else 0,
             "comparisonRepairFlowContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
@@ -391,7 +391,7 @@ class ResearchFacade:
             "factualRepairGoalContractVersion": 5,
             "answerCoherenceContractVersion": 2,
             "synthesisEvidenceContractVersion": 6,
-            "externalReadingContractVersion": 3,
+            "externalReadingContractVersion": 4,
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 1,
             "reviewSourceFieldReferenceContractVersion": 1,

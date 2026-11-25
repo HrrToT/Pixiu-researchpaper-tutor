@@ -1,0 +1,47 @@
+{
+  "comparison": {
+    "receiptSha256": "3d625e0b05f3aa1dc5a94b8a6c0b4b5640afc54ecf7f4a3f42867d38abe3a427",
+    "targetId": "joint_ob-2-2",
+    "publicationSubjects": {
+      "joint_ob-2-2": [
+        "P1",
+        "P2"
+      ]
+    },
+    "permittedEvidenceAliases": [
+      "E9",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20",
+      "E12",
+      "E21",
+      "E49",
+      "E13",
+      "E1",
+      "E2"
+    ],
+    "stageBytes": [
+      23992,
+      23993
+    ]
+  },
+  "externalReading": {
+    "receiptSha256": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+    "retentionEvidenceId": "ev_f540bd9bcd3e9b3df5f086b90168aed4f4c0d597bb34aaa3ecd1dff9ff933a00",
+    "retentionPage": 6,
+    "selectiveReadPages": [
+      4
+    ],
+    "requestBytes": [
+      23885,
+      23831
+    ],
+    "missingPremiseBundles": []
+  },
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

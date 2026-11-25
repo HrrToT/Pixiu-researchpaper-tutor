@@ -208,6 +208,35 @@ def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advic
     assert packet(joint_stage)['jointTargets']
 
 
+@pytest.mark.parametrize('explicit_at', ['question', 'criterion', 'unrelated'])
+def test_cross_paper_scope_recovers_from_an_abbreviated_role_excerpt(explicit_at):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonCrossPaperBoundaryContractVersion=3)
+    cross = '为什么不能直接拿两篇论文的 FPS 排名？'
+    r['question'] += cross
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    goal.update(question=cross if explicit_at == 'question' else '说明渲染速度',
+                comparisonRole={**goal['comparisonRole'], 'requestExcerpt': '渲染速度'},
+                completionCriteria=[{'criterionId': 'C1', 'responseType': 'explanation',
+                    'requirement': cross if explicit_at == 'criterion' else '说明速度测量的条件'}])
+    old = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion': 2},
+                  plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    new = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    target = 'joint_' + goal['obligationId']
+    before = next(s for s in old['stages'] if s['stageId'] == 'joint')
+    after = next(s for s in new['stages'] if s['stageId'] == 'joint')
+    assert target not in before.get('paperSubjectsByTarget', {})
+    assert after['targetIds'] == before['targetIds']
+    if explicit_at == 'unrelated':
+        assert target not in after.get('paperSubjectsByTarget', {})
+    else:
+        assert after['paperSubjectsByTarget'][target] == list(plan['sources'])
+        answer_target = next(t for t in packet(after)['jointTargets'] if t['targetId'] == target)
+        assert answer_target['paperSubjects'] == list(plan['sources'])
+
+
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():
     r,p,rows,aliases,bundles=fixture()
     snapshot=prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases)

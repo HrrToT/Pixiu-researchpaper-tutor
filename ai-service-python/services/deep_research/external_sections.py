@@ -18,7 +18,7 @@ def method_requested(question, *, outline=False):
 
 
 def enabled(record):
-    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,2,3)
+    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,2,3,4)
 
 
 def spans(pages, *, outline=False,normalize_headings=False):

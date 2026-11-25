@@ -797,6 +797,8 @@ v51 的整答审核响应正常结束，但将整题标为已覆盖，未绑定�
 
 候选 `f5ef1a995` 完整离线回归通过 10,000 项，保留了上一版全部 9,996 项。在同一次服务切换中依次执行 D2-v53 与 Quest 首次验收，两个任务分别保存原始回执。D2 使用 16 次模型调用、73,856 Token、148 秒并发布部分报告。两批修订实际发出，第三批需要 10,053 字节，当时还允许 6,760 字节。跨论文速度问题已在计划问题与验收标准中出现，但角色摘录只有“渲染速度”，本次未附论文主体绑定，速度结论进入终审后收到无效审核响应。Quest 使用 11 次模型调用、47,904 Token、100 秒，走完指定版本发现和无缓存全文获取，答案完整性仍未通过。两次运行均未自动重试。原服务恢复并验证历史记录哈希。 [全量离线回归](deep-research-evidence/d2-repair-boundary-full-20261126.json) · [D2 实测](deep-research-evidence/baseline-comparison-v53-real-20261126.json) · [Quest 实测](deep-research-evidence/academic-quest-h3-first-real-20261126.json)
 
+以两份真实回执重放生成前的输入。D2 按原问题和各目标的检查标准恢复跨论文语义，帧率目标绑定 `P1` 与 `P2`，原有目标及其检查标准保持一致。Quest 的证据池已有第 6 页关于不丢弃缓存的直接说明，但旧请求未纳入该段。新版在同一阅读目标中纳入第 4 页按需加载与第 6 页缓存保留两段原文，请求为 23,831 字节，低于原有上限。回放在模型调用前结束，两个案例的最终内容仍待核验。 [真实回执回放](deep-research-evidence/d2-quest-evidence-binding-replay-20261126.json)
+
 同一候选服务随后提交一次独立 KIVI 版本差异题，两例均只使用任务材料。KIVI 用 8 次模型调用、29,787 Token、62 秒，限字草稿阶段返回 `invalid_synthesis_response`，无报告。核对两版PDF的表 3 后，确认初稿混用了 v1 的表 1、误称 v1 表 3 缺少 GSM8K 和若干 2 位行。两例均未重试。常规恢复检查因 KIVI 专用任务已有旧记录而停止，经核对仅该旧任务和新建 D2 任务发生本轮预期变化，原服务已恢复，恢复前后的任务、运行与调用快照一致。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [窗口恢复](deep-research-evidence/comparison-kivi-window-restoration-20261126.json)
 
 用同一 KIVI 回执重建生产写作请求。新版在核对单个明确表号时，按原文表注、版本、表标识和已核实物理页保留候选证据，将已识别的其他表格排除。旧请求包含 v1 表 1 的 66.48，新请求移除该值，保留两版表 3 的对应片段和 v2 的 4 位结果。部分表格列映射仍未核验，定位信息仅用于选证，独立数值核验继续适用。回放在发出请求前停止，原 KIVI 留出题保持首次结果，后续以新材料验证。 [表号范围回放](deep-research-evidence/kivi-named-table-synthesis-replay-20261126.json)

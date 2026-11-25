@@ -69,6 +69,23 @@ def test_definition_and_causal_premises_rank_before_overview_and_experiment_name
     assert selected==[definition,cause] and [intro,definition,cause]==before
 
 
+def test_combined_read_and_retention_criterion_preserves_both_source_passages():
+    rows = [
+        evidence('The algorithm improves throughput by only loading selected cache entries.', 1),
+        evidence('In stage 2, only the selected cache entries are loaded for the current request.', 2),
+        evidence('The algorithm does not evict cache entries between requests. A later request can select them again.', 3),
+    ]
+    question = '打分后实际读取和保留哪些内容'
+    plan = [{'obligations': [{'obligationId': 'o', 'question': question, 'searchQuery': 'cache read retain',
+                              'requiredSources': ['owned'], 'completionCriteria': [
+                                  {'criterionId': 'c1', 'requirement': question, 'responseType': 'identification'}]}]}]
+    foreign = evidence('In stage 2, only the records from a different method are loaded.', 4, source='other')
+    _, bundles = order_premises([foreign, *rows], plan, criterion_method_navigation=True, read_retention=True)
+    assert bundles[0]['evidenceIds'] == ['e2', 'e3']
+    assert bundle(rows, '实际读取哪些内容', 'cache read', 'identification', read_retention=True) == bundle(
+        rows, '实际读取哪些内容', 'cache read', 'identification')
+
+
 def test_small_cap_background_title_cannot_promote_its_definition_as_a_method_premise():
     background=evidence('The values are estimates of moving averages.',1)
     background['location']['section']='5 R ELATED W ORK'

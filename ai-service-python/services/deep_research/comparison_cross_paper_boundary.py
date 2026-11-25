@@ -32,19 +32,29 @@ def explicitly_requests_cross_paper_speed(question):
 
 def scopes(record, plan, targets, *, question=None):
     version = record.get('comparisonCrossPaperBoundaryContractVersion')
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         return {}
+    explicit_request = version >= 2 and explicitly_requests_cross_paper_speed(question)
+    requirements = {row['obligationId']: row for row in plan.get('requirements', [])}
     result = {}
     for target in targets:
         if target['role'] != 'joint' or target.get('deliverable') in {'matched_example', 'conditional_advice'}:
             continue
-        role, = (plan['roles'][oid] for oid in target['allowedObligationIds'])
+        oid, = target['allowedObligationIds']
+        role = plan['roles'][oid]
         request = role['requestExcerpt']
         papers = target['sources']
         local_speed = CROSS_PAPER.search(request) and _SPEED.search(request)
-        split_speed = (version == 2 and target.get('deliverable') == 'comparability'
-                       and _SPEED.search(target['question']) and explicitly_requests_cross_paper_speed(question))
-        if len(papers) >= 2 and (local_speed or split_speed):
+        split_speed = (explicit_request and target.get('deliverable') == 'comparability'
+                       and _SPEED.search(target['question']))
+        # Role excerpts can be shorter than the user's requirement. Use only
+        # this target's frozen question and criteria to recover its meaning.
+        frozen_speed = False
+        if version == 3 and explicit_request:
+            criteria = requirements.get(oid, {}).get('completionCriteria', [])
+            question_parts = [target['question'], *(row['requirement'] for row in criteria)]
+            frozen_speed = any(explicitly_requests_cross_paper_speed(part) for part in question_parts)
+        if len(papers) >= 2 and (local_speed or split_speed or frozen_speed):
             result[target['targetId']] = papers
     return result
 

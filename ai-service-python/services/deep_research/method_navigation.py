@@ -18,6 +18,13 @@ _ROLE_ACTION = re.compile(r'\b(?:apply|applie[sd]|operat\w+|comput\w+|aggregat\w
                           r'|计算|汇总|用于|合并', re.I)
 _CONTENT_ACTION = re.compile(r'\b(?:concatenat\w+|append\w*|retain\w*|stor\w+|sav\w+|contain\w*|keeps?)\b'
                              r'|拼接|保留|存储|包含', re.I)
+_READ_REQUEST = re.compile(r'读取|加载|读入|\b(?:read\w*|load\w*|fetch\w*)\b', re.I)
+_RETAIN_REQUEST = re.compile(r'保留|丢弃|淘汰|\b(?:retain\w*|keep\w*|evict\w*|discard\w*)\b', re.I)
+_SELECTIVE_READ = re.compile(r'\bonly\b[^.!?]{0,130}\b(?:load\w*|fetch\w*|read\w*)\b|只(?:会)?(?:加载|读取)', re.I)
+_NON_EVICTION = re.compile(r'\b(?:does? not|without|never)\s+(?:discard\w*|evict\w*|delet\w*)\b'
+                           r'|不(?:会)?(?:丢弃|驱逐|淘汰|删除)', re.I)
+_RETENTION = re.compile(r'\b(?:retain\w*|keep\w*)\s+(?:all|the (?:full|entire|original))\b|保留(?:全部|完整)', re.I)
+_OPERATION_STAGE = re.compile(r'\b(?:stage|phase|step)\s+[1-9]\d*\b|第[一二三四五六七八九\d]+阶段', re.I)
 _DEFINE=re.compile(r'\b(?:defin\w*|refer\w* to|estimates? of|moving averages?|represents?|records?|stores?)\b|定义|表示为|记录',re.I)
 _CAUSE=re.compile(r'\b(?:because|due to|caus\w*|leading to|leads? to|results? in|counteract\w*)\b|因为|导致|由于',re.I)
 _ACTION=re.compile(r'\b(?:comput\w*|divid\w*|updat\w*|subtract\w*|normaliz\w*|fus\w*|extract\w*|transform\w*|construct\w*|convert\w*)\b|计算|相除|除以|更新|归一化|融合|提取',re.I)
@@ -29,7 +36,7 @@ _STOP={'arxiv','paper','method','methods','algorithm','definition','definitions'
 
 
 def enabled(record):
-    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==3
+    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3, 4)
 
 
 def requested(question):
@@ -75,11 +82,24 @@ def priority(row,requirement,query='',response_type='',*,operations=False):
     return (int(relation>0),relation,int(method),hits,-len(text))
 
 
-def bundle(rows,requirement,query='',response_type='',*,operations=False):
+def bundle(rows,requirement,query='',response_type='',*,operations=False,read_retention=False):
     """At most three exact existing passages for complementary operations/context."""
     rank=lambda row:priority(row,requirement,query,response_type,**({'operations':True} if operations else {}))
     if type(operations) is not bool:raise ValueError('Invalid operation navigation policy')
     ranked=sorted(rows,key=rank,reverse=True)
+    if read_retention and _READ_REQUEST.search(requirement) and _RETAIN_REQUEST.search(requirement):
+        # Reading a subset and retaining the rest are distinct claims. Select
+        # exact source passages for both when the paper supplies them.
+        from services.deep_research.reading_roles import quality
+        complementary = [row for row in ranked if quality({'text': row['quote'], 'location': row.get('location', {})},
+                                                           requirement) == (True, True)]
+        read = max((row for row in complementary if _SELECTIVE_READ.search(row['quote'])),
+                   key=lambda row: bool(_OPERATION_STAGE.search(row['quote'])), default=None)
+        retained = next((row for row in complementary if _NON_EVICTION.search(row['quote'])), None)
+        if retained is None:
+            retained = next((row for row in complementary if _RETENTION.search(row['quote'])), None)
+        if read is not None and retained is not None:
+            return [read] if read is retained else [read, retained]
     if not ranked or rank(ranked[0])[0]<=0:return []
     lead=ranked[0];leads=[lead]
     if _HOW.search(requirement) or response_type=='procedure' or operations:
