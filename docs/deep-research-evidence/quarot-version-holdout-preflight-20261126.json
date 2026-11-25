@@ -1,0 +1,21 @@
+{
+  "case": "H4-QUAROT-VERSIONS",
+  "definitionHash": "d8dad3f6f30f10c282c7c9bb32578845f0d9b05bcd707868f5f3222d01c8e1c4",
+  "reviewedPages": [
+    9,
+    8
+  ],
+  "liveInventory": {
+    "runs": 467,
+    "runHits": 0,
+    "indexFields": 16147,
+    "indexHits": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 173,
+  "receiptOrRepoMatches": 0,
+  "previewVerified": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "independentCredit": 0
+}

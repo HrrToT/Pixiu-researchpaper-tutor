@@ -765,7 +765,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | StreamingLLM 首次执行未取到正文。此后 SnapKV 和 PagedAttention 均在真实应用运行中发现精确版本并下载无缓存全文。SnapKV 发布一条可回查主张，解释未完整。PagedAttention 的两条主张因束搜索与并行采样错配而未发布。 [SnapKV 实测](deep-research-evidence/academic-snapkv-h3-first-real-20261125.json) · [PagedAttention 实测](deep-research-evidence/academic-pagedattention-h3-first-real-20261125.json) | 新冻独立题 Quest v1 待从空材料执行，核对指定版本、方法页引用及完整回答。 [Quest 定义](DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json) |
-| H4 冲突或版本差异 | LoRA 的未确认调用仍保持冻结。新留出题 KIVI 首次执行未发布报告，保存的初稿把 v1 表 1 的数值当成表 3。 [KIVI 首次实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) | 保留 KIVI 首次结果。分别检查版本内表号绑定和限字草稿，修复后使用新的独立题验收。 [KIVI 定义](DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json) |
+| H4 冲突或版本差异 | LoRA 的未确认调用仍保持冻结。KIVI 首次执行未发布报告，保存的初稿把 v1 表 1 的数值当成表 3。 [KIVI 首次实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) | 表号、解析和限字已用本地回放验证。独立新题 QuaRot v1/v2 已冻结，待装载候选后导入两版并正式执行。 [QuaRot 定义](DEEP_RESEARCH_QUAROT_VERSION_HOLDOUT_20261126.json) |
 | H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
 | H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
@@ -798,6 +798,8 @@ v51 的整答审核响应正常结束，但将整题标为已覆盖，未绑定�
 从本机 GROBID 重新提取两份冻结 PDF 的坐标。新版按 PDF 原页横线确认跨行的模型分组，逐项核对物理列、原标注配置和 TEI 完整行。v1 第 7 页表 3 得到 19 条已核验记录，v2 第 8 页得到 32 条；Llama-2-13B 的共用两组配置和后版新增两组 4 位配置均与原表一致。跨行融合、无法逐项核对的内容保留为未核验原文。两版的表号、页码及结构化记录在生产解析、分块和证据校验入口均保持一致。34 项 PDF 表格定向测试通过，无模型调用。既有 KIVI 独立运行记录保持首次结果。 [PDF 解析回放](deep-research-evidence/kivi-model-groups-pdf-replay-20261126.json)
 
 重放 KIVI 的两段真实响应确认，初稿可见长度为 555 字，编辑响应结构有效，但成稿仍有 471 字，超出 400 字要求。新版在范围说明及排版开销能在半数额度内保留时，优先固定范围说明并为其余正文分配实测预算。开销超过一半时仍联合编辑。KIVI 回放中两段普通正文可用 246 字，模拟编辑后的成稿为 363 字，引用、目标身份和原范围说明一致，仍为待核验草稿。97 项定向测试通过，无新增模型调用。 [限字回放](deep-research-evidence/kivi-reserved-scope-budget-replay-20261126.json)
+
+新独立 H4 使用 QuaRot v1 与 v2 的表 2，核对 Llama‑2 13B、70B 的零样本平均准确率和 ARC-Challenge 结果，以及两版表注对精度的描述。评审材料取自 arXiv 的固定版本。按论文编号、标题和两份文件哈希检查 467 个历史运行、16,147 项本地索引字段、外部缓存及 173 个任务，未发现使用记录。提交预检仅包含问题、两份文件 ID、任务材料范围与标准运行预算。此次未导入文档、未调用模型，独立验收信用仍为零。 [冻结定义](DEEP_RESEARCH_QUAROT_VERSION_HOLDOUT_20261126.json) · [预检证据](deep-research-evidence/quarot-version-holdout-preflight-20261126.json)
 
 用当前前端的生产构建在 1366×768、1024×700 两种视口分别打开实际保存的 SnapKV 成果。点击正文引用可展开原文，并跳到正确版本 PDF 第 7 页。关闭预览返回报告，刷新后可再次从任务打开。浏览器读取现有本机 API 的实际报告和 PDF，两份响应的论文哈希都与评审件一致。工作区前后保持一致，零写入、零模型调用。此项验收覆盖既有报告的阅读与找回。 [真实报告浏览器验证](deep-research-evidence/snapkv-browser-citation-20261125.json)
 
