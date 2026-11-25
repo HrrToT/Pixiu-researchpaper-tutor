@@ -14,6 +14,10 @@ H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,5
 
 继续通过生产获取、读取和原文提取节点重放。方法段落只归属于初始化与压缩的解释问题，未归给同轮另一个标题问题。原文提取产生两段通过逐字核对的第 3 页证据，均出现在 15,513 字节的生成请求。请求在模型发送前截停。本次覆盖历史开发材料的取证到生成输入，未做新检索或报告生成，H1 独立验收未改判。 [读取归属及生成请求回放](deep-research-evidence/local-explanation-method-source-replay-20261125.json)
 
+用当前的固定检查构造器重建 H1 计划，发现「接收端又如何重建场景」没有触发具体操作绑定。同一规则在开发对照中识别了「如何生成图像」与英文渲染提问，但漏掉了中英文重建及中文压缩问法。此处需要让取证准备度、写作和整答审核沿用同一套过程检查，并保留历史运行的原审核输入。此次只确定路由缺口，未改写旧审核或调用模型。 [过程检查路由回放](deep-research-evidence/gsc-h1-process-check-routing-20261125.json)
+
+解释取证版本的全量离线回归在同步生命周期断言后通过，源码 `312de36d7` 对应 501 个模块、9,928 个检查，保留此前全部 9,926 个检查，测试期间源码保持一致。 [全量回归](deep-research-evidence/local-explanation-method-lifecycle-full-20261125.json)
+
 ## 2026-11-25 H2 首次独立执行
 
 H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次，消耗 70,170 Token，用时 121 秒。十条候选均未通过事实核验，其中七条数值未与引用对齐、两条语义未确认、一条未能证明所述缺失。运行以 `inconclusive` 结束，工作区保存未完成说明，独立通过数为 0。恢复原服务后，核对了旧运行、其他任务及发布账本。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-h2-candidate-load-20261125.json) · [首次执行](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json)
@@ -744,6 +748,10 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
+
+通过现用 Java 工作区 API 分别重开 H1、D2-v49 和 H3-PagedAttention 三个真实生成的既有成果。每个工作区连续读取两次结果相同，机器版和可编辑版的 ID、文档正文及来源数组逐项与保存回执一致。只读复验未写入工作区或触发模型。当前前端相关组件与交互模型 84 项、Java 工作区研究控制器及来源投影 69 项定向测试通过。浏览器端交互及科学质量仍按各自证据范围核对。 [真实成果重新读取](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
+
+由 SnapKV 报告已发布的主张解析原文证据，经现用工作区的来源文件 API 读回精确版本 PDF。返回的 18 页文件与独立评审件哈希一致，引用定位为第 7 页，读取前后工作区相同。此次验证覆盖真实报告的外部 PDF 交付及引用定位。 [原文文件读取证据](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
 
 补查 D5-v15 的父子回执确认，v49 父报告使用比较规划版本 6、联合比较版本 16、跨论文边界版本 2 和事实审核版本 4。D5-v15 在恢复后的现用服务上创建，前三项为 0、事实审核为版本 3，实际走了通用生成链路。材料和来源策略相同。离线用 v49 服务配置检查时，D5 满足进入结构化比较路径的条件。后续需在启用同组比较配置的候选服务上验证真实追问，再判断是否还需改动比较推理。未修改已完成的父子记录。 [模式核对](deep-research-evidence/d5-comparison-profile-audit-20261125.json)
 

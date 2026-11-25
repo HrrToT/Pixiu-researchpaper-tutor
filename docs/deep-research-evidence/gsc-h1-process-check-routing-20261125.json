@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "26c3d76601540f008b153c3418c1c6c5a19df5c1",
+  "historicalPayloadSha256": "02c9f4b6eeaf22852ff559bdec823dfab94e21c309d066aaa76109e463e94ee0",
+  "case": "H1-GSC-v1",
+  "reconstructionCheck": {
+    "checkId": "criterion:human_aspect_1",
+    "requirement": "接收端又如何重建场景",
+    "criterionId": "human_aspect_1",
+    "responseType": "explanation"
+  },
+  "currentChecklistUsesProcessChecks": true,
+  "developmentVocabularyControls": {
+    "如何生成图像": true,
+    "如何压缩表示": false,
+    "How does the decoder reconstruct a scene?": false,
+    "How does the decoder render a scene?": true,
+    "如何判断重建是否可靠": false,
+    "如何融合多视角信息？": true
+  },
+  "modelCalls": 0,
+  "historicalVerdictsMutated": false,
+  "scope": "literal process check dispatch only; does not establish the semantic judgement under a revised checklist"
+}
