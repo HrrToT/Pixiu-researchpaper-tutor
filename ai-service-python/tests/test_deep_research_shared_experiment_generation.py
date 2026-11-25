@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version == 2:
+    if version in (2, 3):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -82,6 +82,88 @@ def test_single_generation_is_durable_unchecked_and_reused_without_second_send()
     assert result['status'] == 'awaiting_scientific_review' and result['response'] == response()
     assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
     assert invoke.call_count == 1 and 'reportBody' not in current['state']
+
+
+def reference_draft(canonical):
+    draft = deepcopy(canonical)
+    for state in draft['states']:
+        if state['source']['kind'] == 'step':
+            state['source'] = None
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['operation'] = None
+    return draft
+
+
+def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
+    r, data, aliases = context()
+    r[MARKER] = 2
+    previous = build(r, data, aliases)
+    r[MARKER] = 3
+    new = build(r, data, aliases)
+    assert new['contextDigest'] == previous['contextDigest']
+    assert new['inputDigest'] != previous['inputDigest']
+    assert 'operation=null' in new['request']['prompt']
+    assert 'shared_binary_factorial_refs_v3' in json.dumps(new['request'])
+    canonical = proposal()
+    canonical['data']['inputs'][0]['availability'] = 'provided'
+    reply = response(reference_draft(canonical))
+    current, states, checkpoint = harness(r)
+    invoke = Mock(return_value=reply)
+    result = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert result['response'] == reply
+    assert result['boundProposal']['proposal'] == canonical
+    assert result['status'] == 'awaiting_scientific_review'
+    assert result['boundProposal']['scientificApproval'] is False
+    assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+    invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('fault,code', [
+    ('missing_creator', 'plan.state_creator_reference'),
+    ('duplicate_creator', 'plan.state_creator_reference'),
+    ('competing_input', 'plan.state_input_also_created'),
+    ('unprepared_input', 'plan.state_input_unavailable'),
+    ('local_operation', 'plan.intervention_operation_reference'),
+    ('missing_operation', 'plan.operation_required'),
+    ('future_read', 'plan.future_state'),
+])
+def test_reference_profile_rejects_unresolved_or_unsafe_drafts(fault, code):
+    r, data, aliases = context()
+    r[MARKER] = 3
+    canonical = proposal()
+    canonical['data']['inputs'][0]['availability'] = 'provided'
+    draft = reference_draft(canonical)
+    created = next(state for state in draft['states'] if state['source'] is None)
+    creator = next(step for step in draft['steps'] if created['id'] in step['creates'])
+    first_step = draft['steps'][0]
+    if fault == 'missing_creator':
+        creator['creates'].remove(created['id'])
+    elif fault == 'duplicate_creator':
+        next(step for step in draft['steps'] if step != creator)['creates'].append(created['id'])
+    elif fault == 'competing_input':
+        created['source'] = {'kind': 'input', 'id': draft['data']['inputs'][0]['id']}
+    elif fault == 'unprepared_input':
+        input_id = next(state['source']['id'] for state in draft['states'] if state['source'] is not None)
+        next(row for row in draft['data']['inputs'] if row['id'] == input_id)['availability'] = 'prepare'
+    elif fault == 'local_operation':
+        index = next(i for i, step in enumerate(draft['steps']) if step['kind'] == 'intervene')
+        draft['steps'][index]['operation'] = canonical['steps'][index]['operation']
+    elif fault == 'missing_operation':
+        first_step['operation'] = None
+    else:
+        assert draft['steps'].index(first_step) < draft['steps'].index(creator)
+        first_step['reads'].append(created['id'])
+    current, states, checkpoint = harness(r)
+    reply = response(draft)
+    invoke = Mock(return_value=reply)
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert states[-1]['response'] == reply
+    assert states[-1]['status'] == 'invalid_response'
+    assert 'boundProposal' not in states[-1]
+    assert code in {issue['code'] for issue in states[-1]['issues']}
+    invoke.assert_called_once()
 
 
 def test_single_json_fence_is_removed_for_validation_only():

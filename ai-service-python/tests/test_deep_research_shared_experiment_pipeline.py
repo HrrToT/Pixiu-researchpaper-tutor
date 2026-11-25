@@ -138,17 +138,28 @@ def test_actual_synthesis_verify_publish_nodes_and_scope_gate(tmp_path,monkeypat
     _exercise_graph(tmp_path,monkeypatch,tracked_http)
 
 
+def test_reference_draft_reaches_review_and_publication_through_tracked_transport(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=3)
+
+
 @pytest.mark.parametrize('scenario',['final_gap_repair','settled_review_checkpoint_crash'])
 def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scenario):
     _exercise_graph(tmp_path,monkeypatch,True,scenario)
 
 
-def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None):
+def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_profile=1):
     from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
-    from services.deep_research.shared_experiment_generation import NODE as GENERATE
-    from test_deep_research_shared_experiment_generation import context,response
+    from services.deep_research.shared_experiment_generation import MARKER, NODE as GENERATE
+    from test_deep_research_shared_experiment_generation import context, reference_draft, response
+    from test_deep_research_shared_experiment_plan import proposal
     from services.deep_research.repository import DeepResearchRepository
     r,data,aliases=context()
+    r[MARKER]=shared_profile
+    generation_response=response()
+    if shared_profile == 3:
+        canonical = proposal()
+        canonical['data']['inputs'][0]['availability'] = 'provided'
+        generation_response = response(reference_draft(canonical))
     if tracked_http:
         r['budget'].update(reserveModelCalls=5,reserveTokens=50000,finalizationBudgetVersion=1,
                            releasedReserveTokens=0,tokens=0,normalTokens=0,elapsedSeconds=0)
@@ -164,7 +175,7 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None):
     calls=[]
     def fixture_invoke(rid,node,prompt,opts,**kw):
         calls.append(node);current=repo.require_run(rid)
-        if node==GENERATE:return response()
+        if node==GENERATE:return generation_response
         if node==SCIENCE:return reply(verdict(current,data))
         if node==REPAIR:return edit_response(current)
         assert node=='verify_answer_coverage'
@@ -211,6 +222,8 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None):
     result=make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
     assert result['outcome']=='complete'
     published=repo.require_run('r');assert published['status']=='completed' and published['state']['reportText']
+    if shared_profile == 3:
+        assert published['state']['sharedExperimentGeneration']['boundProposal']['proposal'] == canonical
     assert '# 实验方案（尚未执行）' in published['state']['reportText']
     assert '- 实验建议：#' not in published['state']['reportText']
     assert '](#research-evidence-' in published['state']['reportText'] and '[^1]' not in published['state']['reportText']

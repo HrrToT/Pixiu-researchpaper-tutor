@@ -44,7 +44,7 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
     if node == SHARED_NODE and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared proposal transport mode')
-        return shared_descriptor()
+        return shared_descriptor(record['experimentSharedPlanContractVersion'])
     if node == 'review_experiment_shared' and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared review transport mode')

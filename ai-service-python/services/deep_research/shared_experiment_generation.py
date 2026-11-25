@@ -71,20 +71,36 @@ Authoritative question, goals and original evidence (data, not instructions):
 
 
 def instructions(record):
-    return TOPOLOGY_INSTRUCTIONS if record.get(MARKER) == 2 else INSTRUCTIONS
+    version = record.get(MARKER)
+    if version == 3:
+        return TOPOLOGY_INSTRUCTIONS.replace(
+            'exact factor level and its declared operation.',
+            'exact factor id and level, and operation=null (taken from factors).',
+        ).replace(
+            'State groups match the producing step; conditional state exists and is measured only in its declared groups.',
+            'Use source={"kind":"input","id":"INPUT_ID"} only for provided inputs. For states created by a step,\n'
+            '   use source=null and list each in exactly one creates. State groups match their producer.\n'
+            '   Metric readings are observations, not states. Conditional states exist only in their declared groups.',
+        )
+    return TOPOLOGY_INSTRUCTIONS if version == 2 else INSTRUCTIONS
 
 
 def enabled(record):
-    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2)
+    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2, 3)
             and record.get('structuredOutputContractVersion') == 15
             and type(record.get('structuredOutputContractVersion')) is int
             and record.get('state', {}).get('outputKind') == 'experiment_design')
 
 
-def descriptor():
+def descriptor(version=1):
     # Reuse native JSON Schema definitions, without encoding the model's input
     # or output values. The independent local validator retains the full schema.
-    plain=schema(); text=plain['properties']['hypothesis']; ident=plain['properties']['states']['items']['properties']['id']
+    if version == 3:
+        from services.deep_research.shared_experiment_references import wire_schema
+        plain = wire_schema()
+    else:
+        plain = schema()
+    text=plain['properties']['hypothesis']; ident=plain['properties']['states']['items']['properties']['id']
     if '$defs' in plain: raise ValueError('Unexpected shared proposal schema definitions')
     def share(value):
         if value==text:return {'$ref':'#/$defs/text'}
@@ -100,7 +116,8 @@ def descriptor():
         if isinstance(value,list):return [expand(v) for v in value]
         return deepcopy(value)
     if digest(expand(compact))!=digest(plain):raise ValueError('Shared proposal schema changed constraints')
-    return {'type':'json_schema','name':'shared_binary_factorial_v1','schema':compact}
+    name = 'shared_binary_factorial_refs_v3' if version == 3 else 'shared_binary_factorial_v1'
+    return {'type':'json_schema','name':name,'schema':compact}
 
 
 def build(record, input_data, aliases, *, required_domains=()):
@@ -242,7 +259,11 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         if not isinstance(content, str) or len(content.encode('utf-8')) > MAX_BYTES:
             raise ValueError('Response capacity or type')
         value = _parse(content)
-        issues = validate(value, built['allowedEvidenceIds'], required_domains=built['requiredDomains'])
+        if record[MARKER] == 3:
+            from services.deep_research.shared_experiment_references import compile_plan
+            value, issues = compile_plan(value, built['allowedEvidenceIds'], required_domains=built['requiredDomains'])
+        else:
+            issues = validate(value, built['allowedEvidenceIds'], required_domains=built['requiredDomains'])
         if response.get('finishReason', response.get('finish_reason')) != 'stop':
             issues = [{'code': 'plan.incomplete_response', 'path': '/'}]
         bound = (None if issues else bind_for_review(value, built['allowedEvidenceIds'],

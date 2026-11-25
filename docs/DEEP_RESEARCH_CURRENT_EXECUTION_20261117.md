@@ -28,6 +28,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 `009f74cc2` 的 501 模块、9,850 项全量回归通过，9,848 项基线全部保留。新 D3 用版本 2 真实执行一次，6 次调用结算 31,729 Token，95 秒。回复通过围栏解码，后续报告 25 项结构问题，包括状态来源、尚未创建的状态、干预操作绑定及测量状态不可用；没有预算引用或干预组合缺失错误。未进入科学审核、未发布方案，原服务和既有记录核对恢复。案例不同，不能据此判定 H5 的错误已修复。 [全量回归](deep-research-evidence/shared-experiment-topology-full-20261125.json) · [候选装载](deep-research-evidence/d3-densification-topology-candidate-load-20261125.json) · [首次执行](deep-research-evidence/d3-densification-topology-first-real-20261125.json)
 
+共享方案生成版本 3 将干预操作固定在因素水平定义中，由服务器根据步骤的因素和水平解析。步骤生成的状态由唯一的创建步骤确定来源，待准备的输入和无创建步骤的状态会被拒绝。保存的原始回复和编译后的标准方案均保留，后者沿用科学审核与发布检查。D3 与 H5 的保存输入各保留 20 条证据，新请求分别为 29,607 和 31,772 字节，低于 32,000 字节上限。D3 仅替换重复操作定义后，原 25 项约束问题中有 4 项消失，旧稿仍因状态来源问题被拒绝。135 项定向检查通过，含一项使用模拟 HTTP 验证生成、独立审核、持久化及发布的贯通检查。本次回放没有新增真实模型调用，版本 3 的实际方案质量仍待验证。 [保存回执回放](deep-research-evidence/shared-experiment-references-replay-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
