@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6, 7, 8])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6, 7, 8, 9])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version in (2, 3, 4, 5, 6, 7):
+    if version in (2, 3, 4, 5, 6, 7, 8):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -332,6 +332,89 @@ def test_factorial_compiler_derives_arms_from_each_explicit_factor_level(fault, 
         assert 'Write four distinct intervene steps' in saved['request']['prompt']
         assert saved['boundProposal']['proposal'] == canonical
         invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('fault,code', [
+    (None, None),
+    ('per_step_reuse', 'plan.budget_allocation'),
+    ('disjoint_preparation', 'plan.shared_preparation_budget'),
+    ('allocated_to_fit', 'plan.shared_preparation_budget'),
+    ('record_from_clone', 'plan.fit_memory_capture'),
+    ('missing_measurement_read', 'plan.fit_memory_capture_read'),
+    ('missing_fit_interval', 'plan.fit_memory_capture'),
+    ('storage_without_persisted_states', 'plan.incomplete_resource_accounting'),
+])
+def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fault, code):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    canonical['version'] = 3
+    preflight = canonical['steps'][0]
+    preflight.update(kind='prepare', dataUse='none', inputIds=[], updates=[])
+    canonical['steps'].insert(1, {**preflight, 'id':'prepare_checkpoint'})
+    common, matched = canonical['budgets']
+    common.update(unit='wall_seconds', matching='native', allocation='shared_preparation_total',
+                  stopRule='Stop if the continuous preparation cap expires. Skip all arms if incomplete.')
+    matched['allocation'] = 'single'
+    fit, measure = canonical['steps'][-2:]
+    fit['creates'].append('peak')
+    canonical['states'].append({'id':'peak', 'meaning':'Per-arm fit peak allocator reading',
+        'representation':'One peak count in bytes for each paired run', 'fixed':True, 'persisted':False,
+        'scope':'arm', 'groups':list(fit['groups']), 'source':{'kind':'step','id':fit['id']}})
+    measure['reads'].append('peak')
+    measure['metricIds'].append('memory')
+    canonical['analysis']['metricIds'].append('memory')
+    for metric in canonical['metrics']:
+        metric['fitMemoryCaptures'] = []
+    memory = {'id':'memory','domain':'memory','unit':'bytes','direction':'lower_better','stateIds':['peak'],
+              'procedure':'Reset the allocator peak immediately before fit, synchronize and read peak before teardown.',
+              'fitMemoryCaptures':[{'stepId':fit['id'],'recordStateId':'peak'}]}
+    canonical['metrics'].append(memory)
+    if fault == 'per_step_reuse':
+        common['allocation'] = 'single'
+    elif fault == 'disjoint_preparation':
+        canonical['steps'].insert(1, {**preflight, 'id':'separate', 'budgetId':None})
+    elif fault == 'allocated_to_fit':
+        preflight.update(kind='fit', dataUse='training')
+    elif fault == 'record_from_clone':
+        memory['fitMemoryCaptures'][0]['recordStateId'] = 'x'
+        memory['stateIds'].append('x')
+    elif fault == 'missing_measurement_read':
+        measure['reads'].remove('peak')
+    elif fault == 'missing_fit_interval':
+        canonical['steps'].insert(-1, {**fit, 'id':'additional_fit', 'creates':[], 'budgetId':'extra'})
+        canonical['budgets'].append({**matched,'id':'extra'})
+    elif fault == 'storage_without_persisted_states':
+        next(metric for metric in canonical['metrics'] if metric['domain']=='storage')['stateIds'] = ['peak']
+    draft = asset_catalog_draft(canonical)
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['groups'] = []
+    result, issues = compile_plan(draft, ['E1'], profile=8)
+    if code:
+        assert result is None and code in {issue['code'] for issue in issues}
+    else:
+        assert not issues and result == canonical
+        record, data, aliases = context()
+        record[MARKER] = 8
+        current, _, checkpoint = harness(record)
+        invoke = Mock(return_value=response(draft))
+        saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+        assert saved['boundProposal']['proposal'] == canonical and saved['scientificApproval'] is False
+        invoke.assert_called_once()
+        from services.deep_research.shared_experiment_review import build as build_review
+        from services.deep_research.shared_experiment_result import compile_candidate
+        from test_deep_research_shared_experiment_review import check
+        current['state']['sharedExperimentGeneration'] = saved
+        built = build_review(current,data,aliases)
+        assert built['suppliedEvidenceAliases'] == ['E1']
+        assert any('continuous wall-clock cap' in target['requirement'] for target in built['targets'])
+        result, _, _, _ = check(current,data,aliases)
+        assert result['assessment']['complete']
+        report = compile_candidate(current,data,aliases)
+        assert report['markdown'].count('共用 100 秒准备预算') == 1
+        assert '完整拟合窗口记录峰值' in report['markdown']
+        assert report['publishable'] is False
 
 
 @pytest.mark.parametrize('failure,code', [

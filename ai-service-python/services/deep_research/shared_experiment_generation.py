@@ -101,14 +101,14 @@ DERIVED_ARM_INSTRUCTIONS = ('- Write four distinct intervene steps: factor A lev
 
 def instructions(record):
     version = record.get(MARKER)
-    if version in (5, 6, 7):
+    if version in (5, 6, 7, 8):
         prompt = OWNED_STATES_INSTRUCTIONS.replace(
             'Return one ordinary JSON object, no Markdown. No scientific approval or results.',
             'Return compact JSON on one line without indentation or Markdown. Use short distinct IDs. '
             'State settings once, keep each necessary parameter, control and unresolved prerequisite. '
             'No scientific approval or results.',
         )
-        if version in (6, 7):
+        if version in (6, 7, 8):
             prompt = prompt.replace(
                 '- data.inputs are raw assets; use step.inputIds for them. Prepare missing assets in a shared prepare step before using them.\n'
                 '- Top-level states are only pre-existing states backed by provided inputs; shared/arm states created by the protocol go inside\n'
@@ -136,10 +136,29 @@ def instructions(record):
                     '  Resource metrics list all persisted state IDs once, using the same IDs across arms.\n'
                     '  Bind common preparation budgets to shared steps and matched training budgets to their arm steps.',
                 )
-        if version == 7:
+        if version in (7, 8):
             start = prompt.index('- Intervene on A0:')
             end = prompt.index('- Fit only training data', start)
             prompt = prompt[:start] + DERIVED_ARM_INSTRUCTIONS + prompt[end:]
+        if version == 8:
+            prompt = prompt.replace(
+                '  Resource metrics list all persisted state IDs once, using the same IDs across arms.\n'
+                '  Bind common preparation budgets to shared steps and matched training budgets to their arm steps.',
+                '  Storage metrics list all persisted state IDs. Use matched arm budgets for training.'
+            ).replace(
+                'Use each budget ID exactly once per covered arm or once total if shared; steps without a separate '
+                'budget allocation use null.',
+                'Use allocation="single" once per covered arm or once if shared. Use "shared_preparation_total" '
+                'for one shared native wall-clock cap over consecutive prepare steps before cloning. Reference it '
+                'from each covered step and state the cumulative stop rule with no reset. Use null if unbudgeted.',
+            ).replace(
+                '  creates=[], updates=[]. Metric stateIds are measured components, not readings. Record peak memory during fit in the\n'
+                '  metric procedure, then read/report it in the measure step. Define units, conditions and complete resource accounting.',
+                '  creates=[], updates=[]. For training peak device memory, each arm fit creates a peak record. '
+                'List every {"stepId":"fit_id","recordStateId":"record_id"} in fitMemoryCaptures and read each applicable '
+                'record at measurement. Put record IDs in stateIds. Capture actual peak per full fit window, specify device, '
+                'allocator, reset, synchronization and aggregation. Use fitMemoryCaptures=[] for other metrics.',
+            )
         return prompt
     if version == 4:
         return OWNED_STATES_INSTRUCTIONS
@@ -157,7 +176,7 @@ def instructions(record):
 
 
 def enabled(record):
-    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2, 3, 4, 5, 6, 7)
+    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2, 3, 4, 5, 6, 7, 8)
             and record.get('structuredOutputContractVersion') == 15
             and type(record.get('structuredOutputContractVersion')) is int
             and record.get('state', {}).get('outputKind') == 'experiment_design')
@@ -167,14 +186,14 @@ def descriptor(version=1):
     # Reuse native JSON Schema definitions, without encoding the model's input
     # or output values. The independent local validator retains the full schema.
     schema_profile = 4 if version == 5 else version
-    if schema_profile in (3, 4, 6, 7):
+    if schema_profile in (3, 4, 6, 7, 8):
         from services.deep_research.shared_experiment_references import wire_schema
         plain = wire_schema(schema_profile)
     else:
         plain = schema()
     properties = plain['properties']
     text = properties['hypothesis']
-    if schema_profile in (6, 7):
+    if schema_profile in (6, 7, 8):
         ident = properties['data']['properties']['providedInputs']['items']['properties']['id']
     else:
         ident = properties['states']['items']['properties']['id']
@@ -194,7 +213,8 @@ def descriptor(version=1):
         return deepcopy(value)
     if digest(expand(compact))!=digest(plain):raise ValueError('Shared proposal schema changed constraints')
     name = {3: 'shared_binary_factorial_refs_v3', 4: 'shared_binary_factorial_states_v4',
-            6: 'shared_binary_factorial_assets_v6', 7: 'shared_binary_factorial_arms_v7'}.get(
+            6: 'shared_binary_factorial_assets_v6', 7: 'shared_binary_factorial_arms_v7',
+            8: 'shared_binary_factorial_resources_v8'}.get(
         schema_profile, 'shared_binary_factorial_v1')
     return {'type':'json_schema','name':name,'schema':compact}
 
@@ -256,7 +276,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                                              ('maxModelCalls','maxTokens','maxWallClockSeconds')},
                              'sourcePolicy': record.get('sourcePolicy'), 'requiredDomains': sorted(set(required_domains))})
     prompt = instructions(record) + input_text(input_data)
-    output_tokens = COMPACT_RESPONSE_OUTPUT_TOKENS if record[MARKER] in (5, 6, 7) else OUTPUT_TOKENS
+    output_tokens = COMPACT_RESPONSE_OUTPUT_TOKENS if record[MARKER] in (5, 6, 7, 8) else OUTPUT_TOKENS
     request = request_identity(record, NODE, prompt, {'temperature': 0.0, 'max_tokens': output_tokens,
                                                      'timeout_seconds': 90})
     overhead = overhead_bytes(record, NODE, request['extra'])
@@ -289,7 +309,7 @@ def _validate_response(response, profile, built):
         raise ValueError('Response object required')
     content = response.get('rawContent', response.get('content', ''))
     complete = response.get('finishReason', response.get('finish_reason')) == 'stop'
-    compact_transport = profile in (5, 6, 7)
+    compact_transport = profile in (5, 6, 7, 8)
     if compact_transport and not complete:
         return None, [{'code': 'plan.incomplete_response', 'path': '/'}]
     raw_limit = COMPACT_RESPONSE_RAW_BYTES if compact_transport else MAX_BYTES
@@ -301,7 +321,7 @@ def _validate_response(response, profile, built):
         raise ValueError('Response capacity')
     value = _parse(content)
     evidence_ids, domains = built['allowedEvidenceIds'], built['requiredDomains']
-    if profile in (3, 4, 5, 6, 7):
+    if profile in (3, 4, 5, 6, 7, 8):
         from services.deep_research.shared_experiment_references import compile_plan
         value, issues = compile_plan(value, evidence_ids, required_domains=domains,
                                      profile=4 if profile == 5 else profile)

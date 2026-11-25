@@ -1,0 +1,41 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v10",
+  "payloadSha256": "b6c195cc5a07e4a69c9ca196c7f50720bac9b7a37d457909f9f903ac938d6a3c",
+  "legacyIssues": [
+    {
+      "code": "plan.budget_allocation",
+      "path": "/budgets/0"
+    },
+    {
+      "code": "plan.incomplete_resource_accounting",
+      "path": "/metrics/3/stateIds"
+    }
+  ],
+  "oldInputBytes": 29847,
+  "newInputBytes": 30415,
+  "reviewInputBytes": 31876,
+  "repairInputBytes": 31910,
+  "reviewEvidenceCount": 10,
+  "repairEvidenceCount": 14,
+  "sharedPreparationSteps": [
+    "prepare_sfm",
+    "prepare_split",
+    "prepare_checkpoint"
+  ],
+  "trainingMemoryCaptures": [
+    {
+      "stepId": "fit_arm",
+      "recordStateId": "arm_peak_memory_record"
+    }
+  ],
+  "typedAccountingAddedInReplay": true,
+  "structuralValidationIssues": [],
+  "reviewTargets": 27,
+  "reviewHardIssueCount": 3,
+  "sentForReview": false,
+  "providerCalls": 0,
+  "scientificContentAccepted": false,
+  "originalEvidenceCount": 20,
+  "frozenPremiseEvidenceCount": 6,
+  "reviewBytesBeforeReviewInputCompaction": 40376
+}

@@ -66,10 +66,12 @@ def view(record):
     """A compiled revision, explicitly not a fabricated generation response."""
     base=record['state']['sharedExperimentGeneration']; saved=record['state']['sharedExperimentRevision']
     if (not isinstance(saved,dict) or saved.get('status')!='awaiting_scientific_review' or saved.get('baseBindingDigest')!=base['bindingDigest']
-            or saved.get('inputDigest')!=digest({'base':base['bindingDigest'],'request':saved.get('request')})
+            or saved.get('inputDigest')!=digest({'base':base['bindingDigest'],'request':saved.get('request'),
+                **({'suppliedEvidenceAliases':saved.get('suppliedEvidenceAliases')}
+                   if base['boundProposal']['proposal'].get('version') == 3 else {})})
             or digest(saved.get('response'))!=saved.get('responseDigest')):
         raise DeepResearchError('invalid_shared_experiment_revision','修订未就绪或原始响应已改变。')
-    try: bound=apply(base,saved['response'])
+    try: bound=_apply_scoped(base,saved)
     except (ValueError,TypeError,KeyError,IndexError,RecursionError) as exc:
         raise DeepResearchError('invalid_shared_experiment_revision','显式修订未通过完整方案检查。') from exc
     if bound!=saved.get('boundProposal') or not validate_bound(bound,expected_digest=saved.get('bindingDigest')):
@@ -77,6 +79,15 @@ def view(record):
     return {'origin':'revision','status':'awaiting_scientific_review','boundProposal':bound,
             'bindingDigest':bound['bindingDigest'],'scientificApproval':False,
             'sourceGenerationBindingDigest':base['bindingDigest'],'revisionResponseDigest':saved['responseDigest']}
+
+
+def _apply_scoped(base, saved):
+    bound = apply(base, saved['response'])
+    if bound['proposal'].get('version') == 3:
+        supplied = set(saved['suppliedEvidenceAliases'])
+        if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
+            raise ValueError('Repair cited evidence outside its input')
+    return bound
 
 
 def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
@@ -99,12 +110,25 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         answer=validated_saved(prior,input_data,aliases)
         if answer['complete'] is not False or not answer['repairEligible']: raise ValueError('No diagnosed defect permits a repair')
         feedback={'answerCoverage':answer['audit']}
-    prompt=INSTRUCTIONS+input_text({**input_data,'baseDigest':base['bindingDigest'],
-                                  'proposal':base['boundProposal']['proposal'],'diagnosedFeedback':feedback})
-    req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':6144,'timeout_seconds':90})
+    proposal = base['boundProposal']['proposal']
+    def measure(data):
+        prompt=INSTRUCTIONS+input_text({**data,'baseDigest':base['bindingDigest'],
+                                      'proposal':proposal,'diagnosedFeedback':feedback})
+        req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':6144,'timeout_seconds':90})
+        return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
+    supply = {}
+    if proposal.get('version') == 3:
+        from services.deep_research.shared_experiment_review_input import fit_accounted_evidence
+        decisions = feedback.get('scientificReview', {}).get('verdict', {}).get('checks', [])
+        feedback_refs = {binding['evidenceId'] for decision in decisions for binding in decision['evidenceBindings']}
+        req, size, supplied = fit_accounted_evidence(record,input_data,aliases,proposal,measure,32000,
+                                                     feedback_refs=feedback_refs)
+        supply = {'suppliedEvidenceAliases':supplied}
+    else:
+        req, size = measure(input_data)
     built={'request':req,'baseBindingDigest':base['bindingDigest'],
-           'inputDigest':digest({'base':base['bindingDigest'],'request':req}),
-           'inputBytes':len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra']),
+           'inputDigest':digest({'base':base['bindingDigest'],'request':req,**supply}),
+           'inputBytes':size, **supply,
            'scientificApproval':False}
     saved=deepcopy(record['state'].get('sharedExperimentRevision'))
     if saved is None:
@@ -124,7 +148,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     if saved['status'] not in ('response_received','awaiting_scientific_review','invalid_response') or digest(saved.get('response'))!=saved.get('responseDigest'):
         raise DeepResearchError('invalid_shared_experiment_revision','修订原始响应或状态已改变。')
     if saved['status']=='invalid_response':return saved
-    try:bound=apply(base,saved['response'])
+    try:bound=_apply_scoped(base,saved)
     except (ValueError,TypeError,KeyError,IndexError,RecursionError):
         saved.update(status='invalid_response');checkpoint(deepcopy(saved));return saved
     if saved['status']=='awaiting_scientific_review':

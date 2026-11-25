@@ -40,6 +40,30 @@ def verdict(r, data):
 def reply(v): return {'content':json.dumps(v,ensure_ascii=False),'finishReason':'stop'}
 
 
+def test_resource_review_window_keeps_frozen_premises_and_bound_feedback_evidence():
+    from services.deep_research.shared_experiment_review_input import fit_accounted_evidence
+
+    aliases = {'E1':'a', 'E2':'b', 'E3':'c', 'E4':'d'}
+    allocation = {'requiredEvidenceIds':['b'], 'suppliedEvidenceIds':list(aliases.values()),
+                  'allFrozenPremiseBundlesRetained':True}
+    record = {'state':{'sharedExperimentMaterialAllocation':allocation}}
+    data = {'evidence':[{'evidenceId':alias,'tableDataRef':alias} for alias in aliases],
+            'tables':{alias:{'id':alias} for alias in aliases}, 'question':'Frozen request'}
+    proposal = {'sourceFacts':[{'evidenceRefs':['E3']}], 'steps':[{'id':'original'}]}
+    def measure(view):
+        return view, len(view['evidence'])*10
+
+    view, size, supplied = fit_accounted_evidence(record, data, aliases, proposal, measure, 30, feedback_refs=['E4'])
+    assert supplied == ['E2','E3','E4'] and size == 30
+    assert set(view['tables']) == set(supplied) and view['question'] == 'Frozen request'
+    assert len(data['evidence']) == 4
+    _, size, supplied = fit_accounted_evidence(record, data, aliases, proposal, measure, 20, feedback_refs=['E4'])
+    assert supplied == ['E2','E3','E4'] and size == 30  # Explicit capacity rejection preserves all required evidence.
+    allocation['allFrozenPremiseBundlesRetained'] = False
+    _, size, supplied = fit_accounted_evidence(record, data, aliases, proposal, measure, 30)
+    assert supplied == list(aliases) and size == 40
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []

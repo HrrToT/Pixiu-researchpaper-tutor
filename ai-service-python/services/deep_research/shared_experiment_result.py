@@ -69,6 +69,7 @@ def compile_candidate(record, input_data, aliases):
     lines += ['', '## 执行顺序', '']
     data_uses = {'training':'训练数据', 'evaluation':'评估数据', 'none':'不读取新数据'}
     asset_names = {row['id']: row['description'] for row in data['inputs']}
+    shared_budget_starts = {}
     for i,step in enumerate(p['steps'],1):
         if step['factor'] is not None:
             factor = step['factor']; action = ('开启' if factor['level'] else '关闭')+factors[factor['id']]['label']+'，按上表操作'
@@ -83,13 +84,24 @@ def compile_candidate(record, input_data, aliases):
         if step['budgetId'] is not None:
             b = next(b for b in p['budgets'] if b['id']==step['budgetId'])
             unit = {'optimizer_steps':'优化步','epochs':'轮','wall_seconds':'秒'}[b['unit']]
-            lines += ['   预算：'+str(b['cap'])+' '+unit+'；'+('等预算对照' if b['matching']=='equal' else '原生预算，单独报告')
-                      +'；'+b['stopRule']]
+            if b.get('allocation') == 'shared_preparation_total':
+                start = shared_budget_starts.setdefault(b['id'], i)
+                if start == i:
+                    end = max(step_numbers[s['id']] for s in p['steps'] if s['budgetId'] == b['id'])
+                    lines.append(f'   步骤 {start}–{end} 共用 {b["cap"]} 秒准备预算，连续计时。{b["stopRule"]}')
+                else:
+                    lines.append(f'   沿用步骤 {start} 开始的准备计时。')
+            else:
+                lines += ['   预算：'+str(b['cap'])+' '+unit+'；'+('等预算对照' if b['matching']=='equal' else '原生预算，单独报告')
+                          +'；'+b['stopRule']]
     lines += ['', '## 测量口径', '']
     for metric in p['metrics']:
         direction = '越大越好' if metric['direction']=='higher_better' else '越小越好'
         lines += ['- '+metric['domain']+'（'+metric['unit']+'，'+direction+'）：'+metric['procedure'],
                   '  涉及状态：'+names(metric['stateIds'])+'；仅对状态实际存在的组计量。']
+        if captures := metric.get('fitMemoryCaptures'):
+            intervals = '、'.join(f'步骤 {step_numbers[capture["stepId"]]}' for capture in captures)
+            lines.append(f'  在{intervals}各自的完整拟合窗口记录峰值。对每个实验组取本组各拟合窗口中的最大值。')
     lines += ['', '## 效应与判断', '', '各指标单独分析：越大越好的指标取负号作为损失，越小越好的指标保留原值，不混合不同单位。',
               '按 00、10、01、11 顺序，对损失使用以下对比权重：']
     labels = {'A':'因素 A 平均主效应','B':'因素 B 平均主效应','interaction':'交互效应'}

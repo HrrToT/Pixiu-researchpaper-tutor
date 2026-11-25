@@ -9,7 +9,7 @@ from services.deep_research.shared_experiment_plan import GROUPS, _array, _objec
 
 
 def wire_schema(profile=3):
-    wire = schema(2 if profile in (4, 6, 7) else 1)
+    wire = schema(3 if profile == 8 else 2 if profile in (4, 6, 7) else 1)
     states = wire['properties']['states']['items']['properties']
     input_source = states['source']
     input_source['properties']['kind'] = {'const': 'input'}
@@ -17,7 +17,7 @@ def wire_schema(profile=3):
     steps = step['properties']
     operation = steps['operation']
     steps['operation'] = {'anyOf': [operation, {'type': 'null'}]}
-    if profile == 7:
+    if profile in (7, 8):
         step.update({
             'if': {'properties': {'kind': {'const': 'intervene'}}},
             'then': {'properties': {'operation': {'type': 'null'}, 'groups': {'const': []},
@@ -37,7 +37,7 @@ def wire_schema(profile=3):
     metric = wire['properties']['metrics']['items']
     metric['properties']['measureOnSteps'] = _array(states['id'], minimum=1, unique=True)
     metric['required'].append('measureOnSteps')
-    if profile in (6, 7):
+    if profile in (6, 7, 8):
         root = wire['properties']
         del root['states']
         wire['required'].remove('states')
@@ -104,15 +104,15 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3):
         return None, issues
 
     proposal = deepcopy(value)
-    if profile in (6, 7):
+    if profile in (6, 7, 8):
         _expand_asset_catalog(proposal)
-    if profile == 7:
+    if profile in (7, 8):
         for step in proposal['steps']:
             if step['kind'] == 'intervene':
                 factor = step['factor']
                 axis = 0 if factor['id'] == 'A' else 1
                 step['groups'] = [group for group in GROUPS if int(group[axis]) == factor['level']]
-    if profile in (4, 6, 7):
+    if profile in (4, 6, 7, 8):
         _expand_owned_states(proposal, issues)
     factors = {row['id']: row for row in proposal['factors']}
     provided_inputs = {row['id'] for row in proposal['data']['inputs'] if row['availability'] == 'provided'}

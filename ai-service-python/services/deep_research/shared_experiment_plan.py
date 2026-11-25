@@ -85,10 +85,17 @@ def schema(version=1):
                              'uncertainty': text, 'decisionRule': text, 'limitations': text}),
         'unresolved': _array(text, maximum=16),
     })
-    if version == 2:
+    if version in (2, 3):
         step = plan['properties']['steps']['items']
         step['properties']['inputIds'] = _array(ident, maximum=8, unique=True)
         step['required'].append('inputIds')
+    if version == 3:
+        budget = plan['properties']['budgets']['items']
+        budget['properties']['allocation'] = {'enum': ['single', 'shared_preparation_total']}
+        budget['required'].append('allocation')
+        metric = plan['properties']['metrics']['items']
+        metric['properties']['fitMemoryCaptures'] = _array(_object({'stepId': ident, 'recordStateId': ident}), maximum=32)
+        metric['required'].append('fitMemoryCaptures')
     return plan
 
 
@@ -111,8 +118,9 @@ def validate(value, evidence_ids, *, required_domains=()):
             return [{'code': 'plan.capacity', 'path': '/'}]
     except (TypeError, ValueError, OverflowError, RecursionError):
         return [{'code': 'plan.json', 'path': '/'}]
-    typed_inputs = isinstance(value, dict) and type(value.get('version')) is int and value['version'] == 2
-    errors = list(Draft202012Validator(schema(2 if typed_inputs else 1)).iter_errors(value))
+    version = value.get('version') if isinstance(value, dict) else None
+    typed_inputs = type(version) is int and version in (2, 3)
+    errors = list(Draft202012Validator(schema(version if typed_inputs else 1)).iter_errors(value))
     if errors:
         return [{'code': 'plan.schema', 'path': '/'+'/'.join(map(str, e.absolute_path))} for e in errors[:64]]
     def indexed(rows, path):
@@ -248,7 +256,14 @@ def validate(value, evidence_ids, *, required_domains=()):
         if (budget['scope'] == 'shared' and budget['groups'] or budget['scope'] == 'arm' and not budget['groups']):
             issue('plan.budget_scope', f'/budgets/{i}')
         counts = [allocations[(budget['id'], g)] for g in (budget['groups'] if budget['scope'] == 'arm' else ['shared'])]
-        if any(n != 1 for n in counts): issue('plan.budget_allocation', f'/budgets/{i}')
+        if budget.get('allocation') == 'shared_preparation_total':
+            positions = [j for j, step in enumerate(value['steps']) if step['budgetId'] == budget['id']]
+            if (budget['scope'] != 'shared' or budget['unit'] != 'wall_seconds' or budget['matching'] != 'native'
+                    or budget['cap'] <= 0 or not positions or positions != list(range(positions[0], positions[-1] + 1))
+                    or any(value['steps'][j]['kind'] != 'prepare' for j in positions)
+                    or any(step['scope'] != 'shared' for step in value['steps'][:positions[-1] + 1])):
+                issue('plan.shared_preparation_budget', f'/budgets/{i}')
+        elif any(n != 1 for n in counts): issue('plan.budget_allocation', f'/budgets/{i}')
         if budget['scope'] == 'arm' and budget['matching'] == 'equal' and set(budget['groups']) != set(GROUPS):
             issue('plan.unmatched_budget', f'/budgets/{i}/groups')
     if any(treatments[(f, g)] != 1 for f in ('A', 'B') for g in GROUPS):
@@ -271,7 +286,24 @@ def validate(value, evidence_ids, *, required_domains=()):
     persisted = {s['id'] for s in value['states'] if s['persisted']}
     for i, metric in enumerate(value['metrics']):
         if not set(metric['stateIds']) <= set(states): issue('plan.metric_state', f'/metrics/{i}/stateIds')
-        if metric['domain'] in ('storage', 'memory') and not persisted <= set(metric['stateIds']):
+        captures = metric.get('fitMemoryCaptures', [])
+        if captures:
+            captured_steps = {capture['stepId'] for capture in captures}
+            fits = [step for step in value['steps'] if step['kind'] == 'fit' and step['scope'] == 'arm']
+            records = {capture['recordStateId'] for capture in captures}
+            if (metric['domain'] != 'memory' or metric['direction'] != 'lower_better'
+                    or len(captured_steps) != len(captures) or len(records) != len(captures)
+                    or captured_steps != {step['id'] for step in fits}
+                    or {group for step in fits for group in step['groups']} != set(GROUPS)
+                    or not records <= set(metric['stateIds'])
+                    or any(capture['recordStateId'] not in steps.get(capture['stepId'], {}).get('creates', [])
+                           for capture in captures)):
+                issue('plan.fit_memory_capture', f'/metrics/{i}/fitMemoryCaptures')
+            elif any(not {capture['recordStateId'] for capture in captures
+                           if set(steps[capture['stepId']]['groups']) & set(step['groups'])} <= set(step['reads'])
+                       for step in value['steps'] if metric['id'] in step['metricIds']):
+                issue('plan.fit_memory_capture_read', f'/metrics/{i}/fitMemoryCaptures')
+        elif metric['domain'] in ('storage', 'memory') and not persisted <= set(metric['stateIds']):
             issue('plan.incomplete_resource_accounting', f'/metrics/{i}/stateIds')
     if set(value['analysis']['metricIds']) != set(metrics): issue('plan.analysis_metrics', '/analysis/metricIds')
     contrasts = value['analysis']['contrasts']
