@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "07d5eb64586b256a504f7f9ee08bb6655ba966e8",
+  "fullRegression": "comparison-speed-and-audit-binding-20261126.json",
+  "candidate": "academic-dr-comparison-speed-and-audit-binding-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "sharedExperimentProfile": 3,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

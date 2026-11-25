@@ -1,0 +1,75 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v52",
+  "runId": "dr_run_369769b2b29853088d790e076a174168",
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "modelCalls": 13,
+  "tokens": 66987,
+  "elapsedSeconds": 149.0,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 2,
+    "verify_answer_coverage": 1
+  },
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "automaticRetry": false,
+  "acceptedClaimIds": [
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1"
+  ],
+  "rejectionReasons": {
+    "numeric_mismatch": 1,
+    "unbound_table_measurement": 1,
+    "comparison_benchmark_example_scope": 2
+  },
+  "coverageStatus": "checked",
+  "coverageVerdicts": {
+    "ob-1-1": "covered",
+    "ob-1-2": "covered",
+    "ob-2-1": "covered",
+    "ob-2-2": "covered",
+    "answer_scope": "covered"
+  },
+  "coverageErrors": [],
+  "repairStatus": "skipped_budget",
+  "repairCompletedBatches": [],
+  "repairStoppedBatch": null,
+  "reportVersionId": "report_dr_run_369769b2b29853088d790e076a174168_v1",
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "originalServiceAndHistoryVerified": true,
+  "receiptSha256": {
+    ".payload.json": "3d90730f40ccf6987cf9dd4cc4692719801224fd60370abe5f6c5baa681c64ff",
+    ".calls.json": "a12b0ea50999c7718b78f2b5dee1932893847cbd5f198f791e10914dd3029f5d",
+    ".result.json": "6bc476b78dd99d39dd541741ae3a89ba131092caeee6232965e23bddff133bd1",
+    ".execution.json": "08b489862997079e03b1bc425e8a8c4d30fe5642bae28ba2cc78ac8d8848ccf0"
+  },
+  "sourceCommit": "07d5eb64586b256a504f7f9ee08bb6655ba966e8",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "restorationSha256": "c5494189dcbe92ac7467f29efb3bcf0a3b1dbb34b6a1fed7bb08fbe86844a923",
+  "original3dgsDirectionalColorVerified": true,
+  "additionalFrameRateClaimsBlocked": 2,
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 7713,
+    "used": 8816
+  },
+  "missingVerifiedJointConclusion": "ob-2-1",
+  "manualContentGaps": [
+    "LightGaussian compression mechanism",
+    "cross-paper speed comparability"
+  ]
+}
