@@ -138,9 +138,13 @@ def render_report(payload, *, _counting=False):
     if compact:
         labels['inference'] = '推断：'
     comparison = payload.get('comparisonCells')
+    short_attribution = {}
     if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version'] in (1,2,3):
         from services.deep_research.comparison_presentation import sections as comparison_sections
         sections = comparison_sections(comparison, list(claims.values()))
+        if comparison.get('shortProseVersion') == 1:
+            from services.deep_research.comparison_presentation import prose_attribution
+            short_attribution = prose_attribution(comparison, list(claims.values()), sources, counting=_counting)
     # This server-compiled answer is already a complete, audited document.
     # Retain its headings/tables and evidence links without a list-item wrapper.
     # Other reports and malformed/missing citation maps keep the legacy path.
@@ -186,6 +190,11 @@ def render_report(payload, *, _counting=False):
             # Only repeated deterministic protocol suffixes are hidden. Keep
             # every original sentence, condition and source on its own claim.
             label=_claim_label(claim,labels,payload.get('presentationVersion'),payload.get('outputKind'))
+            if key in short_attribution:
+                text, paper, ref = short_attribution[key]
+                if paper:
+                    prefix = f'[{paper}](#research-evidence-{ref})' if ref and not _counting else paper
+                    label = prefix + '：' + label
             content.append(f"{'' if _counting else '- '}{label}{text} {citations}".rstrip())
             conditions = claim.get("conditions")
             if isinstance(conditions, dict) and conditions:

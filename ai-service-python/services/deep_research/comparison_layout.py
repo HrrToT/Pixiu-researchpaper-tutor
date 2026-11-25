@@ -2,6 +2,39 @@
 from copy import deepcopy
 import re
 
+_TABLE_MENTION = re.compile(r'表格|\btable\b', re.I)
+_TABLE_PROHIBITION = re.compile(r'(?:不要|不用|无需|取消|去掉)[^。！？\n]{0,8}表格|\b(?:no|without)\s+(?:a\s+)?table\b', re.I)
+
+
+def short_prose_enabled(record, question, limit):
+    """Use prose for new, explicitly length-limited comparisons without a table requirement."""
+    version = record.get('shortComparisonLayoutContractVersion')
+    if type(version) is not int or version != 1 or type(limit) is not int or not 0 < limit <= 300:
+        return False
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    for layer in layers:
+        if _TABLE_PROHIBITION.search(layer):
+            return True
+        if _TABLE_MENTION.search(layer):
+            return False
+    return True
+
+
+def short_prose_guidance(record, question, limit, target_count):
+    if not short_prose_enabled(record, question, limit):
+        return ''
+    share = max(1, (limit - min(30, limit // 5)) // max(1, target_count))
+    return (f'The app renders all stages as short cited paragraphs, within {limit} characters in total. '
+            f'Aim for about {share} Chinese characters per point including conditions. This is a target, '
+            'not permission to omit what the user asks. Give one concise source-local result per paper point; '
+            'the app supplies its paper label, so omit repeated full titles. The joint point states the '
+            'comparison verdict and the shortest source-backed reason. Keep only settings needed to establish '
+            'or qualify that verdict. In comparability boundaries, observedSettings are relevant protocols, '
+            'not a second list of FPS or other outcomes from the paper points. Do not restate per-paper results '
+            'or list several unchecked conditions. If a shared condition cannot be verified, say which '
+            'alignment remains unestablished without claiming that the papers used different settings. '
+            'Keep any required units, dataset or benchmark conditions, and exact evidence IDs.\n')
+
 
 def explicit_axes(question):
     """Recognize a short explicit list after a table-comparison instruction.
@@ -15,7 +48,7 @@ def explicit_axes(question):
     layers=getattr(question,'point_instruction_layers',getattr(question,'instruction_layers',(question,)))
     for layer in layers:
         if not isinstance(layer,str):continue
-        if re.search(r'(?:不要|不用|无需|取消|去掉)[^。！？\n]{0,8}表格|\b(?:no|without)\s+(?:a\s+)?table\b',layer,re.I):return []
+        if _TABLE_PROHIBITION.search(layer):return []
         lists=[];matched=False
         for pattern in patterns:
             for match in re.finditer(pattern,layer,re.I):

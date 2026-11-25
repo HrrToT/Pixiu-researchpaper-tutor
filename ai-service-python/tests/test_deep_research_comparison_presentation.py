@@ -108,6 +108,44 @@ def test_short_titles_have_full_bibliographic_tooltips_and_stay_in_counted_layou
     assert 'A' * 35 + '…' in counted and full not in counted
 
 
+def test_short_comparison_prose_links_exact_papers_and_preserves_facts_and_budget():
+    from services.deep_research.answer_constraints import visible_count
+    from services.deep_research.comparison_presentation import audit_digest
+
+    payload = fixture()
+    meta = payload['comparisonCells']
+    meta['version'] = 3
+    meta['jointGoals'] = []
+    for row in meta['layout']:
+        row.update(axisId='compression', axisTitle='压缩机制')
+    titles = ['First full paper title with evaluation detail', 'Second full paper title with evaluation detail']
+    payload['evidence'] = []
+    for index, source in enumerate(meta['sources'].values()):
+        source['title'] = titles[index]
+        payload['evidence'].append({'evidenceId': ['e-a', 'e-b'][index], 'sourceTitle': titles[index],
+                                    'sourceWorkId': source['workId'], 'sourceVersionId': source['versionId']})
+    payload['claims'][2]['text'] = f'当前引用不足以比较{titles[0]}与{titles[1]}的跨数据集速度。'
+    payload['characterLimit'] = 200
+    original = audit_digest(meta, payload['claims'])
+    meta['shortProseVersion'] = 1
+    before = deepcopy(payload)
+    reader_text = render_report(payload)
+    assert '| 比较维度' not in reader_text
+    assert reader_text.index('当前引用不足以比较') < reader_text.index('剪除冗余基元')
+    assert '[论文1](#research-evidence-e-a)' in reader_text
+    assert '[论文2](#research-evidence-e-b)' in reader_text
+    assert all(title in reader_text.split('<summary>原文依据</summary>')[1] for title in titles)
+    assert '保持相同数据与预算' in reader_text and payload == before
+    assert original != audit_digest(meta, payload['claims'])
+    edited_claims = deepcopy(payload['claims'])
+    edited_claims[0]['text'] = '剪除不同的基元。'
+    assert audit_digest(meta, edited_claims) != audit_digest(meta, payload['claims'])
+    assert visible_count(payload, 200, 'paper_comparison', payload['evidence'], 4) == visible_answer_character_count(payload)
+    assert visible_answer_character_count(payload) <= 200
+    payload['evidence'][0]['sourceVersionId'] = 'different-version'
+    assert titles[0] in render_report(payload, _counting=True)
+
+
 def test_version_labels_require_a_verified_publication_identity():
     from services.deep_research.publication_identity import from_verified_pages
     payload=fixture()

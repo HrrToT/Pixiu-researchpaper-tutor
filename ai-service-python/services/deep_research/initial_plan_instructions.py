@@ -51,7 +51,8 @@ def prompt(record,data_guidance):
     from services.deep_research.request_context import effective_question, parent_context, separate_clarification
     from services.deep_research.initial_plan_response import followup_anchor_layers
     state=record.get('state',{})
-    inputs={'question':effective_question(record),'outputKind':state.get('outputKind','direction_survey'),
+    question = effective_question(record)
+    inputs={'question':question,'outputKind':state.get('outputKind','direction_survey'),
         'clarification':separate_clarification(record),
         'materials':[{'id':m.get('materialId'),'title':m.get('title','')} for m in record.get('materials',[])[:10]],
         'primaryPapers':record.get('focusPaperIds',[]),
@@ -90,6 +91,14 @@ def prompt(record,data_guidance):
     from services.deep_research.comparison_intent import enabled as comparison_enabled, guidance as comparison_guidance
     comparison_rules = ''
     if comparison_enabled(record):
+        from services.deep_research.answer_constraints import requested_character_limit
+        from services.deep_research.comparison_layout import short_prose_enabled
+        if followup_layers and short_prose_enabled(record, question, requested_character_limit(question)):
+            followup_rule += ('For a short follow-up asking only why a cross-paper comparison is or is not valid, '
+                              'make that explanation one joint answer requirement. Cite both papers; treat protocol '
+                              'details as premises, not extra per-paper deliverables. Do not add an FPS inventory, '
+                              'calculate a ratio, or require evidence of a difference that the question does not establish. '
+                              'Keep separate any other deliverables the current user actually asks for.\n')
         shape['items'][0]['obligations'][0]['comparisonRole'] = {
             'kind':'per_paper','label':'<short axis label>','requestExcerpt':'<literal axis substring>'}
         comparison_rules = '\n' + comparison_guidance(record)

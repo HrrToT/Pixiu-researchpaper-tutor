@@ -298,6 +298,25 @@ def test_followup_plan_accepts_only_current_human_anchors(old_field):
         validate_shape(draft, question, comparison_roles=True, followup_layers=(current,))
 
 
+def test_short_followup_plans_protocol_evidence_without_adding_paper_deliverables():
+    from services.deep_research.initial_plan_instructions import prompt
+    from test_deep_research_comparison_intent import record as comparison_record
+
+    current = '只追加解释为什么不同论文中的FPS不能直接相除。200字以内。'
+    parent = '用表格比较两篇论文的速度并给出测量数字。'
+    r = comparison_record()
+    r.update(question=current, parentRunId='parent', continuationContextContractVersion=1,
+             continuationFormatContractVersion=1, initialPlanResponseContractVersion=4,
+             shortComparisonLayoutContractVersion=1,
+             continuationContext={'parentRunId': 'parent', 'parentInstructions': [parent], 'artifactContext': {}})
+    text = prompt(r, 'Use original evidence.')
+    assert 'make that explanation one joint answer requirement' in text
+    assert 'protocol details as premises, not extra per-paper deliverables' in text
+    assert parent in text and current in text
+    r['question'] = '用表格写出FPS可比性与主要条件。200字以内。'
+    assert 'make that explanation one joint answer requirement' not in prompt(r, 'Use original evidence.')
+
+
 @pytest.mark.parametrize('value',[None,True,0,2])
 def test_server_owns_immutable_response_control_and_does_not_migrate_legacy(tmp_path,value):
     from services.deep_research.facade import ResearchFacade

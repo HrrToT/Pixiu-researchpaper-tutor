@@ -1883,6 +1883,9 @@ space with unsupported global absence or incidental iteration/performance values
                 bind_benchmark_example(record, comparison_cell_draft, comparison_plan)
                 comparison_cell_draft['sources'] = deepcopy(source_registry)
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
+                from services.deep_research.comparison_layout import short_prose_enabled
+                if short_prose_enabled(record, question, requested_limit):
+                    comparison_cell_draft['shortProseVersion'] = 1
                 parsed = comparison_cell_draft['report']
                 from services.deep_research.comparison_presentation import metadata as comparison_metadata
                 parsed['comparisonCells'] = comparison_metadata(comparison_cell_draft)

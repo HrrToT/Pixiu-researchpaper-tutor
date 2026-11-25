@@ -317,6 +317,7 @@ class ResearchFacade:
             "authoredBodyContractVersion": 3,
             "synthesisInputContractVersion": 2,
             "comparisonCellsContractVersion": self._comparison_cells_version,
+            **({'shortComparisonLayoutContractVersion': 1} if continuation_context and self._comparison_cells_version == 1 else {}),
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,

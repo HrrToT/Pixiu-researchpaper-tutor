@@ -5,6 +5,7 @@ Layout and bibliography are not an alternative scientific approval channel.
 """
 from copy import deepcopy
 from html import escape
+import re
 
 from services.deep_research.source_labels import source_display_title
 
@@ -15,8 +16,14 @@ def audit_view(value, claims):
     layout = [{**row, 'claimIds': [cid for cid in row['claimIds'] if cid in known]}
               for row in value['layout']]
     refs = list(dict.fromkeys(ref for claim in claims for ref in claim.get('evidenceRefs', [])))
-    table, _ = render_table(value, claims, {ref: i+1 for i, ref in enumerate(refs)}, counting=True)
-    if value['version'] == 3:
+    short = value.get('shortProseVersion') == 1
+    table, _ = ('', set()) if short else render_table(value, claims, {ref: i+1 for i, ref in enumerate(refs)}, counting=True)
+    if short:
+        from services.deep_research.contracts import digest
+        fields = ('claimId', 'kind', 'text', 'conditions', 'evidenceRefs')
+        table = {'format': 'cited_prose', 'present': False, 'cellsFromAcceptedClaimIds': True,
+                 'claimsSha256': digest([{key: claim.get(key) for key in fields} for claim in claims])}
+    elif value['version'] == 3:
         import hashlib
         # Full accepted text and conditions are already in the audit's claims.
         # Keep the exact table bound without duplicating all scientific prose.
@@ -34,6 +41,7 @@ def audit_view(value, claims):
             joint_binding={'jointReportedClaimsSha256':hashlib.sha256(json.dumps(joint,ensure_ascii=False,
                 sort_keys=True,separators=(',',':')).encode()).hexdigest()}
     return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
+            **({'shortProseVersion': 1} if short else {}),
             'sections': sections(value, claims), 'table': table,
             **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {}),
             **({'jointDeliverables':deepcopy(value['jointDeliverables'])} if value.get('jointDeliverables') else {}),
@@ -90,6 +98,7 @@ def metadata(draft):
     fields = ('obligationId', 'question', 'source', 'claimIds')
     if shared: fields += ('axisId', 'axisTitle')
     return {'version': version if shared else 1,
+            **({'shortProseVersion': 1} if draft.get('shortProseVersion') == 1 else {}),
             **({'checkOutputShapeVersion':1} if version==3
                and type(draft.get('answerWireAudit',{}).get('version')) is int
                and draft['answerWireAudit']['version']==2 else {}),
@@ -104,6 +113,9 @@ def metadata(draft):
 def sections(value, claims):
     cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
     ordinary = [c for c in claims if c['claimId'] not in cell_ids]
+    if value.get('shortProseVersion') == 1:
+        paper_points = [claim for claim in claims if claim['claimId'] in cell_ids]
+        return [{'title': '比较结论', 'claimIds': [claim['claimId'] for claim in ordinary + paper_points]}]
     return [
         {'title': '比较结论', 'claimIds': [c['claimId'] for c in ordinary
                                        if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]},
@@ -112,6 +124,48 @@ def sections(value, claims):
         {'title': '选择建议', 'claimIds': [c['claimId'] for c in ordinary
                                        if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]},
     ]
+
+
+def prose_attribution(value, claims, evidence, *, counting=False):
+    """Get stable labels and exact title replacements without editing the claims."""
+    sources = value['sources']
+    labels = {alias: f'论文{index}' for index, alias in enumerate(sorted(sources), 1)}
+    by_cell = {cid: row['source'] for row in value['layout'] for cid in row['claimIds']}
+    titles = {}
+    from services.deep_research.publication_identity import validated
+    for alias, source in sources.items():
+        title = source_display_title(source.get('title'))
+        if len(title) <= 20:
+            continue
+        publication = validated(source.get('publicationIdentity'), source.get('versionId'))
+        suffix = publication.get('displayId') if publication else None
+        for display in (title, f'{title} ({suffix})') if suffix else (title,):
+            titles.setdefault(display, []).append(alias)
+    pattern = re.compile('|'.join(re.escape(title) for title in sorted(titles, key=len, reverse=True))) if titles else None
+    result = {}
+    for claim in claims:
+        cid = claim['claimId']
+        owned_refs = {}
+        for ref in claim.get('evidenceRefs', []):
+            item = evidence.get(ref, {})
+            for alias, source in sources.items():
+                if (source.get('workId') and source.get('versionId')
+                        and item.get('sourceWorkId') == source['workId']
+                        and item.get('sourceVersionId') == source['versionId']):
+                    owned_refs.setdefault(alias, ref)
+        paper = by_cell.get(cid)
+        text = claim['text']
+        if paper is None and claim.get('kind') == 'inference' and pattern:
+            def title_label(match):
+                owners = titles[match[0]]
+                if len(owners) != 1 or owners[0] not in owned_refs:
+                    return match[0]
+                alias = owners[0]
+                label = labels[alias]
+                return label if counting else f'[{label}](#research-evidence-{owned_refs[alias]})'
+            text = pattern.sub(title_label, text)
+        result[cid] = (text, labels.get(paper, ''), owned_refs.get(paper))
+    return result
 
 
 def _safe(value):

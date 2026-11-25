@@ -59,6 +59,8 @@ def render(record, question, requirements, sources, evidence, tables, limit, max
     if plan.get('answerWireVersion') in (1,2):
         from services.deep_research.comparison_wire import render as render_answers
         return render_answers(record,question,plan,tables,limit,max_claims)
+    from services.deep_research.comparison_layout import short_prose_guidance
+    short_policy = short_prose_guidance(record, question, limit, max_claims)
     enc = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     fields = ('cellId', 'obligationId', 'source', 'evidenceIds', 'preferredEvidenceIds')
     if plan['version'] in (2,3): fields += ('axisId', 'axisTitle')
@@ -133,7 +135,7 @@ def render(record, question, requirements, sources, evidence, tables, limit, max
 Question: {question}
 Maximum total draft points across cells AND conclusions: {max_claims}.
 Total compiled answer character limit: {limit or 'concise; no explicit maximum'}.
-{slot_schema}{slot_guidance}
+{short_policy}{slot_schema}{slot_guidance}
 POINT has kind, body, evidenceRefs, tableBindings, draftingBasis, detailLevel. NO claimId,
 obligationIds, verification or source identity inside POINT. {goal_rule}
 {point_rule}

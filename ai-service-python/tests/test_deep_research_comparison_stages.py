@@ -35,6 +35,26 @@ def prepared():
     return r,prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)
 
 
+@pytest.mark.parametrize('question,short', [
+    ('200字以内比较两篇论文的速度。', True),
+    ('200字以内用表格比较两篇论文的速度。', False),
+])
+def test_short_comparison_guidance_is_shared_without_changing_evidence_permissions(question, short):
+    r, plan, rows, aliases, bundles = fixture()
+    anchored_question = question + '说明表示与压缩机制、额外处理成本、可比性和选择建议。'
+    r.update(question=anchored_question, comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16)
+    args = (plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    old = prepare(r, *args, character_limit=200, merge_joint=False)
+    new = prepare({**r, 'shortComparisonLayoutContractVersion': 1}, *args, character_limit=200, merge_joint=False)
+    for previous, current in zip(old['stages'], new['stages']):
+        assert current['targetIds'] == previous['targetIds']
+        assert current['allowedEvidenceByTarget'] == previous['allowedEvidenceByTarget']
+        assert current['allowedCellsByTarget'] == previous['allowedCellsByTarget']
+        assert ('Aim for about' in current['prompt']) == short
+        assert (current['prompt'] != previous['prompt']) == short
+
+
 def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
     r, plan, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
@@ -873,7 +893,7 @@ def test_readonly_ledger_lookup_requires_exact_native_request_identity():
     assert recorded_response(r,prompt,options,[row]) is None
 
 
-def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False):
+def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False, short_answer=False):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.verification import make_evidence
     r,p,_,_,_=fixture()
@@ -891,6 +911,9 @@ def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False):
         r['comparisonAuthoringContractVersion'] = authoring
     if stage_abstention:
         r['comparisonStageAbstentionContractVersion'] = 1
+    if short_answer:
+        r.update(shortComparisonLayoutContractVersion=1,
+                 question='200字以内比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。说明可比性和选择建议。')
     repo=DeepResearchRepository(tmp_path/'graph.sqlite3');repo.initialize();repo.create_run(r)
     return r,repo
 
@@ -971,6 +994,42 @@ def test_actual_staged_synthesis_uses_ordinary_verification_and_publication(tmp_
     again=make_synthesize_node(blocked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
     assert again['report_version_id']==synth['report_version_id']
     blocked.assert_not_called()
+
+
+def test_short_staged_comparison_uses_the_same_layout_for_draft_and_publication(tmp_path):
+    from services.deep_research.graph import make_synthesize_node, make_verify_node, make_publish_node
+    from services.deep_research.reporting import visible_answer_character_count
+
+    r, repo = graph_fixture(tmp_path, short_answer=True)
+    run_id = r['runId']
+    with pytest.raises(ValueError, match='Immutable run field changed: shortComparisonLayoutContractVersion'):
+        repo.update_run(run_id, lambda run: {**run, 'shortComparisonLayoutContractVersion': 0})
+    sent = []
+
+    def invoke(rid, node, prompt, options, **kwargs):
+        assert node == 'synthesize'
+        sent.append(prompt)
+        return graph_response(prompt)
+
+    state = {'run_id': run_id}
+    state.update(make_synthesize_node(invoke, repo.update_run, scope_validator=lambda *_: True)(state))
+    saved = repo.require_run(run_id)['state']
+    assert all('Aim for about' in prompt for prompt in sent)
+    assert saved['reportBody']['comparisonCells']['shortProseVersion'] == 1
+    assert len(saved['reportBody']['claims']) == 2 and not saved.get('verifiedReport')
+
+    def fixture_verify(claims, evidence, semantic):
+        return {'accepted': deepcopy(claims), 'rejected': []}
+
+    state.update(make_verify_node(fixture_verify, None, repo.update_run)(state))
+    publish = Mock(return_value=({'publicationId': 'short-fixture'}, True))
+    make_publish_node(publish, repo.update_run, scope_validator=lambda *_: True)(state)
+    payload = publish.call_args.kwargs['payload']
+    assert payload['comparisonCells'] == saved['reportBody']['comparisonCells']
+    assert visible_answer_character_count(payload) <= 200
+    assert '论文1' in publish.call_args.kwargs['report_text']
+    assert '| 比较维度' not in publish.call_args.kwargs['report_text']
+    assert payload['outcome'] != 'complete'
 
 
 def test_actual_isolated_graph_keeps_three_stages_on_reopen_and_withholds_unverified_facts(tmp_path):
