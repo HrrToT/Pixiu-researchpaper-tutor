@@ -120,7 +120,7 @@ class ResearchFacade:
                 or comparison_review_batch_version == 1 and comparison_cells_version != 1):
             raise ValueError('Invalid server comparison review batch policy')
         self._comparison_review_batch_version = comparison_review_batch_version
-        if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1,2,3,4,5,6):
+        if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1,2,3,4,5,6,7):
             raise ValueError('Invalid server shared experiment rollout policy')
         self._shared_experiment_plan_version = shared_experiment_plan_version
         if type(shared_experiment_http_observation_version) is not int or shared_experiment_http_observation_version not in (0,1):
@@ -331,7 +331,7 @@ class ResearchFacade:
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
             and self._comparison_review_batch_version == 1 else 0,
             "experimentSharedPlanContractVersion": shared_experiment_profile,
-            **({"experimentArmCloneLayoutVersion": 1} if shared_experiment_profile == 6 else {}),
+            **({"experimentArmCloneLayoutVersion": 1} if shared_experiment_profile in (6, 7) else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

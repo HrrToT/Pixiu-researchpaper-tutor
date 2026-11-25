@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6, 7])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6, 7, 8])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version in (2, 3, 4, 5, 6):
+    if version in (2, 3, 4, 5, 6, 7):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -294,6 +294,44 @@ def test_complete_padded_response_can_fit_canonical_plan_under_profile_5():
     assert prior['inputDigest'] != saved['inputDigest']
     assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == saved
     invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('fault,code', [
+    (None, None),
+    ('explicit_groups', 'plan.wire_schema'),
+    ('missing_clone_operation', 'plan.wire_schema'),
+    ('missing_level', 'plan.intervention_coverage'),
+])
+def test_factorial_compiler_derives_arms_from_each_explicit_factor_level(fault, code):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    draft = asset_catalog_draft(canonical)
+    interventions = [step for step in draft['steps'] if step['kind'] == 'intervene']
+    assert len(interventions) == 4
+    for step in interventions:
+        step['groups'] = []
+    if fault == 'explicit_groups':
+        interventions[0]['groups'] = ['00', '10', '01', '11']
+    elif fault == 'missing_clone_operation':
+        next(step for step in draft['steps'] if step['kind'] == 'clone')['operation'] = None
+    elif fault == 'missing_level':
+        draft['steps'].remove(interventions[0])
+
+    compiled, issues = compile_plan(draft, ['E1'], profile=7)
+    if code:
+        assert compiled is None and code in {issue['code'] for issue in issues}
+    else:
+        assert not issues and compiled == canonical
+        assert all(not step['groups'] for step in interventions)
+        r, data, aliases = context()
+        r[MARKER] = 7
+        current, _, checkpoint = harness(r)
+        invoke = Mock(return_value=response(draft))
+        saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+        assert 'Write four distinct intervene steps' in saved['request']['prompt']
+        assert saved['boundProposal']['proposal'] == canonical
+        invoke.assert_called_once()
 
 
 @pytest.mark.parametrize('failure,code', [

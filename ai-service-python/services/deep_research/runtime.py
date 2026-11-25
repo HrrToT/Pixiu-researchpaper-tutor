@@ -330,7 +330,7 @@ def initialize_runtime():
     shared_observation_profile = os.environ.get('DEEP_RESEARCH_SHARED_HTTP_OBSERVATION', '0')
     if shared_observation_profile not in ('0','1'):
         raise ValueError('Invalid shared experiment HTTP observation policy')
-    if shared_profile not in ('0','1','2','3','4','5','6'):
+    if shared_profile not in ('0','1','2','3','4','5','6','7'):
         raise ValueError('Invalid server shared experiment rollout policy')
     if comparison_profile not in ('0','1'):
         raise ValueError('Invalid server comparison cell rollout policy')
