@@ -78,7 +78,7 @@ def _response_tokens(units,process=False):
     return OUTPUT_TOKENS
 
 
-def _render(units,rows,human,*,process_explanations=False):
+def _render(units,rows,human,*,process_explanations=False,transformation_processes=False):
     aliases={row['evidenceId']:f'E{i+1}' for i,row in enumerate(rows)}
     identities={};sources={};wire={}
     for row in rows:
@@ -101,7 +101,8 @@ def _render(units,rows,human,*,process_explanations=False):
             'evidenceIds':[aliases[eid] for eid in unit['evidenceIds']]})
         if process_explanations:
             from services.deep_research.process_explanations import required
-            if required(group['requirement']):targets[-1]['processRequired']=True
+            if required(group['requirement'], transformation_processes=transformation_processes):
+                targets[-1]['processRequired']=True
     prompt='''Assess JOINT EVIDENCE READINESS for each frozen requested criterion below.
 This routes acquisition only. It is NOT factual approval, answer coverage or permission.
 Use each unit's own listed evidenceIds. Combine actual premises across its source/version
@@ -159,11 +160,13 @@ def _strict_verdicts(saved):
         return None
     found={}
     process=_process_policy(saved)
-    from services.deep_research.process_explanations import required,fields,validate_links
+    from services.deep_research.process_explanations import required,fields,validate_links,transformation_enabled
+    transformation_processes=transformation_enabled(saved)
     for verdict in parsed:
         if not isinstance(verdict,dict):return None
         target=units.get(verdict.get('unitId')) if isinstance(verdict.get('unitId'),str) else None
-        needs_process=process and target is not None and required(target['group']['requirement'])
+        needs_process=process and target is not None and required(
+            target['group']['requirement'], transformation_processes=transformation_processes)
         expected_keys={'unitId','ready','evidenceIds'}|({'processLinks'} if needs_process else set())
         if (set(verdict)!=expected_keys
                 or not isinstance(verdict['unitId'],str) or verdict['unitId'] not in units
@@ -221,6 +224,10 @@ def _validate(saved,known):
             or not isinstance(saved.get('evidence'),list) or len(saved['evidence'])>MAX_EVIDENCE
             or not isinstance(saved.get('human'),list) or any(not isinstance(q,str) for q in saved['human'])):
         raise DeepResearchError('invalid_joint_assessment','保存的联合取证记录无效，不能重新发送。')
+    from services.deep_research.process_explanations import transformation_enabled
+    transformation_processes=transformation_enabled(saved)
+    if 'processExplanationVocabularyVersion' in saved and not transformation_processes:
+        raise DeepResearchError('invalid_joint_assessment','保存的过程检查版本无效，不能重新发送。')
     rows=saved['evidence'];ids=[r.get('evidenceId') for r in rows if isinstance(r,dict)]
     if len(ids)!=len(rows) or any(not isinstance(eid,str) for eid in ids) or len(set(ids))!=len(ids):
         raise DeepResearchError('invalid_joint_assessment','联合取证证据身份无效。')
@@ -249,7 +256,8 @@ def _validate(saved,known):
     process=_process_policy(saved)
     if process==3 and saved['status']=='received' and saved.get('responseAudit')!=_review_units(saved)[1]:
         raise DeepResearchError('invalid_joint_assessment','保存的逐项取证审计与原始回复不一致。')
-    expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process),'outputTokens':_response_tokens(saved['units'],process)}
+    expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process,
+        transformation_processes=transformation_processes),'outputTokens':_response_tokens(saved['units'],process)}
     if (request!=expected or saved.get('requestDigest')!=digest(expected)
             or len(expected['prompt'].encode('utf8'))>24000):
         raise DeepResearchError('invalid_joint_assessment','保存的联合取证请求无效。')
@@ -266,7 +274,11 @@ def assess(state,record,update,invoke,coverage_gaps):
     groups=_groups(obligations,required);known=_evidence(record)
     version=record.get('jointEvidenceContractVersion')
     process=(3 if version==4 else 2 if version==3 else True) if type(version) is int and version in (2,3,4) else False
-    scope=digest({'groups':list(groups.values()),'processExplanations':process if process in (2,3) else 1} if process else list(groups.values()));pool_digest=digest(list(known.values()))
+    from services.deep_research.process_explanations import transformation_enabled
+    transformation_processes=bool(process) and transformation_enabled(record)
+    vocabulary={'processExplanationVocabularyVersion':1} if transformation_processes else {}
+    scope=digest({'groups':list(groups.values()),'processExplanations':process if process in (2,3) else 1,
+                  **vocabulary} if process else list(groups.values()));pool_digest=digest(list(known.values()))
     question=effective_question(record);human=list(getattr(question,'instruction_layers',(question,)))
     round_key=digest({'scope':scope,'evidence':pool_digest,'reviewed':sorted(domain.get('reviewedExtractionPassages',{})),
                       'round':state.get('requery_count',0)})
@@ -321,7 +333,8 @@ def assess(state,record,update,invoke,coverage_gaps):
             candidates=prioritize_existing_evidence(candidates,target_question)
             if process:
                 from services.deep_research.process_explanations import required,evidence_score
-                if required(group['requirement']):candidates=sorted(candidates,key=evidence_score,reverse=True)
+                if required(group['requirement'], transformation_processes=transformation_processes):
+                    candidates=sorted(candidates,key=evidence_score,reverse=True)
             from services.deep_research.method_navigation import enabled as method_navigation_enabled,priority as method_priority
             navigation_scores={}
             if method_navigation_enabled(record):
@@ -354,13 +367,16 @@ def assess(state,record,update,invoke,coverage_gaps):
                     continue
                 unit={'unitId':f'G{len(units)+1}','group':group,'evidenceIds':[e['evidenceId'] for e in subset],'key':key}
                 ids={e['evidenceId'] for e in visible};candidate=[*visible,*[e for e in subset if e['evidenceId'] not in ids]]
-                if len(candidate)<=MAX_EVIDENCE and len(_render([*units,unit],candidate,human,process_explanations=process).encode('utf8'))<=max(0,cap-(_response_tokens([*units,unit],process)-OUTPUT_TOKENS)):
+                if len(candidate)<=MAX_EVIDENCE and len(_render([*units,unit],candidate,human,process_explanations=process,
+                        transformation_processes=transformation_processes).encode('utf8'))<=max(0,cap-(_response_tokens([*units,unit],process)-OUTPUT_TOKENS)):
                     units.append(unit);visible=candidate;fitted=True;break
             if not fitted:
                 capacity_blocked=True
-        request={'prompt':_render(units,visible,human,process_explanations=process),'outputTokens':_response_tokens(units,process)}
+        request={'prompt':_render(units,visible,human,process_explanations=process,
+            transformation_processes=transformation_processes),'outputTokens':_response_tokens(units,process)}
         current={'status':'pending','units':units,'evidence':visible,'human':human,'request':request,
-                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**({'processResponseContractVersion':process if process in (2,3) else 1} if process else {})}
+                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**vocabulary,
+                 **({'processResponseContractVersion':process if process in (2,3) else 1} if process else {})}
         if not units or invoke is None:
             current.update(status='skipped',reason='unavailable' if invoke is None else
                 'budget_or_capacity' if capacity_blocked or cap<=0 else 'missing_source_premise' if missing_sources else 'no_unchecked_units')

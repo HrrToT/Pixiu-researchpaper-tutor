@@ -19,5 +19,13 @@
   },
   "modelCalls": 0,
   "historicalVerdictsMutated": false,
-  "scope": "literal process check dispatch only; does not establish the semantic judgement under a revised checklist"
+  "scope": "literal process check dispatch only; does not establish the semantic judgement under a revised checklist",
+  "updatedChecklistReplay": {
+    "requirementUnchanged": true,
+    "processRequired": true,
+    "legacyFixtureStatus": "covered",
+    "updatedFixtureStatus": "partial",
+    "bindingError": "missing_process_links",
+    "historicalResponseWasNotResubmitted": true
+  }
 }

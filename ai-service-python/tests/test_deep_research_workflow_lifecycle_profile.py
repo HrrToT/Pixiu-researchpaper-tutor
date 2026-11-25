@@ -1,5 +1,6 @@
 """New-run activation is server-owned; persisted legacy runs are not migrated."""
 from copy import deepcopy
+import pytest
 from services.deep_research.repository import DeepResearchRepository
 from services.deep_research.facade import ResearchFacade
 from services.deep_research.execution_workflow_blueprint import enabled
@@ -54,6 +55,9 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['mechanismEvidenceContractVersion']==4
         assert first['sectionPremisesContractVersion']==2
         assert first['localSectionContextContractVersion']==3
+        assert first['processExplanationVocabularyVersion']==1
+        with pytest.raises(ValueError, match='Immutable run field'):
+            repo.update_run(first['runId'], lambda row: {**row, 'processExplanationVocabularyVersion': 0})
         assert first['auditSourceFieldsContractVersion']==4
         assert first['factualRepairGoalContractVersion']==5
         assert first['authoredBodyContractVersion']==3
@@ -114,6 +118,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         old.pop('tableIdentityContextContractVersion')
         old.pop('coverageDiagnosticsContractVersion')
         old.pop('requestCoverageContractVersion')
+        old.pop('processExplanationVocabularyVersion')
         old.pop('claimCheckContractVersion')
         old.pop('scopeObservationContractVersion')
         old.pop('scopeExpressionReviewContractVersion')

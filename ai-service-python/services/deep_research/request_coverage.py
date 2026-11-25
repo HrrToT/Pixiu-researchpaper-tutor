@@ -10,7 +10,8 @@ def enabled(record):
             ('claim_verification','paper_comparison','direction_survey','research_entry'))
 
 
-def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=False,process_explanations=False):
+def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=False,process_explanations=False,
+             transformation_processes=False):
     result=[]
     for item in plan:
         for o in item.get('obligations',[]):
@@ -35,7 +36,8 @@ def contract(plan,question,*,whole_question_id=None,literal_request_dimensions=F
             if process_explanations:
                 from services.deep_research.process_explanations import required
                 for check in checks:
-                    if required(check['requirement']):check['processRequired']=True
+                    if required(check['requirement'], transformation_processes=transformation_processes):
+                        check['processRequired']=True
             result.append({'obligationId':o['obligationId'],'question':o.get('question') or question,
                            'purpose':o.get('purpose','answer_requirement'),'checks':checks})
     return result

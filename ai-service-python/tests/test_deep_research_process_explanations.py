@@ -40,6 +40,74 @@ def test_outcomes_counts_interpretation_and_evidence_uncertainty_do_not_invent_a
     assert not required(text)
 
 
+@pytest.mark.parametrize('text', ['接收端如何重建场景？', '如何压缩场景表示？',
+                                  'How does the decoder reconstruct the scene?', 'How do they encode the image?'])
+def test_transformation_questions_opt_in_without_changing_legacy_detection(text):
+    assert not required(text)
+    assert required(text, transformation_processes=True)
+
+
+@pytest.mark.parametrize('text', ['如何判断重建是否可靠？', '能否说明接收端如何重建场景？',
+                                  '请报告实际重建误差。', 'How to evaluate reconstruction quality?',
+                                  '如何测量重建误差？', 'How well does it reconstruct the scene?'])
+def test_transformation_policy_still_distinguishes_judgment_from_a_process(text):
+    assert not required(text, transformation_processes=True)
+
+
+@pytest.mark.parametrize('opted_in', [False, True])
+def test_reconstruction_requests_use_the_same_process_rule_at_draft_readiness_and_final_audit(opted_in):
+    from services.deep_research.final_coverage import audit_final_answer
+    from services.deep_research.process_explanations import drafting_enabled
+    from services.deep_research.verification import make_evidence
+    from test_deep_research_joint_assessment import fixture, Memory, execute, units
+
+    question = '接收端如何重建场景？'
+    record = fixture(('paper',))
+    record.update(question=question, jointEvidenceContractVersion=4, requestCoverageContractVersion=5)
+    if opted_in:
+        record['processExplanationVocabularyVersion'] = 1
+    obligation = record['state']['plan'][0]['obligations'][0]
+    obligation.update(question=question, requestExcerpt=question)
+    obligation['completionCriteria'][0].update(requirement=question, responseType='explanation')
+    body = '接收端使用生成模型重建场景。'
+    record['state']['evidence'] = [make_evidence(
+        {'workId':'paper','versionId':'paper-v1','contentHash':'h','accessLevel':'fulltext'},
+        body, body, location={'page':4}, obligation_ids=[obligation['obligationId']])]
+
+    def assess(_run, _node, prompt, _options):
+        rows = units(prompt)
+        assert all(bool(unit.get('processRequired')) is opted_in for unit in rows)
+        return {'content': json.dumps([{'unitId': unit['unitId'], 'ready': True,
+                                        'evidenceIds': unit['evidenceIds']} for unit in rows])}
+
+    assert drafting_enabled(record) is opted_in
+    memory = Memory(record)
+    assert bool(execute(memory, assess)['gaps']) is opted_in
+    assert bool(execute(memory, lambda *_: pytest.fail('A settled assessment must not be resent'))['gaps']) is opted_in
+
+    def audit(_run, _node, prompt, _options, **_kwargs):
+        fixed = json.JSONDecoder().raw_decode(prompt.split('Fixed checks (requirements, never paper facts): ',1)[1])[0]
+        assert all(bool(check.get('processRequired')) is opted_in for row in fixed for check in row['checks'])
+        return {'content': json.dumps(raw(fixed, []), ensure_ascii=False)}
+
+    verdict = audit_final_answer('r', question, record['state']['plan'], [claim(body)], [], audit, json.loads,
+                                 request_contract=5, transformation_processes=opted_in)
+    assert bool(verdict['gaps']) is opted_in
+
+
+def test_opted_in_reconstruction_allows_distinct_answer_spans_when_the_operation_is_present():
+    question = '如何重建场景？'
+    fixed = contract([{'obligations':[{'obligationId':'o','question':question}]}], question,
+                     process_explanations=True, transformation_processes=True)
+    answer = claim('多视角深度图经融合得到三角网格。')
+    roles = [{'input': {'id':'c','field':'text','excerpt':'多视角深度图'},
+              'operation': {'id':'c','field':'text','excerpt':'融合'},
+              'output': {'id':'c','field':'text','excerpt':'三角网格'}}]
+    verdict, = normalize(raw(fixed, roles), fixed, process_explanations=True,
+                         distinct_roles=True, claims=[answer])
+    assert verdict['status'] == 'covered'
+
+
 def test_purpose_and_performance_cannot_supply_the_operation_in_a_covered_answer():
     c=claim('这些深度图用于几何重建，并达到了较好的精度。');fixed=contract(PLAN,QUESTION,process_explanations=True)
     links=[{'input':{'request':'深度图'},'operation':{'id':'c','field':'text','excerpt':'用于几何重建'},'output':{'request':'几何重建'}}]

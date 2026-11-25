@@ -2213,6 +2213,7 @@ def make_verify_node(
         from services.deep_research.final_coverage import audit_final_answer
         from services.deep_research.coverage_binding_correction import enabled as correct_binding_enabled
         from services.deep_research.request_coverage import enabled as request_coverage_enabled
+        from services.deep_research.process_explanations import transformation_enabled
         from services.deep_research.factual_reasoning import fixed_scope_compaction,explicit_compaction_scope
         from services.deep_research.claim_check import enabled as claim_check_enabled
         from services.deep_research.request_dimensions import enabled as dimensions_enabled
@@ -2271,6 +2272,7 @@ def make_verify_node(
                     evidence, llm_invoke, _safe_parse_json, budget=budget,
                     **comparison_audit_args, **options,
                     **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
+                    **({'transformation_processes':True} if transformation_enabled(record) and request_coverage_enabled(record) else {}),
                     **({'claim_check':True} if claim_check_enabled(record) else {}),
                     **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
                     **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),

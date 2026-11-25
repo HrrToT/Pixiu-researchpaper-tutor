@@ -18,6 +18,8 @@ H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,5
 
 解释取证版本的全量离线回归在同步生命周期断言后通过，源码 `312de36d7` 对应 501 个模块、9,928 个检查，保留此前全部 9,926 个检查，测试期间源码保持一致。 [全量回归](deep-research-evidence/local-explanation-method-lifecycle-full-20261125.json)
 
+新的过程检查词汇版本将重建、压缩与编解码的机制提问纳入原有过程绑定协议。取证判断、写作和整答采用同一版本。冻结的历史取证记录按原词汇读取，已结算请求不重发。用历史 H1 问题、相同已保存正文及模拟已覆盖响应重放，旧检查仍接受该响应。新版在缺少具体操作绑定时判为部分覆盖；开发夹具补齐对应输入、操作和输出后可通过。127 项相关测试通过。此次验证覆盖检查分流与绑定约束，未生成新答案或改判独立验收。 [过程检查路由回放](deep-research-evidence/gsc-h1-process-check-routing-20261125.json)
+
 ## 2026-11-25 H2 首次独立执行
 
 H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次，消耗 70,170 Token，用时 121 秒。十条候选均未通过事实核验，其中七条数值未与引用对齐、两条语义未确认、一条未能证明所述缺失。运行以 `inconclusive` 结束，工作区保存未完成说明，独立通过数为 0。恢复原服务后，核对了旧运行、其他任务及发布账本。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-h2-candidate-load-20261125.json) · [首次执行](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json)

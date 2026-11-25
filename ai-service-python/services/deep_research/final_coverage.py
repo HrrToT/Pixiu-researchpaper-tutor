@@ -40,7 +40,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
     return max(0, min(24000, remaining - output_tokens - 1024))
 
 
-def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False):
+def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
+                       transformation_processes=False):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -156,7 +157,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
             from services.deep_research.coverage_instructions import prompt as instruction_prompt
             fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
                 literal_request_dimensions=request_contract in (2,3,4,5),
-                process_explanations=request_contract in (4,5))
+                process_explanations=request_contract in (4,5), transformation_processes=transformation_processes)
             catalog=None
             if binding_catalog:
                 from services.deep_research.coverage_binding_catalog import build,build_scoped
@@ -202,7 +203,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             if request_contract:
                 from services.deep_research.request_coverage import contract, prompt as request_prompt
                 fixed_requirements=contract(audit_plan,question,whole_question_id=identity,
-                    literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4,5),process_explanations=type(request_contract) is int and request_contract in (4,5))
+                    literal_request_dimensions=type(request_contract) is int and request_contract in (2,3,4,5),
+                    process_explanations=type(request_contract) is int and request_contract in (4,5),
+                    transformation_processes=transformation_processes)
                 prompt=request_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,FINAL_COVERAGE_POLICY,
                     **({'shared_inputs':True} if shared_decision_inputs else {}),
                     **({'process_explanations':True,**({'distinct_roles':True} if request_contract==5 else {})} if type(request_contract) is int and request_contract in (4,5) else {}))
@@ -464,6 +467,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
     if request_response_errors:
         audit['requestResponseErrors'] = request_response_errors
+    if transformation_processes:
+        audit['processExplanationVocabularyVersion'] = 1
     if comparison_cells is not None:
         from services.deep_research.comparison_presentation import audit_digest
         audit['comparisonPresentationDigest'] = audit_digest(comparison_cells, claims)

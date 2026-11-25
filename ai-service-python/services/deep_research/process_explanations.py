@@ -5,6 +5,11 @@ from itertools import product
 _HOW = re.compile(r'(?:如何|怎样|怎么)[^。！？\n]{0,45}(?:用于|用来|使用|实现|生成|构建|提取|计算|训练|优化|更新|融合|工作|运作|运行|执行|处理|渲染|转换|估计|区分|检验)'
                   r'|\bhow\b[^.!?\n]{0,80}\b(?:use\w*|appl\w*|work\w*|operat\w*|comput\w*|train\w*|optimiz\w*|updat\w*|fus\w*|render\w*|extract\w*|convert\w*)\b'
                   r'|(?:具体|实际|操作|处理|训练|重建)(?:流程|步骤)',re.I)
+_TRANSFORMATION_HOW = re.compile(
+    r'(?:如何|怎样|怎么)[^。！？\n]{0,45}(?:重建|重构|压缩|编码|解码|还原|恢复)'
+    r'|\bhow\b[^.!?\n]{0,80}\b(?:reconstruct\w*|compress\w*|encod\w*|decod\w*|restor\w*)\b', re.I)
+_TRANSFORMATION_EVALUATION = re.compile(
+    r'(?:如何|怎样|怎么)\s*(?:衡量|评估|测量)|\bhow\s+(?:well|accurately|effectively|reliably|fast|quickly)\b', re.I)
 _UNCERTAINTY = re.compile(r'^(?:是否|能否|有没有|有无|可否|能不能|\s*(?:whether|does|can|is)\b)',re.I)
 _ACTION = re.compile(r'\b(?:comput\w*|render\w*|rasteriz\w*|fus\w*|integrat\w*|aggregat\w*|train\w*|optimiz\w*|penaliz\w*|align\w*|sampl\w*|construct\w*|updat\w*|transform\w*|minimiz\w*|distill\w*)\b'
                      r'|计算|渲染|光栅化|融合|聚合|累加|训练|优化|惩罚|约束|对齐|采样|构建|更新|变换|蒸馏|相乘|投影',re.I)
@@ -39,9 +44,16 @@ just as answer/evidence-role spans may not overlap. A question is not itself an
 input-to-output process. If distinct roles cannot be established, do not mark ready/covered.'''
 
 
-def required(requirement):
+def transformation_enabled(record):
+    version = record.get('processExplanationVocabularyVersion')
+    return type(version) is int and version == 1
+
+
+def required(requirement, *, transformation_processes=False):
     if isinstance(requirement,str) and re.search(r'(?:如何|怎样|怎么)(?:理解|看待|评价|解读|看懂|判断)|\bhow\s+(?:to\s+)?(?:understand|interpret|evaluate|judge)\b',requirement,re.I):return False
-    return isinstance(requirement,str) and not _UNCERTAINTY.search(requirement.strip()) and bool(_HOW.search(requirement))
+    return (isinstance(requirement,str) and not _UNCERTAINTY.search(requirement.strip())
+            and bool(_HOW.search(requirement) or transformation_processes
+                     and not _TRANSFORMATION_EVALUATION.search(requirement) and _TRANSFORMATION_HOW.search(requirement)))
 
 
 def fields(row, *, evidence=False):
@@ -108,4 +120,5 @@ def evidence_score(row):
 def drafting_enabled(record):
     from services.deep_research.request_context import effective_question
     return (type(record.get('requestCoverageContractVersion')) is int
-            and record['requestCoverageContractVersion'] in (4,5) and required(effective_question(record)))
+            and record['requestCoverageContractVersion'] in (4,5)
+            and required(effective_question(record), transformation_processes=transformation_enabled(record)))

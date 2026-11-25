@@ -411,6 +411,7 @@ class ResearchFacade:
             "coverageDiagnosticsContractVersion": 4,
             "identificationLocatorContractVersion": 1,
             "requestCoverageContractVersion": 5,
+            "processExplanationVocabularyVersion": 1,
             "claimCheckContractVersion": 9,
             "scopeObservationContractVersion": 3 if self._comparison_cells_version == 1 else 2,
             "scopeExpressionReviewContractVersion": 5,
