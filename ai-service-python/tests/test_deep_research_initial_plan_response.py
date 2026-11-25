@@ -205,7 +205,7 @@ def test_short_literal_requests_remain_answerable_without_creating_auxiliary_exe
 @pytest.mark.parametrize('value',[None,True,False,0,2,1.0,'1'])
 def test_legacy_controls_and_every_other_node_keep_old_interpretation(value):
     r={**record(),'initialPlanResponseContractVersion':value}
-    assert enabled(r) is (type(value) is int and value in (2, 3))
+    assert enabled(r) is (type(value) is int and value in (2, 3, 4))
     assert normalize('plan',response())['structuredOutput']['receivedShape']=='invalid_json'
     for node in ('verify','extract','plan_experiment','synthesize'):
         assert not enabled({**r,'initialPlanResponseContractVersion':1},node)
@@ -272,6 +272,30 @@ def test_factorial_plan_discards_only_surplus_null_leaf_fields(version, key, val
 def test_incomplete_server_profile_cannot_enable_new_interpretation(field):
     r={**record(),'initialPlanResponseContractVersion':1}
     assert enabled(r);r.pop(field);assert not enabled(r)
+
+
+@pytest.mark.parametrize('old_field', ['requestExcerpt', 'comparisonRole', None])
+def test_followup_plan_accepts_only_current_human_anchors(old_field):
+    from services.deep_research.initial_plan_response import validate_shape
+    from services.deep_research.request_context import ResearchQuestion
+
+    current = '只解释不同论文的 FPS 是否可以直接比较。'
+    prior = '说明为什么不能直接拿两篇的 FPS 排名。'
+    question = ResearchQuestion(current+'\n'+prior, [current, prior], [current])
+    draft = plan()
+    obligation = draft[0]['obligations'][0]
+    obligation['requestExcerpt'] = current
+    obligation['comparisonRole'] = {'kind': 'joint', 'label': 'FPS 可比性', 'requestExcerpt': current}
+    if old_field == 'requestExcerpt':
+        obligation['requestExcerpt'] = prior
+    elif old_field == 'comparisonRole':
+        obligation['comparisonRole']['requestExcerpt'] = prior
+    validate_shape(draft, question, comparison_roles=True)
+    if old_field:
+        with pytest.raises(ValueError, match='current follow-up'):
+            validate_shape(draft, question, comparison_roles=True, followup_layers=(current,))
+    else:
+        validate_shape(draft, question, comparison_roles=True, followup_layers=(current,))
 
 
 @pytest.mark.parametrize('value',[None,True,0,2])

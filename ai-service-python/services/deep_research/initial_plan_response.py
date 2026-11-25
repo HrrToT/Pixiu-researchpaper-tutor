@@ -10,8 +10,14 @@ def enabled(record,node='plan'):
     from services.deep_research.initial_plan_instructions import enabled as instructions_enabled
     return (node=='plan' and isinstance(record,dict)
         and type(record.get('initialPlanResponseContractVersion')) is int
-        and record['initialPlanResponseContractVersion'] in (1, 2, 3)
+        and record['initialPlanResponseContractVersion'] in (1, 2, 3, 4)
         and instructions_enabled(record))
+
+
+def followup_anchor_layers(record, question):
+    if enabled(record) and record['initialPlanResponseContractVersion'] == 4:
+        return getattr(question, 'point_instruction_layers', ())
+    return ()
 
 
 class _Pairs(list):
@@ -59,7 +65,7 @@ def parse(text):
         'duplicates':duplicates,'scientificApproval':False}
 
 
-def validate_shape(plan,question,*,comparison_roles=False):
+def validate_shape(plan,question,*,comparison_roles=False,followup_layers=()):
     """Require the new requested shape before existing semantic/scope checks."""
     if type(comparison_roles) is not bool:raise ValueError('Invalid comparison planning policy')
     def exact(value,keys):
@@ -81,10 +87,15 @@ def validate_shape(plan,question,*,comparison_roles=False):
             if comparison_roles:
                 from services.deep_research.comparison_intent import validate_role
                 validate_role(o,question)
+                if followup_layers and not any(o['comparisonRole']['requestExcerpt'] in layer for layer in followup_layers):
+                    raise ValueError('Comparison role must quote the current follow-up or its clarification')
             for key in ('obligationId','question','searchQuery','requestExcerpt'):text(o[key])
             if o['purpose'] not in ('answer_requirement','supporting_research'):
                 raise ValueError('Invalid initial plan purpose')
-            minimum=8 if o['purpose']=='supporting_research' else min(8,len(question.strip()))
+            if followup_layers and not any(o['requestExcerpt'] in layer for layer in followup_layers):
+                raise ValueError('Plan obligation must quote the current follow-up or its clarification')
+            current_request = followup_layers[-1] if followup_layers else question
+            minimum = 8 if o['purpose'] == 'supporting_research' else min(8, len(current_request.strip()))
             if len(o['requestExcerpt'].strip())<minimum or o['requestExcerpt'] not in question:
                 raise ValueError('Initial plan request excerpt is not literal')
             if not isinstance(o['requiredSources'],list) or any(not isinstance(s,str) or not s.strip() for s in o['requiredSources']):
@@ -99,7 +110,7 @@ def validate_shape(plan,question,*,comparison_roles=False):
 
 
 def normalize_obligation_leaf_fields(record, plan, *, comparison_roles=False):
-    """Remove empty child lists and, in profile 3, surplus null leaf fields."""
+    """Remove empty child lists and, in profiles 3 and 4, surplus null leaf fields."""
     if not enabled(record) or not isinstance(plan, list):
         return plan, []
     profile = record['initialPlanResponseContractVersion']
@@ -115,7 +126,7 @@ def normalize_obligation_leaf_fields(record, plan, *, comparison_roles=False):
         for j, obligation in enumerate(item['obligations'])
         if isinstance(obligation, dict)
         for key, value in obligation.items()
-        if (key == 'obligations' and value == []) or (profile == 3 and key not in expected and value is None)
+        if (key == 'obligations' and value == []) or (profile in (3, 4) and key not in expected and value is None)
     ]
     if not paths:
         return plan, []

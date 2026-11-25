@@ -364,18 +364,22 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 logger.warning("Plan response not a list, failing closed: %s", type(parsed))
                 return invalid_plan('Plan response is not a JSON array')
 
-            from services.deep_research.initial_plan_correction import normalize_request_excerpts
-            parsed,excerpt_changes=normalize_request_excerpts(record,parsed,question)
             from services.deep_research.initial_plan_response import (
                 enabled as initial_plan_response_enabled,
+                followup_anchor_layers,
                 normalize_obligation_leaf_fields,
                 validate_shape as validate_initial_plan_shape,
             )
+            followup_layers = followup_anchor_layers(record, question)
+            from services.deep_research.initial_plan_correction import normalize_request_excerpts
+            parsed, excerpt_changes = normalize_request_excerpts(
+                record, parsed, followup_layers[-1] if followup_layers else question)
             from services.deep_research.comparison_intent import enabled as comparison_intent_enabled
             comparison_roles = comparison_intent_enabled(record)
             parsed, leaf_paths = normalize_obligation_leaf_fields(record, parsed, comparison_roles=comparison_roles)
             if initial_plan_response_enabled(record):
-                try:validate_initial_plan_shape(parsed, question, comparison_roles=comparison_roles)
+                try:validate_initial_plan_shape(parsed, question, comparison_roles=comparison_roles,
+                                                followup_layers=followup_layers)
                 except ValueError as exc:return invalid_plan(exc)
 
             try:

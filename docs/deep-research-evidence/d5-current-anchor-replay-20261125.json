@@ -1,0 +1,12 @@
+{
+  "case": "D5-v17",
+  "receiptSha256": "2864d9e9492a308f21696b83900bbd03558152c56e151647e23f87065454d952",
+  "candidateInitialPlanProfile": 4,
+  "legacyPlanAcceptedAncestorOnlyAnchor": true,
+  "actualReplyRejectedByCurrentAnchorRule": true,
+  "testFixtureWithCurrentAnchorsPassesFullPlanningChecks": true,
+  "correctedFixtureObligations": 2,
+  "priorContextKeptSeparateFromCurrentQuestion": true,
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

@@ -48,7 +48,8 @@ The plan and its completion criteria grant no factual or completeness approval.
 
 
 def prompt(record,data_guidance):
-    from services.deep_research.request_context import effective_question,separate_clarification
+    from services.deep_research.request_context import effective_question, parent_context, separate_clarification
+    from services.deep_research.initial_plan_response import followup_anchor_layers
     state=record.get('state',{})
     inputs={'question':effective_question(record),'outputKind':state.get('outputKind','direction_survey'),
         'clarification':separate_clarification(record),
@@ -57,6 +58,18 @@ def prompt(record,data_guidance):
         'previousSources':list({s.get('workId'):{'workId':s.get('workId'),'versionId':s.get('versionId'),
             'title':s.get('title')} for s in state.get('sources',[])}.values())[:12],
         'unverifiedContext':record.get('contextMaterials',[])}
+    followup_layers = followup_anchor_layers(record, inputs['question'])
+    followup_rule = ''
+    if followup_layers:
+        inputs['question'] = followup_layers[-1]
+        inputs['currentClarifications'] = list(followup_layers[:-1])
+        inputs['priorContext'] = parent_context(record)
+        followup_rule = (
+            '\nFollow-up: choose every requestExcerpt and comparisonRole.requestExcerpt only from question or '
+            'currentClarifications. Prior context resolves references and helps reuse evidence. Its prior tasks '
+            'do not become new deliverables. If the current question only asks for a joint explanation, '
+            'individual paper premises used to support it do not require separate answer sections.\n'
+        )
     shape={'items':[{'itemId':'<unique item ID>','question':'<one requested subquestion>',
         'obligations':[{'obligationId':'<globally unique obligation ID>',
             'question':'<one requested dimension>','requiredSources':['<permitted source identity>'],
@@ -80,7 +93,7 @@ def prompt(record,data_guidance):
         shape['items'][0]['obligations'][0]['comparisonRole'] = {
             'kind':'per_paper','label':'<short axis label>','requestExcerpt':'<literal axis substring>'}
         comparison_rules = '\n' + comparison_guidance(record)
-    return (RULES+comparison_rules+response_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
+    return (RULES+comparison_rules+response_rule+followup_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
         +'\nInput data (goals, not paper facts):\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
         +'\nOnly output shape (choose appropriate responseType and purpose values):\n'
         +json.dumps(shape,ensure_ascii=False,separators=(',',':')))
