@@ -2085,7 +2085,9 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
-                   and record['compactionBudgetContractVersion']==1 else {}),
+                   and record['compactionBudgetContractVersion'] in (1,2) else {}),
+                **({'reserve_scope_budget':True} if type(record.get('compactionBudgetContractVersion')) is int
+                   and record['compactionBudgetContractVersion']==2 and output_kind=='claim_verification' else {}),
                 **({'selective_editing':True} if type(record.get('compactionEditingContractVersion')) is int
                    and record['compactionEditingContractVersion'] in (1,2,3) else {}),
                 **({'prefer_fixed_scope':True} if type(record.get('compactionEditingContractVersion')) is int
@@ -2633,7 +2635,7 @@ def make_verify_node(
                             invoke_compaction,_safe_parse_json,evidence=evidence,output_kind=saved.get('outputKind',''),
                             fixed_editor_profile=fixed_scope_profile(record,effective_question(record),saved.get('outputKind','')),
                             **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
-                               and record['compactionBudgetContractVersion']==1 else {}),
+                               and record['compactionBudgetContractVersion'] in (1,2) else {}),
                             **({'selective_editing':True} if type(record.get('compactionEditingContractVersion')) is int
                                and record['compactionEditingContractVersion'] in (1,2,3) else {}),
                             **({'prefer_fixed_scope':True} if type(record.get('compactionEditingContractVersion')) is int

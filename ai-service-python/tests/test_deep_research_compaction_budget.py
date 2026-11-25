@@ -79,7 +79,7 @@ def test_saved_legacy_request_cannot_switch_to_new_prompt_or_resubmit():
     invoke.assert_not_called()
 
 
-@pytest.mark.parametrize('value',[1,True,None,0,'1'])
+@pytest.mark.parametrize('value',[1,2,True,None,0,'1'])
 def test_actual_graph_wires_strict_root_policy_and_still_reverifies_all_edits(value):
     from services.deep_research.graph import make_verify_node
     report,audits,response=packet();report['sections']=[]
@@ -99,7 +99,7 @@ def test_actual_graph_wires_strict_root_policy_and_still_reverifies_all_edits(va
         make_verify_node(verifier,None,update,llm_invoke=invoke)({'run_id':'r'})
     assert invoke.call_count==1
     prompt=invoke.call_args.args[2]
-    assert ('Server-measured publication budget' in prompt) is (type(value) is int and value==1)
+    assert ('Server-measured publication budget' in prompt) is (type(value) is int and value in (1,2))
     assert [c['claimId'] for c in verifier.call_args.args[0]]==['f','c']
     assert record['state']['verifiedReport']['verifiedClaims']==[kept]
 
@@ -111,9 +111,9 @@ def test_factory_owns_immutable_budget_contract_and_legacy_rows_stay_unchanged(t
     facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain',key:False},start_async=False)
-        assert type(row[key]) is int and row[key]==1
+        assert type(row[key]) is int and row[key]==2
         old=deepcopy(row);old.pop(key);old.update(runId='old',idempotencyKey='old');repo.create_run(old)
         for rid in (row['runId'],'old'):
-            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:2})
+            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:1})
         assert key not in repo.require_run('old')
     finally:facade.shutdown()

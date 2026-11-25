@@ -1,0 +1,16 @@
+{
+  "receiptSha256": "8076e429884431dddab5fb10388c8d01682c8176e938c3defe1894969f089992",
+  "originalCharacters": 555,
+  "oldReplyCharacters": 471,
+  "limit": 400,
+  "fixedScopeClaimId": "c3",
+  "editableClaimIds": [
+    "c1",
+    "c2"
+  ],
+  "ordinaryProseHardAllowance": 246,
+  "simulatedEditedCharacters": 363,
+  "sameSourceAndClaimIdentity": true,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

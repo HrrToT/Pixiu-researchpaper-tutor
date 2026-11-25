@@ -14,7 +14,8 @@ def enabled(record):
 
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
-            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False):
+            fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False,
+            reserve_scope_budget=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -23,6 +24,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     """
     if type(authored_body) is not bool or authored_body and expression_version!=5:raise ValueError('Invalid authored compaction policy')
     if type(budget_guidance) is not bool:raise ValueError('Invalid compaction budget guidance policy')
+    if type(reserve_scope_budget) is not bool:raise ValueError('Invalid reserved scope budget policy')
     if type(selective_editing) is not bool:raise ValueError('Invalid selective compaction policy')
     if type(selective_fixed_edit) is not bool or selective_fixed_edit and not (selective_editing and prefer_fixed_scope and explicit_edit_scope):
         raise ValueError('Selective fixed editing requires explicit preferred scope policy')
@@ -68,10 +70,15 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
     def count(value):
         return visible_count({**value,'claims':[*fixed,*value['claims']]},limit,output_kind,evidence,presentation_version)
     if not limit or count(source) <= limit: return source, deepcopy(audits)
-    if fixed_scope_first and (not joint_layout or prefer_fixed_scope and bool(expressions)) and len(expressions)<len(original):
+    direct_edit = fixed_scope_first and (not joint_layout or prefer_fixed_scope and bool(expressions))
+    if (direct_edit or reserve_scope_budget and expressions) and len(expressions) < len(original):
         preview={**source,'claims':[c if c['claimId'] in expressions else {**c,'text':'','conditions':{}}
             for c in source['claims']]}
-        if count(preview)+len(original)-len(expressions)<=limit:
+        fixed_cost = count(preview)
+        # A short boundary can stay fixed. Keep the joint editor available
+        # when the boundary itself needs most of the shortening.
+        reserve_directly = reserve_scope_budget and bool(expressions) and fixed_cost <= limit // 2
+        if (reserve_directly if reserve_scope_budget else direct_edit) and fixed_cost+len(original)-len(expressions)<=limit:
             from services.deep_research.answer_constraints import compact_answer
             def parse_edit(raw):
                 value=parse(raw)
@@ -85,8 +92,10 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             full={**source,'claims':[*fixed,*source['claims']]}
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
-                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],explicit_edit_scope=explicit_edit_scope,compact_layout=compact_layout,
-                **({'selective_fixed_edit':True} if selective_fixed_edit else {}))
+                fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],
+                explicit_edit_scope=explicit_edit_scope or reserve_directly,compact_layout=compact_layout,
+                **({'measured_edit_budget':True,'preserve_answers':True} if reserve_directly else {}),
+                **({'selective_fixed_edit':True} if selective_fixed_edit or reserve_directly else {}))
             if edited is None:return None,audits
             result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])

@@ -434,7 +434,7 @@ class ResearchFacade:
             "factRedraftContractVersion": 3,
             "verificationFeedbackContractVersion": 2,
             "completeReviewFeedbackContractVersion": 1,
-            "compactionBudgetContractVersion": 1,
+            "compactionBudgetContractVersion": 2,
             "compactionEditingContractVersion": 3,
             "fixedScopeEditorReasoningContractVersion": 1,
             "quantitySpellingContractVersion": 17,

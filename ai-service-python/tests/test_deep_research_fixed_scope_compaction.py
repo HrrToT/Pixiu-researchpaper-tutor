@@ -74,6 +74,36 @@ def test_large_scope_selects_joint_edit_locally_before_any_provider_submission()
     joint.assert_called_once();direct.assert_not_called()
 
 
+def test_measured_direct_editor_reserves_scope_for_a_longer_character_limit():
+    report, audits, response = fixture()
+    report['claims'][0]['text'] = '作者报告的条件与质量。' * 60
+    joint = Mock()
+    direct = Mock(return_value={'content': json.dumps(response)})
+    out, new = compact(report, audits, '400字以内', joint, json.loads, presentation_version=2,
+                       expression_version=3, reserve_scope_budget=True, invoke_fixed=direct)
+    assert out and out['claims'][1] == report['claims'][1]
+    assert new[0]['verification'] == 'unchecked'
+    prompt = direct.call_args.args[0]
+    assert '服务器实测编辑预算' in prompt and 'readonlyContext' in prompt
+    assert '返回 ID 的有序列表必须恰好是 ["f"]。' in prompt
+    direct.assert_called_once()
+    joint.assert_not_called()
+
+
+def test_measured_direct_editor_keeps_joint_route_when_scope_itself_needs_editing():
+    report, audits, response = packet()
+    raw = {**report['claims'][1], 'text': '', 'scopeExpression': deepcopy(audits[0]['expression'])}
+    raw['scopeExpression']['observedSettings'][0]['value'] = '很长的设置描述' * 90
+    report['claims'][1], audit = materialize(raw, 3)
+    joint = Mock(return_value={'content': json.dumps(response)})
+    direct = Mock()
+    result, _ = compact(report, [audit], '400字以内', joint, json.loads, presentation_version=2,
+                        expression_version=3, reserve_scope_budget=True, invoke_fixed=direct)
+    assert result
+    joint.assert_called_once()
+    direct.assert_not_called()
+
+
 def test_external_accepted_content_is_readonly_and_consumes_the_same_shared_limit():
     report,audits,response=fixture();accepted=[{'claimId':'kept','kind':'reported','text':'已经接受的内容。','conditions':{},'evidenceRefs':['e']}]
     before=deepcopy(accepted);direct=Mock(return_value={'content':json.dumps(response)})
