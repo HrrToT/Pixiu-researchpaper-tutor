@@ -1,0 +1,35 @@
+{
+  "case": "D5-v15",
+  "runId": "dr_run_51c9c77cc7145f9ca1c68505ee89229d",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "runtimeContainer": "academic-dr-shared-experiment-candidate-20261117",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "parentAndArtifactsUnchanged": true,
+  "sameMaterialScope": true,
+  "inheritedEvidenceCount": 43,
+  "providerCalls": 10,
+  "toolOperationCounts": {
+    "llm_invoke": 10,
+    "retrieve": 2,
+    "read_source": 21
+  },
+  "tokens": 45363,
+  "elapsedSeconds": 120.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "individuallyVerifiedClaims": 0,
+  "claimRejectionReasons": [
+    "semantic_unresolved"
+  ],
+  "childReportOrigins": [
+    "latest",
+    "machine"
+  ],
+  "oldReportCharacters": 1056,
+  "publicationReplayCharacters": 141,
+  "publicationReplayOmitsInternalPrompt": true,
+  "storedReportWasNotRewritten": true,
+  "rawPayloadSha256": "626a7b944ed44f02f419999337d4a29cacd9674047321aa405bbe97820a7638c",
+  "scientificAcceptance": false
+}

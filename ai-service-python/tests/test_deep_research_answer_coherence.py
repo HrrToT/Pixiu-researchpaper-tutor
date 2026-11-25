@@ -35,6 +35,22 @@ def test_covered_requirements_cannot_hide_an_incoherent_combined_answer():
     assert revalidate(audit,'question',CLAIMS)==audit
 
 
+def test_coherence_report_uses_short_public_label_and_retains_full_private_audit():
+    from services.deep_research.reporting import publication_gap_labels, render_report
+
+    context = 'Current follow-up request:\n解释 FPS。\nPrior human requirements:\nPrivate context.'
+    audit = revalidate({'gaps': []}, context, [])
+    assert audit['gaps'][0]['question'] == context
+    ordinary = {'obligationId': 'specific', 'question': '为何不能直接比较 FPS', 'missingEvidence': '测量口径未核对'}
+    gaps = [ordinary, *audit['gaps']]
+    public = publication_gap_labels(gaps)
+    assert public[0] == ordinary
+    assert public[1] == {**audit['gaps'][0], 'question': '本次回答'}
+    result = render_report({'claims': [], 'gaps': gaps, 'presentationVersion': 4})
+    assert '为何不能直接比较 FPS' in result and '本次回答' in result
+    assert 'Private context' not in result and audit['gaps'][0]['question'] == context
+
+
 @pytest.mark.parametrize('change',['absent','duplicate','false_without_issue','true_with_issue',
     'foreign','missing_field','metadata','duplicate_binding','wrong_kind','bool_as_int','mixed_excerpt'])
 def test_malformed_consistency_decisions_fail_closed_without_reinterpreting_coverage(change):

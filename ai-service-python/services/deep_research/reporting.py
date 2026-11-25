@@ -50,8 +50,23 @@ def build_sections(claims, output_kind, proposed_sections=None, *, presentation_
     return sections
 
 
+def publication_gap_labels(gaps, *, effective_question=None):
+    """Keep internal whole-answer question context out of user-facing results."""
+    from services.deep_research.request_context import ResearchQuestion
+
+    wrapped = effective_question if isinstance(effective_question, ResearchQuestion) else None
+    return [
+        {**gap, 'question': '本次回答'} if isinstance(gap, dict)
+        and (gap.get('coherenceGap') is True or (
+            wrapped is not None and gap.get('wholeQuestion') is True and gap.get('question') == wrapped
+        )) else gap
+        for gap in gaps
+    ]
+
+
 def _display_gaps(gaps, *, presentation_version=0):
     """Keep the full audit in storage, show each unfinished obligation once."""
+    gaps = publication_gap_labels(gaps)
     specific = [g for g in gaps if not isinstance(g, dict) or not g.get('wholeQuestion')]
     selected = {}
     for gap in specific or gaps:

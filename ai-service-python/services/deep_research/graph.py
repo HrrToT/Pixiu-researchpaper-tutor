@@ -2803,7 +2803,9 @@ def make_publish_node(
                 *audit.get('gaps', [])]
         
         factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
-        from services.deep_research.reporting import build_sections, conversation_summary, publication_notices
+        from services.deep_research.reporting import (
+            build_sections, conversation_summary, publication_gap_labels, publication_notices,
+        )
         presentation_version = record.get('reportPresentationContractVersion',0)
         sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
             presentation_version=presentation_version)
@@ -2862,7 +2864,7 @@ def make_publish_node(
             "claims": accepted_claims,
             "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
             "limitations": visible_notice + repair_notice,
-            "gaps": gaps,
+            "gaps": publication_gap_labels(gaps, effective_question=effective_question(record)),
             "researchNotes": research_notes,
             "outcome": outcome,
         }
