@@ -29,11 +29,12 @@
         "DEEP_RESEARCH_SNAPKV_EXTERNAL_HOLDOUT_20261125.json",
         "DEEP_RESEARCH_PAGEDATTENTION_EXTERNAL_HOLDOUT_20261125.json"
       ],
-      "nextCandidate": {
-        "state": "frozen_not_executed_no_application_materials",
+      "latestExecution": {
+        "state": "executed_acquisition_passed_content_not_accepted",
         "case": "H3-INFLLM",
         "manifest": "DEEP_RESEARCH_INFLLM_EXTERNAL_HOLDOUT_20261126.json",
         "preflight": "deep-research-evidence/infllm-external-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
         "scientificContentCredit": 0
       }
     },
@@ -48,11 +49,12 @@
         "DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json"
       ],
       "earlierKiviResult": "deep-research-evidence/kivi-version-h4-first-real-20261126.json",
-      "nextCandidate": {
-        "state": "frozen_not_executed_material_not_imported",
+      "latestExecution": {
+        "state": "executed_content_not_accepted",
         "case": "H4-AWQ-VERSIONS",
         "manifest": "DEEP_RESEARCH_AWQ_VERSION_HOLDOUT_20261126.json",
         "preflight": "deep-research-evidence/awq-version-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
         "scientificContentCredit": 0
       }
     },

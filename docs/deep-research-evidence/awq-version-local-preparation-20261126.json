@@ -1,0 +1,28 @@
+{
+  "caseId": "H4-AWQ-VERSIONS",
+  "taskId": "dr-acceptance-h4-awq-versions-20261126",
+  "paperIds": [
+    "48bdf59ea52fccf40346ae129ef49d233ec9dcfe6b9b35e06002204c8123edfb.pdf",
+    "b24539f859d0cf01178e06e3dafd0a07553c83460d084591f22eeb32fc681727.pdf"
+  ],
+  "processing": [
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 111,
+      "aiAnalysisStatus": "not_requested"
+    },
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 89,
+      "aiAnalysisStatus": "not_requested"
+    }
+  ],
+  "sourcePolicy": "task_only",
+  "budgetProfile": "standard",
+  "taskCreated": true,
+  "researchSubmitted": false,
+  "modelCalls": 0,
+  "scientificContentCredit": 0
+}

@@ -1,0 +1,123 @@
+{
+  "sourceCommit": "3ea5f6f7608470517df82e672605104603c37919",
+  "candidateLoad": "comparison-stage-and-arm-clone-candidate-load-20261126.json",
+  "fullRegression": "comparison-stage-and-arm-clone-full-20261126.json",
+  "cases": {
+    "D2-BASELINE-COMPRESSION-v55": {
+      "runId": "dr_run_17f0264e8be65867b0753e5b50239710",
+      "status": "completed",
+      "outcome": "partial",
+      "errorCode": null,
+      "modelCalls": 16,
+      "tokens": 79187,
+      "elapsedSeconds": 135.0,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "6a45c0ffbb54fb9893534a8591fb27a0b942240f675bae2303513bc6aac49558",
+        "calls": "e7b5fac1cb111f7a5128ae18e377426df3d5b8bcc6bbfb4fbaaca3abe68e4d8c",
+        "execution": "d2b22805ac9c08cb5cdd1d7c031cd6d60417a4f815f70a1b8dfbc08e11a08fab",
+        "result": "f2e2ae9ed1b0eb1c432e22a718648ba7e219ef61a466885170b15175e3ce895b"
+      },
+      "comparisonErrors": [
+        "Invalid observed setting fields"
+      ]
+    },
+    "D3-DENSIFICATION-FACTORIAL-v9": {
+      "runId": "dr_run_2d3b66d1b769578fae92b9d0517e46bd",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_shared_experiment_response",
+      "modelCalls": 6,
+      "tokens": 30039,
+      "elapsedSeconds": 69.0,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "9c3b896867c332c77247845c354eaae20259c2b9922ae6f497b07c0855b2625d",
+        "calls": "c7f8f5d288518cb4c2489f772ed83882ca4801b07e513ed933d7bca9232bcd7b",
+        "execution": "f4bdf0a92eb6f74087fa5e0c26ab2a78376c8ba6cdcd26c4a4a8623c596163c6",
+        "result": "8a21410a89e800ad64ff5dd91797943c281930b08b75fca142e316dad9ad4f4c"
+      },
+      "sharedExperimentIssues": [
+        {
+          "code": "plan.operation_required",
+          "path": "/steps/3/operation"
+        }
+      ]
+    },
+    "D5-v18": {
+      "runId": "dr_run_19f22031260955349b93596e24c29750",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "errorCode": null,
+      "modelCalls": 5,
+      "tokens": 19487,
+      "elapsedSeconds": 40.0,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "4ff1849fa73c8779fcc5a15406607ee447f1c455625608aee9eed482dcff35e1",
+        "calls": "40a4d8fce902794e5ee595ac7ecc306539b757baa63db2ad1018d72163ef55e9",
+        "execution": "6ea17665e5aa7b3d4f095437ce5510120ff0ecd9f411a05939887984f82c1a93",
+        "result": "f2753ee8c6d7230230231a78855836cf827af4cfb1c95018e9ac9a4bb08c61e1"
+      },
+      "comparisonErrors": [
+        "Invalid observed setting fields"
+      ],
+      "parentAndArtifactsUnchanged": true,
+      "sameMaterialScope": true,
+      "exactParentBinding": true
+    },
+    "H3-INFLLM-v1": {
+      "runId": "dr_run_8ee6c76c069f5bd6a6a0dd7af80d6756",
+      "status": "completed",
+      "outcome": "complete",
+      "errorCode": null,
+      "modelCalls": 10,
+      "tokens": 51193,
+      "elapsedSeconds": 132.0,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "25aa0c9a3e9a129d2e44fed940fa0034cc32f1e2402b90af35e2ba446022f303",
+        "calls": "b315461a89676d767679dbf851e1696674c7df276c09622adccbf190135a9f1b",
+        "execution": "91cae63cae21da6b99858643e345163e56c938ce15bafaa98a98a7ac18c6259c",
+        "result": "34b25e80e278a8eab538ebe1da50860af84076c413cbff1177d160b910e323fb"
+      },
+      "externalFulltext": {
+        "versionId": "arxiv:2402.04617v1",
+        "accessLevel": "fulltext",
+        "networkRequests": 1,
+        "cacheHit": false,
+        "contentHash": "cd53c7913afa536daaa623870bd2c50b214eadfa009c3396352694952976bb5f",
+        "pageCount": 12
+      },
+      "scientificGap": "The report describes selecting and loading blocks but omits CPU retention of unselected blocks and the exact block scoring aggregation."
+    },
+    "H4-AWQ-VERSIONS-v1": {
+      "runId": "dr_run_96401cb203c550ed86c63307e049fdb3",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_synthesis_response",
+      "modelCalls": 6,
+      "tokens": 25047,
+      "elapsedSeconds": 45.0,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "08f690b62f6741c052b879f31fb0befd361fa48823bcf57d39f1e25be8099c6d",
+        "calls": "5b735c2c529742585e048baddd83af5d8c9744319a51fb5725fcdffd258e991c",
+        "execution": "8529920d80489b1779037ea8fa18e808a66c22df7edaeb3d4845e4c783644121",
+        "result": "96aed117a06cdf8b35bfbfc0c51f33728976cf77eb5e22db2459c0313de64833"
+      },
+      "evidenceItems": 23,
+      "structuredTableItems": 0,
+      "scientificGap": "The draft attributed 0.1% column values to the requested 1% column and no report was saved."
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "onlyExtendedPriorWorkspace": "dr-development-baseline-compression-20261124-v49",
+    "unchangedParentRunAndArtifacts": true,
+    "addedChildRun": "dr_run_19f22031260955349b93596e24c29750",
+    "newModelCalls": 0
+  },
+  "automaticallyRetried": false
+}
