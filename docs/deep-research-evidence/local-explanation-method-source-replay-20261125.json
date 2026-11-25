@@ -1,0 +1,43 @@
+{
+  "scope": "production indexed candidate selection with saved development rows; no fresh retrieval or synthesis",
+  "historicalLedgerSha256": "4f260386bb49b0bcf834cf79d2e24e7b8d1a21b60db415034fd26748b34e7dec",
+  "candidatePoolRows": 11,
+  "prior": [
+    {
+      "page": 2,
+      "chunk": 5,
+      "section": "Introduction"
+    },
+    {
+      "page": 2,
+      "chunk": 6,
+      "section": "Introduction"
+    },
+    {
+      "page": 1,
+      "chunk": 1,
+      "section": "Abstract"
+    }
+  ],
+  "current": [
+    {
+      "page": 2,
+      "chunk": 5,
+      "section": "Introduction"
+    },
+    {
+      "page": 2,
+      "chunk": 6,
+      "section": "Introduction"
+    },
+    {
+      "page": 3,
+      "chunk": 14,
+      "section": "Methods"
+    }
+  ],
+  "topHitPreserved": true,
+  "slotLimit": 3,
+  "insertedSourceUnchanged": true,
+  "modelCalls": 0
+}

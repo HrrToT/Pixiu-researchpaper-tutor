@@ -153,8 +153,9 @@ class LocalTaskRetriever:
             raise DeepResearchError('scope_revoked','论文范围已变更')
         from services.deep_research.mechanism_sources import prefer_sources
         result=prefer_sources(result,candidates,record,query,pdf_id,limit)
-        from services.deep_research.section_context import include_section_context
+        from services.deep_research.section_context import include_section_context, include_explanation_method
         result=include_section_context(result,candidates,record,pdf_id,limit)
+        result=include_explanation_method(result,candidates,record,query,pdf_id,limit)
         result=include_processing_cost(result,candidates,record,query,pdf_id,limit)
         return retain_local_protocol_note(result,candidates,record,query,limit)
 

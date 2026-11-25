@@ -37,7 +37,7 @@ def priority_enabled(record):
             and bool(requested(effective_question(record))))
 
 
-def explanation_only(record):
+def explanation_only(record, *, require_section=True):
     """Do not turn a scoped explanation into a requested comparative verdict.
 
     Ambiguous or positive checking/comparison requests retain all old guidance.
@@ -46,7 +46,7 @@ def explanation_only(record):
     from services.deep_research.request_context import effective_question
     from services.deep_research.evidence_requirements import _outside_examples
     question=effective_question(record)
-    if not priority_enabled(record) or record.get('state',{}).get('outputKind')!='claim_verification':
+    if (require_section and not priority_enabled(record)) or record.get('state',{}).get('outputKind')!='claim_verification':
         return False
     positives=[]
     for layer in getattr(question,'instruction_layers',(str(question),)):

@@ -53,7 +53,7 @@ def test_invalid_next_chunk_cannot_bridge_to_a_later_one(change):
 def test_ambiguous_successor_and_old_or_non_explanation_runs_keep_old_selection():
     selected, candidates = sample()
     assert include_section_context(selected, candidates + [candidates[1]], record(), 'p', 3) == selected
-    for marker in [None, False, True, 0, 3]:
+    for marker in [None, False, True, 0, 4]:
         r = record();r['localSectionContextContractVersion'] = marker
         assert include_section_context(selected, candidates, r, 'p', 3) == selected
     for question in ['解释方法。', '不要解释第5节。', '比较第5节中的性能。']:
@@ -81,6 +81,33 @@ def test_local_retriever_applies_selector_and_rejects_revoked_scope():
         reader._scope_evidence(selected, candidates, '', 'p', 3)
 
 
+@pytest.mark.parametrize('eligible', [True, False])
+def test_single_paper_explanation_gets_relevant_method_within_existing_budget(eligible):
+    from services.deep_research.local_sources import LocalTaskRetriever
+
+    r = record()
+    question = 'Explain how the encoder converts sensor features into a compact message.'
+    query = 'encoder converts sensor features compact message'
+    r.update(localSectionContextContractVersion=3 if eligible else 2, scopeEvidenceContractVersion=1,
+             question=question, sourcePolicy={'mode': 'task_only'}, materials=[{'materialId': 'p'}])
+    r['state']['plan'] = [{'obligations': [{'question': question, 'searchQuery': query, 'requiredSources': ['p']}]}]
+    top, overview = row(2, 'The introduction summarizes the proposed sensor compression system.'), row(3, 'A generic abstract.')
+    detail = row(8, 'The encoder converts sensor features into a compact message. It extracts and normalizes each feature.')
+    for key in ('metadata', 'location'):
+        title_key = 'section_title' if key == 'metadata' else 'section'
+        detail[key][title_key] = 'Methods'
+        top[key][title_key] = 'Introduction'
+        overview[key][title_key] = 'Abstract'
+    foreign = {**detail, 'sourceId': f'p-v{"b" * 16}-chunk-8',
+               'metadata': {**detail['metadata'], 'index_version': 'b' * 16}}
+    reader = LocalTaskRetriever(SimpleNamespace(require_run=lambda _: r), 'run', lambda *_: True, origin='http://localhost')
+    assert reader._scope_evidence([top, overview], [top, overview, foreign, detail], query, 'p', 2) == [
+        top, detail if eligible else overview,
+    ]
+    assert reader._scope_evidence([top, overview], [top, overview, foreign], query, 'p', 2) == [top, overview]
+    assert reader._scope_evidence([top, overview], [top, overview, detail, detail], query, 'p', 2) == [top, overview]
+
+
 def test_new_activation_is_server_owned_and_immutable(tmp_path):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -89,8 +116,8 @@ def test_new_activation_is_server_owned_and_immutable(tmp_path):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'one', 'question': 'Explain',
             'deferStart': True, 'localSectionContextContractVersion': 0}, start_async=False)
-        assert r['localSectionContextContractVersion'] == 2
-        for value in [None, True, 0, 3]:
+        assert r['localSectionContextContractVersion'] == 3
+        for value in [None, True, 0, 2, 4]:
             with pytest.raises(ValueError, match='Immutable run field'):
                 repo.update_run(r['runId'], lambda x: {**x, 'localSectionContextContractVersion': value})
     finally:

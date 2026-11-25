@@ -1,12 +1,13 @@
 """Retrieve bounded literal successors of an explicitly requested section head."""
 import re
+from collections import Counter
 
 from services.deep_research.source_continuity import _exact_indexed, _body
 
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question
@@ -56,3 +57,51 @@ def include_section_context(rows, candidates, record, owner, limit):
         at = next(i for i, r in enumerate(kept) if r['sourceId'] == anchor['sourceId']) + 1
         return kept[:at] + bundle + kept[at:]
     return selected
+
+
+def include_explanation_method(rows, candidates, record, query, owner, limit):
+    """Reserve one existing slot for query-relevant method text in the same index version."""
+    from services.deep_research.criterion_sources import acquisition_questions
+    from services.deep_research.external_sections import _NAV_METHOD, _NAV_OTHER
+    from services.deep_research.method_navigation import priority, requested
+    from services.deep_research.section_premises import explanation_only
+
+    selected = list(rows[:limit])
+    version = record.get('localSectionContextContractVersion')
+    if (type(version) is not int or version != 3 or limit < 2 or not selected
+            or record.get('sourcePolicy', {}).get('mode') != 'task_only'
+            or len(record.get('materials', [])) != 1 or not explanation_only(record, require_section=False)):
+        return selected
+    anchor = _exact_indexed(selected[0], owner)
+    requirements = [q for q in acquisition_questions(record, query, owner) if requested(q)]
+    if not anchor or not requirements:
+        return selected
+
+    def rank(row):
+        identity = _exact_indexed(row, owner)
+        if not identity or identity[1] != anchor[1] or row.get('tableData'):
+            return (0, 0)
+        section = identity[2]
+        role = (row.get('location') or {}).get('sectionRole') or row['metadata'].get('section_role')
+        if _NAV_OTHER.search(section) or not (role == 'method' or _NAV_METHOD.search(section)):
+            return (0, 0)
+        view = {**row, 'quote': _body(row), 'sourceTitle': row.get('title', '')}
+        return max(((score[3], score[1]) for q in requirements
+                    if (score := priority(view, q, query))[3] >= 2), default=(0, 0))
+
+    if any(rank(row)[0] for row in selected):
+        return selected
+    counts = Counter(row.get('sourceId') for row in candidates)
+    viable = [row for row in candidates if counts[row.get('sourceId')] == 1 and rank(row)[0]]
+    if not viable:
+        return selected
+    detail = max(viable, key=rank)
+    protected = {selected[0]['sourceId']} | {row['contextForSourceId'] for row in selected if row.get('contextForSourceId')}
+    if len(selected) >= limit:
+        replacement = next((i for i in reversed(range(len(selected)))
+                            if selected[i]['sourceId'] not in protected and not selected[i].get('contextForSourceId')
+                            and not selected[i].get('tableData')), None)
+        if replacement is None:
+            return selected
+        selected.pop(replacement)
+    return [*selected, detail]
