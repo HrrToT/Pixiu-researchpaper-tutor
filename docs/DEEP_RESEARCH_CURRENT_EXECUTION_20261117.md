@@ -96,6 +96,12 @@ SnapKV H3 首次且单次真实执行。持久化账本确认一次 arXiv 元数
 
 扩展通用方法证据导航，识别询问步骤用途和最后保留内容的中英问法，并优先检查正文里的操作与保留关系。使用当时已结算账本和原候选池离线重建末轮请求，两个检查项均纳入各自的第 7 页原文，仍服从材料和输入预算。68 项定向回归通过，旧报告未改写。SnapKV 回执用作开发回放，后续独立验收需要新冻结题目。 [修复后取证选择回放](deep-research-evidence/academic-method-criterion-navigation-replay-20261125.json)
 
+后续 H3 冻结为 PagedAttention v1，检查并行采样的提示 KV 共享及引用计数。评审文件单独下载，核对了版本、16 页和 SHA-256。CLI 预览确认空材料、`external_only` 和既有标准预算。 [冻结定义](DEEP_RESEARCH_PAGEDATTENTION_EXTERNAL_HOLDOUT_20261125.json)
+
+包含方法证据选择和共享实验 JSON 解析修复的 `4acc68b39` 通过 501 个模块、9,848 项全量测试，保留全部 9,840 项基线用例。 [全量回归](deep-research-evidence/academic-method-experiment-wire-full-20261125.json)
+
+PagedAttention H3 单次真实执行用时 149 秒，9 次模型调用、37,494 Token。精确 arXiv 发现及无缓存下载各一次，正文解析 16 页并核对冻结哈希。系统对两条陈述的事实核验通过，但它们都引用第 7 页的束搜索示例来回答并行采样，场景错配。最终覆盖响应无效，一致性检查冻结这两条陈述，机器版及最新版均保存无结论说明。原服务与历史记录核对恢复。科学内容未通过，未重试。 [候选装载](deep-research-evidence/h3-pagedattention-external-candidate-load-20261125.json) · [真实执行](deep-research-evidence/academic-pagedattention-h3-first-real-20261125.json)
+
 ## 2026-11-24 v44 真实比较
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)
