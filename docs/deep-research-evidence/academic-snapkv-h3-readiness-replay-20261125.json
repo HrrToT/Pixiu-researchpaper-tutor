@@ -1,0 +1,30 @@
+{
+  "case": "H3-SNAPKV-v1",
+  "candidateCount": 75,
+  "lastRound": 2,
+  "candidatePoolSha256": "66e3309def72fa63d4ec8f196799a3b2e6120513092cb4b4201833f903f6bf71",
+  "requestSha256": "69e454a1d54e0039eee6568712c47f00f04ffea4b558553fd67c9c1fc796ccf8",
+  "requestAndReplyRoundTripExact": true,
+  "availablePage7Anchors": [
+    "cacheComposition",
+    "pooling"
+  ],
+  "units": {
+    "G1": {
+      "evidenceCount": 6,
+      "includedAnchors": []
+    },
+    "G2": {
+      "evidenceCount": 6,
+      "includedAnchors": []
+    }
+  },
+  "modelCalls": 0,
+  "scientificAcceptanceEstablished": false,
+  "gradesTransportAsBefore": true,
+  "methodNavigationEnabled": true,
+  "methodNavigationRecognizedChecks": {
+    "pooling": false,
+    "cacheComposition": false
+  }
+}
