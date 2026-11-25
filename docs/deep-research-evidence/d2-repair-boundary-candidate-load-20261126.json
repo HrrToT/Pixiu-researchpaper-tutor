@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "f5ef1a99570d04644290670786f15aeb4f074678",
+  "fullRegression": "d2-repair-boundary-full-20261126.json",
+  "candidate": "academic-dr-d2-repair-boundary-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "pinnedPdfFallback": true,
+  "sharedExperimentProfile": 3,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}
