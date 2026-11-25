@@ -14,7 +14,7 @@ def enabled(record):
 
 def assertions_enabled(record):
     version=record.get('scopeObservationContractVersion')
-    return (version if version>=2 else True) if type(version) is int and version in (1,2,3) else False
+    return (version if version>=2 else True) if type(version) is int and version in (1,2,3,4) else False
 
 
 def consistent_premises_enabled(record):
@@ -56,12 +56,25 @@ def review(checker, claim, expression, evidence, node):
     """
     policy = checker._scope_observation_assertions
     policy = policy() if callable(policy) else policy
-    atomic_comparison = type(policy) is int and policy == 3
-    literal = type(policy) is int and policy in (2, 3)
+    atomic_comparison = type(policy) is int and policy in (3, 4)
+    literal = type(policy) is int and policy in (2, 3, 4)
     assertions = policy is True or literal
     observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
     review_options = {'scope_observations': True} if atomic_comparison else {}
     observation_metadata = {'observationContractVersion': policy if literal else 1} if assertions else {}
+
+    def check_observations(targets):
+        if policy != 4:
+            return checker._check(targets, evidence, [], node, **review_options)
+        # The reviewer copies short request-local IDs. Keep the full identity
+        # for the parent assertion and every persisted observation audit.
+        ids = {f'O{index + 1}': target['claimId'] for index, target in enumerate(targets)}
+        wire = [{**target, 'claimId': alias} for alias, target in zip(ids, targets)]
+        checked = checker._check(wire, evidence, [], node, **review_options)
+        if any(row.get('claimId') not in ids for row in checked):
+            raise DeepResearchError('invalid_verification_response', '观察条件核查编号无效。')
+        return [{**row, 'claimId': ids[row['claimId']]} for row in checked]
+
     failure_policy=getattr(checker,'_known_single_review_failure',False)
     failure_policy=(failure_policy() if callable(failure_policy) else failure_policy) is True
     isolation=checker._isolate_factual_claims
@@ -72,7 +85,7 @@ def review(checker, claim, expression, evidence, node):
         from services.deep_research.review_response_failure import invalid as invalid_response
         checked=[]
         for index,observation in enumerate(observations):
-            rows=checker._check([observation],evidence,[],node,**review_options)
+            rows=check_observations([observation])
             if (len(rows)!=1 or rows[0].get('claimId')!=observation['claimId']
                     or rows[0].get('status') not in ('passed','failed')):
                 raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
@@ -103,7 +116,7 @@ def review(checker, claim, expression, evidence, node):
                     **{k:rows[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity',
                         'reviewDiagnosticAudit','reviewResponseAudit') if k in rows[0]}}
     else:
-        checked = checker._check(observations, evidence, [], node, **review_options) if observations else []
+        checked = check_observations(observations) if observations else []
     expected = [c['claimId'] for c in observations]
     if ([c.get('claimId') for c in checked] != expected
             or any(c.get('status') not in ('passed','failed') for c in checked)):

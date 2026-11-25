@@ -1,0 +1,13 @@
+{
+  "receiptSha256": "3d625e0b05f3aa1dc5a94b8a6c0b4b5640afc54ecf7f4a3f42867d38abe3a427",
+  "responseContentSha256": "d00b6ee9dd2829cabb01e3ffb832c07ce325cb96b5bc006ed9e19a7c8e99f0f5",
+  "targetId": "cmp_conclusion_0",
+  "replyClaimId": "scope-observation-932cda6b1d77d73c60d57070a35b01ed4d5341c5fb5fb55a9ea804036bdedf57-0",
+  "expectedObservationId": "scope-observation-932cda6b1d77d73d60c57070a35b01ed4d5341c5fb5fb55a9ea804036bdedf57-0",
+  "originalResponseRejected": true,
+  "aliasedObservation": "O1",
+  "aliasedResponseStatus": "passed",
+  "reviewContentAltered": false,
+  "providerCalls": 0,
+  "wholeComparisonAccepted": false
+}

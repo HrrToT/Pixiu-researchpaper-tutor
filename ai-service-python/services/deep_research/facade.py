@@ -413,7 +413,7 @@ class ResearchFacade:
             "requestCoverageContractVersion": 5,
             "processExplanationVocabularyVersion": 1,
             "claimCheckContractVersion": 9,
-            "scopeObservationContractVersion": 3 if self._comparison_cells_version == 1 else 2,
+            "scopeObservationContractVersion": 4 if self._comparison_cells_version == 1 else 2,
             "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,

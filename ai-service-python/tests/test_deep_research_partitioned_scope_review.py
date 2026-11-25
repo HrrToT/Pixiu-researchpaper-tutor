@@ -100,6 +100,7 @@ def test_focused_boundary_review_uses_visible_fields_and_preserves_verdict_gates
 
 @pytest.mark.parametrize('version, relation, passed', [
     (2, 'not_entailed', False), (3, 'not_entailed', True), (3, 'entailed', False),
+    (4, 'not_entailed', True), (4, 'entailed', False),
 ])
 def test_comparison_boundary_checks_source_facts_separately_from_cross_paper_entailment(version, relation, passed):
     claim, expression, record, evidence = inputs()
@@ -117,7 +118,11 @@ def test_comparison_boundary_checks_source_facts_separately_from_cross_paper_ent
             row = boundary_row(expression['notEstablished'][0])
             row.update(relation=relation)
         else:
-            row = {'claimId': child['claimId'], 'status': 'passed', 'reason': 'Own source supports this setting.',
+            child_id = 'O1' if version == 4 else child['claimId']
+            assert child_id in prompt
+            if version == 4:
+                assert child['claimId'] not in prompt
+            row = {'claimId': child_id, 'status': 'passed', 'reason': 'Own source supports this setting.',
                    'scopeAudit': {'claimStrength': 'bounded', 'evidenceStrength': 'bounded',
                                   'supported': True, 'statementPath': ['text'],
                                   'premises': [{'evidenceId': 'E1', 'path': ['quote']}]}}
@@ -131,8 +136,9 @@ def test_comparison_boundary_checks_source_facts_separately_from_cross_paper_ent
     assert (result['status'] == 'passed') is passed
     assert 'Scope-strength audit' in calls[0]
     assert ('passed verdict MUST also include comparisonAudit' in calls[0]) is (version == 2)
-    if version == 3:
+    if version in (3, 4):
         assert len(calls) == 2 and 'Method B uses a different data split' in calls[1]
+        assert result['partitionedScopeAudit']['observedSettings'][0]['claimId'] == child['claimId']
     else:
         assert len(calls) == 1
 
