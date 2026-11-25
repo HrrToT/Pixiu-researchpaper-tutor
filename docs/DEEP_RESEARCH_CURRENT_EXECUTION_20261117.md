@@ -32,6 +32,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 版本 3 的 501 个模块、9,861 项离线回归全部通过，保留 9,851 个基线用例。随后以同一冻结 D3 开发题和原始 3DGS v1 论文单次复测，保持标准预算及仅任务材料，结算 7 次调用、34,339 Token，93 秒。四个干预步骤均按新协议选择因素水平，8 个状态有创建步骤。仍有 6 个状态无创建步骤，其中两项是训练开关，四项是显存或质量测量结果。诊断回放也检出原始资产被用于状态读取、只读测量步骤写状态等错误。方案未进入科学审核，未发布，原服务和任务账本已核对恢复。下一版需让原始资产、可变训练状态和指标观察在传输契约中分别拥有明确的引用位置，现有因果与发布校验继续约束方案。 [全量回归](deep-research-evidence/shared-experiment-references-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-references-candidate-load-20261125.json) · [单次实测](deep-research-evidence/d3-shared-references-real-20261125.json) · [回执诊断](deep-research-evidence/d3-shared-references-diagnostic-20261125.json)
 
+新增共享方案生成版本 4。原始资产用步骤的 `inputIds` 引用，运行状态在创建步骤内声明并继承作用范围，指标通过 `measureOnSteps` 绑定只读测量步骤。编译后的方案保留资产引用，审核与发布仍使用独立科学检查及原有因果规则。163 项定向检查通过；模拟 HTTP 验证了审核、持久化、发布及报告中材料的展示。保存的 D3、H5 请求各保留 20 条证据，新版分别为 30,432 和 31,114 字节，低于既有 32,000 字节上限；原请求身份可精确重建。旧 D3 草稿和只转换字段但保留错误测量的草稿均被拒绝。本次没有新增真实模型调用。 [回放记录](deep-research-evidence/d3-owned-states-profile-replay-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)

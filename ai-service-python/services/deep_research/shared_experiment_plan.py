@@ -28,15 +28,15 @@ def _array(items, minimum=0, maximum=32, unique=False):
             **({'uniqueItems': True} if unique else {})}
 
 
-def schema():
+def schema(version=1):
     text = {'type': 'string', 'minLength': 1, 'maxLength': 1600, 'pattern': r'\S'}
     ident = {'type': 'string', 'pattern': r'^[A-Za-z][A-Za-z0-9_-]{0,47}$'}
     ids = _array(ident, maximum=32, unique=True)
     parameter = _object({'name': ident, 'type': {'enum': ['number', 'choice']},
                          'value': {'type': ['number', 'string']}})
     operation = _object({'action': text, 'parameters': _array(parameter, maximum=24)})
-    return _object({
-        'version': {'const': 1, 'type': 'integer'},
+    plan = _object({
+        'version': {'const': version, 'type': 'integer'},
         'hypothesis': text,
         'estimand': text,
         'sourceFacts': _array(_object({'id': ident, 'text': text, 'evidenceRefs': _array(ident, 1, 20, True)}), maximum=20),
@@ -85,6 +85,11 @@ def schema():
                              'uncertainty': text, 'decisionRule': text, 'limitations': text}),
         'unresolved': _array(text, maximum=16),
     })
+    if version == 2:
+        step = plan['properties']['steps']['items']
+        step['properties']['inputIds'] = _array(ident, maximum=8, unique=True)
+        step['required'].append('inputIds')
+    return plan
 
 
 def validate(value, evidence_ids, *, required_domains=()):
@@ -106,7 +111,8 @@ def validate(value, evidence_ids, *, required_domains=()):
             return [{'code': 'plan.capacity', 'path': '/'}]
     except (TypeError, ValueError, OverflowError, RecursionError):
         return [{'code': 'plan.json', 'path': '/'}]
-    errors = list(Draft202012Validator(schema()).iter_errors(value))
+    typed_inputs = isinstance(value, dict) and type(value.get('version')) is int and value['version'] == 2
+    errors = list(Draft202012Validator(schema(2 if typed_inputs else 1)).iter_errors(value))
     if errors:
         return [{'code': 'plan.schema', 'path': '/'+'/'.join(map(str, e.absolute_path))} for e in errors[:64]]
     def indexed(rows, path):
@@ -144,7 +150,9 @@ def validate(value, evidence_ids, *, required_domains=()):
         if state['scope'] == 'shared' and state['groups'] or state['scope'] == 'arm' and not state['groups']:
             issue('plan.state_scope', f'/states/{i}/groups')
         if source['kind'] == 'input':
-            if source['id'] not in inputs or state['scope'] != 'shared': issue('plan.state_source', path)
+            if (source['id'] not in inputs or state['scope'] != 'shared'
+                    or typed_inputs and inputs[source['id']]['availability'] != 'provided'):
+                issue('plan.state_source', path)
         elif source['id'] not in steps or state['id'] not in steps[source['id']]['creates']:
             issue('plan.state_source', path)
     shared = {s['id'] for s in value['states'] if s['source']['kind'] == 'input'}
@@ -154,8 +162,19 @@ def validate(value, evidence_ids, *, required_domains=()):
     measurements = Counter()
     measured_groups = set()
     factors = {f['id']: f for f in value['factors']}
+    ready_inputs = {i['id'] for i in inputs.values() if i['availability'] == 'provided'}
     for i, step in enumerate(value['steps']):
         path = f'/steps/{i}'
+        if typed_inputs:
+            assets = set(step['inputIds'])
+            if not assets <= inputs.keys():
+                issue('plan.step_input_identity', path+'/inputIds')
+            elif step['kind'] == 'prepare' and step['scope'] == 'shared':
+                ready_inputs.update(assets)
+            elif not assets <= ready_inputs:
+                issue('plan.step_input_unavailable', path+'/inputIds')
+            if assets and step['kind'] != 'prepare' and step['dataUse'] == 'none':
+                issue('plan.step_input_without_data_scope', path+'/inputIds')
         if validate_operation(step['operation']): issue('plan.operation', path+'/operation')
         if step['scope'] == 'shared' and step['groups'] or step['scope'] == 'arm' and not step['groups']:
             issue('plan.step_scope', path)

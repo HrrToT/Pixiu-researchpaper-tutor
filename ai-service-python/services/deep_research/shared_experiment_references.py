@@ -5,22 +5,61 @@ from itertools import islice
 
 from jsonschema import Draft202012Validator
 
-from services.deep_research.shared_experiment_plan import schema, validate
+from services.deep_research.shared_experiment_plan import _array, _object, schema, validate
 
 
-def wire_schema():
-    wire = schema()
+def wire_schema(profile=3):
+    wire = schema(2 if profile == 4 else 1)
     states = wire['properties']['states']['items']['properties']
     input_source = states['source']
     input_source['properties']['kind'] = {'const': 'input'}
-    states['source'] = {'anyOf': [input_source, {'type': 'null'}]}
     steps = wire['properties']['steps']['items']['properties']
     steps['operation'] = {'anyOf': [steps['operation'], {'type': 'null'}]}
+    if profile == 3:
+        states['source'] = {'anyOf': [input_source, {'type': 'null'}]}
+        return wire
+
+    owned = {key: value for key, value in states.items() if key not in ('scope', 'groups', 'source')}
+    wire['properties']['states']['items'] = _object({**owned, 'source': input_source})
+    wire['properties']['states']['minItems'] = 0
+    steps['creates'] = _array(_object(owned))
+    del steps['metricIds']
+    wire['properties']['steps']['items']['required'].remove('metricIds')
+    metric = wire['properties']['metrics']['items']
+    metric['properties']['measureOnSteps'] = _array(states['id'], minimum=1, unique=True)
+    metric['required'].append('measureOnSteps')
     return wire
 
 
-def compile_plan(value, evidence_ids, *, required_domains=()):
-    errors = Draft202012Validator(wire_schema()).iter_errors(value)
+def _expand_owned_states(proposal, issues):
+    """Keep both the original input IDs and the actual creator for local review."""
+    for state in proposal['states']:
+        state.update(scope='shared', groups=[])
+
+    steps = {step['id']: step for step in proposal['steps']}
+    for index, step in enumerate(proposal['steps']):
+        definitions = step['creates']
+        step['creates'] = [state['id'] for state in definitions]
+        step['metricIds'] = []
+        for state in definitions:
+            proposal['states'].append({
+                **state, 'scope': step['scope'], 'groups': list(step['groups']),
+                'source': {'kind': 'step', 'id': step['id']},
+            })
+        if step['kind'] == 'measure' and (step['creates'] or step['updates']):
+            issues.append({'code': 'plan.measurement_mutation', 'path': f'/steps/{index}'})
+
+    for index, metric in enumerate(proposal['metrics']):
+        for step_id in metric.pop('measureOnSteps'):
+            step = steps.get(step_id)
+            if step is None or step['kind'] != 'measure':
+                issues.append({'code': 'plan.measurement_reference', 'path': f'/metrics/{index}/measureOnSteps'})
+                continue
+            step['metricIds'].append(metric['id'])
+
+
+def compile_plan(value, evidence_ids, *, required_domains=(), profile=3):
+    errors = Draft202012Validator(wire_schema(profile)).iter_errors(value)
     issues = [
         {'code': 'plan.wire_schema', 'path': '/' + '/'.join(map(str, error.absolute_path))}
         for error in islice(errors, 64)
@@ -29,6 +68,8 @@ def compile_plan(value, evidence_ids, *, required_domains=()):
         return None, issues
 
     proposal = deepcopy(value)
+    if profile == 4:
+        _expand_owned_states(proposal, issues)
     factors = {row['id']: row for row in proposal['factors']}
     provided_inputs = {row['id'] for row in proposal['data']['inputs'] if row['availability'] == 'provided'}
     creators = {}
@@ -44,10 +85,11 @@ def compile_plan(value, evidence_ids, *, required_domains=()):
                 state['source'] = {'kind': 'step', 'id': owners[0]}
             else:
                 issues.append({'code': 'plan.state_creator_reference', 'path': path})
-        elif owners:
-            issues.append({'code': 'plan.state_input_also_created', 'path': path})
-        elif state['source']['id'] not in provided_inputs:
-            issues.append({'code': 'plan.state_input_unavailable', 'path': path})
+        elif state['source']['kind'] == 'input':
+            if owners:
+                issues.append({'code': 'plan.state_input_also_created', 'path': path})
+            elif state['source']['id'] not in provided_inputs:
+                issues.append({'code': 'plan.state_input_unavailable', 'path': path})
 
     for index, step in enumerate(proposal['steps']):
         path = f'/steps/{index}'

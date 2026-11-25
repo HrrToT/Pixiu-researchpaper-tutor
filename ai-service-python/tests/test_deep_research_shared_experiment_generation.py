@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version in (2, 3):
+    if version in (2, 3, 4):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -93,6 +93,102 @@ def reference_draft(canonical):
         if step['kind'] == 'intervene':
             step['operation'] = None
     return draft
+
+
+def owned_states_draft(canonical):
+    draft = reference_draft(canonical)
+    state_defs = {}
+    initial_states = []
+    for state in draft['states']:
+        state_defs[state['id']] = {key: value for key, value in state.items()
+                                  if key not in ('source', 'scope', 'groups')}
+        if state['source'] is not None:
+            initial_states.append({**state_defs[state['id']], 'source': state['source']})
+    draft['states'] = initial_states
+    for metric in draft['metrics']:
+        metric['measureOnSteps'] = [step['id'] for step in draft['steps'] if metric['id'] in step['metricIds']]
+    for step in draft['steps']:
+        step['creates'] = [state_defs[state_id] for state_id in step['creates']]
+        del step['metricIds']
+    return draft
+
+
+def typed_input_proposal():
+    canonical = proposal()
+    canonical['version'] = 2
+    canonical['data']['inputs'][0]['availability'] = 'provided'
+    for step in canonical['steps']:
+        step['inputIds'] = ['input'] if step['dataUse'] != 'none' else []
+    return canonical
+
+
+def test_owned_states_profile_preserves_assets_creators_and_observation_links():
+    r, data, aliases = context()
+    r[MARKER] = 4
+    canonical = typed_input_proposal()
+    draft = owned_states_draft(canonical)
+    reply = response(draft)
+    current, states, checkpoint = harness(r)
+    invoke = Mock(return_value=reply)
+    result = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert result['boundProposal']['proposal'] == canonical
+    assert result['response'] == reply
+    assert 'shared_binary_factorial_states_v4' in json.dumps(result['request'])
+    assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+    invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('fault,code', [
+    ('missing_control', 'plan.factor_state'),
+    ('missing_asset', 'plan.step_input_identity'),
+    ('unprepared_asset', 'plan.step_input_unavailable'),
+    ('asset_read_as_state', 'plan.future_state'),
+    ('measure_writes_state', 'plan.measurement_mutation'),
+    ('fit_as_measure', 'plan.measurement_reference'),
+])
+def test_owned_states_profile_rejects_invalid_role_binding(fault, code):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    draft = owned_states_draft(canonical)
+    fit = draft['steps'][0]
+    if fault == 'missing_control':
+        draft['steps'][1]['creates'].pop(0)
+    elif fault == 'missing_asset':
+        fit['inputIds'] = ['missing']
+    elif fault == 'unprepared_asset':
+        draft['data']['inputs'].append({
+            **draft['data']['inputs'][0], 'id': 'second', 'availability': 'prepare',
+        })
+        fit['inputIds'].append('second')
+    elif fault == 'asset_read_as_state':
+        fit['reads'].append('input')
+    elif fault == 'measure_writes_state':
+        draft['steps'][-1]['updates'].append('x')
+    else:
+        draft['metrics'][0]['measureOnSteps'] = [fit['id']]
+    compiled, issues = compile_plan(draft, ['E1'], profile=4)
+    assert compiled is None
+    assert code in {issue['code'] for issue in issues}
+
+
+def test_owned_states_profile_keeps_prepared_asset_available_after_shared_step():
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    canonical['data']['inputs'].append({
+        'id': 'dataset', 'description': 'Development dataset', 'availability': 'prepare',
+        'preparation': 'Download and verify the manifest before splitting.', 'sourceFactIds': [],
+    })
+    fit = canonical['steps'][0]
+    preparation = {**fit, 'id': 'download', 'kind': 'prepare', 'inputIds': ['dataset'],
+                   'reads': [], 'updates': [], 'budgetId': None,
+                   'operation': {'action': 'Download and verify the manifest.', 'parameters': []}}
+    canonical['steps'].insert(0, preparation)
+    fit['inputIds'].append('dataset')
+    compiled, issues = compile_plan(owned_states_draft(canonical), ['E1'], profile=4)
+    assert not issues
+    assert compiled == canonical
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():

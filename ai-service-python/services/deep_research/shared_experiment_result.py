@@ -68,12 +68,15 @@ def compile_candidate(record, input_data, aliases):
                      '是' if state['fixed'] else '按步骤更新', '计入' if state['persisted'] else '不持久化',arms(state['groups'])))+' |')
     lines += ['', '## 执行顺序', '']
     data_uses = {'training':'训练数据', 'evaluation':'评估数据', 'none':'不读取新数据'}
+    asset_names = {row['id']: row['description'] for row in data['inputs']}
     for i,step in enumerate(p['steps'],1):
         if step['factor'] is not None:
             factor = step['factor']; action = ('开启' if factor['level'] else '关闭')+factors[factor['id']]['label']+'，按上表操作'
         else: action = _operation(step['operation'])
         lines += [f"{i}. {arms(step['groups'])}：{action}。数据范围：{data_uses[step['dataUse']]}。",
                   '   读取：'+names(step['reads'])+'；创建：'+names(step['creates'])+'；更新：'+names(step['updates'])+'。']
+        if step.get('inputIds'):
+            lines += ['   输入材料：'+'、'.join(asset_names[input_id] for input_id in step['inputIds'])+'。']
         if step['metricIds']:
             lines += ['   测量：'+'、'.join(next(m['domain']+'（'+m['unit']+'）' for m in p['metrics'] if m['id']==mid)
                                              for mid in step['metricIds'])+'。']

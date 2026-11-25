@@ -1,0 +1,36 @@
+{
+  "candidateProfile": 4,
+  "inputByteLimit": 32000,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "cases": [
+    {
+      "case": "D3-DENSIFICATION-FACTORIAL-v2",
+      "receiptSha256": "e7aad0efc94401e95c94ff7432109af89a1826a86bebe5eea0ff5de451681eab",
+      "originalRequestRebuiltExactly": true,
+      "sourceEvidenceCount": 20,
+      "originalInputBytes": 31090,
+      "profile4InputBytes": 30432,
+      "rawOldDraftRejected": true,
+      "translatedInvalidDraftRejected": true,
+      "translatedIssues": [
+        {
+          "code": "plan.measurement_mutation",
+          "path": "/steps/7"
+        },
+        {
+          "code": "plan.measurement_reference",
+          "path": "/metrics/3/measureOnSteps"
+        }
+      ]
+    },
+    {
+      "case": "H5-DORA-FACTORIAL-v1",
+      "receiptSha256": "d35a35872c174c6c736f7d53bf2618ff70bc3dfa5a826c3f547fcb8d24e0570e",
+      "originalRequestRebuiltExactly": true,
+      "sourceEvidenceCount": 20,
+      "originalInputBytes": 31160,
+      "profile4InputBytes": 31114
+    }
+  ]
+}
