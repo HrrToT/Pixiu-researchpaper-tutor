@@ -392,7 +392,7 @@ class ResearchFacade:
             "factualRepairGoalContractVersion": 5,
             "answerCoherenceContractVersion": 2,
             "synthesisEvidenceContractVersion": 6,
-            "externalReadingContractVersion": 4,
+            "externalReadingContractVersion": 5,
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 1,
             "reviewSourceFieldReferenceContractVersion": 1,

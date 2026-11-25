@@ -24,6 +24,14 @@ _SELECTIVE_READ = re.compile(r'\bonly\b[^.!?]{0,130}\b(?:load\w*|fetch\w*|read\w
 _NON_EVICTION = re.compile(r'\b(?:does? not|without|never)\s+(?:discard\w*|evict\w*|delet\w*)\b'
                            r'|不(?:会)?(?:丢弃|驱逐|淘汰|删除)', re.I)
 _RETENTION = re.compile(r'\b(?:retain\w*|keep\w*)\s+(?:all|the (?:full|entire|original))\b|保留(?:全部|完整)', re.I)
+_RETENTION_LOCATION_REQUEST = re.compile(
+    r'(?:保留|存储|存放|卸载|保存)(?:在)?(?:哪[里儿]|何处|什么位置)|'
+    r'\bwhere\b[^.!?]{0,100}\b(?:retain\w*|stor\w*|offload\w*|keep\w*|kept|reside\w*)\b', re.I)
+_STORED_ON = re.compile(
+    r'\b(?:stor\w*|offload\w*|retain\w*|keep\w*|kept)\b[^.!?;]{0,100}\b(?:in|on|to)\s+(?:the\s+)?'
+    r'(?:CPU\b|GPU\b|host\b|device memory\b|main memory\b|disk\b)|'
+    r'(?:保留|存储|卸载|存放)[^。！？；]{0,24}(?:CPU|GPU|主存|内存|磁盘)', re.I)
+_CURRENT_COMPUTATION = re.compile(r'\b(?:current|selected|needed|active)\b|当前|当步|所需', re.I)
 _OPERATION_STAGE = re.compile(r'\b(?:stage|phase|step)\s+[1-9]\d*\b|第[一二三四五六七八九\d]+阶段', re.I)
 _DEFINE=re.compile(r'\b(?:defin\w*|refer\w* to|estimates? of|moving averages?|represents?|records?|stores?)\b|定义|表示为|记录',re.I)
 _CAUSE=re.compile(r'\b(?:because|due to|caus\w*|leading to|leads? to|results? in|counteract\w*)\b|因为|导致|由于',re.I)
@@ -36,7 +44,7 @@ _STOP={'arxiv','paper','method','methods','algorithm','definition','definitions'
 
 
 def enabled(record):
-    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3, 4)
+    return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3, 4, 5)
 
 
 def requested(question):
@@ -82,12 +90,13 @@ def priority(row,requirement,query='',response_type='',*,operations=False):
     return (int(relation>0),relation,int(method),hits,-len(text))
 
 
-def bundle(rows,requirement,query='',response_type='',*,operations=False,read_retention=False):
+def bundle(rows,requirement,query='',response_type='',*,operations=False,read_retention=False,retention_location=False):
     """At most three exact existing passages for complementary operations/context."""
     rank=lambda row:priority(row,requirement,query,response_type,**({'operations':True} if operations else {}))
     if type(operations) is not bool:raise ValueError('Invalid operation navigation policy')
     ranked=sorted(rows,key=rank,reverse=True)
-    if read_retention and _READ_REQUEST.search(requirement) and _RETAIN_REQUEST.search(requirement):
+    location_requested = retention_location and _RETENTION_LOCATION_REQUEST.search(requirement)
+    if read_retention and _READ_REQUEST.search(requirement) and (location_requested or _RETAIN_REQUEST.search(requirement)):
         # Reading a subset and retaining the rest are distinct claims. Select
         # exact source passages for both when the paper supplies them.
         from services.deep_research.reading_roles import quality
@@ -95,7 +104,12 @@ def bundle(rows,requirement,query='',response_type='',*,operations=False,read_re
                                                            requirement) == (True, True)]
         read = max((row for row in complementary if _SELECTIVE_READ.search(row['quote'])),
                    key=lambda row: bool(_OPERATION_STAGE.search(row['quote'])), default=None)
-        retained = next((row for row in complementary if _NON_EVICTION.search(row['quote'])), None)
+        retained = None
+        if location_requested:
+            located = [row for row in complementary if _STORED_ON.search(row['quote'])]
+            retained = max(located, key=lambda row: bool(_CURRENT_COMPUTATION.search(row['quote'])), default=None)
+        if retained is None:
+            retained = next((row for row in complementary if _NON_EVICTION.search(row['quote'])), None)
         if retained is None:
             retained = next((row for row in complementary if _RETENTION.search(row['quote'])), None)
         if read is not None and retained is not None:

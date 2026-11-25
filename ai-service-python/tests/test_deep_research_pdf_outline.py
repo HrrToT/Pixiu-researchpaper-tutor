@@ -62,7 +62,7 @@ def test_outline_policy_is_server_owned_and_old_runs_stay_frozen(tmp_path,client
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'表示',
             'deferStart':True,'externalReadingContractVersion':client_value},start_async=False)
-        assert record['externalReadingContractVersion']==4
+        assert record['externalReadingContractVersion']==5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'externalReadingContractVersion':
                 client_value if client_value != 4 else 3})

@@ -1287,11 +1287,12 @@ def make_synthesize_node(
                 **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8,9) else {})} if type(record.get('readingPriorityContractVersion')) is int
                    and record['readingPriorityContractVersion'] in (6,7,8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'measurement_tables':True} if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),
-                **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,3,4) else {}),
-                **({'criterion_method_navigation':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3,4) else {}),
-                **({'read_retention':True} if output_kind=='direction_survey' and record.get('externalReadingContractVersion')==4 else {}),
+                **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,3,4,5) else {}),
+                **({'criterion_method_navigation':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3,4,5) else {}),
+                **({'read_retention':True} if output_kind=='direction_survey' and record.get('externalReadingContractVersion') in (4,5) else {}),
+                **({'retention_location':True} if output_kind=='direction_survey' and record.get('externalReadingContractVersion')==5 else {}),
                 **({'reviewed_coverage':brief_state.get('coverage',())} if output_kind=='direction_survey'
-                   and record.get('externalReadingContractVersion') in (3,4)
+                   and record.get('externalReadingContractVersion') in (3,4,5)
                    and record.get('sourcePolicy',{}).get('mode') in ('external_only','academic_external') else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),

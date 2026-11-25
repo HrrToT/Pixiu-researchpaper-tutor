@@ -56,7 +56,8 @@ def test_layout_hint_is_not_an_invented_method_heading_or_scientific_approval():
     p=[{'page':1,'text':'1 Our method reaches high accuracy.\n2 We compare the method to a baseline.\nThe word method is not a section.'}]
     assert all(part['role']=='unknown' for _,parts in spans(p) for part in parts)
     assert not enabled({'externalReadingContractVersion':True})
-    assert not enabled({'externalReadingContractVersion':5})
+    assert not enabled({'externalReadingContractVersion':6})
+    assert enabled({'externalReadingContractVersion':5})
     assert enabled({'externalReadingContractVersion':4})
     assert enabled({'externalReadingContractVersion':3})
     assert enabled({'externalReadingContractVersion':1})

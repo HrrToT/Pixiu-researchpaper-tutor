@@ -86,6 +86,23 @@ def test_combined_read_and_retention_criterion_preserves_both_source_passages():
         rows, '实际读取哪些内容', 'cache read', 'identification')
 
 
+def test_where_unselected_blocks_remain_prefers_literal_storage_location():
+    loaded = evidence('Only the highest scoring blocks are loaded for the current attention step.', 1)
+    retained = evidence('The engine retains all blocks across computation steps.', 2)
+    stored = evidence('The engine stores most blocks in CPU memory and moves the current blocks to the GPU.', 3)
+    foreign = evidence('The engine stores all blocks in device memory.', 4, source='other')
+    question = '本轮实际加载哪些块、其余历史块保留在哪里'
+    plan = [{'obligations': [{'obligationId': 'o', 'question': question, 'searchQuery': 'cache load retain',
+                              'requiredSources': ['owned'], 'completionCriteria': [
+                                  {'criterionId': 'c1', 'requirement': question, 'responseType': 'identification'}]}]}]
+    rows = [foreign, retained, stored, loaded]
+    _, old = order_premises(rows, plan, criterion_method_navigation=True, read_retention=True)
+    _, current = order_premises(rows, plan, criterion_method_navigation=True, read_retention=True, retention_location=True)
+    assert old[0]['evidenceIds'] == ['e1', 'e2']
+    assert current[0]['evidenceIds'] == ['e1', 'e3']
+    assert bundle(rows[1:], '本轮加载和保留哪些内容', read_retention=True, retention_location=True) == [loaded, retained]
+
+
 def test_small_cap_background_title_cannot_promote_its_definition_as_a_method_premise():
     background=evidence('The values are estimates of moving averages.',1)
     background['location']['section']='5 R ELATED W ORK'

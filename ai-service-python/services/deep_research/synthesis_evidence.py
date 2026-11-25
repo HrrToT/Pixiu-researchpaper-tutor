@@ -56,7 +56,7 @@ def readiness_bundles(rows, obligations, coverage):
     return bundles
 
 
-def order_premises(evidence,plan,limit=20, *, read_retention=False,membership_intents=False,module_intents=False,condition_intents=False,
+def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_location=False,membership_intents=False,module_intents=False,condition_intents=False,
                    definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False):
     if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
     if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
@@ -150,6 +150,7 @@ def order_premises(evidence,plan,limit=20, *, read_retention=False,membership_in
                 method_group=navigation_bundle(own,view['question'],obligations[oid].get('searchQuery',''),
                     (view.get('completionCriteria') or [{}])[0].get('responseType',''),
                     **({'read_retention':True} if read_retention else {}),
+                    **({'retention_location':True} if retention_location else {}),
                     **({'operations':True} if operation_navigation else {}))
                 if method_group:
                     bundle=method_group;lead=bundle[-1];used_method_bundle=True

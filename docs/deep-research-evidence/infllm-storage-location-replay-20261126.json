@@ -1,0 +1,22 @@
+{
+  "providerCalls": 0,
+  "scientificContentAccepted": false,
+  "cases": {
+    "H3-INFLLM-v1": {
+      "sourcePage": 4,
+      "storageEvidence": "ev_7b0a17f57a6963a37fd3898db366a23afc4758eb56e5bc3fa0e111d7f215964b",
+      "scoringEvidence": "ev_ab97f2f454b48118f9213012a48ca28e6ada1ced1375f95ee5ddd78a6b46d39f",
+      "payloadSha256": "25aa0c9a3e9a129d2e44fed940fa0034cc32f1e2402b90af35e2ba446022f303",
+      "runId": "dr_run_8ee6c76c069f5bd6a6a0dd7af80d6756",
+      "v4InputBytes": 23804,
+      "v5InputBytes": 23877
+    },
+    "H3-QUEST-v1": {
+      "identicalAllocation": true,
+      "payloadSha256": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+      "runId": "dr_run_d6e777f56e61547a90ad15305d872751",
+      "v4InputBytes": 23831,
+      "v5InputBytes": 23831
+    }
+  }
+}
