@@ -58,6 +58,40 @@ def test_single_generation_is_durable_unchecked_and_reused_without_second_send()
     assert invoke.call_count == 1 and 'reportBody' not in current['state']
 
 
+def test_single_json_fence_is_removed_for_validation_only():
+    r, data, aliases = context()
+    current, states, checkpoint = harness(r)
+    reply = response()
+    reply['rawContent'] = '```json\n' + reply['content'] + '\n```'
+    invoke = Mock(return_value=reply)
+    saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert saved['status'] == 'awaiting_scientific_review' and saved['scientificApproval'] is False
+    assert saved['response']['rawContent'] == reply['rawContent']
+    assert invoke.call_count == 1
+
+
+@pytest.mark.parametrize('kind', ['duplicate', 'foreign_text', 'invalid_plan'])
+def test_fenced_response_still_requires_strict_input_and_plan_validation(kind):
+    r, data, aliases = context()
+    current, states, checkpoint = harness(r)
+    reply = response()
+    body = reply['content']
+    if kind == 'duplicate':
+        body = body.replace('"version": 1', '"version": 1, "version": 1', 1)
+    elif kind == 'invalid_plan':
+        wrong = proposal()
+        wrong['groups'][0]['levels']['A'] = 1
+        body = json.dumps(wrong)
+    reply['rawContent'] = '```json\n' + body + '\n```'
+    if kind == 'foreign_text':
+        reply['rawContent'] += '\nAnother conclusion.'
+    invoke = Mock(return_value=reply)
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert states[-1]['status'] == 'invalid_response' and 'boundProposal' not in states[-1]
+    assert states[-1]['response'] == reply and invoke.call_count == 1
+
+
 @pytest.mark.parametrize('mutation', ['question', 'goal', 'quote', 'context', 'source', 'publication', 'location', 'alias', 'table'])
 def test_changed_original_context_stops_before_request_or_checkpoint(mutation):
     r, data, aliases = context(); invoke = Mock(); saved = []

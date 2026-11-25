@@ -18,6 +18,10 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 固定的两版 LoRA 只提交一次。已取得来自两版的 32 段证据，其中结构化表格证据为零。五次模型调用成功，合计结算 22,116 Token。第六次调用在事实核验阶段结果未确认，保留 40,984 Token 的预留，276 秒后停在 `paused/unresolved_unknown`，未发布报告。以冻结 PDF 核对原主表行，v1 第 6 页与 v2 第 8 页的 WikiSQL、MNLI-m 和 SAMSum 有变动及保持项，均仅作评审核对数据。常规恢复发现既有 H4 工作区的预期变化，随后逐条核实唯一变化为该任务及新增暂停运行，原服务恢复后账本一致，未取消、续发或重复提交。H4 无科学通过，保留与 H2 共享 LoRA v1 的记录。 [候选装载](deep-research-evidence/comparison-h4-lora-versions-candidate-load-20261124.json) · [首次执行](deep-research-evidence/lora-h4-first-real-20261125.json)
 
+## 2026-11-25 H5 首次执行
+
+冻结的 LoRA v1、DoRA v1 只提交一次。6 次模型调用结算 33,568 Token，用时 97 秒，外部搜索为零。共享实验方案发回了完整的围栏内 JSON，在严格解析处拒绝，未发布报告。用原始回执复核，剥离单一外部围栏后仍有 24 项约束问题。共享准备预算被用于实验组步骤，固定状态更新及测量顺序、状态可用性和配对克隆均存在错误。新解析器接受单一完整 JSON 围栏，原始回复、严格 JSON、科学方案校验和独立审核仍保留。114 项定向回归通过。原服务恢复后核对了旧调用账本和 H4 暂停状态。H5 科学验收未通过，未重试。 [候选装载](deep-research-evidence/comparison-h5-dora-factorial-candidate-load-20261124.json) · [首次执行与约束复核](deep-research-evidence/dora-h5-first-real-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
@@ -674,7 +678,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | [H3-STREAMING 定义](DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json)已冻结。首次独立提交在外部发现阶段失败，未读取正文。 | 用开发样本验证获取修复，再用新冻结的独立任务从空材料开始，核对指定版本正文、引用和解释。 |
 | H4 冲突或版本差异 | [H4-LORA-VERSIONS 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json)首次执行停在事实核验结果未确认，未发布报告。 | 保留原始调用身份，核对版本表格与后续新的验收路径。 |
-| H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)已冻结，两篇论文均完成本地索引。 | 核对假设依据、对照组、资源预算、指标与结论边界。 |
+| H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
 | H6 外部失败或预算耗尽 | 5 条离线故障链首次执行均通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。 [记录](deep-research-evidence/h6-fault-chain-first-20261112.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
