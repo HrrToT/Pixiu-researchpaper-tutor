@@ -331,6 +331,7 @@ class ResearchFacade:
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
             and self._comparison_review_batch_version == 1 else 0,
             "experimentSharedPlanContractVersion": shared_experiment_profile,
+            **({"experimentArmCloneLayoutVersion": 1} if shared_experiment_profile == 6 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

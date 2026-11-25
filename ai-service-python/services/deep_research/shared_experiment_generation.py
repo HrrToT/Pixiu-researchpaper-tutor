@@ -11,6 +11,7 @@ from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.shared_experiment_plan import bind_for_review, validate, validate_bound, schema, MAX_BYTES
 
 MARKER = 'experimentSharedPlanContractVersion'
+CLONE_LAYOUT_MARKER = 'experimentArmCloneLayoutVersion'
 NODE = 'plan_experiment_shared'
 MAX_INPUT = 32000
 OUTPUT_TOKENS = 6144
@@ -112,6 +113,22 @@ def instructions(record):
                 '  Use one clone step over all four arms for paired state, including every state affected by either factor.\n'
                 '  If a later step adds a conditional state, give it a distinct ID and use it only in its applicable arms.',
             )
+            if type(record.get(CLONE_LAYOUT_MARKER)) is int and record[CLONE_LAYOUT_MARKER] == 1:
+                prompt = prompt.replace(
+                    '  Use one clone step over all four arms for paired state, including every state affected by either factor.\n'
+                    '  If a later step adds a conditional state, give it a distinct ID and use it only in its applicable arms.\n'
+                    '- Prepare common states then clone into 00,10,01,11. Clone reads every paired shared state and creates each arm\'s independent\n'
+                    '  state, including any mutable treatment controls with declared equal initial values. Explicitly bind all shared/arm budgets.',
+                    '- One clone step: kind="clone", scope="arm", groups=["00","10","01","11"]. A creates object defines one\n'
+                    '  state ID with independent values in every listed arm. Declare each component once, never once per group.\n'
+                    '  For example, declare arm_optimizer once; each arm reads/updates its own arm_optimizer under that same ID.\n'
+                    '  Read all pairing.sharedStateIds, clone mutable parameter, optimizer and treatment-control state with\n'
+                    '  equal initial values, and put this step ID in pairing.cloneStepIds. Keep shared inputs separate.\n'
+                    '  A conditional state has its own ID in its producing step and exists only in that step\'s arms.\n'
+                    '  List every state a factor changes in its affectedStateIds. Use arm IDs in intervention reads, never shared IDs for mutations.\n'
+                    '  Resource metrics list all persisted state IDs once, using the same IDs across arms.\n'
+                    '  Bind common preparation budgets to shared steps and matched training budgets to their arm steps.',
+                )
         return prompt
     if version == 4:
         return OWNED_STATES_INSTRUCTIONS

@@ -161,7 +161,7 @@ def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scena
 
 def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_profile=1):
     from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
-    from services.deep_research.shared_experiment_generation import MARKER, NODE as GENERATE
+    from services.deep_research.shared_experiment_generation import CLONE_LAYOUT_MARKER, MARKER, NODE as GENERATE
     from test_deep_research_shared_experiment_generation import (
         asset_catalog_draft, context, owned_states_draft, reference_draft, response, typed_input_proposal,
     )
@@ -178,6 +178,7 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
         canonical = typed_input_proposal()
         generation_response = response(owned_states_draft(canonical))
     elif shared_profile == 6:
+        r[CLONE_LAYOUT_MARKER] = 1
         canonical = typed_input_proposal()
         generation_response = response(asset_catalog_draft(canonical))
     if tracked_http:
@@ -216,6 +217,7 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
                 if shared_profile == 6:
                     assert kwargs['json']['text']['format']['name'] == 'shared_binary_factorial_assets_v6'
                     assert 'data.inputsToPrepare' in prompt
+                    assert 'each arm reads/updates its own arm_optimizer under that same ID' in prompt
             if args[0].endswith('/responses'):return http_response(content)
             http=Mock(status_code=200)
             http.json.return_value={'choices':[{'message':{'content':content},'finish_reason':'stop'}],
@@ -278,6 +280,26 @@ def test_server_rollout_only_selects_explicit_binary_factorial_requests(tmp_path
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':question},start_async=False)
         assert r['experimentSharedPlanContractVersion']==expected
     finally:facade.shutdown()
+
+
+def test_server_freezes_arm_clone_layout_only_for_the_asset_profile(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.shared_experiment_generation import CLONE_LAYOUT_MARKER
+
+    repo = DeepResearchRepository(tmp_path / 'r.sqlite3')
+    repo.initialize()
+    facade = ResearchFacade(repo, lambda **kw: None, llm_client=object(), shared_experiment_plan_version=6)
+    try:
+        design, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'design',
+            'question': '设计一个2×2实验', CLONE_LAYOUT_MARKER: 0}, start_async=False)
+        explanation, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'explain',
+            'question': '解释训练的优化步骤', CLONE_LAYOUT_MARKER: 1}, start_async=False)
+        assert design[CLONE_LAYOUT_MARKER] == 1 and CLONE_LAYOUT_MARKER not in explanation
+        with pytest.raises(ValueError, match='Immutable.*experimentArmCloneLayoutVersion'):
+            repo.update_run(design['runId'], lambda row: {**row, CLONE_LAYOUT_MARKER: 0})
+    finally:
+        facade.shutdown()
 
 
 def test_valid_missing_final_coverage_allows_one_repair_but_invalid_response_does_not():

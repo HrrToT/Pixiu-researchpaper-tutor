@@ -1,0 +1,17 @@
+{
+  "receiptSha256": "61f7dc9cdc95d7e1151d78f13bcec210a369573d73a8b12508c6f746c9f3cdef",
+  "originalInputDigest": "1511a3692f4a4b9d2b7f3cf3e4e5ddca1636253873a64413a15adde39182b3d9",
+  "proposedInputDigest": "3f0b87e6b6c4fd834e4a089f70d0506a515c17515dcf00b1d42f4516084424c9",
+  "inputBytesBefore": 31127,
+  "inputBytesAfter": 31592,
+  "inputByteLimit": 32000,
+  "requestContextAndEvidenceIdentical": true,
+  "preservedResponseIssues": [
+    {
+      "code": "plan.wire_schema",
+      "path": "/steps/2/creates"
+    }
+  ],
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -243,6 +243,37 @@ def test_asset_catalog_binds_pending_state_to_the_preparing_step(fault, code):
         assert not issues and compiled == canonical
 
 
+def test_explicit_clone_layout_uses_nine_components_for_four_independent_arms():
+    from services.deep_research.shared_experiment_generation import CLONE_LAYOUT_MARKER
+    from services.deep_research.shared_experiment_plan import GROUPS
+
+    r, data, aliases = context()
+    r[MARKER] = 6
+    legacy = build(r, data, aliases)
+    r[CLONE_LAYOUT_MARKER] = 1
+    current, _, checkpoint = harness(r)
+    canonical = typed_input_proposal()
+    clone = next(step for step in canonical['steps'] if step['kind'] == 'clone')
+    for identity in ('arm_optimizer', 'position', 'scale', 'rotation', 'opacity', 'sh', 'treatment_control'):
+        clone['creates'].append(identity)
+        canonical['states'].append({'id': identity, 'meaning': f'Local {identity}',
+            'representation': 'Snapshot copied from the paired common state', 'scope': 'arm',
+            'groups': list(GROUPS), 'fixed': False, 'persisted': False, 'source': {'kind': 'step', 'id': clone['id']}})
+    draft = asset_catalog_draft(canonical)
+    reply = response(draft)
+    invoke = Mock(return_value=reply)
+    saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    prompt = saved['request']['prompt']
+    assert 'scope="arm", groups=["00","10","01","11"]' in prompt
+    assert 'each arm reads/updates its own arm_optimizer under that same ID' in prompt
+    assert 'arm_optimizer' not in legacy['request']['prompt']
+    assert saved['contextDigest'] == legacy['contextDigest'] and saved['inputDigest'] != legacy['inputDigest']
+    assert saved['boundProposal']['proposal'] == canonical
+    assert len(clone['creates']) == 9 and clone['groups'] == list(GROUPS)
+    assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == saved
+    invoke.assert_called_once()
+
+
 def test_complete_padded_response_can_fit_canonical_plan_under_profile_5():
     r, data, aliases = context()
     r[MARKER] = 4
