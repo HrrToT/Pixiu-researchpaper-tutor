@@ -1,0 +1,42 @@
+{
+  "case": "D5-v17",
+  "runId": "dr_run_bd81078e914c55348e9401563f2094df",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "payloadSha256": "2864d9e9492a308f21696b83900bbd03558152c56e151647e23f87065454d952",
+  "oneSubmission": true,
+  "actualComparisonProfiles": {
+    "comparisonPlanningContractVersion": 6,
+    "comparisonJointReportsContractVersion": 16,
+    "comparisonCrossPaperBoundaryContractVersion": 2,
+    "factualReviewContractVersion": 4
+  },
+  "parentAndArtifactsUnchanged": true,
+  "materialScopeUnchanged": true,
+  "inheritedEvidenceCount": 43,
+  "originalServiceRestored": true,
+  "status": "failed",
+  "errorCode": "invalid_synthesis_response",
+  "childReportPublished": false,
+  "providerCalls": 9,
+  "nodeCounts": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "synthesize_compact": 1
+  },
+  "tokens": 42597,
+  "elapsedSeconds": 62.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "plannedObligationIds": [
+    "fps-measurement-conditions",
+    "fps-comparability-limit"
+  ],
+  "forcedParentNumericExamplePresent": false,
+  "plannerObligationsWithAncestorOnlyExcerpts": [
+    "fps-comparability-limit"
+  ],
+  "compactionFinishReason": "stop",
+  "scientificAcceptance": false
+}
