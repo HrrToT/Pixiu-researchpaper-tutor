@@ -196,21 +196,31 @@ def validate_comparison_measurements(claim, evidence, **options):
     return validate_table_bindings(view, evidence, **options)
 
 
-def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,comparison_context=None,bound_duration_spelling=False):
+def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,
+                            comparison_context=None, bound_duration_spelling=False, bound_composite_cells=False):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
     if type(dataset_joiners) is not bool:raise ValueError('Invalid dataset joiner policy')
     if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
+    if type(bound_composite_cells) is not bool:
+        raise ValueError('Invalid composite table cell policy')
     if comparison_context is not None and not isinstance(comparison_context,dict):
         raise ValueError('Invalid comparison display context')
     author_headers={}
     if comparison_context is not None:
         from services.deep_research.comparison_table_context import author_headers as resolve_headers
         author_headers=resolve_headers(claim,evidence,comparison_context)
-    text = str(claim.get('text', ''))
+    fields = [str(claim.get('text', ''))]
     conditions = claim.get('conditions') or {}
     if isinstance(conditions, dict):
-        text += ' ' + ' '.join(str(v) for v in conditions.values())
+        fields.extend(str(value) for value in conditions.values())
+    text = ' '.join(fields)
+    composite_series = False
+    if bound_composite_cells:
+        from services.deep_research.bound_composite_table_cells import (
+            all_composite_series_bound, has_numeric_slash, literal_dataset_visible,
+        )
+        composite_series = any(has_numeric_slash(field) for field in fields)
     if bound_duration_spelling:
         text = normalize_bound_duration_spelling(text,claim,evidence)
     metric_mentions = {(v, m.upper()) for m, v in _METRIC.findall(text)}
@@ -224,7 +234,7 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                      or re.search(r'\|[^\n]*\|', e.get('quote', ''))}
     if not table_sources and not bindings:
         return None
-    if not metric_mentions and not unit_mentions and not bindings:
+    if not metric_mentions and not unit_mentions and not bindings and not composite_series:
         return None
     prose_measurements = set()
     for item in evidence:
@@ -234,11 +244,14 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
         prose_measurements.update((v, m.upper()) for m, v in _METRIC.findall(quote))
         prose_measurements.update((v, u.upper()) for v, u in _UNIT.findall(quote))
     if not isinstance(bindings, list) or not bindings:
+        if composite_series:
+            return 'ambiguous_table_series'
         return 'missing_table_bindings' if (metric_mentions | unit_mentions) - prose_measurements else None
     # An anonymous slash-separated series does not expose dataset/value pairing.
-    if re.search(r'\d\s*[/／]\s*\d', text):
+    if not bound_composite_cells and re.search(r'\d\s*[/／]\s*\d', text):
         return 'ambiguous_table_series'
     supported = set(prose_measurements)
+    composite_cells = []
     for binding in bindings:
         if not isinstance(binding, dict):
             return 'invalid_table_binding'
@@ -261,12 +274,15 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
         value = row[2][column]
         if binding.get('value') != value:
             return 'table_cell_mismatch'
+        composite_cell = composite_series and has_numeric_slash(value)
         # Hierarchical headers require every level (e.g. cohort and aggregate)
         # to be displayed, without forcing the parser's separator into prose.
         right_boundary = r'(?![a-z0-9_+\-])' if dataset_joiners else r'(?![a-z0-9])'
         dataset_visible = all(any(re.search(r'(?<![a-z0-9])' + re.escape(_dataset_key(label, dataset_joiners)) + right_boundary, _dataset_key(text, dataset_joiners))
                                   for label in (part, dataset_label(part)))
                               for part in dataset.split(' / '))
+        if composite_cell:
+            dataset_visible = dataset_visible or literal_dataset_visible(dataset, text)
         author_column=(row[1].strip().casefold()=='ours' and source['evidenceId'] in author_headers)
         if (not dataset_visible or not (_method_visible(row[1], text) or author_column)
                 or not (_metric_visible(metric,text,translated_metrics)
@@ -274,6 +290,9 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                         _DURATION_LABELS.get(_duration_metric_key(metric), ())))
                 or _key(value) not in _key(text)):
             return 'table_condition_not_displayed'
+        if composite_cell and source['evidenceId'] in (claim.get('evidenceRefs') or ()):
+            identity = (source['evidenceId'], row_number, group_index, metric)
+            composite_cells.append((identity, dataset, row[1], metric, value))
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
             supported.add((match[1], metric.upper()))
@@ -281,6 +300,8 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                 supported.add((match[1], match[2].upper()))
             if metric.upper() == 'PSNR':
                 supported.add((match[1], 'DB'))
+    if composite_series and not all_composite_series_bound(fields, composite_cells, _method_visible):
+        return 'ambiguous_table_series'
     if not (metric_mentions | unit_mentions) <= supported:
         return 'unbound_table_measurement'
     return None

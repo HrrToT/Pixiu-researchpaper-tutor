@@ -40,6 +40,10 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 新研究运行按用户和当前检索义务均提到的精确数据集名称保留已核验表格，每版至多新增两条候选，优先让每个版本进入读取。用两版 LoRA 的隔离索引形态重建，沿用各五个候选位置，v1 读入一个表格片段，v2 读入两个，各有六条已核验行。45 项定向检查通过。原句即使已指明 SAMSum 与 R1/R2/RL，现有输出校验仍会拒绝表中原样的斜杠组合值，记录为下一个独立缺口。此次未重新创建现用索引或执行模型。 [基准表检索与读取回放](deep-research-evidence/named-benchmark-navigation-development-20261125.json)
 
+具名基准表改动通过 503 个模块、9,959 项全量离线回归，保留此前全部 9,941 项，运行中源码保持一致。 [全量回归](deep-research-evidence/named-benchmark-navigation-full-20261125.json)
+
+新研究运行可引用原表同一单元格内按顺序显示的组合指标。方法、数据组、完整指标名及数值必须在同一处显示并绑定到引用的已核验行。51 项定向测试通过。以 LoRA v1 第 6 页 SAMSum 的 R1/R2/RL 原表数值回放，结构校验通过，错误数据组被拒绝，缺少语义裁定时仍无法发布。回放使用模拟裁定，未执行真实模型。 [组合单元格回放](deep-research-evidence/bound-composite-table-cells-development-20261125.json)
+
 ## 2026-11-25 H5 首次执行
 
 冻结的 LoRA v1、DoRA v1 只提交一次。6 次模型调用结算 33,568 Token，用时 97 秒，外部搜索为零。共享实验方案发回了完整的围栏内 JSON，在严格解析处拒绝，未发布报告。用原始回执复核，剥离单一外部围栏后仍有 24 项约束问题。共享准备预算被用于实验组步骤，固定状态更新及测量顺序、状态可用性和配对克隆均存在错误。新解析器接受单一完整 JSON 围栏，原始回复、严格 JSON、科学方案校验和独立审核仍保留。114 项定向回归通过。原服务恢复后核对了旧调用账本和 H4 暂停状态。H5 科学验收未通过，未重试。 [候选装载](deep-research-evidence/comparison-h5-dora-factorial-candidate-load-20261124.json) · [首次执行与约束复核](deep-research-evidence/dora-h5-first-real-20261125.json)

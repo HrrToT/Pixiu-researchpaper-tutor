@@ -96,13 +96,16 @@ def _table_display_diagnostic(claim, support,comparison_context=None):
 
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
-                    requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,comparison_embedded_measurements=False) -> dict:
+                    requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
+                    comparison_embedded_measurements=False, bound_composite_cells=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
     for publication here and no provider-capable callback is invoked.
     """
     if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
+    if type(bound_composite_cells) is not bool:
+        raise ValueError('Invalid composite table cell policy')
     if type(comparison_embedded_measurements) is not bool:raise ValueError('Invalid comparison measurement policy')
     if requested_source_revisions is not None:
         from services.deep_research.source_revisions import validate_constraints
@@ -218,6 +221,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 unsupported_numbers = numbers - original_numbers
             from services.deep_research.table_bindings import validate_table_bindings
             table_options = {'bound_duration_spelling':True} if bound_duration_spelling else {}
+            if bound_composite_cells:
+                table_options['bound_composite_cells'] = True
             if comparison_context is not None:
                 table_options['comparison_context']=comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
@@ -236,6 +241,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             # label cannot waive exact table identity/display checks. This is
             # not the experimental-design path and does not prove semantics.
             table_options = {'bound_duration_spelling': bound_duration_spelling}
+            if bound_composite_cells:
+                table_options['bound_composite_cells'] = True
             if comparison_context is not None:
                 table_options['comparison_context'] = comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
@@ -345,7 +352,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   semantic_check: Callable[[list[dict], list[dict]], list[dict]] | None = None,
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
-                  complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,comparison_embedded_measurements=False) -> dict:
+                  complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
+                  comparison_embedded_measurements=False, bound_composite_cells=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -361,6 +369,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         quantity_spelling_version=quantity_spelling_version, feedback_version=feedback_version,
         table_references_version=table_references_version, requested_source_revisions=requested_source_revisions,
         **({'bound_duration_spelling':True} if bound_duration_spelling else {}),
+        bound_composite_cells=bound_composite_cells,
         **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']

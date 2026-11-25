@@ -1,0 +1,19 @@
+{
+  "scope": "archived development PDF/TEI, isolated verification replay with synthetic semantic verdict",
+  "arxivVersion": "2106.09685v1",
+  "location": {
+    "page": 6,
+    "chunk": 500,
+    "section": "Table 1",
+    "table": "pdf-page-6-table-1"
+  },
+  "rowNumber": 2,
+  "dataset": "SAMSum",
+  "metric": "R1/R2/RL",
+  "value": "52.0/28.0/44.5",
+  "legacyReason": "ambiguous_table_series",
+  "exactCellPassesHardChecks": true,
+  "publishesWithoutSemanticVerdict": false,
+  "wrongDatasetRejection": "ambiguous_table_series",
+  "liveModelRequests": 0
+}

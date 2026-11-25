@@ -57,6 +57,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['localSectionContextContractVersion']==3
         assert first['processExplanationVocabularyVersion']==1
         assert first['namedBenchmarkNavigationVersion']==1
+        assert first['boundCompositeTableCellsVersion']==1
         with pytest.raises(ValueError, match='Immutable run field'):
             repo.update_run(first['runId'], lambda row: {**row, 'processExplanationVocabularyVersion': 0})
         assert first['auditSourceFieldsContractVersion']==4
@@ -121,6 +122,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         old.pop('requestCoverageContractVersion')
         old.pop('processExplanationVocabularyVersion')
         old.pop('namedBenchmarkNavigationVersion')
+        old.pop('boundCompositeTableCellsVersion')
         old.pop('claimCheckContractVersion')
         old.pop('scopeObservationContractVersion')
         old.pop('scopeExpressionReviewContractVersion')
