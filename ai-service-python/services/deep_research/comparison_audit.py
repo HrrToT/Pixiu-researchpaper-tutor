@@ -178,7 +178,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              literal_limits=False, coherence=False, object_envelope=False, compact_layout=False,
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
              inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
-             local_check_fields=False, check_labels=None, inline_limit_bindings=False):
+             local_check_fields=False, check_labels=None, inline_limit_bindings=False,
+             require_covered_bindings=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -189,6 +190,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         raise ValueError('Short check labels require the rendered comparison output shape')
     if inline_limit_bindings and (check_labels is None or not literal_limits):
         raise ValueError('Inline limits require short labels and literal validation')
+    if require_covered_bindings and not rendered_packet:
+        raise ValueError('Required answer bindings need the rendered comparison packet')
     data = deepcopy({'question':question, 'requirements':requirements, 'claims':claims,
                      'metadata':metadata, 'comparisonPresentation':audit_view(comparison, claims)})
     if compact_layout:
@@ -316,6 +319,9 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         if not bounded_packet:
             raise ValueError('Rendered comparison audit requires the bounded policy')
         policy = RENDERED_CHECKS
+        if require_covered_bindings:
+            policy = policy.replace('covered: sufficient; partial: relevant; missing: [].',
+                'covered: sufficient answer with nonempty bindings; partial: incomplete answer with relevant bindings; missing: [].')
         if local_check_fields:
             policy = policy.replace('Add only extraCheckFields.', LOCAL_CHECK_FIELDS)
         if has_process:
@@ -367,6 +373,11 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         checklist = ('\nRequired output rows and their check IDs: '
                      + json.dumps(expected, separators=(',', ':'))
                      + '. Include all rows. Mark unsupported checks missing; do not omit them.\n')
+        if require_covered_bindings:
+            checklist += ('For every covered check, including the full-question row, bind the actual accepted answer '
+                          'fields that satisfy it. Use multiple claim IDs if needed. If a requested part is absent '
+                          'choose partial with the relevant fields, or missing with [] if none apply. '
+                          'Never return covered with bindings:[].\n')
         if inline_limit_bindings:
             limit_checks = [check['checkId'] for row in data['requirements'] for check in row['checks']
                             if check.get('responseType') == 'limitation']

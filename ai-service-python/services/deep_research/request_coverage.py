@@ -93,7 +93,7 @@ question or an answer_requirement and still undergoes the existing exemption che
     return result
 
 
-def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False,empty_missing_process=False,diagnose_unanchored_limits=False):
+def normalize(value,requirements,*,process_explanations=False,claims=(),distinct_roles=False,literal_limits=False,response_errors=None,empty_missing_limits=False,compact_checks=False,empty_missing_process=False,diagnose_unanchored_limits=False,require_covered_bindings=False):
     """Project one decision per fixed check; do not infer semantic coverage."""
     if type(literal_limits) is not bool:raise ValueError('Invalid literal limit policy')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -162,6 +162,9 @@ def normalize(value,requirements,*,process_explanations=False,claims=(),distinct
                     or not compact_checks and (not isinstance(c['reason'],str) or not 1<=len(c['reason'].strip())<=800)
                     or c['status']=='missing' and c['bindings']):return fail('invalid_check_value',obligation_id=required['obligationId'],check_id=fixed['checkId'])
             binding=deepcopy(c['bindings']);check_status=c['status']
+            if require_covered_bindings and check_status == 'covered' and not binding:
+                fail('unbound_covered_check', obligation_id=required['obligationId'], check_id=fixed['checkId'])
+                check_status = 'partial'  # Unverified, without inferring missing answer text.
             if limitation:
                 from services.deep_research.coverage_limits import validate
                 limit_errors=validate(c['limitSpans'],claims,binding,covered=check_status=='covered')

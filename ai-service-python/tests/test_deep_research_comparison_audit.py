@@ -28,7 +28,8 @@ def presentation(version=3):
 def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, compact_layout=False,
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
           comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False,
-          rendered_packet=False, plan=PLAN, local_check_fields=False, label_checks=False, inline_limits=False):
+          rendered_packet=False, plan=PLAN, local_check_fields=False, label_checks=False, inline_limits=False,
+          require_covered_bindings=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -56,6 +57,8 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         elif mutation == 'drop':rows[0]['checks'].pop()
         elif mutation == 'extra':check['unrequested'] = True
         elif mutation == 'partial':check.update(status='partial',reason='The answer is only partial.')
+        elif mutation in ('whole_unbound_covered', 'whole_unbound_missing'):
+            rows[-1]['checks'][0].update(bindings=[], status=mutation.rsplit('_', 1)[1])
         elif mutation == 'limit':rows[0]['checks'][1]['limitSpans'][0]['excerpt'] = 'not in answer'
         elif mutation == 'omit_limit':rows[0]['checks'][1].pop('limitSpans')
         elif mutation == 'omit_row':rows.pop()
@@ -71,6 +74,8 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
                     ordinary_check.pop('reason')
             if mutation == 'legacy_reason':
                 check['reason'] = 'Unexpected free-form explanation.'
+        if require_covered_bindings:
+            assert 'Never return covered with bindings:[].' in prompt
         rows.append({'auditType':'answer_coherence','coherent':mutation != 'incoherent',
             'issues':[] if mutation != 'incoherent' else [{'kind':'contradiction',
               'bindings':[{'claimId':'a','field':'text'}], 'reason':'Fixture joint contradiction.'}]})
@@ -107,9 +112,31 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         local_comparison_check_fields=local_check_fields,
         label_comparison_checks=label_checks,
         inline_comparison_limits=inline_limits,
+        require_covered_bindings=require_covered_bindings,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (plan, claims, evidence)
     return result, sent
+
+
+def test_whole_answer_requires_bound_accepted_fields_for_covered():
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True,
+                   compact_checks=True, compact_instructions=True, bounded_packet=True,
+                   rendered_packet=True, local_check_fields=True, label_checks=True, inline_limits=True,
+                   require_covered_bindings=True)
+    invalid, sent = audit('whole_unbound_covered', **options)
+    assert len(sent) == 1
+    assert invalid['status'] == 'invalid_response'
+    assert invalid['requestResponseErrors'] == [
+        {'code': 'unbound_covered_check', 'obligationId': 'answer_scope', 'checkId': 'request'}]
+    verdicts = {row['obligationId']: row for row in invalid['verdicts']}
+    assert verdicts['o']['status'] == 'covered'
+    assert verdicts['answer_scope']['aspects'][0]['status'] == 'partial'
+    assert verdicts['answer_scope']['aspects'][0]['bindings'] == []
+
+    missing, _ = audit('whole_unbound_missing', **options)
+    assert missing['status'] == 'checked'
+    assert 'requestResponseErrors' not in missing
+    assert any(gap['obligationId'] == 'answer_scope' for gap in missing['gaps'])
 
 
 def test_full_question_checks_claims_conditions_and_required_context_survive_one_bundle():
