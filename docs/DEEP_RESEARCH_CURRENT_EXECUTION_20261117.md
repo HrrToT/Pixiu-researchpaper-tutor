@@ -8,6 +8,8 @@
 
 H1 仅使用冻结的论文 v1，单次提交，调用模型 9 次，消耗 41,516 Token，用时 205 秒。系统标为 `complete`，发布账本确认交付，工作区可见机器存档和可编辑版本。按第 5、6、9 页原文复核，回答写到了动态关键点、重建与噪声，遗漏初始共享知识、条件图像生成的关键环节和低信噪比下去噪后的残余偏差。人工验收未通过，独立通过数为 0。首次恢复检查发现验收任务如预期增加了报告，对这一项核对后完成原服务恢复，其他历史任务与旧运行保持一致。 [候选装载](deep-research-evidence/comparison-inline-limit-h1-candidate-load-20261124.json) · [首次执行与人工核对](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json)
 
+回查原始三次检索及七次读取，第 5 页初始化和第 9 页噪声实验均未进入检索结果。第 6 页解码器段落只在后续噪声问题的检索中出现，读取也只归给噪声义务。两轮取证判断把三个问题全部标为准备充分，最终审核也将三个问题及整答范围全部判为覆盖。复验时先用开发材料逐项核对目标段落能进入对应义务，再检查摘要式回答能否触发补读或显示证据缺口。此次审计仅覆盖历史返回结果，未重新检索或调用模型，历史独立验收不改判。 [检索和读取归属审计](deep-research-evidence/gsc-h1-source-routing-audit-20261125.json)
+
 ## 2026-11-25 H2 首次独立执行
 
 H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次，消耗 70,170 Token，用时 121 秒。十条候选均未通过事实核验，其中七条数值未与引用对齐、两条语义未确认、一条未能证明所述缺失。运行以 `inconclusive` 结束，工作区保存未完成说明，独立通过数为 0。恢复原服务后，核对了旧运行、其他任务及发布账本。 [候选装载](deep-research-evidence/comparison-benchmark-protocol-h2-candidate-load-20261125.json) · [首次执行](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json)

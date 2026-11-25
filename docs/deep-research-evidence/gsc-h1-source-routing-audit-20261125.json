@@ -1,0 +1,186 @@
+{
+  "case": "H1-GSC-v1",
+  "sourceCommit": "26c3d76601540f008b153c3418c1c6c5a19df5c1",
+  "historicalReceiptSha256": {
+    "payload": "02c9f4b6eeaf22852ff559bdec823dfab94e21c309d066aaa76109e463e94ee0",
+    "calls": "25e5225c039c7c957f4c52b72980870a302be0768ae342ee361731483ac81c60"
+  },
+  "retrievalBatches": [
+    {
+      "ledgerIndex": 2,
+      "pages": [
+        2,
+        3,
+        1,
+        12,
+        1
+      ]
+    },
+    {
+      "ledgerIndex": 3,
+      "pages": [
+        2,
+        3,
+        1,
+        1,
+        12
+      ]
+    },
+    {
+      "ledgerIndex": 10,
+      "pages": [
+        2,
+        3,
+        1,
+        12,
+        6
+      ]
+    }
+  ],
+  "readLedger": [
+    {
+      "ledgerIndex": 4,
+      "page": 1,
+      "obligationIds": [
+        "o1",
+        "o2"
+      ]
+    },
+    {
+      "ledgerIndex": 5,
+      "page": 2,
+      "obligationIds": [
+        "o1",
+        "o2"
+      ]
+    },
+    {
+      "ledgerIndex": 6,
+      "page": 1,
+      "obligationIds": [
+        "o1",
+        "o2"
+      ]
+    },
+    {
+      "ledgerIndex": 7,
+      "page": 12,
+      "obligationIds": [
+        "o1",
+        "o2"
+      ]
+    },
+    {
+      "ledgerIndex": 8,
+      "page": 3,
+      "obligationIds": [
+        "o1",
+        "o2"
+      ]
+    },
+    {
+      "ledgerIndex": 11,
+      "page": 12,
+      "obligationIds": [
+        "o3"
+      ]
+    },
+    {
+      "ledgerIndex": 12,
+      "page": 6,
+      "obligationIds": [
+        "o3"
+      ]
+    }
+  ],
+  "readiness": [
+    {
+      "ledgerIndex": 9,
+      "decisions": [
+        {
+          "unitId": "G1",
+          "ready": true,
+          "evidenceIds": [
+            "E1",
+            "E3",
+            "E5",
+            "E6"
+          ]
+        },
+        {
+          "unitId": "G2",
+          "ready": true,
+          "evidenceIds": [
+            "E1",
+            "E3",
+            "E4",
+            "E7"
+          ]
+        }
+      ]
+    },
+    {
+      "ledgerIndex": 13,
+      "decisions": [
+        {
+          "unitId": "G1",
+          "ready": true,
+          "evidenceIds": [
+            "E1",
+            "E3",
+            "E4"
+          ]
+        }
+      ]
+    }
+  ],
+  "anchorCoverageByObligation": [
+    {
+      "obligations": [
+        "o1"
+      ],
+      "methodPage": 5,
+      "retrievedInAnyBatch": false,
+      "readForRequestedObligation": false,
+      "actualReadObligationIds": []
+    },
+    {
+      "obligations": [
+        "o2"
+      ],
+      "methodPage": 6,
+      "retrievedInAnyBatch": true,
+      "readForRequestedObligation": false,
+      "actualReadObligationIds": [
+        "o3"
+      ]
+    },
+    {
+      "obligations": [
+        "o3"
+      ],
+      "methodPage": 9,
+      "retrievedInAnyBatch": false,
+      "readForRequestedObligation": false,
+      "actualReadObligationIds": []
+    }
+  ],
+  "finalCoverage": {
+    "o1": "covered",
+    "o2": "covered",
+    "o3": "covered",
+    "answer_scope": "covered"
+  },
+  "publishedCitationPages": [
+    2,
+    1,
+    1,
+    12
+  ],
+  "firstObservedFailure": "required method detail absent from retrieval for two obligations and decoder source was acquired on the later noise query only",
+  "downstreamFailure": "readiness and answer coverage accepted high-level summaries despite incomplete method detail",
+  "scope": "audit of historical recorded retrieval outputs and read routing; not current retriever measurement or proof of index absence",
+  "newModelCalls": 0,
+  "historicalReceiptMutated": false,
+  "independentAcceptance": false
+}
