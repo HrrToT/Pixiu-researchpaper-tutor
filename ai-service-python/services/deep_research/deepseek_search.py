@@ -43,7 +43,7 @@ class DeepSeekAcademicSearch:
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def __call__(self, query, limit):
+    def __call__(self, query, limit, *, include_unversioned=False):
         # Do not send the original question or request crawled document text.
         results = read_search_results(self.api_key, 'site:arxiv.org ' + query[:113], limit)
         candidates = {}
@@ -57,8 +57,9 @@ class DeepSeekAcademicSearch:
             except AcademicAccessError:
                 continue
             work = work_id(identity)
-            # A search result pointing to latest cannot identify the revision read.
             if work == identity:
+                if include_unversioned:
+                    candidates.setdefault(identity, {'unresolvedArxivWork': work})
                 continue
             title = item.get('title')
             candidates.setdefault(identity, {

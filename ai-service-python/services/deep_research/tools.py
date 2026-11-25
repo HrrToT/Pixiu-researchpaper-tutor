@@ -598,11 +598,12 @@ class ExternalAcademicAdapter:
         return self._discover_request(run_id, {"request": request, "type": "discover"},
                                       lambda: self._client.lookup(identifiers, limit))
 
-    def discover_via_deepseek(self, run_id, provider, query, *, limit=6):
+    def discover_via_deepseek(self, run_id, provider, query, *, limit=6, resolve_revisions=False):
         return self._discover_request(run_id, {
             'provider': 'deepseek_search', 'query': query[:113], 'limit': limit,
             'type': 'discover',
-        }, lambda: provider(query, limit)[:3])
+            **({'resolveUnversionedWork': 1} if resolve_revisions else {}),
+        }, lambda: provider(query, limit, **({'include_unversioned': True} if resolve_revisions else {}))[:3])
 
     def _discover_request(self, run_id, request_identity, send):
         args_digest = digest(request_identity)

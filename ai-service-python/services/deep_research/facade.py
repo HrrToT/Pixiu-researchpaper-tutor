@@ -462,6 +462,7 @@ class ResearchFacade:
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,
             "exactDiscoveryContractVersion": 2,
+            "searchCandidateResolutionContractVersion": 1,
             "planEditContractVersion": 1,
             "clarificationContractVersion": 1,
             "adaptiveResearchContractVersion": 1,

@@ -87,7 +87,18 @@ class AcademicAcquisition:
                          'url': 'https://arxiv.org/abs/' + identity, 'discoveryProvider': 'pinned_arxiv_pdf'}
                         for identity in request_ids if work_id(identity) != identity and identity not in found)]
                 elif not request_ids and not candidates and self.fallback_search:
-                    candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query)
+                    version = record.get('searchCandidateResolutionContractVersion')
+                    if type(version) is int and version == 1:
+                        from services.deep_research.request_context import effective_question
+                        from services.deep_research.source_revisions import explicit_revisions
+
+                        candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query,
+                                                                   resolve_revisions=True)
+                        pins = explicit_revisions(effective_question(record))
+                        candidates = _resolve_search_candidates(adapter, run_id, candidates, pins,
+                                                                client.policy.max_results)
+                    else:
+                        candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query)
             for candidate in candidates:
                 identity = candidate.get("versionId")
                 if not identity:
@@ -150,6 +161,41 @@ class AcademicAcquisition:
                 outcome == 'failed' for outcome in adapter.discovery_outcomes):
             raise DeepResearchError('external_discovery_unavailable', '外部文献获取失败')
         return sources
+
+
+def _resolve_search_candidates(adapter, run_id, candidates, pins, max_results):
+    """Only an exact arXiv metadata ID can resolve an unversioned web result."""
+    exact = {candidate['versionId']: candidate for candidate in candidates if candidate.get('versionId')
+             and candidate['versionId'] in pins.get(candidate['workId'], [candidate['versionId']])}
+    exact_works = {candidate['workId'] for candidate in exact.values()}
+    pending = [candidate['unresolvedArxivWork'] for candidate in candidates if 'unresolvedArxivWork' in candidate]
+    remaining = {work: [revision[6:] for revision in pins.get('arxiv:' + work, []) if revision not in exact]
+                 for work in pending}
+    pending = [work for work in remaining if remaining[work] or 'arxiv:' + work not in exact_works]
+    if not pending:
+        return list(exact.values())
+    lookup_ids = [identity for work in pending for identity in (remaining[work] or [work])]
+    if len(lookup_ids) > max_results:
+        return list(exact.values())
+    metadata = adapter.lookup(run_id, lookup_ids, limit=max(len(lookup_ids), min(3, max_results)))
+    resolutions = {}
+    for row in metadata:
+        identity = row['arxivId']
+        work = work_id(identity)
+        if (work in pending and work != identity and row['versionId'] == 'arxiv:' + identity
+                and row['workId'] == 'arxiv:' + work
+                and row['versionId'] in pins.get(row['workId'], [row['versionId']])):
+            resolutions.setdefault(work, {})[identity] = {**row, 'discoveryProvider': 'deepseek_search'}
+    for work in pending:
+        versions = resolutions.get(work, {})
+        required = remaining[work]
+        if required:
+            exact.update((versions[revision]['versionId'], versions[revision])
+                         for revision in required if revision in versions)
+        elif len(versions) == 1:
+            chosen, = versions.values()
+            exact[chosen['versionId']] = chosen
+    return list(exact.values())
 
 
 def _page_passages(text):

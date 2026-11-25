@@ -7,7 +7,7 @@ from services.deep_research_academic import checked_arxiv_id
 _IDENTITY = r'(?:\d{4}\.\d{4,5}|[a-z][a-z.-]+/\d{7})v[1-9]\d*'
 _REFERENCE = re.compile(
     r'(?<![A-Za-z0-9_./])(?:arxiv\s*:\s*|https?://(?:www\.)?arxiv\.org/(?:abs|pdf|html)/)?'
-    r'(?P<identity>'+_IDENTITY+r')(?:\.pdf)?(?![A-Za-z0-9_./])', re.I)
+    r'(?P<identity>'+_IDENTITY+r')(?:\.pdf)?(?![A-Za-z0-9_/]|\.[A-Za-z0-9_./])', re.I)
 
 
 def enabled(record):

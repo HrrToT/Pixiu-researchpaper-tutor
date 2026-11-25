@@ -348,7 +348,7 @@ class DeepResearchRepository:
                     raise ValueError(f'Immutable run field changed: {observation_policy}')
                 for batch_policy in ('comparisonReviewBatchContractVersion', 'comparisonAuthoringContractVersion',
                                      'comparisonExplorationContractVersion', 'comparisonCrossPaperBoundaryContractVersion',
-                                     'shortComparisonLayoutContractVersion'):
+                                     'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion'):
                     if (updated.get(batch_policy) != current.get(batch_policy)
                             or type(updated.get(batch_policy)) is not type(current.get(batch_policy))
                             or (batch_policy in updated) != (batch_policy in current)):

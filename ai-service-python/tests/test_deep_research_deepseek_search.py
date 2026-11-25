@@ -100,3 +100,74 @@ def test_provider_http_request_disables_redirects_and_content(monkeypatch):
 
     monkeypatch.setattr(deepseek_search.requests, 'post', post)
     assert deepseek_search.DeepSeekAcademicSearch('fixture-key')('paper', 6) == []
+
+
+@pytest.mark.parametrize('lookup_rows, versioned_search, user_pin, expected_revision', [
+    ([PAPER], False, '', PAPER),
+    (['2403.17888'], False, '', None),
+    (['2403.17888v2', PAPER], False, '', None),
+    (['2410.00001v4'], False, '', None),
+    ([], True, '', PAPER),
+    ([PAPER], False, '2403.17888v2', None),
+    (['2403.17888v2'], False, '2403.17888v2', '2403.17888v2'),
+])
+def test_search_work_links_are_resolved_before_any_pdf_fetch(tmp_path, monkeypatch, lookup_rows,
+                                                             versioned_search, user_pin, expected_revision):
+    repo = DeepResearchRepository(tmp_path / 'research.sqlite3')
+    repo.initialize()
+    repo.create_run({'runId': 'r', 'taskId': 't', 'exactDiscoveryContractVersion': 2,
+                     'searchCandidateResolutionContractVersion': 1,
+                     'question': f'Find public research. Preserve arXiv:{user_pin}.' if user_pin else 'Find public research.',
+                     'materials': [{'materialId': 'local'}], 'sourcePolicy': {'mode': 'academic_external'}})
+    repo.begin_execution('r')
+    queries = []
+    fetches = []
+    searches = []
+
+    def search(_key, query, count):
+        searches.append((query, count))
+        return [{'url': 'https://arxiv.org/abs/2403.17888', 'title': 'Search result', 'snippet': 'Discard me'},
+                {'url': 'https://arxiv.org/html/2403.17888'},
+                *([{'url': f'https://arxiv.org/pdf/{PAPER}.pdf'}] if versioned_search else [])]
+
+    def transport(host, path, _limit):
+        if host == 'arxiv.org':
+            fetches.append(path)
+            return 'application/pdf', b'%PDF-fixture'
+        assert host == 'export.arxiv.org'
+        params = parse_qs(urlsplit(path).query)
+        queries.append(params)
+        if 'id_list' not in params:
+            raise AcademicAccessError('Topic lookup failed')
+        entries = ''.join(f'<entry><id>https://arxiv.org/abs/{identity}</id>'
+                          '<title>Registry paper title</title><summary>Metadata abstract</summary></entry>'
+                          for identity in lookup_rows)
+        return 'application/atom+xml', f'<feed xmlns="http://www.w3.org/2005/Atom">{entries}</feed>'.encode()
+
+    monkeypatch.setattr(deepseek_search, 'read_search_results', search)
+    client = AcademicSourceClient(AcademicPolicy(enabled=True, mode='academic_external', allow_fulltext=True), transport)
+    monkeypatch.setattr(client, '_parse_fulltext', lambda _: [{'page': 7, 'text': 'Version-pinned original passage.'}])
+    acquire = AcademicAcquisition(repo, repo.complete_call, client_factory=lambda _: client,
+                                  fallback_search=deepseek_search.DeepSeekAcademicSearch('fixture-key'))
+    targets = [{'obligationId': 'goal', 'question': 'Original passage?', 'query': 'public topic'}]
+    for _ in range(2):
+        sources = acquire('r', targets)
+        if expected_revision:
+            source, = sources
+            assert source['versionId'] == f'arxiv:{expected_revision}'
+            assert source['location']['page'] == 7
+            assert source['text'] == 'Version-pinned original passage.'
+            assert source['discoveryProvider'] == 'deepseek_search'
+            if not versioned_search:
+                assert source['title'] == 'Registry paper title'
+        else:
+            assert sources == []
+
+    assert searches == [('site:arxiv.org public topic', 6)]
+    assert len(queries) == (1 if versioned_search else 2)
+    if not versioned_search:
+        assert queries[1]['id_list'] == [user_pin or '2403.17888']
+    assert fetches == ([f'/pdf/{expected_revision}'] if expected_revision else [])
+    budget = repo.require_run('r')['budget']
+    assert budget['externalSearches'] == (2 if versioned_search else 3)
+    assert budget['fulltextFetches'] == bool(expected_revision)
