@@ -1259,6 +1259,9 @@ def make_synthesize_node(
                 **({'measurement_tables':True} if type(record.get('readingPriorityContractVersion')) is int and record['readingPriorityContractVersion'] in (8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),
                 **({'external_method_context':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,3) else {}),
                 **({'criterion_method_navigation':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion']==3 else {}),
+                **({'reviewed_coverage':brief_state.get('coverage',())} if output_kind=='direction_survey'
+                   and record.get('externalReadingContractVersion')==3
+                   and record.get('sourcePolicy',{}).get('mode') in ('external_only','academic_external') else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
                 **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5,6) else {}),

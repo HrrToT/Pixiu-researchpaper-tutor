@@ -152,3 +152,31 @@ def test_method_role_and_retained_contents_reach_the_criterion_readiness_request
                                        for unit in units(prompt)])}
 
     assert execute(Memory(record), invoke)['gaps']
+
+
+def test_reviewed_readiness_bundle_survives_synthesis_limit_without_crossing_sources():
+    from services.deep_research.synthesis_evidence import fit_premises
+
+    alternate = evidence('An unrelated operating mode also stores offsets.', 1)
+    own_a = evidence('The requested operating mode keeps the original reference.', 40)
+    own_b = evidence('The copy receives the selected offsets during the write.', 41)
+    foreign = evidence('An unrelated paper reports different storage.', 42, source='foreign')
+    rows = [alternate, foreign, own_a, own_b]
+    plan = [{'itemId': 'step', 'obligations': [{
+        'obligationId': 'o', 'question': '这个模式保留哪些内容', 'requiredSources': ['owned'],
+        'completionCriteria': [{'criterionId': 'c', 'requirement': '这个模式保留哪些内容', 'responseType': 'explanation'}],
+    }]}]
+    coverage = [{'obligationId': 'o', 'sourceWorkId': 'owned', 'supportKind': 'joint', 'criteria': [
+        {'criterionId': 'c', 'checked': True, 'evidenceIds': [own_a['evidenceId'], own_b['evidenceId']]},
+        {'criterionId': 'unknown', 'checked': True, 'evidenceIds': [alternate['evidenceId']]},
+    ]}]
+    selected, bundles = order_premises(rows, plan, limit=2, reviewed_coverage=coverage)
+    assert selected == [own_a, own_b]
+    assert len(bundles) == 1 and bundles[0]['criterionId'] == 'c'
+    _, supplied, missing = fit_premises(selected, lambda picked: json.dumps(picked, ensure_ascii=False), bundles)
+    assert [row['evidenceId'] for row in supplied] == [own_a['evidenceId'], own_b['evidenceId']] and not missing
+
+    untrusted = deepcopy(coverage)
+    untrusted[0]['criteria'][0]['evidenceIds'].append(foreign['evidenceId'])
+    _, fallback_bundles = order_premises(rows, plan, limit=2, reviewed_coverage=untrusted)
+    assert {ref for bundle in fallback_bundles for ref in bundle['evidenceIds']} <= {alternate['evidenceId']}

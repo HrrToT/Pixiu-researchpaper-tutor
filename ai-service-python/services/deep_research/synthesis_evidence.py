@@ -24,8 +24,40 @@ def result_role(row):
     return 'unspecified'
 
 
+def readiness_bundles(rows, obligations, coverage):
+    """Carry own, explicitly checked premises into synthesis without approving prose."""
+    from services.deep_research.evidence_requirements import criteria
+
+    known = {row['evidenceId']: row for row in rows}
+    bundles = []
+    for assessment in coverage:
+        oid = assessment.get('obligationId')
+        source = assessment.get('sourceWorkId')
+        obligation = obligations.get(oid)
+        if not obligation or not source or assessment.get('supportKind') != 'joint':
+            continue
+        if obligation.get('requiredSources') and source not in obligation['requiredSources']:
+            continue
+        required = {criterion['criterionId']: criterion['requirement'] for criterion in criteria(obligation)}
+        for verdict in assessment.get('criteria', []):
+            criterion_id = verdict.get('criterionId')
+            refs = verdict.get('evidenceIds')
+            if (verdict.get('checked') is not True or criterion_id not in required
+                    or not isinstance(refs, list) or not refs):
+                continue
+            if not all(isinstance(ref, str) and ref in known and source in {
+                    known[ref].get('sourceWorkId'), known[ref].get('sourceVersionId'),
+                    known[ref].get('ownerMaterialId')} for ref in refs):
+                continue
+            contexts = {ref: context for ref in refs if (context := surrounding_context(known[ref]))}
+            bundles.append({'obligationId': oid, 'criterionId': criterion_id, 'source': source,
+                            'requirement': required[criterion_id], 'evidenceIds': list(dict.fromkeys(refs)),
+                            **({'requiredContextByEvidenceId': contexts} if contexts else {})})
+    return bundles
+
+
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=()):
     if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
     if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
     if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
@@ -35,12 +67,17 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
     obligations={o['obligationId']:o for item in plan for o in item.get('obligations',[])}
     rows=[e for e in evidence if e.get('verification',{}).get('literal')=='passed']
     works=list(dict.fromkeys(e.get('sourceWorkId') for e in rows))
-    chosen=[];seen=set();bundles=[]
+    bundles = readiness_bundles(rows, obligations, reviewed_coverage) if reviewed_coverage else []
+    ready_keys = {(bundle['obligationId'], bundle['criterionId'], bundle['source']) for bundle in bundles}
+    seen = {eid for bundle in bundles for eid in bundle['evidenceIds']}
+    chosen = [e for e in rows if e['evidenceId'] in seen]
     if request_roles:
         from services.deep_research.reading_roles import premise_bundles
-        chosen,bundles=premise_bundles(rows,obligations,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost,
+        role_rows, role_bundles = premise_bundles(rows,obligations,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost,
             **({'procedure_targets':True} if procedure_targets else {}),measurement_tables=measurement_tables,**({'authored_rows':True} if authored_rows else {}))
-        seen={e['evidenceId'] for e in chosen}
+        chosen.extend(e for e in role_rows if e['evidenceId'] not in seen)
+        seen.update(e['evidenceId'] for e in role_rows)
+        bundles.extend(role_bundles)
     section_groups={};section_owners={o['obligationId']:i for i,item in enumerate(plan) for o in item.get('obligations',[])}
     if section_targets:
         from services.deep_research.section_premises import bundle as section_bundle,requested as requested_sections
@@ -61,7 +98,10 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                     if row['evidenceId'] not in seen:chosen.append(row);seen.add(row['evidenceId'])
     for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents,
                                            condition_intents=condition_intents):
+        criterion_id = (view.get('completionCriteria') or [{}])[0].get('criterionId', 'whole_obligation')
         for source in view.get('requiredSources') or works:
+            if (oid, criterion_id, source) in ready_keys:
+                continue
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
             from services.deep_research.operational_premises import requested_operation
             active_intent=('operation' if operational_context and intent is None and requested_operation(view) else intent)
@@ -134,7 +174,7 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
                 for e in bundle:
                     _,context=definition_premise(e,intent.split(':',1)[1],read_sources)
                     if context:contexts[e['evidenceId']]=context
-            bundles.append({'obligationId':oid,'criterionId':(view.get('completionCriteria') or [{}])[0].get('criterionId','whole_obligation'),
+            bundles.append({'obligationId':oid,'criterionId':criterion_id,
                             'requirement':view['question'],'source':source,'evidenceIds':ids,
                             **({'navigationRole':'comparison_operation'} if operation_navigation and used_method_bundle else {}),
                             **({'requiredContextByEvidenceId':contexts} if contexts else {})})

@@ -110,6 +110,8 @@ PagedAttention H3 单次真实执行用时 149 秒，9 次模型调用、37,494 
 
 对照取证判断、实际生成输入与草稿引用。两项检查先前各有 3 段和 2 段被取证判断选中，实际生成体仅收到其中 0 段和 1 段，两条草稿均未引用各自检查通过的片段。此处需要在取证与生成之间保留逐项证据归属，随后仍需独立核验来源事实和回答范围。未额外调用模型。 [范围归属复核](deep-research-evidence/academic-pagedattention-h3-scope-routing-20261125.json)
 
+外部综述生成接入已核对的逐项取证包，按义务、检查项和指定来源优先保留原文及上下文，再放入可选证据，仍受生成输入预算约束。用保存的 PagedAttention 候选离线验证，原生成输入仅含四段不同取证原文中的一段，新选择器保留全部四段并形成两组证据包。78 项定向回归通过，未重跑模型，完整生成输入和成品范围仍需验证。PagedAttention 已用于诊断开发，不能用同一题计新的独立通过。 [证据包回放](deep-research-evidence/academic-pagedattention-h3-synthesis-bundles-replay-20261125.json)
+
 ## 2026-11-24 v44 真实比较
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)
