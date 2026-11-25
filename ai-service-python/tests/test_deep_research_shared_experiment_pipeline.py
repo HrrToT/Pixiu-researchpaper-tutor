@@ -114,6 +114,19 @@ def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
     sent.assert_not_called()
 
 
+def test_failed_fact_paths_address_decoded_proposal_fields():
+    from services.deep_research.shared_experiment_revision import fact_edit_paths
+    from services.deep_research.shared_experiment_review import _pointer
+    proposal = {'sourceFacts': [
+        {'id': 'F2', 'text': 'First fact.', 'evidenceRefs': ['E1']},
+        {'id': 'F8', 'text': 'Second fact.', 'evidenceRefs': ['E3']},
+    ]}
+    paths = fact_edit_paths(proposal, [{'factId': 'F8', 'reason': 'numeric_mismatch'}])
+    assert set(paths) == {'F8'}
+    assert _pointer(proposal, paths['F8']['text']) == proposal['sourceFacts'][1]['text']
+    assert _pointer(proposal, paths['F8']['evidenceRefs']) == ['E3']
+
+
 @pytest.mark.parametrize('fixed',[True,False])
 def test_graph_verifier_repairs_at_most_once_and_rechecks_both_stages(fixed):
     r,data,aliases=ready();r['state']['sharedExperimentInput']={'data':data,'aliases':aliases,'requiredDomains':[]}

@@ -63,3 +63,27 @@ def test_inference_cannot_repeat_the_other_versions_known_table_value_as_an_oper
     assert rejection['reason'] == 'table_revision_value_mismatch'
     assert not contradictory_revision_values(claim, sources, '2')
     assert not contradictory_revision_values({**claim, 'text':'OPT-1.3B（v1: 18.51，v2: 16.91）。'}, sources, '1')
+
+
+def test_multiple_rows_keep_each_versions_values_and_require_matching_coordinates():
+    sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
+    bindings = []
+    for source, value in zip(sources, ('13.02', '11.39'), strict=True):
+        source['tableData']['rows'].append([3, 'OPT-6.7B', [value]])
+        source['quote'] += f'\nTable row 3: OPT-6.7B | {value}'
+        for row, _, (measurement,) in source['tableData']['rows']:
+            bindings.append({'evidenceId': source['evidenceId'], 'rowNumber': row,
+                             'groupIndex': 0, 'metric': '1%', 'value': measurement})
+    claim = {'claimId': 'result', 'kind': 'reported', 'text': 'Original prose',
+             'evidenceRefs': ['e1', 'e2'], 'obligationIds': ['o1', 'o2'], 'tableBindings': bindings}
+    report = {'claims': [claim]}
+    assert materialize(report, sources, '1') == (report, [])
+    compiled, fixed = materialize(report, sources, '1', multiple_rows=True)
+    rendered, = compiled['claims']
+    assert fixed == ['result']
+    assert rendered['text'] == '表 1（Activation · 1%）OPT-1.3B 为 v1 18.51，v2 16.91；OPT-6.7B 为 v1 13.02，v2 11.39。'
+    assert rendered['tableBindings'] == bindings and rendered['obligationIds'] == ['o1', 'o2']
+    assert validate_table_bindings(rendered, sources) is None
+    assert not contradictory_revision_values(rendered, sources, '1')
+    incomplete = {'claims': [{**claim, 'tableBindings': bindings[:-1]}]}
+    assert materialize(incomplete, sources, '1', multiple_rows=True) == (incomplete, [])

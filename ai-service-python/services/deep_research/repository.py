@@ -348,10 +348,10 @@ class DeepResearchRepository:
                     raise ValueError(f'Immutable run field changed: {observation_policy}')
                 for batch_policy in ('comparisonReviewBatchContractVersion', 'comparisonAuthoringContractVersion',
                                      'comparisonExplorationContractVersion', 'comparisonCrossPaperBoundaryContractVersion',
-                                     'experimentArmCloneLayoutVersion',
+                                     'experimentArmCloneLayoutVersion', 'sharedExperimentRevisionPathsVersion',
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
-                                     'namedBenchmarkNavigationVersion', 'namedTableScopeVersion',
+                                     'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',
                                      'boundCompositeTableCellsVersion',

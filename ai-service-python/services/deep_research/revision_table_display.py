@@ -18,13 +18,13 @@ GUIDANCE = ('For the same row across revisions, put exact bound cells in a repor
             'without repeating numbers already reported in those rows.')
 
 
-def _resolve(claim, own, number):
+def _resolve(claim, own, number, *, multiple_rows):
     bindings = claim.get('tableBindings')
     if not isinstance(bindings, list) or not 2 <= len(bindings) <= 32:
         return None
     normalized = []
     groups = defaultdict(dict)
-    work_ids, row_labels, coordinates = set(), set(), set()
+    work_ids = set()
     owners_by_revision = defaultdict(set)
     for binding in bindings:
         if not isinstance(binding, dict):
@@ -49,27 +49,30 @@ def _resolve(claim, own, number):
         if not _LABEL.fullmatch(label) or not _LABEL.fullmatch(column) or not _SCALAR.fullmatch(cell['value']):
             return None
         revision = publication['revision']
-        identity = (revision, column)
-        if identity in coordinates or not re.fullmatch(r'v[1-9]\d*', revision):
+        coordinate = (label, column)
+        if not re.fullmatch(r'v[1-9]\d*', revision) or coordinate in groups[revision]:
             return None
-        coordinates.add(identity)
-        groups[revision][column] = cell['value']
+        groups[revision][coordinate] = cell['value']
         work_ids.add(publication['workId'])
         owners_by_revision[revision].add(source['ownerMaterialId'])
-        row_labels.add(label)
         normalized.append(binding)
-    if (len(work_ids) != 1 or len(row_labels) != 1 or len(groups) < 2
+    if (len(work_ids) != 1 or len(groups) < 2
             or any(len(owners) != 1 for owners in owners_by_revision.values())):
         return None
-    first_columns = list(next(iter(groups.values())))
-    if any(set(values) != set(first_columns) for values in groups.values()):
+    first = next(iter(groups.values()))
+    if any(values.keys() != first.keys() for values in groups.values()):
         return None
-    label, = row_labels
-    return normalized, label, first_columns, groups
+    labels = list(dict.fromkeys(label for label, _ in first))
+    if len(labels) != 1 and not multiple_rows:
+        return None
+    columns = [column for label, column in first if label == labels[0]]
+    if set(first) != {(label, column) for label in labels for column in columns}:
+        return None
+    return normalized, labels, columns, groups
 
 
-def materialize(report, evidence, number):
-    """Keep draft coverage and citations; use literal values for a matched row across revisions."""
+def materialize(report, evidence, number, *, multiple_rows=False):
+    """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
     fixed = []
@@ -81,14 +84,24 @@ def materialize(report, evidence, number):
             claims.append(claim)
             continue
         own = {ref: supplied[ref] for ref in claim['evidenceRefs']}
-        matched = _resolve(claim, own, number)
+        matched = _resolve(claim, own, number, multiple_rows=multiple_rows)
         if not matched:
             claims.append(claim)
             continue
-        bindings, label, columns, revisions = matched
+        bindings, labels, columns, revisions = matched
         order = sorted(revisions, key=lambda item: int(item[1:]))
-        values = '，'.join(revision + ' ' + '、'.join(revisions[revision][key] for key in columns) for revision in order)
-        text = f'表 {number} {label}（' + '、'.join(columns) + f'）依次为 {values}。'
+        values = {
+            label: '，'.join(revision + ' ' + '、'.join(revisions[revision][label, column] for column in columns)
+                            for revision in order)
+            for label in labels
+        }
+        heading = '、'.join(columns)
+        if len(labels) == 1:
+            label, = labels
+            text = f'表 {number} {label}（{heading}）依次为 {values[label]}。'
+        else:
+            rows = '；'.join(f'{label} 为 {values[label]}' for label in labels)
+            text = f'表 {number}（{heading}）{rows}。'
         claims.append({**claim, 'text': text, 'tableBindings': bindings})
         fixed.append(claim['claimId'])
     return {**report, 'claims': claims}, fixed

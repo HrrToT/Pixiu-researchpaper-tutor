@@ -1975,12 +1975,14 @@ space with unsupported global absence or incidental iteration/performance values
                 return {'error_code':'invalid_synthesis_response'}
         blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
         revision_table_ids = []
+        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') == 1
         if (requested_table and record.get('namedTableScopeVersion') == 2
                 and not blocked_draft_ids and not scope_expression_audit):
             from services.deep_research.revision_table_display import materialize as materialize_revision_table
             supplied_ids = {evidence_aliases[row['evidenceId']] for row in evidence_summaries}
             parsed, revision_table_ids = materialize_revision_table(
-                parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table)
+                parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table,
+                multiple_rows=multiple_revision_rows)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
@@ -2134,7 +2136,9 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'compact_layout':True} if compact_layout else {}),
                 **({'fixed_claim_ids':revision_table_ids or [a['claimId'] for a in scope_expression_audit]}
                    if revision_table_ids or scope_expression_audit else {}),
-                **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}))
+                **({'selective_fixed_edit':True} if revision_table_ids and multiple_revision_rows else {}),
+                **({'explicit_edit_scope':True} if (revision_table_ids and multiple_revision_rows)
+                   or explicit_compaction_scope(record,question,output_kind) else {}))
         if draft_merge_audit:
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisDraftMergeAudit':draft_merge_audit}},expected_revision=None)
         if parsed is None:
