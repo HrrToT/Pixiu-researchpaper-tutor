@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-25",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "quest_v1": {
+      "path": "tmp/pdfs/h3-quest-evaluator-20261125/2406.10774v1.pdf",
+      "sha256": "8421ec66bd0dcb7d1dfc3524dbafbb15da354acdbdb477ee99c949f018abba6c",
+      "bytes": 2263803,
+      "pageCount": 11,
+      "arxiv": "2406.10774v1",
+      "reference": "https://arxiv.org/abs/2406.10774v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释既有算法，无实验设计任务。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "quest_v1",
+        "page": 4,
+        "section": "3.4 and Algorithm 1",
+        "check": "Per coordinate, the current query multiplies both extrema of the page's keys. The larger product is selected and summed over coordinates to bound the page score. Top-K pages undergo normal attention."
+      },
+      {
+        "paper": "quest_v1",
+        "page": 2,
+        "section": "2.2 KV Cache Eviction Algorithm",
+        "check": "Quest retains the cache and selectively reads pages for the current query."
+      }
+    ],
+    "executionGates": {
+      "beforeSubmission": "Verify the evaluator-only PDF hash, no prior case, zero matching application cache or research sources, and no materials in the new task.",
+      "discovery": "Record a successful live application metadata lookup of the exact revision, separately from any direct PDF fetch.",
+      "fulltext": "Record fresh application PDF retrieval and compare the content hash and page count with the evaluator copy.",
+      "publication": "Check the saved answer, pinpoint its original method evidence, and enforce the content rubric and character limit."
+    },
+    "goldInputBoundary": "Only the question, empty task materials, external-only policy and standard budget enter the application. The evaluator PDF, anchors and criteria stay outside the application."
+  },
+  "cases": [
+    {
+      "id": "H3-QUEST",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2406.10774v1。给初学者解释 Quest 如何根据当前查询给 KV 缓存页打分，以及打分后实际读取和保留哪些内容。写明取得的是摘要还是正文，引用方法原文，300 字以内。只用指定版本，查不到正文时请说明。",
+      "required": [
+        "空材料任务真实发现并获取指定版本完整 PDF，文件哈希与评审件一致，方法证据可回查。",
+        "说明每页记录 Key 的逐维最小值和最大值，当前 Query 对每维分别乘这两个值并取较大乘积，逐维加总得到页内注意力分数的上界估计。",
+        "说明实际注意力只读取本次评分最高的 K 个缓存页，其他页仍可供后续查询使用。",
+        "说明实际取得正文或摘要，并在字数限制内回答。"
+      ],
+      "forbidden": [
+        "将页分数描述成某个真实 token 精确注意力值，或省略取较大乘积的步骤而声称总是用 Key 最大值。",
+        "把本次不读取某些页解释成永久驱逐。",
+        "以评审文件或已有缓存代替应用本次联网，或把摘要误标为方法正文。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H3-QUEST": "3725d8d6cd5e4d5e4127c991fd6d03c44b12a82342bdc03e1ed58a573b7eb88b"
+  }
+}

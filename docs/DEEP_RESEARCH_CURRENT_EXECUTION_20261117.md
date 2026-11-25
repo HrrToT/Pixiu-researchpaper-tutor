@@ -74,6 +74,8 @@ v49 的建议审核识别出了先测后选，仍因论文未提供既往峰值�
 
 新研究运行的证据边界审核版本 5 要求说明集中在决定结论的条件，并列出每条证据实际可引用的正文路径。来源校验只使用发给模型的字段。使用同一真实回执重新构造生产审核请求，旧响应在新旧流程均被拒绝。模拟响应沿用原命题、引用和判断，只简述可比性缺口，通过边界核验。回放预设了独立观察核验已通过，未调用模型，真实报告仍待验收。 [生产边界审核回放](deep-research-evidence/d2-v49-fps-boundary-diagnostic-replay-20261125.json)
 
+保留审核版本断言的历史测试身份后，`2a2bdf37d` 的全量离线回归通过 501 个模块、9,926 项，覆盖之前全部 9,919 项，运行中源码保持一致。v50 提交预检继续使用标准预算和原两篇论文。DeepSeek 余额接口仍返回不可用，未提交真实生成。 [全量回归](deep-research-evidence/focused-scope-boundary-retained-full-20261125.json)
+
 ## 2026-11-25 v48 真实比较
 
 `6eb82ccf0` 的 501 个模块、9,826 项离线测试通过，9,824 项基线用例全部保留。候选装载核对了源码指纹、PDF 解析依赖及既有任务、运行、调用记录。 [全量回归](deep-research-evidence/comparison-review-roles-full-20261125.json) · [候选装载](deep-research-evidence/comparison-review-roles-v48-candidate-load-20261124.json)
@@ -141,6 +143,8 @@ PagedAttention H3 单次真实执行用时 149 秒，9 次模型调用、37,494 
 外部综述生成接入已核对的逐项取证包，按义务、检查项和指定来源优先保留原文及上下文，再放入可选证据，仍受生成输入预算约束。用保存的 PagedAttention 候选离线验证，原生成输入仅含四段不同取证原文中的一段，新选择器保留全部四段并形成两组证据包。78 项定向回归通过，未重跑模型，完整生成输入和成品范围仍需验证。PagedAttention 已用于诊断开发，不能用同一题计新的独立通过。 [证据包回放](deep-research-evidence/academic-pagedattention-h3-synthesis-bundles-replay-20261125.json)
 
 从同一真实回执离线重建生产综合请求并在发送前截停。生成输入为 23,885 字节，四段必要取证均在模型请求中逐字出现，全部位于已获取的指定版本第 7 页。原报告与回执保持完整，成品范围仍须真实核验。 [完整请求预检](deep-research-evidence/academic-pagedattention-h3-full-packet-preflight-20261125.json)
+
+下一独立 H3 冻结为 Quest v1，核对依当前查询估算页分数、选择读取范围与保留缓存三个要点。评审件经系统代理下载到独立目录，核对 11 页、文件哈希及第 2、4 页的方法锚点。原应用外部来源缓存未见此版本，历史研究载荷无此论文编号。提交驱动预检确认仅传提问、空材料、外部材料策略与标准预算。未创建应用任务，未提交模型，独立信用为零。 [冻结定义](DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json)
 
 ## 2026-11-24 v44 真实比较
 
