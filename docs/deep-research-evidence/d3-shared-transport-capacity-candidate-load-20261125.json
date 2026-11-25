@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "414b9c534c315e9f178d2ef80f892366e0a3ca15",
+  "fullRegression": "shared-experiment-transport-capacity-full-20261125.json",
+  "candidate": "academic-dr-d3-shared-transport-capacity-candidate-20261125",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "sharedExperimentProfile": 5,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

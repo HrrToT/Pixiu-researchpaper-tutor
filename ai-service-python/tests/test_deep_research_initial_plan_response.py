@@ -205,7 +205,7 @@ def test_short_literal_requests_remain_answerable_without_creating_auxiliary_exe
 @pytest.mark.parametrize('value',[None,True,False,0,2,1.0,'1'])
 def test_legacy_controls_and_every_other_node_keep_old_interpretation(value):
     r={**record(),'initialPlanResponseContractVersion':value}
-    assert enabled(r) is (type(value) is int and value == 2)
+    assert enabled(r) is (type(value) is int and value in (2, 3))
     assert normalize('plan',response())['structuredOutput']['receivedShape']=='invalid_json'
     for node in ('verify','extract','plan_experiment','synthesize'):
         assert not enabled({**r,'initialPlanResponseContractVersion':1},node)
@@ -236,6 +236,35 @@ def test_only_explicitly_empty_leaf_lists_are_normalized(version, nested, accept
     else:
         assert result['error_code'] == 'invalid_plan_response'
         assert 'planLeafNormalization' not in r['state']
+
+
+@pytest.mark.parametrize('version,key,value,accepted', [
+    (3, 'purpose_note', None, True),
+    (3, 'purpose_note', 'Additional requirement', False),
+    (3, 'requiredSources', None, False),
+    (3, 'obligations', [{'question': 'Additional request'}], False),
+    (2, 'purpose_note', None, False),
+])
+def test_factorial_plan_discards_only_surplus_null_leaf_fields(version, key, value, accepted):
+    draft = plan()
+    draft[0]['obligations'][0][key] = value
+    raw = response(json.dumps({'items': draft}))
+    invoke = Mock(return_value=normalize('plan', raw, initial_plan_response=True))
+    r = {**record(), 'initialPlanResponseContractVersion': version}
+
+    def update(_run_id, fn, **kwargs):
+        nonlocal r
+        r = fn(deepcopy(r))
+        return deepcopy(r)
+
+    result = make_plan_node(invoke, update, validate_plan)({'run_id': 'r'})
+    invoke.assert_called_once()
+    assert invoke.return_value['rawContent'] == raw['content']
+    if accepted:
+        assert result['plan_ids'] == ['i']
+        assert r['state']['planLeafNormalization'] == {'version': 3, 'paths': [[0, 'obligations', 0, key]]}
+    else:
+        assert result['error_code'] == 'invalid_plan_response'
 
 
 @pytest.mark.parametrize('field',['initialPlanInstructionsContractVersion','planCompletionContractVersion',

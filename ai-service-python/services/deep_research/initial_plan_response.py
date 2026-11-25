@@ -3,11 +3,14 @@ import hashlib
 import json
 
 
+OBLIGATION_FIELDS = 'obligationId question requiredSources searchQuery purpose requestExcerpt completionCriteria'
+
+
 def enabled(record,node='plan'):
     from services.deep_research.initial_plan_instructions import enabled as instructions_enabled
     return (node=='plan' and isinstance(record,dict)
         and type(record.get('initialPlanResponseContractVersion')) is int
-        and record['initialPlanResponseContractVersion'] in (1, 2)
+        and record['initialPlanResponseContractVersion'] in (1, 2, 3)
         and instructions_enabled(record))
 
 
@@ -74,8 +77,7 @@ def validate_shape(plan,question,*,comparison_roles=False):
         if not isinstance(item['obligations'],list) or not 1<=len(item['obligations'])<=2:
             raise ValueError('Initial plan needs1-2 obligations per item')
         for o in item['obligations']:
-            exact(o,'obligationId question requiredSources searchQuery purpose requestExcerpt completionCriteria'
-                  + (' comparisonRole' if comparison_roles else ''))
+            exact(o, OBLIGATION_FIELDS + (' comparisonRole' if comparison_roles else ''))
             if comparison_roles:
                 from services.deep_research.comparison_intent import validate_role
                 validate_role(o,question)
@@ -96,16 +98,24 @@ def validate_shape(plan,question,*,comparison_roles=False):
                     raise ValueError('Invalid initial plan response type')
 
 
-def normalize_empty_leaf_obligations(record, plan):
-    """Remove only explicitly empty child lists from obligation leaves."""
-    if not enabled(record) or record['initialPlanResponseContractVersion'] != 2 or not isinstance(plan, list):
+def normalize_obligation_leaf_fields(record, plan, *, comparison_roles=False):
+    """Remove empty child lists and, in profile 3, surplus null leaf fields."""
+    if not enabled(record) or not isinstance(plan, list):
         return plan, []
+    profile = record['initialPlanResponseContractVersion']
+    if profile == 1:
+        return plan, []
+    expected = set(OBLIGATION_FIELDS.split())
+    if comparison_roles:
+        expected.add('comparisonRole')
     paths = [
-        [i, 'obligations', j, 'obligations']
+        [i, 'obligations', j, key]
         for i, item in enumerate(plan)
         if isinstance(item, dict) and isinstance(item.get('obligations'), list)
         for j, obligation in enumerate(item['obligations'])
-        if isinstance(obligation, dict) and obligation.get('obligations') == []
+        if isinstance(obligation, dict)
+        for key, value in obligation.items()
+        if (key == 'obligations' and value == []) or (profile == 3 and key not in expected and value is None)
     ]
     if not paths:
         return plan, []

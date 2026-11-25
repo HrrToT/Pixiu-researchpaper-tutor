@@ -1,0 +1,27 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v5",
+  "receiptSha256": "a3c5cf375713655e9a4af5d438f5068cd4af353d5733ed1607e559e4afe7a16e",
+  "candidateInitialPlanProfile": 3,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "responses": [
+    {
+      "rawResponseSha256": "b714de00bcab0d6fa18b41193c34d3dfcc54df3147110741ca9931f71d8de7cd",
+      "removedNullLeafFields": 4,
+      "acceptedPlanItems": 2,
+      "validatedObligations": 6,
+      "localInvocations": [
+        "plan"
+      ]
+    },
+    {
+      "rawResponseSha256": "4595b41bfafe217b79b5e46256cc7a9a512835ca161fcdaaa1d3ac16bbb6968b",
+      "removedNullLeafFields": 4,
+      "acceptedPlanItems": 2,
+      "validatedObligations": 6,
+      "localInvocations": [
+        "plan"
+      ]
+    }
+  ]
+}

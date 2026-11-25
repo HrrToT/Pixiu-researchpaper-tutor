@@ -42,6 +42,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 版本 5 的首次全量回归在运行中遇到 D 盘可用字节归零，出现批量测试夹具创建错误，进程已结束。对受影响模块用系统临时目录执行，21 项通过。九轮已完成回归的历史夹具迁至 C 盘本机临时归档，约 1.40 GB；原 JUnit、日志、基线和运行数据库留在原位。跨盘重跑又复现 Windows 长路径问题，同一受影响测试用短路径通过。运行器现在可在指定卷创建独立短夹具目录，仓库内的结果证据和源码校验保持原有流程。两次中止记录均保留为环境诊断，版本 5 真实验证等待完整的全量结果。
 
+短路径运行完整通过 9,883 项离线回归，保留 9,876 个基线用例。D3 第五次固定开发题单次提交，3 次模型调用结算 6,782 Token，用时 15 秒。原始计划与纠正回复均给四条义务附加 `purpose_note:null`，未调用版本 5 共享方案生成。版本 5 的新运行采用初始规划版本 3，只移除义务叶子上的冗余空值字段，并保留原始响应及字段位置。两份真实回复分别重放后，各保留两项规划及规范化后的六条义务，无需额外纠正调用；必要字段为空、附注非空或子义务非空仍被拒绝。195 项定向检查通过。原服务已核对恢复，版本 5 的真实方案生成及科学审核仍待执行。 [全量回归](deep-research-evidence/shared-experiment-transport-capacity-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-transport-capacity-candidate-load-20261125.json) · [真实执行](deep-research-evidence/d3-shared-transport-capacity-real-20261125.json) · [规划回放](deep-research-evidence/d3-planner-null-fields-replay-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
