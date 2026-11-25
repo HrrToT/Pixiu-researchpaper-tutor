@@ -24,6 +24,10 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 新增共享方案生成版本 2，显式规定共享准备、配对克隆、四组施加两因素两个水平、等预算训练及只读测量的顺序和引用方式。证据选择与实际发送共用这份指令。离线以 H5 保存的原输入重建，版本 1 请求身份完全相同，版本 2 保留 20 条证据和原模式约束，31,510 字节低于 32,000 字节上限。定向 118 项通过，非法预算引用仍无法送审。本次未生成新方案，版本 2 的真实产出和科学验收仍待验证。 [输入预检](deep-research-evidence/h5-shared-experiment-topology-preflight-20261125.json)
 
+版本 2 的新 D3 开发题冻结为原始 3DGS v1 的克隆与分裂；材料哈希、75 段索引、仅任务材料和标准预算已核对。评审要求覆盖共同检查点、等优化步、数据隔离、亲子与优化器状态、峰值显存和双因素交互。此前 Compact3D 量化题及相同旧问题的未确认记录继续冻结。这条题用于开发验证，不计独立 H5。 [冻结定义](DEEP_RESEARCH_DENSIFICATION_FACTORIAL_DEVELOPMENT_20261125.json)
+
+`009f74cc2` 的 501 模块、9,850 项全量回归通过，9,848 项基线全部保留。新 D3 用版本 2 真实执行一次，6 次调用结算 31,729 Token，95 秒。回复通过围栏解码，后续报告 25 项结构问题，包括状态来源、尚未创建的状态、干预操作绑定及测量状态不可用；没有预算引用或干预组合缺失错误。未进入科学审核、未发布方案，原服务和既有记录核对恢复。案例不同，不能据此判定 H5 的错误已修复。 [全量回归](deep-research-evidence/shared-experiment-topology-full-20261125.json) · [候选装载](deep-research-evidence/d3-densification-topology-candidate-load-20261125.json) · [首次执行](deep-research-evidence/d3-densification-topology-first-real-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
@@ -103,6 +107,8 @@ SnapKV H3 首次且单次真实执行。持久化账本确认一次 arXiv 元数
 包含方法证据选择和共享实验 JSON 解析修复的 `4acc68b39` 通过 501 个模块、9,848 项全量测试，保留全部 9,840 项基线用例。 [全量回归](deep-research-evidence/academic-method-experiment-wire-full-20261125.json)
 
 PagedAttention H3 单次真实执行用时 149 秒，9 次模型调用、37,494 Token。精确 arXiv 发现及无缓存下载各一次，正文解析 16 页并核对冻结哈希。系统对两条陈述的事实核验通过，但它们都引用第 7 页的束搜索示例来回答并行采样，场景错配。最终覆盖响应无效，一致性检查冻结这两条陈述，机器版及最新版均保存无结论说明。原服务与历史记录核对恢复。科学内容未通过，未重试。 [候选装载](deep-research-evidence/h3-pagedattention-external-candidate-load-20261125.json) · [真实执行](deep-research-evidence/academic-pagedattention-h3-first-real-20261125.json)
+
+对照取证判断、实际生成输入与草稿引用。两项检查先前各有 3 段和 2 段被取证判断选中，实际生成体仅收到其中 0 段和 1 段，两条草稿均未引用各自检查通过的片段。此处需要在取证与生成之间保留逐项证据归属，随后仍需独立核验来源事实和回答范围。未额外调用模型。 [范围归属复核](deep-research-evidence/academic-pagedattention-h3-scope-routing-20261125.json)
 
 ## 2026-11-24 v44 真实比较
 
