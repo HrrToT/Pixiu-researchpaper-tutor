@@ -1,5 +1,5 @@
 {
-  "scope": "production indexed candidate selection with saved development rows; no fresh retrieval or synthesis",
+  "scope": "production indexed candidate selection, read routing, literal extraction and pre-dispatch prompt inspection with saved development rows",
   "historicalLedgerSha256": "4f260386bb49b0bcf834cf79d2e24e7b8d1a21b60db415034fd26748b34e7dec",
   "candidatePoolRows": 11,
   "prior": [
@@ -39,5 +39,16 @@
   "topHitPreserved": true,
   "slotLimit": 3,
   "insertedSourceUnchanged": true,
-  "modelCalls": 0
+  "modelCalls": 0,
+  "productionRead": {
+    "page": 3,
+    "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+    "obligationIds": [
+      "explain-initialization-and-compression"
+    ],
+    "accessLevel": "fulltext"
+  },
+  "literalMethodEvidenceCount": 2,
+  "methodQuotesIncludedInRequest": 2,
+  "requestBytes": 15513
 }

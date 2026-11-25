@@ -53,7 +53,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['sourceWrapperIdentityContractVersion']==1
         assert first['mechanismEvidenceContractVersion']==4
         assert first['sectionPremisesContractVersion']==2
-        assert first['localSectionContextContractVersion']==2
+        assert first['localSectionContextContractVersion']==3
         assert first['auditSourceFieldsContractVersion']==4
         assert first['factualRepairGoalContractVersion']==5
         assert first['authoredBodyContractVersion']==3
