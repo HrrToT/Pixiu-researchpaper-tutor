@@ -441,7 +441,7 @@ class ResearchFacade:
             "answerFormatContractVersion": 3,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 4,
-            "recommendationReviewContractVersion": 3 if self._comparison_cells_version == 1 else 2,
+            "recommendationReviewContractVersion": 4 if self._comparison_cells_version == 1 else 2,
             "recommendationRepairContractVersion": 1,
             "requestSemanticsContractVersion": 2,
             "answerPreservationContractVersion": 1,

@@ -142,6 +142,57 @@ def test_hypotheses_and_experiment_objectives_keep_scientific_path():
     assert not enabled({'recommendationReviewContractVersion':True,'state':{'outputKind':'direction_survey'}})
 
 
+@pytest.mark.parametrize('change, uses_preflight, expected', [
+    ('none', True, 'passed'), ('named_preference', False, 'failed'),
+    ('paper_condition', False, 'passed'), ('reviewer_rejects', True, 'failed'),
+    ('wrong_purpose', True, 'failed'), ('foreign_binding', True, 'failed'),
+])
+def test_fixed_deployment_preflight_is_reviewed_as_a_future_check(change, uses_preflight, expected):
+    from services.deep_research.general_advice import DEVICE_MEMORY_TEST_FIRST_TEXT
+
+    claim, evidence = fixture()
+    claim['text'] = DEVICE_MEMORY_TEST_FIRST_TEXT
+    answer = verdict(purpose='other_nonexperimental')
+    answer['adviceAudit']['deviceMemory'] = {'mode': 'test_first'}
+    if change == 'named_preference':
+        claim['text'] += '优先采用压缩方案。'
+    elif change == 'paper_condition':
+        claim['conditions'] = {'premise': 'Pruning reduces count.'}
+    elif change == 'reviewer_rejects':
+        answer.update(status='failed', reason='该用户问题要求解释原理，这个部署检查未回答所问。')
+    elif change == 'wrong_purpose':
+        answer['adviceAudit']['purpose'] = 'reading_guidance'
+    elif change == 'foreign_binding':
+        answer['adviceAudit']['premises'][0]['evidenceId'] = 'unowned'
+    invoke = Mock(return_value={'content': json.dumps([answer], ensure_ascii=False)})
+    checker = BudgetedSemanticChecker(invoke, 'r', general_advice_review=True, device_memory_advice=4,
+                                      research_question='显存受限时如何选择方法？')
+    result, = checker([claim], [evidence])
+    invoke.assert_called_once()
+    request = invoke.call_args.kwargs['prompt']
+    assert request.startswith('Review whether the proposed deployment check') == uses_preflight
+    assert ('A prior peak-memory number is not a' in request) == uses_preflight
+    assert evidence['quote'] in request
+    assert result['status'] == expected
+
+
+def test_mixed_deployment_and_reading_advice_receive_distinct_checks_in_same_call():
+    from services.deep_research.general_advice import DEVICE_MEMORY_TEST_FIRST_TEXT
+
+    reading, evidence = fixture()
+    preflight = {**reading, 'claimId': 'deployment', 'text': DEVICE_MEMORY_TEST_FIRST_TEXT}
+    recommendation = verdict(purpose='other_nonexperimental')
+    recommendation['claimId'] = 'deployment'
+    recommendation['adviceAudit']['deviceMemory'] = {'mode': 'test_first'}
+    invoke = Mock(return_value={'content': json.dumps([verdict(), recommendation], ensure_ascii=False)})
+    checker = BudgetedSemanticChecker(invoke, 'r', general_advice_review=True, device_memory_advice=4)
+    assert [row['status'] for row in checker([reading, preflight], [evidence])] == ['passed', 'passed']
+    invoke.assert_called_once()
+    request = invoke.call_args.kwargs['prompt']
+    assert request.startswith('Review the actual targets as NONEXPERIMENTAL')
+    assert 'Deployment preflight target IDs: ["deployment"]' in request
+
+
 def test_over_capacity_own_evidence_is_not_cut_or_dispatched():
     c,e=fixture();e['quote']='x'*25000;invoke=Mock()
     result=BudgetedSemanticChecker(invoke,'r',general_advice_review=True)([c],[e])

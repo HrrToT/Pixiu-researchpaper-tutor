@@ -1,0 +1,14 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v49",
+  "receiptSha256": "0824623893889cf948e5721d1fe5a3f6f8252ecbd8026021c9a7b92592d39286",
+  "claim": "cmp_conclusion_2",
+  "historicalFailurePreserved": true,
+  "oldPromptBytes": 7407,
+  "newPromptBytes": 5570,
+  "originalQuoteCountInBothPrompts": 2,
+  "mockApprovalAccepted": true,
+  "mockApprovalWithUnownedSourceRejected": true,
+  "modelCalls": 0,
+  "newReportPublished": false,
+  "scientificAcceptanceEstablished": false
+}

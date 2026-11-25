@@ -9,6 +9,7 @@ import json
 import re
 
 from services.deep_research.table_evidence import visible_table_packet
+from services.deep_research.general_advice import DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
 STAGE_ENVELOPE = '''Write in clear Chinese for the audience in requestContext. Return only
@@ -28,9 +29,6 @@ from each selected cell pair. Rows, [V ID, value] pairs and nested arrays are in
 COMPARISON_POINT_KINDS = frozenset({'reported', 'inference', 'hypothesis', 'proposal', 'suggestion'})
 TEST_FIRST_BODY = {'deviceMemoryAdvice': 'measure_then_choose'}
 TABLE_EXAMPLE_BODY = {'tableExample': 'selected_cells'}
-TEST_FIRST_TEXT = ('先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。'
-                   '根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。'
-                   '若两种方法都超过显存上限，应调整设置后再比较。')
 
 STAGE_POLICY = '''Return every supplied target once. null means unresolved. Select goalRefs from each
 target's goalChoices by the goal actually answered. The server binds targets and permissions.
@@ -318,7 +316,7 @@ def resolve_point(point, target, registry, *, measurement_display=False):
             raise ValueError('invalid_joint_device_memory_advice')
         # Compile the requested procedure as advice; cited premises still
         # enter the ordinary source, semantic and whole-answer review.
-        point = {**point, 'body': {'prose': {'text': TEST_FIRST_TEXT, 'conditions': {}}}}
+        point = {**point, 'body': {'prose': {'text': DEVICE_MEMORY_TEST_FIRST_TEXT, 'conditions': {}}}}
     if deliverable == 'conditional_advice':
         if point['kind'] not in ('proposal', 'suggestion'):
             raise ValueError('joint_advice_requires_advice_kind')
