@@ -1,0 +1,49 @@
+{
+  "allRecoveredRowsExact": true,
+  "startupPassed": true,
+  "readOnlyAuthority": true,
+  "network": "none",
+  "modelCalls": 0,
+  "historicalReads": [
+    "D2-v49",
+    "H3-PAGEDATTENTION",
+    "H4-LORA-VERSIONS"
+  ],
+  "h4StillUnresolved": true,
+  "history": {
+    "deep_research_runs_v2": {
+      "rows": 463,
+      "sha256": "43ad611dde049d52681f9afdcdc33efe130f4cae1f6c829e7dc9d794c5e770ef"
+    },
+    "deep_research_calls_v2": {
+      "rows": 12562,
+      "sha256": "cdf9f1e234ca51419d7bc36c0ca894eaa5d65cfe4ba2d6ef238d504b91505048"
+    },
+    "deep_research_actions_v2": {
+      "rows": 504,
+      "sha256": "7e1bf1c2c38cf9be3b3aeeb89a6d454b621836ea1cffb73ed81be7759d0e0388"
+    },
+    "deep_research_publications_v2": {
+      "rows": 304,
+      "sha256": "adfeecefed8d69d22882e4c45ed0003f5aa09e2f2f813deb094912991faf961e"
+    },
+    "deep_research_outbox_v2": {
+      "rows": 304,
+      "sha256": "1af3cf95a14ec6e219a008c6d59290b0fe05a90eae42f45faa7f4d54ede59ecd"
+    },
+    "runStatuses": {
+      "completed": 304,
+      "failed": 141,
+      "paused": 18
+    }
+  },
+  "pdfVersions": {
+    "pypdf": "6.21.4",
+    "fonttools": "4.68.0"
+  },
+  "originalServiceRunning": true,
+  "originalServiceSwitched": false,
+  "frozenBackendCommit": "7283094319c086a376990b394796e094f6c7b303",
+  "verifiedSourceFiles": 586,
+  "candidateImage": "pixiu-research-pdf-proof:20261120"
+}
