@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-25T22:01:18.096672+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "retrievalattention_v2": {
+      "path": "tmp/pdfs/h3-retrievalattention-evaluator-20261126/2409.10516v2.pdf",
+      "bytes": 837263,
+      "sha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+      "pageCount": 16,
+      "arxiv": "2409.10516v2",
+      "reference": "https://arxiv.org/abs/2409.10516v2",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-RETRIEVALATTENTION",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2409.10516v2。给初学者解释 RetrievalAttention 在每次生成时怎样按当前查询读取相关历史 KV，其余历史 KV 存放在哪里，CPU 和 GPU 分别算哪部分注意力、最后怎么合并。说明取得的是摘要还是正文，并引用方法原文。只用指定版本，300 字以内。找不到正文时请说明。",
+      "required": [
+        "空材料任务实际联网发现并下载固定版本正文，文件哈希和 PDF 页数与评审件一致。",
+        "说明大部分 KV 移到 CPU 及其向量索引；按当前查询找相关的 CPU 侧 KV，并在 CPU 计算这部分注意力。",
+        "说明 GPU 侧保留可预测的 KV，具体实现包括最初 token 和最后的滑动窗口，GPU 计算自己的部分注意力。",
+        "说明两侧结果重新加权后合并，避免把选中 CPU 数据全部搬到 GPU 或两个局部归一结果直接相加。引用指定版本方法，注明访问级别，300 字以内。"
+      ],
+      "forbidden": [
+        "把 CPU 说成只存储不参与本轮计算，或把其余 KV 写成永久删除。",
+        "把相关度估计写成 Quest 的页极值或 InfLLM 的块代表 token。",
+        "把只在选中集合上的近似写成与完整注意力恒等。",
+        "用其他版本、既有应用缓存或评审件代替本次联网。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "retrievalattention_v2",
+        "page": 6,
+        "section": "3.3",
+        "checks": "CPU/GPU split, static-window implementation and combination of partial attention."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-RETRIEVALATTENTION": "14f34ba14cca10214fbaf6fede34da1673ac97b4f94da8bb215b430fe1fd738a"
+  }
+}

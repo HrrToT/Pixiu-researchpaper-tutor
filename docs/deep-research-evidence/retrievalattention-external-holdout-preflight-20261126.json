@@ -1,0 +1,18 @@
+{
+  "case": "H3-RETRIEVALATTENTION",
+  "definitionHash": "14f34ba14cca10214fbaf6fede34da1673ac97b4f94da8bb215b430fe1fd738a",
+  "reviewedPage": 6,
+  "liveInventory": {
+    "runs": 477,
+    "runHits": 0,
+    "indexFields": 19803,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 182,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

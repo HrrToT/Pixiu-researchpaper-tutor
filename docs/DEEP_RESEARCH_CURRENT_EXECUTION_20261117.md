@@ -857,6 +857,8 @@ AWQ v1 的 GROBID 输出把表 1 和表 2 的数据合在同一区域，v2 没�
 
 原 InfLLM 回复缺少存留位置。重放原始请求确认，旧生成证据仅保留「保留全部记忆单元」的段落，而未传入第 4 页说明 CPU 存留与 GPU 当步保留的原文。新版针对明确询问存放位置的目标，把该段与当步选块评分的原文一并交给生成环节，输入为 23,877 字节，符合原 24,000 字节上限。Quest 的原文选择和请求容量保持一致。两例均在模型发送前结束回放。 [外部阅读生成输入回放](deep-research-evidence/infllm-storage-location-replay-20261126.json)
 
+新独立 H3 使用 RetrievalAttention v2，要求从空任务联网取得固定版本，并解释 CPU 侧索引检索、GPU 保留区和两侧注意力结果的合并。以编号、标题和评审 PDF 哈希检查本机 477 个运行、19,803 个索引字段、182 个任务及外部缓存，未发现使用记录。预检请求只包含问题、空材料、外部来源策略和标准预算。评审文件未导入应用，模型未调用。 [冻结定义](DEEP_RESEARCH_RETRIEVALATTENTION_EXTERNAL_HOLDOUT_20261126.json) · [预检证据](deep-research-evidence/retrievalattention-external-holdout-preflight-20261126.json)
+
 ## D3-v7 未确认结果的只读复验
 
 2026-11-20，从实际工作区打开 D3-v7，运行版本 112 仍为 `paused/unresolved_unknown`。浏览器显示「请求结果待确认」，提供「查询状态」，不显示继续研究、补查或重试。点查询按钮和刷新页面只读取原运行，三次状态 GET 均使用同一运行 ID。工作区、研究接口响应和原始回执 SHA-256 均与复验前一致，零写入、零模型调用。服务端允许停止，未在此复验中执行。
