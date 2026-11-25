@@ -469,7 +469,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                             'goalChoices': [{'goalRef': refs[oid], 'question': goals[refs[oid]]['question']}
                                             for oid in target['allowedObligationIds']]}
                            for target in data['targets']]
-        data['evidence'] = [{**e, 'obligations': [refs[oid] for oid in e.get('obligations', [])]}
+        # Reused evidence can retain extraction labels from a parent plan or
+        # an earlier plan revision. Only current goals have request-local refs.
+        data['evidence'] = [{**e, 'obligations': [refs[oid] for oid in e.get('obligations', []) if oid in refs]}
                             for e in evidence]
     if source_scope is not None:
         scopes = (source_scope,) if isinstance(source_scope, str) else source_scope

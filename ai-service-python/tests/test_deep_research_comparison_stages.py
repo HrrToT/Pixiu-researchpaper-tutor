@@ -55,6 +55,20 @@ def test_short_comparison_guidance_is_shared_without_changing_evidence_permissio
         assert (current['prompt'] != previous['prompt']) == short
 
 
+def test_inherited_evidence_tags_do_not_enter_the_current_stage_request():
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16)
+    baseline = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    inherited = deepcopy(rows)
+    inherited[0]['obligations'].append('parent-only-goal')
+    reused = prepare(r, plan['requirements'], plan['sources'], inherited, {}, bundles, aliases, merge_joint=False)
+    assert reused['rows'][0]['obligations'] == inherited[0]['obligations']
+    assert reused['stages'] == baseline['stages']
+    assert reused['aliases'] == baseline['aliases']
+    assert reused['sourcePolicy'] == baseline['sourcePolicy']
+
+
 def test_joint_fps_stage_reuses_fulltext_setup_under_row_cap():
     r, plan, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
