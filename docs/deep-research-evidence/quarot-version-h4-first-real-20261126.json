@@ -1,0 +1,64 @@
+{
+  "case": "H4-QUAROT-VERSIONS",
+  "runId": "dr_run_3f0955245d5851fcb5e6354f397e8c57",
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "modelCalls": 13,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 1,
+    "synthesize_compact": 2,
+    "verify": 2,
+    "verify_answer_coverage": 1,
+    "repair_claims": 1
+  },
+  "tokens": 67302,
+  "elapsedSeconds": 158.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "coverageStatus": "checked",
+  "verifiedClaims": 1,
+  "rejectedReasons": {
+    "absence_not_established": 1,
+    "semantic_unresolved": 1
+  },
+  "typedEvidenceTablesByMaterial": {
+    "6322ae57c4c241d9021f26f73eca541b4c951e627b37447c014da6aa4d0626fd.pdf": [],
+    "f611888c63ef63a5c0232e2c8416619f0c9ace08d0e05692731da82791202e3e.pdf": []
+  },
+  "reportVersionId": "report_dr_run_3f0955245d5851fcb5e6354f397e8c57_v1",
+  "originalRestoredWithHistory": true,
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "receiptSha256": {
+    ".payload.json": "302dfa0af5d67b0ac7f39c854886490b305b15282f5a9a5abea4c0ff73ef21f6",
+    ".calls.json": "6fba32fb673eaacd1807fa4d7788b1dbb2f5d98cc9b31031de3e4d1556f1cab0",
+    ".result.json": "fbcca9af8bb82ee71028f8205127996f7e24786d12369a920a0fb1cc2c19039a",
+    ".execution.json": "b1e4ccce4df1a7e06e06b808cdf5fcc0c05f619e922274feca368182bbd820f2",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "verifiedAnswerCharacters": 120,
+  "sourceCommit": "0995610490157796a7bd8c79752ec766587a2805",
+  "independentCredit": 0,
+  "scientificContentAccepted": false,
+  "automaticRetry": false,
+  "firstEditKeptScopeReadOnly": true,
+  "verifiedV1Table2Values": 8,
+  "missing": [
+    "v2 Table 2 comparison",
+    "version-consistency judgement",
+    "change in table caption precision wording"
+  ],
+  "observedLocatorIssue": {
+    "revision": "v2",
+    "physicalPage": 8,
+    "indexedSection": "Table 1 :",
+    "targetTable": "Table 2",
+    "draftSubstitution": "Appendix A.7 FP16 Hadamard Transformation Ablation"
+  }
+}
