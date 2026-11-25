@@ -1,0 +1,21 @@
+{
+  "case": "H3-SNAPKV-v1",
+  "runId": "dr_run_8c3d06669cbc574e8f05b3e2e75a037c",
+  "reportVersionId": "report_dr_run_8c3d06669cbc574e8f05b3e2e75a037c_v1",
+  "writeStatuses": [
+    200
+  ],
+  "workspaceRevision": 10,
+  "freshBrowserEditVisible": true,
+  "originalReportUnchanged": true,
+  "previousTextStored": true,
+  "evidenceAndRunIdentityUnchanged": true,
+  "citationPagePreserved": 7,
+  "productionWrites": 0,
+  "modelCalls": 0,
+  "isolatedRestartExact": true,
+  "liveOriginalUnchanged": true,
+  "isolatedJavaStopped": true,
+  "javaSourceTree": "f8bb1249b75c6f548a44e1106a246b1a7ddac102",
+  "isolatedJarSha256": "56ea2d510ce6d0be253e810c8795212cb6fee7acf4775d6b13c23a04e2ba46cc"
+}
