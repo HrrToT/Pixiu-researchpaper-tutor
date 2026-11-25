@@ -10,6 +10,14 @@ _EXCLUDE=re.compile(r'参考文献|相关工作|报告.*结果|主要结果|定�
 _WHY=re.compile(r'为什么|为何|\bwhy\b',re.I)
 _HOW=re.compile(r'如何|怎样|怎么|流程|步骤|\b(?:how|procedure)\b',re.I)
 _LIMIT=re.compile(r'边界|局限|适用|\b(?:limitations?|scope|applicability)\b',re.I)
+_ROLE_QUERY = re.compile(r'起什么作用|有什么作用|作用是什么|做了什么|用来做什么|'
+                         r'\b(?:what (?:role|purpose)|what (?:does|did) [^?.!\n]{1,45} do)\b', re.I)
+_CONTENT_QUERY = re.compile(r'(?:保留|存储|包含|保存)(?:了)?(?:什么|哪些)|'
+                            r'\bwhat\b[^?.!\n]{0,40}\b(?:retain\w*|stor\w*|keep\w*|contain\w*)\b', re.I)
+_ROLE_ACTION = re.compile(r'\b(?:apply|applie[sd]|operat\w+|comput\w+|aggregat\w+|cluster\w+|enabl\w+|used to)\b'
+                          r'|计算|汇总|用于|合并', re.I)
+_CONTENT_ACTION = re.compile(r'\b(?:concatenat\w+|append\w*|retain\w*|stor\w+|sav\w+|contain\w*|keeps?)\b'
+                             r'|拼接|保留|存储|包含', re.I)
 _DEFINE=re.compile(r'\b(?:defin\w*|refer\w* to|estimates? of|moving averages?|represents?|records?|stores?)\b|定义|表示为|记录',re.I)
 _CAUSE=re.compile(r'\b(?:because|due to|caus\w*|leading to|leads? to|results? in|counteract\w*)\b|因为|导致|由于',re.I)
 _ACTION=re.compile(r'\b(?:comput\w*|divid\w*|updat\w*|subtract\w*|normaliz\w*|fus\w*|extract\w*|transform\w*|construct\w*|convert\w*)\b|计算|相除|除以|更新|归一化|融合|提取',re.I)
@@ -27,7 +35,8 @@ def enabled(record):
 def requested(question):
     from services.deep_research.external_sections import method_requested,_BACKGROUND,_RESULTS
     return (isinstance(question,str) and not (_EXCLUDE.search(question) or _BACKGROUND.search(question) or _RESULTS.search(question))
-        and bool(_CONCEPT.search(question) or method_requested(question,outline=True)))
+        and bool(_CONCEPT.search(question) or _ROLE_QUERY.search(question) or _CONTENT_QUERY.search(question)
+                 or method_requested(question,outline=True)))
 
 
 def priority(row,requirement,query='',response_type='',*,operations=False):
@@ -49,6 +58,10 @@ def priority(row,requirement,query='',response_type='',*,operations=False):
         # operation merely because it repeats the method name or a cost word.
         relation=0 if row.get('tableData') or text.lstrip().startswith('Table caption:') else min(3,
             len({m.group().casefold()[:5] for p in (_ACTION,_DETAIL_ACTION) for m in p.finditer(text)}))
+    elif _CONTENT_QUERY.search(requirement):
+        relation = min(3, len(_CONTENT_ACTION.findall(text)))
+    elif _ROLE_QUERY.search(requirement):
+        relation = min(3, len(_ROLE_ACTION.findall(text)))
     elif _WHY.search(requirement):relation=3*bool(_CAUSE.search(text))+bool(_DEFINE.search(text))
     elif _HOW.search(requirement) or response_type=='procedure':relation=min(3,len(_ACTION.findall(text)))
     elif _LIMIT.search(requirement) or response_type=='limitation':relation=3*bool(_BOUND.search(text))

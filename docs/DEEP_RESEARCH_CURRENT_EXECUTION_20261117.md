@@ -94,6 +94,8 @@ SnapKV H3 首次且单次真实执行。持久化账本确认一次 arXiv 元数
 
 离线移除最后一轮取证判断记录，用当时的两个活动研究步骤及相同的 75 条候选重建请求。输入摘要及重放后的整条记录与真实执行一致。池化和缓存组成是两个独立检查项，每项收到六条候选，池中第 7 页对应的两段直接原文均未进入任一检查项。方法导航已经开启，但未把这两种问法识别为方法检查，均未按方法原文重排。取证选择与最终草稿的事实错误分别有记录，回放未调用模型或改变运行记录。 [末轮证据选择回放](deep-research-evidence/academic-snapkv-h3-readiness-replay-20261125.json)
 
+扩展通用方法证据导航，识别询问步骤用途和最后保留内容的中英问法，并优先检查正文里的操作与保留关系。使用当时已结算账本和原候选池离线重建末轮请求，两个检查项均纳入各自的第 7 页原文，仍服从材料和输入预算。68 项定向回归通过，旧报告未改写。SnapKV 回执用作开发回放，后续独立验收需要新冻结题目。 [修复后取证选择回放](deep-research-evidence/academic-method-criterion-navigation-replay-20261125.json)
+
 ## 2026-11-24 v44 真实比较
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)

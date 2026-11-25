@@ -119,3 +119,36 @@ def test_joint_readiness_prioritizes_own_criterion_premises_and_keeps_false_verd
         return {'content':json.dumps([{'unitId':u['unitId'],'ready':False,'evidenceIds':[]} for u in units(prompt)])}
     result=execute(memory,invoke)
     assert len(sent)==1 and result['gaps'] and len(sent[0].encode())<=24000
+
+
+@pytest.mark.parametrize(('criterion', 'query', 'direct'), [
+    ('这个去偏步骤起什么作用', 'bias correction neighborhood',
+     'We apply the correction and compute the neighborhood average.'),
+    ('最终索引保留哪些内容', 'index representation coefficients',
+     'The index retains selected coefficients and stores their offsets.'),
+    ('What does the calibration layer do?', 'calibration layer residual',
+     'We apply calibration and compute the residual on a fixed reference.'),
+    ('What does the index store?', 'index representation coefficients',
+     'The index retains selected coefficients and stores their offsets.'),
+])
+def test_method_role_and_retained_contents_reach_the_criterion_readiness_request(criterion, query, direct):
+    from test_deep_research_joint_assessment import fixture, Memory, execute, units
+
+    record = fixture(('owned',))
+    record['externalReadingContractVersion'] = 3
+    premise = evidence(direct, 20)
+    premise['location']['sectionRole'] = 'method'
+    distractors = [evidence('The benchmark scores quantify overall results.', i) for i in range(12)]
+    record['state']['evidence'] = [*distractors, premise]
+    target = record['state']['plan'][0]['obligations'][0]
+    target.update(question=criterion, searchQuery=query, completionCriteria=[{
+        'criterionId': 'c', 'requirement': criterion, 'responseType': 'explanation',
+    }])
+    assert requested(criterion) and priority(premise, criterion, query) > priority(distractors[0], criterion, query)
+
+    def invoke(_run, _node, prompt, _options):
+        assert premise['quote'] in prompt
+        return {'content': json.dumps([{'unitId': unit['unitId'], 'ready': False, 'evidenceIds': []}
+                                       for unit in units(prompt)])}
+
+    assert execute(Memory(record), invoke)['gaps']
