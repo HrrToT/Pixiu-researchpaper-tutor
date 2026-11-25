@@ -1261,6 +1261,13 @@ def make_synthesize_node(
         premise_mode=premise_enabled(record)
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
+        requested_table, requested_table_evidence = None, set()
+        if (output_kind == 'claim_verification' and type(record.get('namedTableScopeVersion')) is int
+                and record['namedTableScopeVersion'] == 1):
+            from services.deep_research.named_table_scope import requested_number, select as select_table_scope
+            requested_table = requested_number(question)
+            if requested_table:
+                candidates, requested_table_evidence = select_table_scope(candidates, requested_table)
         if premise_mode:
             from services.deep_research.experiment_envelope import enabled as compact_experiment_envelope
             if output_kind=='experiment_design' and compact_experiment_envelope(record):
@@ -1304,20 +1311,25 @@ def make_synthesize_node(
         from services.deep_research.claim_check import enabled as claim_check_enabled,prioritize_results
         if premise_mode and claim_check_enabled(record) and record['claimCheckContractVersion'] in (2,3,4,5,6,7,8,9):
             candidates,premise_bundles=prioritize_results(candidates,premise_bundles,question)
+        if premise_mode and requested_table_evidence:
+            from services.deep_research.named_table_scope import prioritize as prioritize_table_scope
+            candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question)
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
+        versioned_sources = cell_mode or requested_table is not None
         for ev in selected_candidates:
             alias = f"E{len(evidence_aliases) + 1}"
             evidence_aliases[alias] = ev['evidenceId']
             source_id = ev.get('sourceWorkId', '')
-            source_key = (source_id, ev.get('sourceVersionId', '')) if cell_mode else source_id
+            source_key = (source_id, ev.get('sourceVersionId', '')) if versioned_sources else source_id
             if source_key not in source_aliases:
                 source_aliases[source_key] = f'P{len(source_aliases) + 1}'
                 from services.deep_research.source_labels import source_display_title
                 source_registry[source_aliases[source_key]] = {
                     'workId': source_id,
                     'title': source_display_title(ev.get('sourceTitle'), paper_titles.get(source_id))}
-                if cell_mode: source_registry[source_aliases[source_key]]['versionId'] = ev.get('sourceVersionId', '')
+                if versioned_sources:
+                    source_registry[source_aliases[source_key]]['versionId'] = ev.get('sourceVersionId', '')
                 if ev.get('sourcePublicationIdentity'):
                     source_registry[source_aliases[source_key]]['publicationIdentity'] = ev['sourcePublicationIdentity']
             table_fields={}
@@ -1338,8 +1350,9 @@ def make_synthesize_node(
                 "sourceContext": surrounding_context(ev),
                 **table_fields,
                 **({'resultRoleHintOnly':result_role(ev)} if premise_mode else {}),
-                'location': {key: value for key, value in ev.get('location', {}).items()
-                             if key not in {'chunk', 'pageResolution'}},
+                'location': {**{key: value for key, value in ev.get('location', {}).items()
+                                if key not in {'chunk', 'pageResolution'}},
+                             **({'requestedTable': requested_table} if ev['evidenceId'] in requested_table_evidence else {})},
                 **({'conditions': ev['conditions']} if ev.get('conditions') else {}),
                 "obligations": ev.get("obligationIds", []),
                 "accessLevel": ev.get("accessLevel", "fulltext"),
@@ -1644,6 +1657,9 @@ space with unsupported global absence or incidental iteration/performance values
         if objective_framing_enabled(record):prompt+='\n'+objective_guidance
         from services.deep_research.process_explanations import drafting_enabled as process_framing_enabled, DRAFT_GUIDANCE as process_guidance
         if process_framing_enabled(record):prompt+='\n'+process_guidance
+        if requested_table:
+            from services.deep_research.named_table_scope import GUIDANCE as table_scope_guidance
+            prompt += '\n' + table_scope_guidance
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}

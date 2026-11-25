@@ -417,6 +417,7 @@ class ResearchFacade:
             "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,
+            "namedTableScopeVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
             "comparisonRepairBatchEnvelopeVersion": 2,
             "boundCompositeTableCellsVersion": 2,

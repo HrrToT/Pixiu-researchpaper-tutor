@@ -350,7 +350,7 @@ class DeepResearchRepository:
                                      'comparisonExplorationContractVersion', 'comparisonCrossPaperBoundaryContractVersion',
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
-                                     'namedBenchmarkNavigationVersion',
+                                     'namedBenchmarkNavigationVersion', 'namedTableScopeVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',
                                      'boundCompositeTableCellsVersion',

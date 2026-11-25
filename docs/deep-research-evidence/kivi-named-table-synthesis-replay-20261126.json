@@ -1,0 +1,12 @@
+{
+  "receiptSha256": "8076e429884431dddab5fb10388c8d01682c8176e938c3defe1894969f089992",
+  "explicitTable": "3",
+  "excludedEvidenceCount": 10,
+  "anchoredRevisions": 2,
+  "keptSharedBaselineAndRequested4BitNumbers": true,
+  "removedUnrelatedV1Table1Value": true,
+  "previousPromptBytes": 23907,
+  "newPromptBytes": 23990,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}
