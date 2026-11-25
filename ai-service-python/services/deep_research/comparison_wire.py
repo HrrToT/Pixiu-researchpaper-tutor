@@ -542,9 +542,11 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                             paper['tableCatalog'] = stage_table_catalog(paper['tableCatalog'], joint=False,
                                                                          reserved_benchmark=True)
     if projected and compact_stage_prompt(record):
-        from services.deep_research.comparison_cross_paper_boundary import POLICY as paper_boundary_policy, scopes as cross_paper_scopes
+        from services.deep_research.comparison_cross_paper_boundary import COMPACT_POLICY, POLICY, scopes as cross_paper_scopes
         paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
+        compact_paper_scope = bool(scoped_joint) and record.get('comparisonCrossPaperBoundaryContractVersion') == 4
+        paper_boundary_policy = COMPACT_POLICY if compact_paper_scope else POLICY
         for target in scoped_joint:
             target['paperSubjects'] = paper_subjects[target['targetId']]
         length = limit or 'concise, no explicit maximum'
@@ -654,8 +656,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             if version in (12, 13, 14, 15, 16):
                 body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
                                   'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
-                                  'cellRefs. The app renders the values. Boundary observedSettings items have only '
-                                  'subject, attribute, value; use actual method names and keep E IDs in evidenceRefs.\n')
+                                  'cellRefs. The app renders the values. ')
+                if compact_paper_scope:
+                    body_guidance += 'For targets without paperSubjects, use method names in boundary settings.\n'
+                else:
+                    body_guidance += ('Boundary observedSettings items have only subject, attribute, value; '
+                                      'use actual method names and keep E IDs in evidenceRefs.\n')
             if version in (13, 14, 15, 16):
                 body_guidance += ('For deliverable=comparability, explain what the evidence supports and what it '
                                   'cannot establish using kind="inference", body.boundary and cellRefs:[]. '

@@ -235,6 +235,14 @@ def test_cross_paper_scope_recovers_from_an_abbreviated_role_excerpt(explicit_at
         assert after['paperSubjectsByTarget'][target] == list(plan['sources'])
         answer_target = next(t for t in packet(after)['jointTargets'] if t['targetId'] == target)
         assert answer_target['paperSubjects'] == list(plan['sources'])
+        from services.deep_research.comparison_cross_paper_boundary import COMPACT_POLICY, POLICY
+        compact = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion': 4},
+                          plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+        compact_joint = next(s for s in compact['stages'] if s['stageId'] == 'joint')
+        assert COMPACT_POLICY in compact_joint['prompt'] and POLICY not in compact_joint['prompt']
+        assert compact_joint['paperSubjectsByTarget'] == after['paperSubjectsByTarget']
+        assert compact_joint['targetIds'] == after['targetIds']
+        assert compact_joint['requiredBundleCount'] == after['requiredBundleCount']
 
 
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():
