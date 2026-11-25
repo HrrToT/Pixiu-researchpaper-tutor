@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-25T20:57:18.393240+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "infllm_v1": {
+      "path": "tmp/pdfs/h3-infllm-evaluator-20261126/2402.04617v1.pdf",
+      "bytes": 973528,
+      "sha256": "cd53c7913afa536daaa623870bd2c50b214eadfa009c3396352694952976bb5f",
+      "pageCount": 12,
+      "arxiv": "2402.04617v1",
+      "reference": "https://arxiv.org/abs/2402.04617v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-INFLLM",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2402.04617v1。给初学者解释 InfLLM 如何根据当前查询选出历史记忆块、本轮实际加载哪些块、其余历史块保留在哪里。说明取得的是摘要还是正文，并引用方法原文。只用指定版本，300 字以内。找不到正文时请说明。",
+      "required": [
+        "从空材料任务发现并下载指定版本全文，文件哈希和页数与评审件一致。",
+        "说明历史 K/V 按块分组，用块内若干代表 token 的 Key 与当前 Query 作点积并加总，选得分最高的若干块参加本轮注意力。",
+        "说明其余块仍保留在 CPU 侧，GPU 保留当步所需块和代表 token，并可缓存近期使用块。",
+        "明确访问级别，引用指定版本 PDF 第 4 页的 3.2 节方法，300 字以内。"
+      ],
+      "forbidden": [
+        "把分数写成 Quest 的逐维极值上界，或声称其余块被永久删除。",
+        "把 CPU 卸载误写成在 CPU 上做本轮注意力，或将全部历史块说成同时驻留 GPU。",
+        "用其他版本、应用已有缓存或评审 PDF 代替本次联网。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "infllm_v1",
+        "page": 4,
+        "section": "3.2",
+        "checks": "Equation 2 and cache management distinguish scoring, access and retention."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-INFLLM": "198d183b3ac78f0489999bb847a5531d8d46374db7be61d032adf98d6e2d4309"
+  }
+}
