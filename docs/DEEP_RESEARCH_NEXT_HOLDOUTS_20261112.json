@@ -24,9 +24,16 @@
     },
     {
       "id": "H4",
-      "state": "frozen_not_executed",
+      "state": "historical_unresolved_used_for_diagnostics",
       "case": "H4-LORA-VERSIONS",
-      "manifest": "DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json"
+      "manifest": "DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json",
+      "nextCandidate": {
+        "state": "frozen_not_executed",
+        "case": "H4-KIVI-VERSIONS",
+        "manifest": "DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json",
+        "preflight": "deep-research-evidence/kivi-version-holdout-preflight-20261125.json",
+        "scientificContentCredit": 0
+      }
     },
     {
       "id": "H5",
@@ -44,7 +51,7 @@
       "liveProviderCredit": 0
     }
   ],
-  "historicalBoundary": "Original failed/retired cases unchanged. H1-H5 new content definitions frozen/unexecuted; H6 first offline operational execution passed. Scientific accepted0, no live Provider credit. Shared-source dependencies remain; H2O excluded.",
+  "historicalBoundary": "Original failed and retired cases are retained. The execution record tracks current attempts and settlement states. KIVI is an unsubmitted H4 candidate. H6 passed offline operational execution. Scientific acceptance remains open. Shared-source dependencies remain; H2O is excluded.",
   "sharedMaterialDependencies": [
     {
       "cases": [
