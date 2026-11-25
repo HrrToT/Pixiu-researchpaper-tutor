@@ -37,11 +37,12 @@
         "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
         "scientificContentCredit": 0
       },
-      "nextCandidate": {
-        "state": "frozen_not_executed_no_application_materials",
+      "retrievalAttentionExecution": {
+        "state": "executed_acquisition_passed_content_not_accepted",
         "case": "H3-RETRIEVALATTENTION",
         "manifest": "DEEP_RESEARCH_RETRIEVALATTENTION_EXTERNAL_HOLDOUT_20261126.json",
         "preflight": "deep-research-evidence/retrievalattention-external-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/research-finalization-real-batch-20261126.json",
         "scientificContentCredit": 0
       }
     },
@@ -62,6 +63,7 @@
         "manifest": "DEEP_RESEARCH_AWQ_VERSION_HOLDOUT_20261126.json",
         "preflight": "deep-research-evidence/awq-version-holdout-preflight-20261126.json",
         "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
+        "postFixRegression": "deep-research-evidence/research-finalization-real-batch-20261126.json",
         "scientificContentCredit": 0
       }
     },

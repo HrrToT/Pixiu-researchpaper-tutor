@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "455812b14f2e14a842797c2c2fb5bbed4bda46bc",
+  "fullRegression": "research-finalization-batch-verified-full-20261126.json",
+  "candidate": "academic-dr-research-finalization-batch-verified-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "pinnedPdfFallback": true,
+  "sharedExperimentProfile": 7,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}
