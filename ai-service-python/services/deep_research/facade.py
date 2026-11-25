@@ -120,7 +120,7 @@ class ResearchFacade:
                 or comparison_review_batch_version == 1 and comparison_cells_version != 1):
             raise ValueError('Invalid server comparison review batch policy')
         self._comparison_review_batch_version = comparison_review_batch_version
-        if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1,2,3,4):
+        if type(shared_experiment_plan_version) is not int or shared_experiment_plan_version not in (0,1,2,3,4,5):
             raise ValueError('Invalid server shared experiment rollout policy')
         self._shared_experiment_plan_version = shared_experiment_plan_version
         if type(shared_experiment_http_observation_version) is not int or shared_experiment_http_observation_version not in (0,1):
@@ -306,7 +306,7 @@ class ResearchFacade:
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
             "promptVersion": "dr-v2.20261116.488",
-            "initialPlanResponseContractVersion": 2 if shared_experiment_profile == 4 else 1,
+            "initialPlanResponseContractVersion": 2 if shared_experiment_profile in (4, 5) else 1,
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,

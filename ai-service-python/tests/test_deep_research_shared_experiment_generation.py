@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version in (2, 3, 4):
+    if version in (2, 3, 4, 5):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -189,6 +189,56 @@ def test_owned_states_profile_keeps_prepared_asset_available_after_shared_step()
     compiled, issues = compile_plan(owned_states_draft(canonical), ['E1'], profile=4)
     assert not issues
     assert compiled == canonical
+
+
+def test_complete_padded_response_can_fit_canonical_plan_under_profile_5():
+    r, data, aliases = context()
+    r[MARKER] = 4
+    prior = build(r, data, aliases)
+    r[MARKER] = 5
+    canonical = typed_input_proposal()
+    padded = ' ' * 25000 + json.dumps(owned_states_draft(canonical), indent=2)
+    reply = response(rawContent=padded)
+    current, _, checkpoint = harness(r)
+    invoke = Mock(return_value=reply)
+    saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert saved['boundProposal']['proposal'] == canonical
+    assert saved['response']['rawContent'] == padded
+    assert saved['request']['extra']['max_tokens'] == invoke.call_args.args[2]['max_tokens'] == 9216
+    assert prior['request']['extra']['max_tokens'] == 6144
+    assert descriptor(4) == descriptor(5)
+    assert prior['contextDigest'] == saved['contextDigest']
+    assert prior['inputDigest'] != saved['inputDigest']
+    assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == saved
+    invoke.assert_called_once()
+
+
+@pytest.mark.parametrize('failure,code', [
+    ('truncated', 'plan.incomplete_response'),
+    ('transport_capacity', 'plan.response_transport_capacity'),
+    ('canonical_capacity', 'plan.capacity'),
+])
+def test_profile_5_still_stops_and_retains_oversized_or_incomplete_response(failure, code):
+    r, data, aliases = context()
+    r[MARKER] = 5
+    if failure == 'truncated':
+        reply = {'rawContent': '{' + ' ' * 25718, 'finishReason': 'length'}
+    elif failure == 'transport_capacity':
+        reply = response(rawContent=' ' * 48001)
+    else:
+        draft = owned_states_draft(typed_input_proposal())
+        draft['unresolved'] = [str(i) + 'X' * 1560 for i in range(16)]
+        reply = response(draft)
+    current, states, checkpoint = harness(r)
+    invoke = Mock(return_value=reply)
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert states[-1]['response'] == reply and states[-1]['status'] == 'invalid_response'
+    assert states[-1]['issues'] == [{'code': code, 'path': '/'}]
+    assert 'boundProposal' not in states[-1]
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    invoke.assert_called_once()
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():

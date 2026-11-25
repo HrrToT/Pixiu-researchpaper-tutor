@@ -146,6 +146,10 @@ def test_owned_states_reach_review_and_publication_with_explicit_assets(tmp_path
     _exercise_graph(tmp_path, monkeypatch, True, shared_profile=4)
 
 
+def test_profile_5_output_limit_reaches_provider_under_tracked_reservation(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=5)
+
+
 @pytest.mark.parametrize('scenario',['final_gap_repair','settled_review_checkpoint_crash'])
 def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scenario):
     _exercise_graph(tmp_path,monkeypatch,True,scenario)
@@ -166,7 +170,7 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
         canonical = proposal()
         canonical['data']['inputs'][0]['availability'] = 'provided'
         generation_response = response(reference_draft(canonical))
-    elif shared_profile == 4:
+    elif shared_profile in (4, 5):
         canonical = typed_input_proposal()
         generation_response = response(owned_states_draft(canonical))
     if tracked_http:
@@ -199,6 +203,9 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
         def post(*args,**kwargs):
             rid,node,prompt,opts=active[-1]
             content=fixture_invoke(rid,node,prompt,opts)['content']
+            if shared_profile == 5 and node == GENERATE:
+                assert args[0].endswith('/responses')
+                assert kwargs['json']['max_output_tokens'] == 9216
             if args[0].endswith('/responses'):return http_response(content)
             http=Mock(status_code=200)
             http.json.return_value={'choices':[{'message':{'content':content},'finish_reason':'stop'}],
@@ -231,9 +238,9 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
     result=make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
     assert result['outcome']=='complete'
     published=repo.require_run('r');assert published['status']=='completed' and published['state']['reportText']
-    if shared_profile in (3, 4):
+    if shared_profile in (3, 4, 5):
         assert published['state']['sharedExperimentGeneration']['boundProposal']['proposal'] == canonical
-    if shared_profile == 4:
+    if shared_profile in (4, 5):
         assert '输入材料：Public training inputs' in published['state']['reportText']
     assert '# 实验方案（尚未执行）' in published['state']['reportText']
     assert '- 实验建议：#' not in published['state']['reportText']

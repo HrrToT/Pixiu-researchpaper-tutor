@@ -38,6 +38,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 规划修复与追问展示修复合并后，9,876 项离线回归通过，保留全部 9,871 个基线用例。随后 D3 第四次固定开发题单次提交，6 次模型调用结算 31,466 Token，用时 95 秒。初始计划首次通过并触发版本 4 的方案生成，请求 29,183 字节。模型在 6,144 输出 Token 上限返回 `finishReason=length`，25,719 字节的原始 JSON 截断在步骤数组，指标和分析尚未输出。本次草稿没有进入独立审核，原服务和历史账本已核对恢复。下一步需分别处理传输格式开销、输出上限与标准方案大小，仍限定在原整轮研究预算内。 [全量回归](deep-research-evidence/factorial-plan-leaves-followup-display-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-plan-leaves-candidate-load-20261125.json) · [实测](deep-research-evidence/d3-shared-plan-leaves-real-20261125.json) · [容量诊断](deep-research-evidence/d3-shared-plan-capacity-audit-20261125.json)
 
+共享方案生成版本 5 保留版本 4 的资产、状态及指标结构，要求紧凑 JSON，并将单次输出上限设为 9,216 Token。原始传输上限为 48,000 字节，解析后的标准方案仍限 24,000 字节。追踪调用仍先从原整轮预算预留再按实际用量结算。用 D3 的真实保存输入重建，20 条原证据、材料范围和预算均相同，新输入 29,315 字节，低于 32,000 字节上限；按当前规则保守预留 39,555 Token。真实截断回复在解析前明确拒绝。134 项定向回归通过，涵盖带缩进的完整响应、传输超限、标准方案超限、已知失败不重发，以及模拟 HTTP 发送和结算。新版尚未提交真实内容验证。 [容量修复回放](deep-research-evidence/d3-shared-plan-capacity-replay-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)

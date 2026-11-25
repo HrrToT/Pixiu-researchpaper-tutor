@@ -1,0 +1,26 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v4",
+  "receiptSha256": "5d67da4b7c2ff19a079f64c0b7a5ea61f02f97a69069baf699e5d4e219a75038",
+  "newSharedExperimentProfile": 5,
+  "originalRequestRebuiltExactly": true,
+  "sameFrozenEvidenceAndScope": true,
+  "evidenceCount": 20,
+  "inputByteLimit": 32000,
+  "previousInputBytes": 29183,
+  "candidateInputBytes": 29315,
+  "previousOutputTokenLimit": 6144,
+  "candidateOutputTokenLimit": 9216,
+  "candidateRawResponseByteLimit": 48000,
+  "canonicalPlanByteLimit": 24000,
+  "candidateConservativeTokenReservation": 39555,
+  "roundBudgetUnchanged": true,
+  "truncatedResponseWasRejectedBeforeParsing": true,
+  "diagnosticIssues": [
+    {
+      "code": "plan.incomplete_response",
+      "path": "/"
+    }
+  ],
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}
