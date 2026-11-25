@@ -763,13 +763,15 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | StreamingLLM 首次执行未取到正文。此后 SnapKV 和 PagedAttention 均在真实应用运行中发现精确版本并下载无缓存全文。SnapKV 发布一条可回查主张，解释未完整。PagedAttention 的两条主张因束搜索与并行采样错配而未发布。 [SnapKV 实测](deep-research-evidence/academic-snapkv-h3-first-real-20261125.json) · [PagedAttention 实测](deep-research-evidence/academic-pagedattention-h3-first-real-20261125.json) | 新冻独立题 Quest v1 待从空材料执行，核对指定版本、方法页引用及完整回答。 [Quest 定义](DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json) |
-| H4 冲突或版本差异 | LoRA 首次执行停在事实核验结果未确认，原始调用保持冻结。后续已用其表格排查解析、检索及组合指标校验。 [LoRA 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json) | KIVI v1/v2 已冻结为新的版本核查题。真实运行需核对两版表 3 的共同结果、后版新增的 4 位配置和各自证据归属。 [KIVI 定义](DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json) |
+| H4 冲突或版本差异 | LoRA 首次执行停在事实核验结果未确认，原始调用保持冻结。后续已用其表格排查解析、检索及组合指标校验。 [LoRA 定义](DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json) | KIVI v1/v2 已在专用任务完成本地索引。真实运行需核对两版表 3 的共同结果、后版新增的 4 位配置和各自证据归属。 [KIVI 定义](DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json) · [材料就绪](deep-research-evidence/kivi-version-local-preparation-20261125.json) |
 | H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
 | H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
 
-KIVI 验收前分别取得 arXiv v1/v2 完整 PDF，核对文件哈希、版本标记及第 7/8 页表 3。按版本编号、标题和两份文件哈希只读扫描 463 个研究载荷、14,738 个索引字段、外部来源缓存与 169 个任务，均无匹配。提交驱动已核对两材料、仅任务材料和标准预算，评审数据留在应用外。DeepSeek 官方余额查询仍显示不可用，本次未导入材料或提交模型，独立验收未执行。 [KIVI 预检](deep-research-evidence/kivi-version-holdout-preflight-20261125.json)
+KIVI 冻结时分别取得 arXiv v1/v2 完整 PDF，核对文件哈希、版本标记及第 7/8 页表 3。按版本编号、标题和两份文件哈希只读扫描 463 个研究载荷、14,738 个索引字段、外部来源缓存与 169 个任务，均无匹配。提交驱动预览使用两份论文、仅任务材料和标准预算，评审数据留在应用外。 [KIVI 冻结预检](deep-research-evidence/kivi-version-holdout-preflight-20261125.json)
+
+冻结后在专用任务中导入两版 PDF，应用解析状态均就绪，索引为 77 和 94 个正文片段。任务文件接口返回的字节哈希与冻结文件一致，其他任务请求这两个文件均返回 404。专用任务的研究运行数为零，未请求 AI 概览或模型调用。独立验收仍待正式提交。 [KIVI 本地材料验证](deep-research-evidence/kivi-version-local-preparation-20261125.json)
 
 通过现用 Java 工作区 API 分别重开 H1、D2-v49 和 H3-PagedAttention 三个真实生成的既有成果。每个工作区连续读取两次结果相同，机器版和可编辑版的 ID、文档正文及来源数组逐项与保存回执一致。只读复验未写入工作区或触发模型。当前前端相关组件与交互模型 84 项、Java 工作区研究控制器及来源投影 69 项定向测试通过。浏览器端交互及科学质量仍按各自证据范围核对。 [真实成果重新读取](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
 
