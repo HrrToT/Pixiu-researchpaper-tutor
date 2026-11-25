@@ -82,3 +82,54 @@ def test_attaches_two_tier_packet_only_when_physical_caption_is_unique(monkeypat
     else:
         assert verified['tableId'] == 'pdf-page-1-table-3'
         assert visible_table_packet(verified['tableVerifiedData'],verified['content']) == expected
+
+
+@pytest.mark.parametrize('mode', ['omitted', 'merged', 'shifted', 'conflicting_row', 'ambiguous_caption'])
+def test_ruled_percentages_preserve_column_owner_without_tei_layout(monkeypatch, mode):
+    import PyPDF2
+    from core import pdf_model_table, pdf_table_columns
+    from services.deep_research.table_evidence import visible_table_packet
+
+    def run(x, y, text):
+        return {'x': x, 'y': y, 'text': text, 'tokens': [{'x': x, 'text': text}]}
+
+    positions = [111, 150, 190, 230, 260, 305, 335]
+    rows = [['Model-A', '10.00', '50.00', '22.00', '15.00', '45.00', '33.00'],
+            ['Model-B', '8.00', '35.00', '19.00', '11.00', '30.00', '26.00']]
+    drawing = [run(230, 20, 'Activation'), run(305, 20, 'Weight'),
+               run(111, 27, 'PPL'), run(150, 27, 'FP16'), run(190, 27, 'RTN'),
+               run(190, 38, 'INT3'), run(230, 38, '0.1%'), run(260, 38, '1%'),
+               run(305, 38, '0.1%'), run(335, 38, '1%'), run(102, 100, 'Table 1. Results')]
+    drawing.extend(run(x, y, text) for y, row in zip((58, 72), rows, strict=True)
+                   for x, text in zip(positions, row, strict=True))
+    rules = [(100, 355, y) for y in (10, 45, 85)] + [(230, 278, 27), (305, 350, 27)]
+    plain = ['0.1% 1% 0.1% 1%', *(' '.join(row) for row in rows)]
+    sections = []
+    if mode == 'merged':
+        sections.append({'id': 'table-raw', 'tableId': 'raw', 'section': 'Table 1 .', 'pageIndex': 0,
+                         'evidenceKind': 'table', 'content': 'Merged raw tables',
+                         'tableBounds': [100, 13, 255, 150], 'tableRows': []})
+    elif mode == 'shifted':
+        drawing[7]['tokens'][0]['x'] = 304
+    elif mode == 'conflicting_row':
+        plain[1] = plain[1].replace('15.00', '51.00')
+    elif mode == 'ambiguous_caption':
+        drawing.append(run(103, 103, 'Table 2. Other Results'))
+
+    class Page(dict):
+        def extract_text(self):
+            return '\n'.join(plain)
+
+    monkeypatch.setattr(PyPDF2, 'PdfReader', lambda _: SimpleNamespace(pages=[Page()]))
+    monkeypatch.setattr(pdf_table_columns, 'drawing_runs', lambda _: drawing)
+    monkeypatch.setattr(pdf_model_table, 'horizontal_rules', lambda _: rules)
+    verified = pdf_table_columns.attach_verified_table_columns(sections, 'fixture.pdf')
+    if mode in ('shifted', 'conflicting_row', 'ambiguous_caption'):
+        assert not verified
+        return
+    table, = verified
+    assert (table['tableId'], table['page']) == ('pdf-page-1-table-1', 1)
+    assert visible_table_packet(table['tableVerifiedData'], table['content']) == {
+        'groups': [['', ['FP16', 'RTN INT3']], ['Activation', ['0.1%', '1%']], ['Weight', ['0.1%', '1%']]],
+        'rows': [[i, label, cells] for i, (label, *cells) in enumerate(rows, 2)],
+    }

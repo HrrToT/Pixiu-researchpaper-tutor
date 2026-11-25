@@ -1,0 +1,81 @@
+{
+  "case": "H4-AWQ-VERSIONS",
+  "sourcePage": 3,
+  "tableNumber": 1,
+  "revisions": {
+    "v1": {
+      "pdfSha256": "48bdf59ea52fccf40346ae129ef49d233ec9dcfe6b9b35e06002204c8123edfb",
+      "teiSha256": "a9c47af913c0a99e1d72a4b59b1acb5a0b5ce6fff82d31331163dd2470d4765b",
+      "oldTeiRows": 10,
+      "verifiedRows": 3,
+      "requestedCells": {
+        "OPT-1.3B": [
+          "16.41",
+          "206.5",
+          "18.51"
+        ],
+        "OPT-6.7B": [
+          "12.29",
+          "43.16",
+          "13.02"
+        ]
+      },
+      "structuredChunksSelected": 2
+    },
+    "v2": {
+      "pdfSha256": "b24539f859d0cf01178e06e3dafd0a07553c83460d084591f22eeb32fc681727",
+      "teiSha256": "defaa8871e3d70f8a3e210e614aaaf564a9341213621568f0bc02c4277f07146",
+      "oldTeiRows": 0,
+      "verifiedRows": 3,
+      "requestedCells": {
+        "OPT-1.3B": [
+          "14.62",
+          "119.00",
+          "16.91"
+        ],
+        "OPT-6.7B": [
+          "10.86",
+          "23.54",
+          "11.39"
+        ]
+      },
+      "structuredChunksSelected": 2
+    }
+  },
+  "providerCalls": 0,
+  "liveIndexChanged": false,
+  "scientificContentAccepted": false,
+  "columnGroups": [
+    [
+      "",
+      [
+        "FP16",
+        "RTN (w3-g128)"
+      ]
+    ],
+    [
+      "FP16% (based on act.)",
+      [
+        "0.1%",
+        "1%",
+        "3%"
+      ]
+    ],
+    [
+      "FP16% (based on W)",
+      [
+        "0.1%",
+        "1%",
+        "3%"
+      ]
+    ],
+    [
+      "FP16% (random)",
+      [
+        "0.1%",
+        "1%",
+        "3%"
+      ]
+    ]
+  ]
+}

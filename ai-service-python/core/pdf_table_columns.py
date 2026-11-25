@@ -478,4 +478,56 @@ def attach_verified_table_columns(sections, pdf_path):
                             for n, method, values in verified['rows']}
             section['content'] = '\n'.join(next((prefix + value for prefix, value in replacements.items()
                                                 if line.startswith(prefix)), line) for line in lines)
-    return [piece for i, section in enumerate(sections) for piece in splits.get(i, [section])] if splits else sections
+    if splits:
+        sections = [piece for i, section in enumerate(sections) for piece in splits.get(i, [section])]
+    return _attach_ruled_percentage_tables(sections, reader, pages, page_rules)
+
+
+def _attach_ruled_percentage_tables(sections, reader, drawing_cache, rule_cache):
+    from collections import Counter
+
+    from core.pdf_benchmark_columns import ruled_percentage_tables
+    from core.pdf_model_table import horizontal_rules
+
+    results = list(sections)
+    for index, page in enumerate(reader.pages):
+        if page.get('/Rotate', 0) % 360:
+            continue
+        try:
+            plain_text = page.extract_text() or ''
+            if not re.search(r'(?:\d+(?:\.\d+)?%[ \t]+){3,}\d+(?:\.\d+)?%', plain_text):
+                continue
+            runs = drawing_cache[index] if index in drawing_cache else drawing_runs(page)
+            rules = rule_cache[index] if index in rule_cache else horizontal_rules(page)
+            tables = list(ruled_percentage_tables(runs, rules, plain_text))
+        except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
+            continue  # Unsupported text extraction or geometry cannot verify this page.
+        counts = Counter(caption['number'] for _, caption, _, _ in tables)
+        for bounds, caption, groups, values in tables:
+            number = caption['number']
+            if counts[number] != 1:
+                continue
+            candidates = [i for i, section in enumerate(results) if section.get('pageIndex') == index
+                          and section.get('evidenceKind') == 'table'
+                          and re.match(r'^Table\s+' + number + r'\b', section.get('section', ''), re.I)]
+            if len(candidates) > 1:
+                continue
+            old = results[candidates[0]] if candidates else None
+            if old and (old.get('tableVerifiedData') or not old.get('tableBounds')
+                        or abs(old['tableBounds'][1] - bounds[1]) > 18):
+                continue
+            table_id = f'pdf-page-{index + 1}-table-{number}'
+            rows = [[i, row[0], row[1:]] for i, row in enumerate(values, 2)]
+            header = ' | '.join(' / '.join(filter(None, (parent, item))) for parent, items in groups for item in items)
+            lines = ['Table caption: ' + caption['text'], 'Table row 1: ' + header,
+                     *(f'Table row {i}: ' + ' | '.join([label, *cells]) for i, label, cells in rows)]
+            table = {'id': f'table-{table_id}', 'section': f'Table {number}', 'tableId': table_id,
+                     'page': index + 1, 'pageIndex': index, 'evidenceKind': 'table', 'tableBounds': bounds,
+                     'content': '\n'.join(lines), 'tablePrefix': '\n'.join(lines[:2]),
+                     'tableVerifiedData': {'groups': groups, 'rows': rows}, 'tableColumnMappingVersion': 2}
+            if old:
+                table['unverifiedTeiTableId'] = old.get('tableId', '')
+                results[candidates[0]] = table
+            else:
+                results.append(table)
+    return results
