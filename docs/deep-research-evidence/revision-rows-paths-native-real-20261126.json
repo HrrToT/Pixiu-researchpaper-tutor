@@ -1,0 +1,99 @@
+{
+  "sourceCommit": "04ed493eac312a23aab85c4dbb27002da3d99ef9",
+  "candidate": "academic-dr-revision-rows-paths-native-candidate-20261126",
+  "fullRegression": "revision-rows-paths-native-full-20261126.json",
+  "cases": {
+    "H4-AWQ-VERSIONS-v4": {
+      "runId": "dr_run_de98c8a7bc5356e48dfe66512954fed2",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 8,
+      "tokens": 49671,
+      "durationSeconds": 109.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "H4-AWQ-VERSIONS-v4.execution.json": "1c56adfaf83db790171df53e539ca1a71bb27569d41129b40ca18ba9844f5350",
+        "H4-AWQ-VERSIONS-v4.payload.json": "36ea053696b5176b7fdf41dbb1369fa55c78bf0504a9313977d053324d2488f7",
+        "H4-AWQ-VERSIONS-v4.result.json": "c9aa6cc7cf1dcf1c0bfcd1f86937edb4d35765566b5d8249d3f33b94e7740120",
+        "H4-AWQ-VERSIONS-v4.calls.json": "052c37036e67e8d7de8381eac72b1de833ba85e1ad6778801909e50ff9420eab",
+        "H4-AWQ-VERSIONS-v4.json": "0cfca10ac31749b61050ace8723472e1a474fae1acb99d9413b40b0d096a2519"
+      },
+      "tableBindingsInDraft": 12,
+      "independentHoldoutAccepted": false,
+      "scopeRejection": {
+        "claimId": "c3",
+        "reason": "invalid_scope_expression",
+        "detail": "Invalid scope expression cardinality"
+      },
+      "revisionMaterializationVerified": false,
+      "outputContainsVerifiedConclusion": false
+    },
+    "D3-DENSIFICATION-FACTORIAL-v12": {
+      "runId": "dr_run_ba714529e2fe5187b0dae67dff7677ab",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 7,
+      "tokens": 33735,
+      "durationSeconds": 87.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "D3-DENSIFICATION-FACTORIAL-v12.execution.json": "e233132150b95f51fafe37f565fa2ffca7b5c27002f5a54282efb00cc762af2e",
+        "D3-DENSIFICATION-FACTORIAL-v12.payload.json": "130245c383b4b23f3cbb6a7f387dcb485f606bf894693c4ba653ea24d182d990",
+        "D3-DENSIFICATION-FACTORIAL-v12.result.json": "6b7ed4fd86680c628e8afa0cdd7f01a2959b49290cc8e4d3eda0a98bf75013a6",
+        "D3-DENSIFICATION-FACTORIAL-v12.calls.json": "9a0eb1101bcf0f63e2d2fc516521145f0e250c24ad4dad67113b8bbda06d27c2",
+        "D3-DENSIFICATION-FACTORIAL-v12.json": "c6945dba01715817786c1f6999c8dd24745773a249ecdf1f2ed9d57f43eef4b2"
+      },
+      "generation": {
+        "status": "awaiting_scientific_review",
+        "inputBytes": 31994
+      },
+      "review": {
+        "status": "not_started_precheck",
+        "inputBytes": 35515,
+        "hardIssues": [
+          {
+            "claimId": "shared_fact_4",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "16e-1"
+            ],
+            "factId": "SF5",
+            "evidenceRefs": [
+              "E7"
+            ]
+          },
+          {
+            "claimId": "shared_fact_9",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "13e0"
+            ],
+            "factId": "SF10",
+            "evidenceRefs": [
+              "E1"
+            ]
+          }
+        ]
+      },
+      "revision": {
+        "status": "not_started_capacity",
+        "inputBytes": 33331,
+        "limitBytes": 32000,
+        "sent": false
+      }
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_de98c8a7bc5356e48dfe66512954fed2"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}
