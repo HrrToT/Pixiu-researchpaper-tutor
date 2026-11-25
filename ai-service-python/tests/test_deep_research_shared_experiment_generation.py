@@ -40,12 +40,38 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
+    if version == 2:
+        assert enabled(r) and transport_enabled(r, NODE)
+        return
     assert not enabled(r) and not transport_enabled(r, NODE)
     with pytest.raises(ValueError): build(r, data, aliases)
+
+
+def test_topology_guidance_is_bound_to_the_new_run_and_validates_the_same_plan():
+    r, data, aliases = context()
+    old = build(r, data, aliases)
+    r[MARKER] = 2
+    new = build(r, data, aliases)
+    assert new['contextDigest'] == old['contextDigest']
+    assert new['allowedEvidenceIds'] == old['allowedEvidenceIds']
+    assert new['inputDigest'] != old['inputDigest']
+    assert 'A0 groups=["00","01"]' in new['request']['prompt']
+    assert 'Measure steps have creates=[], updates=[]' in new['request']['prompt']
+    assert 'A0 groups=' not in old['request']['prompt']
+    current, states, checkpoint = harness(r)
+    proposal_with_wrong_budget = proposal()
+    clone = next(step for step in proposal_with_wrong_budget['steps'] if step['kind'] == 'clone')
+    clone['budgetId'] = next(budget['id'] for budget in proposal_with_wrong_budget['budgets'] if budget['scope'] == 'shared')
+    invoke = Mock(return_value=response(proposal_with_wrong_budget))
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert states[-1]['status'] == 'invalid_response' and not states[-1].get('boundProposal')
+    assert any(issue['code'] == 'plan.budget_reference' for issue in states[-1]['issues'])
+    invoke.assert_called_once()
 
 
 def test_single_generation_is_durable_unchecked_and_reused_without_second_send():

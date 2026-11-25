@@ -22,6 +22,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 冻结的 LoRA v1、DoRA v1 只提交一次。6 次模型调用结算 33,568 Token，用时 97 秒，外部搜索为零。共享实验方案发回了完整的围栏内 JSON，在严格解析处拒绝，未发布报告。用原始回执复核，剥离单一外部围栏后仍有 24 项约束问题。共享准备预算被用于实验组步骤，固定状态更新及测量顺序、状态可用性和配对克隆均存在错误。新解析器接受单一完整 JSON 围栏，原始回复、严格 JSON、科学方案校验和独立审核仍保留。114 项定向回归通过。原服务恢复后核对了旧调用账本和 H4 暂停状态。H5 科学验收未通过，未重试。 [候选装载](deep-research-evidence/comparison-h5-dora-factorial-candidate-load-20261124.json) · [首次执行与约束复核](deep-research-evidence/dora-h5-first-real-20261125.json)
 
+新增共享方案生成版本 2，显式规定共享准备、配对克隆、四组施加两因素两个水平、等预算训练及只读测量的顺序和引用方式。证据选择与实际发送共用这份指令。离线以 H5 保存的原输入重建，版本 1 请求身份完全相同，版本 2 保留 20 条证据和原模式约束，31,510 字节低于 32,000 字节上限。定向 118 项通过，非法预算引用仍无法送审。本次未生成新方案，版本 2 的真实产出和科学验收仍待验证。 [输入预检](deep-research-evidence/h5-shared-experiment-topology-preflight-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)

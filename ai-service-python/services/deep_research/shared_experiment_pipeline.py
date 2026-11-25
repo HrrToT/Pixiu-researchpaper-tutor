@@ -11,7 +11,7 @@ def _save(update,rid,key):
 
 
 def synthesize(record,rows,aliases,sources,tables,bundles,update,invoke):
-    from services.deep_research.shared_experiment_generation import prepare,INSTRUCTIONS,NODE,MAX_INPUT
+    from services.deep_research.shared_experiment_generation import prepare,instructions,NODE,MAX_INPUT
     from services.deep_research.shared_strings import input_text
     from services.deep_research.planning_transport import overhead_bytes
     from services.deep_research.synthesis_evidence import fit_premises
@@ -25,7 +25,7 @@ def synthesize(record,rows,aliases,sources,tables,bundles,update,invoke):
         tids={row['tableDataRef'] for row in selected if row.get('tableDataRef')}
         return {'question':effective_question(record),'requirements':requirements,'sources':sources,
                 'evidence':selected,'tables':{k:v for k,v in tables.items() if k in tids}}
-    def render(selected):return INSTRUCTIONS+input_text(data_for(selected))
+    def render(selected):return instructions(record)+input_text(data_for(selected))
     # Preserve complete selected contexts; optional quotes cannot displace a
     # necessary context merely because they are shorter without it.
     _,selected,missing=fit_premises(rows,render,wire_bundles,max_bytes=MAX_INPUT-overhead_bytes(record,NODE),
