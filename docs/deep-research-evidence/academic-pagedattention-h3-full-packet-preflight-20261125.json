@@ -1,0 +1,16 @@
+{
+  "case": "H3-PAGEDATTENTION-v1",
+  "savedPayloadSha256": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+  "requiredEvidence": 4,
+  "historicallySupplied": 1,
+  "currentlySupplied": 4,
+  "literalRequiredQuotesFoundInWire": 4,
+  "requiredSourcePages": [
+    7
+  ],
+  "promptBytes": 23885,
+  "promptSha256": "70426da51b39087bf881b0f3b8244789e6c4363ed0ca896180d78415e839c8c8",
+  "realModelCalls": 0,
+  "savedRunUnchanged": true,
+  "scientificAcceptanceEstablished": false
+}
