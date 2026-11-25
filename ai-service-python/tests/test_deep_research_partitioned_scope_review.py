@@ -69,6 +69,35 @@ def test_failed_fact_is_never_upgraded_by_an_epistemic_operator():
     assert result['status']=='failed' and 'Fact unsupported' in result['reason'] and len(calls)==1
 
 
+@pytest.mark.parametrize('variant, expected', [('scope_gap', 'passed'), ('unbound_number', 'failed'),
+                                                ('invisible_path', 'failed'), ('entailed', 'failed')])
+def test_focused_boundary_review_uses_visible_fields_and_preserves_verdict_gates(variant, expected):
+    claim, expression, record, evidence = inputs(settings=False)
+    evidence[0]['sourceContext'] = 'Other setting. Method A retained quality at 66%.'
+
+    def respond(rows, _call):
+        row = rows[0]
+        row['diagnosticFacts'] = []
+        row['premises'] = [{'evidenceId': 'E1', 'path': ['sourceContext', 'before']}]
+        if variant == 'unbound_number':
+            row['reason'] = 'Only one result at 93 fps is available.'
+        if variant == 'invisible_path':
+            row['premises'][0]['path'] = ['sourceContext', 'after']
+        if variant == 'entailed':
+            row['relation'] = 'entailed'
+
+    checker, calls = checker_for(claim, expression, record, evidence, modify=respond, consistent=True)
+    checker._review_diagnostic_bindings = True
+    checker._focused_boundary_review = True
+    result = checker([claim], evidence)[0]
+    assert result['status'] == expected and len(calls) == 1
+    prompt = calls[0]['prompt']
+    assert 'one short reason naming the decisive condition or clause' in prompt
+    assert 'Never use titles or section' in prompt
+    assert '"E1":[["quote"],["sourceContext","before"]]' in prompt
+    assert 'unrelated universal theorem' not in prompt
+
+
 @pytest.mark.parametrize('version, relation, passed', [
     (2, 'not_entailed', False), (3, 'not_entailed', True), (3, 'entailed', False),
 ])

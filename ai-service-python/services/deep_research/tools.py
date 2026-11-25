@@ -750,6 +750,7 @@ class BudgetedSemanticChecker:
         diagnostic_parameter_ids=False,
         diagnostic_target_structure=False,
         short_circuit_scope_observations=False,
+        focused_boundary_review=False,
         workflow_representation_context=None,
         comparison_review_batches=False,
         comparison_repair_review_output=False,
@@ -782,6 +783,7 @@ class BudgetedSemanticChecker:
         self._diagnostic_parameter_ids = diagnostic_parameter_ids
         self._diagnostic_target_structure = diagnostic_target_structure
         self._short_circuit_scope_observations = short_circuit_scope_observations
+        self._focused_boundary_review = focused_boundary_review
         self._mechanism_grounding = mechanism_grounding
         self._singleton_factual_response = singleton_factual_response
         self._factual_scope = factual_scope

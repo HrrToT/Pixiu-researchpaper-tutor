@@ -9,7 +9,7 @@ from services.deep_research.scope_expression_review import validate
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (2,3,4))
+            and record['scopeExpressionReviewContractVersion'] in (2,3,4,5))
 
 
 def assertions_enabled(record):
@@ -19,12 +19,17 @@ def assertions_enabled(record):
 
 def consistent_premises_enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (3,4))
+            and record['scopeExpressionReviewContractVersion'] in (3,4,5))
 
 
 def short_circuit_enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] == 4)
+            and record['scopeExpressionReviewContractVersion'] in (4,5))
+
+
+def focused_boundary_enabled(record):
+    return (type(record.get('scopeExpressionReviewContractVersion')) is int
+            and record['scopeExpressionReviewContractVersion'] == 5)
 
 
 def observation_claims(claim, expression, *, assertions=False, literal=False):
@@ -157,9 +162,27 @@ Targets:
         prompt+='\nPrefer one source binding form per premise. If both path and quote are returned, the quote must be a contiguous excerpt of that exact visible field of the same evidenceId; both are checked. Extra fields, conflicting text and cross-field matches fail.\n'
     diagnostics=getattr(checker,'_review_diagnostic_bindings',False)
     diagnostics=(diagnostics() if callable(diagnostics) else diagnostics) is True
+    focused = getattr(checker, '_focused_boundary_review', False)
+    focused = (focused() if callable(focused) else focused) is True
     if diagnostics:
         from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
         prompt+='\n'+diagnostic_guidance
+    if focused:
+        from services.deep_research.review_source_fields import visible_paths
+        paths = {row['evidenceId']: visible_paths(row) for row in own}
+        prompt = prompt.replace('permitted paths are ["quote"],\n["sourceContext","before"] or ["sourceContext","after"], with a nonempty string.',
+                                'use only the available premise paths listed below for that evidence ID.', 1)
+        prompt += ('\nFor this entailment check, give one short reason naming the decisive condition or clause. '
+                   'For not_entailed, identify the missing link in these citations. Do not add incidental '
+                   'reported values, hardware models, or alternative numerical results. Include a measured '
+                   'value only where it is necessary to decide the proposition. Never use titles or section '
+                   'labels in the context as measurement evidence. Copy an available premise path from '
+                   'the same evidence ID, including ["sourceContext"] when listed for scalar context. '
+                   'Available premise paths:\n' + json.dumps(paths, ensure_ascii=False, separators=(',', ':')))
+        if diagnostics:
+            prompt += ('\nIf the reason adds no positive source fact, return diagnosticFacts: []. '
+                       'For each necessary new source fact, copy the exact statement from your final reason '
+                       'and the contiguous original excerpt from the specified field of its own evidence.')
     from services.deep_research.tools import TrackedLLMInvoker
     limit = checker._invoke.prompt_byte_limit(checker._run_id,node) if isinstance(checker._invoke,TrackedLLMInvoker) else 24000
     mechanism=getattr(checker,'_mechanism_grounding',False)
@@ -203,6 +226,10 @@ Targets:
     restored=restore_verdict_evidence({'scopeExpressionAudit':{'observedSettings':[], 'notEstablished':rows}},
                                      reverse,scope_expression=True)
     audit['notEstablished']=restored['scopeExpressionAudit']['notEstablished']
+    if focused:
+        review_evidence = [{**row, 'evidenceId': reverse.get(row['evidenceId'], row['evidenceId'])} for row in own]
+    else:
+        review_evidence = [{**e, 'sourceContext': surrounding_context(e)} for e in evidence]
     if diagnostics:
         from services.deep_research.review_diagnostics import bind as bind_diagnostic
         parameter_policy=getattr(checker,'_diagnostic_parameter_ids',False)
@@ -211,7 +238,7 @@ Targets:
         # Their unseen prose cannot authorize structural navigation exemptions.
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
-            [{**e,'sourceContext':surrounding_context(e)} for e in evidence],reverse,
+            review_evidence,reverse,
             **({'source_parameter_ids':True} if parameter_policy else {})) for row in rows]
         invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
         if invalid:
@@ -221,7 +248,7 @@ Targets:
     # Only the exact positive proposition with explicit scope and own premises
     # can establish non-entailment. Entailed/ambiguous/unknown results fail.
     errors=validate(claim,{'observedSettings':[], 'notEstablished':expression['notEstablished']},restored,
-                    [{**e,'sourceContext':surrounding_context(e)} for e in evidence],
+                    review_evidence,
                     consistent_premises=consistent_premises)
     return {'claimId':claim['claimId'],'status':'failed' if errors else 'passed',
             'reason':'推广命题尚未核实：'+', '.join(errors) if errors else '观察条件与证据推导边界已分别核查。',

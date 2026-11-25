@@ -1,7 +1,7 @@
 {
   "case": "D2-BASELINE-COMPRESSION-v49",
   "claimId": "cmp_conclusion_1",
-  "scope": "diagnostic binding only",
+  "scope": "diagnostic binding and production non-entailment review with fixture observation verdict",
   "historicalStatus": "failed",
   "historicalErrors": [
     "diagnostic_statement_not_in_reason",
@@ -24,6 +24,16 @@
     }
   ],
   "fixtureErrors": [],
+  "productionBoundaryReview": {
+    "historicalWireStatus": "failed",
+    "updatedWireHistoricalResponseStatus": "failed",
+    "updatedWireFixtureResponseStatus": "passed",
+    "fixtureObservationPassAssumed": true,
+    "promptBytes": [
+      6710,
+      7565
+    ]
+  },
   "numericHeadlineLocation": "E2 sourceContext section title only, absent from quote",
   "modelCalls": 0,
   "historicalReceiptMutated": false,

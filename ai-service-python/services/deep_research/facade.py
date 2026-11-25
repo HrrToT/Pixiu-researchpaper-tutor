@@ -413,7 +413,7 @@ class ResearchFacade:
             "requestCoverageContractVersion": 5,
             "claimCheckContractVersion": 9,
             "scopeObservationContractVersion": 3 if self._comparison_cells_version == 1 else 2,
-            "scopeExpressionReviewContractVersion": 4,
+            "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,
@@ -1349,7 +1349,10 @@ class ResearchFacade:
         from services.deep_research.factual_scope import enabled as scope_enabled
         from services.deep_research.factual_review import enabled as bounded_review_enabled
         from services.deep_research.scope_expression_review import context_for_record
-        from services.deep_research.partitioned_scope_review import enabled as partitioned_scope_enabled, assertions_enabled,consistent_premises_enabled,short_circuit_enabled
+        from services.deep_research.partitioned_scope_review import (
+            enabled as partitioned_scope_enabled, assertions_enabled, consistent_premises_enabled,
+            focused_boundary_enabled, short_circuit_enabled,
+        )
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
         from services.deep_research.general_advice import enabled as general_advice_enabled
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
@@ -1407,6 +1410,7 @@ class ResearchFacade:
             scope_observation_assertions=lambda: assertions_enabled(self._repo.require_run(run_id)),
             consistent_scope_premises=lambda: consistent_premises_enabled(self._repo.require_run(run_id)),
             short_circuit_scope_observations=lambda: short_circuit_enabled(self._repo.require_run(run_id)),
+            focused_boundary_review=lambda: focused_boundary_enabled(self._repo.require_run(run_id)),
             complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
                 and self._repo.require_run(run_id)['factualScopeContractVersion'] in (3,4),
             result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int

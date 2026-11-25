@@ -82,7 +82,8 @@ def test_unknown_error_is_propagated_without_becoming_a_semantic_failure():
 
 def test_policy_requires_exact_frozen_server_version():
     assert short_circuit_enabled({'scopeExpressionReviewContractVersion': 4})
-    for value in (None, True, False, 0, 1, 2, 3, '4', 5):
+    assert short_circuit_enabled({'scopeExpressionReviewContractVersion': 5})
+    for value in (None, True, False, 0, 1, 2, 3, '4', 6):
         assert not short_circuit_enabled({'scopeExpressionReviewContractVersion': value})
 
 

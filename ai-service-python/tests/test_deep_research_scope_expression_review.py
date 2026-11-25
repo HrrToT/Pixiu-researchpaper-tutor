@@ -111,7 +111,7 @@ def test_alias_restoration_is_explicit_and_never_rewrites_quote_strings_or_legac
     assert v==before
 
 
-@pytest.mark.parametrize('replacement',[None,0,True,'1',1,2,3,5])
+@pytest.mark.parametrize('replacement',[None,0,True,'1',1,2,3,4,6])
 def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_context(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -124,12 +124,13 @@ def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'scopeExpressionReviewContractVersion':replacement},start_async=False)
-        assert run['scopeExpressionReviewContractVersion']==4
+        assert run['scopeExpressionReviewContractVersion']==5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'scopeExpressionReviewContractVersion':replacement})
         run=repo.update_run(run['runId'],lambda r:{**r,'state':record['state']})
         checker=facade._build_semantic_checker(run['runId'],Mock())
         assert checker._short_circuit_scope_observations() is True
+        assert checker._focused_boundary_review() is True
         assert checker._scope_expression_context([row])=={'c':expression}
         assert checker._scope_expression_context([materialize(raw,2)[0]])=={}
         old=deepcopy(run);old.update(runId='old',idempotencyKey='old');old.pop('scopeExpressionReviewContractVersion')
