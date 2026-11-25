@@ -312,14 +312,14 @@ def verify_table_columns(section, runs, *, mixed=False):
     return {'groups': groups, 'rows': checked} if checked else None
 
 
-def _physical_table_caption(section,runs, *, two_tier=False):
+def _physical_table_caption(section,runs, *, two_tier=False, row_groups=False):
     """Read a unique adjacent physical caption, never borrow a TEI number."""
     bounds=section.get('tableBounds')
     if not bounds:return None
     x,y,w,h=bounds;candidates=[]
     padding = 50 if two_tier else 30
     max_above = 25 if two_tier else 160
-    separator = r'[.:]' if two_tier else r'\.'
+    separator = r'[.:]' if two_tier or row_groups else r'\.'
     for run in runs:
         match=re.match(r'^\s*Table\s*(\d+)'+separator,run['text'],re.I)
         if match and x-padding<=run['x']<=x+w+padding and (0<=y-run['y']<=max_above or 0<=run['y']-(y+h)<=25):
@@ -345,11 +345,12 @@ def _physical_table_caption(section,runs, *, two_tier=False):
 def attach_verified_table_columns(sections, pdf_path):
     from PyPDF2 import PdfReader
     from core.pdf_benchmark_columns import verify_two_tier_columns
+    from core.pdf_model_table import horizontal_rules, verify_model_groups
     try:
         reader = PdfReader(pdf_path)
     except Exception:
         return sections
-    pages = {}
+    pages, page_rules = {}, {}
     for section in sections:
         index = section.get('pageIndex')
         if section.get('evidenceKind') != 'table' or index is None or not 0 <= index < len(reader.pages):
@@ -368,6 +369,12 @@ def attach_verified_table_columns(sections, pdf_path):
                 caption=_physical_table_caption(section,pages[index],two_tier=True) if two_tier else None
                 if caption:
                     verified=two_tier
+            if not verified:
+                caption = _physical_table_caption(section, pages[index], row_groups=True)
+                if caption:
+                    if index not in page_rules:
+                        page_rules[index] = horizontal_rules(reader.pages[index])
+                    verified = verify_model_groups(section, pages[index], page_rules[index])
         except (KeyError, ValueError, TypeError, ImportError, AttributeError):
             verified = None
         if verified:

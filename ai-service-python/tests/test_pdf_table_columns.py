@@ -35,6 +35,55 @@ def test_grouped_header_and_each_cell_are_cross_checked_with_pdf_positions():
                                [3, 'Ours', ['2', '30MB', '5', '60MB']]]
 
 
+def model_groups_fixture():
+    def cell(text):
+        return {'text': text, 'cols': 1, 'rows': 1}
+
+    tei = [['Model', '', 'MetricA', 'MetricB', 'MetricC']]
+    runs = []
+
+    def draw(value, x, y):
+        runs.append({'text': value, 'x': x, 'y': y, 'tokens': [{'text': value, 'x': x}]})
+
+    for value, x in zip(('Model', 'MetricA', 'MetricB', 'MetricC'), (4, 70, 90, 110)):
+        draw(value, x, 10)
+    for name, start, offset in (('Model-A', 20, 0), ('Model-B', 57, 30)):
+        for index, config in enumerate(('Baseline', '4bit (fake)', 'Grouped-4')):
+            values = [str(offset + index * 3 + j) for j in (1, 2, 3)]
+            tei.append([name if index == 1 else '', config, *values])
+            y = start + index * 10
+            if index == 1:
+                draw(name, 4, y)
+                draw('4bit (fake', 26, y)
+                draw(')', 65, y)
+            else:
+                draw(config, 26, y)
+            for value, x in zip(values, (73, 93, 113)):
+                draw(value, x, y)
+    rules = [(0, 120, y) for y in (15, 50, 90)]
+    section = {'tableBounds': [0, 0, 120, 90], 'tableRows': [[cell(v) for v in row] for row in tei]}
+    return section, runs, rules
+
+
+def test_model_groups_require_drawn_boundaries_and_confirm_exact_values():
+    from core.pdf_model_table import verify_model_groups
+
+    section, runs, rules = model_groups_fixture()
+    packet = verify_model_groups(section, runs, rules)
+    assert packet['groups'] == [['', ['MetricA', 'MetricB', 'MetricC']]]
+    assert packet['rows'][1] == [3, 'Model-A / 4bit (fake)', ['4', '5', '6']]
+    assert packet['rows'][4] == [6, 'Model-B / 4bit (fake)', ['34', '35', '36']]
+    assert verify_model_groups(section, runs, [rules[0], rules[-1]]) is None
+    different_scope = deepcopy(section)
+    different_scope['tableRows'][2][0]['text'] = 'Model-C'
+    assert verify_model_groups(different_scope, runs, rules) is None
+    different_value = deepcopy(section)
+    different_value['tableRows'][1][2]['text'] = 'wrong value'
+    retained = verify_model_groups(different_value, runs, rules)
+    assert 2 not in {number for number, _, _ in retained['rows']}
+    assert 5 in {number for number, _, _ in retained['rows']}
+
+
 def hierarchical_fixture():
     def cell(text):
         return {'text': text, 'cols': 1, 'rows': 1}
