@@ -30,6 +30,16 @@ def validated(value, content_hash):
     return deepcopy(value)
 
 
+def owned_evidence_publication(evidence):
+    """Check the PDF snapshot hash independently of the quoted chunk hash."""
+    material = evidence.get('ownerMaterialId')
+    match = re.fullmatch(r'([0-9a-f]{64})\.pdf', material) if isinstance(material, str) else None
+    if (not match or evidence.get('sourceWorkId') != material or evidence.get('sourceVersionId') != match[1]
+            or evidence.get('accessLevel') != 'fulltext' or evidence.get('verification', {}).get('literal') != 'passed'):
+        return None
+    return validated(evidence.get('sourcePublicationIdentity'), match[1])
+
+
 GUIDANCE = '''publicationIdentity is a server-established publication/revision identity from the
 owned PDF's literal first-page arXiv stamp after its snapshot byte hash was checked. It identifies
 WHICH work/revision is cited; that revision need not be repeated in each body quotation. It is not

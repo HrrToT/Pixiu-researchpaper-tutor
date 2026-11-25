@@ -160,6 +160,8 @@ class LocalTaskRetriever:
         result=include_section_context(result,candidates,record,pdf_id,limit)
         result=include_explanation_method(result,candidates,record,query,pdf_id,limit)
         result=include_processing_cost(result,candidates,record,query,pdf_id,limit)
+        from services.deep_research.named_table_scope import include_indexed_rows
+        result=include_indexed_rows(result,candidates,record,pdf_id,limit)
         return retain_local_protocol_note(result,candidates,record,query,limit)
 
 

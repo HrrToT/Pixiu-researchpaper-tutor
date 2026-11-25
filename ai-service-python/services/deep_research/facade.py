@@ -418,7 +418,7 @@ class ResearchFacade:
             "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,
-            "namedTableScopeVersion": 1,
+            "namedTableScopeVersion": 2,
             "singleBenchmarkCriteriaVersion": 2,
             "comparisonRepairBatchEnvelopeVersion": 3,
             "boundCompositeTableCellsVersion": 2,
@@ -1495,6 +1495,10 @@ class ResearchFacade:
         from services.deep_research.source_revisions import enabled as revision_constraints_enabled,explicit_revisions
         revisions=(explicit_revisions(effective_question(record)) if revision_constraints_enabled(record)
             and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'} else {})
+        named_revision_table = None
+        if record.get('namedTableScopeVersion') == 2 and record.get('state', {}).get('outputKind') == 'claim_verification':
+            from services.deep_research.named_table_scope import requested_number
+            named_revision_table = requested_number(effective_question(record))
         def verify(claims,evidence,semantic=None):
             context=None
             if type(record.get('comparisonPlanningContractVersion')) is int and record['comparisonPlanningContractVersion'] in (2,3,4,5,6):
@@ -1511,6 +1515,7 @@ class ResearchFacade:
                 **({'complete_review_feedback':True} if type(record.get('completeReviewFeedbackContractVersion')) is int
                    and record['completeReviewFeedbackContractVersion']==1 else {}),
                 **({'requested_source_revisions':revisions} if revisions else {}),
+                **({'named_revision_table':named_revision_table} if named_revision_table else {}),
                 **({'comparison_context':context} if context is not None else {}),
                 **({'bound_duration_spelling':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (4,5,6)

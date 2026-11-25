@@ -786,6 +786,8 @@ def make_read_node(
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
+                **({'named_table_question': effective_question(record)} if record.get('namedTableScopeVersion') == 2
+                   and record['state'].get('outputKind') == 'claim_verification' else {}),
                 **({'protocol_note': True} if prefers_protocol_note(record) else {}),
                 **({'mechanism_overviews': True} if record.get('comparisonMechanismReadContractVersion') == 1
                    and record['state'].get('outputKind') == 'paper_comparison' else {}),
@@ -1263,7 +1265,7 @@ def make_synthesize_node(
         candidates = distinct_evidence_candidates(evidence)
         requested_table, requested_table_evidence = None, set()
         if (output_kind == 'claim_verification' and type(record.get('namedTableScopeVersion')) is int
-                and record['namedTableScopeVersion'] == 1):
+                and record['namedTableScopeVersion'] in (1, 2)):
             from services.deep_research.named_table_scope import requested_number, select as select_table_scope
             requested_table = requested_number(question)
             if requested_table:
@@ -1315,7 +1317,8 @@ def make_synthesize_node(
             candidates,premise_bundles=prioritize_results(candidates,premise_bundles,question)
         if premise_mode and requested_table_evidence:
             from services.deep_research.named_table_scope import prioritize as prioritize_table_scope
-            candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question)
+            candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question,
+                **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}))
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
         versioned_sources = cell_mode or requested_table is not None
@@ -1662,6 +1665,9 @@ space with unsupported global absence or incidental iteration/performance values
         if requested_table:
             from services.deep_research.named_table_scope import GUIDANCE as table_scope_guidance
             prompt += '\n' + table_scope_guidance
+            if record.get('namedTableScopeVersion') == 2:
+                from services.deep_research.revision_table_display import GUIDANCE as revision_table_guidance
+                prompt += '\n' + revision_table_guidance
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1968,6 +1974,13 @@ space with unsupported global absence or incidental iteration/performance values
             except ValueError:
                 return {'error_code':'invalid_synthesis_response'}
         blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
+        revision_table_ids = []
+        if (requested_table and record.get('namedTableScopeVersion') == 2
+                and not blocked_draft_ids and not scope_expression_audit):
+            from services.deep_research.revision_table_display import materialize as materialize_revision_table
+            supplied_ids = {evidence_aliases[row['evidenceId']] for row in evidence_summaries}
+            parsed, revision_table_ids = materialize_revision_table(
+                parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
@@ -2065,7 +2078,8 @@ space with unsupported global absence or incidental iteration/performance values
         from services.deep_research.audience_schedule import reader_first as use_reader_first
         direct_comparison_authoring = (cell_mode and isinstance(comparison_cell_draft,dict)
                                        and comparison_cell_draft.get('answerWireAudit',{}).get('version') in (1,2))
-        reader_first = not direct_comparison_authoring and not blocked_draft_ids and use_reader_first(record, parsed, output_kind)
+        reader_first = (not direct_comparison_authoring and not blocked_draft_ids and not revision_table_ids
+                        and use_reader_first(record, parsed, output_kind))
         if reader_first:
             parsed = adapt_reader(parsed,pending_compaction=True)
 
@@ -2109,7 +2123,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed = compact_answer(parsed, question,
                 draft_compact_invoke if editor_options else direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence,
-                preserve_claims=bool(point_constraint and point_constraint['mode'] == 'exact'),
+                preserve_claims=bool(revision_table_ids or point_constraint and point_constraint['mode'] == 'exact'),
                 **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
                 **({'lean_edit':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (3,4) else {}),
@@ -2118,14 +2132,16 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'draft_merge':True,'merge_audit':draft_merge_audit} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion'] in (5,6,7,8) else {}),
                 presentation_version=record.get('reportPresentationContractVersion',0),
                 **({'compact_layout':True} if compact_layout else {}),
-                **({'fixed_claim_ids':[a['claimId'] for a in scope_expression_audit]} if scope_expression_audit else {}),
+                **({'fixed_claim_ids':revision_table_ids or [a['claimId'] for a in scope_expression_audit]}
+                   if revision_table_ids or scope_expression_audit else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}))
         if draft_merge_audit:
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisDraftMergeAudit':draft_merge_audit}},expected_revision=None)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
 
-        if not direct_comparison_authoring and not reader_first and not blocked_draft_ids and eligible(record, parsed, output_kind):
+        if (not direct_comparison_authoring and not reader_first and not blocked_draft_ids and not revision_table_ids
+                and eligible(record, parsed, output_kind)):
             parsed = adapt_reader(parsed)
         
         if output_kind == "experiment_design":

@@ -98,7 +98,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
-                    bind_composite_revisions=False) -> dict:
+                    bind_composite_revisions=False, named_revision_table=None) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -246,6 +246,10 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 reason = reason or binding_reason
             else:
                 reason = reason or validate_table_bindings(claim, support, **table_options)
+        if named_revision_table and kind in {'reported', 'inference'}:
+            from services.deep_research.revision_table_display import contradictory_revision_values
+            if contradictory_revision_values(claim, support, named_revision_table):
+                reason = reason or 'table_revision_value_mismatch'
         if comparison_embedded_measurements and kind in {'inference', 'proposal', 'suggestion', 'hypothesis'}:
             # Ordinary comparison advice can embed reported measurements. Its
             # label cannot waive exact table identity/display checks. This is
@@ -366,7 +370,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
                   complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
                   comparison_embedded_measurements=False, bound_composite_cells=False,
-                  bind_composite_revisions=False) -> dict:
+                  bind_composite_revisions=False, named_revision_table=None) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -384,6 +388,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         **({'bound_duration_spelling':True} if bound_duration_spelling else {}),
         bound_composite_cells=bound_composite_cells,
         bind_composite_revisions=bind_composite_revisions,
+        **({'named_revision_table':named_revision_table} if named_revision_table else {}),
         **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']

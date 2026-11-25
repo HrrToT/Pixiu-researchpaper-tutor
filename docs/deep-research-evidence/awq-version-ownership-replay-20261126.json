@@ -1,0 +1,17 @@
+{
+  "case": "H4-AWQ-VERSIONS-v2",
+  "payloadSha256": "bed44f9745677a685b7d1acac23074d470de9e8d8b80d80722b6efe980b79525",
+  "indexSnapshotSha256": "e9e66bb8f2cd079ac5b850f0f9d8fe19cfc65c173e30c26a4aaee27ab887f39d",
+  "verifiedTableRowsSupplied": 4,
+  "verifiedTableReferencesSuppliedInReplay": true,
+  "historicalInvalidBindingsNotRendered": true,
+  "suppliedInputBytes": 23936,
+  "visibleCharactersAfterRecordedCellRendering": 384,
+  "renderedReportedClaims": [
+    "表 1 OPT-1.3B（FP16、RTN (w3-g128)、FP16% (based on act.) · 1%）依次为 v1 16.41、206.5、18.51，v2 14.62、119.00、16.91。",
+    "表 1 OPT-6.7B（FP16、RTN (w3-g128)、FP16% (based on act.) · 1%）依次为 v1 12.29、43.16、13.02，v2 10.86、23.54、11.39。"
+  ],
+  "reversedInferenceDetectedWithBothSourceTables": true,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}
