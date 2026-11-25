@@ -27,6 +27,8 @@ def build(record,question,kind,limit,claim_limit,sections,obligations,sources,ev
     metric_key_hint=('exact member of tableData.groups[groupIndex][1]'
         if type(record.get('tableReferencesContractVersion')) is int and record['tableReferencesContractVersion']==4
         else 'exact header')
+    from services.deep_research.bound_composite_table_cells import drafting_guidance
+    point_guidance += drafting_guidance(record)
     from services.deep_research.factual_prompt import enabled as compact_enabled, build as compact_build
     if compact_enabled(record,kind):
         return compact_build(record,question,kind,limit,claim_limit,sections,obligations,

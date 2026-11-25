@@ -97,7 +97,8 @@ def _table_display_diagnostic(claim, support,comparison_context=None):
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
-                    comparison_embedded_measurements=False, bound_composite_cells=False) -> dict:
+                    comparison_embedded_measurements=False, bound_composite_cells=False,
+                    bind_composite_revisions=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -106,6 +107,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
     if type(bound_composite_cells) is not bool:
         raise ValueError('Invalid composite table cell policy')
+    if type(bind_composite_revisions) is not bool or (bind_composite_revisions and not bound_composite_cells):
+        raise ValueError('Invalid composite table revision policy')
     if type(comparison_embedded_measurements) is not bool:raise ValueError('Invalid comparison measurement policy')
     if requested_source_revisions is not None:
         from services.deep_research.source_revisions import validate_constraints
@@ -189,6 +192,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 # Removing a work-ID prefix from arxiv:...v4 leaves a spurious
                 # measurement of 4; an uncited version must remain checked.
                 identities = {item.get('sourceWorkId', ''), item.get('sourceVersionId', '')}
+                if bind_composite_revisions:
+                    from services.deep_research.bound_composite_table_cells import evidence_revision
+                    revision = evidence_revision(item)
+                    if revision:
+                        identities.add(revision)
                 for identity in sorted(identities, key=len, reverse=True):
                     if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
@@ -223,6 +231,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             table_options = {'bound_duration_spelling':True} if bound_duration_spelling else {}
             if bound_composite_cells:
                 table_options['bound_composite_cells'] = True
+            if bind_composite_revisions:
+                table_options['bind_composite_revisions'] = True
             if comparison_context is not None:
                 table_options['comparison_context']=comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
@@ -243,6 +253,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             table_options = {'bound_duration_spelling': bound_duration_spelling}
             if bound_composite_cells:
                 table_options['bound_composite_cells'] = True
+            if bind_composite_revisions:
+                table_options['bind_composite_revisions'] = True
             if comparison_context is not None:
                 table_options['comparison_context'] = comparison_context
             if type(table_references_version) is int and table_references_version in (2,3,4):
@@ -353,7 +365,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   *, absence_scope_version=0, quantity_spelling_version=0, feedback_version=0,
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
                   complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
-                  comparison_embedded_measurements=False, bound_composite_cells=False) -> dict:
+                  comparison_embedded_measurements=False, bound_composite_cells=False,
+                  bind_composite_revisions=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -370,6 +383,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         table_references_version=table_references_version, requested_source_revisions=requested_source_revisions,
         **({'bound_duration_spelling':True} if bound_duration_spelling else {}),
         bound_composite_cells=bound_composite_cells,
+        bind_composite_revisions=bind_composite_revisions,
         **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']

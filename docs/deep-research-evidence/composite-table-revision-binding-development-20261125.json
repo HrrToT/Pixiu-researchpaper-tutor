@@ -1,0 +1,17 @@
+{
+  "scope": "development replay; no live generation or historical state writes",
+  "versions": [
+    "arxiv:2106.09685v1",
+    "arxiv:2106.09685v2"
+  ],
+  "pages": [
+    6,
+    8
+  ],
+  "sharedValue": "52.0/28.0/44.5",
+  "existingHardChecksAllowWrongShortRevisionWithSyntheticVerdict": true,
+  "revisionBoundPolicyRejectsMislabelledRevision": true,
+  "revisionBoundPolicyAcceptsEachQualifiedDisplay": true,
+  "renderedClaimLinksMatchEachVersion": true,
+  "modelCalls": 0
+}

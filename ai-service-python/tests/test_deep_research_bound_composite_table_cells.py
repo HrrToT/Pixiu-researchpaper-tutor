@@ -76,3 +76,52 @@ def test_cited_table_without_exact_binding_cannot_support_series():
     del claim['tableBindings']
     report = verify_claims([claim], [evidence], bound_composite_cells=True)
     assert report['rejected'][0]['reason'] == 'ambiguous_table_series'
+
+
+@pytest.mark.parametrize('display, accepted', [
+    ('v1 ' + DISPLAY, True),
+    ('arXiv:2106.09685v1 ' + DISPLAY, True),
+    ('v2 ' + DISPLAY, False),
+    (DISPLAY.rstrip('。') + '（v2）', False),
+    ('v1 和 v2 ' + DISPLAY, False),
+])
+def test_revision_label_must_match_the_owned_pdf_bound_to_the_cell(display, accepted):
+    from services.deep_research.publication_identity import from_verified_pages
+
+    evidence, claim = evidence_and_claim()
+    evidence['sourcePublicationIdentity'] = from_verified_pages(
+        {'contentHash': evidence['contentHash']}, [{'page': 1, 'text': 'arXiv:2106.09685v1 [cs.CL]'}],
+    )
+    claim['text'] = display
+    calls = []
+
+    def passed(claims, sources):
+        calls.append(len(claims))
+        return [{'claimId': 'c', 'status': 'passed'}]
+
+    result = verify_claims([claim], [evidence], passed, bound_composite_cells=True, bind_composite_revisions=True)
+    assert bool(result['accepted']) is accepted
+    assert calls == ([1] if accepted else [])
+
+
+def test_publication_stamp_hash_must_match_the_cited_document():
+    from services.deep_research.publication_identity import from_verified_pages
+
+    evidence, claim = evidence_and_claim()
+    evidence['sourcePublicationIdentity'] = from_verified_pages(
+        {'contentHash': 'different document'}, [{'page': 1, 'text': 'arXiv:2106.09685v1 [cs.CL]'}],
+    )
+    claim['text'] = 'v1 ' + DISPLAY
+    result = verify_claims([claim], [evidence], bound_composite_cells=True, bind_composite_revisions=True)
+    assert result['rejected'][0]['reason'] == 'ambiguous_table_series'
+
+
+def test_drafting_guidance_only_with_a_verified_visible_cell_in_current_policy():
+    from services.deep_research.bound_composite_table_cells import drafting_guidance
+
+    evidence, _ = evidence_and_claim()
+    record = {'boundCompositeTableCellsVersion': 2, 'state': {'evidence': [evidence]}}
+    assert 'each revision' in drafting_guidance(record)
+    assert not drafting_guidance({**record, 'boundCompositeTableCellsVersion': 1})
+    evidence['quote'] = 'Only the table caption was read.'
+    assert not drafting_guidance(record)

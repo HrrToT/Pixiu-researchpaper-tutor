@@ -197,13 +197,16 @@ def validate_comparison_measurements(claim, evidence, **options):
 
 
 def validate_table_bindings(claim, evidence, *, translated_metrics=False, dataset_joiners=False,
-                            comparison_context=None, bound_duration_spelling=False, bound_composite_cells=False):
+                            comparison_context=None, bound_duration_spelling=False, bound_composite_cells=False,
+                            bind_composite_revisions=False):
     """Return a rejection reason; semantic checking still follows this gate."""
     if type(translated_metrics) is not bool:raise ValueError('Invalid metric translation policy')
     if type(dataset_joiners) is not bool:raise ValueError('Invalid dataset joiner policy')
     if type(bound_duration_spelling) is not bool:raise ValueError('Invalid bound duration spelling policy')
     if type(bound_composite_cells) is not bool:
         raise ValueError('Invalid composite table cell policy')
+    if type(bind_composite_revisions) is not bool or (bind_composite_revisions and not bound_composite_cells):
+        raise ValueError('Invalid composite table revision policy')
     if comparison_context is not None and not isinstance(comparison_context,dict):
         raise ValueError('Invalid comparison display context')
     author_headers={}
@@ -218,7 +221,7 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
     composite_series = False
     if bound_composite_cells:
         from services.deep_research.bound_composite_table_cells import (
-            all_composite_series_bound, has_numeric_slash, literal_dataset_visible,
+            all_composite_series_bound, evidence_revision, has_numeric_slash, literal_dataset_visible,
         )
         composite_series = any(has_numeric_slash(field) for field in fields)
     if bound_duration_spelling:
@@ -252,6 +255,7 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
         return 'ambiguous_table_series'
     supported = set(prose_measurements)
     composite_cells = []
+    revisions = {} if bind_composite_revisions else None
     for binding in bindings:
         if not isinstance(binding, dict):
             return 'invalid_table_binding'
@@ -293,6 +297,8 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
         if composite_cell and source['evidenceId'] in (claim.get('evidenceRefs') or ()):
             identity = (source['evidenceId'], row_number, group_index, metric)
             composite_cells.append((identity, dataset, row[1], metric, value))
+            if revisions is not None:
+                revisions[identity] = evidence_revision(source)
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
             supported.add((match[1], metric.upper()))
@@ -300,7 +306,7 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                 supported.add((match[1], match[2].upper()))
             if metric.upper() == 'PSNR':
                 supported.add((match[1], 'DB'))
-    if composite_series and not all_composite_series_bound(fields, composite_cells, _method_visible):
+    if composite_series and not all_composite_series_bound(fields, composite_cells, _method_visible, revisions):
         return 'ambiguous_table_series'
     if not (metric_mentions | unit_mentions) <= supported:
         return 'unbound_table_measurement'

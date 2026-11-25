@@ -417,7 +417,7 @@ class ResearchFacade:
             "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,
-            "boundCompositeTableCellsVersion": 1,
+            "boundCompositeTableCellsVersion": 2,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,
             "sourceGlyphContractVersion": 1,
@@ -1501,7 +1501,9 @@ class ResearchFacade:
                 feedback_version=feedback,table_references_version=table_references,
                 review_context_version=context_version,
                 bound_composite_cells=(type(record.get('boundCompositeTableCellsVersion')) is int
-                                       and record['boundCompositeTableCellsVersion'] == 1),
+                                       and record['boundCompositeTableCellsVersion'] in (1, 2)),
+                bind_composite_revisions=(type(record.get('boundCompositeTableCellsVersion')) is int
+                                          and record['boundCompositeTableCellsVersion'] == 2),
                 **({'complete_review_feedback':True} if type(record.get('completeReviewFeedbackContractVersion')) is int
                    and record['completeReviewFeedbackContractVersion']==1 else {}),
                 **({'requested_source_revisions':revisions} if revisions else {}),
