@@ -69,6 +69,32 @@ def overview_score(text,section):
     return 20*main+6*pipeline+25*contributions+2*own+introduction if main or pipeline or contributions else 0
 
 
+def comparison_mechanism(obligation):
+    role = obligation.get('comparisonRole') or {}
+    return (role.get('kind') == 'per_paper'
+            and bool(_MECHANISM.search(role.get('requestExcerpt', '')))
+            and not any(_measurement_requirement(criterion['requirement'])
+                        for criterion in obligation.get('completionCriteria', [])))
+
+
+def comparison_overviews(sources, obligations, extracted):
+    from services.deep_research.obligation_binding import eligible_obligation_ids
+
+    active = {oid: obligation for oid, obligation in obligations.items() if comparison_mechanism(obligation)}
+    best = {}
+    for source in sources:
+        identity = (source.get('workId'), source.get('versionId'))
+        if (source.get('accessLevel') != 'fulltext' or source.get('tableData') or not all(identity)
+                or source.get('ownerMaterialId') != identity[0]
+                or (source['sourceId'], source.get('contentHash')) in extracted
+                or not set(source.get('obligationIds', [])).intersection(eligible_obligation_ids(source, active))):
+            continue
+        score = overview_score(source.get('text', ''), source.get('location', {}).get('section', ''))
+        if score > best.get(identity, (0, None))[0]:
+            best[identity] = (score, source)
+    return [source for _, source in best.values()]
+
+
 def prefer_sources(indexed,candidates,record,query,owned_id,limit):
     """Reserve at most two existing slots for intact owned method passages."""
     selected=list(indexed[:limit])
@@ -89,7 +115,7 @@ def prefer_sources(indexed,candidates,record,query,owned_id,limit):
     return chosen[:limit]
 
 
-def component_bundle(rows, read_sources, work):
+def component_bundle(rows, read_sources, work, *, allow_pipeline=False):
     """Keep a visible authored component list intact across literal passage units.
 
     Units remain separate original evidence. No new quote, identity or support
@@ -107,9 +133,12 @@ def component_bundle(rows, read_sources, work):
         if re.search(r'related work|background|references|ablation|appendix|experiment|result',section,re.I):
             continue
         marker=re.search(r'\b(?:our contributions? (?:include|are)|to sum up.{0,30}contributions?)\b|本文的?贡献(?:包括|如下)',text,re.I)
+        if marker is None and allow_pipeline:
+            marker=re.search(r'\b(?:our|the|a) (?:[a-z]+ )?pipeline\s*[:：]|(?:整体|总体)流程\s*[:：]',text,re.I)
         if not marker:continue
         suffix=text[marker.start():]
-        heading=re.search(r'\n\s*(?:\d+\.?\s+[A-Z]|Related Work\b|Experiments\b)',suffix)
+        heading=re.search(r'\n\s*(?:\d+\.?\s+[A-Z]|Related Work\b|Experiments\b'
+                          + (r'|In summary\b|总结而言' if allow_pipeline else '') + ')',suffix)
         end=marker.start()+heading.start() if heading else len(text)
         block=text[marker.start():end]
         if len(block)>1800 or len(re.findall(r'•|(?:^|\n)\s*[-*]',block))<2:continue

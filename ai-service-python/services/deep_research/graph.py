@@ -779,6 +779,8 @@ def make_read_node(
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
                 **({'protocol_note': True} if prefers_protocol_note(record) else {}),
+                **({'mechanism_overviews': True} if record.get('comparisonMechanismReadContractVersion') == 1
+                   and record['state'].get('outputKind') == 'paper_comparison' else {}),
                 **({'table_navigation_obligations': table_navigation} if table_navigation else {}),
                 **({'processing_cost':True} if cost_enabled(record) else {}),
                 **({'priority_version':{2:7,3:8,4:9,5:10,6:10,7:10,8:10,9:10}[record['readingPriorityContractVersion']]}
@@ -1265,6 +1267,7 @@ def make_synthesize_node(
                    and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else {}),
                 **({'processing_cost':True} if cost_premises_enabled(record) else {}),
                 **({'comparison_operations':True} if comparison_operations_enabled(record) else {}),
+                **({'comparison_mechanisms': True} if record.get('comparisonMechanismReadContractVersion') == 1 else {}),
                 **({'procedure_targets':True} if synthesis_input_enabled(record,output_kind) else {}),
                 **({'request_roles':True,**({'mixed_script_terms':True} if record.get('readingPriorityContractVersion') in (7,8,9) else {})} if type(record.get('readingPriorityContractVersion')) is int
                    and record['readingPriorityContractVersion'] in (6,7,8,9) and output_kind in {'paper_comparison','claim_verification'} else {}),

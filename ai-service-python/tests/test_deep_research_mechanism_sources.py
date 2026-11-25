@@ -142,3 +142,49 @@ def test_mechanism_text_cannot_displace_metric_tables_for_its_sibling_obligation
 def test_old_mixed_profiles_keep_their_exact_qualitative_route(version):
     r=mixed_record(version)
     assert enabled(r) and for_query(r,'storage quality rendering speed reported results','p')
+
+
+def test_comparison_reading_preserves_one_author_method_overview_inside_the_same_limit():
+    from services.deep_research.reading_priority import select_read_sources
+
+    role = {'kind': 'per_paper', 'requestExcerpt': '压缩机制'}
+    obligation = {'obligationId': 'm', 'question': '说明压缩机制', 'comparisonRole': role, 'requiredSources': ['p']}
+    sources = []
+    for i, section, text in [(1, 'Results', 'Storage measurements.'), (2, 'Results', 'Reported accuracy.'),
+                             (3, 'Evaluation', 'Actual benchmark runs.'),
+                             (4, 'Methods', 'Our pipeline encodes attributes and filters redundant primitives.')]:
+        sources.append({**row(i, section, text), 'workId': 'p', 'versionId': 'v1', 'ownerMaterialId': 'p',
+                        'contentHash': f'chunk-{i}', 'location': {'section': section}, 'obligationIds': ['m']})
+    before = deepcopy(sources)
+    chosen = select_read_sources(sources, {'m': obligation}, 3, mechanism_overviews=True)
+    assert len(chosen) == 3 and chosen[0] == sources[3] and sources == before
+    assert sources[3] not in select_read_sources(sources, {'m': obligation}, 3)
+    invalid = {**sources[3], 'ownerMaterialId': 'other'}
+    chosen = select_read_sources([*sources[:3], invalid], {'m': obligation}, 3, mechanism_overviews=True)
+    assert invalid not in chosen
+    measurement = {**obligation, 'comparisonRole': {'kind': 'per_paper', 'requestExcerpt': '渲染速度'}}
+    assert select_read_sources(sources, {'m': measurement}, 3, mechanism_overviews=True) == select_read_sources(
+        sources, {'m': measurement}, 3)
+
+
+def test_comparison_mechanism_bundle_preserves_author_pipeline_passages():
+    from services.deep_research.synthesis_evidence import order_premises
+
+    first = 'Our pipeline:\n• Encode the features.\n'
+    second = '• Quantize the attributes.\n• Recover the reconstruction.\n'
+    full = first + second + 'In summary, storage is reduced.'
+    source = {'sourceId': 's', 'workId': 'p', 'ownerMaterialId': 'p', 'versionId': 'v1',
+              'accessLevel': 'fulltext', 'text': full, 'location': {'section': 'Introduction'}}
+    rows = [{'evidenceId': eid, 'sourceId': 's', 'sourceWorkId': 'p', 'ownerMaterialId': 'p',
+             'sourceVersionId': 'v1', 'quote': quote, 'verification': {'literal': 'passed'},
+             'location': {'section': 'Introduction', 'sourcePassageStart': start,
+                          'sourcePassageEnd': start + len(quote)}}
+            for eid, quote, start in [('first', first, 0), ('second', second, len(first))]]
+    obligation = {'obligationId': 'm', 'question': '说明压缩机制', 'requiredSources': ['p'],
+                  'comparisonRole': {'kind': 'per_paper', 'requestExcerpt': '压缩机制'},
+                  'completionCriteria': [{'criterionId': 'c', 'requirement': '说明压缩机制', 'responseType': 'explanation'}]}
+    _, bundles = order_premises(rows, [{'obligations': [obligation]}], read_sources=[source],
+                                comparison_operations=True, comparison_mechanisms=True)
+    bundle, = bundles
+    assert bundle['navigationRole'] == 'comparison_operation'
+    assert bundle['evidenceIds'] == ['first', 'second']

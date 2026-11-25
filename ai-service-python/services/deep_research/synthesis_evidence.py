@@ -57,7 +57,7 @@ def readiness_bundles(rows, obligations, coverage):
 
 
 def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=()):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False):
     if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
     if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
     if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
@@ -138,7 +138,14 @@ def order_premises(evidence,plan,limit=20, *, membership_intents=False,module_in
             lead=ranked[0];bundle=[lead]
             method_contexts={};used_method_bundle=False
             operation_navigation=(comparison_operations and obligations[oid].get('comparisonRole',{}).get('kind')=='per_paper')
-            if (criterion_method_navigation and active_intent is None) or operation_navigation:
+            if comparison_mechanisms and operation_navigation:
+                from services.deep_research.mechanism_sources import comparison_mechanism, component_bundle
+                if comparison_mechanism(obligations[oid]):
+                    components = component_bundle(own, read_sources, source, allow_pipeline=True)
+                    if components:
+                        bundle = components
+                        used_method_bundle = True
+            if not used_method_bundle and ((criterion_method_navigation and active_intent is None) or operation_navigation):
                 from services.deep_research.method_navigation import bundle as navigation_bundle
                 method_group=navigation_bundle(own,view['question'],obligations[oid].get('searchQuery',''),
                     (view.get('completionCriteria') or [{}])[0].get('responseType',''),

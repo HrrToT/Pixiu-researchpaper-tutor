@@ -64,6 +64,8 @@ v46 获得了带标记的基线表，但获取结果没有包含解释重训标�
 
 此次机制陈述引用了剪枝与蒸馏，但向量量化部分只引到另一种方法，核验未放行。跨论文边界草稿只保留有报告依据的 A6000 设置，后续审核仍因解释与原文绑定失败而拒绝。显存建议在此轮复测未通过，审核仍要求已有测量值，且建议被路由到了跨论文可比性义务。D2 维持 `inconclusive`。 [结果边界](deep-research-evidence/baseline-comparison-v49-real-20261125.json)
 
+按 v49 首轮活动计划和实际检索账本重放，逐项复现 12 条历史读取顺序。LightGaussian 第 2 页包含剪枝、球谐蒸馏和向量量化的段落，当时已检索到但未读取。新版在当前机制义务下优先读取每篇论文的一段方法概述，保持原 12 个读取槽位，保留旧顺序已读的 4 个表格片段。将新增原文送入生产提取过程，重建的单论文生成请求在 24,000 字节上限内完整包含两段必要机制原文。177 项定向测试通过。该预检沿用历史核验材料，无新模型调用或报告发布。 [读取与生成请求回放](deep-research-evidence/d2-v49-mechanism-read-and-synthesis-preflight-20261125.json)
+
 ## 2026-11-25 v48 真实比较
 
 `6eb82ccf0` 的 501 个模块、9,826 项离线测试通过，9,824 项基线用例全部保留。候选装载核对了源码指纹、PDF 解析依赖及既有任务、运行、调用记录。 [全量回归](deep-research-evidence/comparison-review-roles-full-20261125.json) · [候选装载](deep-research-evidence/comparison-review-roles-v48-candidate-load-20261124.json)
