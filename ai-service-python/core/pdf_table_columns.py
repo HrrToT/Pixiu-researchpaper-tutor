@@ -317,7 +317,7 @@ def _physical_table_caption(section,runs, *, two_tier=False, row_groups=False):
     bounds=section.get('tableBounds')
     if not bounds:return None
     x,y,w,h=bounds;candidates=[]
-    padding = 50 if two_tier else 30
+    padding = 50 if two_tier or row_groups else 30
     max_above = 25 if two_tier else 160
     separator = r'[.:]' if two_tier or row_groups else r'\.'
     for run in runs:
@@ -342,6 +342,78 @@ def _physical_table_caption(section,runs, *, two_tier=False, row_groups=False):
     return {'number':number,'text':' '.join(kept)}
 
 
+_INNER_CAPTION = re.compile(r'^\s*Table\s*(\d+)\s*[:.]', re.I)
+
+
+def _split_fused_table(section, runs, rules, captions):
+    """Separate independently framed sub-tables inside one overgrown TEI zone."""
+    from collections import defaultdict
+    from core.pdf_model_table import verify_fused_model_groups
+
+    x, y, width, height = section['tableBounds']
+    rows = section['tableRows']
+    printed = [(match[1], run['y']) for run in runs if x - 12 <= run['x'] <= x + width + 12
+               and y <= run['y'] <= y + height
+               if (match := _INNER_CAPTION.match(run['text']))]
+    if len({number for number, _ in printed}) != len(printed):
+        return None
+    by_number = dict(printed)
+    if any(number not in by_number for _, number in captions):
+        return None
+    if [by_number[number] for _, number in captions] != sorted(by_number[number] for _, number in captions):
+        return None
+
+    raw_lines = section['content'].splitlines()
+    if len(raw_lines) != len(rows) + 1:
+        return None
+    first, first_number = captions[0]
+    original = {**section, 'content': '\n'.join(raw_lines[:first + 1]), 'tableRows': rows[:first],
+                'tableBounds': [x, y, width, by_number[first_number] - y]}
+    pieces = [original]
+    for position, (caption_row, number) in enumerate(captions):
+        raw_end = captions[position + 1][0] if position + 1 < len(captions) else len(rows)
+        baseline = by_number[number]
+        next_caption = min((other_y for _, other_y in printed if other_y > baseline), default=y + height)
+        bands = defaultdict(set)
+        for left, right, rule_y in rules:
+            if (x - 12 <= left < right <= x + width + 12 and right - left >= width / 2
+                    and baseline < rule_y < next_caption):
+                bands[round(left, 1), round(right, 1)].add(round(rule_y, 2))
+        candidates = [(ends, sorted(levels)) for ends, levels in bands.items()
+                      if len(levels) >= 4 and 5 <= min(levels) - baseline <= 65]
+        if len(candidates) != 1:
+            return None
+        (left, right), cuts = candidates[0]
+        candidates_rows = [[cell for cell in row if cell['text'].strip()] for row in rows[caption_row + 1:raw_end]]
+        headers = [i for i, row in enumerate(candidates_rows[:4]) if len(row) >= 3
+                   and compact(row[0]['text']).casefold() in {'model', 'method'}
+                   and compact(row[1]['text']).casefold() in {'method', 'configuration'}]
+        if len(headers) != 1:
+            return None
+        start = headers[0]
+        # One top rule, one header rule, then one terminating rule per model group.
+        stop = start + len(cuts) - 1
+        if stop > len(candidates_rows):
+            return None
+        fragment = {**section, 'tableRows': candidates_rows[start:stop],
+                    'tableBounds': [left, cuts[0], right - left, cuts[-1] - cuts[0]]}
+        verified = verify_fused_model_groups(fragment, runs, rules)
+        caption = _physical_table_caption(fragment, runs, row_groups=True) if verified else None
+        if not caption or caption['number'] != number:
+            return None
+
+        table_id = f"pdf-page-{section['pageIndex'] + 1}-table-{number}"
+        lines = ['Table caption: ' + caption['text'],
+                 'Table row 1: Model / Configuration | ' + ' | '.join(verified['groups'][0][1]),
+                 *(f'Table row {index}: ' + ' | '.join([label, *values]) for index, label, values in verified['rows'])]
+        pieces.append({**fragment, 'id': f'table-{table_id}', 'section': f'Table {number}', 'tableId': table_id,
+                       'content': '\n'.join(lines), 'tablePrefix': '\n'.join(lines[:2]),
+                       'tableVerifiedData': verified, 'tableColumnMappingVersion': 2,
+                       'unverifiedTeiTableId': section.get('tableId', '')})
+        # The canonical PDF body still carries surrounding non-table prose and figures.
+    return pieces
+
+
 def attach_verified_table_columns(sections, pdf_path):
     from PyPDF2 import PdfReader
     from core.pdf_benchmark_columns import verify_two_tier_columns
@@ -350,8 +422,8 @@ def attach_verified_table_columns(sections, pdf_path):
         reader = PdfReader(pdf_path)
     except Exception:
         return sections
-    pages, page_rules = {}, {}
-    for section in sections:
+    pages, page_rules, splits = {}, {}, {}
+    for section_index, section in enumerate(sections):
         index = section.get('pageIndex')
         if section.get('evidenceKind') != 'table' or index is None or not 0 <= index < len(reader.pages):
             continue
@@ -360,6 +432,17 @@ def attach_verified_table_columns(sections, pdf_path):
         try:
             if index not in pages:
                 pages[index] = drawing_runs(reader.pages[index])
+            captions = [(i, match[1]) for i, row in enumerate(section.get('tableRows') or ())
+                        if len(texts := [cell['text'] for cell in row if cell['text'].strip()]) == 1
+                        and (match := _INNER_CAPTION.match(texts[0]))]
+            if captions:
+                if section.get('tableBounds'):
+                    if index not in page_rules:
+                        page_rules[index] = horizontal_rules(reader.pages[index])
+                    split = _split_fused_table(section, pages[index], page_rules[index], captions)
+                    if split:
+                        splits[section_index] = split
+                continue  # Never verify rows from a combined zone under one caption.
             legacy = verify_table_columns(section,pages[index])
             verified = legacy or verify_table_columns(section,pages[index],mixed=True)
             caption=_physical_table_caption(section,pages[index]) if verified else None
@@ -395,4 +478,4 @@ def attach_verified_table_columns(sections, pdf_path):
                             for n, method, values in verified['rows']}
             section['content'] = '\n'.join(next((prefix + value for prefix, value in replacements.items()
                                                 if line.startswith(prefix)), line) for line in lines)
-    return sections
+    return [piece for i, section in enumerate(sections) for piece in splits.get(i, [section])] if splits else sections

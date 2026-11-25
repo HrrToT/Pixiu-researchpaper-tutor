@@ -29,33 +29,39 @@ def horizontal_rules(page):
     return rules
 
 
-def verify_model_groups(section, runs, rules):
-    """Bind complete TEI rows to drawn metrics and uniquely bounded model groups."""
+def _model_grid(section, runs, rules, *, named_method_column=False):
+    """Read a physical grid with independently supplied header and model labels."""
     rows = section.get('tableRows') or []
     bounds = section.get('tableBounds')
     if not bounds or len(rows) < 3 or len(rows[0]) < 3:
         return None
     header = rows[0]
-    if _compact(header[0]['text']).casefold() not in {'model', 'method'} or header[1]['text'].strip():
+    method_header = header[1]['text'].strip()
+    if (_compact(header[0]['text']).casefold() not in {'model', 'method'}
+            or method_header and not (named_method_column and method_header.casefold() in {'method', 'configuration'})):
         return None
-    if any(cell['rows'] != 1 for cell in header) or any(cell['cols'] != 1 for cell in header[:2]):
+    if any(cell['rows'] != 1 for cell in header) or (not named_method_column
+            and any(cell['cols'] != 1 for cell in header[:2])):
         return None
     metrics = [name for cell in header[2:] for name in cell['text'].split()]
     if (not 2 <= len(metrics) <= 8 or len(set(metrics)) != len(metrics)
-            or len(metrics) != sum(cell['cols'] for cell in header[2:])):
+            or not named_method_column and len(metrics) != sum(cell['cols'] for cell in header[2:])):
         return None
 
     x, y, width, height = bounds
     inside = [run for run in runs if x - 2 <= run['x'] <= x + width + 2
               and y - 2 <= run['y'] <= y + height + 3]
     lines = [(line[0]['y'], _tokens(line)) for line in _line_groups(inside)]
-    expected = [_compact(header[0]['text']), *map(_compact, metrics)]
+    leading_headers = [header[0]['text'], *([method_header] if method_header else [])]
+    expected = [*map(_compact, leading_headers), *map(_compact, metrics)]
     headers = [(baseline, tokens) for baseline, tokens in lines
                if [_compact(token['text']) for token in tokens] == expected]
     if len(headers) != 1:
         return None
     header_y, tokens = headers[0]
-    model_x, *columns = [token['x'] for token in tokens]
+    model_x = tokens[0]['x']
+    model_end = (model_x + tokens[1]['x']) / 2 if method_header else model_x + 5
+    columns = [token['x'] for token in tokens[len(leading_headers):]]
     gaps = [b - a for a, b in zip(columns, columns[1:])]
     if min(gaps) < 9:
         return None
@@ -74,10 +80,12 @@ def verify_model_groups(section, runs, rules):
         for baseline, tokens in lines:
             if not start < baseline < end or not tokens:
                 continue
-            if abs(tokens[0]['x'] - model_x) <= 5:
+            starts_with_model = (tokens[0]['x'] < model_end if method_header
+                                 else abs(tokens[0]['x'] - model_x) <= 5)
+            if starts_with_model:
                 matches = [n for n in range(1, len(tokens) + 1)
                            if _compact(''.join(token['text'] for token in tokens[:n])) == _compact(model)]
-                if len(matches) != 1 or tokens[matches[0] - 1]['x'] >= edges[0]:
+                if len(matches) != 1 or tokens[matches[0] - 1]['x'] >= (model_end if method_header else edges[0]):
                     return None
                 model_anchors += 1
                 tokens = tokens[matches[0]:]
@@ -92,7 +100,16 @@ def verify_model_groups(section, runs, rules):
             physical.append((model_index, model, config, values, _compact(config + ''.join(values))))
         if model_anchors != 1:
             return None
+    return metrics, models, physical
 
+
+def verify_model_groups(section, runs, rules):
+    """Bind complete TEI rows to drawn metrics and uniquely bounded model groups."""
+    grid = _model_grid(section, runs, rules)
+    if grid is None:
+        return None
+    metrics, models, physical = grid
+    rows = section['tableRows']
     parsed = [(_compact(''.join(cell['text'] for cell in row[1:])), number)
               for number, row in enumerate(rows[1:], 2)]
     parsed_count, physical_count = Counter(key for key, _ in parsed), Counter(row[-1] for row in physical)
@@ -112,4 +129,43 @@ def verify_model_groups(section, runs, rules):
     if not checked or any(index not in group_rows or not min(group_rows[index]) <= index <= max(group_rows[index])
                           for index, _ in models):
         return None
+    return {'groups': [['', metrics]], 'rows': checked}
+
+
+def _consume_chunks(text, chunks):
+    """Consume a uniquely partitioned multiset of complete literal chunks."""
+    remaining = Counter(chunks)
+    while remaining:
+        matches = [chunk for chunk in remaining if text.startswith(chunk)]
+        if len(matches) != 1:
+            return None
+        match = matches[0]
+        text = text[len(match):]
+        remaining[match] -= 1
+        if not remaining[match]:
+            del remaining[match]
+    return text
+
+
+def verify_fused_model_groups(section, runs, rules):
+    """Recover only groups whose complete tuples agree with the fused TEI cells."""
+    grid = _model_grid(section, runs, rules, named_method_column=True)
+    if grid is None:
+        return None
+    metrics, models, physical = grid
+    source_rows = section['tableRows']
+    checked = []
+    for index, model in models:
+        group = [entry for entry in physical if entry[0] == index]
+        configs = [_compact(entry[2]) for entry in group]
+        values = [''.join(entry[3]) for entry in group]
+        if len(group) < 2 or not all(configs) or len(set(configs)) != len(group):
+            return None
+        tei = _compact(''.join(cell['text'] for cell in source_rows[index - 1][1:]))
+        interleaved = _consume_chunks(tei, [entry[-1] for entry in group])
+        after_configs = _consume_chunks(tei, configs)
+        if interleaved != '' and (after_configs is None or _consume_chunks(after_configs, values) != ''):
+            return None
+        for _, _, config, cells, _ in group:
+            checked.append([len(checked) + 2, f'{model} / {config}', cells])
     return {'groups': [['', metrics]], 'rows': checked}

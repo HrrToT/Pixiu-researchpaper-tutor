@@ -84,6 +84,59 @@ def test_model_groups_require_drawn_boundaries_and_confirm_exact_values():
     assert 5 in {number for number, _, _ in retained['rows']}
 
 
+def fused_tables_fixture():
+    section, runs, rules = model_groups_fixture()
+
+    def cell(text):
+        return {'text': text, 'cols': 1, 'rows': 1}
+
+    def draw(text, x, y):
+        runs.append({'text': text, 'x': x, 'y': y, 'tokens': [{'text': text, 'x': x}]})
+
+    header, *ordinary = section['tableRows']
+    header[1] = cell('Method')
+    header[1]['cols'] = 2
+    fused = []
+    for group in (ordinary[:3], ordinary[3:]):
+        name = group[1][0]['text']
+        configurations = ' '.join(row[1]['text'] for row in group)
+        reversed_values = ' '.join(value['text'] for row in reversed(group) for value in row[2:])
+        fused.append([cell(name), cell(configurations + ' ' + reversed_values)])
+    rows = [[cell('Method'), cell('Training')], [cell('Original'), cell('12')],
+            [cell('Table 2: Independent results')], header, *fused, [cell('Figure tail')]]
+    lines = ['Table caption: Table 1 : Setup',
+             *(f'Table row {i}: ' + ' | '.join(c['text'] for c in row) for i, row in enumerate(rows, 1))]
+    draw('Table 2: Independent results', 0, -10)
+    draw('Method', 26, 10)
+    section.update(tableId='tei-joined', section='Table 1 :', evidenceKind='table',
+                   pageIndex=4, tableBounds=[0, -40, 120, 155], tableRows=rows,
+                   tablePrefix='\n'.join(lines[:2]), content='\n'.join(lines))
+    return section, runs, [(0, 120, 5), *rules]
+
+
+def test_one_tei_zone_separates_the_physical_tables_without_promoting_figure_content():
+    from core.pdf_table_columns import _split_fused_table
+
+    section, runs, rules = fused_tables_fixture()
+    earlier, recovered = _split_fused_table(section, runs, rules, [(2, '2')])
+    assert earlier['tableId'] == 'tei-joined' and 'Independent results' not in earlier['content']
+    assert recovered['tableId'] == 'pdf-page-5-table-2' and recovered['section'] == 'Table 2'
+    assert recovered['tableVerifiedData']['rows'][0] == [2, 'Model-A / Baseline', ['1', '2', '3']]
+    assert recovered['tableVerifiedData']['rows'][4] == [6, 'Model-B / 4bit (fake )', ['34', '35', '36']]
+    assert 'Figure tail' not in recovered['content'] and 'Figure tail' not in earlier['content']
+
+
+def test_fused_table_with_wrong_tuple_or_ambiguous_caption_stays_unverified():
+    from core.pdf_table_columns import _split_fused_table
+
+    section, runs, rules = fused_tables_fixture()
+    changed = deepcopy(section)
+    changed['tableRows'][4][1]['text'] += ' 999'
+    assert _split_fused_table(changed, runs, rules, [(2, '2')]) is None
+    duplicate = {'text': 'Table 2: Another label', 'x': 0, 'y': -27, 'tokens': []}
+    assert _split_fused_table(section, [duplicate, *runs], rules, [(2, '2')]) is None
+
+
 def hierarchical_fixture():
     def cell(text):
         return {'text': text, 'cols': 1, 'rows': 1}
