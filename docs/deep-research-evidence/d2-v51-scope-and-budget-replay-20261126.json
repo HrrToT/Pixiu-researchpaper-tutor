@@ -1,0 +1,32 @@
+{
+  "receiptSha256": "093c19248c7aae48691af055799f5d23a2c953cf5187529a1889e2035e37a635",
+  "oldFrameRateClaimAccepted": true,
+  "newRejection": "comparison_benchmark_example_scope",
+  "rewrittenPlanningGoal": "ob-2-2",
+  "oldStop": {
+    "batch": 1,
+    "kind": "repairEvidenceBytes",
+    "limit": 11862,
+    "used": 13315
+  },
+  "newBatches": [
+    [
+      "cmp_0_0",
+      "cmp_4_0"
+    ],
+    [
+      "cmp_3_0",
+      "cmp_5_0"
+    ],
+    [
+      "cmp_7_0"
+    ]
+  ],
+  "nextRequest": {
+    "promptBytes": 11671,
+    "outputTokens": 4096
+  },
+  "preservedCompletedBatch": true,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

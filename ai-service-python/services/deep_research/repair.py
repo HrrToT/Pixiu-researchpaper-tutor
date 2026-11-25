@@ -952,6 +952,7 @@ def factual_redraft_eligible(report):
 
 
 def repair_rejected(report, verification, evidence, question, invoke, parse, *, comparison_prioritize_cells=False,
+                    comparison_split_to_fit=False,
                     comparison_priority_evidence=(),
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
@@ -1094,6 +1095,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                            'comparisonPriorityEvidence': comparison_priority_evidence})
     if benchmark_example is not None:
         identity = digest({'inputDigest': identity, 'benchmarkExample': benchmark_example})
+    if comparison_split_to_fit:
+        identity = digest({'inputDigest': identity, 'comparisonSplitToFit': True})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1224,7 +1227,27 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                         **({'released_finalization':True} if released_finalization else {}),
                         **({'input_bytes':32000} if repair_evidence_packet_version in (4,5) else {}))) \
                           if current_budget else state['maxPromptBytes']
-                    prepared = prepare(group, revised, cap)
+                    try:
+                        prepared = prepare(group, revised, cap)
+                    except BudgetExhaustedError as exc:
+                        if (not comparison_split_to_fit or len(group) < 2 or len(state['batches']) >= 3
+                                or exc.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}):
+                            raise
+                        # Earlier settlements may shrink the budget after preflight.
+                        # Keep source order and retain every remaining target.
+                        for size in range(len(group) - 1, 0, -1):
+                            prefix, remaining = group[:size], group[size:]
+                            try:
+                                prepared = prepare(prefix, revised, cap)
+                            except BudgetExhaustedError as split_error:
+                                if split_error.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}:
+                                    raise
+                                continue
+                            state['batches'][index:index + 1] = [prefix, remaining]
+                            group = prefix
+                            break
+                        else:
+                            raise exc
                     request = {'prepared': prepared, 'outputTokens': output}
                     state['pending'] = {'index': index, 'request': request, 'digest': digest(request)}
                     if checkpoint:

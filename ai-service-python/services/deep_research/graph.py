@@ -479,9 +479,10 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 if preserve_numeric_example(record):
                     from services.deep_research.comparison_joint_reports import preserve_requested_numeric_example
                     validated = validate_plan(preserve_requested_numeric_example(validated, question))
-                    if type(record.get('singleBenchmarkCriteriaVersion')) is int and record['singleBenchmarkCriteriaVersion'] == 1:
+                    if type(record.get('singleBenchmarkCriteriaVersion')) is int and record['singleBenchmarkCriteriaVersion'] in (1, 2):
                         from services.deep_research.comparison_joint_reports import normalize_single_example_requirements
-                        validated, single_example_changes = normalize_single_example_requirements(validated, question)
+                        validated, single_example_changes = normalize_single_example_requirements(
+                            validated, question, include_speed_boundary=record['singleBenchmarkCriteriaVersion'] == 2)
                         validated = validate_plan(validated)
                         requirement_changes.extend(single_example_changes)
 
@@ -2450,7 +2451,7 @@ def make_verify_node(
                                          and compact_repair and unified_repair_eligible else False)
                     comparison_batch_envelope = (bool(comparison_repair)
                                                  and type(record.get('comparisonRepairBatchEnvelopeVersion')) is int
-                                                 and record['comparisonRepairBatchEnvelopeVersion'] == 1)
+                                                 and record['comparisonRepairBatchEnvelopeVersion'] in (1, 2))
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
@@ -2489,6 +2490,8 @@ def make_verify_node(
                            and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible else {}),
                         **({'comparison_authoring':comparison_repair} if comparison_repair else {}),
                         **({'comparison_prioritize_cells':True} if comparison_batch_envelope else {}),
+                        **({'comparison_split_to_fit':True} if comparison_batch_envelope
+                           and record['comparisonRepairBatchEnvelopeVersion'] == 2 else {}),
                         **({'comparison_priority_evidence':comparison_priority_evidence}
                            if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int

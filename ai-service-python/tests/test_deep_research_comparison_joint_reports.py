@@ -163,6 +163,24 @@ def test_boundary_keeps_paper_title_out_of_frame_rate_check(attribute, value, su
     assert benchmark_binding_error(claim, draft) == expected
 
 
+@pytest.mark.parametrize(('text', 'expected'), [
+    ('LightGaussian 的 FPS 为 237，在另一数据集上为 357。', 'comparison_benchmark_example_scope'),
+    ('帧率约为 180。', 'comparison_benchmark_example_scope'),
+    ('平均FPS为237。', 'comparison_benchmark_example_scope'),
+    ('FPS was 237 on the benchmark.', 'comparison_benchmark_example_scope'),
+    ('两篇 FPS 的测量口径未对齐。', None),
+])
+def test_one_example_detects_frame_rate_values_after_verbs(text, expected):
+    from services.deep_research.comparison_joint_reports import benchmark_binding_error
+
+    claim = {'claimId': 'speed', 'text': text, 'conditions': {}}
+    draft = {'benchmarkExampleClaimId': 'example', 'benchmarkSpeedScopeVersion': 1}
+    assert benchmark_binding_error(claim, draft) is None
+    draft['benchmarkSpeedScopeVersion'] = 2
+    assert benchmark_binding_error(claim, draft) == expected
+    assert benchmark_binding_error({**claim, 'claimId': 'example'}, draft) is None
+
+
 @pytest.mark.parametrize('mutation',['policy','kind','text','binding','reference'])
 def test_reported_policy_and_joint_fact_are_bound_to_final_audit_digest(mutation):
     _,draft,c,_,_=compiled();meta=metadata(draft)
@@ -186,7 +204,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
-        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 2
+        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 3
         assert r['comparisonRepairFlowContractVersion'] == 1
         assert r['comparisonStageAbstentionContractVersion'] == 1
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})

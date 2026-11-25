@@ -25,6 +25,7 @@ _SPEED = re.compile(
 _STORAGE = re.compile(r'存储|文件(?:体积|大小)|\b(?:storage|file size)\b', re.I)
 _QUALITY = re.compile(r'画质|视觉质量|\b(?:image|visual|rendering) quality\b|\b(?:PSNR|SSIM|LPIPS)\b', re.I)
 _INVENTORY = re.compile(r'两篇各自|分别列出|逐篇列出|\b(?:list|enumerate)\b[^.!?]{0,90}\b(?:each|both)\b', re.I)
+_SPEED_INVENTORY = re.compile(r'各自报告|列出|\b(?:list|enumerate|report the)\b', re.I)
 _PROTOCOL = re.compile(
     r'\b(?:evaluat\w*|benchmark\w*|measur\w*|render\w*|timing)\b[^.!?。]{0,120}'
     r'\b(?:on|using|with|at)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform|resolution)\b'
@@ -51,7 +52,7 @@ def joint_numeric_example(roles, question):
                     for role in roles.values()))
 
 
-def normalize_single_example_requirements(plan, question):
+def normalize_single_example_requirements(plan, question, *, include_speed_boundary=False):
     """Keep the qualitative goals when only one quantitative benchmark was requested."""
     layers = getattr(question, 'point_instruction_layers',
                      getattr(question, 'instruction_layers', (str(question),)))
@@ -70,7 +71,10 @@ def normalize_single_example_requirements(plan, question):
                           if pattern.search(excerpt)]
             # Do not reinterpret a standalone metric request, processing costs,
             # comparability alone, or an independently explicit inventory.
-            if len(dimensions) < 2:
+            speed_boundary = (include_speed_boundary and dimensions == ['渲染速度']
+                              and role['kind'] == 'joint' and _SPEED.search(goal.get('requestExcerpt', ''))
+                              and re.search(r'排名|排行|排序|\brank\w*\b', goal['requestExcerpt'], re.I))
+            if len(dimensions) < 2 and not speed_boundary:
                 continue
             display = '、'.join(dimensions)
             subject = '比较两篇' if role['kind'] == 'joint' else '说明该论文报告'
@@ -78,10 +82,18 @@ def normalize_single_example_requirements(plan, question):
             candidates = [(goal, 'question'), *((entry, 'requirement') for entry in goal.get('completionCriteria', []))]
             for entry, field in candidates:
                 text = entry[field]
-                if (any(text in layer for layer in layers) or not _INVENTORY.search(text)
-                        or sum(bool(pattern.search(text)) for pattern in (_STORAGE, _QUALITY, _SPEED)) < 2):
+                if any(text in layer for layer in layers):
                     continue
-                entry[field] = qualifier
+                if speed_boundary:
+                    if not (_SPEED.search(text) and _SPEED_INVENTORY.search(text)):
+                        continue
+                    entry[field] = ('依据两篇原文说明各自如何测量渲染速度，并解释现有证据为何不能用于直接排名。'
+                                    '测量结果集中在唯一的同表对照中。')
+                elif (_INVENTORY.search(text)
+                      and sum(bool(pattern.search(text)) for pattern in (_STORAGE, _QUALITY, _SPEED)) >= 2):
+                    entry[field] = qualifier
+                else:
+                    continue
                 changes.append({'obligationId': goal['obligationId'], 'field': field,
                                 'change': 'preserved_single_benchmark_example'})
     return (result, changes) if changes else (plan, changes)
@@ -220,17 +232,20 @@ def bind_benchmark_example(record, draft, plan):
                and claim['obligationIds'] == [oid]]
     draft['benchmarkExampleClaimId'] = matches[0] if len(matches) == 1 else None
     if strict_benchmark_speed_scope(record):
-        draft['benchmarkSpeedScopeVersion'] = 1
+        draft['benchmarkSpeedScopeVersion'] = 2 if record['comparisonBenchmarkSpeedScopeContractVersion'] == 3 else 1
 
 
 def strict_benchmark_speed_scope(record):
     version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
-    return type(version) is int and version in (1, 2)
+    return type(version) is int and version in (1, 2, 3)
 
 
 _NUMERIC_FRAME_RATE = re.compile(
     r'(?:\d\s*\+?\s*(?:fps\b|frames?\s*(?:/|per\s+)\s*(?:s\b|seconds?\b)|帧\s*(?:/|每)\s*秒)'
     r'|(?:\bfps|帧率)\s*[:：=]\s*[<>≤≥~≈+-]?\s*\d)', re.I)
+_VALUE_AFTER_FRAME_RATE = re.compile(
+    r'(?:(?<![A-Za-z0-9])fps(?![A-Za-z0-9])|帧率)\s*(?:分别)?\s*(?:为|是|约为|达到|达|超过|低于|约|\b(?:was|were|is|of|reached)\b)'
+    r'\s*[<>≤≥~≈+-]?\s*\d', re.I)
 
 
 def _benchmark_scope_text(claim, draft):
@@ -273,12 +288,14 @@ def benchmark_binding_error(claim, draft):
         if any(isinstance(binding, dict) and isinstance(binding.get('metric'), str)
                and benchmark_metric(binding['metric']) for binding in bindings):
             return 'comparison_benchmark_example_scope'
-        if draft.get('benchmarkSpeedScopeVersion') == 1:
+        scope_version = draft.get('benchmarkSpeedScopeVersion')
+        if scope_version in (1, 2):
             conditions = claim.get('conditions')
             fields = [_benchmark_scope_text(claim, draft)]
             if isinstance(conditions, dict):
                 fields.extend(f'{key}: {value}' for key, value in conditions.items())
-            if any(_NUMERIC_FRAME_RATE.search(field) for field in fields):
+            if any(_NUMERIC_FRAME_RATE.search(field) or
+                   scope_version == 2 and _VALUE_AFTER_FRAME_RATE.search(field) for field in fields):
                 return 'comparison_benchmark_example_scope'
         return None
     if not bindings:

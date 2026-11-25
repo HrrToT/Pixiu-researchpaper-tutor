@@ -110,7 +110,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     if record.get('comparisonJointReportsContractVersion') in (14, 15, 16):
         plan_options['group_example_criteria'] = True
     if record.get('comparisonJointReportsContractVersion') == 16:
-        plan_options['scoped_example_text'] = 2 if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 2 else True
+        plan_options['scoped_example_text'] = 2 if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (2, 3) else True
     if record.get('comparisonCrossPaperBoundaryContractVersion') == 2:
         plan_options['split_speed_and_advice'] = True
     if preserve_numeric_example(record):
