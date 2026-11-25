@@ -22,6 +22,9 @@ _ADVICE = re.compile(r'建议|推荐|(?:有条件|如何|怎样)选择|\b(?:reco
 _SPEED = re.compile(
     r'(?<![A-Za-z0-9])(?:fps|frame\s+rate|rendering\s+(?:speed|time|latency|performance))(?![A-Za-z0-9])'
     r'|帧率|渲染(?:速度|耗时|延迟)', re.I)
+_STORAGE = re.compile(r'存储|文件(?:体积|大小)|\b(?:storage|file size)\b', re.I)
+_QUALITY = re.compile(r'画质|视觉质量|\b(?:image|visual|rendering) quality\b|\b(?:PSNR|SSIM|LPIPS)\b', re.I)
+_INVENTORY = re.compile(r'两篇各自|分别列出|逐篇列出|\b(?:list|enumerate)\b[^.!?]{0,90}\b(?:each|both)\b', re.I)
 _PROTOCOL = re.compile(
     r'\b(?:evaluat\w*|benchmark\w*|measur\w*|render\w*|timing)\b[^.!?。]{0,120}'
     r'\b(?:on|using|with|at)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform|resolution)\b'
@@ -46,6 +49,42 @@ def joint_numeric_example(roles, question):
     return (any(_SINGLE_NUMERIC_EXAMPLE.search(layer) for layer in layers)
             and any(role['kind'] == 'joint' and _NUMERIC.search(role['question'])
                     for role in roles.values()))
+
+
+def normalize_single_example_requirements(plan, question):
+    """Keep the qualitative goals when only one quantitative benchmark was requested."""
+    layers = getattr(question, 'point_instruction_layers',
+                     getattr(question, 'instruction_layers', (str(question),)))
+    if not any(_SINGLE_NUMERIC_EXAMPLE.search(layer) for layer in layers):
+        return plan, []
+    result, changes = deepcopy(plan), []
+    for step in result:
+        for goal in step['obligations']:
+            role = goal.get('comparisonRole', {})
+            excerpt = role.get('requestExcerpt', '')
+            if (role.get('kind') not in {'joint', 'per_paper'} or not excerpt
+                    or not any(excerpt in layer for layer in layers) or _SINGLE_NUMERIC_EXAMPLE.search(excerpt)
+                    or _INVENTORY.search(excerpt)):
+                continue
+            dimensions = [name for name, pattern in (('存储', _STORAGE), ('画质', _QUALITY), ('渲染速度', _SPEED))
+                          if pattern.search(excerpt)]
+            # Do not reinterpret a standalone metric request, processing costs,
+            # comparability alone, or an independently explicit inventory.
+            if len(dimensions) < 2:
+                continue
+            display = '、'.join(dimensions)
+            subject = '比较两篇' if role['kind'] == 'joint' else '说明该论文报告'
+            qualifier = f'按原文{subject}的{display}取舍及适用条件。此项用定性描述，测量值集中在一组同表同口径示例中。'
+            candidates = [(goal, 'question'), *((entry, 'requirement') for entry in goal.get('completionCriteria', []))]
+            for entry, field in candidates:
+                text = entry[field]
+                if (any(text in layer for layer in layers) or not _INVENTORY.search(text)
+                        or sum(bool(pattern.search(text)) for pattern in (_STORAGE, _QUALITY, _SPEED)) < 2):
+                    continue
+                entry[field] = qualifier
+                changes.append({'obligationId': goal['obligationId'], 'field': field,
+                                'change': 'preserved_single_benchmark_example'})
+    return (result, changes) if changes else (plan, changes)
 
 
 def preserve_requested_numeric_example(plan, question):

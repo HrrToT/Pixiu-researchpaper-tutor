@@ -126,6 +126,37 @@ def test_followup_reuses_parent_context_without_adding_its_numeric_example():
     assert joint_numeric_example(roles, with_example)
 
 
+def test_one_example_keeps_qualitative_comparison_and_measurement_conditions():
+    from services.deep_research.comparison_joint_reports import normalize_single_example_requirements
+    from services.deep_research.request_context import ResearchQuestion
+
+    axis = '存储与画质、渲染速度'
+    constraint = '数字只选一组来源明确的基线对照作例子。'
+    question = f'比较{axis}。{constraint}'
+    original = [{'obligations': [{
+        'obligationId': 'measurements',
+        'question': '两篇各自报告的存储占用、画质与渲染速度是什么？',
+        'comparisonRole': {'kind': 'joint', 'requestExcerpt': axis},
+        'completionCriteria': [
+            {'criterionId': 'metrics', 'requirement': '分别列出两篇存储、画质和渲染速度的指标。'},
+            {'criterionId': 'conditions', 'requirement': '解释两篇的口径能否直接比较。'},
+        ],
+    }]}]
+    normalized, changes = normalize_single_example_requirements(original, question)
+    assert len(changes) == 2
+    goal = normalized[0]['obligations'][0]
+    assert all(word in goal['question'] for word in ('存储', '画质', '渲染速度', '适用条件', '一组同表同口径'))
+    assert goal['completionCriteria'][0]['criterionId'] == 'metrics'
+    assert goal['completionCriteria'][1] == original[0]['obligations'][0]['completionCriteria'][1]
+
+    followup = ResearchQuestion(question, [axis, constraint], [axis])
+    assert normalize_single_example_requirements(original, followup) == (original, [])
+    explicit = deepcopy(original)
+    explicit[0]['obligations'][0]['comparisonRole']['requestExcerpt'] = '分别列出两篇存储、画质和渲染速度的指标。'
+    new_question = explicit[0]['obligations'][0]['comparisonRole']['requestExcerpt'] + constraint
+    assert normalize_single_example_requirements(explicit, new_question) == (explicit, [])
+
+
 @pytest.mark.parametrize('server_profile',[0,1])
 def test_comparison_role_contract_is_server_selected_and_frozen(tmp_path,server_profile):
     from services.deep_research.facade import ResearchFacade

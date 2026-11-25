@@ -351,6 +351,8 @@ class DeepResearchRepository:
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion',
+                                     'singleBenchmarkCriteriaVersion',
+                                     'comparisonRepairBatchEnvelopeVersion',
                                      'boundCompositeTableCellsVersion',
                                      'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion'):
                     if (updated.get(batch_policy) != current.get(batch_policy)

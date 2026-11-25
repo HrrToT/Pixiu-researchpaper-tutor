@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from copy import deepcopy
 
 from services.deep_research.answer_constraints import answer_character_count, requested_character_limit, normalize_conditions, resolve_evidence_aliases
@@ -15,6 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
+                    comparison_priority_evidence=(),
                     metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False, benchmark_example=None,
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
@@ -711,6 +713,23 @@ If a supported revision is not possible, omit that target rather than bypass sco
     if premise_audit is not None:
         priorities={eid:i for i,eid in enumerate(premise_audit['preferredEvidenceIds'])}
         optional_rows.sort(key=lambda row:priorities.get(aliases[row['evidenceId']],len(priorities)))
+    if comparison_priority_evidence:
+        rank = {ref: index for index, ref in enumerate(comparison_priority_evidence)}
+        first_id, first_claim = next(iter(originals.items()))
+        technical_terms = re.compile(r'(?<![A-Za-z0-9])[A-Z][A-Z0-9]{1,11}(?![A-Za-z0-9])')
+        cited = set(first_claim.get('evidenceRefs', []))
+        missing = set(technical_terms.findall(first_claim.get('text', '')))
+        for row in rows:
+            if aliases[row['evidenceId']] in cited:
+                missing.difference_update(technical_terms.findall(row.get('quote', '')))
+
+        def comparison_order(row):
+            ref = aliases[row['evidenceId']]
+            addresses_gap = ref in allowed.get(first_id, ()) and bool(missing.intersection(
+                technical_terms.findall(row.get('quote', ''))))
+            return not addresses_gap, rank.get(ref, len(rank))
+
+        optional_rows.sort(key=comparison_order)
     mandatory_size = len(render(mandatory_rows).encode('utf-8'))
     if mandatory_size > max_prompt_bytes:
         kind = 'repairPromptBytes' if len(render([]).encode('utf-8')) > max_prompt_bytes else 'repairEvidenceBytes'
@@ -932,7 +951,8 @@ def factual_redraft_eligible(report):
         and c.get('designContractVersion') is None for c in claims)
 
 
-def repair_rejected(report, verification, evidence, question, invoke, parse, *,
+def repair_rejected(report, verification, evidence, question, invoke, parse, *, comparison_prioritize_cells=False,
+                    comparison_priority_evidence=(),
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
                     released_finalization=False, comparison_authoring=False, benchmark_example=None,
@@ -1069,6 +1089,9 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
         identity=digest({'inputDigest':identity,'releasedFinalizationInputVersion':1})
     if comparison_authoring:
         identity=digest({'inputDigest':identity,'comparisonAuthoringContractVersion':int(comparison_authoring)})
+    if comparison_prioritize_cells:
+        identity = digest({'inputDigest': identity, 'comparisonPrioritizeCells': 1,
+                           'comparisonPriorityEvidence': comparison_priority_evidence})
     if benchmark_example is not None:
         identity = digest({'inputDigest': identity, 'benchmarkExample': benchmark_example})
 
@@ -1084,6 +1107,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
                   'rejected': [row for row in verification.get('rejected', []) if row['claimId'] in ids]}
         return _prepare_repair(report, subset, evidence, question,
             **({'comparison_authoring':comparison_authoring} if comparison_authoring else {}),
+            **({'comparison_priority_evidence': comparison_priority_evidence} if comparison_priority_evidence else {}),
             **({'benchmark_example':benchmark_example} if benchmark_example is not None else {}),
             **({'compact_repair_policy':compact_repair_policy} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
@@ -1128,7 +1152,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *,
     if scheduling_version in (1,2) and batch_state is None:state['deferredReviewIds']=sorted(deferred)
     if comparison_authoring and batch_state is None:
         from services.deep_research.comparison_repair import source_batches
-        groups = source_batches(originals, report.get('comparisonCells'))
+        groups = source_batches(originals, report.get('comparisonCells'),
+                                **({'prioritize_cells': True} if comparison_prioritize_cells else {}))
         if groups:
             state['batches'] = groups
     if (type(state.get('version')) is not int or state['version'] != 1 or state.get('inputDigest') != identity

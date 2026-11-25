@@ -479,6 +479,11 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 if preserve_numeric_example(record):
                     from services.deep_research.comparison_joint_reports import preserve_requested_numeric_example
                     validated = validate_plan(preserve_requested_numeric_example(validated, question))
+                    if type(record.get('singleBenchmarkCriteriaVersion')) is int and record['singleBenchmarkCriteriaVersion'] == 1:
+                        from services.deep_research.comparison_joint_reports import normalize_single_example_requirements
+                        validated, single_example_changes = normalize_single_example_requirements(validated, question)
+                        validated = validate_plan(validated)
+                        requirement_changes.extend(single_example_changes)
 
             plan_ids = [item["itemId"] for item in validated]
             from services.deep_research.continuation import rebind_inherited_state
@@ -2440,10 +2445,21 @@ def make_verify_node(
                             return {**budget, 'maxTokens': max(0, budget['maxTokens'] - audit_reservation)}
                         return budget
 
+                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, repair_profile
+                    comparison_repair = (repair_profile(record) if comparison_authoring_enabled(record)
+                                         and compact_repair and unified_repair_eligible else False)
+                    comparison_batch_envelope = (bool(comparison_repair)
+                                                 and type(record.get('comparisonRepairBatchEnvelopeVersion')) is int
+                                                 and record['comparisonRepairBatchEnvelopeVersion'] == 1)
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
                                          for c in repair_report.get('claims',[]))
+                        if comparison_batch_envelope:
+                            # This is the envelope for any source-local batch.
+                            # repair_rejected fits and reserves the actual output
+                            # separately before dispatching each durable request.
+                            target_count = 1
                         repair_input_options['output_tokens']=repair_batch_output_limit(target_count)
                     if edit_repair:
                         repair_input_options['output_tokens']=EDIT_OUTPUT_TOKENS
@@ -2456,15 +2472,25 @@ def make_verify_node(
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
-                    from services.deep_research.comparison_measurement_display import enabled as comparison_authoring_enabled, repair_profile
                     comparison_draft = saved.get('comparisonCellDraft') or {}
+                    comparison_priority_evidence = []
+                    if comparison_batch_envelope:
+                        packet = saved.get('comparisonStageInput') or {}
+                        aliases = packet.get('aliases', {})
+                        comparison_priority_evidence = list(dict.fromkeys(
+                            aliases[ref] for step in packet.get('stages', [])
+                            if step.get('stageId') != 'joint'
+                            for ref in step.get('requiredEvidenceIds', []) if ref in aliases
+                        ))
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         **({'benchmark_example': {'claimId': comparison_draft['benchmarkExampleClaimId']}}
                            if repair_flow_enabled(record) and 'benchmarkExampleClaimId' in comparison_draft
                            and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible else {}),
-                        **({'comparison_authoring':repair_profile(record)} if comparison_authoring_enabled(record)
-                           and compact_repair and unified_repair_eligible else {}),
+                        **({'comparison_authoring':comparison_repair} if comparison_repair else {}),
+                        **({'comparison_prioritize_cells':True} if comparison_batch_envelope else {}),
+                        **({'comparison_priority_evidence':comparison_priority_evidence}
+                           if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
                            and record['verifiedTextRepairContractVersion'] in (1,2)
                            and not comparison_authoring_enabled(record) else {}),
