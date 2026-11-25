@@ -1,0 +1,16 @@
+{
+  "case": "D5",
+  "proposedAttempt": 15,
+  "parentTaskId": "dr-development-baseline-compression-20261124-v49",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "parentRunRevision": 159,
+  "parentReportVersionId": "report_dr_run_1fe6e49739e55251bbff13de83fa86cb_v1",
+  "parentReportOrigins": ["latest", "machine"],
+  "allKnownD5AttemptsHaveConfirmedTerminalOutcomes": true,
+  "sameFrozenParentMaterials": true,
+  "sourcePolicy": "task_only",
+  "parentAndWorkspaceReadSnapshotUnchanged": true,
+  "localReads": 13,
+  "modelCalls": 0,
+  "submitted": false
+}
