@@ -1,0 +1,91 @@
+{
+  "scope": "production verified-column attachment on frozen development TEI/PDF rows; the retrieval index was untouched",
+  "findings": [
+    {
+      "version": "2106.09685v1",
+      "physicalPage": 6,
+      "physicalTableNumber": "1",
+      "rawDataRowCount": 6,
+      "matchedRows": 6,
+      "productionAttachmentVerified": true,
+      "groups": [
+        [
+          "# of Trainable",
+          [
+            "Parameters"
+          ]
+        ],
+        [
+          "WikiSQL",
+          [
+            "Accuracy (%)"
+          ]
+        ],
+        [
+          "MNLI-m",
+          [
+            "Accuracy (%)"
+          ]
+        ],
+        [
+          "SAMSum",
+          [
+            "R1/R2/RL"
+          ]
+        ]
+      ],
+      "unchangedRowSpelling": true,
+      "perQuotePacketIsolation": true,
+      "swappedNumericCellsRejected": true,
+      "conflictingHeaderRejected": true,
+      "duplicateRowIdentityRejected": true,
+      "pdfSha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "teiSha256": "e47b823bc75622d5d7b806e596a35d7d52b1028c62d017e9a63a5e3e00b01700"
+    },
+    {
+      "version": "2106.09685v2",
+      "physicalPage": 8,
+      "physicalTableNumber": "4",
+      "rawDataRowCount": 8,
+      "matchedRows": 6,
+      "productionAttachmentVerified": true,
+      "groups": [
+        [
+          "# Trainable",
+          [
+            "Parameters"
+          ]
+        ],
+        [
+          "WikiSQL",
+          [
+            "Acc. (%)"
+          ]
+        ],
+        [
+          "MNLI-m",
+          [
+            "Acc. (%)"
+          ]
+        ],
+        [
+          "SAMSum",
+          [
+            "R1/R2/RL"
+          ]
+        ]
+      ],
+      "unchangedRowSpelling": true,
+      "perQuotePacketIsolation": true,
+      "swappedNumericCellsRejected": true,
+      "conflictingHeaderRejected": true,
+      "duplicateRowIdentityRejected": true,
+      "pdfSha256": "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a",
+      "teiSha256": "87d50c5103bbe02d02621dbcbf329b564712a7ea7e981da5aab7ec4b8e20479c"
+    }
+  ],
+  "sampledPdfPages": 2,
+  "indexWrites": 0,
+  "modelCalls": 0,
+  "independentAcceptance": false
+}

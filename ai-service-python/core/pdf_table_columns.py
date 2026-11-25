@@ -312,18 +312,21 @@ def verify_table_columns(section, runs, *, mixed=False):
     return {'groups': groups, 'rows': checked} if checked else None
 
 
-def _physical_table_caption(section,runs):
+def _physical_table_caption(section,runs, *, two_tier=False):
     """Read a unique adjacent physical caption, never borrow a TEI number."""
     bounds=section.get('tableBounds')
     if not bounds:return None
     x,y,w,h=bounds;candidates=[]
+    padding = 50 if two_tier else 30
+    max_above = 25 if two_tier else 160
+    separator = r'[.:]' if two_tier else r'\.'
     for run in runs:
-        match=re.match(r'^\s*Table\s*(\d+)\.',run['text'],re.I)
-        if match and x-30<=run['x']<=x+w+30 and (0<=y-run['y']<=160 or 0<=run['y']-(y+h)<=25):
+        match=re.match(r'^\s*Table\s*(\d+)'+separator,run['text'],re.I)
+        if match and x-padding<=run['x']<=x+w+padding and (0<=y-run['y']<=max_above or 0<=run['y']-(y+h)<=25):
             candidates.append((match.group(1),run['y']))
     if len(candidates)!=1:return None
     number,start=candidates[0];stop=y-2 if start<y else start+100
-    selected=[r for r in runs if start<=r['y']<=stop and x-30<=r['x']<=x+w+30]
+    selected=[r for r in runs if start<=r['y']<=stop and x-padding<=r['x']<=x+w+padding]
     lines=[]
     for run in sorted(selected,key=lambda r:(r['y'],r['x'])):
         if not lines or run['y']-lines[-1][0]['y']>4:lines.append([])
@@ -341,6 +344,7 @@ def _physical_table_caption(section,runs):
 
 def attach_verified_table_columns(sections, pdf_path):
     from PyPDF2 import PdfReader
+    from core.pdf_benchmark_columns import verify_two_tier_columns
     try:
         reader = PdfReader(pdf_path)
     except Exception:
@@ -359,6 +363,11 @@ def attach_verified_table_columns(sections, pdf_path):
             verified = legacy or verify_table_columns(section,pages[index],mixed=True)
             caption=_physical_table_caption(section,pages[index]) if verified else None
             if verified and legacy is None and caption is None:verified=None
+            if not verified:
+                two_tier=verify_two_tier_columns(section,pages[index])
+                caption=_physical_table_caption(section,pages[index],two_tier=True) if two_tier else None
+                if caption:
+                    verified=two_tier
         except (KeyError, ValueError, TypeError, ImportError, AttributeError):
             verified = None
         if verified:
