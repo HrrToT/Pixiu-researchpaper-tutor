@@ -127,6 +127,23 @@ def test_failed_fact_paths_address_decoded_proposal_fields():
     assert _pointer(proposal, paths['F8']['evidenceRefs']) == ['E3']
 
 
+def test_fact_only_repair_preserves_other_fields_and_unresolved_items():
+    r,_,_ = diagnosed()
+    base = r['state']['sharedExperimentGeneration']
+    allowed = ['/sourceFacts/0/text', '/sourceFacts/0/evidenceRefs']
+    proposal = base['boundProposal']['proposal']
+    change = {'baseDigest': base['bindingDigest'], 'edits': [
+        {'path': allowed[0], 'value': 'A corrected paper fact.'},
+    ], 'unresolved': proposal['unresolved']}
+    revised = apply(base, reply(change), allowed_paths=allowed)['proposal']
+    assert revised['sourceFacts'][0]['text'] == 'A corrected paper fact.'
+    assert all(revised[key] == value for key, value in proposal.items() if key != 'sourceFacts')
+    with pytest.raises(ValueError, match='unrelated field'):
+        apply(base, edit_response(r), allowed_paths=allowed)
+    with pytest.raises(ValueError, match='unresolved prerequisite'):
+        apply(base, reply({**change, 'unresolved': ['New unrelated prerequisite']}), allowed_paths=allowed)
+
+
 @pytest.mark.parametrize('fixed',[True,False])
 def test_graph_verifier_repairs_at_most_once_and_rechecks_both_stages(fixed):
     r,data,aliases=ready();r['state']['sharedExperimentInput']={'data':data,'aliases':aliases,'requiredDomains':[]}

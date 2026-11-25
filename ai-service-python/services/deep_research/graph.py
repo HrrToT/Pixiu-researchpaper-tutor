@@ -1666,8 +1666,9 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.named_table_scope import GUIDANCE as table_scope_guidance
             prompt += '\n' + table_scope_guidance
             if record.get('namedTableScopeVersion') == 2:
-                from services.deep_research.revision_table_display import GUIDANCE as revision_table_guidance
-                prompt += '\n' + revision_table_guidance
+                from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE
+                prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') == 2
+                                 else GUIDANCE)
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -1975,7 +1976,7 @@ space with unsupported global absence or incidental iteration/performance values
                 return {'error_code':'invalid_synthesis_response'}
         blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
         revision_table_ids = []
-        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') == 1
+        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2)
         if (requested_table and record.get('namedTableScopeVersion') == 2
                 and not blocked_draft_ids and not scope_expression_audit):
             from services.deep_research.revision_table_display import materialize as materialize_revision_table

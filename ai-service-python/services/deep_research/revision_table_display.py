@@ -16,6 +16,12 @@ _DECIMAL = re.compile(r'(?<![A-Za-z0-9_.-])\d+\.\d+(?![A-Za-z0-9.%])')
 GUIDANCE = ('For the same row across revisions, put exact bound cells in a reported claim. '
             'The app formats their revision labels from the PDF. In conclusions explain the difference '
             'without repeating numbers already reported in those rows.')
+JUDGEMENT_GUIDANCE = (
+    'Bind measured values once in reported prose; give the dataset and conditions. '
+    'Each binding has exactly evidenceId,rowNumber,groupIndex,metric,value. '
+    'Use prose for supported differences and shared findings. Use boundary only for an unresolved claim '
+    'such as the cause of a difference; do not list table measurements as observedSettings.'
+)
 
 
 def _resolve(claim, own, number, *, multiple_rows):

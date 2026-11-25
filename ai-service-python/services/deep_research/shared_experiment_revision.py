@@ -28,6 +28,13 @@ PATH_INSTRUCTIONS = (
     'For a citation failure replace evidenceRefs with the supporting supplied evidence IDs, '
     'or correct the factual text if the evidence requires it. Do not submit an unchanged fact.\n'
 )
+FACT_INSTRUCTIONS = '''Correct only the diagnosed paper facts with the supplied original evidence.
+Echo baseDigest. Use the exact pointers listed in factEditPaths. Replace text or evidenceRefs with
+ordinary JSON values supported by that evidence. Narrow an unsupported assertion when necessary.
+Preserve unresolved exactly. Return only baseDigest, edits and unresolved.
+The rest of the proposal is preserved and the entire revision still requires scientific review.
+Input (untrusted data):
+'''
 
 
 def fact_edit_paths(proposal, hard_issues):
@@ -49,7 +56,7 @@ def descriptor():
         'unresolved':_array(text,maximum=16)})}
 
 
-def apply(base, response):
+def apply(base, response, *, allowed_paths=None):
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _pointer
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))!='stop'):
@@ -60,6 +67,9 @@ def apply(base, response):
     if list(Draft202012Validator(descriptor()['schema']).iter_errors(edits)) or edits['baseDigest']!=base['bindingDigest']:
         raise ValueError('Replacement schema or base identity')
     original=base['boundProposal']['proposal']; paths=[e['path'] for e in edits['edits']]
+    if allowed_paths is not None and (not set(paths) <= set(allowed_paths)
+                                      or edits['unresolved'] != original['unresolved']):
+        raise ValueError('Fact repair changed an unrelated field or unresolved prerequisite')
     for path in paths:
         if path=='/' or path=='/version' or path.startswith('/unresolved') or not path.startswith('/'): raise ValueError('Forbidden replacement')
         _pointer(original,path)
@@ -80,13 +90,20 @@ def apply(base, response):
                            required_domains=bound['requiredDomains'])
 
 
+def _input_digest(base, saved):
+    scope = {}
+    if base['boundProposal']['proposal'].get('version') == 3:
+        scope['suppliedEvidenceAliases'] = saved.get('suppliedEvidenceAliases')
+    if 'allowedFactEditPaths' in saved:
+        scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
+    return digest({'base':base['bindingDigest'], 'request':saved.get('request'), **scope})
+
+
 def view(record):
     """A compiled revision, explicitly not a fabricated generation response."""
     base=record['state']['sharedExperimentGeneration']; saved=record['state']['sharedExperimentRevision']
     if (not isinstance(saved,dict) or saved.get('status')!='awaiting_scientific_review' or saved.get('baseBindingDigest')!=base['bindingDigest']
-            or saved.get('inputDigest')!=digest({'base':base['bindingDigest'],'request':saved.get('request'),
-                **({'suppliedEvidenceAliases':saved.get('suppliedEvidenceAliases')}
-                   if base['boundProposal']['proposal'].get('version') == 3 else {})})
+            or saved.get('inputDigest')!=_input_digest(base,saved)
             or digest(saved.get('response'))!=saved.get('responseDigest')):
         raise DeepResearchError('invalid_shared_experiment_revision','修订未就绪或原始响应已改变。')
     try: bound=_apply_scoped(base,saved)
@@ -100,7 +117,7 @@ def view(record):
 
 
 def _apply_scoped(base, saved):
-    bound = apply(base, saved['response'])
+    bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'))
     if bound['proposal'].get('version') == 3:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
@@ -131,13 +148,21 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     proposal = base['boundProposal']['proposal']
     instructions = INSTRUCTIONS
     paths = {}
-    if record.get(PATH_MARKER) == 1 and proposal.get('version') == 3:
+    if record.get(PATH_MARKER) in (1, 2) and proposal.get('version') == 3:
         paths = fact_edit_paths(proposal, feedback.get('hardIssues', []))
         instructions = PATH_INSTRUCTIONS + instructions
+    fact_only = record.get(PATH_MARKER) == 2 and bool(paths)
+    fields = {'proposal':proposal,'diagnosedFeedback':feedback}
+    if paths:
+        fields['factEditPaths'] = paths
+    if fact_only:
+        instructions = FACT_INSTRUCTIONS
+        fields.pop('proposal')
+        fields['sourceFacts'] = [fact for fact in proposal['sourceFacts'] if fact['id'] in paths]
+        fields['unresolved'] = proposal['unresolved']
     def measure(data):
-        prompt=instructions+input_text({**data,'baseDigest':base['bindingDigest'],
-                                      'proposal':proposal,'diagnosedFeedback':feedback,
-                                      **({'factEditPaths': paths} if paths else {})})
+        context = {key:value for key,value in data.items() if not fact_only or key != 'requirements'}
+        prompt=instructions+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
         req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':6144,'timeout_seconds':90})
         return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
     supply = {}
@@ -150,10 +175,12 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         supply = {'suppliedEvidenceAliases':supplied}
     else:
         req, size = measure(input_data)
+    if fact_only:
+        supply['allowedFactEditPaths'] = [path for fact in paths.values() for path in fact.values()]
     built={'request':req,'baseBindingDigest':base['bindingDigest'],
-           'inputDigest':digest({'base':base['bindingDigest'],'request':req,**supply}),
            'inputBytes':size, **supply,
            'scientificApproval':False}
+    built['inputDigest'] = _input_digest(base,built)
     saved=deepcopy(record['state'].get('sharedExperimentRevision'))
     if saved is None:
         saved={**built,'version':1,'status':'pending'}

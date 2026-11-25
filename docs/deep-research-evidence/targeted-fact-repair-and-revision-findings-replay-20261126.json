@@ -1,0 +1,29 @@
+{
+  "baseline": "revision-rows-paths-native-real-20261126.json",
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false,
+  "targetedTestsPassed": 169,
+  "D3-v12": {
+    "fixture": "saved generation and review with simulated changes to the two diagnosed facts",
+    "oldRepairInputBytes": 33331,
+    "focusedRepairInputBytes": 19279,
+    "requestLimitBytes": 32000,
+    "changedFactIds": ["SF5", "SF10"],
+    "otherProposalFieldsUnchanged": true,
+    "unresolvedPrerequisitesPreserved": 4,
+    "factPrecheckFailuresAfterRepair": [],
+    "cachedReplayInvokedEditorAgain": false,
+    "fullReviewInputBytesAfterRepair": 35471,
+    "fullReviewChecksPreserved": 29,
+    "fullReviewSent": false
+  },
+  "AWQ-v4": {
+    "fixture": "saved draft with simulated prose for the revision difference and canonical cell binding keys",
+    "tableBindingsPreserved": 12,
+    "obligationsPreserved": true,
+    "visibleCharacters": 344,
+    "characterLimit": 400,
+    "precheckFailures": [],
+    "independentHoldoutAccepted": false
+  }
+}
