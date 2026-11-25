@@ -205,10 +205,37 @@ def test_short_literal_requests_remain_answerable_without_creating_auxiliary_exe
 @pytest.mark.parametrize('value',[None,True,False,0,2,1.0,'1'])
 def test_legacy_controls_and_every_other_node_keep_old_interpretation(value):
     r={**record(),'initialPlanResponseContractVersion':value}
-    assert not enabled(r)
+    assert enabled(r) is (type(value) is int and value == 2)
     assert normalize('plan',response())['structuredOutput']['receivedShape']=='invalid_json'
     for node in ('verify','extract','plan_experiment','synthesize'):
         assert not enabled({**r,'initialPlanResponseContractVersion':1},node)
+
+
+@pytest.mark.parametrize('version,nested,accepted', [
+    (2, [], True), (1, [], False), (2, None, False), (2, [{'question': 'Additional request'}], False),
+])
+def test_only_explicitly_empty_leaf_lists_are_normalized(version, nested, accepted):
+    value = plan()
+    value[0]['obligations'][0]['obligations'] = nested
+    original_response = response(json.dumps({'items': value}))
+    invoke = Mock(return_value=normalize('plan', original_response, initial_plan_response=True))
+    r = {**record(), 'initialPlanResponseContractVersion': version}
+
+    def update(_run_id, fn, **kwargs):
+        nonlocal r
+        r = fn(deepcopy(r))
+        return deepcopy(r)
+
+    result = make_plan_node(invoke, update, validate_plan)({'run_id': 'r'})
+    invoke.assert_called_once()
+    if accepted:
+        assert result['plan_ids'] == ['i']
+        assert r['state']['planLeafNormalization']['paths'] == [[0, 'obligations', 0, 'obligations']]
+        assert 'obligations' not in r['state']['plan'][0]['obligations'][0]
+        assert invoke.return_value['rawContent'] == original_response['content']
+    else:
+        assert result['error_code'] == 'invalid_plan_response'
+        assert 'planLeafNormalization' not in r['state']
 
 
 @pytest.mark.parametrize('field',['initialPlanInstructionsContractVersion','planCompletionContractVersion',

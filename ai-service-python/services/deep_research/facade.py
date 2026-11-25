@@ -292,6 +292,8 @@ class ResearchFacade:
             continuation_context = {'parentRunId': parent_id, 'parentInstructions': parent_instructions,
                                     'artifactContext': deepcopy(context)}
         
+        shared_experiment_profile = self._shared_experiment_plan_version if re.search(
+            r'(?<!\d)2\s*[xX×*]\s*2(?!\d)', str(request.get('question', ''))) else 0
         payload = {
             "runId": run_id,
             "taskId": workspace_task_id,  # Product task ID
@@ -304,7 +306,7 @@ class ResearchFacade:
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
             "promptVersion": "dr-v2.20261116.488",
-            "initialPlanResponseContractVersion": 1,
+            "initialPlanResponseContractVersion": 2 if shared_experiment_profile == 4 else 1,
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanInstructionsContractVersion": 1,
             "initialPlanModelContractVersion": 1,
@@ -326,8 +328,7 @@ class ResearchFacade:
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
             and self._comparison_review_batch_version == 1 else 0,
-            "experimentSharedPlanContractVersion": self._shared_experiment_plan_version if re.search(
-                r'(?<!\d)2\s*[xX×*]\s*2(?!\d)',str(request.get('question',''))) else 0,
+            "experimentSharedPlanContractVersion": shared_experiment_profile,
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

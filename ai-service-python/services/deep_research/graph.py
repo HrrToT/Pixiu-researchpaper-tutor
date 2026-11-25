@@ -366,8 +366,13 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
 
             from services.deep_research.initial_plan_correction import normalize_request_excerpts
             parsed,excerpt_changes=normalize_request_excerpts(record,parsed,question)
-            from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled,validate_shape as validate_initial_plan_shape
+            from services.deep_research.initial_plan_response import (
+                enabled as initial_plan_response_enabled,
+                normalize_empty_leaf_obligations,
+                validate_shape as validate_initial_plan_shape,
+            )
             from services.deep_research.comparison_intent import enabled as comparison_intent_enabled
+            parsed, leaf_paths = normalize_empty_leaf_obligations(record, parsed)
             if initial_plan_response_enabled(record):
                 try:validate_initial_plan_shape(parsed,question,**({'comparison_roles':True} if comparison_intent_enabled(record) else {}))
                 except ValueError as exc:return invalid_plan(exc)
@@ -480,6 +485,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     **(rebind_inherited_state(r.get('state') or {}, validated)
                        if inherited else {**(r.get("state") or {}), "plan": validated}),
                     'planIdNormalization': identity_changes,
+                    **({'planLeafNormalization': {'version': 2, 'paths': leaf_paths}} if leaf_paths else {}),
                     **({'planRequestExcerptNormalization':{'version':1,'changes':excerpt_changes}} if excerpt_changes else {}),
                     **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
                     **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),

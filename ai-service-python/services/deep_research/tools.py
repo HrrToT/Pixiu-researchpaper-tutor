@@ -395,7 +395,8 @@ class TrackedLLMInvoker:
             request_identity['messages'] = wire_messages
         from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled
         initial_plan_response=structured and initial_plan_response_enabled(transport_record,node)
-        if initial_plan_response:request_identity['initialPlanResponseContractVersion']=1
+        if initial_plan_response:
+            request_identity['initialPlanResponseContractVersion'] = transport_record['initialPlanResponseContractVersion']
         args_digest = digest(request_identity)
         from services.deep_research.factual_review import cell_review_enabled
         guarded_review = bounded_review or direct_review or (self._run_record and node == 'verify'

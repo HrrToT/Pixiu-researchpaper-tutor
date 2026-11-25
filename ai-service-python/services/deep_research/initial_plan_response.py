@@ -7,7 +7,7 @@ def enabled(record,node='plan'):
     from services.deep_research.initial_plan_instructions import enabled as instructions_enabled
     return (node=='plan' and isinstance(record,dict)
         and type(record.get('initialPlanResponseContractVersion')) is int
-        and record['initialPlanResponseContractVersion']==1
+        and record['initialPlanResponseContractVersion'] in (1, 2)
         and instructions_enabled(record))
 
 
@@ -94,6 +94,26 @@ def validate_shape(plan,question,*,comparison_roles=False):
                 for key in ('criterionId','requirement'):text(c[key])
                 if c['responseType'] not in ('identification','explanation','procedure','limitation'):
                     raise ValueError('Invalid initial plan response type')
+
+
+def normalize_empty_leaf_obligations(record, plan):
+    """Remove only explicitly empty child lists from obligation leaves."""
+    if not enabled(record) or record['initialPlanResponseContractVersion'] != 2 or not isinstance(plan, list):
+        return plan, []
+    paths = [
+        [i, 'obligations', j, 'obligations']
+        for i, item in enumerate(plan)
+        if isinstance(item, dict) and isinstance(item.get('obligations'), list)
+        for j, obligation in enumerate(item['obligations'])
+        if isinstance(obligation, dict) and obligation.get('obligations') == []
+    ]
+    if not paths:
+        return plan, []
+    from copy import deepcopy
+    normalized = deepcopy(plan)
+    for i, items_key, j, leaf_key in paths:
+        del normalized[i][items_key][j][leaf_key]
+    return normalized, paths
 
 
 def verify_saved(response):

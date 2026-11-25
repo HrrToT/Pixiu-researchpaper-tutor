@@ -34,6 +34,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 新增共享方案生成版本 4。原始资产用步骤的 `inputIds` 引用，运行状态在创建步骤内声明并继承作用范围，指标通过 `measureOnSteps` 绑定只读测量步骤。编译后的方案保留资产引用，审核与发布仍使用独立科学检查及原有因果规则。163 项定向检查通过；模拟 HTTP 验证了审核、持久化、发布及报告中材料的展示。保存的 D3、H5 请求各保留 20 条证据，新版分别为 30,432 和 31,114 字节，低于既有 32,000 字节上限；原请求身份可精确重建。旧 D3 草稿和只转换字段但保留错误测量的草稿均被拒绝。本次没有新增真实模型调用。 [回放记录](deep-research-evidence/d3-owned-states-profile-replay-20261125.json)
 
+版本 4 在 501 个模块的 9,871 项全量离线回归通过后装载。D3 第三次冻结开发执行单次提交，结算 3 次模型调用、6,965 Token，用时 16 秒，停在 `invalid_plan_response`，尚未调用版本 4 的共享方案生成。两个规划回复的四个叶子义务均多出一个空 `obligations` 数组。新增的初始规划兼容版本只用于共享方案版本 4 的新任务，仅移除这个空字段，保留原始回复并记录字段位置。分别回放两份真实响应，各自只使用该份响应即通过图上的原规划和材料校验，保留两项规划及六条规范化后的义务。非空子计划及其他不合规字段仍会被拒绝。131 项定向检查通过。原服务及账本已核对恢复，无方案发布或科学验收。 [全量回归](deep-research-evidence/shared-experiment-owned-states-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-owned-states-candidate-load-20261125.json) · [实测](deep-research-evidence/d3-shared-owned-states-real-20261125.json) · [原始规划重放](deep-research-evidence/d3-planner-leaf-normalization-replay-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
