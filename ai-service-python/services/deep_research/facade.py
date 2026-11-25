@@ -419,7 +419,7 @@ class ResearchFacade:
             "namedBenchmarkNavigationVersion": 1,
             "namedTableScopeVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
-            "comparisonRepairBatchEnvelopeVersion": 2,
+            "comparisonRepairBatchEnvelopeVersion": 3,
             "boundCompositeTableCellsVersion": 2,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,

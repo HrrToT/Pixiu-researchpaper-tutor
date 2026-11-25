@@ -952,7 +952,7 @@ def factual_redraft_eligible(report):
 
 
 def repair_rejected(report, verification, evidence, question, invoke, parse, *, comparison_prioritize_cells=False,
-                    comparison_split_to_fit=False,
+                    comparison_split_to_fit=False, comparison_preflight_to_fit=False,
                     comparison_priority_evidence=(),
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
@@ -1097,6 +1097,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
         identity = digest({'inputDigest': identity, 'benchmarkExample': benchmark_example})
     if comparison_split_to_fit:
         identity = digest({'inputDigest': identity, 'comparisonSplitToFit': True})
+    if comparison_preflight_to_fit:
+        identity = digest({'inputDigest': identity, 'comparisonPreflightToFit': True})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1156,9 +1158,13 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if comparison_authoring and batch_state is None:
         from services.deep_research.comparison_repair import source_batches
         groups = source_batches(originals, report.get('comparisonCells'),
-                                **({'prioritize_cells': True} if comparison_prioritize_cells else {}))
+                                **({'prioritize_cells': True} if comparison_prioritize_cells else {}),
+                                **({'allow_deferred': True} if comparison_preflight_to_fit else {}))
         if groups:
             state['batches'] = groups
+    if batch_state is None and comparison_preflight_to_fit:
+        from services.deep_research.comparison_repair import admit_source_batches
+        state['batches'], state['preflightDeferredTargets'] = admit_source_batches(state['batches'], prepare)
     if (type(state.get('version')) is not int or state['version'] != 1 or state.get('inputDigest') != identity
             or type(state.get('maxPromptBytes')) is not int or not 0 <= state['maxPromptBytes'] <= (32000 if repair_evidence_packet_version in (4,5) else 24000)
             or not isinstance(state.get('batches'), list) or not 1 <= len(state['batches']) <= 3
@@ -1166,7 +1172,13 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                    or any(not isinstance(cid, str) for cid in group) for group in state['batches'])
             or not isinstance(state.get('results'), dict)):
         raise DeepResearchError('invalid_repair_plan', '保存的修订计划与原始输入不一致，不能重新发送。')
-    ids = [cid for group in state['batches'] for cid in group]
+    preflight_deferred = state.get('preflightDeferredTargets', {})
+    if (not isinstance(preflight_deferred, dict) or (preflight_deferred and not comparison_preflight_to_fit)
+            or any(not isinstance(details, dict) or details.get('kind') not in {
+                'repairPromptBytes', 'repairEvidenceBytes', 'repairBatchCount'}
+                for details in preflight_deferred.values())):
+        raise DeepResearchError('invalid_repair_plan', '保存的暂缓修订目标无效。')
+    ids = [cid for group in state['batches'] for cid in group] + list(preflight_deferred)
     if (len(ids) != len(set(ids)) or set(ids) != {c['claimId'] for c in originals}
             or set(state['results']) != {str(i) for i in range(len(state['results']))}
             or len(state['results']) > len(state['batches'])):
@@ -1192,7 +1204,10 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                 or set(p.get('originals', {})) != set(state['batches'][pending['index']])
                 or type(request.get('outputTokens')) is not int or not 1 <= request['outputTokens'] <= 8192):
             raise DeepResearchError('invalid_repair_plan', '保存的待发送修订请求范围无效。')
-    if batch_state is None:
+    if batch_state is None and comparison_preflight_to_fit:
+        if checkpoint:
+            checkpoint(deepcopy(state))
+    elif batch_state is None:
         try:
             for group in state['batches'] if comparison_authoring else state['batches'][:1]:
                 prepare(group)

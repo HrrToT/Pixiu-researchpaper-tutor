@@ -757,7 +757,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | v52 单次发布部分报告。六条主张通过，含原始 3DGS 球谐颜色、同表数字示例和显存选择建议。两条越界帧率结论被拒；跨论文速度口径与 LightGaussian 机制仍缺。 [v52 实测](deep-research-evidence/baseline-comparison-v52-real-20261126.json) | 核对首批修复的证据容量与跨论文测量边界。 |
+| D2 两论文比较 | v52 单次发布部分报告。六条主张通过，含原始 3DGS 球谐颜色、同表数字示例和显存选择建议。两条越界帧率结论被拒。回放确认已能在原预算内准备首条修订请求。 [v52 实测](deep-research-evidence/baseline-comparison-v52-real-20261126.json) · [修订预检回放](deep-research-evidence/d2-v52-repair-admission-replay-20261126.json) | 继续核对 LightGaussian 机制与跨论文速度口径，确认新版最终报告。 |
 | D3 四组实验 | 最近完成生成的开发运行把待准备输入声明为已有状态，并重复定义了配对克隆状态。其后修复已做离线回放，下一次真实调用在解析任务要点时收到 HTTP 402。历史未确认运行是不同 ID。 [状态归属回放](deep-research-evidence/d3-prepared-input-catalog-replay-20261125.json) · [最新单次尝试](deep-research-evidence/d3-shared-asset-catalog-real-20261125.json) · [历史记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。保留历史未确认请求的原身份与冻结状态。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | D5-v15 在 v49 的真实报告上单次追问，沿用同两篇论文及 43 条证据，父运行和两个父成果逐项不变。子结果保存机器版及最新版。10 次模型调用、45,363 Token、120 秒，外部查找和全文下载均为零。新增解释两次被拒，因为把尚未核实的场景和分辨率差异写成事实。发布回放移除了内部提示词，保留无法得出结论及未完成的用户问题，正文由 1,056 字符减至 141。旧实测报告未改写，74 项报告与一致性检查通过。 [D5-v15 实测与发布回放](deep-research-evidence/d5-v49-real-followup-20261125.json) · [历史 D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) | 仍需验证新增的可比性解释通过核验并打开真实子报告。 |
@@ -790,6 +790,8 @@ KIVI 冻结时分别取得 arXiv v1/v2 完整 PDF，核对文件哈希、版本�
 v51 的整答审核响应正常结束，但将整题标为已覆盖，未绑定任何已接受的正文。新版审核明确要求每条「已覆盖」判断都绑定成稿字段，包括整题检查。将该真实响应重放后，整题检查定位为 `unbound_covered_check`，保留其余六条审核响应，最终状态依旧为 `invalid_response`。全答发布继续受限。定向测试同时验证显式缺失可保留为缺口，不需反复请求审核。此次无新增模型调用。 [整答审核重放](deep-research-evidence/d2-v51-coverage-bindings-replay-20261126.json)
 
 候选 `07d5eb645` 的 9,990 项全量离线测试通过，保留上一版 9,984 个用例。D2-v52 用 13 次模型调用、66,987 Token、149 秒生成部分报告。新版拦截两条示例外的帧率主张，原始 3DGS 的球谐颜色和同表对照已保存。整答审核完成，发布检查仍标出跨论文速度结论缺失。LightGaussian 机制草稿因数值不匹配被拒。首批修复需要 8,816 字节，超过 7,713 字节上限，无修复调用。 [全量离线回归](deep-research-evidence/comparison-speed-and-audit-binding-20261126.json) · [D2-v52 实测](deep-research-evidence/baseline-comparison-v52-real-20261126.json)
+
+使用同一份 D2-v52 回执和原 7,713 字节上限，重现旧调度器的预检失败。四个目标逐一测得 7,661、7,706、7,472 和超过 10,000 字节。新版按论文分组，组内请求超限时逐项预检，保存三项可处理的请求顺序及余下目标。回放截住首条 7,661 字节的请求，未联系模型服务。后续请求仍按当时的余量检查，修订通过证据核验后才可计入原任务覆盖。该回放证明首批可发出，D2 的真实报告仍待验收。 [修订预检回放](deep-research-evidence/d2-v52-repair-admission-replay-20261126.json)
 
 同一候选服务随后提交一次独立 KIVI 版本差异题，两例均只使用任务材料。KIVI 用 8 次模型调用、29,787 Token、62 秒，限字草稿阶段返回 `invalid_synthesis_response`，无报告。核对两版PDF的表 3 后，确认初稿混用了 v1 的表 1、误称 v1 表 3 缺少 GSM8K 和若干 2 位行。两例均未重试。常规恢复检查因 KIVI 专用任务已有旧记录而停止，经核对仅该旧任务和新建 D2 任务发生本轮预期变化，原服务已恢复，恢复前后的任务、运行与调用快照一致。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [窗口恢复](deep-research-evidence/comparison-kivi-window-restoration-20261126.json)
 

@@ -1,0 +1,127 @@
+{
+  "receiptSha256": "3d90730f40ccf6987cf9dd4cc4692719801224fd60370abe5f6c5baa681c64ff",
+  "original": {
+    "preflight": [
+      {
+        "targets": [
+          "cmp_0_0",
+          "cmp_6_0"
+        ],
+        "kind": "repairEvidenceBytes",
+        "limit": 7713,
+        "used": 9287
+      },
+      {
+        "targets": [
+          "cmp_0_0",
+          "cmp_5_0"
+        ],
+        "kind": "repairEvidenceBytes",
+        "limit": 7713,
+        "used": 8816
+      }
+    ],
+    "dispatch": [],
+    "plan": [],
+    "deferred": {}
+  },
+  "singleTargets": [
+    {
+      "targets": [
+        "cmp_0_0"
+      ],
+      "promptBytes": 7661
+    },
+    {
+      "targets": [
+        "cmp_5_0"
+      ],
+      "promptBytes": 7706
+    },
+    {
+      "targets": [
+        "cmp_6_0"
+      ],
+      "promptBytes": 7472
+    },
+    {
+      "targets": [
+        "cmp_7_0"
+      ],
+      "kind": "repairEvidenceBytes",
+      "limit": 7713,
+      "used": 10094
+    }
+  ],
+  "providerCalls": 0,
+  "updated": {
+    "preflight": [
+      {
+        "targets": [
+          "cmp_0_0",
+          "cmp_6_0"
+        ],
+        "kind": "repairEvidenceBytes",
+        "limit": 7713,
+        "used": 9287
+      },
+      {
+        "targets": [
+          "cmp_0_0"
+        ],
+        "promptBytes": 7661
+      },
+      {
+        "targets": [
+          "cmp_6_0"
+        ],
+        "promptBytes": 7472
+      },
+      {
+        "targets": [
+          "cmp_5_0",
+          "cmp_7_0"
+        ],
+        "kind": "repairEvidenceBytes",
+        "limit": 7713,
+        "used": 11299
+      },
+      {
+        "targets": [
+          "cmp_5_0"
+        ],
+        "promptBytes": 7706
+      },
+      {
+        "targets": [
+          "cmp_0_0"
+        ],
+        "promptBytes": 7661
+      }
+    ],
+    "dispatch": [
+      {
+        "promptBytes": 7661,
+        "outputTokens": 4096
+      }
+    ],
+    "plan": [
+      [
+        "cmp_0_0"
+      ],
+      [
+        "cmp_6_0"
+      ],
+      [
+        "cmp_5_0"
+      ]
+    ],
+    "deferred": {
+      "cmp_7_0": {
+        "kind": "repairBatchCount",
+        "limit": 3,
+        "used": 4
+      }
+    }
+  }
+}

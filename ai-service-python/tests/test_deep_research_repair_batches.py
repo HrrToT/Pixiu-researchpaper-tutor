@@ -78,6 +78,42 @@ def test_all_batches_preflight_before_any_provider_send(monkeypatch):
     assert sends == snapshots == []
 
 
+def test_comparison_preflight_retains_affordable_targets_and_preserves_deferrals_on_resume(monkeypatch):
+    report, verification = inputs()
+    for claim in report['claims']:
+        claim.pop('designRole')
+        claim['kind'] = 'reported'
+        claim['obligationIds'] = ['comparison']
+    report['comparisonCells'] = {'version': 3, 'sources': {'P1': {}, 'P2': {}}, 'layout': [
+        {'source': 'P1', 'claimIds': ['data', 'steps']},
+        {'source': 'P2', 'claimIds': ['budget', 'h', 'a']},
+    ]}
+    fake_preparer(monkeypatch, limit_failure='steps')
+    sends, snapshots = [], []
+
+    def dispatch(prompt):
+        sends.append(json.loads(prompt)['targets'])
+        return {'content': '[]'}
+
+    options = dict(comparison_authoring=True, comparison_preflight_to_fit=True,
+                   consolidated_instructions=True, compact_repair_policy=2,
+                   verbatim_repair=True, authored_body=True, factual_prompt_version=3, target_goals=5,
+                   fact_redraft=True, source_aware_redraft=True, concise_factual=True,
+                   compact_source_repair=True, scope_expression=5,
+                   requirement_context=[{'obligationId': 'comparison'}],
+                   checkpoint=snapshots.append)
+    repair_rejected(report, verification, [], 'Question', dispatch, json.loads, **options)
+    assert sends == [['data'], ['budget'], ['h']]
+    saved = snapshots[-1]
+    assert saved['preflightDeferredTargets']['steps']['kind'] == 'repairEvidenceBytes'
+    assert saved['preflightDeferredTargets']['a']['kind'] == 'repairBatchCount'
+    repair_rejected(report, verification, [], 'Question', dispatch, json.loads, batch_state=saved, **options)
+    assert len(sends) == 3
+    del saved['preflightDeferredTargets']['steps']
+    with pytest.raises(DeepResearchError, match='保存的修订目标无效'):
+        repair_rejected(report, verification, [], 'Question', dispatch, json.loads, batch_state=saved, **options)
+
+
 def test_unknown_pending_batch_propagates_and_completed_batch_is_not_resent(monkeypatch):
     report, verification = inputs()
     fake_preparer(monkeypatch)

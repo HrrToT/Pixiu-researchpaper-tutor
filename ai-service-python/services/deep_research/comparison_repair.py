@@ -2,6 +2,44 @@
 import json
 
 
+def admit_source_batches(groups, prepare):
+    """Keep exact evidence packets for up to three independent requests."""
+    from services.deep_research.contracts import BudgetExhaustedError
+
+    admitted, deferred = [], {}
+    first_error = None
+
+    def admit(group):
+        nonlocal first_error
+        if len(admitted) == 3:
+            return {'kind': 'repairBatchCount', 'limit': 3, 'used': 4}
+        try:
+            prepare(group)
+        except BudgetExhaustedError as exc:
+            if exc.details.get('kind') not in {'repairPromptBytes', 'repairEvidenceBytes'}:
+                raise
+            if first_error is None:
+                first_error = exc
+            return exc.details
+        admitted.append(group)
+        return None
+
+    for group in groups:
+        failure = admit(group)
+        if failure is None:
+            continue
+        if len(group) == 1 or failure['kind'] == 'repairBatchCount':
+            deferred.update({cid: failure for cid in group})
+            continue
+        for cid in group:
+            failure = admit([cid])
+            if failure is not None:
+                deferred[cid] = failure
+    if first_error is not None and not admitted:
+        raise first_error
+    return admitted, deferred
+
+
 def table_catalog(rows, sources_by_evidence):
     """Use the synthesis cell registry with the repair request's own aliases."""
     from services.deep_research.comparison_wire import table_catalog as build_catalog
@@ -138,7 +176,7 @@ one authored branch, no top-level text/conditions/scopeExpression or deletion de
 '''
 
 
-def source_batches(claims, presentation, *, prioritize_cells=False):
+def source_batches(claims, presentation, *, prioritize_cells=False, allow_deferred=False):
     if (not isinstance(presentation, dict) or presentation.get('version') != 3
             or not isinstance(presentation.get('sources'), dict)
             or not isinstance(presentation.get('layout'), list)):
@@ -163,10 +201,8 @@ def source_batches(claims, presentation, *, prioritize_cells=False):
         # Repair the earliest empty/rejected cell before later measurements.
         order = {cid: index for index, slot in enumerate(presentation['layout']) for cid in slot.get('claimIds', [])}
         batches.sort(key=lambda group: min(order.get(cid, len(presentation['layout'])) for cid in group))
-    # Existing checkpoint protocol permits at most three batches. For larger
-    # source sets the existing generic fitter remains authoritative; no target
-    # is dropped or relabelled to force the source grouping to fit.
-    return batches if len(batches) <= 3 else None
+    # Older runs fall back to the generic fitter for larger source sets.
+    return batches if allow_deferred or len(batches) <= 3 else None
 
 
 def outcome_audit(prepared, rows):
