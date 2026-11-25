@@ -30,6 +30,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 共享方案生成版本 3 将干预操作固定在因素水平定义中，由服务器根据步骤的因素和水平解析。步骤生成的状态由唯一的创建步骤确定来源，待准备的输入和无创建步骤的状态会被拒绝。保存的原始回复和编译后的标准方案均保留，后者沿用科学审核与发布检查。D3 与 H5 的保存输入各保留 20 条证据，新请求分别为 29,607 和 31,772 字节，低于 32,000 字节上限。D3 仅替换重复操作定义后，原 25 项约束问题中有 4 项消失，旧稿仍因状态来源问题被拒绝。135 项定向检查通过，含一项使用模拟 HTTP 验证生成、独立审核、持久化及发布的贯通检查。本次回放没有新增真实模型调用，版本 3 的实际方案质量仍待验证。 [保存回执回放](deep-research-evidence/shared-experiment-references-replay-20261125.json)
 
+版本 3 的 501 个模块、9,861 项离线回归全部通过，保留 9,851 个基线用例。随后以同一冻结 D3 开发题和原始 3DGS v1 论文单次复测，保持标准预算及仅任务材料，结算 7 次调用、34,339 Token，93 秒。四个干预步骤均按新协议选择因素水平，8 个状态有创建步骤。仍有 6 个状态无创建步骤，其中两项是训练开关，四项是显存或质量测量结果。诊断回放也检出原始资产被用于状态读取、只读测量步骤写状态等错误。方案未进入科学审核，未发布，原服务和任务账本已核对恢复。下一版需让原始资产、可变训练状态和指标观察在传输契约中分别拥有明确的引用位置，现有因果与发布校验继续约束方案。 [全量回归](deep-research-evidence/shared-experiment-references-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-references-candidate-load-20261125.json) · [单次实测](deep-research-evidence/d3-shared-references-real-20261125.json) · [回执诊断](deep-research-evidence/d3-shared-references-diagnostic-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)
@@ -690,9 +692,9 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
 | D2 两论文比较 | v47 的原表示例及另五条主张通过单项核验。全答审核在发送前因剩余额度不足停止，应用保存部分报告。 [真实运行](deep-research-evidence/baseline-comparison-v47-real-20261125.json) | 真实验证双方比较、同口径数字、可比条件和选择建议均通过事实及全答核验，并打开完整发布报告。 |
-| D3 四组实验 | D3-v7 在共享方案生成时结果未确认。查询保护通过真实界面复验。 [记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
+| D3 四组实验 | 原始 3DGS 单次复测采用因素引用，仍缺训练开关的创建步骤，并混淆指标和状态。未进入科学审核。D3-v7 的未确认状态及查询保护证据仍保留。 [新版实测](deep-research-evidence/d3-shared-references-real-20261125.json) · [历史记录](deep-research-evidence/shared-experiment-d3-v7-20261117.json) | 核对可执行方案、共同起点、等预算、指标、主效应、交互效应及适用范围。D3-v7 继续冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
-| D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。现候选补查已验证父子绑定、材料身份和证据继承。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [近期补查](deep-research-evidence/v27-report-followup-isolated-20261120.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
+| D5 计划调整与追问 | 窄范围 D5-v14 和历史 F1 通过开发验收。v49 真实比较报告可以读取，父成果的机器版和最新版均在。按原题及同两篇论文预检，既有 D5 提交均有确认终态。 [D5-v14](deep-research-evidence/D5-v14-diagnostic-20261018.json) · [F1](deep-research-evidence/F1-fresh-continuation-workflow-20261018.json) · [v49 预检](deep-research-evidence/d5-v49-continuation-readiness-20261125.json) | 新比较的真实补查仍须执行到生成、重核新增事实和打开新报告。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。完整研究库副本冷启动核对历史状态。 [完整回归](deep-research-evidence/citation-pdf-typography-host-full-20261120.json) · [副本冷启动](deep-research-evidence/v29-full-research-copy-20261120.json) | 保留离线集成结论。切换时复核现用任务与数据，历史未知请求保持冻结。 |
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
