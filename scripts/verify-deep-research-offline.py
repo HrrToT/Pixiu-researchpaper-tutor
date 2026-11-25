@@ -50,6 +50,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--baseline-junit', required=True, type=Path)
+    parser.add_argument('--fixture-root', type=Path,
+                        help='Place only pytest fixtures on this volume; keep logs and evidence in the repository.')
     parser.add_argument('--diagnostic-timeout', type=int, default=0,
                         help='Dump slow-test thread stacks after N seconds; does not fail or stop a test.')
     args = parser.parse_args()
@@ -69,9 +71,17 @@ def main():
     evidence = root / 'docs/deep-research-evidence' / (args.run_id + '.json')
     if evidence.exists():
         parser.error('Evidence already exists; choose a new run ID')
+    fixture_work = work
+    if args.fixture_root is not None:
+        fixture_root = args.fixture_root.resolve(strict=True)
+        if not fixture_root.is_dir():
+            parser.error('Fixture root must be an existing directory')
+        fixture_work = fixture_root / work.name
+        if fixture_work != work:
+            fixture_work.mkdir(exist_ok=False)
     work.mkdir(exist_ok=False)
     before = source_snapshot(root)
-    pytest_args = [str(tests), '-q', '-m', 'not live_llm', '--basetemp', str(work / 'pytest'),
+    pytest_args = [str(tests), '-q', '-m', 'not live_llm', '--basetemp', str(fixture_work / 'pytest'),
                    '--junitxml', str(work / 'junit.xml'), '--durations=12']
     if args.diagnostic_timeout:
         pytest_args += ['-o', 'faulthandler_timeout=' + str(args.diagnostic_timeout),
