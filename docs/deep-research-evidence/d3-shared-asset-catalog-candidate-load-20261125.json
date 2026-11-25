@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "f1920f72cc0e8658040782bf3230e0a2227dd4d8",
+  "fullRegression": "factorial-prepared-input-catalog-full-20261125.json",
+  "candidate": "academic-dr-d3-shared-asset-catalog-candidate-20261125",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "sharedExperimentProfile": 6,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "localBackupCompression": "gzip",
+  "localBackupSha256": "21bb775233b75ea3850a4480200885ef0e87f6ae8ff1597220cc534aa28042cc",
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

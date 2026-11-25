@@ -1,0 +1,41 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v7",
+  "sourceCommit": "f1920f72cc0e8658040782bf3230e0a2227dd4d8",
+  "providerCalls": 1,
+  "settledTokens": 0,
+  "budgetedTokensIncludingUnsettled": 4597,
+  "elapsedSeconds": 3.0,
+  "runId": "dr_run_366906db5b395e2f825a8f11f61f6206",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "provider_payment_rejected",
+  "initialPlanResponseVersion": 3,
+  "initialPlanStatus": null,
+  "emptyPlannerLeafFieldsRemoved": 0,
+  "generationVersion": 6,
+  "generationStatus": null,
+  "generationInputBytes": null,
+  "generationIssues": {},
+  "providerJsonSchemaStatus": null,
+  "scientificReviewStatus": null,
+  "sciencePrecheckErrors": {},
+  "structurallyBoundExperiment": false,
+  "fourGroupsInBoundPlan": [],
+  "releaseCertificateComplete": null,
+  "unknownNodes": [],
+  "modelNodeCounts": {
+    "resolve_brief": 1
+  },
+  "reportVersionId": null,
+  "workspaceReportOrigins": [],
+  "serviceAndRecordsRestored": true,
+  "scientificAcceptanceEstablished": false,
+  "automaticRetry": false,
+  "receiptSha256": {
+    ".payload.json": "b5bab94e1958eecc5da3510d919f9d73fac59b3806ff8544720c850947a7090a",
+    ".calls.json": "47e490f05cd5c3919632e03e2a44d75ef534bd63d90e02843f74f013c7d7bf60",
+    ".result.json": "7a81f789362e0a8eda361e06752abc120e87973441446e410e788ea609b130fb",
+    ".execution.json": "0b6c8fc2be90785717e8857d2e7be168bd94d81bef10911f82b656086c8b3962",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}
