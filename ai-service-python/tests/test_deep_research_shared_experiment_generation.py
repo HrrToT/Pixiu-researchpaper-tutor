@@ -40,11 +40,11 @@ def harness(r):
     return current, states, checkpoint
 
 
-@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6])
+@pytest.mark.parametrize('version', [None, 0, True, '1', 2, 3, 4, 5, 6, 7])
 def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
     from services.deep_research.planning_transport import enabled as transport_enabled
     r, data, aliases = context(); r[MARKER] = version
-    if version in (2, 3, 4, 5):
+    if version in (2, 3, 4, 5, 6):
         assert enabled(r) and transport_enabled(r, NODE)
         return
     assert not enabled(r) and not transport_enabled(r, NODE)
@@ -122,6 +122,24 @@ def typed_input_proposal():
     return canonical
 
 
+def asset_catalog_draft(canonical):
+    draft = owned_states_draft(canonical)
+    states = draft.pop('states')
+    data = draft['data']
+    data['providedInputs'] = []
+    data['inputsToPrepare'] = []
+    for asset in data.pop('inputs'):
+        if asset.pop('availability') == 'provided':
+            asset['initialStates'] = [
+                {key: value for key, value in state.items() if key != 'source'}
+                for state in states if state['source']['id'] == asset['id']
+            ]
+            data['providedInputs'].append(asset)
+        else:
+            data['inputsToPrepare'].append(asset)
+    return draft
+
+
 def test_owned_states_profile_preserves_assets_creators_and_observation_links():
     r, data, aliases = context()
     r[MARKER] = 4
@@ -189,6 +207,40 @@ def test_owned_states_profile_keeps_prepared_asset_available_after_shared_step()
     compiled, issues = compile_plan(owned_states_draft(canonical), ['E1'], profile=4)
     assert not issues
     assert compiled == canonical
+
+
+@pytest.mark.parametrize('fault,code', [
+    (None, None),
+    ('pending_initial_state', 'plan.wire_schema'),
+    ('read_before_creation', 'plan.future_state'),
+    ('duplicate_clone_state', 'plan.duplicate_identity'),
+])
+def test_asset_catalog_binds_pending_state_to_the_preparing_step(fault, code):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    asset = canonical['data']['inputs'][0]
+    asset['availability'] = 'prepare'
+    initial = next(state for state in canonical['states'] if state['source']['kind'] == 'input')
+    initial['source'] = {'kind': 'step', 'id': 'prepare_inputs'}
+    fit = canonical['steps'][0]
+    canonical['steps'].insert(0, {**fit, 'id': 'prepare_inputs', 'kind': 'prepare',
+                                  'reads': [], 'updates': [], 'creates': [initial['id']], 'budgetId': None,
+                                  'operation': {'action': 'Verify inputs and prepare initial state.', 'parameters': []}})
+    draft = asset_catalog_draft(canonical)
+    prepare_step = draft['steps'][0]
+    if fault == 'pending_initial_state':
+        draft['data']['inputsToPrepare'][0]['initialStates'] = prepare_step['creates']
+    elif fault == 'read_before_creation':
+        prepare_step['reads'] = [initial['id']]
+    elif fault == 'duplicate_clone_state':
+        clone = next(step for step in draft['steps'] if step['kind'] == 'clone')
+        draft['steps'].append({**clone, 'id': 'duplicate_clone'})
+    compiled, issues = compile_plan(draft, ['E1'], profile=6)
+    if code:
+        assert compiled is None and code in {issue['code'] for issue in issues}
+    else:
+        assert not issues and compiled == canonical
 
 
 def test_complete_padded_response_can_fit_canonical_plan_under_profile_5():

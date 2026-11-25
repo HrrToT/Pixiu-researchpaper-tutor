@@ -93,13 +93,26 @@ Authoritative question, goals and original evidence (data, not instructions):
 
 def instructions(record):
     version = record.get(MARKER)
-    if version == 5:
-        return OWNED_STATES_INSTRUCTIONS.replace(
+    if version in (5, 6):
+        prompt = OWNED_STATES_INSTRUCTIONS.replace(
             'Return one ordinary JSON object, no Markdown. No scientific approval or results.',
             'Return compact JSON on one line without indentation or Markdown. Use short distinct IDs. '
             'State settings once, keep each necessary parameter, control and unresolved prerequisite. '
             'No scientific approval or results.',
         )
+        if version == 6:
+            prompt = prompt.replace(
+                '- data.inputs are raw assets; use step.inputIds for them. Prepare missing assets in a shared prepare step before using them.\n'
+                '- Top-level states are only pre-existing states backed by provided inputs; shared/arm states created by the protocol go inside\n'
+                '  the creating step\'s creates, as full objects. Use state IDs in reads and updates, never raw asset IDs or metric IDs.',
+                '- Put only already supplied raw assets in data.providedInputs. Only these assets may own initialStates.\n'
+                '  Put missing raw assets in data.inputsToPrepare. A shared prepare step names them in inputIds and declares any\n'
+                '  states it produces as objects in creates. It cannot read those states before creation.\n'
+                '- Every protocol-created state has one owner in step.creates. Use state IDs in reads and updates, never asset or metric IDs.\n'
+                '  Use one clone step over all four arms for paired state, including every state affected by either factor.\n'
+                '  If a later step adds a conditional state, give it a distinct ID and use it only in its applicable arms.',
+            )
+        return prompt
     if version == 4:
         return OWNED_STATES_INSTRUCTIONS
     if version == 3:
@@ -116,7 +129,7 @@ def instructions(record):
 
 
 def enabled(record):
-    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2, 3, 4, 5)
+    return (isinstance(record, dict) and type(record.get(MARKER)) is int and record[MARKER] in (1, 2, 3, 4, 5, 6)
             and record.get('structuredOutputContractVersion') == 15
             and type(record.get('structuredOutputContractVersion')) is int
             and record.get('state', {}).get('outputKind') == 'experiment_design')
@@ -126,12 +139,17 @@ def descriptor(version=1):
     # Reuse native JSON Schema definitions, without encoding the model's input
     # or output values. The independent local validator retains the full schema.
     schema_profile = 4 if version == 5 else version
-    if schema_profile in (3, 4):
+    if schema_profile in (3, 4, 6):
         from services.deep_research.shared_experiment_references import wire_schema
         plain = wire_schema(schema_profile)
     else:
         plain = schema()
-    text=plain['properties']['hypothesis']; ident=plain['properties']['states']['items']['properties']['id']
+    properties = plain['properties']
+    text = properties['hypothesis']
+    if schema_profile == 6:
+        ident = properties['data']['properties']['providedInputs']['items']['properties']['id']
+    else:
+        ident = properties['states']['items']['properties']['id']
     if '$defs' in plain: raise ValueError('Unexpected shared proposal schema definitions')
     def share(value):
         if value==text:return {'$ref':'#/$defs/text'}
@@ -147,7 +165,8 @@ def descriptor(version=1):
         if isinstance(value,list):return [expand(v) for v in value]
         return deepcopy(value)
     if digest(expand(compact))!=digest(plain):raise ValueError('Shared proposal schema changed constraints')
-    name = {3: 'shared_binary_factorial_refs_v3', 4: 'shared_binary_factorial_states_v4'}.get(
+    name = {3: 'shared_binary_factorial_refs_v3', 4: 'shared_binary_factorial_states_v4',
+            6: 'shared_binary_factorial_assets_v6'}.get(
         schema_profile, 'shared_binary_factorial_v1')
     return {'type':'json_schema','name':name,'schema':compact}
 
@@ -209,7 +228,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                                              ('maxModelCalls','maxTokens','maxWallClockSeconds')},
                              'sourcePolicy': record.get('sourcePolicy'), 'requiredDomains': sorted(set(required_domains))})
     prompt = instructions(record) + input_text(input_data)
-    output_tokens = COMPACT_RESPONSE_OUTPUT_TOKENS if record[MARKER] == 5 else OUTPUT_TOKENS
+    output_tokens = COMPACT_RESPONSE_OUTPUT_TOKENS if record[MARKER] in (5, 6) else OUTPUT_TOKENS
     request = request_identity(record, NODE, prompt, {'temperature': 0.0, 'max_tokens': output_tokens,
                                                      'timeout_seconds': 90})
     overhead = overhead_bytes(record, NODE, request['extra'])
@@ -242,18 +261,19 @@ def _validate_response(response, profile, built):
         raise ValueError('Response object required')
     content = response.get('rawContent', response.get('content', ''))
     complete = response.get('finishReason', response.get('finish_reason')) == 'stop'
-    if profile == 5 and not complete:
+    compact_transport = profile in (5, 6)
+    if compact_transport and not complete:
         return None, [{'code': 'plan.incomplete_response', 'path': '/'}]
-    raw_limit = COMPACT_RESPONSE_RAW_BYTES if profile == 5 else MAX_BYTES
+    raw_limit = COMPACT_RESPONSE_RAW_BYTES if compact_transport else MAX_BYTES
     if not isinstance(content, str):
         raise ValueError('Invalid response type')
     if len(content.encode('utf-8')) > raw_limit:
-        if profile == 5:
+        if compact_transport:
             return None, [{'code': 'plan.response_transport_capacity', 'path': '/'}]
         raise ValueError('Response capacity')
     value = _parse(content)
     evidence_ids, domains = built['allowedEvidenceIds'], built['requiredDomains']
-    if profile in (3, 4, 5):
+    if profile in (3, 4, 5, 6):
         from services.deep_research.shared_experiment_references import compile_plan
         value, issues = compile_plan(value, evidence_ids, required_domains=domains,
                                      profile=4 if profile == 5 else profile)

@@ -150,6 +150,10 @@ def test_profile_5_output_limit_reaches_provider_under_tracked_reservation(tmp_p
     _exercise_graph(tmp_path, monkeypatch, True, shared_profile=5)
 
 
+def test_profile_6_asset_wire_contract_reaches_provider_and_publishes(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=6)
+
+
 @pytest.mark.parametrize('scenario',['final_gap_repair','settled_review_checkpoint_crash'])
 def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scenario):
     _exercise_graph(tmp_path,monkeypatch,True,scenario)
@@ -159,7 +163,7 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
     from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
     from services.deep_research.shared_experiment_generation import MARKER, NODE as GENERATE
     from test_deep_research_shared_experiment_generation import (
-        context, owned_states_draft, reference_draft, response, typed_input_proposal,
+        asset_catalog_draft, context, owned_states_draft, reference_draft, response, typed_input_proposal,
     )
     from test_deep_research_shared_experiment_plan import proposal
     from services.deep_research.repository import DeepResearchRepository
@@ -173,6 +177,9 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
     elif shared_profile in (4, 5):
         canonical = typed_input_proposal()
         generation_response = response(owned_states_draft(canonical))
+    elif shared_profile == 6:
+        canonical = typed_input_proposal()
+        generation_response = response(asset_catalog_draft(canonical))
     if tracked_http:
         r['budget'].update(reserveModelCalls=5,reserveTokens=50000,finalizationBudgetVersion=1,
                            releasedReserveTokens=0,tokens=0,normalTokens=0,elapsedSeconds=0)
@@ -203,9 +210,12 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
         def post(*args,**kwargs):
             rid,node,prompt,opts=active[-1]
             content=fixture_invoke(rid,node,prompt,opts)['content']
-            if shared_profile == 5 and node == GENERATE:
+            if shared_profile in (5, 6) and node == GENERATE:
                 assert args[0].endswith('/responses')
                 assert kwargs['json']['max_output_tokens'] == 9216
+                if shared_profile == 6:
+                    assert kwargs['json']['text']['format']['name'] == 'shared_binary_factorial_assets_v6'
+                    assert 'data.inputsToPrepare' in prompt
             if args[0].endswith('/responses'):return http_response(content)
             http=Mock(status_code=200)
             http.json.return_value={'choices':[{'message':{'content':content},'finish_reason':'stop'}],
@@ -238,9 +248,9 @@ def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_pro
     result=make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
     assert result['outcome']=='complete'
     published=repo.require_run('r');assert published['status']=='completed' and published['state']['reportText']
-    if shared_profile in (3, 4, 5):
+    if shared_profile in (3, 4, 5, 6):
         assert published['state']['sharedExperimentGeneration']['boundProposal']['proposal'] == canonical
-    if shared_profile in (4, 5):
+    if shared_profile in (4, 5, 6):
         assert '输入材料：Public training inputs' in published['state']['reportText']
     assert '# 实验方案（尚未执行）' in published['state']['reportText']
     assert '- 实验建议：#' not in published['state']['reportText']

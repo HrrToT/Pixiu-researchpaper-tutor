@@ -9,7 +9,7 @@ from services.deep_research.shared_experiment_plan import _array, _object, schem
 
 
 def wire_schema(profile=3):
-    wire = schema(2 if profile == 4 else 1)
+    wire = schema(2 if profile in (4, 6) else 1)
     states = wire['properties']['states']['items']['properties']
     input_source = states['source']
     input_source['properties']['kind'] = {'const': 'input'}
@@ -28,7 +28,34 @@ def wire_schema(profile=3):
     metric = wire['properties']['metrics']['items']
     metric['properties']['measureOnSteps'] = _array(states['id'], minimum=1, unique=True)
     metric['required'].append('measureOnSteps')
+    if profile == 6:
+        root = wire['properties']
+        del root['states']
+        wire['required'].remove('states')
+        data = root['data']
+        inputs = data['properties'].pop('inputs')
+        asset = inputs['items']['properties']
+        del asset['availability']
+        data['required'].remove('inputs')
+        data['properties'].update(
+            providedInputs=_array(_object({**asset, 'initialStates': _array(_object(owned))}),
+                                  maximum=inputs['maxItems']),
+            inputsToPrepare=_array(_object(asset), maximum=inputs['maxItems']),
+        )
+        data['required'].extend(('providedInputs', 'inputsToPrepare'))
     return wire
+
+
+def _expand_asset_catalog(proposal):
+    data = proposal['data']
+    proposal['states'] = []
+    data['inputs'] = []
+    for entry in data.pop('providedInputs'):
+        for state in entry.pop('initialStates'):
+            proposal['states'].append({**state, 'source': {'kind': 'input', 'id': entry['id']}})
+        data['inputs'].append({**entry, 'availability': 'provided'})
+    for entry in data.pop('inputsToPrepare'):
+        data['inputs'].append({**entry, 'availability': 'prepare'})
 
 
 def _expand_owned_states(proposal, issues):
@@ -68,7 +95,9 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3):
         return None, issues
 
     proposal = deepcopy(value)
-    if profile == 4:
+    if profile == 6:
+        _expand_asset_catalog(proposal)
+    if profile in (4, 6):
         _expand_owned_states(proposal, issues)
     factors = {row['id']: row for row in proposal['factors']}
     provided_inputs = {row['id'] for row in proposal['data']['inputs'] if row['availability'] == 'provided'}
