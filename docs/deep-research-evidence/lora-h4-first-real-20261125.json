@@ -1,0 +1,81 @@
+{
+  "case": "H4-LORA-VERSIONS-v1",
+  "status": "paused",
+  "outcome": "none",
+  "errorCode": "unresolved_unknown",
+  "runId": "dr_run_e7ac03fdfb9e519b85cbc5f8293ceb30",
+  "modelCalls": 6,
+  "tokensIncludingUnresolvedReservation": 63100,
+  "settledTokens": 22116,
+  "unknownNodes": [
+    "verify"
+  ],
+  "elapsedSeconds": 276.0,
+  "externalSearches": 0,
+  "evidenceCount": 32,
+  "tableEvidenceCount": 0,
+  "evidenceVersions": [
+    "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+    "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a"
+  ],
+  "frozenPdfTableBaselines": {
+    "lora_v1": {
+      "page": 6,
+      "metricValues": [
+        [
+          "73.0",
+          "89.5",
+          "52.0/28.0/44.5"
+        ],
+        [
+          "73.4",
+          "91.3",
+          "52.1/28.3/44.3"
+        ],
+        [
+          "73.8",
+          "91.7",
+          "53.2/29.2/45.0"
+        ]
+      ]
+    },
+    "lora_v2": {
+      "page": 8,
+      "metricValues": [
+        [
+          "73.8",
+          "89.5",
+          "52.0/28.0/44.5"
+        ],
+        [
+          "73.4",
+          "91.7",
+          "53.8/29.8/45.9"
+        ],
+        [
+          "74.0",
+          "91.6",
+          "53.4/29.2/45.1"
+        ]
+      ]
+    }
+  },
+  "verifiedClaims": 0,
+  "rejectedClaims": 0,
+  "reportVersionId": null,
+  "workspaceReportOrigins": [],
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "sharedSourceHistory": "LoRA v1 was also used by H2; both definitions were frozen before execution.",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "receiptSha256": {
+    ".payload.json": "641473dbd5ad1f66ee2fa68667f4c6fc0c119e5b7b4f9b4f7e7bcfc5c90febbb",
+    ".calls.json": "e3ce9e580dbf6e12261e5ffdaaaff4ddfc641baeffd09f8580ef78ae22c24798",
+    ".result.json": "fddaaa679adcfde9e50d3bbdf84998ef64cfc1bff447c3b7c8ba75830f7d299f",
+    ".execution.json": "5826c45d6d54ffd6c797f53c6d4323aa1fe9b9cf825cdaab7943e8b84e72f60f",
+    ".restore.log": "9a438fbb7ee5328bf87e4e1fd791daf12c56925d2c375cf142d5bf9edcdf872b"
+  },
+  "sourceCommit": "22365e7f514ad19c838cdd1dd106105240a490ff",
+  "unresolvedReservationTokens": 40984
+}
