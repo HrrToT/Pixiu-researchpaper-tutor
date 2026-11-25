@@ -1,0 +1,38 @@
+{
+  "case": "D5-v15",
+  "parentSha256": "0824623893889cf948e5721d1fe5a3f6f8252ecbd8026021c9a7b92592d39286",
+  "childSha256": "626a7b944ed44f02f419999337d4a29cacd9674047321aa405bbe97820a7638c",
+  "sameMaterialAndSourcePolicy": true,
+  "profiles": {
+    "comparisonCellsContractVersion": {
+      "parent": 1,
+      "child": 0
+    },
+    "comparisonPlanningContractVersion": {
+      "parent": 6,
+      "child": 0
+    },
+    "comparisonReviewBatchContractVersion": {
+      "parent": 2,
+      "child": 0
+    },
+    "comparisonJointReportsContractVersion": {
+      "parent": 16,
+      "child": 0
+    },
+    "comparisonCrossPaperBoundaryContractVersion": {
+      "parent": 2,
+      "child": 0
+    },
+    "factualReviewContractVersion": {
+      "parent": 4,
+      "child": 3
+    }
+  },
+  "actualParentComparisonRolesEnabled": true,
+  "actualChildComparisonRolesEnabled": false,
+  "hypotheticalChildWithV49ServerProfilesEligibleForComparisonRoles": true,
+  "profileProjectionAppliedToLiveRecord": false,
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}
