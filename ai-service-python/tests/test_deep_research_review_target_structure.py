@@ -15,6 +15,34 @@ def case(reason='前三个分句由引文支持，但最后一个分句不成立
     return {'claimId':'c','status':'failed','reason':reason,'diagnosticFacts':[]},claim,ev
 
 
+@pytest.mark.parametrize(('reason', 'valid_cell', 'locator', 'unbound_numbers'), [
+    ('The tableBindings correctly reference E4 rows 9 and 10.', True, True, 0),
+    ('The tableBindings correctly reference E4 rows 9 and 10.', False, False, 2),
+    ('The tableBindings reference E3 rows 9 and 10.', True, False, 2),
+    ('The tableBindings reference E4 rows 9 and 11.', True, False, 2),
+    ('The tableBindings reference E4 rows 9 and 10 FPS.', True, False, 2),
+    ('The tableBindings reference E4 rows 9 and 10. Training took 9 seconds.', True, True, 1),
+])
+def test_only_exact_cited_table_addresses_are_excluded_from_review_numbers(reason, valid_cell, locator, unbound_numbers):
+    verdict, claim, ev = case(reason)
+    eid = ev[0]['evidenceId']
+    ev[0]['quote'] = 'Table row 9: Baseline | 144\nTable row 10: Variant | 237'
+    ev[0]['tableData'] = {'groups': [['Benchmark', ['FPS']]],
+                         'rows': [[9, 'Baseline', ['144']], [10, 'Variant', ['237']]]}
+    claim['tableBindings'] = [
+        {'evidenceId': eid, 'rowNumber': row, 'groupIndex': 0, 'metric': 'FPS', 'value': value}
+        for row, value in ((9, '144'), (10, '237' if valid_cell else '238'))
+    ]
+    result = bind(verdict, claim, ev, {'E4': eid}, target_structure=True)
+    audit = result['reviewDiagnosticAudit']
+    assert audit['unboundNewNumberCount'] == unbound_numbers
+    assert bool(audit['targetStructureReferences']) is locator
+    if locator:
+        reference, = audit['targetStructureReferences']
+        assert reference['evidenceId'] == eid and reference['rowNumbers'] == [9, 10]
+    assert result['status'] == 'failed'  # Navigation never reverses a failed scientific decision.
+
+
 @pytest.mark.parametrize('reference',['前三个分句','前3个分句','第3句','最后一个分句','后两句','first three clauses','first 3 sentences','last one sentence'])
 def test_available_target_navigation_is_not_new_source_measurement(reference):
     verdict,claim,ev=case(reference+' does not establish this target.');before=deepcopy((verdict,claim,ev))

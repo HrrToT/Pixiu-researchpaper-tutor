@@ -7,6 +7,12 @@ _REFERENCE=re.compile(r'(?P<cnlabel>最后|第|前|后)(?P<cnnumber>[0-9]{1,3}|[
     r'|\b(?P<enlabel>first|last|final|next|previous)\s+(?P<ennumber>[0-9]{1,3}|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?P<enunit>clauses?|sentences?|paragraphs?)\b',re.I)
 _SOURCE=re.compile(r'原文|论文|来源|引文|算法|表格|章节|\b(?:source|paper|passage|quote|algorithm|table|section|line|evidence|arxiv|doi)\b'
     r'|(?<![A-Za-z0-9_])(?:[EPQT]_*\d+|ev_[0-9a-f]+)(?![A-Za-z0-9_])',re.I)
+_TABLE_LOCATOR = re.compile(
+    r'(?:^|(?<=[.!?。！？\n]))[ \t]*(?:The\s+)?tableBindings\s+(?:correctly\s+)?'
+    r'(?:references?|points?\s+to)\s+(?P<alias>E[1-9]\d*)\s+rows?\s+'
+    r'(?P<first>[1-9]\d{0,3})(?:\s+and\s+(?P<second>[1-9]\d{0,3}))?'
+    r'(?=[ \t]*(?:[.!?。！？](?:\s|$)|\n|$))', re.I,
+)
 
 
 def _number(text):
@@ -55,3 +61,31 @@ def view(text,target_text):
         chars[start:end]=' '*(end-start)
         references.append({'text':m.group(),'start':m.start(),'end':m.end(),'kind':kind,'count':count,'availableUnits':available})
     return ''.join(chars),references
+
+
+def table_locator_view(text, claim, evidence, aliases):
+    """Exclude row addresses from numeric scanning only for verified cell bindings."""
+    from services.deep_research.table_bindings import bound_table_context
+
+    bindings = claim.get('tableBindings')
+    if not isinstance(bindings, list) or not bindings:
+        return text, []
+    chars = list(text)
+    references = []
+    for match in _TABLE_LOCATOR.finditer(text):
+        evidence_id = aliases.get(match['alias'])
+        if evidence_id not in evidence:
+            continue
+        slots = [slot for slot in ('first', 'second') if match[slot] is not None]
+        row_numbers = [int(match[slot]) for slot in slots]
+        bound_rows = {binding['rowNumber'] for binding in bindings if isinstance(binding, dict)
+                      and binding.get('evidenceId') == evidence_id and type(binding.get('rowNumber')) is int
+                      and bound_table_context({**claim, 'tableBindings': [binding]}, [evidence[evidence_id]])}
+        if not set(row_numbers) <= bound_rows:
+            continue
+        for slot in slots:
+            start, end = match.span(slot)
+            chars[start:end] = ' ' * (end - start)
+        references.append({'text': match.group(), 'start': match.start(), 'end': match.end(),
+                           'kind': 'table_rows', 'evidenceId': evidence_id, 'rowNumbers': row_numbers})
+    return ''.join(chars), references

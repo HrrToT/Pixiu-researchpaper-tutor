@@ -53,13 +53,19 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         numbers=scanner(own)
     review_numbers=numbers
     target_references=[]
+    reverse = reverse or {}
     if target_structure:
-        from services.deep_research.review_target_structure import view
+        from services.deep_research.review_target_structure import table_locator_view, view
         from services.deep_research.execution_materialization import verification_claim_view
         target_text=verification_claim_view(claim).get('text','')
-        review_numbers=lambda text:numbers(view(text,target_text)[0])
-        _,target_references=view(reason,target_text)
-    reverse = reverse or {}
+
+        def scan_view(text):
+            scanned, references = view(text, target_text)
+            scanned, table_references = table_locator_view(scanned, claim, own, reverse)
+            return scanned, [*references, *table_references]
+
+        review_numbers = lambda text: numbers(scan_view(text)[0])
+        _, target_references = scan_view(reason)
     if not isinstance(facts, list) or len(facts) > 16:
         errors.append('diagnostic_facts_missing_or_invalid')
         facts = []
