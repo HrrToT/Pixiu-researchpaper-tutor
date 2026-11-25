@@ -36,6 +36,8 @@ H2 使用已冻结的 LoRA v1 和 DoRA v1，单次提交，调用模型 16 次�
 
 版本 4 在 501 个模块的 9,871 项全量离线回归通过后装载。D3 第三次冻结开发执行单次提交，结算 3 次模型调用、6,965 Token，用时 16 秒，停在 `invalid_plan_response`，尚未调用版本 4 的共享方案生成。两个规划回复的四个叶子义务均多出一个空 `obligations` 数组。新增的初始规划兼容版本只用于共享方案版本 4 的新任务，仅移除这个空字段，保留原始回复并记录字段位置。分别回放两份真实响应，各自只使用该份响应即通过图上的原规划和材料校验，保留两项规划及六条规范化后的义务。非空子计划及其他不合规字段仍会被拒绝。131 项定向检查通过。原服务及账本已核对恢复，无方案发布或科学验收。 [全量回归](deep-research-evidence/shared-experiment-owned-states-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-owned-states-candidate-load-20261125.json) · [实测](deep-research-evidence/d3-shared-owned-states-real-20261125.json) · [原始规划重放](deep-research-evidence/d3-planner-leaf-normalization-replay-20261125.json)
 
+规划修复与追问展示修复合并后，9,876 项离线回归通过，保留全部 9,871 个基线用例。随后 D3 第四次固定开发题单次提交，6 次模型调用结算 31,466 Token，用时 95 秒。初始计划首次通过并触发版本 4 的方案生成，请求 29,183 字节。模型在 6,144 输出 Token 上限返回 `finishReason=length`，25,719 字节的原始 JSON 截断在步骤数组，指标和分析尚未输出。本次草稿没有进入独立审核，原服务和历史账本已核对恢复。下一步需分别处理传输格式开销、输出上限与标准方案大小，仍限定在原整轮研究预算内。 [全量回归](deep-research-evidence/factorial-plan-leaves-followup-display-full-20261125.json) · [候选装载](deep-research-evidence/d3-shared-plan-leaves-candidate-load-20261125.json) · [实测](deep-research-evidence/d3-shared-plan-leaves-real-20261125.json) · [容量诊断](deep-research-evidence/d3-shared-plan-capacity-audit-20261125.json)
+
 ## 2026-11-24 v46 真实比较
 
 组合版本单次提交，14 次模型调用，78,530 Token，129 秒。跨论文可比性目标已绑定两篇论文，10 条已编译主张中有 5 条通过单项核验。数字示例未通过，初审记录了数值、表格绑定及示例范围问题。全答审核未通过，运行最终为 `inconclusive`，没有发布报告。原服务及历史记录已核对恢复。 [候选装载](deep-research-evidence/comparison-inline-limit-v46-candidate-load-20261124.json) · [真实执行](deep-research-evidence/baseline-comparison-v46-real-20261124.json)

@@ -1,0 +1,27 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v4",
+  "receiptSha256": "5d67da4b7c2ff19a079f64c0b7a5ea61f02f97a69069baf699e5d4e219a75038",
+  "initialPlanPassed": true,
+  "finishReason": "length",
+  "outputTokenLimit": 6144,
+  "reportedOutputTokens": 6144,
+  "rawResponseBytes": 25719,
+  "canonicalPlanByteLimit": 24000,
+  "rawIndentationCharacters": 4536,
+  "completeTopLevelFields": [
+    "version",
+    "hypothesis",
+    "estimand",
+    "sourceFacts",
+    "data",
+    "states",
+    "pairing",
+    "factors",
+    "groups",
+    "budgets"
+  ],
+  "unfinishedTopLevelField": "steps",
+  "enteredScientificReview": false,
+  "truncatedTextAccepted": false,
+  "providerCallsAddedByAudit": 0
+}
