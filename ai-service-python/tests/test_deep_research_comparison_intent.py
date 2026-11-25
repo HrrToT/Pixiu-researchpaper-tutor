@@ -107,6 +107,25 @@ def test_planning_retains_explicit_numeric_example_omitted_by_model():
     assert categorized['choice'][0]['kind'] == 'conditional_advice'
 
 
+def test_followup_reuses_parent_context_without_adding_its_numeric_example():
+    from services.deep_research.comparison_joint_reports import joint_numeric_example, preserve_requested_numeric_example
+    from services.deep_research.request_context import ResearchQuestion
+
+    ask = '只解释为什么不同论文中的 FPS 不能直接相除。'
+    example = '数字只选一组来源明确的基线对照作例子。'
+    frozen = plan()
+    joint = next(o for item in frozen for o in item['obligations'] if o['comparisonRole']['kind'] == 'joint')
+    roles = {'example': {**joint['comparisonRole'], 'requestExcerpt': example, 'question': joint['question']}}
+    without = ResearchQuestion(f'{ask}\n{example}', [ask, example], [ask])
+    assert preserve_requested_numeric_example(frozen, without) is frozen
+    assert not joint_numeric_example(roles, without)
+
+    with_example = ResearchQuestion(f'{ask}\n{example}', [ask, example], [ask, example])
+    assert any(o['obligationId'] == 'requested_numeric_example'
+               for item in preserve_requested_numeric_example(frozen, with_example) for o in item['obligations'])
+    assert joint_numeric_example(roles, with_example)
+
+
 @pytest.mark.parametrize('server_profile',[0,1])
 def test_comparison_role_contract_is_server_selected_and_frozen(tmp_path,server_profile):
     from services.deep_research.facade import ResearchFacade

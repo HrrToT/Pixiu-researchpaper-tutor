@@ -36,9 +36,13 @@ def has_single_numeric_example(roles):
 
 def joint_numeric_example(roles, question):
     """Recover a joint example when another part of its goal supplies the literal anchor."""
-    if has_single_numeric_example(roles):
+    current_layers = getattr(question, 'point_instruction_layers', None)
+    anchored_roles = roles if current_layers is None else {
+        key: role for key, role in roles.items() if any(role['requestExcerpt'] in layer for layer in current_layers)
+    }
+    if has_single_numeric_example(anchored_roles):
         return True
-    layers = getattr(question, 'instruction_layers', (str(question),))
+    layers = current_layers if current_layers is not None else getattr(question, 'instruction_layers', (str(question),))
     return (any(_SINGLE_NUMERIC_EXAMPLE.search(layer) for layer in layers)
             and any(role['kind'] == 'joint' and _NUMERIC.search(role['question'])
                     for role in roles.values()))
@@ -46,7 +50,8 @@ def joint_numeric_example(roles, question):
 
 def preserve_requested_numeric_example(plan, question):
     """Keep an explicit example the model omitted from its joint obligations."""
-    layers = getattr(question, 'instruction_layers', (str(question),))
+    layers = getattr(question, 'point_instruction_layers',
+                     getattr(question, 'instruction_layers', (str(question),)))
     exact = next((m.group() for layer in layers for m in _SINGLE_NUMERIC_EXAMPLE.finditer(layer)), None)
     if not exact or exact not in question:
         return plan
