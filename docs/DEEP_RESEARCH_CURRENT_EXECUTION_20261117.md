@@ -70,6 +70,8 @@ H3 从空材料、外部材料专用任务开始，候选运行前未命中本�
 
 新独立 H3 冻结为 SnapKV v1，题目检查观察窗口、池化及缓存保留内容。评审 PDF 从系统代理单独下载并核对版本、18 页和文件哈希。CLI 预览确认只传空材料任务、固定问题及原 `standard` 预算。 [冻结定义](DEEP_RESEARCH_SNAPKV_EXTERNAL_HOLDOUT_20261125.json)
 
+SnapKV H3 首次且单次真实执行。持久化账本确认一次 arXiv 元数据精确发现和一次无缓存全文下载，两步均成功。实际解析 18 页，PDF 哈希与冻结件一致。11 次模型调用、39,566 Token、81 秒，机器版及最新版均读到 `partial` 报告。发布的一条主张解释了用观察窗口查询对前缀位置打分，所引片段在实际获取的第 7 页可逐字回查。草稿错误声称丢弃观察窗口 KV，核验拦下。已取得的证据包含第 7 页池化和拼接缓存的正文，未进入已通过的主张。通过了新鲜发现、全文获取和一条原文引用，完整科学解释未通过。原服务及历史记录已核对恢复，未重试。 [候选装载](deep-research-evidence/h3-snapkv-external-candidate-load-20261125.json) · [真实执行](deep-research-evidence/academic-snapkv-h3-first-real-20261125.json)
+
 ## 2026-11-24 v44 真实比较
 
 紧凑终审版本通过 9,793 项全量离线回归，保留全部 9,791 项基线用例。v44 仅提交一次，调用模型 17 次，消耗 86,518 Token，用时 179 秒，外部检索为零。两批修订返回，三个主张保持单项核验通过。紧凑终审真实发出并正常返回，输出为 959 Token。模型把一项适用范围判为已覆盖，却未提供规定的 `limitSpans` 原句绑定。服务端拒绝该审核响应，报告未发布。原服务已恢复，历史任务、运行和调用记录逐项一致。 [全量回归](deep-research-evidence/comparison-rendered-audit-packet-host-full-20261124.json) · [候选装载](deep-research-evidence/comparison-rendered-audit-packet-candidate-load-20261124.json) · [真实验收](deep-research-evidence/baseline-comparison-v44-real-20261124.json)
