@@ -243,6 +243,14 @@ def test_cross_paper_scope_recovers_from_an_abbreviated_role_excerpt(explicit_at
         assert compact_joint['paperSubjectsByTarget'] == after['paperSubjectsByTarget']
         assert compact_joint['targetIds'] == after['targetIds']
         assert compact_joint['requiredBundleCount'] == after['requiredBundleCount']
+        typed = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion': 5},
+                        plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+        typed_joint = next(s for s in typed['stages'] if s['stageId'] == 'joint')
+        setting_shape = '{"subject":"P_ID","attribute":"name","value":"stated value","evidenceRefs":["E_ID"]}'
+        assert setting_shape in typed_joint['prompt'] and setting_shape not in compact_joint['prompt']
+        assert typed_joint['paperSubjectsByTarget'] == compact_joint['paperSubjectsByTarget']
+        assert typed_joint['targetIds'] == compact_joint['targetIds']
+        assert typed_joint['requiredBundleCount'] == compact_joint['requiredBundleCount']
 
 
 def test_complete_joint_merge_reduces_calls_without_dropping_targets_or_premise_bundles():

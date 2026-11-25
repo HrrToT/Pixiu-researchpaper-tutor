@@ -26,6 +26,11 @@ COMPACT_POLICY = ('For paperSubjects, use those exact publication IDs in observe
                   'Cite both papers and give each known setting its own evidenceRefs from its paper. Omit unknown settings. '
                   'Use notEstablished for comparisons the two citations do not establish. If they establish alignment, explain it with citations. '
                   'Return null if no answer is grounded.\n')
+TYPED_POLICY = ('For paperSubjects use exact publication IDs in comparison_evidence.subjects and each observedSettings item: '
+                '{"subject":"P_ID","attribute":"name","value":"stated value","evidenceRefs":["E_ID"]}. '
+                'Cite both papers and cite each known setting from its paper. Omit unknown settings. '
+                'Use notEstablished for comparisons the citations do not establish. Explain established alignment with citations. '
+                'Return null if no answer is grounded.\n')
 
 
 def explicitly_requests_cross_paper_speed(question):
@@ -36,7 +41,7 @@ def explicitly_requests_cross_paper_speed(question):
 
 def scopes(record, plan, targets, *, question=None):
     version = record.get('comparisonCrossPaperBoundaryContractVersion')
-    if type(version) is not int or version not in (1, 2, 3, 4):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5):
         return {}
     explicit_request = version >= 2 and explicitly_requests_cross_paper_speed(question)
     requirements = {row['obligationId']: row for row in plan.get('requirements', [])}
@@ -54,7 +59,7 @@ def scopes(record, plan, targets, *, question=None):
         # Role excerpts can be shorter than the user's requirement. Use only
         # this target's frozen question and criteria to recover its meaning.
         frozen_speed = False
-        if version in (3, 4) and explicit_request:
+        if version in (3, 4, 5) and explicit_request:
             criteria = requirements.get(oid, {}).get('completionCriteria', [])
             question_parts = [target['question'], *(row['requirement'] for row in criteria)]
             frozen_speed = any(explicitly_requests_cross_paper_speed(part) for part in question_parts)

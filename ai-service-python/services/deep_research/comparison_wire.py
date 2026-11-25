@@ -542,11 +542,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                             paper['tableCatalog'] = stage_table_catalog(paper['tableCatalog'], joint=False,
                                                                          reserved_benchmark=True)
     if projected and compact_stage_prompt(record):
-        from services.deep_research.comparison_cross_paper_boundary import COMPACT_POLICY, POLICY, scopes as cross_paper_scopes
+        from services.deep_research.comparison_cross_paper_boundary import (
+            COMPACT_POLICY, POLICY, TYPED_POLICY, scopes as cross_paper_scopes,
+        )
         paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
-        compact_paper_scope = bool(scoped_joint) and record.get('comparisonCrossPaperBoundaryContractVersion') == 4
-        paper_boundary_policy = COMPACT_POLICY if compact_paper_scope else POLICY
+        boundary_version = record.get('comparisonCrossPaperBoundaryContractVersion')
+        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5)
+        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY}.get(boundary_version, POLICY)
         for target in scoped_joint:
             target['paperSubjects'] = paper_subjects[target['targetId']]
         length = limit or 'concise, no explicit maximum'
