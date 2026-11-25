@@ -1,0 +1,34 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v49",
+  "claimId": "cmp_conclusion_1",
+  "scope": "diagnostic binding only",
+  "historicalStatus": "failed",
+  "historicalErrors": [
+    "diagnostic_statement_not_in_reason",
+    "diagnostic_source_not_bound",
+    "new_diagnostic_numbers_not_bound"
+  ],
+  "preservedRelation": "not_entailed",
+  "preservedPremises": [
+    {
+      "evidenceId": "E1",
+      "path": [
+        "quote"
+      ]
+    },
+    {
+      "evidenceId": "E2",
+      "path": [
+        "quote"
+      ]
+    }
+  ],
+  "fixtureErrors": [],
+  "numericHeadlineLocation": "E2 sourceContext section title only, absent from quote",
+  "modelCalls": 0,
+  "historicalReceiptMutated": false,
+  "receiptSha256": {
+    "payload": "0824623893889cf948e5721d1fe5a3f6f8252ecbd8026021c9a7b92592d39286",
+    "calls": "4f260386bb49b0bcf834cf79d2e24e7b8d1a21b60db415034fd26748b34e7dec"
+  }
+}
