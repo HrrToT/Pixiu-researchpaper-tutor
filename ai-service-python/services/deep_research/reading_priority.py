@@ -5,7 +5,8 @@ from services.deep_research.source_continuity import needs_preceding_context,met
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
-def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None, protocol_note=False, mechanism_overviews=False):
+def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None, protocol_note=False, mechanism_overviews=False,
+                        benchmark_human=None):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -60,6 +61,9 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     if mechanism_overviews and limit >= 3:
         from services.deep_research.mechanism_sources import comparison_overviews
         preferred.extend(comparison_overviews(ordered, obligations, extracted)[:limit // 3])
+    if benchmark_human:
+        from services.deep_research.named_benchmark_navigation import preferred_benchmark_reads
+        preferred.extend(preferred_benchmark_reads(ordered, obligations, benchmark_human, limit, extracted))
     ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:

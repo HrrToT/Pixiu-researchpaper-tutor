@@ -416,6 +416,7 @@ class ResearchFacade:
             "scopeObservationContractVersion": 3 if self._comparison_cells_version == 1 else 2,
             "scopeExpressionReviewContractVersion": 5,
             "scopeEvidenceContractVersion": 1,
+            "namedBenchmarkNavigationVersion": 1,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,
             "sourceGlyphContractVersion": 1,
