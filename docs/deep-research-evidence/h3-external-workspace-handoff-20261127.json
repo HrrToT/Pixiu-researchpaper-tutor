@@ -1,0 +1,194 @@
+{
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+  "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+  "contentBoundary": "Replayed exact provider-generated and scientifically reviewed H3 report",
+  "originalRunId": "dr_run_274ef553b83054efa51f2bd223e7fdf7",
+  "sourceArtifactSha256": "5eb0988ee031cddffb518197812587e7107d41f36766035c0241491ca2106926",
+  "expectedPdfSha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+  "newReplayRunId": "dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+  "confirmedExternalPdf": true,
+  "artifactCount": 2,
+  "assistantMessageCount": 1,
+  "citedPages": [
+    4,
+    5,
+    6,
+    14
+  ],
+  "crossTaskFileDenied": true,
+  "unknownSourceDenied": true,
+  "duplicateDispatchDidNotAddArtifact": true,
+  "javaRestartPersistenceVerified": true,
+  "reportBodySha256": "e067da366162fe0f24d4b54449d911e79d35a36794fb7e40866b651b077cc9a0",
+  "exitCode": 0,
+  "javaStopped": true,
+  "pythonHttpStopped": true,
+  "blockedRequests": [],
+  "httpRequests": [
+    {
+      "method": "GET",
+      "path": "/probe",
+      "port": 8193,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/start",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/publication-sync",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/sources",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/sources/src_4f461bc3d47b11e9f7d8a046cc8e7a48294ecb923e93feeef8d5e53a8800ea30/file",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/sources/foreign-source/file",
+      "port": 8189,
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/other-handoff-task/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/sources/src_4f461bc3d47b11e9f7d8a046cc8e7a48294ecb923e93feeef8d5e53a8800ea30/file",
+      "port": 8189,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/external-real-report-handoff/research/dr_run_5e1acf02ad0956c8bb22570f91abc82b/sources/src_4f461bc3d47b11e9f7d8a046cc8e7a48294ecb923e93feeef8d5e53a8800ea30/file",
+      "port": 8189,
+      "status": 200
+    }
+  ],
+  "codeCommit": "51a2055d6da1dfe85555d322f65e8e5048532a51",
+  "artifactSha256": {
+    "receipt.json": "82d24435874c35e6ae56175c4afbd377d989011842a2e00dd373b8fad0f59e33",
+    "task-first-read.json": "914e5493a8951c683f9cb81f5ed08385b5c0a5aed22d7bf4012932aa1eb33b80",
+    "report-first-read.json": "3c3357c63d3b814531181c0d8a69dfcabcfa0f2cc8a37a0f9bb3bca9cb39d685"
+  },
+  "reactTest": {
+    "usedRealJavaSavedArtifact": true,
+    "renderedAppendixCitation": true,
+    "openedCorrectTaskRunAndSource": true,
+    "zeroBasedPageIndex": 13,
+    "pinnedVersion": "arxiv:2409.10516v2",
+    "testedPdfViewerPixels": false
+  },
+  "scope": {
+    "database": "isolated H2 and SQLite",
+    "historicalHoldoutCredit": 0,
+    "productionDeploymentVerified": false
+  }
+}
