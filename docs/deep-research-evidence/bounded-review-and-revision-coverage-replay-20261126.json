@@ -25,7 +25,7 @@
       "decodedCoverageShape": "comparison_audit_v1",
       "preservedClaimIds": ["c1", "c2"],
       "unresolvedClaimId": "c3",
-      "remainingIssue": "The factual reviewer introduced conditions not grounded in its visible source bindings. The original semantic validator rejected the conclusion, and the coverage response left that requirement missing."
+      "remainingIssue": "Diagnostic numeric scanning rejected the reviewer’s count of four target table rows as an unbound measurement (4e0). In a fixture removing only the two descriptions of that count, all three original factual verdicts pass. The unchanged coverage response still marks the shared conclusion missing."
     }
   },
   "scientificContentAccepted": false
