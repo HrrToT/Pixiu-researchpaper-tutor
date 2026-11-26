@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "4ed60b2bc",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "status": "completed",
+  "outcome": "partial",
+  "caseSubmissions": 1,
+  "automaticReruns": 0,
+  "mode": "Real generation via the production research graph, with an isolated ledger and hash-verified local PDFs served through the application's PDF retrieval path",
+  "publicationScope": "isolated ledger only",
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "externalFulltextFetches": 0,
+  "elapsedSeconds": 164.53,
+  "providerReportedUsage": {
+    "gpt-6-luna": {"calls": 5, "inputTokens": 15867, "outputTokens": 1566, "totalTokens": 17433},
+    "gpt-6.1-terra": {"calls": 10, "inputTokens": 55070, "outputTokens": 4036, "totalTokens": 59106},
+    "total": {"calls": 15, "inputTokens": 70937, "outputTokens": 5602, "totalTokens": 76539}
+  },
+  "estimatedUsdAtStandardUncachedRates": 0.0776197,
+  "pricingBoundary": "Calculated from provider token totals, with no cache discount. The actual API billing line and grant deduction were not checked.",
+  "qualityReview": {
+    "literalCitationsChecked": 12,
+    "literalCitationsMatchedTheirPdfPage": 12,
+    "verifiedExamples": ["Original 3DGS initialization and adaptive density control", "LightGaussian post-training fine-tuning, including the separately reported 5000-step operations"],
+    "remainingGaps": ["LightGaussian compression and rendering comparison cells were withheld", "No comparable numerical baseline example was released", "No verified joint conclusion on FPS comparability or a conditional memory-limited choice was released"],
+    "diagnostic": "The joint comparability-and-choice target was isolated as stage_cross_paper_evidence. Two comparison cells remained semantic_unresolved after repair.",
+    "scientificAcceptance": false
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-first-20261126"
+}
