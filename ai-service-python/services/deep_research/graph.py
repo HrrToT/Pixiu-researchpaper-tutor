@@ -1334,7 +1334,8 @@ def make_synthesize_node(
                 **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3) else {}))
             if external_explanation_rows:
                 candidates, premise_bundles = external_explanation.prioritize(
-                    external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []))
+                    external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []),
+                    include_selection_rule=record.get(external_explanation.MARKER) == 2)
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':

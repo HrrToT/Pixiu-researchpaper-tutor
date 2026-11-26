@@ -11,21 +11,28 @@ _MERGE_REQUEST = re.compile(r'合并|汇合|\b(?:merge|combine)\b', re.I)
 _MERGE_RULE = re.compile(r'\b(?:combin\w*|merg\w*)[^.!?]{0,170}\b(?:following equations?|normaliz\w*|rescal\w*|weighted|denominator|maximum)\b', re.I)
 _PERSISTENT_GPU = re.compile(r'\bpersist\w*[^.!?]{0,80}\bGPU\b', re.I)
 _PARALLEL = re.compile(r'\bparallel\b', re.I)
+_STATIC_SELECTION = re.compile(r'\b(?:static pattern|fixed (?:pattern|set)|GPU)\b', re.I)
+_INITIAL_TOKENS = re.compile(r'\b(?:initial|first|starting)\b[^.!?]{0,30}\btokens?\b', re.I)
+_LOCAL_WINDOW = re.compile(r'\b(?:local|recent|sliding)\s+window\b', re.I)
 
 
 def enabled(record, kind):
-    return (record.get(MARKER) == 1 and kind == 'direction_survey'
+    return (record.get(MARKER) in (1, 2) and kind == 'direction_survey'
             and record.get('sourcePolicy', {}).get('mode') == 'external_only')
 
 
-def prioritize(rows, ordered, bundles, plan):
+def _asks_split_merge(question):
+    return 'CPU' in question.upper() and 'GPU' in question.upper() and bool(_MERGE_REQUEST.search(question))
+
+
+def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False):
     """Keep storage and merge passages with the literal, same-source premises."""
     priority_rows, priority_bundles = [], []
     for item in plan:
         for obligation in item.get('obligations', []):
             question = obligation['question']
             seeks_storage = _READ_REQUEST.search(question) and _RETENTION_LOCATION_REQUEST.search(question)
-            seeks_merge = 'CPU' in question.upper() and 'GPU' in question.upper() and _MERGE_REQUEST.search(question)
+            seeks_merge = _asks_split_merge(question)
             if not (seeks_storage or seeks_merge):
                 continue
             for source in obligation.get('requiredSources', []):
@@ -45,6 +52,11 @@ def prioritize(rows, ordered, bundles, plan):
                     merge = first(_MERGE_RULE.search)
                     if split is not None and merge is not None:
                         selected.extend([split, merge])
+                        if include_selection_rule:
+                            selection = first(lambda text: _STATIC_SELECTION.search(text)
+                                              and _INITIAL_TOKENS.search(text) and _LOCAL_WINDOW.search(text))
+                            if selection is not None:
+                                selected.append(selection)
                 if selected:
                     priority_rows.extend(selected)
                     priority_bundles.append({
@@ -87,6 +99,9 @@ with numbers. Bind exact table cells by source rowNumber, zero-based groupIndex,
 Invent no source, assumption, result or author omission. Scope conclusions to the specified revision.
 Access is derived from verified citations. Omit unrelated metrics, background and advice.
 """
+    if record.get(MARKER) == 2 and _asks_split_merge(question):
+        output += ('For split computation, explain the evidenced selection rule for each branch and '
+                   'how the branch results are combined. Distinguish implementation settings from the general method.\n')
     if scope_enabled:
         output += scope_guidance(record['scopeExpressionContractVersion']) + '\n'
     if compact_evidence_wire:
