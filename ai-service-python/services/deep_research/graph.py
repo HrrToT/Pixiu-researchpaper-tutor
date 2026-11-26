@@ -2565,11 +2565,17 @@ def make_verify_node(
                     released_finalization = (comparison_repair_can_use_release(current) if local_contributions(record)
                                              else comparison_operations_enabled(record))
                     repair_input_options={'released_finalization':True} if released_finalization else {}
+                    from services.deep_research.comparison_capacity import reserve_repair_release_audit
                     audit_reservation = 0
-                    if (comparison_audit_args.get('fit_compact_comparison_budget')
-                            and answer_coverage.get('status') == 'deferred_factual_repair'):
-                        audit_reservation = audit_accepted(verification_result.get('accepted', []),
-                                                          current, measure_reservation=True)
+                    if comparison_audit_args.get('fit_compact_comparison_budget'):
+                        if reserve_repair_release_audit(record, answer_coverage):
+                            # Size the complete draft as a forecast for the next
+                            # audit. Its claims are never sent or approved here.
+                            audit_reservation = audit_accepted(repair_report.get('claims', []),
+                                                              current, measure_reservation=True)
+                        elif answer_coverage.get('status') == 'deferred_factual_repair':
+                            audit_reservation = audit_accepted(verification_result.get('accepted', []),
+                                                              current, measure_reservation=True)
 
                     def budget_for_repair(snapshot):
                         budget = snapshot.get('budget', {})

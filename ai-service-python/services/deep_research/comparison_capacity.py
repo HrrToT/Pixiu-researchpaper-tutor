@@ -99,7 +99,14 @@ def after_synthesis(record):
 
 def repair_flow_enabled(record):
     version = record.get('comparisonRepairFlowContractVersion')
-    return type(version) is int and version == 1
+    return type(version) is int and version in (1, 2)
+
+
+def reserve_repair_release_audit(record, coverage):
+    """Protect the release audit when a checked comparison still needs repairs."""
+    version = record.get('comparisonRepairFlowContractVersion')
+    return (type(version) is int and version == 2
+            and coverage.get('status') == 'checked' and bool(coverage.get('gaps')))
 
 
 def defer_initial_audit(record, verification):

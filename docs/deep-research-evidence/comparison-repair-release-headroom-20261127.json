@@ -1,0 +1,73 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "baseRunId": "dr_run_e2b489b1c41d585e9f196a0118738d4f",
+  "savedReleaseAdmission": {
+    "kind": "coveragePromptBytes",
+    "limit": 16616,
+    "used": 23582
+  },
+  "maxTokens": 100000,
+  "legacyPreflight": {
+    "version": 1,
+    "tokensBeforeRepair": 56368,
+    "measurement": [],
+    "attempted": [
+      {
+        "node": "repair_claims",
+        "bytes": 23914,
+        "output": 5120
+      }
+    ],
+    "repairStop": null,
+    "repairLimit": null,
+    "batches": [
+      [
+        "cmp_1_0",
+        "cmp_3_0",
+        "cmp_5_0",
+        "cmp_7_0"
+      ],
+      [
+        "cmp_4_0",
+        "cmp_6_0"
+      ]
+    ]
+  },
+  "candidatePreflight": {
+    "version": 2,
+    "tokensBeforeRepair": 56368,
+    "measurement": [
+      [
+        28877,
+        7
+      ]
+    ],
+    "attempted": [
+      {
+        "node": "repair_claims",
+        "bytes": 9622,
+        "output": 4096
+      }
+    ],
+    "repairStop": null,
+    "repairLimit": null,
+    "batches": [
+      [
+        "cmp_1_0"
+      ],
+      [
+        "cmp_3_0"
+      ],
+      [
+        "cmp_6_0"
+      ]
+    ]
+  },
+  "providerCalls": 0,
+  "newScientificApproval": false,
+  "stoppedAt": "before first repair provider dispatch under each policy",
+  "evidenceFilesSha256": {
+    "run.json": "11766094ee53432c679fdf0fdc59a63a656a60186e5eaa192cc062ac1e423e2f",
+    "calls.json": "cfe8f1f735e630a80c938f0041c9c100f3aa856b9374c6200989e1e14cb94eb1"
+  }
+}
