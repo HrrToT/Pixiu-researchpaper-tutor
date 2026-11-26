@@ -11,6 +11,23 @@ def enabled(record, node='verify_answer_coverage'):
         and record['answerCoherenceContractVersion'] in (1, 2))
 
 
+def revision_coverage_enabled(record, node='verify_answer_coverage'):
+    marker = record.get('revisionTableCoverageEnvelopeVersion')
+    instructions = record.get('coverageInstructionsContractVersion')
+    coherence = record.get('answerCoherenceContractVersion')
+    if (node != 'verify_answer_coverage' or type(marker) is not int or marker != 1
+            or record.get('namedTableScopeVersion') != 2
+            or record.get('state', {}).get('outputKind') != 'claim_verification'
+            or type(instructions) is not int or instructions != 1
+            or record.get('requestCoverageContractVersion') not in (3, 4, 5)
+            or type(coherence) is not int or coherence not in (1, 2)):
+        return False
+    from services.deep_research.named_table_scope import requested_number
+    from services.deep_research.request_coverage import enabled as request_coverage_enabled
+    from services.deep_research.request_context import effective_question
+    return request_coverage_enabled(record) and requested_number(effective_question(record)) is not None
+
+
 POLICY = ('Return exactly one JSON object with ONLY items, auditType, coherent, issues. '
     'items contains all ordinary coverage rows, never an answer_coherence row. '
     'auditType is "answer_coherence"; coherent is a JSON boolean; issues is an array. '
@@ -26,8 +43,9 @@ CORRECTION_POLICY = ('Return exactly one JSON object with only the key "items", 
 
 def uses_correction_envelope(record, node, prompt):
     from services.deep_research.coverage_binding_correction import GUIDANCE
-    return (enabled(record, node) and record['comparisonAuditEnvelopeContractVersion'] >= 2
-            and prompt.startswith(GUIDANCE + '\nFrozen review inputs:\n'))
+    return (prompt.startswith(GUIDANCE + '\nFrozen review inputs:\n')
+            and (revision_coverage_enabled(record, node)
+                 or enabled(record, node) and record['comparisonAuditEnvelopeContractVersion'] >= 2))
 
 
 def decode(value):

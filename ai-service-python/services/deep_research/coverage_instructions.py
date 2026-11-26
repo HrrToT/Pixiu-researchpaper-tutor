@@ -87,7 +87,8 @@ prove coverage: judge the actual semantic connection and EVERY requested part.
 
 def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inputs=False,
            task_sources=False,binding_catalog=None,scoped_catalog=False,coherence=False,
-           process_explanations=False,distinct_roles=False,request_semantics=0,literal_limits=False):
+           process_explanations=False,distinct_roles=False,request_semantics=0,literal_limits=False,
+           root_coherence=False):
     if type(literal_limits) is not bool:raise ValueError("Invalid literal limit policy")
     from services.deep_research.request_coverage import decision_inputs
     if not distinct_roles and process_explanations:
@@ -95,12 +96,16 @@ def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inpu
         process=PROCESS.replace('input/output and same-field role spans\nmust not overlap. Never copy the whole question into both.',
             'same answer-field role spans must not overlap. Input/output request roles follow the active contract.')
     else:process=PROCESS
+    output = OUTPUT
+    if root_coherence:
+        output = output.replace('Return ONLY a JSON array, exactly one row per fixed obligationId, with every',
+            'Return a JSON object with items, auditType, coherent, issues. In items, give one row per fixed obligationId, with every', 1)
     result=('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.\n'
         +decision_inputs(question,requirements,claims,metadata,shared_inputs=shared_inputs)
         +'Available evidence for detecting omissions, NOT inventing requirements: '+evidence_marker+'\n'
-        +CORE+(OUTPUT.replace('These are the exact keys.',
+        +CORE+(output.replace('These are the exact keys.',
             'These are the ordinary keys; limitation checks additionally require limitSpans as specified below.')
-            if literal_limits else OUTPUT))
+            if literal_limits else output))
     if literal_limits:
         from services.deep_research.coverage_limits import GUIDANCE
         result+='\n'+GUIDANCE
@@ -111,5 +116,7 @@ def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inpu
         result+=process
     if coherence:
         from services.deep_research.answer_coherence import GUIDANCE
-        result+=GUIDANCE
+        result += (GUIDANCE.replace('Also append EXACTLY ONE additional array row:',
+            'Specify auditType, coherent and issues as root keys beside items. For a coherent answer:', 1)
+            if root_coherence else GUIDANCE)
     return result

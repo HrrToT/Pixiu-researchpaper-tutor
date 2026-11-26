@@ -164,7 +164,7 @@ def messages_for_record(record, node, prompt):
         from services.deep_research.shared_experiment_revision import POLICY as REPAIR_POLICY
         return [{'role':'system','content':REPAIR_POLICY},{'role':'user','content':prompt}]
     from services.deep_research.comparison_audit_envelope import (
-        CORRECTION_POLICY, POLICY, enabled as comparison_envelope, uses_correction_envelope,
+        CORRECTION_POLICY, POLICY, enabled as comparison_envelope, revision_coverage_enabled, uses_correction_envelope,
     )
     if uses_correction_envelope(record, node, prompt):
         correction_prompt = prompt.replace(
@@ -173,7 +173,7 @@ def messages_for_record(record, node, prompt):
             1,
         )
         return [{'role':'system','content':CORRECTION_POLICY},{'role':'user','content':correction_prompt}]
-    if comparison_envelope(record, node):
+    if comparison_envelope(record, node) or revision_coverage_enabled(record, node):
         return [{'role':'system','content':POLICY},{'role':'user','content':prompt}]
     from services.deep_research.compaction_editor import enabled as editor_enabled,messages as editor_messages
     if editor_enabled(record,node) and enabled(record) and record['structuredOutputContractVersion']>=2:

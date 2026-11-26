@@ -70,3 +70,35 @@ def partition_review(record, data, aliases, proposal, build_request, limit):
          'checkIds': [entry[0] for entry in [*data['sectionChecks'], *data['humanChecks']]],
          'suppliedEvidenceAliases': second_refs},
     ]
+
+
+def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks):
+    """Bound verdict count while preserving the full proposal in every review."""
+    fact_sources = {fact['id']: set(fact['evidenceRefs']) for fact in proposal['sourceFacts']}
+    batches = []
+    for key in ('factChecks', 'sectionChecks', 'humanChecks'):
+        checks = data[key]
+        for start in range(0, len(checks), max_checks):
+            selected = checks[start:start + max_checks]
+            packet = {**data, 'factChecks': [], 'sectionChecks': [], 'humanChecks': [], key: selected}
+            if key == 'factChecks':
+                cited = set().union(*(fact_sources[fact_id] for _, fact_id in selected))
+                rows = [row for row in data['evidence'] if row['evidenceId'] in cited]
+                supplied = [row['evidenceId'] for row in rows]
+                if set(supplied) != cited:
+                    return []
+                refs = {row.get('tableDataRef') for row in rows}
+                packet.update(requirements=[], evidence=rows,
+                              tables={k: v for k, v in data['tables'].items() if k in refs})
+                request, size = build_request(packet)
+            else:
+                # Preserve sources cited by the proposal as well as required
+                # premises for the section and human-criteria reviews.
+                request, size, supplied = fit_accounted_evidence(
+                    record, packet, aliases, proposal, build_request, limit)
+            if size > limit:
+                return []
+            batches.append({'request': request, 'inputBytes': size,
+                            'checkIds': [entry[0] for entry in selected],
+                            'suppliedEvidenceAliases': supplied})
+    return batches

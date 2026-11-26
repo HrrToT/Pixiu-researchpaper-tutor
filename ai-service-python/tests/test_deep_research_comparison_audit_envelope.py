@@ -43,7 +43,11 @@ def test_transport_does_not_modify_rows_or_upgrade_negative_coherence():
     with pytest.raises(ValueError):normalize('verify',{'content':raw},comparison_audit_envelope=True)
 
 
-def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,monkeypatch):
+@pytest.mark.parametrize(('question','kind'), [('比较论文','paper_comparison'),
+     ('核对两版表 1 的 OPT-1.3B','claim_verification')])
+def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,monkeypatch,question,kind):
+    from services.deep_research.comparison_audit_envelope import revision_coverage_enabled
+    from services.deep_research.coverage_instructions import prompt as coverage_prompt
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.tools import TrackedLLMInvoker
@@ -51,19 +55,26 @@ def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
     facade=ResearchFacade(repo,lambda **kwargs:None,llm_client=object(),comparison_cells_version=1)
     try:
-        run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'比较论文',
-            'outputKind':'paper_comparison'},start_async=False)
+        run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':question,
+            'outputKind':kind},start_async=False)
         rid=run['runId']
-        run=repo.update_run(rid,lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
-        assert enabled(run) and run['comparisonAuditEnvelopeContractVersion']==11
+        run=repo.update_run(rid,lambda r:{**r,'state':{**r.get('state',{}),'outputKind':kind}})
+        is_revision = kind == 'claim_verification'
+        marker = 'revisionTableCoverageEnvelopeVersion' if is_revision else 'comparisonAuditEnvelopeContractVersion'
+        assert revision_coverage_enabled(run) if is_revision else enabled(run)
+        assert run[marker] == (1 if is_revision else 11)
+        if is_revision:
+            direct_prompt = coverage_prompt(question, [], [], {}, 'EVIDENCE', coherence=True, root_coherence=True)
+            assert 'root keys beside items' in direct_prompt
+            assert 'append EXACTLY ONE additional array row' not in direct_prompt
         assert messages_for_record(run,'verify_answer_coverage','prompt')[0]['content']==POLICY
         for version in [None,0,True,9999]:
-            old={**run,'comparisonAuditEnvelopeContractVersion':version}
-            assert not enabled(old)
+            old={**run,marker:version}
+            assert not (enabled(old) or revision_coverage_enabled(old))
             assert messages_for_record(old,'verify_answer_coverage','prompt')[0]['content']!=POLICY
-        assert not enabled(run,'verify')
+        assert not (enabled(run,'verify') or revision_coverage_enabled(run,'verify'))
         with pytest.raises(ValueError,match='Immutable'):
-            repo.update_run(rid,lambda r:{**r,'comparisonAuditEnvelopeContractVersion':0})
+            repo.update_run(rid,lambda r:{**r,marker:0})
         repo.begin_execution(rid)
         raw=json.dumps(value());http=Mock(status_code=200)
         http.json.return_value={'choices':[{'message':{'content':raw},'finish_reason':'stop'}],
@@ -73,16 +84,18 @@ def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,
         monkeypatch.setattr('llm.client.requests.post',post)
         client=DeepSeekLLM(api_key='fixture',base_url='https://fixture.invalid',timeout_seconds=2)
         invoke=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,run_record_fn=repo.require_run)
-        result=invoke(rid,'verify_answer_coverage','prompt',{'max_tokens':200})
+        audit_prompt=direct_prompt if is_revision else 'prompt'
+        result=invoke(rid,'verify_answer_coverage',audit_prompt,{'max_tokens':200})
         assert sends[0]['messages'][0]['content']==POLICY and len(sends)==1
         assert result['rawContent']==raw and json.loads(result['content'])==decode(value())
         assert result['structuredOutput']['receivedShape']=='comparison_audit_v1'
-        cached=invoke(rid,'verify_answer_coverage','prompt',{'max_tokens':200})
+        cached=invoke(rid,'verify_answer_coverage',audit_prompt,{'max_tokens':200})
         assert cached==result and len(sends)==1
 
         correction_prompt = GUIDANCE + '\nFrozen review inputs:\n{}'
         old_run = {**run, 'comparisonAuditEnvelopeContractVersion': 1}
-        assert messages_for_record(old_run, 'verify_answer_coverage', correction_prompt)[0]['content'] == POLICY
+        if not is_revision:
+            assert messages_for_record(old_run, 'verify_answer_coverage', correction_prompt)[0]['content'] == POLICY
         rows = [{'obligationId': 'o', 'checkId': 'criterion:C2', 'status': 'partial',
                  'processLinks': [], 'reason': 'Only one of the two papers is described.'}]
         for shape, payload in [('items', {'items': rows}), ('array_compat', rows)]:

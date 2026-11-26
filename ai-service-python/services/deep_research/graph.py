@@ -2299,7 +2299,7 @@ def make_verify_node(
         from services.deep_research.comparison_presentation import metadata as comparison_metadata
         comparison_audit_args = ({'comparison_cells': comparison_metadata(saved['comparisonCellDraft'])}
                                  if cell_enabled(record) and saved.get('comparisonCellDraft') is not None else {})
-        from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope
+        from services.deep_research.comparison_audit_envelope import enabled as comparison_envelope, revision_coverage_enabled
         from services.deep_research.comparison_measurement_display import (
             compact_coverage_checks, direct_scope_review, fit_compact_audit_budget, joint_comparison_delivery)
         if comparison_audit_args and direct_scope_review(record):
@@ -2344,6 +2344,7 @@ def make_verify_node(
                     saved.get('plan', []), accepted,
                     evidence, llm_invoke, _safe_parse_json, budget=budget,
                     **comparison_audit_args, **options,
+                    **({'root_coherence':True} if revision_coverage_enabled(record) else {}),
                     **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                     **({'transformation_processes':True} if transformation_enabled(record) and request_coverage_enabled(record) else {}),
                     **({'claim_check':True} if claim_check_enabled(record) else {}),

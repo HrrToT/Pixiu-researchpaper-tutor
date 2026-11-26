@@ -91,6 +91,31 @@ def test_partition_covers_each_check_with_original_support_and_keeps_full_propos
     assert partition_review(record, data, aliases, proposal, measure, 10) == []
 
 
+def test_output_bounded_review_partitions_even_when_input_fits():
+    from services.deep_research.shared_experiment_review_input import partition_bounded_review
+
+    aliases = {'E1': 'a', 'E2': 'b'}
+    record = {'state': {'sharedExperimentMaterialAllocation': {
+        'requiredEvidenceIds': ['b'], 'suppliedEvidenceIds': list(aliases.values()),
+        'allFrozenPremiseBundlesRetained': True}}}
+    proposal = {'sourceFacts': [{'id': 'F1', 'evidenceRefs': ['E1']}],
+                'steps': [{'id': 'step'}]}
+    data = {'proposal': proposal, 'requirements': [{'obligationId': 'o'}],
+            'evidence': [{'evidenceId': alias} for alias in aliases], 'tables': {},
+            'factChecks': [['fact', 'F1']], 'sectionChecks': [['section', 'criterion', ['/steps']]],
+            'humanChecks': [[f'user_{i}', 'o', f'criterion_{i}'] for i in range(5)]}
+    def measure(view):
+        return view, len(view['evidence']) * 10
+
+    parts = partition_bounded_review(record, data, aliases, proposal, measure, 24, 3)
+    assert [part['checkIds'] for part in parts] == [
+        ['fact'], ['section'], ['user_0', 'user_1', 'user_2'], ['user_3', 'user_4']]
+    assert parts[0]['suppliedEvidenceAliases'] == ['E1']
+    assert all(part['request']['proposal'] == proposal for part in parts)
+    assert all(part['suppliedEvidenceAliases'] == ['E1', 'E2'] for part in parts[1:])
+    assert all(part['request']['requirements'] == data['requirements'] for part in parts[1:])
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []

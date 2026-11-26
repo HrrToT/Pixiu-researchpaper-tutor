@@ -335,7 +335,7 @@ class ResearchFacade:
             **({"experimentArmCloneLayoutVersion": 2 if shared_experiment_profile == 8 else 1}
                if shared_experiment_profile in (6, 7, 8) else {}),
             **({"sharedExperimentRevisionPathsVersion": 3} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentCompactReviewVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentCompactReviewVersion": 2} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
@@ -425,6 +425,7 @@ class ResearchFacade:
             "namedBenchmarkNavigationVersion": 1,
             "namedTableScopeVersion": 2,
             "revisionTableMultipleRowsVersion": 5,
+            "revisionTableCoverageEnvelopeVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
             "comparisonRepairBatchEnvelopeVersion": 3,
             "boundCompositeTableCellsVersion": 2,

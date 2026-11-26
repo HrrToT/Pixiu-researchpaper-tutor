@@ -353,6 +353,7 @@ class DeepResearchRepository:
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',
+                                     'revisionTableCoverageEnvelopeVersion',
                                      'initialPlanExcerptSpanVersion', 'externalExplanationInputVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',

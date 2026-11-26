@@ -1,0 +1,32 @@
+{
+  "sourceReceipts": "shared-state-findings-native-real-20261126.json",
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 80,
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v16": {
+      "originalReviewInputBytes": 31939,
+      "originalFinishReason": "length",
+      "originalOutputTokens": 4096,
+      "reviewInputLimitBytes": 32000,
+      "outputTokensPerBatch": 4096,
+      "batches": [
+        {"checks": "source_facts", "count": 10, "inputBytes": 25077},
+        {"checks": "scientific_sections", "count": 8, "inputBytes": 31941},
+        {"checks": "human_criteria", "count": 9, "inputBytes": 31813}
+      ],
+      "replayedStage": "review_input_build",
+      "providerVerdictsCollectedForBatches": 0
+    },
+    "H4-AWQ-VERSIONS-v8": {
+      "replayedStage": "verify",
+      "replayedFactualResponses": 3,
+      "replayedCoverageResponses": 1,
+      "originalCoverageShape": "invalid_wrapper",
+      "decodedCoverageShape": "comparison_audit_v1",
+      "preservedClaimIds": ["c1", "c2"],
+      "unresolvedClaimId": "c3",
+      "remainingIssue": "The factual reviewer introduced conditions not grounded in its visible source bindings. The original semantic validator rejected the conclusion, and the coverage response left that requirement missing."
+    }
+  },
+  "scientificContentAccepted": false
+}
