@@ -131,7 +131,11 @@ class AcademicAcquisition:
                         terms-=_reading_terms(label)
                     seen={s.get('location',{}).get('page') for s in record.get('state',{}).get('sources',[])
                           if s.get('versionId')==identity and target['obligationId'] in s.get('obligationIds',[])}
+                    from services.deep_research.external_explanation import MARKER, asks_split_merge
+                    follow_merge = (record.get(MARKER) == 3 and record['sourcePolicy']['mode'] == 'external_only'
+                                    and asks_split_merge(question))
                     selected_pages=select_sections(pages,reading_query,terms,seen=seen,
+                        follow_merge_reference=follow_merge,
                         **({'contract_version':min(3,record['externalReadingContractVersion'])} if record.get('externalReadingContractVersion') in (2,3,4,5) else {}))
                 else:selected_pages=[(page,None) for page in _select_pages(pages, reading_query, title=material.get('title', ''))]
                 for page,parts in selected_pages:

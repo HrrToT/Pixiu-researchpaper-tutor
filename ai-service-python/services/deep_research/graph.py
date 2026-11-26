@@ -1335,7 +1335,7 @@ def make_synthesize_node(
             if external_explanation_rows:
                 candidates, premise_bundles = external_explanation.prioritize(
                     external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []),
-                    include_selection_rule=record.get(external_explanation.MARKER) == 2)
+                    include_selection_rule=record.get(external_explanation.MARKER) in (2, 3))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':

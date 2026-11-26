@@ -52,6 +52,25 @@ def test_page_allowance_and_literal_page_envelope_remain_bounded():
     assert len(select(pages(),'how does the method work',set()))==3
 
 
+def test_explicit_merge_reference_keeps_anchor_and_replaces_one_read_page():
+    source = pages() + [
+        {'page':5, 'text':'B.1 Formula of Combining Attention Results\nThe partial outputs are reweighted.'},
+        {'page':6, 'text':'C.1 Combining other results\nThis section concerns a separate example.'},
+    ]
+    source[1]['text'] += 'The detailed combination algorithm is given in §B.\n'
+    query = 'CPU 和 GPU 怎样合并？'
+    terms = {'kernels','updates'}
+    baseline = select(source,query,terms,contract_version=3)
+    chosen = select(source,query,terms,contract_version=3,follow_merge_reference=True)
+    assert len(chosen) == len(baseline) == 3
+    assert {2, 5} <= {page['page'] for page, _ in chosen}
+    assert 5 not in {page['page'] for page, _ in baseline}
+    assert 6 not in {page['page'] for page, _ in chosen}
+    source.append({'page':7, 'text':'B.2 Combining other attention results\nAmbiguous second target.'})
+    assert 5 not in {page['page'] for page, _ in
+                     select(source,query,terms,contract_version=3,follow_merge_reference=True)}
+
+
 def test_layout_hint_is_not_an_invented_method_heading_or_scientific_approval():
     p=[{'page':1,'text':'1 Our method reaches high accuracy.\n2 We compare the method to a baseline.\nThe word method is not a section.'}]
     assert all(part['role']=='unknown' for _,parts in spans(p) for part in parts)

@@ -10,6 +10,16 @@ _NAV_OTHER=re.compile(r'\b(?:introduction|related work|background|references|bib
 _ASK = re.compile(r'解释|如何|怎样|怎么|为什么|机制|原理|流程|方法|\b(?:explain|how|why|mechanism|procedure)\b',re.I)
 _BACKGROUND = re.compile(r'相关工作|背景方法|以往方法|传统方法|\b(?:related work|prior methods?|previous methods?|traditional methods?)\b',re.I)
 _RESULTS = re.compile(r'报告.*结果|实验结果|评测结果|性能结果|性能比较|数据集表现|\b(?:benchmark|results? comparison|reported results?|evaluation results?)\b',re.I)
+_MERGE_REFERENCE = re.compile(
+    r'\b(?:combin\w*|merg\w*)[ \t\n]+(?:the[ \t\n]+)?(?:algorithm|procedure|steps|rule)\b'
+    r'[^.!?;]{0,160}?(?:\bappendix\s+|§\s*)([A-Z](?:\.\d+){0,3})(?![A-Za-z0-9])',
+    re.IGNORECASE,
+)
+_APPENDIX_HEADING = re.compile(
+    r'^[ \t]*(?:Appendix[ \t]+)?([A-Z](?:\.\d+){0,3})[ \t]+'
+    r'[^\n]{0,120}\b(?i:combin\w*|merg\w*)\b[^\n]{0,120}$',
+    re.MULTILINE,
+)
 
 
 def method_requested(question, *, outline=False):
@@ -83,7 +93,7 @@ def _part(start,end,stack):
             'role':stack[-1][2] if stack else 'unknown'}
 
 
-def select(pages,query,terms,*,seen=(),contract_version=1):
+def select(pages,query,terms,*,seen=(),contract_version=1,follow_merge_reference=False):
     if type(contract_version) is not int or contract_version not in (1,2,3):raise ValueError("Invalid external reading policy")
     annotated=spans(pages,outline=contract_version in (2,3),**({'normalize_headings':True} if contract_version==3 else {}))
     method_request=method_requested(query,outline=contract_version in (2,3))
@@ -110,6 +120,29 @@ def select(pages,query,terms,*,seen=(),contract_version=1):
         if overview is not None and methods:
             selected=methods[:2]+([overview] if all(pair[0] is not overview[0] for pair in methods[:2]) else [])
             selected+= [pair for pair in ranked if all(pair[0] is not p[0] for p in selected)][:3-len(selected)]
+    if follow_merge_reference:
+        selected = _include_merge_procedure(annotated, selected)
+    return selected
+
+
+def _include_merge_procedure(annotated, selected):
+    selected_numbers = {page['page'] for page, _ in selected}
+    for anchor, _ in selected:
+        for match in _MERGE_REFERENCE.finditer(anchor['text']):
+            label = match.group(1).upper()
+            candidates = []
+            for pair in annotated:
+                for heading in _APPENDIX_HEADING.finditer(pair[0]['text'][:6000]):
+                    if heading.group(1) == label or heading.group(1).startswith(label + '.'):
+                        candidates.append(pair)
+                        break
+            if len(candidates) != 1 or candidates[0][0]['page'] in selected_numbers:
+                continue
+            # Keep the page that established the pointer and stay within the
+            # existing page cap. No links or requests are created by PDF text.
+            replaced = next((pair for pair in reversed(selected) if pair[0] is not anchor), None)
+            if replaced is not None:
+                return [candidates[0] if pair is replaced else pair for pair in selected]
     return selected
 
 
