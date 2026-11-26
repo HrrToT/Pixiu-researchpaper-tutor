@@ -803,6 +803,7 @@ def make_read_node(
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
                 **({'named_table_question': effective_question(record)} if record.get('namedTableScopeVersion') == 2
                    and record['state'].get('outputKind') == 'claim_verification' else {}),
+                **({'named_table_grouped_rows':True} if record.get('namedTableGroupedRowsVersion') == 1 else {}),
                 **({'protocol_note': True} if prefers_protocol_note(record) else {}),
                 **({'mechanism_overviews': True} if record.get('comparisonMechanismReadContractVersion') == 1
                    and record['state'].get('outputKind') == 'paper_comparison' else {}),
@@ -1348,6 +1349,7 @@ def make_synthesize_node(
             from services.deep_research.named_table_scope import prioritize as prioritize_table_scope
             candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question,
                 **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}),
+                **({'grouped_rows':True} if record.get('namedTableGroupedRowsVersion') == 1 else {}),
                 keep_revisions_together=record.get('revisionTableMultipleRowsVersion') in (4, 5))
         if protocol_rows:
             candidates = [*protocol_rows.values(), *(row for row in candidates if row['evidenceId'] not in protocol_rows)]

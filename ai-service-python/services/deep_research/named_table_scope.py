@@ -8,12 +8,45 @@ _REQUEST = re.compile(_TABLE, re.I)
 _LIST = re.compile(_TABLE + r'\s*(?:[、,，/–-]|\band\b|及|和|与|至|到)\s*\d', re.I)
 _CAPTION = re.compile(r'^\s*(?:table caption:\s*)?' + _TABLE + r'[ \t]*[:：.]', re.I | re.M)
 _SECTION = re.compile(r'^\s*' + _TABLE + r'[ \t]*[:：.]?[ \t]*$', re.I)
+_SIZED_MODEL = re.compile(r'^([A-Za-z][\w.-]*?)[\s\-‐‑–−]+(\d+(?:\.\d+)?[BM])$', re.I)
+_MODEL_LIST = re.compile(r'^\s*(?:(?:和|与|及|、|,|，|\band\b|\bor\b)\s*\d+(?:\.\d+)?[BM](?![A-Za-z0-9])\s*)+', re.I)
 
 
-def requested_row_numbers(packet, question):
-    return {number for number, label, _ in packet['rows'] if label.strip() and re.search(
+def _requested_models(models, question):
+    from services.deep_research.requested_table_rows import match_priority
+
+    named = {model for model in models if match_priority(model, question)}
+    # Extend an explicit model-size list only within the same family, e.g.
+    # "Llama-2 13B and 70B". A size elsewhere in the question cannot select it.
+    families = {}
+    for model in models:
+        if match := _SIZED_MODEL.fullmatch(model):
+            families.setdefault(match[1].casefold(), {})[match[2].casefold()] = model
+    for family, candidates in families.items():
+        parts = [re.findall(r'[a-z]+|\d+|[^a-z\d]+', token) for token in re.split(r'[\s\-‐‑–−]+', family)]
+        prefix = r'[\s\-‐‑–−]+'.join(
+            r'[\s\-‐‑–−]*'.join(map(re.escape, tokens)) for tokens in parts)
+        for anchor in re.finditer(r'(?<![A-Za-z0-9])' + prefix +
+                                  r'[\s\-‐‑–−]+(\d+(?:\.\d+)?[BM])(?![A-Za-z0-9])', question, re.I):
+            sizes = {anchor[1].casefold()}
+            tail = _MODEL_LIST.match(question[anchor.end():])
+            if tail:
+                sizes.update(item.casefold() for item in re.findall(r'\d+(?:\.\d+)?[BM]', tail[0], re.I))
+            named.update(candidates[size] for size in sizes & candidates.keys())
+    return named
+
+
+def requested_row_numbers(packet, question, *, grouped_rows=False):
+    numbers = {number for number, label, _ in packet['rows'] if label.strip() and re.search(
         r'(?<![A-Za-z0-9_.-])' + r'\s+'.join(map(re.escape, label.split())) + r'(?![A-Za-z0-9_.-])',
         question, re.I)}
+    if grouped_rows:
+        groups = {label.split(' / ', 1)[0] for _, label, _ in packet['rows'] if ' / ' in label}
+        layers = getattr(question, 'point_instruction_layers', getattr(question, 'instruction_layers', (question,)))
+        named = _requested_models(groups, '\n'.join(layers))
+        numbers.update(number for number, label, _ in packet['rows']
+                       if ' / ' in label and label.split(' / ', 1)[0] in named)
+    return numbers
 
 
 def include_indexed_rows(rows, candidates, record, owner, limit):
@@ -39,7 +72,8 @@ def include_indexed_rows(rows, candidates, record, owner, limit):
         if (counts[row['sourceId']] != 1 or not table or not section or section[1].casefold() != number):
             continue
         packet = visible_table_packet(row.get('tableData'), row.get('text', ''))
-        matched = requested_row_numbers(packet, question) if packet else set()
+        matched = requested_row_numbers(packet, question,
+            grouped_rows=record.get('namedTableGroupedRowsVersion') == 1) if packet else set()
         if matched:
             matches.append((row, matched))
     if not matches or len({row['location']['table'] for row, _ in matches}) != 1:
@@ -119,7 +153,7 @@ def select(rows, number):
     return selected, matched
 
 
-def preferred_read_rows(sources, question, limit, extracted):
+def preferred_read_rows(sources, question, limit, extracted, *, grouped_rows=False):
     """Read distinct requested rows for each eligible snapshot before generic passages."""
     from services.deep_research.table_evidence import visible_table_packet
 
@@ -135,7 +169,7 @@ def preferred_read_rows(sources, question, limit, extracted):
                 or (row['sourceId'], row.get('contentHash')) in extracted):
             continue
         packet = visible_table_packet(row.get('tableData'), row.get('text', ''))
-        matches = requested_row_numbers(packet, question) if packet else set()
+        matches = requested_row_numbers(packet, question, grouped_rows=grouped_rows) if packet else set()
         if matches:
             per_source[(row['workId'], row['versionId'])].append((row, matches))
     queues = []
@@ -152,7 +186,8 @@ def preferred_read_rows(sources, question, limit, extracted):
             for queue in queues if index < len(queue)][:limit // 2]
 
 
-def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_revisions_together=False):
+def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_revisions_together=False,
+               grouped_rows=False):
     """Keep a caption and its available result passage together per revision."""
     revisions = defaultdict(list)
     for row in rows:
@@ -162,7 +197,7 @@ def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_r
     for identity, items in revisions.items():
         if requested_rows:
             from services.deep_research.table_evidence import visible_table_packet
-            indexed = [(row, requested_row_numbers(packet, question)) for row in items
+            indexed = [(row, requested_row_numbers(packet, question, grouped_rows=grouped_rows)) for row in items
                        if (packet := visible_table_packet(row.get('tableData'), row['quote']))]
             indexed = [(row, matches) for row, matches in indexed if matches]
             if indexed and len({row['location'].get('table') for row, _ in indexed}) == 1:

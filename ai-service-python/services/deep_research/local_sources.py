@@ -126,7 +126,8 @@ class LocalTaskRetriever:
             number = requested_number(question)
             matching = [row for row in passages if row.get('tableData') and number
                         and row['location'].get('section') == f'Table {number}'
-                        and requested_row_numbers(row['tableData'], question)]
+                        and requested_row_numbers(row['tableData'], question,
+                                                  grouped_rows=record.get('namedTableGroupedRowsVersion') == 1)]
             if len(matching) == 1:
                 table, = matching
                 found = [table, *(row for row in found if row['sourceId'] != table['sourceId'])][:min(limit, 5)]

@@ -369,6 +369,7 @@ class DeepResearchRepository:
                                      'revisionTableCoverageEnvelopeVersion', 'revisionTablePointRenderingVersion',
                                      'revisionTableMeasuredMetricAliasVersion',
                                      'revisionTableCommonOrderVersion',
+                                     'namedTableGroupedRowsVersion',
                                      'revisionTableSingleVersionDisplayVersion',
                                      'initialPlanExcerptSpanVersion', 'externalExplanationInputVersion',
                                      'singleBenchmarkCriteriaVersion',

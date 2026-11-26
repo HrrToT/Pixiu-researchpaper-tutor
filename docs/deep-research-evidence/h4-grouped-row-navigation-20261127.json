@@ -1,0 +1,69 @@
+{
+  "kivi": {
+    "versions": [
+      {
+        "version": "v1",
+        "page": 7,
+        "pdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+        "oldMatchedRows": 0,
+        "newMatchedRows": 4,
+        "selectedLabels": [
+          "Llama-2-13B / 16bit",
+          "Llama-2-13B / 2bit (K - C , V - T )",
+          "Llama-2-13B / 2bit (K -T, V -C)",
+          "Llama-2-13B / KIVI-2"
+        ]
+      },
+      {
+        "version": "v2",
+        "page": 8,
+        "pdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+        "oldMatchedRows": 0,
+        "newMatchedRows": 8,
+        "selectedLabels": [
+          "Llama-2-13B / 16bit",
+          "Llama-2-13B / 4bit (K -T, V -T)",
+          "Llama-2-13B / 2bit (K - C , V - T )",
+          "Llama-2-13B / 2bit (K -T, V -T)",
+          "Llama-2-13B / 2bit (K -C, V -C)",
+          "Llama-2-13B / 2bit (K -T, V -C)",
+          "Llama-2-13B / KIVI-4",
+          "Llama-2-13B / KIVI-2"
+        ]
+      }
+    ],
+    "oldPreferredPassages": 0,
+    "newPreferredPassages": 2,
+    "requiredEvidenceBundle": "explicit_table_context_across_versions",
+    "retainedRequestedModelChunks": true
+  },
+  "quarot": {
+    "versions": [
+      {
+        "version": "v2",
+        "page": 8,
+        "pdfSha256": "f611888c63ef63a5c0232e2c8416619f0c9ace08d0e05692731da82791202e3e",
+        "oldMatchedRows": 0,
+        "newMatchedRows": 4,
+        "selectedLabels": [
+          "LLAMA2-13B / FP16",
+          "LLAMA2-13B / QuaRot",
+          "LLAMA2-70B / FP16",
+          "LLAMA2-70B / QuaRot"
+        ]
+      }
+    ],
+    "oldPreferredPassages": 0,
+    "newPreferredPassages": 1,
+    "requiredEvidenceBundle": "explicit_table_context",
+    "retainedRequestedModelChunks": true,
+    "v1IndexReplayAvailable": false
+  },
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "unseenHoldoutCredit": 0,
+  "baseCommit": "fcb12cc79c93ffb32485aa73f94d1a1ba8e83bd9",
+  "route": "real PDF and saved TEI through index chunking, preferred read order and synthesis evidence bundles",
+  "targetedRegressionTests": 66,
+  "postTestRequestScopeChecks": 6
+}

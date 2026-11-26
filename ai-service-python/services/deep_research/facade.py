@@ -453,6 +453,7 @@ class ResearchFacade:
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,
             "namedTableScopeVersion": 2,
+            "namedTableGroupedRowsVersion": 1,
             "revisionTableMultipleRowsVersion": 5,
             "revisionTableCoverageEnvelopeVersion": 1,
             "revisionTablePointRenderingVersion": 1,

@@ -1,4 +1,4 @@
-from services.deep_research.named_table_scope import include_indexed_rows, prioritize, requested_number, select
+from services.deep_research.named_table_scope import include_indexed_rows, prioritize, requested_number, requested_row_numbers, select
 from services.deep_research.request_context import ResearchQuestion
 
 
@@ -78,3 +78,16 @@ def test_required_table_bundle_prioritizes_both_revisions_before_optional_rows()
                             requested_rows=True, keep_revisions_together=True)
     assert bundles[0]['evidenceIds'] == ['v1','v2']
     assert [bundle['evidenceIds'] for bundle in bundles[1:]] == [['v1'],['v2']]
+
+
+def test_named_model_group_retains_configurations_and_respects_explicit_size_lists():
+    packet = {'rows': [[2,'Llama-2-7B / KIVI-2',['8']], [3,'Llama-2-13B / 16bit',['9']],
+                       [4,'Llama-2-13B / KIVI-2',['7']], [5,'Llama-2-70B / FP16',['6']],
+                       [6,'Llama-3-70B / FP16',['5']]]}
+    question = '核对表 3 的 Llama‑2 13B 和 70B 结果。'
+    assert not requested_row_numbers(packet,question)
+    assert requested_row_numbers(packet,question,grouped_rows=True)=={3,4,5}
+    assert requested_row_numbers({'rows':[[5,'LLAMA2-70B / FP16',['6']]]},question,grouped_rows=True)=={5}
+    assert requested_row_numbers(packet,'核对 Llama-2-13B。背景讨论过 70B。',grouped_rows=True)=={3,4}
+    followup = ResearchQuestion(question, ['核对 Llama-2-13B。', question], ['核对 Llama-2-13B。'])
+    assert requested_row_numbers(packet,followup,grouped_rows=True)=={3,4}
