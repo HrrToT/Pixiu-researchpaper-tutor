@@ -96,12 +96,15 @@ def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_name
                     "originalControlCount":controls}
         if include_tables or include_named_tables:
             from core.pdf_repeated_metric_tables import verified_metric_tables
-            from core.pdf_benchmark_columns import verified_percentage_tables
+            from core.pdf_benchmark_columns import verified_percentage_tables, verified_ruled_two_tier_tables
             try:
                 tables = verified_metric_tables(page, text) if include_tables else []
                 if include_named_tables:
                     recognized = {table['number'] for table in tables}
                     tables.extend(table for table in verified_percentage_tables(page, text)
+                                  if table['number'] not in recognized)
+                    recognized = {table['number'] for table in tables}
+                    tables.extend(table for table in verified_ruled_two_tier_tables(page, row['text'])
                                   if table['number'] not in recognized)
             except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
                 tables = []  # Optional geometry cannot make readable PDF prose unavailable.

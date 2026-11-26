@@ -487,13 +487,13 @@ def attach_verified_table_columns(sections, pdf_path):
                                                 if line.startswith(prefix)), line) for line in lines)
     if splits:
         sections = [piece for i, section in enumerate(sections) for piece in splits.get(i, [section])]
-    return _attach_ruled_percentage_tables(sections, reader, pages, page_rules)
+    return _attach_additional_ruled_tables(sections, reader, pages, page_rules)
 
 
-def _attach_ruled_percentage_tables(sections, reader, drawing_cache, rule_cache):
+def _attach_additional_ruled_tables(sections, reader, drawing_cache, rule_cache):
     from collections import Counter
 
-    from core.pdf_benchmark_columns import ruled_percentage_tables
+    from core.pdf_benchmark_columns import may_have_ruled_two_tier_table, ruled_percentage_tables, ruled_two_tier_tables
     from core.pdf_model_table import horizontal_rules
 
     results = list(sections)
@@ -502,15 +502,26 @@ def _attach_ruled_percentage_tables(sections, reader, drawing_cache, rule_cache)
             continue
         try:
             plain_text = page.extract_text() or ''
-            if not re.search(r'(?:\d+(?:\.\d+)?%[ \t]+){3,}\d+(?:\.\d+)?%', plain_text):
+            percentages = re.search(r'(?:\d+(?:\.\d+)?%[ \t]+){3,}\d+(?:\.\d+)?%', plain_text)
+            two_tier = may_have_ruled_two_tier_table(plain_text)
+            if not percentages and not two_tier:
                 continue
             runs = drawing_cache[index] if index in drawing_cache else drawing_runs(page)
             rules = rule_cache[index] if index in rule_cache else horizontal_rules(page)
-            tables = list(ruled_percentage_tables(runs, rules, plain_text))
+            tables = []
+            if percentages:
+                for bounds, caption, groups, values in ruled_percentage_tables(runs, rules, plain_text):
+                    rows = [[i, row[0], row[1:]] for i, row in enumerate(values, 2)]
+                    tables.append((bounds, caption, {'groups': groups, 'rows': rows}, False))
+            if two_tier:
+                percentage_numbers = {caption['number'] for _, caption, _, _ in tables}
+                tables.extend((bounds, caption, packet, True)
+                              for bounds, caption, packet in ruled_two_tier_tables(runs, rules, plain_text)
+                              if caption['number'] not in percentage_numbers)
         except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
             continue  # Unsupported text extraction or geometry cannot verify this page.
         counts = Counter(caption['number'] for _, caption, _, _ in tables)
-        for bounds, caption, groups, values in tables:
+        for bounds, caption, packet, from_two_tier in tables:
             number = caption['number']
             if counts[number] != 1:
                 continue
@@ -520,11 +531,14 @@ def _attach_ruled_percentage_tables(sections, reader, drawing_cache, rule_cache)
             if len(candidates) > 1:
                 continue
             old = results[candidates[0]] if candidates else None
-            if old and (old.get('tableVerifiedData') or not old.get('tableBounds')
-                        or abs(old['tableBounds'][1] - bounds[1]) > 18):
+            if old and old.get('tableVerifiedData'):
                 continue
+            if old and (not old.get('tableBounds') or abs(old['tableBounds'][1] - bounds[1]) > 18):
+                if not from_two_tier:
+                    continue
+                old = None  # A different TEI boundary must keep its original content.
             table_id = f'pdf-page-{index + 1}-table-{number}'
-            rows = [[i, row[0], row[1:]] for i, row in enumerate(values, 2)]
+            groups, rows = packet['groups'], packet['rows']
             header = ' | '.join(' / '.join(filter(None, (parent, item))) for parent, items in groups for item in items)
             lines = ['Table caption: ' + caption['text'], 'Table row 1: ' + header,
                      *(f'Table row {i}: ' + ' | '.join([label, *cells]) for i, label, cells in rows)]

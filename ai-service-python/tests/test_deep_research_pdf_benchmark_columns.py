@@ -38,6 +38,34 @@ def test_reconstructs_columns_from_two_physical_header_lines_and_exact_rows():
     assert (section, drawing) == baseline
 
 
+@pytest.mark.parametrize('fault', [None, 'foreign_caption', 'swapped_cell', 'missing_rule'])
+def test_native_two_tier_table_requires_its_own_drawn_caption_and_exact_cells(fault):
+    from core.pdf_benchmark_columns import ruled_two_tier_tables
+
+    _, drawing, _ = benchmark()
+    drawing = [r for r in drawing if r['x'] < 300]
+    caption = {'x': 38, 'y': 88, 'text': 'Table 4. Results',
+               'tokens': [{'text': 'Table 4. Results', 'x': 38}]}
+    drawing.append(caption)
+    rules = [(38, 293, y) for y in (15, 40, 81)]
+    plain = ['Table 3. Earlier Results', 'Method Trainable Dataset A Parameters Accuracy (%)',
+             'Full tune 31.5M 72.0', 'Low rank 2.2M 73.4', 'Low rank 5.0M 74.0', 'Table 4. Results']
+    if fault == 'foreign_caption':
+        plain[-1] = 'Table 3. Results'
+    elif fault == 'swapped_cell':
+        plain[3] = 'Low rank 2.2M 74.0'
+    elif fault == 'missing_rule':
+        rules.pop(1)
+    results = list(ruled_two_tier_tables(drawing, rules, '\n'.join(plain)))
+    if fault:
+        assert not results
+        return
+    _, located, packet = results[0]
+    assert located['number'] == '4'
+    assert packet['groups'] == [['Trainable', ['Parameters']], ['Dataset A', ['Accuracy (%)']]]
+    assert packet['rows'][2] == [4, 'Low rank', ['5.0M', '74.0']]
+
+
 @pytest.mark.parametrize('change', ['shifted_header', 'unknown_header', 'duplicate_heading', 'collapsed_geometry'])
 def test_two_tier_decoder_rejects_ambiguous_column_layout(change):
     section, drawing, _ = benchmark()

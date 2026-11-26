@@ -7,6 +7,8 @@ import unicodedata
 
 _NUMBER = r'[-+−]?\d+(?:,\d{3})*(?:\.\d+)?(?:%|[KMB])?'
 _NUMERIC_CELL = re.compile(rf'{_NUMBER}(?:/{_NUMBER}){{0,3}}')
+_RULED_CAPTION = re.compile(r'^Table\s*(\d+)\s*[:.]', re.I)
+_DATA_LINE = re.compile(rf'\S.+?(?:[ \t]+{_NUMBER}){{2,11}}$')
 
 
 def _compact(value):
@@ -110,6 +112,82 @@ def verify_two_tier_columns(section, runs):
     if len({_compact(g[0]).casefold() for g in groups}) != len(groups):
         return None
     return {'groups': groups, 'rows': [[number, cells[0], cells[1:]] for number, cells, _, _ in stable]}
+
+
+def ruled_two_tier_tables(runs, rules, plain_text):
+    """Recover complete two-tier tables when the TEI lost the rows or table boundary."""
+    from collections import defaultdict
+
+    plain = [line.strip() for line in plain_text.splitlines() if line.strip()]
+    edges = defaultdict(set)
+    for left, right, y in rules:
+        if right - left >= 100:
+            edges[round(left, 1), round(right, 1)].add(round(y, 2))
+    for (left, right), values in edges.items():
+        levels = sorted(values)
+        for top, divider, bottom in zip(levels, levels[1:], levels[2:]):
+            if not 9 <= divider - top <= 50 or not 12 <= bottom - divider <= 160:
+                continue
+            column_runs = [run for run in runs if left - 3 <= run['x'] <= right + 3
+                           and top < run['y'] <= bottom + 24]
+            headers = _line_groups([run for run in column_runs if run['y'] < divider])
+            body = _line_groups([run for run in column_runs if divider < run['y'] < bottom])
+            below = _line_groups([run for run in column_runs if run['y'] > bottom])
+            if not 2 <= len(headers) <= 4 or not 2 <= len(body) <= 30 or not below:
+                continue
+            caption_text = ' '.join(token['text'] for token in _tokens(below[0]))
+            caption = _RULED_CAPTION.match(caption_text)
+            if not caption:
+                continue
+            plain_indices = [i for i, line in enumerate(plain) if i >= len(body) + 1
+                             and _compact(line) == _compact(caption_text)]
+            if len(plain_indices) != 1:
+                continue
+            tail, = plain_indices
+            raw = [line.split() for line in plain[tail - len(body):tail]]
+            counts = [next((i for i, token in enumerate(reversed(row)) if not _NUMERIC_CELL.fullmatch(token)), len(row))
+                      for row in raw]
+            if len(set(counts)) != 1 or not 2 <= counts[0] <= 11 or any(len(row) <= counts[0] for row in raw):
+                continue
+            width = counts[0]
+            labels = [_tokens(line) for line in headers]
+            if any(not tokens for tokens in labels):
+                continue
+            fixed = [tokens[0]['text'] for tokens in labels if len(tokens) == 1 and tokens[0]['x'] <= left + 12]
+            if len(fixed) != 1 or not re.fullmatch(r'[A-Za-z][\w-]*', fixed[0]):
+                continue
+            drawn_header = ''.join(token['text'] for tokens in labels if len(tokens) > 1 for token in tokens)
+            # Plain extraction may attach the fixed header to an adjacent
+            # baseline. Its words must still corroborate the drawn header.
+            raw_header = _compact(''.join(plain[max(0, tail - len(body) - 4):tail - len(body)]))
+            if _compact(fixed[0]) not in raw_header or _compact(drawn_header) not in raw_header.replace(_compact(fixed[0]), '', 1):
+                continue
+            rows = [[' '.join(row[:-width]), *row[-width:]] for row in raw]
+            header = [{'text': fixed[0], 'rows': 1, 'cols': 1}, {'text': drawn_header, 'rows': 1, 'cols': width}]
+            section = {'tableBounds': [left, top, right - left, bottom - top],
+                       'tableRows': [header, *[[{'text': v, 'rows': 1, 'cols': 1} for v in row] for row in rows]]}
+            packet = verify_two_tier_columns(section, runs)
+            if not packet or len(packet['rows']) != len(body):
+                continue
+            yield section['tableBounds'], {'number': caption[1], 'text': plain[tail]}, packet
+
+
+def may_have_ruled_two_tier_table(text):
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    return any(_RULED_CAPTION.match(caption) and _DATA_LINE.fullmatch(first) and _DATA_LINE.fullmatch(second)
+               for first, second, caption in zip(lines, lines[1:], lines[2:]))
+
+
+def verified_ruled_two_tier_tables(page, text):
+    from core.pdf_model_table import horizontal_rules
+    from core.pdf_table_columns import drawing_runs
+
+    if page.get('/Rotate', 0) % 360 or not may_have_ruled_two_tier_table(text):
+        return []
+    tables = list(ruled_two_tier_tables(drawing_runs(page), horizontal_rules(page), text))
+    counts = Counter(caption['number'] for _, caption, _ in tables)
+    return [{'number': caption['number'], 'caption': caption['text'], 'tableData': packet}
+            for _, caption, packet in tables if counts[caption['number']] == 1]
 
 
 _PERCENT = re.compile(r'\d+(?:\.\d+)?%')
