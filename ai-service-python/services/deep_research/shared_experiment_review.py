@@ -6,7 +6,7 @@ Structural validation is never substituted for scientific support/completeness.
 from copy import deepcopy
 import json
 
-from services.deep_research.contracts import DeepResearchError, digest
+from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.shared_experiment_generation import enabled, build as build_generation, prepare as prepare_generation, _parse
 from services.deep_research.shared_experiment_plan import validate_bound, _object, _array
 
@@ -618,6 +618,23 @@ def assess(record, input_data, aliases, response):
             'reviewDigest':digest({'generation':generation['bindingDigest'],'response':response})}
 
 
+def _initial_batch_budget_stop(record, built):
+    from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN
+    batches = built.get('batches')
+    budget = record.get('budget') or {}
+    limit = budget.get('maxTokens')
+    if record.get(SCOPED_PACKET_MARKER) != 1 or not batches or not limit:
+        return None
+    spent = int(budget.get('tokens') or 0)
+    for index, batch in enumerate(batches):
+        reservation = batch['inputBytes'] + batch['request']['extra']['max_tokens'] + INPUT_RESERVATION_MARGIN
+        if spent + reservation > limit:
+            # Actual usage settles between packets. Only reject if an individual
+            # packet cannot fit even before any earlier packet consumes tokens.
+            return {'batchIndex': index, 'limit': limit, 'spent': spent, 'reservation': reservation}
+    return None
+
+
 def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=()):
     from services.deep_research.planning_transport import dispatch_options
     built = build(record,input_data,aliases,required_domains=required_domains)
@@ -628,12 +645,17 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or reference_review_enabled(built))
               and len(built['targets']) > MAX_CHECKS_PER_REVIEW and not built.get('batches')):
             saved['status'] = 'not_started_capacity'
+        elif stop := _initial_batch_budget_stop(record, built):
+            saved.update(status='not_started_budget', budgetStop=stop)
         checkpoint(deepcopy(saved))
     elif (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version'] != 1
           or any(k not in saved or digest(saved[k]) != digest(v) for k,v in built.items())):
         raise DeepResearchError('invalid_shared_experiment_review_state','共享方案审核输入或身份已改变。')
     if saved['status'] == 'not_started_capacity':
         raise DeepResearchError('shared_experiment_review_capacity','完整科学审核超出单批容量，尚未发送。')
+    if saved['status'] == 'not_started_budget':
+        stop = saved['budgetStop']
+        raise BudgetExhaustedError('tokens', stop['limit'], stop['spent'] + stop['reservation'])
     if saved['status'] == 'not_started_precheck': return saved
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')

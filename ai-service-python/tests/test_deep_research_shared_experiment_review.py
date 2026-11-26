@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from services.deep_research.contracts import DeepResearchError, UnknownCallError, digest
+from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate
 from services.deep_research.shared_experiment_review import targets, prepare, assess, descriptor, NODE, _pointer
 from services.deep_research.shared_experiment_result import compile_candidate, validate_candidate
@@ -17,6 +17,39 @@ def ready(value=None):
     def checkpoint(v): r['state']['sharedExperimentGeneration'] = deepcopy(v)
     generate(r,data,aliases,invoke=Mock(return_value=generation_response(value)),checkpoint=checkpoint)
     return r,data,aliases
+
+
+def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record[review.SCOPED_PACKET_MARKER] = 1
+    record['budget'] = {'maxTokens': 100000, 'tokens': 67740}
+    batches = [
+        {'inputBytes': size, 'request': {'extra': {'max_tokens': 4096}}}
+        for size in (14845, 31913, 31746)
+    ]
+    built = {'inputBytes': 31913, 'hardIssues': [], 'targets': [], 'batches': batches}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: built)
+    invoke, checkpoint = Mock(), Mock()
+
+    with pytest.raises(BudgetExhaustedError) as caught:
+        prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert caught.value.details == {'kind': 'tokens', 'limit': 100000, 'used': 104773}
+    saved = checkpoint.call_args.args[0]
+    assert saved['status'] == 'not_started_budget'
+    assert saved['budgetStop'] == {
+        'batchIndex': 1, 'limit': 100000, 'spent': 67740, 'reservation': 37033,
+    }
+    record['state'][review.review_slot(record)] = saved
+    checkpoint.reset_mock()
+    with pytest.raises(BudgetExhaustedError):
+        prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    invoke.assert_not_called()
+    checkpoint.assert_not_called()
+
+    record['budget']['tokens'] = 62967
+    assert review._initial_batch_budget_stop(record, built) is None
 
 
 def verdict(r, data):

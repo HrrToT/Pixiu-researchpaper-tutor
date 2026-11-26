@@ -2,6 +2,8 @@
 import json
 from llm.responses_transport import API_KEY
 
+INPUT_RESERVATION_MARGIN = 1024
+
 
 def enabled(record,node):
     from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE

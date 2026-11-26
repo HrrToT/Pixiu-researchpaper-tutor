@@ -417,9 +417,9 @@ class TrackedLLMInvoker:
         
         # Reserve a conservative UTF-8 byte bound, then settle measured usage.
         prompt_byte_length = len(prompt.encode("utf-8"))
-        from services.deep_research.planning_transport import overhead_bytes
+        from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN, overhead_bytes
         transport_overhead = overhead_bytes(transport_record,node,extra_body)
-        estimated_input = prompt_byte_length + 1024 + transport_overhead
+        estimated_input = prompt_byte_length + INPUT_RESERVATION_MARGIN + transport_overhead
         max_output = (extra_body or {}).get("max_tokens", DEFAULT_RESEARCH_OUTPUT_TOKENS)
         
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
