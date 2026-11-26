@@ -1,11 +1,14 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ viewer: null, jump: vi.fn(), zoom: vi.fn() }));
+const state = vi.hoisted(() => ({ viewer: null, installed: vi.fn(), jump: vi.fn(), zoom: vi.fn() }));
 vi.mock('@react-pdf-viewer/core', () => ({ SpecialZoomLevel: { PageWidth: 'PageWidth' }, Worker: ({ children }) => children,
   Viewer: props => {
     state.viewer = props;
-    React.useEffect(() => { props.plugins.forEach(plugin => plugin.install({ jumpToPage: state.jump, zoom: state.zoom })); }, [props.plugins]);
+    React.useEffect(() => {
+      props.plugins.forEach(plugin => plugin.install({ jumpToPage: state.jump, zoom: state.zoom }));
+      state.installed();
+    }, [props.plugins]);
     return <div data-testid="source-pdf" />;
   } }));
 vi.mock('../services/taskResearchApi', () => ({ taskResearchApi: { sourceFile: vi.fn() } }));
@@ -15,7 +18,7 @@ import ExternalResearchReader from './ExternalResearchReader';
 const source = { taskId: 'task', runId: 'run', sourceId: 'source', title: 'Public paper', pageIndex: 4,
   contentHash: 'a'.repeat(64), url: 'https://arxiv.org/abs/2601.00001v2' };
 beforeEach(() => {
-  state.jump.mockReset(); state.zoom.mockReset(); taskResearchApi.sourceFile.mockReset();
+  state.installed.mockReset(); state.jump.mockReset(); state.zoom.mockReset(); taskResearchApi.sourceFile.mockReset();
   URL.createObjectURL = vi.fn(() => 'blob:saved-pdf'); URL.revokeObjectURL = vi.fn();
 });
 
@@ -28,6 +31,7 @@ it('reads the saved version at its cited page and only adds materials on explici
   expect(taskResearchApi.sourceFile).toHaveBeenCalledWith('task', 'run', 'source', expect.any(AbortSignal));
   expect(add).not.toHaveBeenCalled(); expect(open).not.toHaveBeenCalled();
   expect(state.viewer.initialPage).toBe(4);
+  await waitFor(() => expect(state.installed).toHaveBeenCalled());
   act(() => state.viewer.onDocumentLoad({ doc: { numPages: 18 } }));
   expect(state.jump).toHaveBeenLastCalledWith(4);
   fireEvent.click(screen.getByRole('button', { name: '下一页' }));
