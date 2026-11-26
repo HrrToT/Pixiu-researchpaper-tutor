@@ -39,6 +39,20 @@
     "failuresErrorsOrSkips": 0
   },
   "modelCalls": 0,
+  "currentJavaFullSuite": {
+    "sourceCommit": "01d093964f60a3e127cd05b0d7f640b689ab80f4",
+    "command": "mvn -o -B test",
+    "jdkMajor": 21,
+    "database": "H2 in-memory",
+    "suites": 18,
+    "passed": 171,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sourceArchiveSha256": "8bffbcab482425cb92381f8735127c720e644c2e44d89728e0fe7f22f9fcba4d",
+    "mavenLogSha256": "d3107357f2c13825efc568253e6418f11c5189abd2fc2e508d7fa7fbe1caed3d",
+    "localReports": "tmp/java-workbench-full-20261126/backend-java/target/surefire-reports"
+  },
   "productionWrites": 0,
   "providerAvailableAtCheck": false,
   "scientificAcceptance": false,
