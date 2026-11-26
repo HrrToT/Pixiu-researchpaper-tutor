@@ -62,6 +62,7 @@ coherent=true requires issues:[]. Coherence cannot override any failed check.
 Input:
 '''
 COMPACT_REVIEW_MARKER = 'sharedExperimentCompactReviewVersion'
+STOP_INVALID_BATCH_MARKER = 'sharedExperimentStopInvalidReviewBatchVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -219,11 +220,14 @@ def build(record, input_data, aliases, *, required_domains=()):
     else:
         request, size = measure(data)
         supplied = None
+    stop_policy = ({STOP_INVALID_BATCH_MARKER: 1}
+                   if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
-                                  **({'batches':batches} if batches else {})}),
+                                  **({'batches':batches} if batches else {}), **stop_policy}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
+            **stop_policy,
             'targets':targets(record), 'hardIssues':_fact_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
@@ -316,6 +320,23 @@ def _substantive(binding):
             and not any('/'+key+'/' in path for key in ('evidenceRefs','sourceFactIds','metricIds','cloneStepIds','sharedStateIds')))
 
 
+def _decode_batch(answer, check_ids, validator):
+    if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
+        raise ValueError('Incomplete review')
+    content = answer.get('rawContent', answer.get('content', ''))
+    if not isinstance(content, str) or len(content.encode('utf-8')) > 24000:
+        raise ValueError('Review capacity')
+    part = _parse(content)
+    if not validator.is_valid(part):
+        raise ValueError('Review schema')
+    ids = [check['checkId'] for check in part['checks']]
+    if len(ids) != len(set(ids)) or set(ids) != set(check_ids):
+        raise ValueError('Review target coverage')
+    if part['coherent'] == bool(part['issues']):
+        raise ValueError('Coherence conflicts with issues')
+    return part
+
+
 def assess(record, input_data, aliases, response):
     """Validate verdict coverage and literal bindings, never infer a missing pass."""
     from jsonschema import Draft202012Validator
@@ -339,21 +360,9 @@ def assess(record, input_data, aliases, response):
         value = {'checks': [], 'coherent': True, 'issues': []}
         evidence_by_check = {}
         for packet, answer in parts:
-            if not isinstance(answer,dict) or answer.get('finishReason',answer.get('finish_reason')) != 'stop':
-                raise ValueError('Incomplete review')
-            content = answer.get('rawContent',answer.get('content',''))
-            if not isinstance(content,str) or len(content.encode('utf-8')) > 24000:
-                raise ValueError('Review capacity')
-            part = _parse(content)
-            if not validator.is_valid(part):
-                raise ValueError('Review schema')
-            ids = [check['checkId'] for check in part['checks']]
-            if len(ids) != len(set(ids)) or set(ids) != set(packet['checkIds']):
-                raise ValueError('Review target coverage')
-            if part['coherent'] == bool(part['issues']):
-                raise ValueError('Coherence conflicts with issues')
+            part = _decode_batch(answer, packet['checkIds'], validator)
             supplied = packet['suppliedEvidenceAliases']
-            evidence_by_check.update({cid: supplied for cid in ids})
+            evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
             value['checks'].extend(part['checks'])
             value['coherent'] = value['coherent'] and part['coherent']
             value['issues'].extend(part['issues'])
@@ -417,18 +426,36 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')
     if saved['status'] == 'pending':
+        from jsonschema import Draft202012Validator
         requests = [part['request'] for part in built['batches']] if 'batches' in built else [built['request']]
         responses = saved.get('batchResponses', []) if 'batches' in built else []
         if (not isinstance(responses, list) or len(responses) > len(requests)
                 or 'batchResponses' in saved and digest(responses) != saved.get('batchResponsesDigest')):
             raise DeepResearchError('invalid_shared_experiment_review_state','已保存的审核分组响应已改变。')
-        for req in requests[len(responses):]:
+        validator = Draft202012Validator(descriptor(record)['schema']) if built.get(STOP_INVALID_BATCH_MARKER) == 1 else None
+
+        def stop_after_invalid(index, answer):
+            if validator is None:
+                return False
+            try:
+                _decode_batch(answer, built['batches'][index]['checkIds'], validator)
+            except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
+                saved['stoppedAfterInvalidBatch'] = index
+                return True
+            return False
+
+        stopped = any(stop_after_invalid(index, answer) for index, answer in enumerate(responses))
+        for index in range(len(responses), len(requests)):
+            if stopped:
+                break
+            req = requests[index]
             try:
                 responses.append(invoke(NODE,req['prompt'],dispatch_options(record,NODE,req['extra'])))
             except Exception:
                 saved['status']='invocation_failed'; checkpoint(deepcopy(saved)); raise
             if 'batches' in built:
                 saved.update(batchResponses=responses,batchResponsesDigest=digest(responses))
+                stopped = stop_after_invalid(index, responses[-1])
                 checkpoint(deepcopy(saved))
         response = responses if 'batches' in built else responses[0]
         saved.update(status='response_received',response=deepcopy(response),responseDigest=digest(response))

@@ -1,0 +1,15 @@
+{
+  "sourceReceipt": "derived-pairing-and-table-coordinate-v2-real-20261126.json",
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 60,
+  "originalReviewDispatches": 3,
+  "dispatchesInReplay": 2,
+  "stoppedAfterBatchIndex": 1,
+  "stopReason": "length",
+  "originalLastBatchTokens": 11353,
+  "originalAllStageTokens": 61745,
+  "preservedOriginalPrefixResponses": 2,
+  "resumingFromSavedPrefixDispatchedAgain": false,
+  "scientificContentAccepted": false
+}

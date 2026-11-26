@@ -155,6 +155,37 @@ def test_complete_review_covers_every_fact_section_and_frozen_criterion_then_reu
     assert not r['state'].get('reportBody') and not r.get('publication')
 
 
+def test_truncated_review_batch_stops_later_sends_and_restores_from_checkpoint(monkeypatch):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record[review.COMPACT_REVIEW_MARKER] = 2
+    record[review.STOP_INVALID_BATCH_MARKER] = 1
+    checks = verdict(record, data)['checks'][:3]
+    batches = [{'checkIds': [check['checkId']], 'request': {'prompt': f'batch {i}', 'extra': {}}}
+               for i, check in enumerate(checks)]
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: {
+        'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': targets(record),
+        review.STOP_INVALID_BATCH_MARKER: 1})
+    first = reply({'checks': [checks[0]], 'coherent': True, 'issues': []})
+    truncated = {'content': '', 'finishReason': 'length'}
+    invoke = Mock(side_effect=[first, truncated])
+    checkpoints = []
+    def checkpoint(value):
+        record['state']['sharedExperimentReview'] = deepcopy(value)
+        checkpoints.append(deepcopy(value))
+
+    result = prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert invoke.call_count == 2
+    assert result['batchResponses'] == [first, truncated]
+    assert result['stoppedAfterInvalidBatch'] == 1
+    assert result['status'] == 'invalid_response' and not result['assessment']['scientificApproval']
+    record['state']['sharedExperimentReview'] = next(
+        value for value in checkpoints if value['status'] == 'pending' and value.get('stoppedAfterInvalidBatch') == 1)
+    assert prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+    assert invoke.call_count == 2
+
+
 @pytest.mark.parametrize('mutation', ['missing','duplicate','unknown','fake_plan','wrong_section','identifier_only',
                                     'missing_fact_evidence','foreign_evidence','nonliteral_evidence','coherence',
                                     'truncated','duplicate_json'])
