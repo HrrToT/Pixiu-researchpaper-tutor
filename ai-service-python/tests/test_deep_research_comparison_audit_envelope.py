@@ -43,9 +43,15 @@ def test_transport_does_not_modify_rows_or_upgrade_negative_coherence():
     with pytest.raises(ValueError):normalize('verify',{'content':raw},comparison_audit_envelope=True)
 
 
-@pytest.mark.parametrize(('question','kind'), [('比较论文','paper_comparison'),
-     ('核对两版表 1 的 OPT-1.3B','claim_verification')])
-def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path,monkeypatch,question,kind):
+def test_new_server_run_freezes_envelope_and_actual_invoker_decodes_it(tmp_path, monkeypatch):
+    _exercise_server_envelope(tmp_path, monkeypatch, '比较论文', 'paper_comparison')
+
+
+def test_named_table_coverage_invoker_decodes_root_coherence_and_keeps_correction_shape(tmp_path, monkeypatch):
+    _exercise_server_envelope(tmp_path, monkeypatch, '核对两版表 1 的 OPT-1.3B', 'claim_verification')
+
+
+def _exercise_server_envelope(tmp_path,monkeypatch,question,kind):
     from services.deep_research.comparison_audit_envelope import revision_coverage_enabled
     from services.deep_research.coverage_instructions import prompt as coverage_prompt
     from services.deep_research.repository import DeepResearchRepository
