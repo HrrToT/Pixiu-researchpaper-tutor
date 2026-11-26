@@ -153,6 +153,34 @@ def test_gaussian_replacement_count_uses_only_explicit_cited_context():
                                numeric_context={'source': [text]})['rejected']
 
 
+def test_context_hints_point_only_to_the_verified_field_owning_the_figure_number():
+    from services.deep_research import shared_experiment_review as review
+    from services.deep_research.selection import surrounding_context
+
+    record, data, aliases = ready()
+    record[review.FACT_CONTEXT_MARKER] = 3
+    fact = record['state']['sharedExperimentGeneration']['boundProposal']['proposal']['sourceFacts'][0]
+    local = record['state']['evidence'][0]
+    visible = data['evidence'][0]
+    local['sourceContext'] = 'Figure 5. ' + local['quote']
+    visible['sourceContext'] = surrounding_context(local)
+    assert review._fact_context_hints(record, aliases, data, [fact]) == {}
+
+    # The bound proposal is immutable in production. Rebuild the test fixture
+    # with a claim carrying the figure number before checking the hint.
+    altered = proposal()
+    altered['sourceFacts'][0]['text'] = 'Figure 5 reports the public source statement.'
+    record, data, aliases = ready(altered)
+    record[review.FACT_CONTEXT_MARKER] = 3
+    local = record['state']['evidence'][0]
+    local['sourceContext'] = 'Figure 5. ' + local['quote']
+    data['evidence'][0]['sourceContext'] = surrounding_context(local)
+    assert review._fact_context_hints(record, aliases, data, altered['sourceFacts']) == {
+        'F1': [{'evidenceId':'E1','field':'before'}]}
+    data['evidence'][0]['sourceContext']['before'] = 'Unverified Figure 5.'
+    assert review._fact_context_hints(record, aliases, data, altered['sourceFacts']) == {}
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []

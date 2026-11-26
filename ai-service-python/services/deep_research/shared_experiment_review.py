@@ -114,7 +114,7 @@ def reference_review_enabled(record):
 
 def _fact_context_enabled(record):
     version = record.get(FACT_CONTEXT_MARKER)
-    return type(version) is int and version in (1, 2)
+    return type(version) is int and version in (1, 2, 3)
 
 
 def _generation(record):
@@ -252,6 +252,18 @@ def build(record, input_data, aliases, *, required_domains=()):
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
+            if record.get(FACT_CONTEXT_MARKER) == 3:
+                hints = _fact_context_hints(record, aliases, input_data, bound['proposal']['sourceFacts'])
+                if hints:
+                    for row in data['factChecks']:
+                        if row[1] in hints:
+                            row.append(hints[row[1]])
+                    instructions = instructions.replace(
+                        'Input:\n',
+                        'A fourth factChecks field lists supporting contextual bindings {evidenceId,field}. '
+                        'Verify those fields and include them on a pass that relies on their numbers or figure labels. '
+                        'Include any other evidence needed to support the complete fact. Hints do not approve a fact.\nInput:\n',
+                    )
     elif _fact_context_enabled(record):
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
@@ -288,7 +300,8 @@ def build(record, input_data, aliases, *, required_domains=()):
     stop_policy = ({STOP_INVALID_BATCH_MARKER: 1}
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
-    fact_policy = {FACT_CONTEXT_MARKER: 2} if record.get(FACT_CONTEXT_MARKER) == 2 else {}
+    fact_policy = ({FACT_CONTEXT_MARKER: record[FACT_CONTEXT_MARKER]}
+                   if record.get(FACT_CONTEXT_MARKER) in (2, 3) else {})
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
                                   **({'batches':batches} if batches else {}), **stop_policy, **reference_policy,
@@ -333,7 +346,7 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0)}
     if _fact_context_enabled(record):
-        if record.get(FACT_CONTEXT_MARKER) == 2:
+        if record.get(FACT_CONTEXT_MARKER) in (2, 3):
             policy['quantity_spelling_version'] = 18
         contexts = _visible_numeric_context(input_data, by_id, aliases)
         if passed_bindings is None:
@@ -351,6 +364,7 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
                         cited.setdefault(eid, []).append(binding['text'])
                 failures.extend(precheck_claims([claim], evidence, numeric_context=cited, **policy)['rejected'])
             return failures
+
     checked = precheck_claims(claims, evidence, **policy)
     if proposal.get('version') == 3:
         by_claim = {claim['claimId']: fact for claim, fact in zip(claims, facts, strict=True)}
@@ -358,6 +372,29 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
                  'factId':by_claim[r['claimId']]['id'], 'evidenceRefs':by_claim[r['claimId']]['evidenceRefs']}
                 for r in checked['rejected']]
     return [{'claimId':r['claimId'],'reason':r['reason']} for r in checked['rejected']]
+
+
+def _fact_context_hints(record, aliases, input_data, facts):
+    """Identify exact contextual fields needed by a fact's numeric precheck."""
+    by_id = {row['evidenceId']: row for row in record['state'].get('evidence', [])}
+    contexts = _visible_numeric_context(input_data, by_id, aliases)
+    without_context = _fact_prechecks(record, aliases, input_data,
+                                      passed_bindings={fact['id']: [] for fact in facts})
+    missing = {issue['claimId'] for issue in without_context if issue['reason'] == 'numeric_mismatch'}
+    hints = {}
+    for index, fact in enumerate(facts):
+        if f'shared_fact_{index}' not in missing:
+            continue
+        selected = [{'evidenceId': alias, 'field': field, 'text': text}
+                    for alias in fact['evidenceRefs'] for field, text in contexts.get(aliases[alias], {}).items()]
+        if not selected or _fact_prechecks(record, aliases, input_data, passed_bindings={fact['id']: selected}):
+            continue
+        for binding in selected[:]:
+            reduced = [row for row in selected if row != binding]
+            if not _fact_prechecks(record, aliases, input_data, passed_bindings={fact['id']: reduced}):
+                selected = reduced
+        hints[fact['id']] = [{'evidenceId': row['evidenceId'], 'field': row['field']} for row in selected]
+    return hints
 
 
 def _prechecks(record, aliases, input_data):
