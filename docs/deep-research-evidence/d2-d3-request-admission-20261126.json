@@ -1,0 +1,32 @@
+{
+  "candidateCommit": "55bb73205",
+  "mode": "offline development-case request admission using the frozen questions and exact PDF bytes",
+  "providerAvailableAtCheck": false,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "D2": {
+    "case": "D2-BASELINE-COMPRESSION-v56",
+    "stages": [
+      {"stage": "P1", "inputBytes": 23982, "promptDigest": "74ddcb603e972f3701999660d3f9d19e6171a8b6ee1caa15a231295ce5eb37ff"},
+      {"stage": "P2", "inputBytes": 23995, "promptDigest": "053f3c9b5c5a49c77b67535278d6f13ef73c6ff46f222924819be452ac4f5fcd"},
+      {"stage": "joint", "inputBytes": 23995, "promptDigest": "a0d46cababf14a4c0c8524dcf573ff05f8ea3fe83d6e9739caf2024a49e6066c"}
+    ],
+    "stageInputLimitBytes": 24000,
+    "readPassages": 12,
+    "bothOriginal3DGSContextsIncludedInJointStage": {"measurementConditionsPage": 8, "deploymentMemoryContextPage": 11},
+    "adviceMode": "measure_both_before_recommending_either",
+    "allFrozenPremiseBundlesRetained": true
+  },
+  "D3": {
+    "case": "D3-DENSIFICATION-FACTORIAL-v20",
+    "generationRequestDigest": "2ac909abd63f05f150a5413194929cb63fb4b34c9fe9908b90f34db1f77037ac",
+    "generationInputBytes": 31920,
+    "generationInputLimitBytes": 32000,
+    "maxOutputTokens": 9216,
+    "readPassages": 12,
+    "physicalEvidencePages": [5, 6, 7],
+    "providerOptionsValidated": true
+  },
+  "scientificAcceptance": false,
+  "boundary": "Requests were assembled by the candidate graph and intercepted. The D2 stage fingerprints identify prompt text. The D3 fingerprint identifies the full request. These are readiness checks for fixed development cases. No new independent holdout was opened."
+}
