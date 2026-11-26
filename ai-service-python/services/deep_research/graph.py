@@ -2462,7 +2462,7 @@ def make_verify_node(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 beginner_lead_claim_id=((saved.get('comparisonCellDraft') or {}).get('beginnerLeadClaimId')
-                                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 5 else None),
+                                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (5, 6) else None),
                 **({'bound_comparison_targets':True} if saved.get('comparisonCellDraft') is not None
                    and type(record.get('repairInstructionsContractVersion')) is int
                    and record['repairInstructionsContractVersion']==5 else {}),
@@ -2617,6 +2617,8 @@ def make_verify_node(
                             and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible):
                         benchmark_id = comparison_draft['benchmarkExampleClaimId']
                         benchmark_example = {'claimId': benchmark_id}
+                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 6:
+                            benchmark_example['relativeSpeedIsNumeric'] = True
                         if any(row.get('claimId') == benchmark_id and row.get('beginnerLeadRepair') is True
                                for row in repair_targets.get('rejected', [])):
                             benchmark_example['introOnly'] = True

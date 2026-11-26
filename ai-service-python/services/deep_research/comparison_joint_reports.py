@@ -376,7 +376,8 @@ def bind_benchmark_example(record, draft, plan):
                and claim['obligationIds'] == [oid]]
     draft['benchmarkExampleClaimId'] = matches[0] if len(matches) == 1 else None
     if strict_benchmark_speed_scope(record):
-        draft['benchmarkSpeedScopeVersion'] = 2 if record['comparisonBenchmarkSpeedScopeContractVersion'] in (3, 4, 5) else 1
+        version = record['comparisonBenchmarkSpeedScopeContractVersion']
+        draft['benchmarkSpeedScopeVersion'] = 3 if version == 6 else 2 if version in (3, 4, 5) else 1
     if scoped_example_presentation(record) == 3 and len(matches) == 1:
         from services.deep_research.benchmark_tradeoff_summary import INTRO_PREFIX
         example = next(claim for claim in draft['report']['claims'] if claim['claimId'] == matches[0])
@@ -386,12 +387,12 @@ def bind_benchmark_example(record, draft, plan):
 
 def strict_benchmark_speed_scope(record):
     version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
-    return type(version) is int and version in (1, 2, 3, 4, 5)
+    return type(version) is int and version in (1, 2, 3, 4, 5, 6)
 
 
 def scoped_example_presentation(record):
     version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
-    if version in (4, 5):
+    if version in (4, 5, 6):
         from services.deep_research.audience_rewrite import beginner_requested
         return 3 if beginner_requested(record) else 2
     return 2 if version in (2, 3) else True
@@ -403,6 +404,16 @@ _NUMERIC_FRAME_RATE = re.compile(
 _VALUE_AFTER_FRAME_RATE = re.compile(
     r'(?:(?<![A-Za-z0-9])fps(?![A-Za-z0-9])|帧率)\s*(?:分别)?\s*(?:为|是|约为|达到|达|超过|低于|约|\b(?:was|were|is|of|reached)\b)'
     r'\s*[<>≤≥~≈+-]?\s*\d', re.I)
+_RELATIVE_FRAME_RATE = re.compile(
+    rf'(?:{_SPEED.pattern})[^。！？；，、.!?;,\n]{{0,36}}?'
+    r'(?:翻倍|减半|[零一二两三四五六七八九十百]+\s*倍|'
+    r'\d+(?:\.\d+)?\s*(?:[%％×]|倍|x\b|[- ]fold\b|times\b)|'
+    r'\b(?:doubl(?:e|ed|es|ing)|tripl(?:e|ed|es|ing)|half|halved|twice|three times)\b)'
+    rf'|\b(?:twice|three times|\d+(?:\.\d+)?\s*(?:x\b|times\b))'
+    rf'\s+(?:as\s+)?(?:fast|high|faster|higher|lower|the)\b[^.!?;,\n]{{0,16}}?(?:{_SPEED.pattern})'
+    rf'|\b(?:doubl(?:e|ed|es|ing)|tripl(?:e|ed|es|ing)|halv(?:e|ed|es|ing))'
+    rf'\s+(?:(?:the|reported|measured|average)\s+)*?(?:{_SPEED.pattern})',
+    re.I)
 
 
 def _benchmark_scope_text(claim, draft):
@@ -446,13 +457,14 @@ def benchmark_binding_error(claim, draft):
                and benchmark_metric(binding['metric']) for binding in bindings):
             return 'comparison_benchmark_example_scope'
         scope_version = draft.get('benchmarkSpeedScopeVersion')
-        if scope_version in (1, 2):
+        if scope_version in (1, 2, 3):
             conditions = claim.get('conditions')
             fields = [_benchmark_scope_text(claim, draft)]
             if isinstance(conditions, dict):
                 fields.extend(f'{key}: {value}' for key, value in conditions.items())
             if any(_NUMERIC_FRAME_RATE.search(field) or
-                   scope_version == 2 and _VALUE_AFTER_FRAME_RATE.search(field) for field in fields):
+                   scope_version >= 2 and _VALUE_AFTER_FRAME_RATE.search(field) or
+                   scope_version == 3 and _RELATIVE_FRAME_RATE.search(field) for field in fields):
                 return 'comparison_benchmark_example_scope'
         return None
     if not bindings:

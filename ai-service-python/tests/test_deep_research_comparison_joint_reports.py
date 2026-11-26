@@ -300,6 +300,28 @@ def test_only_joint_example_can_use_numerical_frame_rate(text, conditions, block
     assert benchmark_binding_error({**claim, 'claimId': example['claimId']}, draft) is None
 
 
+@pytest.mark.parametrize(('text', 'conditions', 'blocked'), [
+    ('在 Tank & Temple 上，渲染速度相较基线接近翻倍。', {}, True),
+    ('渲染速度提高约 30%。', {}, True),
+    ('渲染速度提高了 2.5 倍。', {}, True),
+    ('Frame rate nearly doubled on this dataset.', {}, True),
+    ('The method doubles the reported rendering speed.', {}, True),
+    ('It reaches twice the baseline rendering speed.', {}, True),
+    ('转到测试口径。', {'相对帧率': '接近翻倍'}, True),
+    ('渲染速度更快，存储缩小三倍。', {}, False),
+    ('渲染速度更快，训练在RTX A6000上完成。', {}, False),
+    ('提速来自排序优化。', {'训练迭代次数': '提高了两倍'}, False),
+])
+def test_lexical_frame_rate_ratios_belong_to_the_single_numeric_example(text, conditions, blocked):
+    from services.deep_research.comparison_joint_reports import benchmark_binding_error
+
+    claim = {'claimId': 'paper_cell', 'text': text, 'conditions': conditions, 'tableBindings': []}
+    draft = {'benchmarkExampleClaimId': 'example', 'benchmarkSpeedScopeVersion': 3}
+    assert benchmark_binding_error(claim, draft) == ('comparison_benchmark_example_scope' if blocked else None)
+    assert benchmark_binding_error({**claim, 'claimId': 'example'}, draft) is None
+    assert benchmark_binding_error(claim, {**draft, 'benchmarkSpeedScopeVersion': 2}) is None
+
+
 @pytest.mark.parametrize(('attribute', 'value', 'suffix', 'expected'), [
     ('GPU', 'RTX A6000', '', None),
     ('FPS', '200', '', 'comparison_benchmark_example_scope'),
@@ -369,7 +391,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
-        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 5
+        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 6
         assert r['comparisonRepairFlowContractVersion'] == 1
         assert r['comparisonStageAbstentionContractVersion'] == 1
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})

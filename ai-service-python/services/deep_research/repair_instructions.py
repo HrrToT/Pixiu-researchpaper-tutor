@@ -132,6 +132,9 @@ def render(*, question, length_contract, requirements, source_context, targets,
                     'Keep necessary, directly cited method settings and processing costs. When a figure '
                     'lacks a supporting passage, remove the figure and keep the supported observation; '
                     'do not claim that the paper did not report it.\n')
+        if benchmark_example.get('relativeSpeedIsNumeric') is True:
+            routing += ('A frame-rate ratio, percentage, or stated doubling also counts as a benchmark '
+                        'number. Outside the sole example, describe only the supported direction and setting.\n')
         if benchmark_example.get('introOnly') is True:
             routing += ('For benchmarkExample.claimId, revise only the short beginner explanation. '
                         'Explain the practical trade-off in plain words, identify the compared methods, '

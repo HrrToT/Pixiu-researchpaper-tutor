@@ -622,6 +622,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
+            if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 6:
+                policy += ('Outside the single benchmark example, describe rendering-speed direction '
+                           'and setup without ratios, percentages, or stated doubling.\n')
             if literal_targets and data['jointTargets']:
                 policy += BENCHMARK_OWNER_POLICY
             else:
