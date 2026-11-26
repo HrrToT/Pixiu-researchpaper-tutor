@@ -790,6 +790,8 @@ KIVI 冻结时分别取得 arXiv v1/v2 完整 PDF，核对文件哈希、版本�
 
 通过现用 Java 工作区 API 分别重开 H1、D2-v49 和 H3-PagedAttention 三个真实生成的既有成果。每个工作区连续读取两次结果相同，机器版和可编辑版的 ID、文档正文及来源数组逐项与保存回执一致。只读复验未写入工作区或触发模型。当前前端相关组件与交互模型 84 项、Java 工作区研究控制器及来源投影 69 项定向测试通过。浏览器端交互及科学质量仍按各自证据范围核对。 [真实成果重新读取](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
 
+用前端生产构建和现用 Java 只读接口打开 SnapKV 既有报告。Chromium 核对了引用弹窗原文，点击后第 7 页实际渲染在视口，取回的 PDF 哈希与验收件一致。只读检查前后的工作区数据完全一致，无写请求和模型调用。 [浏览器复验](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
+
 由 SnapKV 报告已发布的主张解析原文证据，经现用工作区的来源文件 API 读回精确版本 PDF。返回的 18 页文件与独立评审件哈希一致，引用定位为第 7 页，读取前后工作区相同。此次验证覆盖真实报告的外部 PDF 交付及引用定位。 [原文文件读取证据](deep-research-evidence/research-real-report-workspace-reopen-20261125.json)
 
 2026-11-26，候选 `728309431` 提交一次 D2-v50，14 次模型调用、70,345 Token、174 秒，未联网。报告已保存机器版和最新版，原服务及历史记录已核对恢复。原始 3DGS 表示声明附带球谐颜色，却漏引生成请求已经给出的两段相关原文，因此该栏未通过核验。规划同时要求分别列两篇的存储、画质和速度，又保留用户指定的唯一同表数字示例，分栏生成的额外数字被硬检查拒绝。完整比较未达标。 [候选载入记录](deep-research-evidence/d3-shared-comparison-mechanism-candidate-load-20261125.json) · [v50 实测](deep-research-evidence/baseline-comparison-v50-real-20261126.json)

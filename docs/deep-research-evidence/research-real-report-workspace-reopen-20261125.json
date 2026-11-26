@@ -62,5 +62,24 @@
     "matchesFrozenEvaluatorCopy": true,
     "workspaceUnchanged": true
   },
-  "citationFileReads": 1
+  "citationFileReads": 1,
+  "browserReadOnlyRecheck": {
+    "frontendCommit": "01d093964f60a3e127cd05b0d7f640b689ab80f4",
+    "browser": "Chromium",
+    "viewportCssPixels": [1366, 768],
+    "case": "H3-SNAPKV-v1",
+    "publishedReportOpened": true,
+    "citationExactQuoteMatched": true,
+    "renderedPdfPageInViewport": 7,
+    "pdfPages": 18,
+    "pdfReads": 1,
+    "pdfSha256MatchesFrozenCopy": true,
+    "workspaceUnchanged": true,
+    "writesAttempted": 0,
+    "modelCalls": 0,
+    "screenshotsSha256": {
+      "saved-snapkv-citation.png": "dc5348d8d46b4a93a27350f609723fe929f9fd54779cb2b86e9f760789b38a26",
+      "saved-snapkv-page-7.png": "3913aac80dfa52dd1d3b4217f3b7ab93adb14b52588da616377b512fae2d6d50"
+    }
+  }
 }
