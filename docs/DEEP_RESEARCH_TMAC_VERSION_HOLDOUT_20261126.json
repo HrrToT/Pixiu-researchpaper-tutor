@@ -3,8 +3,10 @@
   "frozenAt": "2026-11-26",
   "frozenTimestamp": "2026-11-26T06:25:29.817305+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_not_executed_material_not_imported",
+  "executionStatus": "first_execution_partial_retired_for_development",
   "independentCredit": 0,
+  "firstExecutionEvidence": "deep-research-evidence/tmac-version-h4-first-frozen-20261127.json",
+  "parserReplayEvidence": "deep-research-evidence/tmac-adjacent-table-parser-replay-20261127.json",
   "materials": {
     "tmac_v1": {
       "path": "tmp/pdfs/h4-tmac-evaluator-20261126/2407.00088v1.pdf",
