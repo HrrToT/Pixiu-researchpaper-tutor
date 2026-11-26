@@ -371,3 +371,23 @@ def test_actual_parser_worker_accepts_the_parent_local_limit():
     writer.write(output)
     pages = _parse_pdf(output.getvalue())
     assert pages[0]['page'] == 1 and 'Real parser evidence.' in pages[0]['text']
+def test_pdf_comparison_fallback_keeps_the_start_of_a_nearby_sentence():
+    from services.deep_research.local_sources import LocalTaskRetriever
+
+    prefix = 'a' * 1464 + '.\n'
+    statement = 'Method B outperforms the original Method A under the matched benchmark.'
+    page = prefix + statement + ' ' + 'b' * 1900
+    pages = [{'page': 8, 'text': page}]
+    material = {'contentHash': 'hash', 'versionId': 'v1'}
+    legacy = LocalTaskRetriever._pdf_passages('paper', material, pages)
+    revised = LocalTaskRetriever._pdf_passages(
+        'paper', material, pages, record={'comparisonPdfPassageBoundaryVersion': 1})
+    assert legacy[1]['location'] == {'page': 8, 'offset': 1500}
+    assert statement not in legacy[1]['text']
+    assert revised[1]['location'] == {'page': 8, 'offset': 1465}
+    assert revised[1]['text'].startswith('\n' + statement)
+    assert revised[1]['sourceId'] != legacy[1]['sourceId']
+    assert len(revised) == len(legacy)
+    for row in revised:
+        start = row['location']['offset']
+        assert row['text'] == page[start:start + 1800]

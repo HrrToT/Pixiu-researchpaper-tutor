@@ -1,6 +1,7 @@
 """Bounded local PDF retrieval when the vector backend is unavailable."""
 from __future__ import annotations
 
+from bisect import bisect_right
 import hashlib
 import importlib.util
 import json
@@ -113,11 +114,11 @@ class LocalTaskRetriever:
             found = self._scope_evidence(indexed, self.index_context.get(pdf_id, []), query, pdf_id, limit)
             return self._stamp_identity(self._experiment_protocol_passages(found, query, pdf_id, limit), pdf_id)
         material, pages = self.load_pages(pdf_id)
-        passages = self._pdf_passages(pdf_id, material, pages)
+        record = self.repo.require_run(self.run_id)
+        passages = self._pdf_passages(pdf_id, material, pages, record=record)
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
-        record = self.repo.require_run(self.run_id)
         if record.get('comparisonPdfTableFallbackVersion') == 1 and limit >= 2:
             metrics = _requested_metrics(query)
             if not metrics and re.search(r'\bbaseline\b|基线', query, re.I) and re.search(r'\bbenchmark\b|对照', query, re.I):
@@ -161,7 +162,7 @@ class LocalTaskRetriever:
                 return rows
             except (requests.RequestException, subprocess.TimeoutExpired):
                 return rows
-            passages = self._pdf_passages(pdf_id, material, pages)
+            passages = self._pdf_passages(pdf_id, material, pages, record=record)
         if not self.validate(self.run_id, pdf_id):
             raise DeepResearchError('scope_revoked', '论文范围已变更')
         return protocol.include_passages(rows, passages, roles, limit)
@@ -233,11 +234,19 @@ class LocalTaskRetriever:
 
 
     @staticmethod
-    def _pdf_passages(pdf_id, material, pages):
+    def _pdf_passages(pdf_id, material, pages, *, record=None):
+        from services.deep_research.quote_context import _sentence_cuts
+
+        align = (record or {}).get('comparisonPdfPassageBoundaryVersion') == 1
         passages = []
         for page in pages:
             text = page.get('text', '')
-            for offset in range(0, len(text), 1500):
+            cuts = _sentence_cuts(text) if align else []
+            for nominal in range(0, len(text), 1500):
+                offset = nominal
+                cut_index = bisect_right(cuts, nominal)
+                if cut_index and nominal - cuts[cut_index - 1] <= 150:
+                    offset = cuts[cut_index - 1]
                 passage = text[offset:offset + 1800]
                 if passage.strip():
                     location = {'page': page['page'], 'offset': offset}
@@ -297,7 +306,7 @@ class LocalTaskRetriever:
                 if not indexed:
                     raise DeepResearchError(failure['code'],'论文原文回读暂不可用')
                 return [{**row,**({'pdfMeasurementRead':failure} if i == 0 else {})} for i,row in enumerate(indexed)]
-            passages = self._pdf_passages(pdf_id,material,self.pages[key])
+            passages = self._pdf_passages(pdf_id,material,self.pages[key],record=record)
             # An original PDF has a document hash/version, not an index version.
             passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
             found = include_pdf_measurements(indexed,passages,query,pdf_id,material['contentHash'],limit)

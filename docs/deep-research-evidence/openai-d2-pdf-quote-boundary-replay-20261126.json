@@ -1,0 +1,18 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "source": "LightGaussian arXiv:2311.17245v6, physical page 8",
+  "failureObserved": "The original PDF passage started at a fixed character offset in the middle of the name of the comparison method.",
+  "replay": {
+    "previousOffset": 1500,
+    "newOffset": 1466,
+    "completeMethodPairPresentInLiteralPassage": true,
+    "maximumPassageCharacters": 1800,
+    "pageUnchanged": true,
+    "passageCountUnchanged": true,
+    "completeSpeedPassageSelectedInSynthesisReplay": false
+  },
+  "targetedOfflineTestsPassed": 113,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "The repaired source passage contains the complete comparison sentence. The replayed generation packet did not prioritize it; final response evidence selection and quality remain to verify."
+}
