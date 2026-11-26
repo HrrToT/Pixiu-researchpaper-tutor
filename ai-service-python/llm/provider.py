@@ -22,6 +22,8 @@ class LLMUsage:
     output_tokens: int
     total_tokens: int
     estimated: bool = False
+    cached_input_tokens: Optional[int] = None
+    cache_write_input_tokens: Optional[int] = None
 
 
 @dataclass(frozen=True)

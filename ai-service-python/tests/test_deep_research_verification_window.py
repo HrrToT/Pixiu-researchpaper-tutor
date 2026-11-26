@@ -44,11 +44,14 @@ def test_other_nodes_cannot_use_the_verification_window(node):
 def test_new_window_reserves_full_bytes_and_settles_measured_usage(tmp_path):
     repo = store(tmp_path)
     provider = Mock()
-    provider.invoke.return_value = LLMResult('fixture', 'fixture', '[]', LLMUsage(5500, 500, 6000))
+    provider.invoke.return_value = LLMResult('fixture', 'fixture', '[]',
+        LLMUsage(5500, 500, 6000, cached_input_tokens=4000, cache_write_input_tokens=1000))
     tracked(repo, provider)('r', 'verify_design_science', 'x' * 27000, {'max_tokens': 4000}, True)
     call, = repo.list_calls('r')
     assert call['reservedTokens'] == 27000 + 1024 + 4000
     assert call['usesReserve'] is True and call['settled'] is True
+    assert call['result']['usage'] == {'total_tokens': 6000, 'input_tokens': 5500,
+        'output_tokens': 500, 'cached_input_tokens': 4000, 'cache_write_input_tokens': 1000}
     assert repo.require_run('r')['budget']['tokens'] == 6000
     assert repo.require_run('r')['budget']['normalTokens'] == 0
     provider.invoke.assert_called_once()

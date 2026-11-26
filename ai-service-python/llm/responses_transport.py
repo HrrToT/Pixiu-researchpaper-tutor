@@ -85,4 +85,6 @@ def chat_view(data):
     if mapped is not None:
         values=list(mapped.values())
         if (any(type(v) is not int or v<0 for v in values) or values[2]!=values[0]+values[1]):mapped=None
+        elif isinstance(usage.get('input_tokens_details'), dict):
+            mapped['prompt_tokens_details'] = usage['input_tokens_details']
     return {**data,'choices':[{'message':{'content':content},'finish_reason':finish}],'usage':mapped}

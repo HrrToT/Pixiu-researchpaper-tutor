@@ -58,7 +58,17 @@ def _normalize_usage(
             value.get("total_tokens"),
         )
         if all(isinstance(item, int) and item >= 0 for item in fields):
-            return LLMUsage(fields[0], fields[1], fields[2], estimated=False)
+            details = value.get("prompt_tokens_details")
+            cached = cache_write = None
+            if isinstance(details, dict):
+                reads = details.get("cached_tokens")
+                writes = details.get("cache_write_tokens")
+                cached = reads if type(reads) is int and 0 <= reads <= fields[0] else None
+                cache_write = writes if type(writes) is int and 0 <= writes <= fields[0] else None
+                if cached is not None and cache_write is not None and cached + cache_write > fields[0]:
+                    cached = cache_write = None
+            return LLMUsage(fields[0], fields[1], fields[2], estimated=False,
+                            cached_input_tokens=cached, cache_write_input_tokens=cache_write)
     return LLMUsage(
         estimated_input_tokens,
         estimated_output_tokens,

@@ -504,6 +504,10 @@ class TrackedLLMInvoker:
                 "output_tokens": result.usage.output_tokens if hasattr(result.usage, "output_tokens") else 0,
             },
         }
+        for field in ("cached_input_tokens", "cache_write_input_tokens"):
+            value = getattr(result.usage, field, None)
+            if type(value) is int and not result.usage.estimated:
+                response["usage"][field] = value
         reported_model = getattr(result, "reported_model", None)
         from llm.response_observation import sanitize as sanitize_observation
         observation=sanitize_observation(getattr(result,'provider_observation',None))

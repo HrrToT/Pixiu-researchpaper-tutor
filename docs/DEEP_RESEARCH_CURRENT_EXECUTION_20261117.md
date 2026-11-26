@@ -759,6 +759,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 - OpenAI 的项目密钥已通过真实调用确认可用。候选版新建研究使用 GPT-6 Luna 处理常规步骤，GPT-6.1 Terra 负责综合与核验。首个 D2 在隔离环境单次提交，15 次调用共 76,539 Token，生成部分报告。正文中 12 条引文均核对到对应原页，完整比较仍未通过。 [D2 首次 OpenAI 验收](deep-research-evidence/openai-luna-terra-d2-first-20261126.json) · [候选冷启动](deep-research-evidence/openai-pdf-table-candidate-cold-start-20261126.json)
 - 首例的 15 条服务商记录与模型调用账本逐笔吻合。Terra 的 55,070 输入 Token 中，综合占 19,299，四次论断核验（含一次修订核验）占 17,608，两次整答覆盖核验占 12,514，修订占 5,649。后续同题复验同时记录各阶段实际输入、输出与调用次数，并逐项核对同条件数值例、速度可比性和内存受限建议。回放容量和历史费用估算不作为新版实测消耗。 [D2 分阶段消耗](deep-research-evidence/openai-luna-terra-d2-first-20261126.json)
 - 用首例报告保存的 8 条论断重建初次核验请求。在现用协议下，将单批限制从 32,000 字节降至 28,000 或 24,000 字节，三批请求摘要及预算预留逐项一致。旧协议对照在 24,000 字节时多拆一批。保留现用窗口。回放以最终报告论断作输入，覆盖核验和修订未纳入，无真实模型调用。 [D2 核验窗口回放](deep-research-evidence/openai-luna-terra-d2-first-20261126.json)
+- 模型调用账本现在保留服务商报告的缓存命中与写入 Token。Chat Completions 和 Responses 均覆盖，历史缺失值保留未知，研究预算仍按总 Token 结算。175 项定向回归通过，覆盖两种接口、用量缺失或不合法、落盘结算和原有传输。首例回执未记录这些字段，本轮未调用真实模型。 [OpenAI 缓存用量说明](https://developers.openai.com/api/docs/guides/prompt-caching)
 - 修复后的 D2 在离线回放中保留双方评测条件、同口径数值示例、显存受限选择和完整的速度引文，三个生成阶段都符合 24,000 字节上限。按当前单例授权已执行一次真实比较，下一次付费复测等待确认。D3、D5 和独立内容验收按下表继续追踪。历史未知请求保留原身份。 [同口径 PDF 对照](deep-research-evidence/openai-d2-pdf-table-fallback-replay-20261126.json) · [速度引文回放](deep-research-evidence/openai-d2-speed-quote-placement-replay-20261126.json)
 
 ### 固定案例证据

@@ -27,7 +27,8 @@ def test_chat_request_is_bounded_and_reports_actual_usage(monkeypatch):
     post = mock_response(monkeypatch, 200, {
         "model": "gpt-5.4-mini-2026-03-17",
         "choices": [{"message": {"content": '{"answer":"yes"}'}, "finish_reason": "stop"}],
-        "usage": {"prompt_tokens": 12, "completion_tokens": 5, "total_tokens": 17},
+        "usage": {"prompt_tokens": 12, "completion_tokens": 5, "total_tokens": 17,
+                  "prompt_tokens_details": {"cached_tokens": 7, "cache_write_tokens": 3}},
     })
     result = client().invoke(LLMRequest(prompt="Return a JSON object", timeout_seconds=3, extra_body={
         "thinking": {"type": "disabled"}, "reasoning_effort": "high",
@@ -44,6 +45,7 @@ def test_chat_request_is_bounded_and_reports_actual_usage(monkeypatch):
     assert result.provider == "openai"
     assert result.finish_reason == "stop" and result.reported_model == "gpt-5.4-mini-2026-03-17"
     assert (result.usage.total_tokens, result.usage.estimated) == (17, False)
+    assert (result.usage.cached_input_tokens, result.usage.cache_write_input_tokens) == (7, 3)
 
 
 def test_responses_preserves_schema_observation_and_token_limit(monkeypatch):
@@ -51,7 +53,8 @@ def test_responses_preserves_schema_observation_and_token_limit(monkeypatch):
         "status": "completed", "output": [{"type": "reasoning"}, {
             "type": "message", "content": [{"type": "output_text", "text": "{}"}],
         }],
-        "usage": {"input_tokens": 9, "output_tokens": 4, "total_tokens": 13},
+        "usage": {"input_tokens": 9, "output_tokens": 4, "total_tokens": 13,
+                  "input_tokens_details": {"cached_tokens": 0, "cache_write_tokens": 5}},
     })
     schema = {"type": "object", "properties": {"optional": {"type": "string"}}}
     result = client().invoke(LLMRequest(prompt="Return JSON", extra_body={
@@ -69,7 +72,21 @@ def test_responses_preserves_schema_observation_and_token_limit(monkeypatch):
         "store": False,
     }
     assert result.content == "{}" and result.usage.total_tokens == 13
+    assert (result.usage.cached_input_tokens, result.usage.cache_write_input_tokens) == (0, 5)
     assert result.provider_observation["requestId"] == "req_test"
+
+
+@pytest.mark.parametrize("details", [None, {"cached_tokens": True},
+                                     {"cached_tokens": 7, "cache_write_tokens": 5}])
+def test_absent_or_invalid_cache_usage_keeps_reported_totals(monkeypatch, details):
+    mock_response(monkeypatch, 200, {
+        "choices": [{"message": {"content": "ok"}}],
+        "usage": {"prompt_tokens": 9, "completion_tokens": 4, "total_tokens": 13,
+                  "prompt_tokens_details": details},
+    })
+    usage = client().invoke(LLMRequest(prompt="research")).usage
+    assert usage.total_tokens == 13 and not usage.estimated
+    assert usage.cached_input_tokens is None and usage.cache_write_input_tokens is None
 
 
 @pytest.mark.parametrize(("code", "status", "retryable"), [
