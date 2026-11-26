@@ -371,6 +371,7 @@ class DeepResearchRepository:
                                      'revisionTableCommonOrderVersion',
                                      'namedTableGroupedRowsVersion',
                                      'revisionTableSingleVersionDisplayVersion',
+                                     'revisionTableDifferingRowsVersion',
                                      'initialPlanExcerptSpanVersion', 'externalExplanationInputVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',

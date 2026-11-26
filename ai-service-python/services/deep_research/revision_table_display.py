@@ -12,6 +12,7 @@ _FIELDS = {'evidenceId', 'rowNumber', 'groupIndex', 'metric', 'value'}
 _ALTERNATE_FIELDS = {'evidenceId', 'sourceRowNumber', 'groupIndex', 'metricKey', 'value'}
 _SCALAR = re.compile(r'[+−-]?\d+(?:\.\d+)?%?')
 _LABEL = re.compile(r'[\w .()+%\-/·]{1,96}')
+_ROW_LABEL = re.compile(r'[\w .,()+%\-/·]{1,96}')
 _REVISION = re.compile(r'(?<![A-Za-z0-9_.-])v[1-9]\d*(?![A-Za-z0-9_.-])', re.I)
 _DECIMAL = re.compile(r'(?<![A-Za-z0-9_.-])\d+\.\d+(?![A-Za-z0-9.%])')
 _MEASURED = re.compile(r'\bmeasured\s+(?:the\s+)?([^.!?;\n]{1,96})', re.I)
@@ -89,7 +90,7 @@ def _unique_coordinate(binding, source, *, measured_names=(), peers=()):
 
 
 def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measured_metric_alias=False,
-             single_revision_display=False):
+             single_revision_display=False, differing_revision_rows=False):
     bindings = claim.get('tableBindings')
     if not isinstance(bindings, list) or not 2 <= len(bindings) <= 32:
         return None
@@ -140,7 +141,8 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measur
         cell = entries[0]
         label = ' '.join(cell['method'].split())
         column = ' · '.join(' '.join(part.split()) for part in (cell['group'], cell['metric']) if part.strip())
-        if not _LABEL.fullmatch(label) or not _LABEL.fullmatch(column) or not _SCALAR.fullmatch(cell['value']):
+        label_pattern = _ROW_LABEL if differing_revision_rows else _LABEL
+        if not label_pattern.fullmatch(label) or not _LABEL.fullmatch(column) or not _SCALAR.fullmatch(cell['value']):
             return None
         revision = publication['revision']
         coordinate = (label, column)
@@ -154,13 +156,16 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measur
             or any(len(owners) != 1 for owners in owners_by_revision.values())):
         return None
     first = next(iter(groups.values()))
-    if any(values.keys() != first.keys() for values in groups.values()):
+    same_rows = all(values.keys() == first.keys() for values in groups.values())
+    if not same_rows and not differing_revision_rows:
         return None
-    labels = list(dict.fromkeys(label for label, _ in first))
+    labels = list(dict.fromkeys(label for values in groups.values() for label, _ in values))
     if len(labels) != 1 and not multiple_rows:
         return None
-    columns = [column for label, column in first if label == labels[0]]
-    if set(first) != {(label, column) for label in labels for column in columns}:
+    first_label = next(iter(first))[0]
+    columns = [column for label, column in first if label == first_label]
+    if any(set(values) != {(label, column) for label, _ in values for column in columns}
+           for values in groups.values()):
         return None
     return normalized, labels, columns, groups
 
@@ -201,7 +206,7 @@ def _common_order(question, labels, columns, revisions, bindings, cited):
 
 def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
                 excluded_claim_ids=(), measured_metric_alias=False, shared_findings_question=None,
-                single_revision_display=False):
+                single_revision_display=False, differing_revision_rows=False):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -217,7 +222,7 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
         own = {ref: supplied[ref] for ref in claim['evidenceRefs']}
         matched = _resolve(claim, own, number, multiple_rows=multiple_rows,
                            reconcile_coordinates=reconcile_coordinates, measured_metric_alias=measured_metric_alias,
-                           single_revision_display=single_revision_display)
+                           single_revision_display=single_revision_display, differing_revision_rows=differing_revision_rows)
         if not matched:
             claims.append(claim)
             continue
@@ -235,6 +240,20 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
             fixed.append(claim['claimId'])
             continue
         order = sorted(revisions, key=lambda item: int(item[1:]))
+        if differing_revision_rows and any(revisions[revision].keys() != revisions[order[0]].keys() for revision in order):
+            rendered_rows = []
+            for label in labels:
+                by_value = defaultdict(list)
+                for revision in order:
+                    if (label, columns[0]) in revisions[revision]:
+                        measurement = '、'.join(revisions[revision][label, column] for column in columns)
+                        by_value[measurement].append(revision)
+                display = '，'.join('、'.join(versions) + ' ' + value for value, versions in by_value.items())
+                rendered_rows.append(f'{label} 为 {display}')
+            text = f'表 {number}（{"、".join(columns)}）' + '；'.join(rendered_rows) + '。'
+            claims.append({**claim, 'text':text, 'tableBindings':bindings})
+            fixed.append(claim['claimId'])
+            continue
         values = {
             label: '，'.join(revision + ' ' + '、'.join(revisions[revision][label, column] for column in columns)
                             for revision in order)

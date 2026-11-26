@@ -460,6 +460,7 @@ class ResearchFacade:
             "revisionTableMeasuredMetricAliasVersion": 1,
             "revisionTableCommonOrderVersion": 1,
             "revisionTableSingleVersionDisplayVersion": 1,
+            "revisionTableDifferingRowsVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
             "comparisonRepairBatchEnvelopeVersion": 3,
             "boundCompositeTableCellsVersion": 2,

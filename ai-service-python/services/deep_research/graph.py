@@ -2031,7 +2031,8 @@ space with unsupported global absence or incidental iteration/performance values
                 excluded_claim_ids=blocked_draft_ids,
                 measured_metric_alias=record.get('revisionTableMeasuredMetricAliasVersion') == 1,
                 shared_findings_question=question if record.get('revisionTableCommonOrderVersion') == 1 else None,
-                single_revision_display=record.get('revisionTableSingleVersionDisplayVersion') == 1)
+                single_revision_display=record.get('revisionTableSingleVersionDisplayVersion') == 1,
+                differing_revision_rows=record.get('revisionTableDifferingRowsVersion') == 1)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):

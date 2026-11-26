@@ -122,6 +122,28 @@ def test_single_version_display_adds_only_its_verified_original_groups():
     assert materialize(rendered,[source],'1',multiple_rows=True,single_revision_display=True) == (rendered,[])
 
 
+def test_changed_tables_print_shared_rows_and_each_revisions_distinct_rows():
+    old, new = revision('18.51', 1, 'a' * 64), revision('18.51', 2, 'b' * 64)
+    added = 'OPT-1.3B / 4bit (K -T, V -T)'
+    new['tableData']['rows'].append([3, added, ['16.44']])
+    new['quote'] += f'\nTable row 3: {added} | 16.44'
+    bindings = [{'evidenceId':row['evidenceId'], 'rowNumber':n,'groupIndex':0,'metric':'1%','value':values[0]}
+                for row in (old,new) for n,_,values in row['tableData']['rows']]
+    claim = {'claimId':'values','kind':'reported','text':'Draft','evidenceRefs':['e1','e2'],'tableBindings':bindings}
+    report={'claims':[claim]}
+    assert materialize(report,[old,new],'1',multiple_rows=True) == (report,[])
+    body,fixed=materialize(report,[old,new],'1',multiple_rows=True,differing_revision_rows=True)
+    assert fixed==['values']
+    changed,=body['claims']
+    assert changed['text']==f'表 1（Activation · 1%）OPT-1.3B 为 v1、v2 18.51；{added} 为 v2 16.44。'
+    assert changed['tableBindings']==bindings
+    assert validate_table_bindings(changed,[old,new]) is None
+
+    broken = deepcopy(report)
+    broken['claims'][0]['tableBindings'][-1]['value']='16.45'
+    assert materialize(broken,[old,new],'1',multiple_rows=True,differing_revision_rows=True)==(broken,[])
+
+
 @pytest.mark.parametrize('new_values, question, new_metric, ordered', [
     (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', True),
     (['15', '100', '14'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),

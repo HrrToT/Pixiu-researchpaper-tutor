@@ -1,0 +1,39 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "verificationClass": "known_case_development",
+  "sourceCommit": "535eff236ef3154caf6fab2177084a2130c7b8b7",
+  "runId": "dr_run_b43ab5787b04588cbe831451fbb8e9d6",
+  "status": "completed",
+  "outcome": "partial",
+  "acceptedClaims": [
+    "c1",
+    "c3"
+  ],
+  "numericDraftCellsCorrect": 18,
+  "initialRejectedTableClaim": "table_condition_not_displayed",
+  "readMode": "Production PDF/TEI chunking and scope routing, local lexical index adapter in the isolated graph",
+  "realCalls": 12,
+  "realTokens": 65871,
+  "elapsedSeconds": 169.0,
+  "offlineReplay": {
+    "reusedExactBindings": true,
+    "modelCalls": 0,
+    "numericPrecheckPassed": true,
+    "visibleCharacters": 351,
+    "sourcePagesByRevision": {
+      "v1": 7,
+      "v2": 8
+    }
+  },
+  "simulatedAndResidualCacheDistinctionVerifiedInRun": true,
+  "scientificAcceptance": false,
+  "unseenHoldoutCredit": 0,
+  "automaticRetries": 0,
+  "sha256": {
+    "intent.json": "905817258cc92b196369a449f2a468f95c487a3a863fbe464156c906c978ed7d",
+    "calls.json": "6df76f7de2ee2d86c8234c4b8b401cd9e0911cdf2a9cc5c8034c44791cfdc881",
+    "run.json": "8677ad29e8dad741bb2495a51fe9653e5b2c67895cb5c368ebd54df2491d096d",
+    "result.json": "f4440c2c49793168b8e1bbb3cb54bebdc672f76926c2cae543baf2565a04af9c",
+    "provider.jsonl": "143104ab2643ca517d77aaf090b55fb594c949c55f4c8c867f3aaec06a613fb4"
+  }
+}
