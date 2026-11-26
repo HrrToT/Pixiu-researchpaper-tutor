@@ -39,7 +39,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] == 1)
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2))
+
+
+def deployment_memory_context_enabled(record):
+    return (type(record.get('comparisonEvaluationProtocolVersion')) is int
+            and record['comparisonEvaluationProtocolVersion'] == 2)
 
 
 def _evaluation_protocol_score(text):
@@ -73,6 +78,22 @@ def preferred_evaluation_reads(rows, obligations, limit, extracted):
         if score > found.get(key, (0, None))[0]:
             found[key] = (score, row)
     return [row for _, row in list(found.values())[:limit // 3]]
+
+
+def preferred_deployment_memory_reads(rows, obligations, limit, extracted):
+    from services.deep_research.general_advice import deployment_memory_context, requests_device_memory
+    from services.deep_research.obligation_binding import eligible_obligation_ids
+    from services.deep_research.reading_roles import quality
+
+    active = {oid: row for oid, row in obligations.items() if requests_device_memory(row.get('question', ''))}
+    found = {}
+    for row in rows:
+        if (row.get('accessLevel') == 'fulltext' and row.get('versionId') and not row.get('tableData')
+                and (row['sourceId'], row.get('contentHash')) not in extracted
+                and eligible_obligation_ids(row, active) and quality(row) == (True, True)
+                and deployment_memory_context(row['text'])):
+            found.setdefault((row['workId'], row['versionId']), row)
+    return list(found.values())[:limit // 6]
 
 
 def has_single_numeric_example(roles):
@@ -415,6 +436,20 @@ def comparison_protocol_priority(rows, targets, *, reported_platform=False):
             if score > prioritized.get(source, (0, None))[0]:
                 prioritized[source] = (score, row['evidenceId'])
     return {eid for _, eid in prioritized.values()}
+
+
+def deployment_memory_priority(rows, targets):
+    from services.deep_research.general_advice import deployment_memory_context, requests_device_memory
+
+    allowed = {eid for target in targets if target.get('deliverable') == 'conditional_advice'
+               and requests_device_memory(target['question']) for eid in target['evidenceIds']}
+    found = {}
+    for row in rows:
+        if (row['evidenceId'] in allowed and row.get('accessLevel') == 'fulltext'
+                and not (row.get('tableData') or row.get('tableDataRef'))
+                and deployment_memory_context(row['quote'])):
+            found.setdefault(row['source'], row['evidenceId'])
+    return set(found.values())
 
 
 PLANNING = '''Use joint for a shared source-reported contrast or numerical example as well as

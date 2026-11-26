@@ -7,7 +7,7 @@ from services.deep_research.obligation_binding import eligible_obligation_ids
 
 def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None, protocol_note=False, mechanism_overviews=False,
                         benchmark_human=None, named_table_question=None, experiment_protocol=False,
-                        comparison_evaluation_protocol=False):
+                        comparison_evaluation_protocol=False, comparison_deployment_memory=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -74,6 +74,9 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     if comparison_evaluation_protocol:
         from services.deep_research.comparison_joint_reports import preferred_evaluation_reads
         preferred = [*preferred_evaluation_reads(ordered, obligations, limit, extracted), *preferred]
+    if comparison_deployment_memory:
+        from services.deep_research.comparison_joint_reports import preferred_deployment_memory_reads
+        preferred = [*preferred_deployment_memory_reads(ordered, obligations, limit, extracted), *preferred]
     ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:

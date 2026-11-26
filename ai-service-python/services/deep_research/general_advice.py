@@ -205,6 +205,20 @@ def requests_device_memory(text):
     return bool(_GPU_MEMORY.search(text))
 
 
+def deployment_memory_context(text):
+    """Find deployment context without classifying buffers as a measurement."""
+    from services.deep_research.source_continuity import _body
+
+    body = ' '.join(_body({'text': text}).split())
+    for sentence in _STATEMENT_BREAKS.split(body):
+        if (requests_device_memory(sentence)
+                and re.search(r'\b(?:render\w*|deployment|inference)\b|渲染|部署|推理', sentence, re.I)
+                and re.search(r'\b(?:required?|requires|store|buffer\w*|allocat\w*|peak)\b|需要|占用|峰值|缓存',
+                              sentence, re.I)):
+            return True
+    return False
+
+
 def device_memory_test_first(text):
     if not _MEASURE_FIRST.search(text):
         return False

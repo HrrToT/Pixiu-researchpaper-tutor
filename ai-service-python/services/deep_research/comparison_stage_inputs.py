@@ -170,10 +170,13 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         if include_joint and joint_comparison_delivery(record):
             from services.deep_research.comparison_joint_reports import (
                 comparison_protocol_priority, evaluation_protocols_enabled, joint_numeric_example,
+                deployment_memory_context_enabled, deployment_memory_priority,
             )
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets, reported_platform=evaluation_protocols_enabled(record))
                          if version in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else set())
+            if deployment_memory_context_enabled(record):
+                protocols.update(deployment_memory_priority(own, all_targets))
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow
                 # protocol passages before optional table inventories.

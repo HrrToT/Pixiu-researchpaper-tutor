@@ -780,7 +780,7 @@ def make_read_node(
             from services.deep_research.table_note_index import prefers_protocol_note
             from services.deep_research.named_benchmark_navigation import enabled as benchmark_navigation, human_text
             from services.deep_research import experiment_protocol_sources as protocol
-            from services.deep_research.comparison_joint_reports import evaluation_protocols_enabled
+            from services.deep_research.comparison_joint_reports import evaluation_protocols_enabled, deployment_memory_context_enabled
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             table_navigation = {}
             if record['readingPriorityContractVersion'] == 9 and local_contributions(record):
@@ -789,6 +789,8 @@ def make_read_node(
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'comparison_evaluation_protocol': True} if evaluation_protocols_enabled(record)
+                   and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
+                **({'comparison_deployment_memory': True} if deployment_memory_context_enabled(record)
                    and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
                 **({'named_table_question': effective_question(record)} if record.get('namedTableScopeVersion') == 2

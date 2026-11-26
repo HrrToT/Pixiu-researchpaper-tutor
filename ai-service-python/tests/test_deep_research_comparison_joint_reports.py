@@ -85,6 +85,28 @@ def test_measurement_protocol_keeps_actual_reported_settings_in_bounded_slots():
     assert comparison_protocol_priority(candidates, targets, reported_platform=True) == {'hardware', 'second'}
 
 
+def test_deployment_memory_context_stays_in_the_active_source_and_target_scope():
+    from services.deep_research.comparison_joint_reports import deployment_memory_priority, preferred_deployment_memory_reads
+    from services.deep_research.general_advice import has_device_memory_measurement
+
+    prose = 'Rendering requires GPU memory for the model and an additional 30–500 MB rasterizer buffer.'
+    context = {'sourceId': 'context', 'workId': 'p', 'versionId': 'p-v1',
+               'location': {}, 'text': prose, 'accessLevel': 'fulltext'}
+    foreign = {**context, 'sourceId': 'foreign', 'workId': 'q', 'versionId': 'q-v1'}
+    summary = {**context, 'sourceId': 'summary', 'accessLevel': 'abstract'}
+    training = {**context, 'sourceId': 'train', 'text': 'During training peak GPU memory was 20 GB.'}
+    options = [summary, foreign, training, context]
+    active = {'advice': {'obligationId': 'advice', 'question': '显存受限时如何选择？', 'requiredSources': ['p']}}
+    assert preferred_deployment_memory_reads(options, active, 12, ()) == [context]
+    assert preferred_deployment_memory_reads(options, active, 12, {('context', None)}) == []
+    assert preferred_deployment_memory_reads(options, active, 5, ()) == []
+    rows = [{**row, 'evidenceId': row['sourceId'], 'source': row['workId'], 'quote': row['text']} for row in options]
+    targets = [{'deliverable': 'conditional_advice', 'question': '显存受限时如何选择？',
+                'evidenceIds': ['context', 'train']}]
+    assert deployment_memory_priority(rows, targets) == {'context'}
+    assert not has_device_memory_measurement(prose, direct=True)
+
+
 @pytest.mark.parametrize('change', [None, 'ordinary_gap', 'partial_audit', 'invalid_audit', 'stale_layout',
                                    'wrong_version', 'wrong_value', 'missing_bindings', 'unverified'])
 def test_verified_same_table_example_closes_only_the_joint_readiness_gap(change):
