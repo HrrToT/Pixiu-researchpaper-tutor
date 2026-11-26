@@ -6,6 +6,7 @@ import needed in individual test files.
 
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -15,9 +16,8 @@ _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-# DeepSeekLLM.invoke 的唯一网络出口是 requests.post(f"{base_url}/chat/completions")
-# （llm/client.py:156）。按 URL 特征识别，避免波及外部检索等非 LLM 的 HTTP 测试。
-_LLM_HTTP_MARKER = "/chat/completions"
+# 两种模型请求的端点。按路径检查，保留外部检索等非 LLM 的 HTTP 测试。
+_LLM_HTTP_PATHS = ("/chat/completions", "/responses")
 
 
 class LiveLLMBlockedError(RuntimeError):
@@ -101,7 +101,7 @@ def block_live_llm_http(request, monkeypatch):
     real_post = llm_client.requests.post
 
     def _guarded_post(url, *args, **kwargs):
-        if _LLM_HTTP_MARKER in str(url):
+        if urlsplit(str(url)).path.rstrip("/").endswith(_LLM_HTTP_PATHS):
             raise LiveLLMBlockedError(
                 f"测试试图请求真实 LLM（{url}）。请打桩 llm.client.requests.post，"
                 "或给该测试加 @pytest.mark.live_llm 显式声明它需要活调用。"

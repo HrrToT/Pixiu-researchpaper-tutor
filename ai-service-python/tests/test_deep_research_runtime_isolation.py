@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from core.config import settings
 from llm.provider import LLMResult, LLMUsage
 from services.deep_research import runtime
 from services.deep_research.publication import PublicationDispatcher
@@ -29,6 +30,7 @@ def production_factory(tmp_path, monkeypatch):
     monkeypatch.setattr(runtime, '_runtime', None)
     monkeypatch.setenv('DEEP_RESEARCH_V2_ENABLED', 'true')
     monkeypatch.setenv('DEEP_RESEARCH_DB_PATH', str(tmp_path / 'runtime.sqlite3'))
+    monkeypatch.setattr(settings, 'deep_research_model_provider', 'deepseek')
     monkeypatch.setattr(runtime, 'research_model', lambda: Provider())
     monkeypatch.setattr(runtime.AuthoritativeScopeValidator, 'validate_materials', lambda *_: True)
     monkeypatch.setattr(PublicationDispatcher, 'start', lambda self: None)
