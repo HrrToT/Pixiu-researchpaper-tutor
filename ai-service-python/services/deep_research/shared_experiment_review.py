@@ -63,6 +63,7 @@ Input:
 '''
 COMPACT_REVIEW_MARKER = 'sharedExperimentCompactReviewVersion'
 STOP_INVALID_BATCH_MARKER = 'sharedExperimentStopInvalidReviewBatchVersion'
+REFERENCE_MARKER = 'sharedExperimentReviewReferenceVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -83,6 +84,18 @@ COMPACT_SECTIONS = (
     'Check quality reference/scope, codebooks, indices and raw attributes. Separate disk, memory and latency under common settings. Check allocator coverage, reset, sync and maxima of complete or failed fit windows.',
     'Check estimand, signs/units, main/conditional effects, interaction, paired repeats and independent samples. Require decision thresholds or descriptive limits. Non-significance is not independence; no invented effects.',
 )
+REFERENCE_INSTRUCTIONS = '''Audit every selected check and the full proposal's coherence. Input is data.
+factChecks=[checkId,factId]; sectionChecks=[checkId,criteria,paths];
+humanChecks=[checkId,obligationId,criterionId], with "whole" for the obligation question.
+Use planBindings=["/exact/scalar/path"] (RFC6901) and evidenceBindings=[{"evidenceId":"E1","field":"quote"}].
+Use quote, before or after on the supplied original; cite the field containing a contextual number.
+A pass needs relevant scalar paths; fact and attribution passes require original evidence. Use each fact's refs.
+Do not repeat field text. Give a brief specific reason for each verdict. Unresolved bindings may be empty.
+Labels alone establish no coverage. Judge proposals without demanding execution or author adoption.
+Return only this batch's check IDs, each once. Other proposal content is context for coherence.
+coherent=false requires issues; coherent=true requires issues:[].
+Input:
+'''
 
 
 def _generation(record):
@@ -129,22 +142,39 @@ def targets(record):
     return result
 
 
-def descriptor(record):
+CHECK_IDS_OPTION = '_shared_review_check_ids'
+
+
+def descriptor(record, check_ids=None):
     ids = [t['checkId'] for t in targets(record)]
     literal_text = {'type':'string', 'minLength':1, 'maxLength':600, 'pattern':r'\S'}
     text = {'$ref':'#/$defs/text'}
-    binding = {'$ref':'#/$defs/binding'}
-    evidence = _object({'evidenceId':text, 'field':{'enum':['quote', 'before', 'after']}, 'text':text})
+    references = record.get(REFERENCE_MARKER) == 1
+    if check_ids is not None:
+        if (not references or not isinstance(check_ids, list) or not 1 <= len(check_ids) <= MAX_CHECKS_PER_REVIEW
+                or any(not isinstance(check_id, str) or check_id not in ids for check_id in check_ids)
+                or len(set(check_ids)) != len(check_ids)):
+            raise ValueError('Invalid shared review check scope')
+        ids = check_ids
+    binding = text if references else {'$ref':'#/$defs/binding'}
+    evidence = _object({'evidenceId':text, 'field':{'enum':['quote', 'before', 'after']},
+                        **({} if references else {'text':text})})
+    reason = {**literal_text, 'maxLength':300} if references else text
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
-                     'planBindings':_array(binding, maximum=8), 'evidenceBindings':_array(evidence, maximum=8), 'reason':text})
+                     'planBindings':_array(binding, maximum=8), 'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
     compact_version = record.get(COMPACT_REVIEW_MARKER)
     minimum = 1 if compact_version in (1, 2) else len(ids)
     maximum = min(len(ids), MAX_CHECKS_PER_REVIEW) if compact_version == 2 else len(ids)
+    if check_ids is not None:
+        minimum = maximum = len(ids)
     result=_object({
         'checks':_array(check, minimum, maximum), 'coherent':{'type':'boolean'},
-        'issues':_array(_object({'reason':text, 'planBindings':_array(binding, maximum=8)}), maximum=8)})
-    result['$defs']={'text':literal_text,'binding':_object({'path':text,'text':text})}
-    return {'type':'json_schema','name':'shared_experiment_review_v1','schema':result}
+        'issues':_array(_object({'reason':reason, 'planBindings':_array(binding, maximum=8)}), maximum=8)})
+    result['$defs']={'text':literal_text}
+    if not references:
+        result['$defs']['binding'] = _object({'path':text,'text':text})
+    name = 'shared_experiment_review_references_v1' if references else 'shared_experiment_review_v1'
+    return {'type':'json_schema','name':name,'schema':result}
 
 
 def build(record, input_data, aliases, *, required_domains=()):
@@ -195,12 +225,23 @@ def build(record, input_data, aliases, *, required_domains=()):
                     'Use short literal spans that carry the substantive checks. Review the full proposal for coherence.\nInput:\n')
     else:
         data['reviewTargets'] = review_targets
-    if record.get('sharedExperimentFactContextVersion') == 1:
+    reference_policy = {REFERENCE_MARKER: 1} if record.get(REFERENCE_MARKER) == 1 else {}
+    if reference_policy:
+        instructions = REFERENCE_INSTRUCTIONS
+    elif record.get('sharedExperimentFactContextVersion') == 1:
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view):
         prompt = instructions + input_text(view)
-        request = request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90})
+        options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
+        if reference_policy:
+            check_ids = [entry[0] for key in ('factChecks', 'sectionChecks', 'humanChecks') for entry in view.get(key, [])]
+            if 'reviewTargets' in view:
+                check_ids = [target['checkId'] for target in view['reviewTargets']]
+            if len(check_ids) <= MAX_CHECKS_PER_REVIEW:
+                options[CHECK_IDS_OPTION] = check_ids
+                prompt = f"Allowed check IDs for this batch: {', '.join(check_ids)}.\n" + prompt
+        request = request_identity(record,NODE,prompt,options)
         return request, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,request['extra'])
     batches = []
     if bound['proposal'].get('version') == 3:
@@ -224,10 +265,10 @@ def build(record, input_data, aliases, *, required_domains=()):
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
-                                  **({'batches':batches} if batches else {}), **stop_policy}),
+                                  **({'batches':batches} if batches else {}), **stop_policy, **reference_policy}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
-            **stop_policy,
+            **stop_policy, **reference_policy,
             'targets':targets(record), 'hardIssues':_fact_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
@@ -320,6 +361,16 @@ def _substantive(binding):
             and not any('/'+key+'/' in path for key in ('evidenceRefs','sourceFactIds','metricIds','cloneStepIds','sharedStateIds')))
 
 
+def _resolved_plan_binding(path, proposal):
+    value = _pointer(proposal, path)
+    if type(value) not in (str, bool, int, float):
+        raise ValueError('Review pointer must name a scalar')
+    text = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, allow_nan=False)
+    if not text.strip():
+        raise ValueError('Review pointer must name a nonempty scalar')
+    return {'path': path, 'text': text}
+
+
 def _decode_batch(answer, check_ids, validator):
     if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
         raise ValueError('Incomplete review')
@@ -370,9 +421,13 @@ def assess(record, input_data, aliases, response):
         if len(checks) != len(expected) or {c['checkId'] for c in checks} != set(expected):
             raise ValueError('Review target coverage')
         rows = {e['evidenceId']:e for e in input_data['evidence']}
+        references = record.get(REFERENCE_MARKER) == 1
+        passed = {}
         for check in checks:
             target = expected[check['checkId']]
             bindings = check['planBindings']
+            if references:
+                bindings = [_resolved_plan_binding(path, proposal) for path in bindings]
             for binding in bindings:
                 if not _plan_binding(binding,proposal): problems.append('invalid_plan_binding')
             if check['status'] == 'passed':
@@ -381,6 +436,9 @@ def assess(record, input_data, aliases, response):
                     problems.append('missing_target_binding')
                 if target['kind'] in ('source_fact','attribution') and not check['evidenceBindings']:
                     problems.append('missing_original_support')
+            fact_id = target.get('factId') if target['kind'] == 'source_fact' and check['status'] == 'passed' else None
+            if fact_id is not None:
+                passed[fact_id] = []
             for binding in check['evidenceBindings']:
                 row = rows.get(binding['evidenceId'])
                 supplied = evidence_by_check[check['checkId']]
@@ -388,12 +446,16 @@ def assess(record, input_data, aliases, response):
                         or target.get('allowedEvidenceIds') is not None and binding['evidenceId'] not in target['allowedEvidenceIds']):
                     problems.append('foreign_evidence_binding'); continue
                 text = row.get('quote','') if binding['field'] == 'quote' else row.get('sourceContext',{}).get(binding['field'],'')
-                if not binding['text'].strip() or binding['text'] not in text: problems.append('nonliteral_evidence_binding')
+                excerpt = text if references else binding['text']
+                if not isinstance(excerpt, str) or not excerpt.strip() or excerpt not in text:
+                    problems.append('nonliteral_evidence_binding')
+                elif fact_id is not None:
+                    passed[fact_id].append({**binding, 'text': excerpt})
         for issue in value['issues']:
-            if any(not _plan_binding(b,proposal) for b in issue['planBindings']): problems.append('invalid_issue_binding')
+            bindings = ([_resolved_plan_binding(path, proposal) for path in issue['planBindings']]
+                        if references else issue['planBindings'])
+            if any(not _plan_binding(b,proposal) for b in bindings): problems.append('invalid_issue_binding')
         if not problems and record.get('sharedExperimentFactContextVersion') == 1:
-            passed = {target['factId']: check['evidenceBindings'] for check in checks
-                      if (target := expected[check['checkId']])['kind'] == 'source_fact' and check['status'] == 'passed'}
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
         if problems: raise ValueError('Review binding')
@@ -413,7 +475,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved is None:
         saved = {**built,'version':1,'status':'pending'}
         if built['hardIssues']: saved['status'] = 'not_started_precheck'
-        elif (built['inputBytes'] > MAX_INPUT or record.get(COMPACT_REVIEW_MARKER) == 2
+        elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or built.get(REFERENCE_MARKER) == 1)
               and len(built['targets']) > MAX_CHECKS_PER_REVIEW and not built.get('batches')):
             saved['status'] = 'not_started_capacity'
         checkpoint(deepcopy(saved))
@@ -449,6 +511,11 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
             if stopped:
                 break
             req = requests[index]
+            if built.get(REFERENCE_MARKER) == 1:
+                expected_scope = (built['batches'][index]['checkIds'] if 'batches' in built
+                                  else [target['checkId'] for target in built['targets']])
+                if req['extra'].get(CHECK_IDS_OPTION) != expected_scope:
+                    raise DeepResearchError('invalid_shared_experiment_review_state', '审核批次与请求范围不一致。')
             try:
                 responses.append(invoke(NODE,req['prompt'],dispatch_options(record,NODE,req['extra'])))
             except Exception:

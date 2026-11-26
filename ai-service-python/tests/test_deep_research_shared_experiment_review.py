@@ -155,6 +155,39 @@ def test_complete_review_covers_every_fact_section_and_frozen_criterion_then_reu
     assert not r['state'].get('reportBody') and not r.get('publication')
 
 
+@pytest.mark.parametrize('fault', [None, 'object_pointer', 'unknown_pointer', 'foreign_source',
+                                 'empty_context', 'wrong_section', 'missing_check'])
+def test_review_references_resolve_only_owned_scalar_fields(fault):
+    from services.deep_research.shared_experiment_review import REFERENCE_MARKER
+
+    record, data, aliases = ready()
+    record[REFERENCE_MARKER] = 1
+    body = verdict(record, data)
+    for row in body['checks']:
+        row['planBindings'] = [binding['path'] for binding in row['planBindings']]
+        row['evidenceBindings'] = [{k: v for k, v in binding.items() if k != 'text'}
+                                   for binding in row['evidenceBindings']]
+    first = body['checks'][0]
+    if fault == 'object_pointer':
+        first['planBindings'] = ['/data']
+    elif fault == 'unknown_pointer':
+        first['planBindings'] = ['/missing']
+    elif fault == 'foreign_source':
+        first['evidenceBindings'][0]['evidenceId'] = 'E2'
+    elif fault == 'empty_context':
+        first['evidenceBindings'][0]['field'] = 'before'
+    elif fault == 'wrong_section':
+        first['planBindings'] = ['/hypothesis']
+    elif fault == 'missing_check':
+        body['checks'].pop()
+    result = assess(record, data, aliases, reply(body))
+    assert result['valid'] is (fault is None)
+    if fault is None:
+        assert result['verdict'] == body and result['complete']
+        record.pop(REFERENCE_MARKER)
+        assert not assess(record, data, aliases, reply(body))['valid']
+
+
 def test_truncated_review_batch_stops_later_sends_and_restores_from_checkpoint(monkeypatch):
     from services.deep_research import shared_experiment_review as review
 
@@ -184,6 +217,30 @@ def test_truncated_review_batch_stops_later_sends_and_restores_from_checkpoint(m
         value for value in checkpoints if value['status'] == 'pending' and value.get('stoppedAfterInvalidBatch') == 1)
     assert prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
     assert invoke.call_count == 2
+
+
+def test_reference_review_scope_reaches_the_provider_without_private_options():
+    from jsonschema import Draft202012Validator
+    from llm.responses_transport import payload
+    from services.deep_research.planning_transport import options_for_record
+    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, REFERENCE_MARKER
+
+    record, data, _ = ready()
+    record[REFERENCE_MARKER] = 1
+    checks = verdict(record, data)['checks']
+    selected = [checks[0]['checkId']]
+    options = options_for_record(record, NODE, {CHECK_IDS_OPTION: selected, 'max_tokens': 4096})
+    wire = payload([{'role': 'user', 'content': 'fixture'}], options, model='fixture', temperature=0)
+    schema = wire['text']['format']['schema']
+    assert CHECK_IDS_OPTION not in wire
+    row = {**checks[0], 'planBindings': [], 'evidenceBindings': []}
+    body = {'checks': [row], 'coherent': True, 'issues': []}
+    validator = Draft202012Validator(schema)
+    assert validator.is_valid(body)
+    assert not validator.is_valid({**body, 'checks': [{**row, 'checkId': checks[1]['checkId']}]})
+    assert not validator.is_valid({**body, 'checks': [row, row]})
+    with pytest.raises(ValueError):
+        options_for_record(record, NODE, {CHECK_IDS_OPTION: selected * 2})
 
 
 @pytest.mark.parametrize('mutation', ['missing','duplicate','unknown','fake_plan','wrong_section','identifier_only',

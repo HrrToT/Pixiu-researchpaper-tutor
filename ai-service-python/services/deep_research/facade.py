@@ -340,6 +340,7 @@ class ResearchFacade:
             **({"sharedExperimentFitObservationOutputVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDerivedPairingVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentStopInvalidReviewBatchVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentReviewReferenceVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

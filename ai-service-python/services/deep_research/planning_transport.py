@@ -39,7 +39,8 @@ def descriptor():
     return {'type':'json_schema','name':'private_experiment_columns_v1','schema':schema}
 
 
-def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False):
+def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False,
+                   review_check_ids=None):
     from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE, descriptor as shared_descriptor
     if node == SHARED_NODE and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
@@ -50,7 +51,7 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared review transport mode')
         from services.deep_research.shared_experiment_review import descriptor as review_descriptor
-        return review_descriptor(record)
+        return review_descriptor(record, review_check_ids)
     if node == 'repair_experiment_shared' and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared replacement transport mode')
@@ -182,6 +183,10 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
 def options_for_record(record,node,options):
     """Own transport selection; caller/source options cannot inject an adapter."""
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
+    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE as REVIEW_NODE, REFERENCE_MARKER
+    if CHECK_IDS_OPTION in options and (node != REVIEW_NODE or record.get(REFERENCE_MARKER) != 1
+                                        or options[CHECK_IDS_OPTION] is None or not enabled(record, node)):
+        raise ValueError('Review check scope is server-owned and versioned')
     from services.deep_research import workflow_representation_stage as representation
     shared_init = node == 'plan_workflow_init' and representation.enabled(record)
     if representation.OPTION in options and not shared_init:
@@ -196,6 +201,8 @@ def options_for_record(record,node,options):
         raise ValueError('HTTP observation is server-owned and versioned')
     if not enabled(record,node):return {**options,'response_format':{'type':'json_object'}}
     allowed={'response_format','thinking','reasoning_effort','max_tokens','temperature','timeout_seconds'}
+    if CHECK_IDS_OPTION in options:
+        allowed.add(CHECK_IDS_OPTION)
     if shared_init:
         representation.bound(record, options[representation.OPTION])
         allowed.add(representation.OPTION)
@@ -250,7 +257,8 @@ def options_for_record(record,node,options):
             record, options[representation.OPTION])}
     return {**options,API_KEY:'responses','response_format':descriptor_for(
         record,node,options.get(TARGET_OPTION, 'component'),metadata_edits=options.get(EDIT_OPTION,False),
-        revision_source_refs=options.get(sources.OPTION),fit_edits=options.get(fits.OPTION,False))}
+        revision_source_refs=options.get(sources.OPTION),fit_edits=options.get(fits.OPTION,False),
+        review_check_ids=options.get(CHECK_IDS_OPTION))}
 
 
 def validate_options(record,node,options):
@@ -277,7 +285,8 @@ def overhead_bytes(record,node,options=None):
     from services.deep_research.workflow_metadata_edits import OPTION
     from services.deep_research.workflow_revision_sources import OPTION as SOURCE_OPTION
     from services.deep_research.workflow_fit_edits import OPTION as FIT_OPTION
+    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION
     return len(json.dumps({API_KEY:'responses','response_format':descriptor_for(
         record,node,target,metadata_edits=(options or {}).get(OPTION,False),revision_source_refs=(options or {}).get(SOURCE_OPTION),
-        fit_edits=(options or {}).get(FIT_OPTION,False))},
+        fit_edits=(options or {}).get(FIT_OPTION,False),review_check_ids=(options or {}).get(CHECK_IDS_OPTION))},
         ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))

@@ -6,7 +6,7 @@ API_KEY = '_deepseek_api'
 def payload(messages, options, *, model, temperature):
     from llm.response_observation import OPTION as OBSERVATION_OPTION
     allowed={API_KEY,'response_format','thinking','reasoning_effort','max_tokens',
-        'temperature','timeout_seconds','_workflow_init_target','_workflow_representation_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits',OBSERVATION_OPTION}
+        'temperature','timeout_seconds','_workflow_init_target','_workflow_representation_target','_workflow_metadata_edits','_workflow_revision_source_refs','_workflow_fit_edits','_shared_review_check_ids',OBSERVATION_OPTION}
     if OBSERVATION_OPTION in options and options[OBSERVATION_OPTION] is not True:
         raise ValueError('Invalid HTTP observation option')
     if set(options)-allowed or options.get(API_KEY)!='responses':
@@ -44,6 +44,14 @@ def payload(messages, options, *, model, temperature):
                 or len(set(refs))!=len(refs) or fmt['name']!='metadata_symbolic_results_bound_refs_v1'
                 or fmt['schema'].get('properties',{}).get('sourceRefs',{}).get('const')!=refs):
             raise ValueError('Invalid metadata source binding')
+    if '_shared_review_check_ids' in options:
+        ids = options['_shared_review_check_ids']
+        checks = fmt['schema'].get('properties', {}).get('checks', {})
+        id_schema = checks.get('items', {}).get('properties', {}).get('checkId', {})
+        if (fmt['name'] != 'shared_experiment_review_references_v1' or not isinstance(ids, list)
+                or not ids or id_schema.get('enum') != ids
+                or checks.get('minItems') != len(ids) or checks.get('maxItems') != len(ids)):
+            raise ValueError('Invalid shared review check binding')
     cap=options.get('max_tokens')
     if type(cap) is not int or cap<=0:raise ValueError('Invalid Responses output cap')
     thinking=options.get('thinking')
