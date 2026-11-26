@@ -103,6 +103,41 @@ def test_invalid_sibling_does_not_block_exact_revision_cells():
     assert validate_table_bindings(body['claims'][0], sources) is None
 
 
+def test_reported_metric_name_resolves_only_a_unique_value_in_the_verified_row():
+    sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
+    bindings = []
+    for row, value in zip(sources, ('18.51', '16.91'), strict=True):
+        row['quote'] = 'We measured the WikiText perplexity ( ↓ ).\n' + row['quote']
+        bindings.append({'evidenceId': row['evidenceId'], 'rowNumber': 2, 'groupIndex': 0,
+                         'metric': 'WikiText perplexity (↓)', 'value': value})
+    claim = {'claimId': 'cells', 'kind': 'reported', 'text': 'Draft', 'evidenceRefs': ['e1', 'e2'],
+             'tableBindings': bindings}
+    report = {'claims': [claim]}
+    assert materialize(report, sources, '1', reconcile_coordinates=True) == (report, [])
+    body, fixed = materialize(report, sources, '1', reconcile_coordinates=True, measured_metric_alias=True)
+    assert fixed == ['cells']
+    assert validate_table_bindings(body['claims'][0], sources) is None
+    sources[0]['tableData']['groups'][0][1].append('2%')
+    sources[0]['tableData']['rows'][0][2].append('18.51')
+    sources[0]['quote'] += ' | 18.51'
+    assert materialize(report, sources, '1', reconcile_coordinates=True,
+                       measured_metric_alias=True) == (report, [])
+    sources[1]['tableData']['groups'][0][1].append('2%')
+    sources[1]['tableData']['rows'][0][2].append('16.91')
+    sources[1]['quote'] += ' | 16.91'
+    for row, value in zip(sources, ('13.02', '11.39'), strict=True):
+        row['tableData']['rows'].append([3, 'OPT-6.7B', [value, '25.00']])
+        row['quote'] += f'\nTable row 3: OPT-6.7B | {value} | 25.00'
+        bindings.append({'evidenceId': row['evidenceId'], 'rowNumber': 3, 'groupIndex': 0,
+                         'metric': 'WikiText perplexity (↓)', 'value': value})
+    body, fixed = materialize(report, sources, '1', multiple_rows=True, reconcile_coordinates=True,
+                              measured_metric_alias=True)
+    assert fixed == ['cells'] and validate_table_bindings(body['claims'][0], sources) is None
+    bindings.pop()  # The other revision's column cannot resolve the duplicate here.
+    assert materialize(report, sources, '1', multiple_rows=True, reconcile_coordinates=True,
+                       measured_metric_alias=True) == (report, [])
+
+
 def test_flat_column_reference_reconciles_only_a_unique_exact_cell():
     sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
     bindings = [{'evidenceId': source['evidenceId'], 'rowNumber': 2, 'groupIndex': 4,

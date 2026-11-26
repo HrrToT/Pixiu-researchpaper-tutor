@@ -13,6 +13,7 @@ _SCALAR = re.compile(r'[+−-]?\d+(?:\.\d+)?%?')
 _LABEL = re.compile(r'[\w .()+%\-/·]{1,96}')
 _REVISION = re.compile(r'(?<![A-Za-z0-9_.-])v[1-9]\d*(?![A-Za-z0-9_.-])', re.I)
 _DECIMAL = re.compile(r'(?<![A-Za-z0-9_.-])\d+\.\d+(?![A-Za-z0-9.%])')
+_MEASURED = re.compile(r'\bmeasured\s+(?:the\s+)?([^.!?;\n]{1,96})', re.I)
 GUIDANCE = ('For the same row across revisions, put exact bound cells in a reported claim. '
             'The app formats their revision labels from the PDF. In conclusions explain the difference '
             'without repeating numbers already reported in those rows.')
@@ -31,7 +32,15 @@ REQUESTED_FINDINGS_GUIDANCE = (
 )
 
 
-def _unique_coordinate(binding, source):
+def _metric_key(text):
+    return ''.join(text.casefold().split())
+
+
+def _table_identity(source):
+    return source.get('ownerMaterialId'), source.get('sourceVersionId'), (source.get('location') or {}).get('table')
+
+
+def _unique_coordinate(binding, source, *, measured_names=(), peers=()):
     """Resolve a flat column reference within the same cited row and value."""
     from services.deep_research.table_evidence import visible_table_packet
 
@@ -42,17 +51,37 @@ def _unique_coordinate(binding, source):
     if row is None:
         return None
     matches = []
+    value_matches = []
     offset = 0
     for group, (label, metrics) in enumerate(packet['groups']):
         for index, metric in enumerate(metrics):
-            if (binding['metric'] in (metric, f'{label} / {metric}')
-                    and binding['value'] == row[2][offset + index]):
-                matches.append({**binding, 'groupIndex': group, 'metric': metric})
+            if binding['value'] == row[2][offset + index]:
+                cell = {**binding, 'groupIndex': group, 'metric': metric}
+                value_matches.append(cell)
+                if binding['metric'] in (metric, f'{label} / {metric}'):
+                    matches.append(cell)
         offset += len(metrics)
+    if not matches and isinstance(binding['metric'], str) and measured_names == {_metric_key(binding['metric'])}:
+        if len(value_matches) == 1:
+            matches = value_matches
+        elif len(value_matches) > 1:
+            # A model can number its selected columns instead of copying their
+            # headers. Reuse a slot only when the other cited rows of this same
+            # PDF table identify exactly one corresponding verified column.
+            coordinates = set()
+            for other, row_source in peers:
+                if (other.get('rowNumber') == binding['rowNumber'] or other.get('groupIndex') != binding['groupIndex']
+                        or other.get('metric') != binding['metric']):
+                    continue
+                anchored = _unique_coordinate(other, row_source, measured_names=measured_names)
+                if anchored is not None:
+                    coordinates.add((anchored['groupIndex'], anchored['metric']))
+            if len(coordinates) == 1:
+                matches = [cell for cell in value_matches if (cell['groupIndex'], cell['metric']) in coordinates]
     return matches[0] if len(matches) == 1 else None
 
 
-def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
+def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measured_metric_alias=False):
     bindings = claim.get('tableBindings')
     if not isinstance(bindings, list) or not 2 <= len(bindings) <= 32:
         return None
@@ -60,6 +89,23 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
     groups = defaultdict(dict)
     work_ids = set()
     owners_by_revision = defaultdict(set)
+    measured_names = defaultdict(set)
+    peer_rows = defaultdict(list)
+    if measured_metric_alias:
+        # A caption can be in a different passage from the row. Keep it
+        # within this claim's cited, verified table and exact PDF revision.
+        eligible_tables = {}
+        for eid, source in own.items():
+            table = _table_identity(source)
+            if (table[2] and owned_evidence_publication(source)
+                    and eid in select([source], number)[1]):
+                eligible_tables[eid] = table
+                measured_names[table].update(_metric_key(match[1]) for match in _MEASURED.finditer(source['quote']))
+        for binding in bindings:
+            if isinstance(binding, dict) and set(binding) == _FIELDS and isinstance(binding['evidenceId'], str):
+                eid = binding['evidenceId']
+                if eid in eligible_tables:
+                    peer_rows[eligible_tables[eid]].append((binding, own[eid]))
     for binding in bindings:
         if not isinstance(binding, dict):
             return None
@@ -76,7 +122,9 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
             return None
         entries = bound_table_context({**claim, 'tableBindings': [binding]}, [source])
         if not entries and reconcile_coordinates:
-            binding = _unique_coordinate(binding, source)
+            table = _table_identity(source)
+            binding = _unique_coordinate(binding, source, measured_names=measured_names.get(table, ()),
+                                         peers=peer_rows.get(table, ()))
             if binding is not None:
                 entries = bound_table_context({**claim, 'tableBindings': [binding]}, [source])
         if len(entries) != 1:
@@ -110,7 +158,7 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
 
 
 def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
-                excluded_claim_ids=()):
+                excluded_claim_ids=(), measured_metric_alias=False):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -125,7 +173,7 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
             continue
         own = {ref: supplied[ref] for ref in claim['evidenceRefs']}
         matched = _resolve(claim, own, number, multiple_rows=multiple_rows,
-                           reconcile_coordinates=reconcile_coordinates)
+                           reconcile_coordinates=reconcile_coordinates, measured_metric_alias=measured_metric_alias)
         if not matched:
             claims.append(claim)
             continue

@@ -159,7 +159,14 @@ def instructions(record):
                 'record at measurement. Put record IDs in stateIds. Capture actual peak per full fit window, specify device, '
                 'allocator, reset, synchronization and aggregation. Use fitMemoryCaptures=[] for other metrics.',
             )
-        if record.get(CLONE_LAYOUT_MARKER) == 2:
+        if version == 8 and record.get('sharedExperimentDerivedPairingVersion') == 1:
+            prompt = prompt.replace(
+                '  Read all pairing.sharedStateIds, clone mutable parameter, optimizer and treatment-control state with\n'
+                '  equal initial values, and put this step ID in pairing.cloneStepIds. Keep shared inputs separate.',
+                '  In clone.reads list the existing shared starting state used by all arms. Clone mutable parameters,\n'
+                '  optimizer and controls with equal initial values. pairing contains identityChecks only.'
+            )
+        elif record.get(CLONE_LAYOUT_MARKER) == 2:
             prompt = prompt.replace(
                 '  Read all pairing.sharedStateIds, clone mutable parameter, optimizer and treatment-control state with\n'
                 '  equal initial values, and put this step ID in pairing.cloneStepIds. Keep shared inputs separate.',
@@ -190,13 +197,13 @@ def enabled(record):
             and record.get('state', {}).get('outputKind') == 'experiment_design')
 
 
-def descriptor(version=1):
+def descriptor(version=1, *, derive_pairing=False):
     # Reuse native JSON Schema definitions, without encoding the model's input
     # or output values. The independent local validator retains the full schema.
     schema_profile = 4 if version == 5 else version
     if schema_profile in (3, 4, 6, 7, 8):
         from services.deep_research.shared_experiment_references import wire_schema
-        plain = wire_schema(schema_profile)
+        plain = wire_schema(schema_profile, derive_pairing=derive_pairing)
     else:
         plain = schema()
     properties = plain['properties']
@@ -224,6 +231,8 @@ def descriptor(version=1):
             6: 'shared_binary_factorial_assets_v6', 7: 'shared_binary_factorial_arms_v7',
             8: 'shared_binary_factorial_resources_v8'}.get(
         schema_profile, 'shared_binary_factorial_v1')
+    if schema_profile == 8 and derive_pairing:
+        name = 'shared_binary_factorial_derived_pairing_v1'
     return {'type':'json_schema','name':name,'schema':compact}
 
 
@@ -290,6 +299,8 @@ def build(record, input_data, aliases, *, required_domains=()):
     overhead = overhead_bytes(record, NODE, request['extra'])
     output_policy = ({'sharedExperimentFitObservationOutputVersion': 1}
                      if record.get('sharedExperimentFitObservationOutputVersion') == 1 else {})
+    if record.get('sharedExperimentDerivedPairingVersion') == 1:
+        output_policy['sharedExperimentDerivedPairingVersion'] = 1
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
             'requiredDomains': sorted(set(required_domains)), 'inputBytes': len(prompt.encode('utf-8')) + overhead,
             'promptBytes': len(prompt.encode('utf-8')), 'transportOverheadBytes': overhead,
@@ -336,7 +347,8 @@ def _validate_response(response, profile, built):
         from services.deep_research.shared_experiment_references import compile_plan
         value, issues = compile_plan(value, evidence_ids, required_domains=domains,
                                      profile=4 if profile == 5 else profile,
-                                     fit_observation_outputs=built.get('sharedExperimentFitObservationOutputVersion') == 1)
+                                     fit_observation_outputs=built.get('sharedExperimentFitObservationOutputVersion') == 1,
+                                     derive_pairing=built.get('sharedExperimentDerivedPairingVersion') == 1)
     else:
         issues = validate(value, evidence_ids, required_domains=domains)
     if not complete:

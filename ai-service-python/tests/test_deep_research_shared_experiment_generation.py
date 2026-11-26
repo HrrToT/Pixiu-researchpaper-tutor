@@ -395,6 +395,17 @@ def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fau
         assert result is None and code in {issue['code'] for issue in issues}
     else:
         assert not issues and result == canonical
+        pairing_wire = deepcopy(draft)
+        pairing_wire['pairing'] = {'identityChecks': draft['pairing']['identityChecks']}
+        derived, pairing_issues = compile_plan(pairing_wire, ['E1'], profile=8, derive_pairing=True)
+        assert not pairing_issues
+        assert derived == {**canonical, 'pairing': {**canonical['pairing'],
+                           'sharedStateIds': sorted(canonical['pairing']['sharedStateIds'])}}
+        assert compile_plan(draft, ['E1'], profile=8, derive_pairing=True)[0] is None
+        clone = next(step for step in pairing_wire['steps'] if step['kind'] == 'clone')
+        clone['reads'].append('not_created')
+        invalid, invalid_issues = compile_plan(pairing_wire, ['E1'], profile=8, derive_pairing=True)
+        assert invalid is None and any(issue['code'] == 'plan.future_state' for issue in invalid_issues)
         annotated = deepcopy(draft)
         for factor in annotated['factors']:
             factor['affectedStateIds'].append('peak')

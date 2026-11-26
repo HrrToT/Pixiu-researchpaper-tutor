@@ -8,8 +8,13 @@ from jsonschema import Draft202012Validator
 from services.deep_research.shared_experiment_plan import GROUPS, _array, _object, schema, validate
 
 
-def wire_schema(profile=3):
+def wire_schema(profile=3, *, derive_pairing=False):
     wire = schema(3 if profile == 8 else 2 if profile in (4, 6, 7) else 1)
+    if profile == 8 and derive_pairing:
+        pairing = wire['properties']['pairing']
+        for name in ('sharedStateIds', 'cloneStepIds'):
+            del pairing['properties'][name]
+            pairing['required'].remove(name)
     states = wire['properties']['states']['items']['properties']
     input_source = states['source']
     input_source['properties']['kind'] = {'const': 'input'}
@@ -119,8 +124,17 @@ def _separate_fit_observations(proposal):
                 factor['affectedStateIds'] = [sid for sid in factor['affectedStateIds'] if sid != state_id]
 
 
-def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False):
-    errors = Draft202012Validator(wire_schema(profile)).iter_errors(value)
+def _derive_pairing(proposal):
+    """Use the actual clone reads as the shared starting state."""
+    clones = [step for step in proposal['steps'] if step['kind'] == 'clone' and step['scope'] == 'arm']
+    declared = {state['id'] for state in proposal['states'] if state['scope'] == 'shared'}
+    shared = declared.intersection(*(step['reads'] for step in clones)) if clones else set()
+    proposal['pairing'].update(sharedStateIds=sorted(shared), cloneStepIds=[step['id'] for step in clones])
+
+
+def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False,
+                 derive_pairing=False):
+    errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing)).iter_errors(value)
     issues = [
         {'code': 'plan.wire_schema', 'path': '/' + '/'.join(map(str, error.absolute_path))}
         for error in islice(errors, 64)
@@ -139,6 +153,8 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_obs
                 step['groups'] = [group for group in GROUPS if int(group[axis]) == factor['level']]
     if profile in (4, 6, 7, 8):
         _expand_owned_states(proposal, issues)
+    if profile == 8 and derive_pairing:
+        _derive_pairing(proposal)
     if profile == 8 and fit_observation_outputs:
         _separate_fit_observations(proposal)
     factors = {row['id']: row for row in proposal['factors']}

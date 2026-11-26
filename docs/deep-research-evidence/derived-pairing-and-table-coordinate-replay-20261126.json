@@ -1,0 +1,29 @@
+{
+  "sourceReceipts": "fit-output-and-revision-point-real-20261126.json",
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 133,
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v19": {
+      "replay": "Project the original draft into the new response shape by removing the two generated pairing lists.",
+      "priorStructuralIssues": 3,
+      "currentStructuralIssues": 0,
+      "reviewFactPrecheckIssues": 0,
+      "derivedSharedStateIds": ["shared_checkpoint"],
+      "derivedCloneStepIds": ["clone_arms"],
+      "generationInputBytes": 31467,
+      "reviewBatchInputBytes": [25564, 31988, 31707, 31988],
+      "undeclaredCloneReadRejected": true
+    },
+    "H4-AWQ-VERSIONS-v10": {
+      "replay": "Run synthesis with the originally recorded response, using exactly cited table rows and measured-metric text.",
+      "priorTablePrecheck": "unverified_table_cell",
+      "currentTablePrecheck": "passed",
+      "canonicalTableBindings": 12,
+      "priorCompactionCallsInReplay": 1,
+      "currentCompactionCallsInReplay": 0,
+      "ambiguousValueWithoutSameRevisionColumnAnchorRejected": true,
+      "originalProviderRequestResent": false
+    }
+  },
+  "scientificContentAccepted": false
+}

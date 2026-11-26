@@ -1999,7 +1999,8 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, revision_table_ids = materialize_revision_table(
                 parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table,
                 multiple_rows=multiple_revision_rows, reconcile_coordinates=reconcile_revision_coordinates,
-                excluded_claim_ids=blocked_draft_ids)
+                excluded_claim_ids=blocked_draft_ids,
+                measured_metric_alias=record.get('revisionTableMeasuredMetricAliasVersion') == 1)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
