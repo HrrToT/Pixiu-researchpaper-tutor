@@ -2366,8 +2366,10 @@ def make_verify_node(
                     comparison_audit_args['share_comparison_evidence_sentences'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
-                    if audit_version == 15:
+                    if audit_version in (15, 16):
                         comparison_audit_args['extend_comparison_audit_window'] = True
+                    if audit_version == 16:
+                        comparison_audit_args['localize_comparison_gap'] = True
                 if joint_comparison_delivery(record):
                     comparison_audit_args['require_joint_conclusions'] = True
         from services.deep_research.comparison_review_batches import current_profile
@@ -2376,7 +2378,7 @@ def make_verify_node(
         def audit_accepted(accepted, snapshot, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15)):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             return audit_final_answer(run_id, effective_question(record),
@@ -2427,7 +2429,7 @@ def make_verify_node(
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
                 if (comparison_audit_args.get('comparison_audit_envelope')
-                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15)
+                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16)
                         and llm_invoke is not None and verification_result.get('accepted')):
                     # Stopping individual reviews does not by itself exhaust the
                     # final-answer allowance. Check the retained subset with the

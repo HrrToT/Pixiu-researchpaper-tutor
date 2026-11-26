@@ -151,7 +151,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             # A missing joint slot cannot transfer its requirements to a cell.
             continue
         obligation_id = gap.get("obligationId")
-        question = gap.get("question")
+        question = gap.get("missingRequestExcerpt") or gap.get("question")
         details = gap.get('missingAspects')
         questions = [question, *[value for value in details if isinstance(value, str) and value.strip()]] \
             if isinstance(details, list) else [question]

@@ -45,7 +45,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500, *, max_input_bytes=DE
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
-                       extend_comparison_audit_window=False):
+                       extend_comparison_audit_window=False, localize_comparison_gap=False):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -118,6 +118,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     budget_limit = None
     diagnostic_errors, gap_details = [], {}
     request_response_errors = []
+    missing_request_excerpt = None
     coherence_result=None
     if claims and plan and invoke:
         cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
@@ -285,6 +286,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
                     source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields, check_labels=check_labels, inline_limit_bindings=bool(inline_limits), require_covered_bindings=require_covered_bindings,
                     share_evidence_sentences=share_comparison_evidence_sentences)
+                if localize_comparison_gap and check_labels and identity in check_labels:
+                    from services.deep_research.comparison_gap_excerpt import guidance
+                    original_render = render
+                    request_code = check_labels[identity][1].get('request')
+                    if request_code:
+                        render = lambda rows: original_render(rows) + guidance(request_code)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -354,6 +361,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     if check_labels is not None and verdicts is not None:
                         from services.deep_research.comparison_audit_labels import restore
                         verdicts = restore(verdicts, check_labels, inline_limits=inline_limits)
+                    if localize_comparison_gap:
+                        from services.deep_research.comparison_gap_excerpt import extract
+                        verdicts, missing_request_excerpt = extract(verdicts, identity, question)
                     raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
                         compact_checks=compact_comparison_checks,
@@ -435,6 +445,13 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 and a.get('status') in {'partial', 'missing'}
                 and isinstance(a.get('basis'), dict) and a['basis'].get('kind') == 'source'
                 and isinstance(a['basis'].get('evidenceId'), str)))
+            if (status == 'checked' and gap.get('obligationId') == identity and missing_request_excerpt
+                    and any(isinstance(a, dict) and a.get('aspectId') == 'request'
+                            and a.get('status') in ('partial', 'missing') for a in matching[0]['aspects'])):
+                full_request = audit_plan[-1]['obligations'][0]['question'].strip()
+                gap['missingAspects'] = list(dict.fromkeys(
+                    missing_request_excerpt if part == full_request else part for part in gap['missingAspects']))
+                gap['missingRequestExcerpt'] = missing_request_excerpt
         if len(matching) == 1 and isinstance(matching[0].get('missingDesignRoles'), list):
             from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS
             gap['missingDesignRoles'] = matching[0]['missingDesignRoles']
