@@ -22,6 +22,8 @@ _ADVICE = re.compile(r'建议|推荐|(?:有条件|如何|怎样)选择|\b(?:reco
 _SPEED = re.compile(
     r'(?<![A-Za-z0-9])(?:fps|frame\s+rate|rendering\s+(?:speed|time|latency|performance))(?![A-Za-z0-9])'
     r'|帧率|渲染(?:速度|耗时|延迟)', re.I)
+_REPORTED_CONTRAST = re.compile(r'\b(?:outperform\w*|faster than|slower than|compar\w+ (?:with|to|against))\b'
+                                r'|快于|慢于|优于|相比|相较', re.I)
 _STORAGE = re.compile(r'存储|文件(?:体积|大小)|\b(?:storage|file size)\b', re.I)
 _QUALITY = re.compile(r'画质|视觉质量|\b(?:image|visual|rendering) quality\b|\b(?:PSNR|SSIM|LPIPS)\b', re.I)
 _INVENTORY = re.compile(r'两篇各自|分别列出|逐篇列出|\b(?:list|enumerate)\b[^.!?]{0,90}\b(?:each|both)\b', re.I)
@@ -500,6 +502,27 @@ def comparison_protocol_priority(rows, targets, *, reported_platform=False, expl
             if score > prioritized.get(source, (0, None))[0]:
                 prioritized[source] = (score, row['evidenceId'])
     return {eid for _, eid in prioritized.values()}
+
+
+def preferred_speed_result(rows, targets, source):
+    """Prefer a literal contrast before optional prose for a paper's speed row."""
+    if not any(target['role'] == 'paper_cell' and target['source'] == source
+               and _SPEED.search(target['question']) for target in targets):
+        return ()
+    from services.deep_research.quote_context import _sentence_cuts
+
+    for row in rows:
+        if (row['source'] != source or row.get('accessLevel') != 'fulltext'
+                or row.get('tableData') or row.get('tableDataRef')):
+            continue
+        text = ' '.join(row['quote'].split())
+        cuts = [0, *_sentence_cuts(text), len(text)]
+        for start, end in zip(cuts, cuts[1:]):
+            sentence = text[start:end].strip()
+            if (sentence and sentence[0].isalpha() and _SPEED.search(sentence)
+                    and _REPORTED_CONTRAST.search(sentence)):
+                return (row['evidenceId'],)
+    return ()
 
 
 def deployment_memory_priority(rows, targets):

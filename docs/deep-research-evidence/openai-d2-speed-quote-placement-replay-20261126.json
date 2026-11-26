@@ -1,0 +1,16 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "baseCase": "D2-BASELINE-COMPRESSION",
+  "replay": {
+    "completeSpeedComparisonIncludedInLightGaussianStage": true,
+    "source": "LightGaussian v6, original PDF page 8",
+    "inputBytes": {"P1": 23945, "P2": 23991, "joint": 23908},
+    "perStageLimitBytes": 24000,
+    "allFrozenPremiseBundlesRetained": true,
+    "sameDatasetCellsCompiled": 10
+  },
+  "targetedOfflineTestsPassed": 216,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "An already literal-checked, source-local comparison was available in the rebuilt generation request. Dispatch was intercepted. This does not establish that the model will cite it or pass whole-answer review."
+}

@@ -237,7 +237,7 @@ class LocalTaskRetriever:
     def _pdf_passages(pdf_id, material, pages, *, record=None):
         from services.deep_research.quote_context import _sentence_cuts
 
-        align = (record or {}).get('comparisonPdfPassageBoundaryVersion') == 1
+        align = (record or {}).get('comparisonPdfPassageBoundaryVersion') in (1, 2)
         passages = []
         for page in pages:
             text = page.get('text', '')

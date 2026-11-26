@@ -192,6 +192,11 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         visible_protocols = known_protocols if include_joint else None
         optional_pairs = [(protocol['noteEvidenceId'], table_id)
                           for table_id, protocol in (visible_protocols or {}).items()]
+        if not include_joint and record.get('comparisonPdfPassageBoundaryVersion') == 2:
+            from services.deep_research.comparison_joint_reports import preferred_speed_result
+            speed_result = preferred_speed_result(own, all_targets, scope)
+            if speed_result:
+                optional_pairs.append(speed_result)
         def render_stage(selected):
             plan = plan_cells(requirements, sources, selected, **plan_options)
             return render(record, question, plan, tables, character_limit, len(target_ids),

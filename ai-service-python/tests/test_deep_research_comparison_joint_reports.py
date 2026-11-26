@@ -114,6 +114,22 @@ def test_speed_retrieval_retains_protocol_only_from_the_same_pdf_snapshot():
         'FPS evaluation hardware', 'left', 'current', 2) == rows
 
 
+def test_optional_speed_premise_requires_a_source_local_comparison_sentence():
+    from services.deep_research.comparison_joint_reports import preferred_speed_result
+
+    paper = {'source': 'P2', 'accessLevel': 'fulltext'}
+    truncated = {**paper, 'evidenceId': 'fragment',
+                 'quote': '-GS on the benchmark, nearly doubling rendering speed.'}
+    reported = {**paper, 'evidenceId': 'comparison',
+                'quote': 'Our method outperforms Method A on the benchmark, nearly doubling rendering speed.'}
+    rows = [truncated, {**reported, 'source': 'P1', 'evidenceId': 'foreign'},
+            {**reported, 'accessLevel': 'abstract', 'evidenceId': 'abstract'}, reported]
+    targets = [{'role': 'paper_cell', 'source': 'P2', 'question': '渲染速度'}]
+    assert preferred_speed_result(rows, targets, 'P2') == ('comparison',)
+    assert not preferred_speed_result(rows[:-1], targets, 'P2')
+    assert not preferred_speed_result(rows, [{**targets[0], 'question': '压缩机制'}], 'P2')
+
+
 def test_deployment_memory_context_stays_in_the_active_source_and_target_scope():
     from services.deep_research.comparison_joint_reports import deployment_memory_priority, preferred_deployment_memory_reads
     from services.deep_research.general_advice import has_device_memory_measurement
