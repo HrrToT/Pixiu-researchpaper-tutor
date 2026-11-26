@@ -37,6 +37,20 @@
     }
   },
   "pricingBoundary": "Calculated from provider token totals, with no cache discount. The actual API billing line and grant deduction were not checked.",
+  "secondCaseOfflinePreflight": {
+    "sourceCommit": "888f251e4",
+    "materialSha256": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+    ],
+    "modelSnapshot": ["gpt-6.1-terra", "gpt-6-luna"],
+    "budget": {"maxModelCalls": 18, "maxTokens": 100000, "maxWallClockSeconds": 360},
+    "casePolicy": "task_only",
+    "newExecutionRequested": false,
+    "paidOutputDirectoryCreated": false,
+    "providerRequests": 0,
+    "boundary": "An isolated deferred run was created with a fake credential and its ledgers checked empty. Live execution is pending authorization."
+  },
   "offlineInitialReviewWindowReplay": {
     "sourceReceiptSha256": "f41f30d3c66ff52f48b271c876f548bc9131d2de4c097e37a843936c9b33d27d",
     "sourceClaims": "Eight claims in the saved terminal report body; the replay does not reconstruct the original pre-review draft.",
