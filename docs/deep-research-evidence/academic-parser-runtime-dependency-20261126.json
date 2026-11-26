@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "f6d85ea55",
+  "publicDevelopmentArxivVersion": "2403.17888v3",
+  "pdfSha256": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7",
+  "runningResearchContainer": {
+    "name": "academic-dr-shared-experiment-candidate-20261117",
+    "imageId": "sha256:c32d136e40a368cdb1c734db473f03a1a93286cc73186d1a617fe00717d5ed79",
+    "pypdfImport": "ModuleNotFoundError",
+    "sameImageInIsolatedProbe": "Current parser failed on the cached PDF because pypdf was absent"
+  },
+  "isolatedParserProbe": {
+    "image": "pixiu-research-pdf-proof:20261120",
+    "pypdfVersion": "6.21.4",
+    "matchesProjectRequirements": true,
+    "numberedPages": 13,
+    "extractedCharacters": 62436,
+    "unreadableGlyphPages": [4, 9],
+    "source": "Current workspace parser and existing cached development PDF mounted read-only",
+    "networkDisabled": true
+  },
+  "modelCalls": 0,
+  "researchDataWrites": 0,
+  "holdoutRequests": 0,
+  "liveDeploymentChanged": false,
+  "boundary": "The running container still lacks the fallback dependency. The isolated result verifies parser behavior on cached bytes and does not establish live document acquisition or report quality."
+}
