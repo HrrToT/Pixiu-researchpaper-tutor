@@ -1,0 +1,117 @@
+{
+  "sourceCommit": "ff77a79a0dfdf4e4c8be7c1d1660d6c0b1b68b3c",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_e2b489b1c41d585e9f196a0118738d4f",
+  "status": "completed",
+  "outcome": "partial",
+  "caseSubmissions": 1,
+  "automaticReruns": 0,
+  "lastProviderCallStartSeconds": 148.76,
+  "workflowElapsedSeconds": 152.0,
+  "actualCalls": 16,
+  "actualTotalTokens": 78860,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 10764,
+      "output_tokens": 2098,
+      "total_tokens": 12862,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 10160
+    },
+    "gpt-6.1-terra": {
+      "calls": 11,
+      "input_tokens": 61646,
+      "output_tokens": 4352,
+      "total_tokens": 65998,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 61613
+    }
+  },
+  "callsByWorkflowNode": {
+    "resolve_brief": 1,
+    "plan": 2,
+    "assess_relevance": 2,
+    "synthesize": 3,
+    "verify": 3,
+    "verify_answer_coverage": 1,
+    "repair_claims": 2,
+    "verify_repair": 2
+  },
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 17270,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 11,
+    "tokens": 78860,
+    "normalTokens": 46130,
+    "elapsedSeconds": 152.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "productionWrites": 0,
+  "quality": {
+    "verifiedDraftClaims": 5,
+    "unresolvedDraftClaims": [
+      {
+        "claimId": "cmp_1_0",
+        "reason": "semantic_unresolved",
+        "executionState": null
+      },
+      {
+        "claimId": "cmp_3_0",
+        "reason": "semantic_unresolved",
+        "executionState": null
+      }
+    ],
+    "publishedClaims": 5,
+    "initialReviewStop": null,
+    "wholeAnswerReviewDispatched": true,
+    "wholeAnswerReviewStatus": "checked",
+    "wholeAnswerCoherence": "checked",
+    "wholeAnswerGapIds": [
+      "obl-mechanisms",
+      "obl-quality-speed",
+      "obl-choice",
+      "requested_numeric_example",
+      "answer_scope"
+    ],
+    "claimEvidenceCount": 10,
+    "matchingClaimEvidenceCount": 10,
+    "verifiedTablePages": [
+      6
+    ],
+    "repairReleaseDeferred": {
+      "status": "budget_exhausted",
+      "budgetLimit": {
+        "kind": "coveragePromptBytes",
+        "limit": 16616,
+        "used": 23582
+      }
+    },
+    "synthesisInputBytes": 23990,
+    "incompleteSynthesisPremiseBundles": 0
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-fifth-20261127",
+  "sha256": {
+    "intent.json": "7185a4e1f9a71784f4a4f0bb16e44bb34af2bbf35af1af77925157a0500bae07",
+    "provider.jsonl": "2770664c9b1fa8da6ddc9a9fbdc993319a5d80def012b94f1c77a659f960b969",
+    "calls.json": "cfe8f1f735e630a80c938f0041c9c100f3aa856b9374c6200989e1e14cb94eb1",
+    "run.json": "11766094ee53432c679fdf0fdc59a63a656a60186e5eaa192cc062ac1e423e2f",
+    "result.json": "a49a65331281d14d1ef0c08affa8b5d95daa09d0619be6095812956f2ae36214",
+    "report.md": "eb11682ff85cd6955eb92993e132a5e2907768ac188c881b0c894bdf967eb773",
+    "citation-audit.json": "4d33ae554db3b2e4c3adad561b2662fc71126d61031c366b3a251cd13e454e95"
+  },
+  "currencyCharge": null
+}
