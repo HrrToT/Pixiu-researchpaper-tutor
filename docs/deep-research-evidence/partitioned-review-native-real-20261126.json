@@ -1,0 +1,83 @@
+{
+  "sourceCommit": "a69c69efaff3ac8fd10af9fece78ece6db130e54",
+  "candidate": "academic-dr-partitioned-review-native-candidate-20261126",
+  "fullRegression": "partitioned-review-native-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v13": {
+      "runId": "dr_run_782920f33d5a56f1bd60a4d60039c49c",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 7,
+      "tokens": 35661,
+      "durationSeconds": 90.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "D3-DENSIFICATION-FACTORIAL-v13.json": "1fc468d550bf62290d90f8eb08bee4170c1b4a4a519da05133315ed516b0403a",
+        "D3-DENSIFICATION-FACTORIAL-v13.execution.json": "9133a2bc266876949e15d35685f590a28c5292fb66aa6733ba073eb4bcb2a3b6",
+        "D3-DENSIFICATION-FACTORIAL-v13.calls.json": "d81cc414a2bae59a973af2d021d8cb4d8ef4ba613622f0ee2046247abb82027d",
+        "D3-DENSIFICATION-FACTORIAL-v13.payload.json": "d786343ee81a6ac0ed2384200c4856aa9620c96f5b5683c9e57ffdf637db3ecf",
+        "D3-DENSIFICATION-FACTORIAL-v13.result.json": "df526b1e751093041b44ee52a8733ccf6b91604b5087d3d29de5d5499a8a30e9"
+      },
+      "repairStatus": "awaiting_scientific_review",
+      "repairInputBytes": 16797,
+      "reviewStatus": "not_started_precheck",
+      "reviewInputBytes": 31864,
+      "sameHardIssues": [
+        {
+          "claimId": "shared_fact_3",
+          "reason": "uncited_device_condition",
+          "factId": "SF4",
+          "evidenceRefs": [
+            "E1"
+          ]
+        },
+        {
+          "claimId": "shared_fact_4",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "3e1",
+            "7e0"
+          ],
+          "factId": "SF5",
+          "evidenceRefs": [
+            "E3"
+          ]
+        }
+      ],
+      "providerScientificReviewCalls": 0
+    },
+    "H4-AWQ-VERSIONS-v5": {
+      "runId": "dr_run_4540709f5b3a52248979c4d45ef48222",
+      "status": "completed",
+      "outcome": "partial",
+      "modelCalls": 10,
+      "tokens": 61283,
+      "durationSeconds": 151.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "H4-AWQ-VERSIONS-v5.json": "8539efe8d8957f9fb359437e925de9630de8099c03efab76b819854c3b948134",
+        "H4-AWQ-VERSIONS-v5.execution.json": "5b5bd4851bc4d083fa7377150c530d8b9390311733cc6814a46592e4131522f4",
+        "H4-AWQ-VERSIONS-v5.calls.json": "3cf736e3112e4114c27980ceb6892e9fadb0e4ecce28342e939ba3fcda73191d",
+        "H4-AWQ-VERSIONS-v5.payload.json": "6d7f5e4b4002a6015b278de6bfe26a632015f013861fb95723e714572cc950f9",
+        "H4-AWQ-VERSIONS-v5.result.json": "0810b78d2e843d945960df009b710d86bf118585d01329311f81255d5400606c"
+      },
+      "tableBindingsInInitialDraft": 12,
+      "evidenceBoundaryPublished": true,
+      "repairCompactionStatus": "invalid",
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_4540709f5b3a52248979c4d45ef48222"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}

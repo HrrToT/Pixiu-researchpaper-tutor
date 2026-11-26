@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "a69c69efaff3ac8fd10af9fece78ece6db130e54",
+  "fullRegression": "partitioned-review-native-full-20261126.json",
+  "candidate": "academic-dr-partitioned-review-native-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "pinnedPdfFallback": true,
+  "sharedExperimentProfile": 8,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

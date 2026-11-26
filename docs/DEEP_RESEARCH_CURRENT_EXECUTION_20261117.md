@@ -764,8 +764,8 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
-| H3 外部补查 | Quest v1 从空任务发现指定版本并首次下载全文，11 页 PDF 哈希匹配。逐条核验确认页打分解释，缓存保留说明仍缺证据，整答审核返回无效。新版对遗漏段落的请求已做离线回放。 [Quest 实测](deep-research-evidence/academic-quest-h3-first-real-20261126.json) · [证据回放](deep-research-evidence/d2-quest-evidence-binding-replay-20261126.json) | 保留 Quest 首次结果。InfLLM 新题已冻结，从空材料验证指定版本、块打分、加载与保留。 [InfLLM 定义](DEEP_RESEARCH_INFLLM_EXTERNAL_HOLDOUT_20261126.json) · [预检](deep-research-evidence/infllm-external-holdout-preflight-20261126.json) |
-| H4 冲突或版本差异 | LoRA 的未确认调用保持冻结。KIVI 首次执行未发布报告。QuaRot 首次执行保存部分报告，v1 数值通过，但 v2 表 2 的证据未准确归属。同页表格拆分已用原始 PDF 回放。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [QuaRot 实测](deep-research-evidence/quarot-version-h4-first-real-20261126.json) | 已冻结 AWQ 两版表 1 的新题，待导入后单次验收。 [AWQ 定义](DEEP_RESEARCH_AWQ_VERSION_HOLDOUT_20261126.json) · [预检](deep-research-evidence/awq-version-holdout-preflight-20261126.json) |
+| H3 外部补查 | Quest、InfLLM、RetrievalAttention 各自取得了指定版本的公开全文。Quest 缺缓存保留的完整说明，InfLLM 遗漏 CPU 存留位置，RetrievalAttention 遗漏部分保留分工和重新加权细节。 [Quest 实测](deep-research-evidence/academic-quest-h3-first-real-20261126.json) · [InfLLM 实测](deep-research-evidence/comparison-and-factorial-real-batch-20261126.json) · [RetrievalAttention 实测](deep-research-evidence/research-finalization-real-batch-20261126.json) | 保留三次首次结果。验证新留出题能完整回答所问的机制及条件，并同时通过来源与全文验收。 |
+| H4 冲突或版本差异 | LoRA 的未确认调用保持冻结。KIVI 首次执行未发布报告。QuaRot 首次执行保存部分报告。AWQ 首次失败，v4 复测保留了 12 个表格绑定，差异论断仍未通过校验。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261125.json) · [QuaRot 实测](deep-research-evidence/quarot-version-h4-first-real-20261126.json) · [AWQ 实测](deep-research-evidence/revision-rows-paths-native-real-20261126.json) | 用 AWQ 复测验证新版的版本差异表达。独立验收需要新的冻结题，AWQ 的后续复测按开发证据计。 |
 | H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
 | H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
@@ -888,6 +888,15 @@ D3-v10 的真实草稿把三个连续准备步骤写在同一壁钟预算下，�
 用保存的 D3-v12 请求回放。两条问题只涉及来源事实，因此修订输入包含待改事实、准确路径及原文，服务端拒绝修改其他字段或清除原有待解决项。修订请求由 33,331 缩至 19,279 字节，模拟修订后事实预检无错误，重复读取修订回执未再次调用。完整审核仍保留 29 项检查，实际输入 35,471 字节，尚未发送。AWQ 的草稿要求显式区分已报道差异与缺乏证据的归因，并指定精确的单元格绑定字段。用实际草稿、模拟差异正文和规范化绑定字段回放，保留全部 12 个数值与原回答义务，344 字符通过预检。169 项定向测试通过，两例均未重新调用模型或获得新的科学验收结论。 [定向回放证据](deep-research-evidence/targeted-fact-repair-and-revision-findings-replay-20261126.json)
 
 D3 完整审核优先使用单次请求。输入仍超限时，来源事实与科学设计检查分两次送审，两次均携带完整方案和相应的原文依据。用已保存的 D3-v12 草稿和修订夹具回放，第一组 28,468 字节，覆盖 12 项来源事实。第二组 31,794 字节，覆盖 17 项设计与用户要求。两组合计保留全部 29 项检查和原有四项待解决事项。模拟首批响应落盘后中断，仅继续第二批。交叉替换响应及引用另一批独有证据均被拒绝。177 项定向测试通过，尚未调用真实模型或通过科学验收。 [分批审核回放](deep-research-evidence/d3-partitioned-review-replay-20261126.json)
+
+候选 `a69c69efa` 在本机通过 506 个模块、10,041 项离线测试，保留前一版全部 10,039 项。测试用时 17 分 22 秒，排队等待复测的首个脚本超时，未加载候选或提交研究。回归完成后加载候选并核对源码、依赖及历史数据，两例各提交一次。 [全量回归](deep-research-evidence/partitioned-review-native-full-20261126.json) · [候选校验](deep-research-evidence/partitioned-review-native-candidate-load-20261126.json)
+
+- **D3-v13** 用时 90 秒、7 次模型调用。事实修订请求为 16,797 字节，真实发送一次。修订改写了措辞但保留两条原引用，A6000 与 7K/30K 的事实预检仍未通过。正确段落已在同一输入中，后续可根据记录的原文定位两个引用。科学审核未发送，分批审核仍需真实验证。
+- **AWQ-v5** 用时 151 秒、10 次模型调用。发布部分报告，保留了对差异原因的证据边界。数值草稿含 12 个表格绑定，但列组索引与列键未准确对应原表，主文版本标签互换。此草稿含独立的证据边界，版本表渲染受整答分支条件限制。修订后压缩响应也未通过校验，两个版本的数值与共同结论均待验收。
+
+两例均无科学内容验收通过，未自动重试。原服务恢复后，任务、运行和账本核对一致。 [实测与恢复证据](deep-research-evidence/partitioned-review-native-real-20261126.json)
+
+AWQ-v5 原始草稿的 12 个数值在各自引用的原表行中均有唯一匹配。离线诊断使用引用的行号、列名与精确值还原列组位置后，应用按 PDF 版本生成了正确的 v1/v2 数值正文。这次诊断未修改现用索引或发布报告。
 
 ## D3-v7 未确认结果的只读复验
 
