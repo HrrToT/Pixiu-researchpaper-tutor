@@ -39,12 +39,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] == 2)
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3))
 
 
 def _evaluation_protocol_score(text):
@@ -53,6 +53,30 @@ def _evaluation_protocol_score(text):
     if _REPORTED_PLATFORM.search(prose):
         return 2
     return int(bool(_PROTOCOL.search(prose)))
+
+
+def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
+    """Keep a reported evaluation setting in the scoped speed query's hits."""
+    if (record.get('comparisonEvaluationProtocolVersion') != 3 or not content_hash
+            or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
+        return rows
+
+    def score(row):
+        if (row.get('pdfId') != pdf_id or row.get('contentHash') != content_hash
+                or row.get('accessLevel') != 'fulltext' or row.get('tableData')):
+            return 0
+        return _evaluation_protocol_score(row.get('text', ''))
+
+    best = max(candidates, key=score, default=None)
+    current = max(map(score, rows), default=0)
+    if best is None or score(best) <= current:
+        return rows
+    if len(rows) < limit:
+        return [*rows, best]
+    replace = next((i for i in range(len(rows) - 1, -1, -1)
+                    if not rows[i].get('tableData')
+                    and rows[i].get('retrievalMode') == 'pdf_lexical_fallback'), None)
+    return [*rows[:replace], best, *rows[replace + 1:]] if replace is not None else rows
 
 
 def preferred_evaluation_reads(rows, obligations, limit, extracted):
@@ -422,10 +446,11 @@ def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missin
             and row.get('state') == 'unchecked' and row.get('missingEvidence')}
 
 
-def comparison_protocol_priority(rows, targets, *, reported_platform=False):
+def comparison_protocol_priority(rows, targets, *, reported_platform=False, explicit_targets=False):
     """Reserve optional priority for one evaluation-protocol passage per relevant source."""
     relevant_sources = {source for target in targets
-                        if target['role'] == 'joint' and not target.get('deliverable')
+                        if target['role'] == 'joint' and (not target.get('deliverable')
+                            or explicit_targets and target['deliverable'] == 'comparability')
                         and _SPEED.search(target['question']) for source in target['sources']}
     prioritized = {}
     for row in rows:

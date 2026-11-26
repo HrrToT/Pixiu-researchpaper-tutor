@@ -83,6 +83,35 @@ def test_measurement_protocol_keeps_actual_reported_settings_in_bounded_slots():
                   for row in rows]
     targets = [{'role': 'joint', 'sources': ['left', 'right'], 'question': '为什么 FPS 不能直接比较？'}]
     assert comparison_protocol_priority(candidates, targets, reported_platform=True) == {'hardware', 'second'}
+    targets[0]['deliverable'] = 'comparability'
+    assert not comparison_protocol_priority(candidates, targets, reported_platform=True)
+    assert comparison_protocol_priority(candidates, targets, reported_platform=True, explicit_targets=True) == {'hardware', 'second'}
+
+
+def test_speed_retrieval_retains_protocol_only_from_the_same_pdf_snapshot():
+    from services.deep_research.comparison_joint_reports import retain_evaluation_protocol
+
+    paper = {'pdfId': 'left', 'contentHash': 'current', 'accessLevel': 'fulltext',
+             'retrievalMode': 'pdf_lexical_fallback'}
+    generic = {**paper, 'sourceId': 'generic', 'text': 'We present real-time visualization.'}
+    table = {**generic, 'sourceId': 'table', 'tableData': {'rows': []}}
+    protocol = {**paper, 'sourceId': 'protocol',
+                'text': 'All results are reported running on an A6000 GPU, except another evaluation.'}
+    stale = {**protocol, 'sourceId': 'old', 'contentHash': 'stale'}
+    foreign = {**protocol, 'sourceId': 'foreign', 'pdfId': 'right'}
+    abstract = {**protocol, 'sourceId': 'abstract', 'accessLevel': 'abstract'}
+    rows = [generic, table]
+    candidates = [generic, stale, foreign, abstract, protocol]
+    current = {'comparisonEvaluationProtocolVersion': 3}
+    assert retain_evaluation_protocol(
+        rows, candidates, current, 'FPS evaluation hardware', 'left', 'current', 2) == [protocol, table]
+    assert retain_evaluation_protocol(
+        rows, candidates[:-1], current, 'FPS evaluation hardware', 'left', 'current', 2) == rows
+    assert retain_evaluation_protocol(
+        rows, candidates, current, 'model compression mechanism', 'left', 'current', 2) == rows
+    assert retain_evaluation_protocol(
+        rows, candidates, {'comparisonEvaluationProtocolVersion': 2},
+        'FPS evaluation hardware', 'left', 'current', 2) == rows
 
 
 def test_deployment_memory_context_stays_in_the_active_source_and_target_scope():
