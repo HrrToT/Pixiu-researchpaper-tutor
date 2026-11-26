@@ -1,0 +1,72 @@
+{
+  "sourceCommit": "564e248b617ef39aa6749677955c7098279415fc",
+  "candidate": "academic-dr-fact-and-table-binding-native-candidate-20261126",
+  "fullRegression": "fact-and-table-binding-native-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v14": {
+      "runId": "dr_run_5376107f8a8e553880bffb377c62ef08",
+      "status": "failed",
+      "outcome": "none",
+      "modelCalls": 3,
+      "tokens": 6795,
+      "durationSeconds": 15.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "D3-DENSIFICATION-FACTORIAL-v14.json": "b34c41304cd3008cc3cdf4b74a0c06e016f63219fe238c2e7a05bff5492b253b",
+        "D3-DENSIFICATION-FACTORIAL-v14.execution.json": "05e1b8ea278130f1627de1879dd6a12cbf71bb6e035256e17c8deca0c689fb84",
+        "D3-DENSIFICATION-FACTORIAL-v14.calls.json": "96e6b96b89cce4f3d0438f46a98f0e2586e59c4b7beeaf0480a19f696f4f6e2e",
+        "D3-DENSIFICATION-FACTORIAL-v14.payload.json": "366aeb583d791d394bc03b89b665274217dd126b4a96665337c79a43e12fe8ce",
+        "D3-DENSIFICATION-FACTORIAL-v14.result.json": "86921cd079add07eebf258d1910f08c86758c815066f785b261b44105f857925"
+      },
+      "errorCode": "invalid_plan_response",
+      "planRejection": "Initial plan request excerpt is not literal",
+      "noncontiguousExcerpt": "不透明度处理、指标与显存计量",
+      "originalContinuousExcerpt": "不透明度处理、执行顺序、指标与显存计量",
+      "planResponses": 2,
+      "proposalStageReached": false
+    },
+    "H4-AWQ-VERSIONS-v6": {
+      "runId": "dr_run_4910140c4d9f50d4bc471151dbec894a",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 9,
+      "tokens": 48247,
+      "durationSeconds": 137.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "H4-AWQ-VERSIONS-v6.json": "77c44dd978e9e9ac2f1c5d73dc73393e6b13aec668df84e0ac38c803628c1fb3",
+        "H4-AWQ-VERSIONS-v6.execution.json": "fd0a2b2a7ca03e9c6a3f848751ab9aa92f0c5295ebc0f5907ff24d2aef3f858c",
+        "H4-AWQ-VERSIONS-v6.calls.json": "27b1f5de3cf59ffca2b64943ffa4a05ffef75a860bcbfeabcd0faf8b556aa9a8",
+        "H4-AWQ-VERSIONS-v6.payload.json": "b9907eda68bea29993a75de3b48c6b5f4ecdcf1bb6af8b2192fdd4057d755495",
+        "H4-AWQ-VERSIONS-v6.result.json": "473a9224d6afb7ce58a99f2ca517b3ed6aeabfe6c0ed2b59d538083d2ff8afe3"
+      },
+      "retrievedVersions": {
+        "v1": 16,
+        "v2": 15
+      },
+      "candidateVersions": {
+        "v1": 9,
+        "v2": 9
+      },
+      "suppliedVersions": {
+        "v1": 4
+      },
+      "synthesisInputBytes": 23978,
+      "fixedInputBytes": 19987,
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_4910140c4d9f50d4bc471151dbec894a"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}
