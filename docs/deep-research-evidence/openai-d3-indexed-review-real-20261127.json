@@ -1,0 +1,117 @@
+{
+  "sourceCommit": "19adf7cb7de14c06d185bbf939a3a91ba4a82ee4",
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "runId": "dr_run_1096e34e38835562a8a4e4b97aff0e85",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_shared_experiment_response",
+  "elapsedSeconds": 107.0,
+  "submissions": 1,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "providerCalls": 6,
+  "actualTotalTokens": 28836,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16105,
+      "output_tokens": 1033,
+      "total_tokens": 17138,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 15530
+    },
+    "gpt-6.1-terra": {
+      "calls": 1,
+      "input_tokens": 7445,
+      "output_tokens": 4253,
+      "total_tokens": 11698,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 7442
+    }
+  },
+  "modelCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "plan_experiment_shared": 1
+  },
+  "stageEvidence": {
+    "sharedExperimentGeneration": {
+      "status": "invalid_response",
+      "inputBytes": 31792,
+      "issues": [
+        {
+          "code": "plan.state_scope",
+          "path": "/states/0/groups"
+        },
+        {
+          "code": "plan.state_scope",
+          "path": "/states/1/groups"
+        },
+        {
+          "code": "plan.state_scope",
+          "path": "/states/2/groups"
+        },
+        {
+          "code": "plan.state_scope",
+          "path": "/states/3/groups"
+        },
+        {
+          "code": "plan.state_scope",
+          "path": "/states/4/groups"
+        },
+        {
+          "code": "plan.step_scope",
+          "path": "/steps/0"
+        },
+        {
+          "code": "plan.step_scope",
+          "path": "/steps/1"
+        },
+        {
+          "code": "plan.budget_scope",
+          "path": "/budgets/0"
+        },
+        {
+          "code": "plan.analysis_metrics",
+          "path": "/analysis/metricIds"
+        }
+      ]
+    }
+  },
+  "release": null,
+  "localReceiptDir": "tmp/openai-d3-indexed-review-20261127",
+  "billedCurrencyCharge": null,
+  "sha256": {
+    "intent.json": "9340b7ee19210ac1f8a43b815bdedb7948236f887013ac254751e72881542f56",
+    "provider.jsonl": "6d6f305cc6832dd99f36b17918dc9f1406f66a8aa3e68cb14fbed209c181af94",
+    "calls.json": "80574a5b99e8107320f7c662bae0b1086faa07ce41ad02c363f25aeb5af17876",
+    "run.json": "667c4410e3f36d3237cb757e027fca51dab0c8fa1860efa056128ce9fd33f778",
+    "result.json": "70c6d6cc6581124920c6211c6724536dee5e64cd81158dc129e765a7f424bdea"
+  },
+  "offlineScopeDiagnostic": {
+    "alteredFieldsForReplayOnly": [
+      "/budgets/0/groups",
+      "/steps/0/groups",
+      "/steps/1/groups"
+    ],
+    "originalGroupCoverage": [
+      "00",
+      "01",
+      "10",
+      "11"
+    ],
+    "remainingIssues": [
+      {
+        "code": "plan.analysis_metrics",
+        "path": "/analysis/metricIds"
+      }
+    ],
+    "declaredButNotAnalyzedMetrics": [
+      "storage"
+    ],
+    "providerCalls": 0,
+    "scientificApproval": false
+  }
+}
