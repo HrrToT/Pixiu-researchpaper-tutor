@@ -1,0 +1,118 @@
+{
+  "sourceCommit": "535a23900d7723ae79b522836bc4cb64183cc634",
+  "offlineRegression": "openai-d2-audit-and-table-native-full-20261127.json",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_26d9ecb735a854a198f468cca0a9d882",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "caseSubmissions": 1,
+  "automaticReruns": 0,
+  "elapsedSeconds": 153.39,
+  "actualCalls": 15,
+  "actualTotalTokens": 76084,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 15746,
+      "output_tokens": 1315,
+      "total_tokens": 17061,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 15142
+    },
+    "gpt-6.1-terra": {
+      "calls": 10,
+      "input_tokens": 55281,
+      "output_tokens": 3742,
+      "total_tokens": 59023,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 55251
+    }
+  },
+  "usageByWorkflowNode": {
+    "resolve_brief": {
+      "calls": 1,
+      "input_tokens": 592,
+      "output_tokens": 155,
+      "total_tokens": 747,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0
+    },
+    "plan": {
+      "calls": 1,
+      "input_tokens": 1550,
+      "output_tokens": 1040,
+      "total_tokens": 2590,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 1547
+    },
+    "assess_relevance": {
+      "calls": 3,
+      "input_tokens": 13604,
+      "output_tokens": 120,
+      "total_tokens": 13724,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 13595
+    },
+    "synthesize": {
+      "calls": 3,
+      "input_tokens": 19610,
+      "output_tokens": 1466,
+      "total_tokens": 21076,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 19601
+    },
+    "verify_advice": {
+      "calls": 1,
+      "input_tokens": 3621,
+      "output_tokens": 228,
+      "total_tokens": 3849,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 3618
+    },
+    "verify": {
+      "calls": 6,
+      "input_tokens": 32050,
+      "output_tokens": 2048,
+      "total_tokens": 34098,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 32032
+    }
+  },
+  "externalSearches": 0,
+  "externalFulltextFetches": 0,
+  "productionWrites": 0,
+  "quality": {
+    "verifiedDraftClaims": 7,
+    "unresolvedDraftClaims": [
+      "cmp_1_0",
+      "cmp_3_0",
+      "cmp_4_0",
+      "cmp_conclusion_0"
+    ],
+    "publishedClaims": 0,
+    "initialReviewStop": {
+      "kind": "modelCalls",
+      "limit": 18,
+      "used": 10
+    },
+    "normalCallsSpent": 10,
+    "reserveCallsSpent": 5,
+    "wholeAnswerReviewDispatched": false,
+    "finalAnswerHeld": true,
+    "verifiedTablePhysicalPage": 6,
+    "verifiedTablePacketMatchesOriginal": true,
+    "claimEvidenceCount": 9,
+    "matchingClaimEvidenceCount": 9,
+    "scientificContentAccepted": false
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-third-20261127",
+  "sha256": {
+    "intent.json": "e3fd738147f145197bfc89166efccfff1d60e360edbf62176d32e692fa09cc9e",
+    "provider.jsonl": "9e1b0d7227474c689aee3330f7e28ce541b24270ade3c38221568715c8b10bcd",
+    "calls.json": "c8cf439fbe3ab6e30f1bf03f7395965207dc9616b58000b61c18c5bbde7fe4d5",
+    "run.json": "4ed6bfc053cf790775acfd121e56aae89c2c5abbd7ca365bb42ee867604c49d2",
+    "result.json": "82ea195702d98cc1fc43aafa4c76cd299953d8c937b50b713d1874650a2923a9",
+    "report.md": "12bc3f2d2b33fb4362930b0dc4ab450ad4abe8f8b4cd08e17459de2d96bf5764",
+    "citation-audit.json": "3a2665cd1adb79957fe755b5c116e2e757d64f26d008497946440d4a417e9fa2"
+  }
+}
