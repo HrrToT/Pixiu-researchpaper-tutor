@@ -1318,7 +1318,8 @@ def make_synthesize_node(
         if premise_mode and requested_table_evidence:
             from services.deep_research.named_table_scope import prioritize as prioritize_table_scope
             candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question,
-                **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}))
+                **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}),
+                keep_revisions_together=record.get('revisionTableMultipleRowsVersion') == 4)
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
         versioned_sources = cell_mode or requested_table is not None
@@ -1667,7 +1668,7 @@ space with unsupported global absence or incidental iteration/performance values
             prompt += '\n' + table_scope_guidance
             if record.get('namedTableScopeVersion') == 2:
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE
-                prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') in (2, 3)
+                prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') in (2, 3, 4)
                                  else GUIDANCE)
         template = prompt
         if premise_mode:
@@ -1976,8 +1977,8 @@ space with unsupported global absence or incidental iteration/performance values
                 return {'error_code':'invalid_synthesis_response'}
         blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
         revision_table_ids = []
-        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2, 3)
-        reconcile_revision_coordinates = record.get('revisionTableMultipleRowsVersion') == 3
+        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2, 3, 4)
+        reconcile_revision_coordinates = record.get('revisionTableMultipleRowsVersion') in (3, 4)
         if (requested_table and record.get('namedTableScopeVersion') == 2
                 and not blocked_draft_ids and (not scope_expression_audit or reconcile_revision_coordinates)):
             from services.deep_research.revision_table_display import materialize as materialize_revision_table

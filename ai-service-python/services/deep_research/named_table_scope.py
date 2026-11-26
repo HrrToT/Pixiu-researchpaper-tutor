@@ -152,7 +152,7 @@ def preferred_read_rows(sources, question, limit, extracted):
             for queue in queues if index < len(queue)][:limit // 2]
 
 
-def prioritize(rows, bundles, matched, question, *, requested_rows=False):
+def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_revisions_together=False):
     """Keep a caption and its available result passage together per revision."""
     revisions = defaultdict(list)
     for row in rows:
@@ -187,6 +187,10 @@ def prioritize(rows, bundles, matched, question, *, requested_rows=False):
             preferred.append({'obligationId': obligations[0], 'criterionId': 'explicit_table_context',
                               'requirement': question, 'source': identity[0],
                               'evidenceIds': [row['evidenceId'] for row in pair]})
+    if keep_revisions_together and len(preferred) > 1:
+        combined = {**preferred[0], 'criterionId': 'explicit_table_context_across_versions',
+                    'evidenceIds': list(dict.fromkeys(eid for bundle in preferred for eid in bundle['evidenceIds']))}
+        preferred.insert(0, combined)
     return sorted(rows, key=lambda row: row['evidenceId'] not in matched), [*preferred, *bundles]
 
 

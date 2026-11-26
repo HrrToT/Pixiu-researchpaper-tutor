@@ -1,9 +1,11 @@
 """One journaled correction of a known invalid plan, never an unknown resend."""
 import hashlib
 import json
+import re
 from copy import deepcopy
 
 KEY='initialPlanCorrectionContractVersion'
+SPAN_KEY='initialPlanExcerptSpanVersion'
 AUDIT='initialPlanFormatCorrection'
 
 
@@ -11,6 +13,21 @@ def enabled(record):
     from services.deep_research.initial_plan_response import enabled as response_enabled
     return (isinstance(record,dict) and type(record.get(KEY)) is int
             and record[KEY]==1 and response_enabled(record))
+
+
+def _unique_list_span(question, quote):
+    """Restore skipped list items only when the exact original span is unique."""
+    match = re.fullmatch(r'([^、，,。！？；;\r\n]{4,40})([、，,])([^、，,。！？；;\r\n]{4,40})', quote)
+    if not match:
+        return None
+    first, separator, last = match.groups()
+    literal_separator = re.escape(separator)
+    skipped = r'[^、，,。！？；;\r\n]{1,32}'
+    spans = set()
+    for count in (1, 2):
+        pattern = re.escape(first) + literal_separator + (skipped + literal_separator)*count + re.escape(last)
+        spans.update(m.span(1) for m in re.finditer(f'(?=({pattern}))', question))
+    return next(iter(spans)) if len(spans) == 1 else None
 
 
 def finish(repo_update,run_id,status):
@@ -36,7 +53,16 @@ def normalize_request_excerpts(record,plan,question):
         for j,o in enumerate(item['obligations']):
             if not isinstance(o,dict):continue
             quote=o.get('requestExcerpt')
-            if not isinstance(quote,str) or quote!=quote.strip() or not 4<=len(quote)<8:continue
+            if not isinstance(quote,str) or quote!=quote.strip():continue
+            if record.get(SPAN_KEY) == 1 and quote not in question:
+                span = _unique_list_span(question, quote)
+                if span is not None:
+                    left, end = span
+                    o['requestExcerpt'] = question[left:end]
+                    changes.append({'path':[i,'obligations',j,'requestExcerpt'],'original':quote,
+                                    'expanded':question[left:end],'expandedSpan':[left,end]})
+                    continue
+            if not 4<=len(quote)<8:continue
             start=question.find(quote)
             if start<0 or question.find(quote,start+1)>=0:continue
             end=min(len(question),start+8);left=max(0,end-8)

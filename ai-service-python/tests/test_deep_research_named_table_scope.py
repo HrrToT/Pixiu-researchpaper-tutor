@@ -64,3 +64,17 @@ def test_retrieval_preserves_two_requested_rows_from_only_the_same_named_table_a
     _, bundles = prioritize(packet_evidence, [], {row['evidenceId'] for row in packet_evidence},
                             request['question'], requested_rows=True)
     assert bundles[0]['evidenceIds'] == [first['sourceId'], second['sourceId']]
+
+
+def test_required_table_bundle_prioritizes_both_revisions_before_optional_rows():
+    rows = []
+    for version, value in (('v1', '18.51'), ('v2', '16.91')):
+        row = evidence(version, section='Table 1', table='tab_1', version=version,
+                       quote=f'Table row 2: OPT-1.3B | {value}')
+        row.update(tableData={'groups': [['', ['Loss']]], 'rows': [[2, 'OPT-1.3B', [value]]]},
+                   obligationIds=['o'])
+        rows.append(row)
+    _, bundles = prioritize(rows, [], {'v1','v2'}, '核对表 1 的 OPT-1.3B。',
+                            requested_rows=True, keep_revisions_together=True)
+    assert bundles[0]['evidenceIds'] == ['v1','v2']
+    assert [bundle['evidenceIds'] for bundle in bundles[1:]] == [['v1'],['v2']]

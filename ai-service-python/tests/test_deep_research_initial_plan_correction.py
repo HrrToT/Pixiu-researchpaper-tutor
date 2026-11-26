@@ -54,6 +54,23 @@ def test_valid_initial_plan_does_not_spend_a_correction():
     assert result['plan_ids']==['i'] and invoke.call_count==1 and AUDIT not in saved['state']
 
 
+def test_unique_noncontiguous_list_excerpt_uses_the_literal_source_span_once():
+    value = plan()
+    obligation = value[0]['obligations'][0]
+    obligation['requestExcerpt'] = '不透明度处理、指标与显存计量'
+    question = '请说明不透明度处理、执行顺序、指标与显存计量。'
+    record = {**run_record(), 'initialPlanExcerptSpanVersion': 1, 'question': question}
+    normalized, changes = normalize_request_excerpts(record,value,question)
+    assert normalized[0]['obligations'][0]['requestExcerpt'] == '不透明度处理、执行顺序、指标与显存计量'
+    assert value[0]['obligations'][0]['requestExcerpt'] == obligation['requestExcerpt']
+    change, = changes
+    assert question[slice(*change['expandedSpan'])] == change['expanded']
+    repeated = question + question
+    assert normalize_request_excerpts(record,value,repeated) == (value,[])
+    same_start = '不透明度处理、执行顺序、指标与显存计量、指标与显存计量。'
+    assert normalize_request_excerpts(record,value,same_start) == (value,[])
+
+
 @pytest.mark.parametrize('mutation',['cycle','unknown_dependency','invented_excerpt','extra_field','criteria_count','source_type'])
 def test_corrected_output_cannot_skip_existing_plan_gates(mutation):
     value=plan();o=value[0]['obligations'][0]
