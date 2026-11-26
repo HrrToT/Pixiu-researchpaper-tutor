@@ -1,0 +1,91 @@
+{
+  "sourceCommit": "e7106636a281a110253adbc27db489c878ba1d5b",
+  "candidate": "academic-dr-derived-pairing-and-table-coordinate-v2-candidate-20261126",
+  "fullRegression": "derived-pairing-and-table-coordinate-v2-full-20261126.json",
+  "firstFullAttempt": {
+    "passed": 10052,
+    "failures": 1,
+    "failure": "runtime isolation test elapsed 7205 seconds against its 360-second budget",
+    "targetedModuleRecheckPassed": 9
+  },
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "runId": "dr_run_ab476889e05d53ac972d650f79e2c580",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "submissions": 1,
+  "automaticRetry": false,
+  "elapsedSeconds": 229.0,
+  "modelCalls": 9,
+  "settledTokens": 61745,
+  "providerUsageByNode": {
+    "resolve_brief": {
+      "calls": 1,
+      "inputTokens": 551,
+      "outputTokens": 286
+    },
+    "plan": {
+      "calls": 1,
+      "inputTokens": 1295,
+      "outputTokens": 985
+    },
+    "assess_relevance": {
+      "calls": 3,
+      "inputTokens": 13687,
+      "outputTokens": 190
+    },
+    "plan_experiment_shared": {
+      "calls": 1,
+      "inputTokens": 8859,
+      "outputTokens": 4579
+    },
+    "review_experiment_shared": {
+      "calls": 3,
+      "inputTokens": 22777,
+      "outputTokens": 8536
+    }
+  },
+  "generationValid": true,
+  "factPrecheckIssues": [],
+  "sharedStateIds": [
+    "base_gaussians",
+    "base_optimizer"
+  ],
+  "scientificReviewBatches": [
+    {
+      "checks": 10,
+      "inputBytes": 22618,
+      "finishReason": "stop",
+      "inputTokens": 6073,
+      "outputTokens": 1485
+    },
+    {
+      "checks": 8,
+      "inputBytes": 31977,
+      "finishReason": "length",
+      "inputTokens": 8306,
+      "outputTokens": 4096
+    },
+    {
+      "checks": 9,
+      "inputBytes": 31806,
+      "finishReason": "stop",
+      "inputTokens": 8398,
+      "outputTokens": 2955
+    }
+  ],
+  "scientificReviewStatus": "invalid_response",
+  "scientificContentAccepted": false,
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {},
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    ".json": "bc67c2aab75d43e7412001f1458aa07966e36563c2d9deb63654ba4660037095",
+    ".payload.json": "7717aede469c01637851db4cd07071b24e39f0a00befe796ab10bac65f2e067f",
+    ".calls.json": "f4039cd2ba7e10ad71ce70bc4695a2fcea4f34753310b66c5ea414d274594b8c",
+    ".execution.json": "ff9193809eb3c0cc5b34dabba9f1eda526f2a476affbd6a7d99479b7e3b1d4e7",
+    ".result.json": "2ee9537be4b5298038198f8629a6aec8ab448f73da0c5ff79889946665a20c71"
+  }
+}
