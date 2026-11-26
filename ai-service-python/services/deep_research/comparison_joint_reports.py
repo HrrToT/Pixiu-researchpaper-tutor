@@ -261,7 +261,7 @@ def preserve_requested_memory_advice(plan, question):
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,
                              separate_example_boundary=False, group_example_criteria=False,
-                             split_speed_and_advice=False):
+                             split_speed_and_advice=False, preserve_mixed_speed_criteria=False):
     """Assign distinct outputs without losing or duplicating any frozen criterion."""
     from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
     split_speed_and_advice = split_speed_and_advice and explicitly_requests_cross_paper_speed(question)
@@ -274,6 +274,21 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
         criteria = obligation.get('completionCriteria', [])
         if roles[oid]['kind'] != 'joint':
             continue
+        if split_speed_and_advice and preserve_mixed_speed_criteria:
+            advice = [c['requirement'] for c in criteria if _ADVICE.search(c['requirement'])]
+            other = [c['requirement'] for c in criteria if not _ADVICE.search(c['requirement'])]
+            speed_request = any(explicitly_requests_cross_paper_speed(part) for part in (
+                obligation['question'], roles[oid]['requestExcerpt'], *(c['requirement'] for c in criteria)))
+            if advice and speed_request:
+                if (any(_SPEED.search(part) for part in other)
+                        and not any(_SPEED.search(part) for part in advice)
+                        and not any(_NUMERIC.search(part) or _BASELINE_EXAMPLE.search(part)
+                                    or _EXAMPLE_CRITERION.search(part) for part in other)):
+                    result[oid] = [{'kind': 'comparability', 'requirement': '\n'.join(other)},
+                                   {'kind': 'conditional_advice', 'requirement': '\n'.join(advice)}]
+                # An ambiguous combined criterion stays attached to the general
+                # joint target. Classifying it as advice alone drops the boundary.
+                continue
         if split_speed_and_advice and len(criteria) == 2:
             speed = [c for c in criteria if _SPEED.search(c['requirement'])
                      and (_COMPARABILITY.search(c['requirement'])

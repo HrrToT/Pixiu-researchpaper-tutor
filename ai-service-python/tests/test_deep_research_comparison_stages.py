@@ -208,6 +208,42 @@ def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advic
     assert packet(joint_stage)['jointTargets']
 
 
+@pytest.mark.parametrize('inseparable', [False, True])
+def test_comparison_stage_preserves_every_frozen_clause_in_mixed_speed_request(inseparable):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonCrossPaperBoundaryContractVersion=6)
+    clauses = ['说明能比较什么', '为什么不能直接拿两篇的FPS排名', '给出显存受限时的有条件选择建议']
+    excerpt = '，'.join(clauses)
+    example = '数字只选一组来源和口径明确的基线对照作例子'
+    r['question'] += excerpt + '。' + example + '。'
+    joint = [row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint']
+    mixed, numeric = joint[:2]
+    mixed.update(question=excerpt, comparisonRole={**mixed['comparisonRole'], 'requestExcerpt':excerpt},
+        completionCriteria=[{'criterionId': f'C{i}', 'requirement': clause, 'responseType': 'explanation'}
+                            for i, clause in enumerate([excerpt] if inseparable else clauses)])
+    numeric.update(question=example, comparisonRole={**numeric['comparisonRole'], 'requestExcerpt':example},
+        completionCriteria=[{'criterionId':'C1','requirement':'给出一组基线对照数字。','responseType':'identification'}])
+    old = prepare({**r, 'comparisonCrossPaperBoundaryContractVersion':5}, plan['requirements'],
+                  plan['sources'], rows, {}, bundles, aliases)
+    new = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+    assert new['requirements'] == old['requirements']
+    anchor = 'joint_' + mixed['obligationId']
+    assert anchor + '_conditional_advice' in old['stages'][-1]['targetIds']
+    stage = new['stages'][-1]
+    targets = {t['targetId']: t for t in packet(stage)['jointTargets']}
+    boundary = anchor if inseparable else anchor + '_comparability'
+    assert stage['paperSubjectsByTarget'] == {boundary: list(plan['sources'])}
+    assert all(clause in targets[boundary]['question'] for clause in clauses[:2])
+    if inseparable:
+        assert clauses[2] in targets[boundary]['question']
+        assert anchor + '_conditional_advice' not in targets
+    else:
+        assert clauses[2] in targets[anchor + '_conditional_advice']['question']
+    assert 'joint_' + numeric['obligationId'] + '_matched_example' in targets
+
+
 @pytest.mark.parametrize('explicit_at', ['question', 'criterion', 'unrelated'])
 def test_cross_paper_scope_recovers_from_an_abbreviated_role_excerpt(explicit_at):
     r, plan, rows, aliases, bundles = fixture()

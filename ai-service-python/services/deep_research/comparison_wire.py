@@ -550,8 +550,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
         boundary_version = record.get('comparisonCrossPaperBoundaryContractVersion')
-        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5)
-        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY}.get(boundary_version, POLICY)
+        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5, 6)
+        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY, 6: TYPED_POLICY}.get(boundary_version, POLICY)
         for target in scoped_joint:
             target['paperSubjects'] = paper_subjects[target['targetId']]
         length = limit or 'concise, no explicit maximum'
