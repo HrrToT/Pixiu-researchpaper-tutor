@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "21499674f",
+  "sourceCase": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_beginner_opening_repair",
+  "outcome": "partial",
+  "actualTotalTokens": 20680,
+  "providerModel": "gpt-6.1-terra",
+  "providerCalls": 3,
+  "providerNodes": [
+    "repair_claims",
+    "verify_repair",
+    "verify_answer_coverage"
+  ],
+  "verifiedRevision": "cmp_conclusion_2",
+  "retainedOtherClaims": 10,
+  "benchmarkBindingsAndConditionsPreserved": true,
+  "wholeAnswerCoverage": "checked",
+  "coherent": true,
+  "gap": "向初学者比较原始表示与压缩后部署的取舍",
+  "secondSpeedExampleClaim": "cmp_7_0",
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-beginner-prose-repair-20261127",
+  "sha256": {
+    "intent.json": "61ba0dc94538ebddbb213142e51f6e4455eed7c5e9c8829f4e4ec419e7257b34",
+    "calls.json": "d32be3121484080f8949d4db31d3cd9a85fe5bea4f2c0ea2b68fa9aec591a0c2",
+    "run.json": "407b5f804ff6629f76105bdb8b568592fc56f1d6e1045655479715f3e54f5817",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "68a8e993f27ccab7f55d6e572869826c3931758542474221b2923211dd84dfb7"
+  }
+}
