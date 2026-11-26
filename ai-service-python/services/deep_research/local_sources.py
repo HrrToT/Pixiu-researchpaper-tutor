@@ -119,6 +119,17 @@ class LocalTaskRetriever:
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
+        if record.get('namedTablePdfFallbackVersion') == 1 and limit > 0:
+            from services.deep_research.named_table_scope import requested_number, requested_row_numbers
+            from services.deep_research.request_context import effective_question
+            question = effective_question(record)
+            number = requested_number(question)
+            matching = [row for row in passages if row.get('tableData') and number
+                        and row['location'].get('section') == f'Table {number}'
+                        and requested_row_numbers(row['tableData'], question)]
+            if len(matching) == 1:
+                table, = matching
+                found = [table, *(row for row in found if row['sourceId'] != table['sourceId'])][:min(limit, 5)]
         if record.get('comparisonPdfTableFallbackVersion') in (1, 2) and limit >= 2:
             metrics = _requested_metrics(query)
             if not metrics and re.search(r'\bbaseline\b|基线', query, re.I) and re.search(r'\bbenchmark\b|对照', query, re.I):
@@ -357,7 +368,10 @@ class LocalTaskRetriever:
                 if self.parse is not None:
                     self.pages[key] = self.parse(body)
                 else:
-                    self.pages[key] = _parse_pdf(body, include_tables=record.get('comparisonPdfTableFallbackVersion') in (1, 2))
+                    self.pages[key] = _parse_pdf(
+                        body, include_tables=record.get('comparisonPdfTableFallbackVersion') in (1, 2),
+                        **({'include_named_tables':True} if record.get('namedTablePdfFallbackVersion') == 1 else {}),
+                    )
             return material, self.pages[key]
 
 
@@ -446,10 +460,12 @@ def _bm25(query, documents):
     return scores
 
 
-def _parse_pdf(body, *, include_tables=False):
+def _parse_pdf(body, *, include_tables=False, include_named_tables=False):
     args = [sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)]
     if include_tables:
         args.append('--verified-tables')
+    if include_named_tables:
+        args.append('--verified-percentage-tables')
     process = subprocess.run(args,
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:

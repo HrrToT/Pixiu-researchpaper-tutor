@@ -296,6 +296,10 @@ class ResearchFacade:
         
         shared_experiment_profile = self._shared_experiment_plan_version if re.search(
             r'(?<!\d)2\s*[xX×*]\s*2(?!\d)', str(request.get('question', ''))) else 0
+        from services.deep_research.named_table_scope import requested_number
+        output_kind = request.get('outputKind')
+        named_table_verification = (output_kind == 'claim_verification' and bool(materials)
+                                    and requested_number(str(request.get('question') or '')) is not None)
         payload = {
             "runId": run_id,
             "taskId": workspace_task_id,  # Product task ID
@@ -325,7 +329,8 @@ class ResearchFacade:
             **({'comparisonEvaluationProtocolVersion': 4} if self._comparison_cells_version == 1 else {}),
             **({'comparisonLiteralAxisGoalVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonPdfTableFallbackVersion': 2} if self._comparison_cells_version == 1
-                and request.get('outputKind') == 'paper_comparison' else {}),
+                and output_kind == 'paper_comparison' else {}),
+            **({'namedTablePdfFallbackVersion': 1} if named_table_verification else {}),
             **({'comparisonPdfPassageBoundaryVersion': 2} if self._comparison_cells_version == 1
                 and request.get('outputKind') == 'paper_comparison' else {}),
             **({'shortComparisonLayoutContractVersion': 1} if continuation_context and self._comparison_cells_version == 1 else {}),

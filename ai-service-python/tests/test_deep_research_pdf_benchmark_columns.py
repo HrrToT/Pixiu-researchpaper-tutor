@@ -123,9 +123,12 @@ def test_ruled_percentages_preserve_column_owner_without_tei_layout(monkeypatch,
     monkeypatch.setattr(PyPDF2, 'PdfReader', lambda _: SimpleNamespace(pages=[Page()]))
     monkeypatch.setattr(pdf_table_columns, 'drawing_runs', lambda _: drawing)
     monkeypatch.setattr(pdf_model_table, 'horizontal_rules', lambda _: rules)
+    from core.pdf_benchmark_columns import verified_percentage_tables
+    fallback = verified_percentage_tables(Page(), '\n'.join(plain))
     verified = pdf_table_columns.attach_verified_table_columns(sections, 'fixture.pdf')
     if mode in ('shifted', 'conflicting_row', 'ambiguous_caption'):
         assert not verified
+        assert not fallback
         return
     table, = verified
     assert (table['tableId'], table['page']) == ('pdf-page-1-table-1', 1)
@@ -133,3 +136,4 @@ def test_ruled_percentages_preserve_column_owner_without_tei_layout(monkeypatch,
         'groups': [['', ['FP16', 'RTN INT3']], ['Activation', ['0.1%', '1%']], ['Weight', ['0.1%', '1%']]],
         'rows': [[i, label, cells] for i, (label, *cells) in enumerate(rows, 2)],
     }
+    assert fallback == [{'number':'1','caption':'Table 1. Results','tableData':table['tableVerifiedData']}]

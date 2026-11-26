@@ -375,6 +375,7 @@ class DeepResearchRepository:
                                      'boundCompositeTableCellsVersion',
                                      'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion',
                                      'openaiResearchModels', 'comparisonPdfTableFallbackVersion',
+                                     'namedTablePdfFallbackVersion',
                                      'comparisonLiteralAxisGoalVersion', 'comparisonPdfPassageBoundaryVersion'):
                     if (updated.get(batch_policy) != current.get(batch_policy)
                             or type(updated.get(batch_policy)) is not type(current.get(batch_policy))

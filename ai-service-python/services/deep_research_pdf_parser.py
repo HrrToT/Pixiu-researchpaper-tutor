@@ -62,7 +62,7 @@ def _extract_page_text(page):
         cache.clear()
 
 
-def parse_pdf(body: bytes, max_pages: int, *, include_tables=False) -> list[dict]:
+def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_named_tables=False) -> list[dict]:
     reader_type = PdfReader
     if reader_type is None:
         from PyPDF2 import PdfReader as reader_type
@@ -94,10 +94,15 @@ def parse_pdf(body: bytes, max_pages: int, *, include_tables=False) -> list[dict
                 row['extraction']={"engine":"PyPDF2","fallbackEngine":"pypdf",
                     "fallbackVersion":pypdf.__version__,"status":"unreadable_glyphs",
                     "originalControlCount":controls}
-        if include_tables:
+        if include_tables or include_named_tables:
             from core.pdf_repeated_metric_tables import verified_metric_tables
+            from core.pdf_benchmark_columns import verified_percentage_tables
             try:
-                tables = verified_metric_tables(page, text)
+                tables = verified_metric_tables(page, text) if include_tables else []
+                if include_named_tables:
+                    recognized = {table['number'] for table in tables}
+                    tables.extend(table for table in verified_percentage_tables(page, text)
+                                  if table['number'] not in recognized)
             except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
                 tables = []  # Optional geometry cannot make readable PDF prose unavailable.
             if tables:
@@ -114,7 +119,9 @@ def main():
         body = sys.stdin.buffer.read(max_bytes + 1)
         if len(body) > max_bytes:
             return 2
-        result = parse_pdf(body, max_pages, include_tables=sys.argv[3:] == ['--verified-tables'])
+        flags = sys.argv[3:]
+        result = parse_pdf(body, max_pages, include_tables='--verified-tables' in flags,
+                           include_named_tables='--verified-percentage-tables' in flags)
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
         return 0
     except Exception as error:

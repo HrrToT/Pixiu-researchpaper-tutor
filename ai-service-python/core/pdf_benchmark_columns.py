@@ -113,6 +113,24 @@ def verify_two_tier_columns(section, runs):
 
 
 _PERCENT = re.compile(r'\d+(?:\.\d+)?%')
+_PERCENTAGE_HEADER = re.compile(r'(?:\d+(?:\.\d+)?%[ \t]+){3,}\d+(?:\.\d+)?%')
+
+
+def verified_percentage_tables(page, text):
+    """Expose only uniquely identified, geometry-verified percentage tables."""
+    if page.get('/Rotate', 0) % 360 or not _PERCENTAGE_HEADER.search(text):
+        return []
+    from core.pdf_model_table import horizontal_rules
+    from core.pdf_table_columns import drawing_runs
+
+    tables = list(ruled_percentage_tables(drawing_runs(page), horizontal_rules(page), text))
+    counts = Counter(caption['number'] for _, caption, _, _ in tables)
+    return [
+        {'number':caption['number'], 'caption':caption['text'], 'tableData':{
+            'groups':groups,
+            'rows':[[index, values[0], values[1:]] for index, values in enumerate(rows, 2)]}}
+        for _, caption, groups, rows in tables if counts[caption['number']] == 1
+    ]
 
 
 def ruled_percentage_tables(runs, rules, plain_text):
