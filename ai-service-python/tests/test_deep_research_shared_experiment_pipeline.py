@@ -39,15 +39,38 @@ def updater(record):
     return update
 
 
-def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated():
+@pytest.mark.parametrize('compact', [False, True])
+def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated(compact):
+    from services.deep_research.shared_experiment_answer_packet import MARKER
+
     r,data,aliases=ready();check(r,data,aliases)
+    if compact:
+        r[MARKER] = 1
     sent=Mock(side_effect=lambda rid,node,prompt,opts,**kw:coverage(prompt))
     def save(v):r['state'][answer_slot(r)]=deepcopy(v)
     result=answer(r,data,aliases,invoke=sent,checkpoint=save)
     assert result['complete'],result['audit']
+    assert ('Audit the complete unexecuted proposal' in sent.call_args.args[2]) is compact
     assert answer(r,data,aliases,invoke=sent,checkpoint=save)==result and sent.call_count==1
     r['state'][answer_slot(r)]['audit']['gaps']=[{'invented':'gap'}]
     with pytest.raises(DeepResearchError):validated_saved(r,data,aliases)
+
+
+def test_compact_final_audit_shares_exact_answer_text():
+    from services.deep_research import nested_tables,shared_strings
+    from services.deep_research.shared_experiment_answer_packet import prompt
+
+    name = 'Original parameter state with a shared initialization checksum'
+    prose = '\n'.join(f'{index}. Read {name}, then verify the appropriate inputs.' for index in range(20))
+    claim = {'claimId': 'proposal', 'text': prose, 'evidenceRefs': ['E1']}
+    query = 'Design a paired comparison.'
+    rendered = prompt(query, [], [claim], {}, {}, 'EVIDENCE', [name])
+    marker = 'Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n'
+    wire = json.JSONDecoder().raw_decode(rendered.split(marker, 1)[1])[0]
+    decoded = nested_tables.unpack(shared_strings.unpack(wire))
+    assert isinstance(decoded['claims'][0]['text'], list)
+    decoded['claims'][0]['text'] = ''.join(decoded['claims'][0]['text'])
+    assert decoded == {'question': query, 'requirements': [], 'claims': [claim], 'metadata': {}}
 
 
 def test_final_audit_budget_stop_retains_candidate_without_sending_or_repair():

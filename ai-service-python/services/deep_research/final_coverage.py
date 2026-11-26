@@ -46,7 +46,14 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
-                       explain_comparison_gap=False):
+                       explain_comparison_gap=False, shared_experiment_phrases=None):
+    shared_experiment_packet = shared_experiment_phrases is not None
+    if shared_experiment_packet:
+        from services.deep_research import shared_experiment_answer_packet as experiment_packet
+        if not (consolidated_instructions and shared_decision_inputs and shared_evidence_context and diagnostics
+                and coherence and scoped_catalog and literal_limits and request_contract == 5
+                and comparison_cells is None and not root_coherence):
+            raise ValueError('Shared experiment audit requires complete fixed checks and original evidence')
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -173,14 +180,18 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                 permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
                 catalog=(build_scoped(claims,display_metadata,fixed_requirements,permissions) if scoped_catalog
                     else build(claims,display_metadata))
-            prompt=instruction_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,
-                shared_inputs=shared_decision_inputs,task_sources=task_sources,binding_catalog=catalog,
-                scoped_catalog=scoped_catalog,coherence=coherence,request_semantics=request_semantics,
-                process_explanations=request_contract in (4,5),distinct_roles=request_contract==5,
-                **({'root_coherence':True} if root_coherence else {}),
-                **({'literal_limits':True} if literal_limits else {}))
-            prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
-                **({'shared_inputs':True} if shared_decision_inputs else {}))
+            if shared_experiment_packet:
+                prompt = experiment_packet.prompt(question, fixed_requirements, wire_claims, display_metadata,
+                                                  catalog, evidence_marker, shared_experiment_phrases)
+            else:
+                prompt=instruction_prompt(question,fixed_requirements,wire_claims,display_metadata,evidence_marker,
+                    shared_inputs=shared_decision_inputs,task_sources=task_sources,binding_catalog=catalog,
+                    scoped_catalog=scoped_catalog,coherence=coherence,request_semantics=request_semantics,
+                    process_explanations=request_contract in (4,5),distinct_roles=request_contract==5,
+                    **({'root_coherence':True} if root_coherence else {}),
+                    **({'literal_limits':True} if literal_limits else {}))
+                prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
+                    **({'shared_inputs':True} if shared_decision_inputs else {}))
         else:
             from services.deep_research.coverage_policy import FINAL_COVERAGE_POLICY
             prompt = f'''Audit whether the FINAL ACCEPTED ANSWER fully answers the user's question.
@@ -295,13 +306,14 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     if request_code:
                         render = lambda rows: original_render(rows) + guidance(request_code, explain=explain_comparison_gap)
             fixed_bytes = len(render([]).encode('utf-8'))
-            def fit(byte_limit):
+            def fit(byte_limit, *, cited_only=False):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
                     raise BudgetExhaustedError('coveragePromptBytes', byte_limit, fixed_bytes)
                 if diagnostics:
                     from services.deep_research.coverage_diagnostics import fit_complete_context
-                    return fit_complete_context(rows, render, byte_limit,
-                        {ref for c in wire_claims for ref in c.get('evidenceRefs', [])})
+                    required = {ref for c in wire_claims for ref in c.get('evidenceRefs', [])}
+                    selected = [row for row in rows if row['evidenceId'] in required] if cited_only else rows
+                    return fit_complete_context(selected, render, byte_limit, required)
                 return fit_evidence_prompt(rows, render, max_bytes=byte_limit)
 
             attempts = [output_tokens]
@@ -316,6 +328,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 if len(checks) <= 12 and not any(
                         check.get('processRequired') or check.get('responseType') == 'limitation' for check in checks):
                     attempts.append(SHORT_COMPARISON_OUTPUT_TOKENS)
+            if shared_experiment_packet and experiment_packet.permits_short_output(fixed_requirements):
+                attempts.append(experiment_packet.SHORT_OUTPUT_TOKENS)
             if measure_reservation:
                 # Use the same renderer and minimum admissible output envelope.
                 # This path only sizes the accepted answer and all cited rows.
@@ -328,13 +342,16 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             if extend_comparison_audit_window:
                 from services.deep_research.comparison_audit_envelope import EXTENDED_INPUT_BYTES
                 windows.append(EXTENDED_INPUT_BYTES)
+            if shared_experiment_packet:
+                windows.append(experiment_packet.MAX_INPUT_BYTES)
             for window, allowance in ((window, allowance) for window in windows for allowance in attempts):
                 limit = coverage_prompt_byte_limit(budget, allowance, max_input_bytes=window)
                 if limit <= previous_limit:
                     continue
                 previous_limit = limit
                 try:
-                    prompt, rows = fit(limit)
+                    prompt, rows = fit(limit, cited_only=shared_experiment_packet
+                                       and allowance == experiment_packet.SHORT_OUTPUT_TOKENS)
                 except BudgetExhaustedError as exc:
                     admission_error = exc
                     continue

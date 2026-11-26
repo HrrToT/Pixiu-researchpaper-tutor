@@ -302,6 +302,10 @@ class TrackedLLMInvoker:
         if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17)
                 and comparison_audit_enabled(record, node)):
             return min(self._verification_max_input, EXTENDED_INPUT_BYTES)
+        if node == 'verify_answer_coverage':
+            from services.deep_research import shared_experiment_answer_packet as experiment_packet
+            if experiment_packet.enabled(record):
+                return min(self._verification_max_input, experiment_packet.MAX_INPUT_BYTES)
         from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
         if node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(record):
             return min(self._experiment_max_input, 32000)

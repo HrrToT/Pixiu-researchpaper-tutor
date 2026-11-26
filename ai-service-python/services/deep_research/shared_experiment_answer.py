@@ -80,12 +80,18 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint):
         call.update(status='received',response=deepcopy(response),responseDigest=digest(response));checkpoint(deepcopy(saved))
         return response
     from services.deep_research.request_context import effective_question
+    from services.deep_research import shared_experiment_answer_packet as packet
+    packet_options = {}
+    if packet.enabled(record):
+        from services.deep_research.shared_experiment_review import _generation
+        proposal = _generation(record)['boundProposal']['proposal']
+        packet_options['shared_experiment_phrases'] = packet.repeated_fields(proposal)
     audit=audit_final_answer(record['runId'],effective_question(record),record['state'].get('plan',[]),
         [claim_for(candidate)],record['state'].get('evidence',[]),tracked,json.loads,
         budget=saved['budgetAtPreparation'],request_contract=5,diagnostics=True,coherence=True,
         literal_dimensions=True,task_sources=True,request_semantics=2,identification_locators=True,
         shared_evidence_context=True,shared_decision_inputs=True,consolidated_instructions=True,
-        literal_limits=True,binding_catalog=True,scoped_catalog=True)
+        literal_limits=True,binding_catalog=True,scoped_catalog=True,**packet_options)
     if any(c['status']=='invocation_failed' for c in saved['calls'].values()):
         raise DeepResearchError('shared_answer_audit_stopped','最终审核调用未确认，不能自动重发。')
     saved.update(status='checked',audit=audit,auditDigest=digest(audit));checkpoint(deepcopy(saved))
