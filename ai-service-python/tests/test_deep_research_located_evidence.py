@@ -114,6 +114,51 @@ def test_page_match_does_not_bypass_literal_evidence_check():
         create(source, QUOTE, 'Different original', location={'page': 1}, obligation_ids=['o'])
 
 
+@pytest.mark.parametrize('fault', [None, 'snapshot', 'index', 'page', 'single_wrong_page', 'unchecked_line', 'partial_caption'])
+def test_owned_named_index_table_retains_exact_page_for_complete_literal_rows(fault):
+    from hashlib import sha256
+
+    create, source, record, local = setup()
+    pdf_hash = 'a' * 64
+    owner = pdf_hash + '.pdf'
+    caption = 'Table caption: Table 3: Results by model'
+    baseline = 'Table row 2: Model / Baseline | 11'
+    variant = 'Table row 3: Model / Variant | 12'
+    original = '\n'.join([caption, baseline, variant, 'Table row 4: Unchecked | 13'])
+    source.update(workId=owner, versionId=pdf_hash, contentHash=sha256(original.encode()).hexdigest())
+    record['materials'] = [{'materialId': owner, 'contentHash': pdf_hash}]
+    record['namedTableIndexedPageVersion'] = 1
+    anchor = {'page': 7, 'chunk': 9, 'section': 'Table 3', 'table': 'pdf-page-7-table-3'}
+    row = {**source, 'ownerMaterialId': owner, 'sourceId': owner + '-v0123456789abcdef-chunk-9',
+           'text': original, 'location': anchor,
+           'publicationIdentity': {'scheme': 'arxiv', 'workId': 'arxiv:2402.02750', 'revision': 'v1',
+                                   'literalStamp': 'arXiv:2402.02750v1', 'displayId': 'arxiv:2402.02750v1',
+                                   'origin': 'owned_pdf_header', 'contentHash': pdf_hash, 'physicalPage': 1},
+           'tableData': {'groups': [['', ['Accuracy']]],
+                         'rows': [[2, 'Model / Baseline', ['11']], [3, 'Model / Variant', ['12']]]}}
+    record['state']['sources'] = [row]
+    quote, location = '\n'.join([caption, baseline, variant]), dict(anchor)
+    if fault == 'snapshot':
+        row['publicationIdentity']['contentHash'] = 'b' * 64
+    elif fault == 'index':
+        row['sourceId'] = 'unverified-index-id'
+    elif fault == 'page':
+        location['page'] = 8
+    elif fault == 'single_wrong_page':
+        quote, location['page'] = baseline, 8
+    elif fault == 'unchecked_line':
+        quote = original
+    elif fault == 'partial_caption':
+        quote = caption[:-3]
+    result = create(source, quote, original, location=location, obligation_ids=['o'])
+    if fault is None:
+        assert result['location'] == {**anchor, 'pageIndex': 6, 'pageResolution': 'exact'}
+        local.load_pages.assert_not_called()
+    else:
+        assert result['location']['pageResolution'] == 'unresolved'
+        local.load_pages.assert_called_once_with(owner)
+
+
 def test_page_batch_reuses_physical_pages_only_inside_its_explicit_scope():
     from services.deep_research.text_quality import guard
     create, source, record, local = setup()

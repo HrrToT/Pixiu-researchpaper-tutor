@@ -50,6 +50,7 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
             from services.deep_research.table_evidence import visible_table_packet
             verified_pdf_tables = (record.get('comparisonPdfTableFallbackVersion') == 2
                                    or record.get('namedTablePdfFallbackVersion') == 1)
+            indexed_table_pages = record.get('namedTableIndexedPageVersion') == 1
             table_row = False
             for item in record.get('state', {}).get('sources', []):
                 if (item.get('workId') != source.get('workId') or
@@ -58,8 +59,17 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
                     continue
                 packet = visible_table_packet(item.get('tableData'), original)
                 if packet:
-                    table_row = any(quote == f'Table row {n}: ' + ' | '.join([method, *values])
-                                    for n, method, values in packet['rows'])
+                    verified_lines = {f'Table row {n}: ' + ' | '.join([method, *values])
+                                      for n, method, values in packet['rows']}
+                    if indexed_table_pages:
+                        indexed_page = _indexed_table_quote_page(item, material, quote, original,
+                                                                location, verified_lines)
+                        if indexed_page is not None:
+                            location = {**location, 'page': indexed_page, 'pageIndex': indexed_page - 1,
+                                        'pageResolution': 'exact'}
+                            table_row = True
+                            break
+                    table_row = quote in verified_lines and not indexed_table_pages
                     if not table_row and verified_pdf_tables:
                         table_row = _verified_pdf_table_passage(item, material, quote, original, location)
                 if table_row:
@@ -128,3 +138,37 @@ def _verified_pdf_table_passage(item, material, quote, original, location):
     identity = f"{material['materialId']}:{material['contentHash']}:{anchor}"
     return (item.get('sourceId') == 'src_' + sha256(identity.encode()).hexdigest()
             and visible_table_packet(item.get('tableData'), quote) is not None)
+
+
+def _indexed_table_quote_page(item, material, quote, original, location, verified_lines):
+    """Use parser-established page anchors for exact rows in the owned PDF index."""
+    from hashlib import sha256
+    import re
+    from services.deep_research.publication_identity import validated
+
+    anchor = item.get('location') or {}
+    owner, digest = material['materialId'], material.get('contentHash')
+    page, chunk = anchor.get('page'), anchor.get('chunk')
+    source_id = item.get('sourceId')
+    if (not digest or owner != digest + '.pdf' or type(page) is not int or page < 1
+            or type(chunk) is not int or chunk < 0
+            or not isinstance(anchor.get('table'), str)
+            or item.get('ownerMaterialId') != owner or item.get('versionId') != digest
+            or not validated(item.get('publicationIdentity'), digest)
+            or item.get('text') != original or item.get('contentHash') != sha256(original.encode()).hexdigest()
+            or not isinstance(source_id, str)
+            or not re.fullmatch(re.escape(owner) + rf'-v[0-9a-f]{{16}}-chunk-{chunk}', source_id)):
+        return None
+    table = re.fullmatch(rf'pdf-page-{page}-table-([1-9]\d*)', anchor['table'])
+    if (not table or anchor.get('section') != f'Table {table[1]}'
+            or any(location.get(key) != anchor[key] for key in ('page', 'chunk', 'table', 'section'))
+            or location.get('pageIndex', page - 1) != page - 1):
+        return None
+    lines = quote.splitlines()
+    if not lines or quote not in original:
+        return None
+    caption = re.compile(rf'^Table caption:\s*Table\s*{table[1]}\s*[:.]', re.I)
+    original_lines = set(original.splitlines())
+    if not all(line in verified_lines or line in original_lines and caption.match(line) for line in lines):
+        return None
+    return page

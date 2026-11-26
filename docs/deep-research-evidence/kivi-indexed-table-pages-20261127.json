@@ -1,0 +1,21 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "source": "Exact numeric claim citations from completed isolated live review and captured local PDF index",
+  "pages": {
+    "v1": {
+      "page": 7,
+      "table": "pdf-page-7-table-3",
+      "pdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4"
+    },
+    "v2": {
+      "page": 8,
+      "table": "pdf-page-8-table-3",
+      "pdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4"
+    }
+  },
+  "historicalReportRewritten": false,
+  "providerCalls": 0,
+  "browserNavigationTested": false,
+  "focusedTestsPassed": 70,
+  "contentVerificationReceipt": "kivi-explicit-change-labels-live-20261127.json"
+}
