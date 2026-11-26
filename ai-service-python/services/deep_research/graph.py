@@ -2366,10 +2366,12 @@ def make_verify_node(
                     comparison_audit_args['share_comparison_evidence_sentences'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
-                    if audit_version in (15, 16):
+                    if audit_version in (15, 16, 17):
                         comparison_audit_args['extend_comparison_audit_window'] = True
-                    if audit_version == 16:
+                    if audit_version in (16, 17):
                         comparison_audit_args['localize_comparison_gap'] = True
+                    if audit_version == 17:
+                        comparison_audit_args['explain_comparison_gap'] = True
                 if joint_comparison_delivery(record):
                     comparison_audit_args['require_joint_conclusions'] = True
         from services.deep_research.comparison_review_batches import current_profile
@@ -2378,7 +2380,7 @@ def make_verify_node(
         def audit_accepted(accepted, snapshot, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16)):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             return audit_final_answer(run_id, effective_question(record),
@@ -2429,7 +2431,7 @@ def make_verify_node(
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
                 if (comparison_audit_args.get('comparison_audit_envelope')
-                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16)
+                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17)
                         and llm_invoke is not None and verification_result.get('accepted')):
                     # Stopping individual reviews does not by itself exhaust the
                     # final-answer allowance. Check the retained subset with the
@@ -2462,7 +2464,7 @@ def make_verify_node(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
                 beginner_lead_claim_id=((saved.get('comparisonCellDraft') or {}).get('beginnerLeadClaimId')
-                                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (5, 6) else None),
+                                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (5, 6, 7) else None),
                 **({'bound_comparison_targets':True} if saved.get('comparisonCellDraft') is not None
                    and type(record.get('repairInstructionsContractVersion')) is int
                    and record['repairInstructionsContractVersion']==5 else {}),
@@ -2617,7 +2619,7 @@ def make_verify_node(
                             and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible):
                         benchmark_id = comparison_draft['benchmarkExampleClaimId']
                         benchmark_example = {'claimId': benchmark_id}
-                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 6:
+                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (6, 7):
                             benchmark_example['relativeSpeedIsNumeric'] = True
                         if any(row.get('claimId') == benchmark_id and row.get('beginnerLeadRepair') is True
                                for row in repair_targets.get('rejected', [])):

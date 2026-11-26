@@ -125,7 +125,8 @@ class LocalTaskRetriever:
                 metrics = {'FPS', 'SIZE', 'PSNR', 'SSIM', 'LPIPS'}
             if metrics:
                 found = _include_metric_tables(found, [row for row in passages if row.get('tableData')],
-                                               query, metrics, min(limit, 5))
+                                               query, metrics, min(limit, 5),
+                                               marked_headers=record.get('comparisonBenchmarkSpeedScopeContractVersion') == 7)
         precision = record.get('sourcePrecisionContractVersion')
         if type(precision) is int and precision in (3,4,5,6,7,8):
             from services.deep_research.requested_measurements import include_pdf_measurements
@@ -256,6 +257,15 @@ class LocalTaskRetriever:
                         'title': material.get('title', pdf_id), 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'})
             for table in page.get('verifiedTables', []):
                 number, packet = table['number'], table['tableData']
+                directions = table.get('metricDirections', ())
+                if ((record or {}).get('comparisonBenchmarkSpeedScopeContractVersion') == 7
+                        and len(directions) == sum(len(metrics) for _, metrics in packet['groups'])
+                        and all(direction in ('↑', '↓') for direction in directions)):
+                    arrows = iter(directions)
+                    packet = {**packet, 'groups': [
+                        [group, [metric + next(arrows) for metric in metrics]]
+                        for group, metrics in packet['groups']
+                    ]}
                 header = ' | '.join(f'{group} / {metric}' for group, metrics in packet['groups'] for metric in metrics)
                 lines = [f"Table caption: {table['caption']}", f'Table row 1: Method | {header}']
                 lines.extend(f'Table row {n}: ' + ' | '.join([label, *values]) for n, label, values in packet['rows'])
@@ -360,7 +370,7 @@ def _requested_metrics(query):
     return {metric for metric, pattern in aliases.items() if re.search(pattern, query, re.I)}
 
 
-def _include_metric_tables(indexed, tables, query, metrics, limit):
+def _include_metric_tables(indexed, tables, query, metrics, limit, *, marked_headers=False):
     """Reserve at most two slots for relevant verified rows, keeping prose context.
 
     This is retrieval only: neither table validity nor ranking establishes that
@@ -373,6 +383,8 @@ def _include_metric_tables(indexed, tables, query, metrics, limit):
         if not packet:
             continue
         headers = {m.upper() for _, group in packet['groups'] for m in group}
+        if marked_headers:
+            headers = {name.rstrip('↑↓').strip() for name in headers}
         if headers & {'MEM', 'MEMORY', 'STORAGE'}:
             headers.add('SIZE')
         overlap = len(headers & metrics)

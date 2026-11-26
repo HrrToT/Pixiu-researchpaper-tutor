@@ -17,14 +17,15 @@ def verified_metric_tables(page, text):
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     candidates = []
     for index, header in enumerate(lines):
-        metrics = tuple(name.rstrip('↑↓ ').casefold() for name in _METRICS.findall(header))
+        marked = _METRICS.findall(header)
+        metrics = tuple(name.rstrip('↑↓ ').casefold() for name in marked)
         if (not 4 <= len(metrics) <= 24 or len(set(metrics)) * 2 > len(metrics)
                 or _METRICS.sub('', header).strip()):
             continue
         for tail in range(index + 3, min(index + 34, len(lines))):
             caption = _CAPTION.match(lines[tail])
             if caption:
-                candidates.append((caption[1], lines[tail], metrics,
+                candidates.append((caption[1], lines[tail], metrics, tuple(name[-1] for name in marked),
                                    lines[max(0, index - 2):index + 1], lines[index + 1:tail]))
                 break
     if not candidates or len(candidates) > 4:
@@ -49,7 +50,7 @@ def verified_metric_tables(page, text):
             headers[names].append(line[0]['y'])
 
     tables = []
-    for number, caption_line, metrics, heading, plain_rows in candidates:
+    for number, caption_line, metrics, directions, heading, plain_rows in candidates:
         if len(captions[number]) != 1 or len(headers[metrics]) != 1:
             continue
         header_y, = headers[metrics]
@@ -80,5 +81,8 @@ def verified_metric_tables(page, text):
                                       source_row)
             rows.append([n, original_label[0].strip() if original_label else label, values])
         packet['rows'] = rows
-        tables.append({'number': number, 'caption': caption_line, 'tableData': packet})
+        table = {'number': number, 'caption': caption_line, 'tableData': packet}
+        if tuple(metric.casefold() for _, group in packet['groups'] for metric in group) == metrics:
+            table['metricDirections'] = directions
+        tables.append(table)
     return tables

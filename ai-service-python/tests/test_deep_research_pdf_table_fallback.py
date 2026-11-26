@@ -24,8 +24,27 @@ def test_pdf_only_table_requires_same_group_headers_and_matching_drawn_rows(monk
         'groups': [['Dataset A', ['FPS', 'Size']], ['Dataset B', ['FPS', 'Size']]],
         'rows': [[2, 'Base', ['100', '50MB', '150', '60MB']], [3, 'Ours', ['200', '20MB', '230', '30MB']]],
     }
+    assert table['metricDirections'] == ('↑', '↓', '↑', '↓')
     assert not verified_metric_tables({}, text.replace('200 20MB', '20MB 200'))
     assert not verified_metric_tables({'/Rotate': 90}, text)
+
+
+def test_directional_pdf_headers_retain_original_rows_and_remain_searchable():
+    from services.deep_research.local_sources import LocalTaskRetriever, _include_metric_tables
+
+    table = {'number': '1', 'caption': 'Table 1: Measurements.',
+             'tableData': {'groups': [['Data', ['FPS', 'PSNR']]],
+                           'rows': [[2, 'Reference', ['10', '27']], [3, 'Ours', ['20', '26']]]},
+             'metricDirections': ('↑', '↑')}
+    material = {'contentHash': 'hash', 'versionId': 'version'}
+    page = {'page': 1, 'text': '', 'verifiedTables': [table]}
+    old, = LocalTaskRetriever._pdf_passages('paper', material, [page], record={})
+    revised, = LocalTaskRetriever._pdf_passages('paper', material, [page],
+        record={'comparisonBenchmarkSpeedScopeContractVersion': 7})
+    assert old['tableData'] == table['tableData']
+    assert revised['tableData']['groups'] == [['Data', ['FPS↑', 'PSNR↑']]]
+    assert revised['tableData']['rows'] == old['tableData']['rows']
+    assert _include_metric_tables([], [revised], 'PSNR', {'PSNR'}, 2, marked_headers=True) == [revised]
 
 
 def test_multiple_markers_require_one_visible_baseline_twin_and_one_explicit_note():

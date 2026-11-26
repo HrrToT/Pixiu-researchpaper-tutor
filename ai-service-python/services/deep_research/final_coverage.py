@@ -45,7 +45,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500, *, max_input_bytes=DE
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
-                       extend_comparison_audit_window=False, localize_comparison_gap=False):
+                       extend_comparison_audit_window=False, localize_comparison_gap=False,
+                       explain_comparison_gap=False):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -119,6 +120,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     diagnostic_errors, gap_details = [], {}
     request_response_errors = []
     missing_request_excerpt = None
+    missing_answer_element = None
     coherence_result=None
     if claims and plan and invoke:
         cited = {ref for claim in claims for ref in claim.get('evidenceRefs', [])}
@@ -291,7 +293,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     original_render = render
                     request_code = check_labels[identity][1].get('request')
                     if request_code:
-                        render = lambda rows: original_render(rows) + guidance(request_code)
+                        render = lambda rows: original_render(rows) + guidance(request_code, explain=explain_comparison_gap)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -363,7 +365,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                         verdicts = restore(verdicts, check_labels, inline_limits=inline_limits)
                     if localize_comparison_gap:
                         from services.deep_research.comparison_gap_excerpt import extract
-                        verdicts, missing_request_excerpt = extract(verdicts, identity, question)
+                        verdicts, missing_request_excerpt, missing_answer_element = extract(
+                            verdicts, identity, question, explain=explain_comparison_gap)
                     raw_review=verdicts
                     verdicts=normalize(verdicts,fixed_requirements,claims=wire_claims,
                         compact_checks=compact_comparison_checks,
@@ -503,6 +506,9 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
             **({'diagnosticErrors':diagnostic_errors} if diagnostics else {})}
     if request_response_errors:
         audit['requestResponseErrors'] = request_response_errors
+    if missing_answer_element and any(gap.get('missingRequestExcerpt') == missing_request_excerpt for gap in gaps):
+        audit['wholeQuestionDiagnostic'] = {'requestExcerpt': missing_request_excerpt,
+                                            'missingAnswerElement': missing_answer_element}
     if transformation_processes:
         audit['processExplanationVocabularyVersion'] = 1
     if comparison_cells is not None:

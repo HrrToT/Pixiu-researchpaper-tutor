@@ -24,6 +24,21 @@ def test_ambiguous_or_different_size_units_do_not_generate_a_tradeoff_summary(si
     assert summarize(selected(size), baseline_row=5) == ''
 
 
+def test_metric_explanation_requires_and_follows_the_exact_bound_arrows():
+    unmarked = selected()
+    directions = {'PSNR': '↑', 'SSIM': '↑', 'LPIPS': '↓'}
+    marked = [{'binding': {**cell['binding'],
+                           'metric': cell['binding']['metric'] + directions.get(cell['binding']['metric'], '')}}
+              for cell in unmarked]
+    assert '越好' not in summarize(unmarked, baseline_row=5, explain_metrics=True)
+    text = summarize(marked, baseline_row=5, explain_metrics=True)
+    assert 'PSNR（峰值信噪比）越高越好' in text
+    assert 'SSIM（结构相似度）越高越好' in text
+    assert 'LPIPS（感知差异）越低越好' in text
+    marked[-1]['binding']['metric'] = 'LPIPS↑'
+    assert 'LPIPS（感知差异）' not in summarize(marked, baseline_row=5, explain_metrics=True)
+
+
 def test_intro_order_is_bound_to_the_same_audit_as_the_accepted_comparison():
     claims = [{'claimId': 'boundary', 'kind': 'inference', 'text': 'Boundary.'},
               {'claimId': 'example', 'kind': 'reported', 'text': 'Matched comparison.'}]

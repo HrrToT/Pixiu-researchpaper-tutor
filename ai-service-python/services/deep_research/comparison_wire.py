@@ -350,11 +350,12 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                         else '原表在同一数据组中报告了以下两种方法的结果。')
                 if protocol:
                     text += '表注说明带标记的基线在同一平台上重新训练。'
-                if target.get('scopedExampleText') in (2, 3):
+                if target.get('scopedExampleText') in (2, 3, 4):
                     text += '这些结果限于下列数据组和原表测量条件，其他数据组或设置不在这组对照范围内。'
-                if target.get('scopedExampleText') == 3 and protocol:
+                if target.get('scopedExampleText') in (3, 4) and protocol:
                     from services.deep_research.benchmark_tradeoff_summary import summarize
-                    summary = summarize([registry[ref] for ref in cells], protocol['rowNumber'])
+                    summary = summarize([registry[ref] for ref in cells], protocol['rowNumber'],
+                                        explain_metrics=target['scopedExampleText'] == 4)
                     if summary:
                         text = summary + text
                 point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
@@ -622,7 +623,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         if example_owner:
             data['requestContext']['benchmarkExampleOwner'] = example_owner
-            if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 6:
+            if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (6, 7):
                 policy += ('Outside the single benchmark example, describe rendering-speed direction '
                            'and setup without ratios, percentages, or stated doubling.\n')
             if literal_targets and data['jointTargets']:
