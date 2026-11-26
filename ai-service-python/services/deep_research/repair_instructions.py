@@ -132,6 +132,13 @@ def render(*, question, length_contract, requirements, source_context, targets,
                     'Keep necessary, directly cited method settings and processing costs. When a figure '
                     'lacks a supporting passage, remove the figure and keep the supported observation; '
                     'do not claim that the paper did not report it.\n')
+        if benchmark_example.get('introOnly') is True:
+            routing += ('For benchmarkExample.claimId, revise only the short beginner explanation. '
+                        'Explain the practical trade-off in plain words, identify the compared methods, '
+                        'and limit the statement to the matched setup. Keep the existing metric cells '
+                        'and accompanying source note. The app displays the measured values separately. '
+                        'Do not add a Markdown table, numerical restatement, new condition, cross-paper '
+                        'ranking or GPU-memory recommendation. Those other sections are already covered.\n')
     return (core+routing+table_rule+scope+'\nHuman question:\n'+question+'\n'+length_contract
         +'\nExact repair inputs (goals and metadata, not paper facts):\n'+enc(data)
         +'\nAllowed evidence IDs by target (permissions, not support):\n'+permissions_marker

@@ -19,6 +19,31 @@ def _camera_claims():
     ]
 
 
+def test_beginner_gap_repairs_only_the_measured_lead():
+    claims = [_claim('lead', ['example'], 'Matched measurements.'),
+              _claim('boundary', ['scope'], 'No direct cross-paper ranking.'),
+              _claim('mechanism', ['mechanism'], 'Pruning removes selected elements.')]
+    excerpt = '向初学者比较原始表示与压缩后部署的取舍'
+    gap = {'obligationId': 'answer_scope', 'wholeQuestion': True,
+           'question': excerpt + '。再列出比较表。', 'missingRequestExcerpt': excerpt}
+    audit = {'status': 'checked', 'requestCoverageContractVersion': 5, 'gaps': [gap],
+             'verdicts': [{'obligationId': 'answer_scope',
+                           'bindings': [{'claimId': c['claimId']} for c in claims]}]}
+    verification = {'accepted': claims, 'rejected': []}
+    scoped = prepare_coverage_repair({'claims': claims}, verification, audit,
+                                    prioritize_specific=True, bound_comparison_targets=True,
+                                    beginner_lead_claim_id='lead')
+    assert [row['claimId'] for row in scoped['accepted']] == ['boundary', 'mechanism']
+    assert scoped['rejected'] == [{'claimId': 'lead', 'reason': 'answer_incomplete',
+                                   'missingQuestions': [excerpt], 'beginnerLeadRepair': True}]
+    for value in (None, '说明为什么不能直接比较FPS'):
+        other = {**audit, 'gaps': [{**gap, 'missingRequestExcerpt': value}]}
+        unscoped = prepare_coverage_repair({'claims': claims}, verification, other,
+                                          prioritize_specific=True, bound_comparison_targets=True,
+                                          beginner_lead_claim_id='lead')
+        assert unscoped['accepted'] == []
+
+
 def test_merge_initial_conflicting_identity_stays_rejected():
     claim = _claim('c', ['o'], 'ambiguous')
     initial = {'accepted': [claim], 'rejected': [{'claimId': 'c', 'reason': 'failed'}]}

@@ -62,7 +62,7 @@ def review_binding_only(audit, gap, *, invalid_process_reviews=False):
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False, bound_comparison_targets=False):
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False, bound_comparison_targets=False, beginner_lead_claim_id=None):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
@@ -145,6 +145,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     # Map each targeted accepted claim id to the ordered, unique list of gap
     # questions that implicated it.
     targets = {}
+    lead_repair_id = None
     for gap in active_gaps:
         if bound_comparison_targets and gap.get('missingJointConclusion') is True:
             # Failed joint drafts are already queued for repair by identity.
@@ -204,6 +205,15 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             # answer_scope gap must not drag unrelated covered facts into a
             # rewrite just because its verdict binds the rest of the answer.
             gap_targets = set(targets)
+        elif (scoped and bound_comparison_targets and gap.get('wholeQuestion')
+                and beginner_lead_claim_id in accepted_report_ids and gap.get('missingRequestExcerpt')):
+            from services.deep_research.audience_rewrite import beginner_requested
+            excerpt = gap['missingRequestExcerpt']
+            if isinstance(excerpt, str) and beginner_requested({'question': excerpt}):
+                # Improve the explanation at the point where the reader sees
+                # the measured trade-off. Other covered claims stay accepted.
+                gap_targets = {beginner_lead_claim_id}
+                lead_repair_id = beginner_lead_claim_id
 
         for cid in gap_targets:
             bucket = targets.setdefault(cid, [])
@@ -251,6 +261,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
                 "claimId": cid,
                 "reason": "answer_incomplete",
                 "missingQuestions": list(targets[cid]),
+                **({'beginnerLeadRepair': True} if cid == lead_repair_id else {}),
             }
         )
 

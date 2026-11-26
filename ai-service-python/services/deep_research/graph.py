@@ -2461,6 +2461,8 @@ def make_verify_node(
                 repair_report, verification_result = prepare_design_completion(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
+                beginner_lead_claim_id=((saved.get('comparisonCellDraft') or {}).get('beginnerLeadClaimId')
+                                        if record.get('comparisonBenchmarkSpeedScopeContractVersion') == 5 else None),
                 **({'bound_comparison_targets':True} if saved.get('comparisonCellDraft') is not None
                    and type(record.get('repairInstructionsContractVersion')) is int
                    and record['repairInstructionsContractVersion']==5 else {}),
@@ -2610,11 +2612,17 @@ def make_verify_node(
                             if step.get('stageId') != 'joint'
                             for ref in step.get('requiredEvidenceIds', []) if ref in aliases
                         ))
+                    benchmark_example = None
+                    if (repair_flow_enabled(record) and 'benchmarkExampleClaimId' in comparison_draft
+                            and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible):
+                        benchmark_id = comparison_draft['benchmarkExampleClaimId']
+                        benchmark_example = {'claimId': benchmark_id}
+                        if any(row.get('claimId') == benchmark_id and row.get('beginnerLeadRepair') is True
+                               for row in repair_targets.get('rejected', [])):
+                            benchmark_example['introOnly'] = True
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
-                        **({'benchmark_example': {'claimId': comparison_draft['benchmarkExampleClaimId']}}
-                           if repair_flow_enabled(record) and 'benchmarkExampleClaimId' in comparison_draft
-                           and comparison_authoring_enabled(record) and compact_repair and unified_repair_eligible else {}),
+                        **({'benchmark_example': benchmark_example} if benchmark_example is not None else {}),
                         **({'comparison_authoring':comparison_repair} if comparison_repair else {}),
                         **({'comparison_prioritize_cells':True} if comparison_batch_envelope else {}),
                         **({'comparison_split_to_fit':True} if comparison_batch_envelope

@@ -369,7 +369,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
-        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 4
+        assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 5
         assert r['comparisonRepairFlowContractVersion'] == 1
         assert r['comparisonStageAbstentionContractVersion'] == 1
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
