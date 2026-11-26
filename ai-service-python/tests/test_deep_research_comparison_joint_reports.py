@@ -58,6 +58,33 @@ def test_shared_reported_example_does_not_force_a_second_source_or_waive_other_g
     assert claim['text'] in text and '10MB' in text and '6MB' in text
 
 
+def test_measurement_protocol_keeps_actual_reported_settings_in_bounded_slots():
+    from services.deep_research.comparison_joint_reports import comparison_protocol_priority
+    from services.deep_research.reading_priority import select_read_sources
+
+    def paper(sid, work, text, **fields):
+        return {'sourceId': sid, 'workId': work, 'versionId': work + '-v1',
+                'accessLevel': 'fulltext', 'text': text, 'location': {}, **fields}
+
+    generic = paper('generic', 'left', 'We can render high-quality views on consumer GPU hardware.')
+    settings = paper('hardware', 'left',
+                     'All results are reported running on an A6000 GPU, except for one evaluation.')
+    second = paper('second', 'right', 'All performance evaluations are conducted on an RTX GPU.')
+    foreign = paper('foreign', 'out-of-scope', settings['text'])
+    abstract = {**settings, 'sourceId': 'summary', 'accessLevel': 'abstract'}
+    rows = [generic, foreign, abstract, settings, second]
+    obligations = {'comparison': {'obligationId': 'comparison',
+                                  'question': '比较 FPS 前需要说明什么硬件条件？',
+                                  'requiredSources': ['left', 'right']}}
+    selected = select_read_sources(rows, obligations, 6, comparison_evaluation_protocol=True)
+    assert [row['sourceId'] for row in selected[:2]] == ['hardware', 'second']
+    assert len(selected) == 4 and foreign not in selected
+    candidates = [{**row, 'source': row['workId'], 'evidenceId': row['sourceId'], 'quote': row['text']}
+                  for row in rows]
+    targets = [{'role': 'joint', 'sources': ['left', 'right'], 'question': '为什么 FPS 不能直接比较？'}]
+    assert comparison_protocol_priority(candidates, targets, reported_platform=True) == {'hardware', 'second'}
+
+
 @pytest.mark.parametrize('change', [None, 'ordinary_gap', 'partial_audit', 'invalid_audit', 'stale_layout',
                                    'wrong_version', 'wrong_value', 'missing_bindings', 'unverified'])
 def test_verified_same_table_example_closes_only_the_joint_readiness_gap(change):

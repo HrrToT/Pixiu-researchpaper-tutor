@@ -166,9 +166,11 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]
         if include_joint and joint_comparison_delivery(record):
-            from services.deep_research.comparison_joint_reports import comparison_protocol_priority, joint_numeric_example
+            from services.deep_research.comparison_joint_reports import (
+                comparison_protocol_priority, evaluation_protocols_enabled, joint_numeric_example,
+            )
             examples = joint_numeric_example(full_plan['roles'], question)
-            protocols = (comparison_protocol_priority(own, all_targets)
+            protocols = (comparison_protocol_priority(own, all_targets, reported_platform=evaluation_protocols_enabled(record))
                          if version in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else set())
             if examples or protocols:
                 # Mandatory premises are fitted first. Offer the narrow

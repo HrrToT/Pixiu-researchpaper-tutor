@@ -30,6 +30,49 @@ _PROTOCOL = re.compile(
     r'\b(?:evaluat\w*|benchmark\w*|measur\w*|render\w*|timing)\b[^.!?。]{0,120}'
     r'\b(?:on|using|with|at)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform|resolution)\b'
     r'|(?:评估|测量|测试|渲染)[^。！？]{0,65}(?:显卡|GPU|硬件|分辨率)', re.I)
+_REPORTED_PLATFORM = re.compile(
+    r'\b(?:results?|evaluations?|experiments?|benchmarks?)\s+(?:are|were)\s+'
+    r'(?:reported|conducted|run|measured|evaluated)\b[^.!?。]{0,120}'
+    r'\b(?:on|using|with)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform)\b', re.I)
+_REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:hardware|protocols?|conditions?|settings?)\b', re.I)
+
+
+def evaluation_protocols_enabled(record):
+    return (type(record.get('comparisonEvaluationProtocolVersion')) is int
+            and record['comparisonEvaluationProtocolVersion'] == 1)
+
+
+def _evaluation_protocol_score(text):
+    from services.deep_research.source_continuity import _body
+    prose = ' '.join(_body({'text': text}).split())
+    if _REPORTED_PLATFORM.search(prose):
+        return 2
+    return int(bool(_PROTOCOL.search(prose)))
+
+
+def preferred_evaluation_reads(rows, obligations, limit, extracted):
+    from services.deep_research.obligation_binding import eligible_obligation_ids
+    from services.deep_research.reading_roles import quality
+
+    active = {}
+    for oid, obligation in obligations.items():
+        question = ' '.join([obligation.get('question', ''), obligation.get('searchQuery', ''),
+                             *(criterion['requirement'] for criterion in obligation.get('completionCriteria', []))])
+        if _SPEED.search(question) and _REQUESTED_PROTOCOL.search(question):
+            active[oid] = obligation
+    if not active:
+        return []
+    found = {}
+    for row in rows:
+        if (row.get('accessLevel') != 'fulltext' or not row.get('versionId') or row.get('tableData')
+                or (row['sourceId'], row.get('contentHash')) in extracted
+                or not eligible_obligation_ids(row, active) or quality(row) != (True, True)):
+            continue
+        key = (row['workId'], row.get('versionId'))
+        score = _evaluation_protocol_score(row['text'])
+        if score > found.get(key, (0, None))[0]:
+            found[key] = (score, row)
+    return [row for _, row in list(found.values())[:limit // 3]]
 
 
 def has_single_numeric_example(roles):
@@ -358,19 +401,20 @@ def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missin
             and row.get('state') == 'unchecked' and row.get('missingEvidence')}
 
 
-def comparison_protocol_priority(rows, targets):
+def comparison_protocol_priority(rows, targets, *, reported_platform=False):
     """Reserve optional priority for one evaluation-protocol passage per relevant source."""
     relevant_sources = {source for target in targets
                         if target['role'] == 'joint' and not target.get('deliverable')
                         and _SPEED.search(target['question']) for source in target['sources']}
-    prioritized = set()
+    prioritized = {}
     for row in rows:
         source = row['source']
         if (source in relevant_sources and row.get('accessLevel') == 'fulltext'
-                and not (row.get('tableData') or row.get('tableDataRef')) and _PROTOCOL.search(row['quote'])):
-            prioritized.add(row['evidenceId'])
-            relevant_sources.remove(source)
-    return prioritized
+                and not (row.get('tableData') or row.get('tableDataRef'))):
+            score = _evaluation_protocol_score(row['quote']) if reported_platform else int(bool(_PROTOCOL.search(row['quote'])))
+            if score > prioritized.get(source, (0, None))[0]:
+                prioritized[source] = (score, row['evidenceId'])
+    return {eid for _, eid in prioritized.values()}
 
 
 PLANNING = '''Use joint for a shared source-reported contrast or numerical example as well as
