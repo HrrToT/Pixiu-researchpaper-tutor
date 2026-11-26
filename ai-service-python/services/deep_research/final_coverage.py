@@ -43,7 +43,7 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
 
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
-                       share_comparison_evidence_sentences=False):
+                       share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -453,7 +453,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     if require_joint_conclusions:
         from services.deep_research.comparison_presentation import missing_joint_conclusions
         gap_by_id = {gap['obligationId']: gap for gap in gaps}
-        for goal in missing_joint_conclusions(comparison_cells, claims):
+        for goal in missing_joint_conclusions(comparison_cells, claims,
+                                              checked_scope_expressions=checked_comparison_scope_expressions):
             oid = goal['obligationId']
             if oid not in gap_by_id:
                 gap_by_id[oid] = {'obligationId': oid, 'question': goal['question'], 'stage': 'answer'}

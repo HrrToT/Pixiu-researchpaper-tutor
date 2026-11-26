@@ -166,6 +166,17 @@
     "scientificContentAccepted": false
   },
   "localEvidence": "tmp/openai-d2-luna-terra-second-20261126",
+  "jointBoundaryOfflineReplay": {
+    "candidateComparisonAuditVersion": 13,
+    "historicalMissingJointConclusion": ["comparability_and_choice"],
+    "candidateMissingJointConclusion": [],
+    "exactMaterializedTextBoundToCheckedScope": true,
+    "version12And13HaveIdenticalAuditRequests": true,
+    "truncatedFinalAuditStillHeld": true,
+    "targetedTestsPassed": 207,
+    "providerRequests": 0,
+    "scientificContentAccepted": false
+  },
   "tablePageOfflineReplay": {
     "historicalResolution": "unresolved",
     "candidatePdfTableFallbackVersion": 2,

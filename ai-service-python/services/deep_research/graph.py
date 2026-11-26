@@ -2371,11 +2371,16 @@ def make_verify_node(
         from services.deep_research.comparison_review_batches import current_profile
         if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
             comparison_audit_args['empty_missing_limits']=True
-        def audit_accepted(accepted, budget, **options):
+        def audit_accepted(accepted, snapshot, **options):
+            scopes = {}
+            if (comparison_audit_args.get('require_joint_conclusions')
+                    and record.get('comparisonAuditEnvelopeContractVersion') == 13):
+                from services.deep_research.scope_expression_review import context_for_record
+                scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             return audit_final_answer(run_id, effective_question(record),
                     saved.get('plan', []), accepted,
-                    evidence, llm_invoke, _safe_parse_json, budget=budget,
-                    **comparison_audit_args, **options,
+                    evidence, llm_invoke, _safe_parse_json, budget=snapshot.get('budget'),
+                    **comparison_audit_args, **scopes, **options,
                     **({'root_coherence':True} if revision_coverage_enabled(record) else {}),
                     **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
                     **({'transformation_processes':True} if transformation_enabled(record) and request_coverage_enabled(record) else {}),
@@ -2426,7 +2431,7 @@ def make_verify_node(
                 answer_coverage = {'status':'deferred_factual_repair','gaps':[],'verdicts':[],
                                    'scientificApproval':False}
             else:
-                answer_coverage = audit_accepted(verification_result.get('accepted', []), current.get('budget'))
+                answer_coverage = audit_accepted(verification_result.get('accepted', []), current)
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
                 repair_report, verification_result = prepare_design_completion(
@@ -2536,7 +2541,7 @@ def make_verify_node(
                     if (comparison_audit_args.get('fit_compact_comparison_budget')
                             and answer_coverage.get('status') == 'deferred_factual_repair'):
                         audit_reservation = audit_accepted(verification_result.get('accepted', []),
-                                                          current.get('budget'), measure_reservation=True)
+                                                          current, measure_reservation=True)
 
                     def budget_for_repair(snapshot):
                         budget = snapshot.get('budget', {})
@@ -2770,7 +2775,7 @@ def make_verify_node(
                         verification_result = merged
                     elif merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
-                        merged_audit = audit_accepted(merged.get('accepted', []), current.get('budget'))
+                        merged_audit = audit_accepted(merged.get('accepted', []), current)
                         from services.deep_research.comparison_measurement_display import repair_profile
                         from services.deep_research.comparison_repair import can_retain_audited_answer
                         if repair_profile(record) in (3, 4) and can_retain_audited_answer(
@@ -2806,7 +2811,7 @@ def make_verify_node(
         # invalid or budget-limited repair must still audit the retained answer.
         if answer_coverage.get('status') == 'deferred_factual_repair':
             current = repo_update(run_id, lambda r: r, expected_revision=None)
-            answer_coverage = audit_accepted(verification_result.get('accepted', []), current.get('budget'))
+            answer_coverage = audit_accepted(verification_result.get('accepted', []), current)
 
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])

@@ -11,7 +11,7 @@ def enabled(record):
             and record['scopeExpressionReviewContractVersion'] in (1,2,3,4,5))
 
 
-def context_for_record(record, claims):
+def context_for_record(record, claims, *, typed=False):
     if not enabled(record): return {}
     state = record.get('state', {})
     if not isinstance(state,dict): return {}
@@ -40,7 +40,9 @@ def context_for_record(record, claims):
             key = json.dumps(entry['expression'],ensure_ascii=False,sort_keys=True)
             candidates[key] = entry['expression']
         if len(candidates)==1:
-            result[claim['claimId']] = review_expression(next(iter(candidates.values())), record.get('scopeExpressionContractVersion',1))
+            expression = next(iter(candidates.values()))
+            result[claim['claimId']] = (deepcopy(expression) if typed else
+                review_expression(expression, record.get('scopeExpressionContractVersion',1)))
     return result
 
 

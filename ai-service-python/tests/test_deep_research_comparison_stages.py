@@ -380,6 +380,30 @@ def test_v35_english_example_keeps_distinct_comparability_target_and_historical_
     assert not missing_joint_conclusions(value, [reported, boundary])
 
 
+def test_materialized_joint_scope_counts_only_for_the_exact_checked_claim():
+    from services.deep_research.comparison_presentation import missing_joint_conclusions
+    from services.deep_research.scope_expression import materialize
+    from services.deep_research.scope_expression_review import context_for_record
+
+    value = {'jointGoals':[{'obligationId':'speed'}], 'layout':[], 'jointDeliverables':{
+        'speed':[{'kind':'comparability','requirement':'Explain comparability'}]}}
+    scope = {'observedSettings': [], 'notEstablished': [
+        {'type':'comparison_evidence', 'subjects':['Paper A','Paper B'], 'quantity':'FPS test settings'}]}
+    draft = {'claimId':'limits', 'kind':'inference', 'obligationIds':['speed'], 'conditions':{}, 'text':''}
+    claim, audit = materialize({**draft, 'scopeExpression':scope}, 5)
+    run = {'scopeExpressionContractVersion':5, 'scopeExpressionReviewContractVersion':5,
+           'state':{'synthesisScopeExpressionAudit':[audit]}}
+    checked = {**claim, 'verification':'semantic_passed'}
+
+    def check(row):
+        typed = context_for_record(run, [row], typed=True)
+        return missing_joint_conclusions(value, [row], checked_scope_expressions=typed)
+
+    assert not check(checked)
+    assert check(claim)[0]['missingDeliverables'] == ['Explain comparability']
+    assert check({**checked, 'text':checked['text'] + ' Other wording.'})[0]['missingDeliverables'] == ['Explain comparability']
+
+
 def test_v36_uses_one_example_target_for_both_criteria_with_a_joint_only_goal_catalog():
     r, plan, rows, aliases, bundles = fixture()
     anchor = '数字只选一组来源和口径明确的基线对照作例子'

@@ -65,7 +65,7 @@ def revalidate_audit(audit, value, claims):
             'gaps': [*audit.get('gaps', []), gap]}
 
 
-def missing_joint_conclusions(value, claims):
+def missing_joint_conclusions(value, claims, *, checked_scope_expressions=None):
     """A paper cell cannot stand in for a required joint deliverable."""
     cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
     kinds = {}
@@ -75,8 +75,14 @@ def missing_joint_conclusions(value, claims):
             obligations = claim.get('obligationIds', [])
             for oid in obligations:
                 kinds.setdefault(oid, set()).add(claim.get('kind'))
-            scope = claim.get('scopeExpression')
-            if claim.get('kind') == 'inference' and isinstance(scope, dict):
+            if checked_scope_expressions is None:
+                boundary = isinstance(claim.get('scopeExpression'), dict)
+            else:
+                scope = checked_scope_expressions.get(claim['claimId'], {})
+                boundary = claim.get('verification') == 'semantic_passed' and any(
+                    isinstance(item, dict) and item.get('type') == 'comparison_evidence'
+                    for item in scope.get('notEstablished', []))
+            if claim.get('kind') == 'inference' and boundary:
                 comparison_boundaries.update(obligations)
     missing = []
     required_kinds = {'matched_example': {'reported'}, 'conditional_advice': {'proposal', 'suggestion'}}
