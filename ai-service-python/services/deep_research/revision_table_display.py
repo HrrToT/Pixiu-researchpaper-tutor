@@ -22,6 +22,7 @@ _COMMON_FINDING = re.compile(
     r'|\b(?:shared|common) (?:findings?|conclusions?) (?:across|in) (?:both|the) (?:revisions|versions)\b',
     re.I,
 )
+_ADDED_ROWS = re.compile(r'新增(?:报告|汇报|列出)?|新(?:列出|报告)|\b(?:newly reported|added configurations)\b', re.I)
 GUIDANCE = ('For the same row across revisions, put exact bound cells in a reported claim. '
             'The app formats their revision labels from the PDF. In conclusions explain the difference '
             'without repeating numbers already reported in those rows.')
@@ -204,9 +205,45 @@ def _common_order(question, labels, columns, revisions, bindings, cited):
     return '各版所列模型的数值均从低到高为 ' + '、'.join(common) + '。'
 
 
+def _earlier_group(own, bindings, number, revision, label):
+    """A row can be called new only against a closed, contiguous model group."""
+    from services.deep_research.table_evidence import visible_table_packet
+
+    model, separator, _ = label.partition(' / ')
+    if not separator:
+        return set()
+    bound_sources = (own[binding['evidenceId']] for binding in bindings)
+    tables = {_table_identity(source) for source in bound_sources
+              if (owned_evidence_publication(source) or {}).get('revision') == revision}
+    if len(tables) != 1:
+        return set()
+    rows = {}
+    for source in own.values():
+        identity = owned_evidence_publication(source)
+        table = (source.get('location') or {}).get('table', '')
+        if (not identity or identity['revision'] != revision or _table_identity(source) not in tables
+                or not isinstance(table, str)
+                or not re.fullmatch(r'pdf-page-[1-9]\d*-table-' + re.escape(number), table)
+                or source['evidenceId'] not in select([source], number)[1]):
+            continue
+        packet = visible_table_packet(source.get('tableData'), source.get('quote', ''))
+        if not packet:
+            continue
+        for row_number, row_label, _ in packet['rows']:
+            if rows.setdefault(row_number, row_label) != row_label:
+                return set()
+    group = sorted(index for index, name in rows.items() if name.partition(' / ')[0] == model)
+    if not group or group != list(range(group[0], group[-1] + 1)):
+        return set()
+    before, after = rows.get(group[0] - 1, ''), rows.get(group[-1] + 1, '')
+    if (group[0] != 2 and ' / ' not in before) or ' / ' not in after:
+        return set()
+    return {_metric_key(rows[index]) for index in group}
+
+
 def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
                 excluded_claim_ids=(), measured_metric_alias=False, shared_findings_question=None,
-                single_revision_display=False, differing_revision_rows=False):
+                single_revision_display=False, differing_revision_rows=False, revision_changes_question=None):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -249,7 +286,16 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
                         measurement = '、'.join(revisions[revision][label, column] for column in columns)
                         by_value[measurement].append(revision)
                 display = '，'.join('、'.join(versions) + ' ' + value for value, versions in by_value.items())
-                rendered_rows.append(f'{label} 为 {display}')
+                annotation = ''
+                if len(order) == 2 and _ADDED_ROWS.search(revision_changes_question or ''):
+                    versions = [version for version in order if (label, columns[0]) in revisions[version]]
+                    if versions == order and len(by_value) == 1:
+                        annotation = '（两版数值一致）'
+                    elif versions == order[1:]:
+                        earlier = _earlier_group(own, bindings, number, order[0], label)
+                        if earlier and _metric_key(label) not in earlier:
+                            annotation = '（新版表中新增）'
+                rendered_rows.append(f'{label}{annotation} 为 {display}')
             text = f'表 {number}（{"、".join(columns)}）' + '；'.join(rendered_rows) + '。'
             claims.append({**claim, 'text':text, 'tableBindings':bindings})
             fixed.append(claim['claimId'])

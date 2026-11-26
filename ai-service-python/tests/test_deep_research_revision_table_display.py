@@ -144,6 +144,32 @@ def test_changed_tables_print_shared_rows_and_each_revisions_distinct_rows():
     assert materialize(broken,[old,new],'1',multiple_rows=True,differing_revision_rows=True)==(broken,[])
 
 
+@pytest.mark.parametrize('older_extra', ['closed', 'open', 'gap', 'already_present'])
+def test_new_configuration_requires_a_closed_older_model_group(older_extra):
+    old, new = revision('18.51', 1, 'a' * 64), revision('18.51', 2, 'b' * 64)
+    baseline, added = 'OPT-1.3B / FP16', 'OPT-1.3B / Grouped-4'
+    old_rows = [[2, 'OPT-350M / FP16', ['22']], [3, baseline, ['18.51']]]
+    if older_extra in {'closed', 'already_present'}:
+        if older_extra == 'already_present':
+            old_rows.append([4, added, ['16.44']])
+        old_rows.append([len(old_rows) + 2, 'OPT-6.7B / FP16', ['10']])
+    if older_extra == 'gap':
+        old_rows.extend([[5, 'OPT-1.3B / Other', ['17']], [6, 'OPT-6.7B / FP16', ['10']]])
+    for source, rows in ((old, old_rows), (new, [[2, baseline, ['18.51']], [3, added, ['16.44']]])):
+        source['tableData']['rows'] = rows
+        source['quote'] = '\n'.join(f'Table row {n}: {label} | {values[0]}' for n, label, values in rows)
+    bindings = [{'evidenceId': eid, 'rowNumber': n, 'groupIndex': 0, 'metric': '1%', 'value': value}
+                for eid, n, value in [('e1', 3, '18.51'), ('e2', 2, '18.51'), ('e2', 3, '16.44')]]
+    claim = {'claimId': 'values', 'kind': 'reported', 'text': 'Draft', 'evidenceRefs': ['e1', 'e2'],
+             'tableBindings': bindings}
+    report, _ = materialize({'claims': [claim]}, [old, new], '1', multiple_rows=True,
+                            differing_revision_rows=True, revision_changes_question='哪些配置是新增报告？')
+    rendered, = report['claims']
+    assert ('新版表中新增' in rendered['text']) is (older_extra == 'closed')
+    assert '两版数值一致' in rendered['text']
+    assert validate_table_bindings(rendered, [old, new]) is None
+
+
 @pytest.mark.parametrize('new_values, question, new_metric, ordered', [
     (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', True),
     (['15', '100', '14'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),

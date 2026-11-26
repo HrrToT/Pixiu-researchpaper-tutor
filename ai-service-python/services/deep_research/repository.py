@@ -373,6 +373,7 @@ class DeepResearchRepository:
                                      'namedTableBoundedReviewVersion',
                                      'revisionTableSingleVersionDisplayVersion',
                                      'revisionTableDifferingRowsVersion',
+                                     'revisionTableChangeLabelsVersion',
                                      'initialPlanExcerptSpanVersion', 'externalExplanationInputVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',
