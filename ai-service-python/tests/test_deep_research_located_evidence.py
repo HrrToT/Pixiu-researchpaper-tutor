@@ -77,16 +77,22 @@ def test_only_verified_serialized_table_row_preserves_geometry():
     assert 'page' not in ev['location']
 
 
-@pytest.mark.parametrize('version, change, expected_page', [
-    (2, None, 6), (1, None, None), (2, 'page', None), (2, 'source', None),
+@pytest.mark.parametrize('flag, version, change, expected_page', [
+    ('comparisonPdfTableFallbackVersion', 2, None, 6),
+    ('comparisonPdfTableFallbackVersion', 1, None, None),
+    ('comparisonPdfTableFallbackVersion', 2, 'page', None),
+    ('comparisonPdfTableFallbackVersion', 2, 'source', None),
+    ('namedTablePdfFallbackVersion', 1, None, 6),
+    ('namedTablePdfFallbackVersion', 1, 'page', None),
+    ('namedTablePdfFallbackVersion', 1, 'source', None),
 ])
-def test_only_matching_owned_pdf_table_passage_retains_page(version, change, expected_page):
+def test_only_matching_owned_pdf_table_passage_retains_page(flag, version, change, expected_page):
     from services.deep_research.local_sources import LocalTaskRetriever
 
     create, source, record, local = setup()
     material, = record['materials']
     source['contentHash'] = material['contentHash']
-    record['comparisonPdfTableFallbackVersion'] = version
+    record[flag] = version
     packet = {'groups': [['Scenes', ['FPS']]], 'rows': [[2, 'Baseline', ['60']], [3, 'Ours', ['120']]]}
     page = {'page': 6, 'verifiedTables': [{'number': '1', 'caption': 'Comparison', 'tableData': packet}]}
     table, = LocalTaskRetriever._pdf_passages('paper', material, [page])

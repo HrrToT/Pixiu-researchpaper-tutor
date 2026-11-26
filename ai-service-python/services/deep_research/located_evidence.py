@@ -48,6 +48,8 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
         if material and source.get('accessLevel') == 'fulltext':
             # A parser-serialized table cannot be matched against prose.
             from services.deep_research.table_evidence import visible_table_packet
+            verified_pdf_tables = (record.get('comparisonPdfTableFallbackVersion') == 2
+                                   or record.get('namedTablePdfFallbackVersion') == 1)
             table_row = False
             for item in record.get('state', {}).get('sources', []):
                 if (item.get('workId') != source.get('workId') or
@@ -58,7 +60,7 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
                 if packet:
                     table_row = any(quote == f'Table row {n}: ' + ' | '.join([method, *values])
                                     for n, method, values in packet['rows'])
-                    if not table_row and record.get('comparisonPdfTableFallbackVersion') == 2:
+                    if not table_row and verified_pdf_tables:
                         table_row = _verified_pdf_table_passage(item, material, quote, original, location)
                 if table_row:
                     break
