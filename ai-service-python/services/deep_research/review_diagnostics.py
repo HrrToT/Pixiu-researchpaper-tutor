@@ -34,9 +34,11 @@ override a failed decision or any other audit; the server checks them independen
 '''
 
 
-def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False):
+def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
+         revision_row_counts=False):
     if type(target_structure) is not bool:raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
+    if type(revision_row_counts) is not bool:raise ValueError('Invalid revision row count policy')
     from services.deep_research.audit_source_fields import resolve
     from services.deep_research.verification import _measurement_numbers, normalize_quote
     result = deepcopy(verdict)
@@ -53,6 +55,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         numbers=scanner(own)
     review_numbers=numbers
     target_references=[]
+    table_notes=[]
     reverse = reverse or {}
     if target_structure:
         from services.deep_research.review_target_structure import table_locator_view, view
@@ -85,8 +88,15 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
             errors.append('diagnostic_source_not_bound')
             continue
         covered_numbers |= (review_numbers(fact['statement']) & numbers(fact['excerpt']))
+        if revision_row_counts and fact['path'] == ['quote']:
+            table_notes.append((resolved[0], fact['statement'], fact['excerpt']))
     target = claim.get('text', '') + ' ' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
-    introduced = review_numbers(reason) - numbers(target)
+    numeric_reason = reason
+    if revision_row_counts:
+        from services.deep_research.review_target_structure import revision_row_count_view
+        numeric_reason, references = revision_row_count_view(reason, table_notes, numbers)
+        target_references.extend(references)
+    introduced = review_numbers(numeric_reason) - numbers(target)
     missing = introduced - covered_numbers
     if missing:
         errors.append('new_diagnostic_numbers_not_bound')
@@ -97,6 +107,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
     if target_structure:
         audit.update(reviewTargetStructureContractVersion=1,targetStructureReferences=target_references)
+    if revision_row_counts:
+        audit['reviewRevisionRowCountVersion'] = 1
     result['reviewDiagnosticAudit'] = audit
     if errors:
         # Preserve the raw model response in the immutable call journal, not in

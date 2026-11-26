@@ -98,7 +98,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
-                    bind_composite_revisions=False, named_revision_table=None) -> dict:
+                    bind_composite_revisions=False, named_revision_table=None, numeric_context=None) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -202,6 +202,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
             source_texts = [item['quote'] for item in support]
+            if numeric_context:
+                source_texts.extend(text for item in support for text in numeric_context.get(item['evidenceId'], ()))
             if conceptual_articles:
                 from services.deep_research.measurement_numbers import parameter_identifiers, without_parameter_identifiers
                 known = set().union(*(parameter_identifiers(text) for text in source_texts))

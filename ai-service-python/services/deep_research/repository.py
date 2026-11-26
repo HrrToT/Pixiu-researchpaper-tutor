@@ -350,6 +350,7 @@ class DeepResearchRepository:
                                      'comparisonExplorationContractVersion', 'comparisonCrossPaperBoundaryContractVersion',
                                      'experimentArmCloneLayoutVersion', 'sharedExperimentRevisionPathsVersion',
                                      'sharedExperimentCompactReviewVersion',
+                                     'sharedExperimentFactContextVersion', 'reviewRevisionRowCountVersion',
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',

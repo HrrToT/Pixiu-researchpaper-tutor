@@ -336,6 +336,7 @@ class ResearchFacade:
                if shared_experiment_profile in (6, 7, 8) else {}),
             **({"sharedExperimentRevisionPathsVersion": 3} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentCompactReviewVersion": 2} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentFactContextVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,
@@ -403,6 +404,7 @@ class ResearchFacade:
             "reviewSourceFieldReferenceContractVersion": 1,
             "reviewParameterIdentityContractVersion": 1,
             "reviewTargetStructureContractVersion": 1,
+            "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": 2,
             "sourceGapClosureContractVersion": 1,
             "extractionScheduleContractVersion": 1,
@@ -1359,6 +1361,7 @@ class ResearchFacade:
         """Share policy wiring with the live-scope production subclass."""
         from services.deep_research.tools import BudgetedSemanticChecker
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
+        from services.deep_research.comparison_audit_envelope import revision_coverage_enabled
         from services.deep_research.audit_source_fields import enabled as audit_fields_enabled
         from services.deep_research.factual_scope import enabled as scope_enabled
         from services.deep_research.factual_review import enabled as bounded_review_enabled
@@ -1410,6 +1413,9 @@ class ResearchFacade:
             review_diagnostic_bindings=lambda: review_diagnostics_enabled(self._repo.require_run(run_id)),
             diagnostic_target_structure=lambda: type(self._repo.require_run(run_id).get('reviewTargetStructureContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewTargetStructureContractVersion']==1,
+            diagnostic_revision_row_counts=lambda: (
+                (row_count_record := self._repo.require_run(run_id)).get('reviewRevisionRowCountVersion') == 1
+                and revision_coverage_enabled(row_count_record)),
             diagnostic_parameter_ids=lambda: type(self._repo.require_run(run_id).get('reviewParameterIdentityContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewParameterIdentityContractVersion']==1,
             integrated_diagnostic_schema=lambda: type(self._repo.require_run(run_id).get('reviewDiagnosticContractVersion')) is int

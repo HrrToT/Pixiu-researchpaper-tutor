@@ -116,6 +116,25 @@ def test_output_bounded_review_partitions_even_when_input_fits():
     assert all(part['request']['requirements'] == data['requirements'] for part in parts[1:])
 
 
+def test_numeric_source_context_requires_contiguous_frozen_fulltext():
+    from services.deep_research.shared_experiment_review import _visible_numeric_context
+    from services.deep_research.verification import precheck_claims
+
+    before = 'The benchmark uses 13 scenes. '
+    quote = 'The sensors recorded RGB images.'
+    row = {'evidenceId': 'original', 'quote': quote, 'sourceContext': before + quote,
+           'accessLevel': 'fulltext', 'verification': {'literal': 'passed'}}
+    source = {'evidenceId': 'E1', 'quote': quote, 'accessLevel': 'fulltext',
+              'sourceContext': {'before': before, 'after': ''}}
+    claim = {'claimId': 'fact', 'kind': 'reported', 'text': 'The benchmark uses 13 scenes.',
+             'evidenceRefs': ['original'], 'detailLevel': 'fulltext'}
+    context = _visible_numeric_context({'evidence': [source]}, {'original': row}, {'E1': 'original'})
+    assert precheck_claims([claim], [row])['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert precheck_claims([claim], [row], numeric_context={'original': list(context['original'].values())})['candidates']
+    source['sourceContext']['before'] = 'Unrelated 13.'
+    assert _visible_numeric_context({'evidence': [source]}, {'original': row}, {'E1': 'original'}) == {}
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []

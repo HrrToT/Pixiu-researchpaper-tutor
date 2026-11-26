@@ -14,6 +14,12 @@ _TABLE_LOCATOR = re.compile(
     r'(?P<first>[1-9]\d{0,3})(?:\s+and\s+(?P<second>[1-9]\d{0,3}))?'
     r'(?=[ \t]*(?:[.!?。！？](?:\s|$)|\n|$))', re.I,
 )
+_ROW_COUNT = re.compile(
+    r'(?<![0-9一二两三四五六七八九十])(?P<cn>[1-9]\d?|[一二两三四五六七八九十]{1,3})'
+    r'\s*个(?:目标(?:表格)?行|表行(?=序关系|排序))'
+    r'|\b(?P<en>[1-9]\d?|one|two|three|four|five|six|seven|eight|nine|ten)\s+target\s+table\s+rows?\b',
+    re.I,
+)
 
 
 def _number(text):
@@ -91,4 +97,44 @@ def table_locator_view(text, claim, evidence, aliases):
             chars[start:end] = ' ' * (end - start)
         references.append({'text': match.group(), 'start': match.start(), 'end': match.end(),
                            'kind': 'table_rows', 'evidenceId': evidence_id, 'rowNumbers': row_numbers})
+    return ''.join(chars), references
+
+
+def revision_row_count_view(text, bound_notes, numbers):
+    """Recognize counts of explicitly reviewed table rows, across owned revisions."""
+    matches = list(_ROW_COUNT.finditer(text))
+    if not matches:
+        return text, []
+    from services.deep_research.publication_identity import validated
+    from services.deep_research.table_evidence import visible_table_packet
+
+    rows = set()
+    for source, statement, excerpt in bound_notes:
+        version = source.get('versionId')
+        publication = validated(source.get('publicationIdentity'), version)
+        table = (source.get('location') or {}).get('table')
+        if (not publication or source.get('workId') != version + '.pdf' or not table
+                or source.get('accessLevel') != 'fulltext'):
+            continue
+        packet = visible_table_packet(source.get('tableData'), excerpt)
+        if not packet:
+            continue
+        stated_numbers = numbers(statement)
+        for number, label, values in packet['rows']:
+            if (label.strip() and re.search(r'(?<![A-Za-z0-9_.-])' + re.escape(label) + r'(?![A-Za-z0-9_.-])', statement, re.I)
+                    and len(stated_numbers & numbers(' '.join(values))) >= 2):
+                rows.add((publication['workId'], publication['revision'], table, number))
+    revisions = {row[1] for row in rows}
+    if (len({row[0] for row in rows}) != 1 or len(revisions) < 2
+            or len({(row[1], row[2]) for row in rows}) != len(revisions)):
+        return text, []
+    chars = list(text)
+    references = []
+    for match in matches:
+        key = 'cn' if match['cn'] is not None else 'en'
+        if _number(match[key]) == len(rows):
+            start, end = match.span(key)
+            chars[start:end] = ' ' * (end - start)
+            references.append({'text': match.group(), 'start': match.start(), 'end': match.end(),
+                               'kind': 'referenced_revision_rows', 'rows': sorted(rows)})
     return ''.join(chars), references

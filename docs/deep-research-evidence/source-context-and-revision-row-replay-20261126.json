@@ -1,0 +1,27 @@
+{
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 131,
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v17": {
+      "sourceReceipt": "bounded-review-revision-coverage-v2-real-20261126.json",
+      "priorNumericPrecheckIssues": 2,
+      "currentNumericPrecheckIssues": 0,
+      "visibleContextBindings": {"F3": "E1/sourceContext/before", "F5": "E3/sourceContext/after"},
+      "issuesWithoutReviewedContextSpans": 2,
+      "issuesWithReviewedContextSpansFixture": 0,
+      "reviewBatches": [
+        {"checks": 7, "inputBytes": 22350},
+        {"checks": 8, "inputBytes": 31629},
+        {"checks": 8, "inputBytes": 31325}
+      ]
+    },
+    "H4-AWQ-VERSIONS-v8": {
+      "sourceReceipt": "shared-state-findings-native-real-20261126.json",
+      "acceptedCurrentReplayClaimIds": ["c1", "c2", "c3"],
+      "verifiedDistinctRowsByRevision": {"v1": [2, 3], "v2": [2, 3]},
+      "coverageResponseReplayedUnchanged": true,
+      "remainingCoverageGap": "awq-shared-conclusion"
+    }
+  },
+  "scientificContentAccepted": false
+}

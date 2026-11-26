@@ -752,6 +752,7 @@ class BudgetedSemanticChecker:
         review_source_fields=False,
         diagnostic_parameter_ids=False,
         diagnostic_target_structure=False,
+        diagnostic_revision_row_counts=False,
         short_circuit_scope_observations=False,
         focused_boundary_review=False,
         workflow_representation_context=None,
@@ -785,6 +786,7 @@ class BudgetedSemanticChecker:
         self._review_source_fields = review_source_fields
         self._diagnostic_parameter_ids = diagnostic_parameter_ids
         self._diagnostic_target_structure = diagnostic_target_structure
+        self._diagnostic_revision_row_counts = diagnostic_revision_row_counts
         self._short_circuit_scope_observations = short_circuit_scope_observations
         self._focused_boundary_review = focused_boundary_review
         self._mechanism_grounding = mechanism_grounding
@@ -1670,9 +1672,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                 parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
                 structure_policy=getattr(self,'_diagnostic_target_structure',False)
                 structure_policy=(structure_policy() if callable(structure_policy) else structure_policy) is True
+                count_policy=self._diagnostic_revision_row_counts
+                count_policy=(count_policy() if callable(count_policy) else count_policy) is True
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
                     **({'source_parameter_ids':True} if parameter_policy else {}),
-                    **({'target_structure':True} if structure_policy else {})) for v in parsed]
+                    **({'target_structure':True} if structure_policy else {}),
+                    **({'revision_row_counts':True} if count_policy else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}

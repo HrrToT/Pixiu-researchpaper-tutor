@@ -194,6 +194,9 @@ def build(record, input_data, aliases, *, required_domains=()):
                     'Use short literal spans that carry the substantive checks. Review the full proposal for coherence.\nInput:\n')
     else:
         data['reviewTargets'] = review_targets
+    if record.get('sharedExperimentFactContextVersion') == 1:
+        instructions = instructions.replace('Input:\n',
+            'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view):
         prompt = instructions + input_text(view)
         request = request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90})
@@ -221,10 +224,30 @@ def build(record, input_data, aliases, *, required_domains=()):
                                   **({'batches':batches} if batches else {})}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
-            'targets':targets(record), 'hardIssues':_fact_prechecks(record,aliases), 'scientificApproval':False}
+            'targets':targets(record), 'hardIssues':_fact_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
-def _fact_prechecks(record, aliases):
+def _visible_numeric_context(input_data, by_id, aliases):
+    contexts = {}
+    for row in input_data['evidence']:
+        alias = row['evidenceId']
+        evidence = by_id[aliases[alias]]
+        context = row.get('sourceContext')
+        original = evidence.get('sourceContext')
+        quote = evidence.get('quote')
+        if (row.get('accessLevel') != 'fulltext' or evidence.get('accessLevel') != 'fulltext'
+                or evidence.get('verification', {}).get('literal') != 'passed'
+                or not isinstance(original, str) or not isinstance(context, dict)
+                or not isinstance(quote, str) or not quote or row.get('quote') != quote):
+            continue
+        before, after = context.get('before', ''), context.get('after', '')
+        if isinstance(before, str) and isinstance(after, str) and before + quote + after in original:
+            contexts[evidence['evidenceId']] = {field: value for field, value in (('before', before), ('after', after))
+                                                 if value.strip()}
+    return contexts
+
+
+def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
     from services.deep_research.verification import precheck_claims
     proposal = _generation(record)['boundProposal']['proposal']
     facts = proposal['sourceFacts']
@@ -234,10 +257,27 @@ def _fact_prechecks(record, aliases):
                'evidenceRefs':[aliases[e] for e in f['evidenceRefs']],
                'detailLevel':'abstract' if any(by_id[aliases[e]].get('accessLevel') == 'abstract' for e in f['evidenceRefs']) else 'fulltext'}
               for i,f in enumerate(facts)]
-    checked = precheck_claims(claims,evidence,
-        absence_scope_version=record.get('absenceScopeContractVersion',0),
-        quantity_spelling_version=record.get('quantitySpellingContractVersion',0),
-        table_references_version=record.get('tableReferencesContractVersion',0))
+    policy = {'absence_scope_version': record.get('absenceScopeContractVersion', 0),
+              'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
+              'table_references_version': record.get('tableReferencesContractVersion', 0)}
+    if record.get('sharedExperimentFactContextVersion') == 1:
+        contexts = _visible_numeric_context(input_data, by_id, aliases)
+        if passed_bindings is None:
+            policy['numeric_context'] = {eid: list(spans.values()) for eid, spans in contexts.items()}
+        else:
+            failures = []
+            for fact, claim in zip(facts, claims, strict=True):
+                if fact['id'] not in passed_bindings:
+                    continue
+                cited = {}
+                for binding in passed_bindings[fact['id']]:
+                    eid = aliases[binding['evidenceId']]
+                    span = contexts.get(eid, {}).get(binding['field'], '')
+                    if binding['text'] in span:
+                        cited.setdefault(eid, []).append(binding['text'])
+                failures.extend(precheck_claims([claim], evidence, numeric_context=cited, **policy)['rejected'])
+            return failures
+    checked = precheck_claims(claims, evidence, **policy)
     if proposal.get('version') == 3:
         by_claim = {claim['claimId']: fact for claim, fact in zip(claims, facts, strict=True)}
         return [{**{k:r[k] for k in ('claimId','reason','missingReportedNumbers') if k in r},
@@ -283,7 +323,7 @@ def assess(record, input_data, aliases, response):
     problems = []
     try:
         current = build_generation(record,input_data,aliases,required_domains=generation['boundProposal']['requiredDomains'])
-        if current['contextDigest'] != generation['boundProposal']['contextDigest'] or _fact_prechecks(record,aliases):
+        if current['contextDigest'] != generation['boundProposal']['contextDigest'] or _fact_prechecks(record, aliases, input_data):
             raise ValueError('Original context or fact prechecks')
         expected = {t['checkId']:t for t in targets(record)}
         assembled = (build(record,input_data,aliases,required_domains=generation['boundProposal']['requiredDomains'])
@@ -342,6 +382,11 @@ def assess(record, input_data, aliases, response):
                 if not binding['text'].strip() or binding['text'] not in text: problems.append('nonliteral_evidence_binding')
         for issue in value['issues']:
             if any(not _plan_binding(b,proposal) for b in issue['planBindings']): problems.append('invalid_issue_binding')
+        if not problems and record.get('sharedExperimentFactContextVersion') == 1:
+            passed = {target['factId']: check['evidenceBindings'] for check in checks
+                      if (target := expected[check['checkId']])['kind'] == 'source_fact' and check['status'] == 'passed'}
+            if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
+                problems.append('missing_numeric_source_binding')
         if problems: raise ValueError('Review binding')
     except (ValueError,TypeError,KeyError,IndexError,OverflowError,RecursionError):
         return {'valid':False,'complete':False,'scientificApproval':False,

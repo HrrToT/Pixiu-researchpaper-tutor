@@ -76,6 +76,37 @@ def test_meta_count_cannot_hide_equal_scientific_count_elsewhere_in_reason():
     assert result['reviewDiagnosticAudit']['targetStructureReferences'] and result['reviewDiagnosticAudit']['unboundNewNumberCount']==1
 
 
+def test_revision_count_requires_distinct_literal_rows_and_does_not_hide_scientific_counts():
+    evidence_rows = []
+    statements = []
+    for version in (1, 2):
+        checksum = str(version) * 64
+        evidence_id = f'e{version}'
+        stamp = f'arXiv:2306.00978v{version}'
+        quote = 'Table row 3: Method | 18.51 | 206.50'
+        evidence_rows.append({'evidenceId': evidence_id, 'quote': quote,
+            'workId': checksum + '.pdf', 'versionId': checksum, 'accessLevel': 'fulltext',
+            'publicationIdentity': {'scheme': 'arxiv', 'workId': 'arxiv:2306.00978',
+                'revision': f'v{version}', 'displayId': f'arxiv:2306.00978v{version}',
+                'physicalPage': 1, 'origin': 'owned_pdf_header', 'literalStamp': stamp, 'contentHash': checksum},
+            'location': {'table': 'table-1'},
+            'tableData': {'groups': [['Evaluation', ['Setting A', 'Setting B']]],
+                          'rows': [[3, 'Method', ['18.51', '206.50']]]}})
+        statements.append({'statement': 'Method reports 18.51 and 206.50.',
+                           'evidenceId': evidence_id, 'path': ['quote'], 'excerpt': quote})
+    claim = {'claimId': 'c', 'text': 'Both versions have the same ordering.',
+             'evidenceRefs': ['e1', 'e2']}
+    reason = '两个目标行表明顺序一致。\nMethod reports 18.51 and 206.50.'
+    verdict = {'status': 'passed', 'reason': reason, 'diagnosticFacts': statements}
+    result = bind(verdict, claim, evidence_rows, target_structure=True, revision_row_counts=True)
+    assert result['status'] == 'passed'
+    assert result['reviewDiagnosticAudit']['targetStructureReferences'][0]['kind'] == 'referenced_revision_rows'
+    assert bind({**verdict, 'diagnosticFacts': statements[:1]}, claim, evidence_rows,
+                target_structure=True, revision_row_counts=True)['status'] == 'failed'
+    assert bind({**verdict, 'reason': reason + '\n使用了两个数据集。'}, claim, evidence_rows,
+                target_structure=True, revision_row_counts=True)['status'] == 'failed'
+
+
 def test_unavailable_target_units_are_not_counted_from_source_or_another_claim():
     verdict,claim,ev=case('前三个分句不成立。');claim['text']='One statement.';ev[0]['quote']=TEXT
     result=bind(verdict,claim,ev,target_structure=True)
