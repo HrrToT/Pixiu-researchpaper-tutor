@@ -120,7 +120,7 @@ def instructions(record):
                 '  Use one clone step over all four arms for paired state, including every state affected by either factor.\n'
                 '  If a later step adds a conditional state, give it a distinct ID and use it only in its applicable arms.',
             )
-            if type(record.get(CLONE_LAYOUT_MARKER)) is int and record[CLONE_LAYOUT_MARKER] == 1:
+            if type(record.get(CLONE_LAYOUT_MARKER)) is int and record[CLONE_LAYOUT_MARKER] in (1, 2):
                 prompt = prompt.replace(
                     '  Use one clone step over all four arms for paired state, including every state affected by either factor.\n'
                     '  If a later step adds a conditional state, give it a distinct ID and use it only in its applicable arms.\n'
@@ -158,6 +158,14 @@ def instructions(record):
                 'List every {"stepId":"fit_id","recordStateId":"record_id"} in fitMemoryCaptures and read each applicable '
                 'record at measurement. Put record IDs in stateIds. Capture actual peak per full fit window, specify device, '
                 'allocator, reset, synchronization and aggregation. Use fitMemoryCaptures=[] for other metrics.',
+            )
+        if record.get(CLONE_LAYOUT_MARKER) == 2:
+            prompt = prompt.replace(
+                '  Read all pairing.sharedStateIds, clone mutable parameter, optimizer and treatment-control state with\n'
+                '  equal initial values, and put this step ID in pairing.cloneStepIds. Keep shared inputs separate.',
+                '  First enumerate shared IDs actually created before cloning. Every clone read and pairing.sharedStateIds\n'
+                '  entry must name one of them. If shared metadata is needed, define its producing prepare step and value.\n'
+                '  Clone mutable parameters, optimizer and controls with equal initial values. Set pairing.cloneStepIds.'
             )
         return prompt
     if version == 4:

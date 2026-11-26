@@ -22,6 +22,13 @@ JUDGEMENT_GUIDANCE = (
     'Use prose for supported differences and shared findings. Use boundary only for an unresolved claim '
     'such as the cause of a difference; do not list table measurements as observedSettings.'
 )
+REQUESTED_FINDINGS_GUIDANCE = (
+    'Bind original measurements once as reported cells. Keep the dataset and exact requested settings. '
+    'Each binding has evidenceId,rowNumber,groupIndex,metric,value. State observed changes in prose. '
+    'For a shared finding, compare the requested setting to each requested baseline using the bound cells '
+    'from both revisions; state their ordering, including where the setting is worse. '
+    'A broader caption does not substitute for that answer. Use boundary only for unresolved questions such as cause.'
+)
 
 
 def _unique_coordinate(binding, source):

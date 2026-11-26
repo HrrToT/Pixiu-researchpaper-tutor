@@ -1,0 +1,27 @@
+{
+  "sourceReceipts": "excerpts-revision-allocation-native-real-20261126.json",
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 110,
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v15": {
+      "cloneLayoutVersion": 2,
+      "generationInputBytes": 30446,
+      "generationInputLimitBytes": 32000,
+      "originalStructuralIssues": 5,
+      "fixtureEdit": "Declare the shared metadata produced by the existing preparation step before its first use.",
+      "fixtureStructuralIssues": 0
+    },
+    "H4-AWQ-VERSIONS-v7": {
+      "revisionTableMultipleRowsVersion": 5,
+      "synthesisInputBytesBefore": 23986,
+      "synthesisInputBytesAfter": 23975,
+      "synthesisInputLimitBytes": 24000,
+      "requestedRowsByRevision": [[2, 3], [2, 3]],
+      "fixtureVerifiedOrdering": "FP16 < 1% activation-based mixed precision < RTN for perplexity in each requested row.",
+      "fixtureOrderingsChecked": 4,
+      "fixtureTableBindingsPreserved": 12,
+      "fixtureVisibleCharacters": 280
+    }
+  },
+  "scientificContentAccepted": false
+}
