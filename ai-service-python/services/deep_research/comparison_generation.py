@@ -34,6 +34,7 @@ def planning_options(record, question):
                 **({'separate_joint_deliverables':True} if separate_joint_deliverables(record) else {}),
                 **({'paired_protocol_notes':True} if paired_protocol_notes(record) else {}),
                 **({'structured_test_first':True} if record.get('comparisonJointReportsContractVersion') in (11, 12, 13, 14, 15, 16) else {}),
+                **({'direct_device_memory':True} if record.get('recommendationReviewContractVersion') == 5 else {}),
                 **({'structured_table_example':True} if record.get('comparisonJointReportsContractVersion') in (12, 13, 14, 15, 16) else {}),
                 **({'separate_example_boundary':True} if record.get('comparisonJointReportsContractVersion') in (13, 14, 15, 16) else {}),
                 **({'group_example_criteria':True} if record.get('comparisonJointReportsContractVersion') in (14, 15, 16) else {}),

@@ -9,6 +9,36 @@ from services.deep_research.reporting import render_report,publication_notices,c
 from services.deep_research.answer_constraints import visible_count
 
 
+@pytest.mark.parametrize(('text', 'expected'), [
+    ('Rendering requires GPU memory for the model and an additional 30–500 MB buffer.', False),
+    ('The model file was 45 MB, which can reduce pressure on GPU memory.', False),
+    ('Peak GPU memory was estimated at 4 GB.', False),
+    ('Peak GPU memory was 4 GB on the evaluation device.', True),
+    ('渲染时峰值显存实测为 4 GB。', True),
+])
+def test_direct_device_memory_excludes_proxies_and_estimates(text, expected):
+    from services.deep_research.general_advice import has_device_memory_measurement
+
+    assert has_device_memory_measurement(text, direct=True) is expected
+
+
+def test_measured_advice_cannot_strip_the_estimate_qualifier_from_its_citation():
+    from services.deep_research.general_advice import validate
+
+    excerpt = 'peak GPU memory was 4 GB'
+    quote = 'The estimated peak GPU memory was 4 GB.'
+    evidence = make_evidence({'workId': 'p', 'versionId': 'v', 'contentHash': 'h', 'accessLevel': 'fulltext'},
+                             quote, quote, location={}, obligation_ids=[])
+    cid = evidence['evidenceId']
+    claim = {'kind': 'proposal', 'text': '显存受限时可考虑此方案。', 'evidenceRefs': [cid]}
+    decision = verdict('other_nonexperimental', cid)
+    decision['adviceAudit']['deviceMemory'] = {'mode': 'measured',
+        'premise': {'evidenceId': cid, 'path': ['quote']}, 'excerpt': excerpt}
+    assert validate(claim, decision, [evidence], device_memory=True) == []
+    assert validate(claim, decision, [evidence], device_memory=True, direct_device_memory=True) == [
+        'device_memory_premise_not_established']
+
+
 def fixture():
     quote='Pruning reduces count. Distillation reduces feature size.'
     e=make_evidence({'workId':'p','versionId':'v','contentHash':'h','accessLevel':'fulltext'},quote,quote,location={},obligation_ids=[])

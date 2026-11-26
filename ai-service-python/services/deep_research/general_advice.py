@@ -18,7 +18,7 @@ def eligible(claim):
 
 def enabled(record):
     return (type(record.get('recommendationReviewContractVersion')) is int
-        and record['recommendationReviewContractVersion'] in (1, 2, 3, 4)
+        and record['recommendationReviewContractVersion'] in (1, 2, 3, 4, 5)
         and record.get('state',{}).get('outputKind') in
             {'direction_survey','paper_comparison','claim_verification','research_entry'})
 
@@ -157,12 +157,19 @@ _PREFERENCE_OR_BENEFIT = re.compile(
 _MEMORY_VALUE = re.compile(r'\d+(?:[.,]\d+)?\s*(?:KiB|MiB|GiB|KB|MB|GB|字节)\b', re.I)
 _NONMEASUREMENT = re.compile(
     r'未测|未报告|\b(?:not measured|not reported|unmeasured|not provided|was not recorded)\b', re.I)
+_DIRECT_MEMORY_VALUE = re.compile(
+    r'(?:\b(?:gpu[ -]+memory|device[ -]+memory|vram)(?:\s+(?:consumption|usage|footprint))?\s*'
+    r'(?:[:=]|(?:was measured at|was|reached|peaked at)\s+)\s*(?:about\s+|approximately\s+)?'
+    r'|(?:峰值)?显存(?:占用|用量|消耗)?\s*(?:[:：=]|实测(?:为|达到)|为|达到)\s*(?:约\s*)?)'
+    + _MEMORY_VALUE.pattern, re.I)
+_ESTIMATE = re.compile(r'\b(?:estimated?|projected|hypothetical|would|expected|capacity)\b|估算|预计|上限容量', re.I)
+_STATEMENT_BREAKS = re.compile(r'[。；;\n]|(?<=[.!?])\s+')
 _MEASURED_CHOICE_RULE = re.compile(
     r'(?:根据|依据|按)(?:上述|实际)?(?:实测|测量|测试)(?:结果|值)(?:来)?选择(?:峰值)?显存(?:占用)?更(?:低|少)的(?:方法|方案)'
     r'(?=[。；;！？.!?，,\n]|$)')
 
 
-def _device_memory_supported(claim, audit, own):
+def _device_memory_supported(claim, audit, own, *, direct=False):
     text = claim.get('text', '') + '\n' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
     if not _GPU_MEMORY.search(text):
         return 'deviceMemory' not in audit
@@ -178,14 +185,20 @@ def _device_memory_supported(claim, audit, own):
         return False
     source = own.get(premise.get('evidenceId'))
     resolved = resolve(premise, own)
-    return bool(source and source.get('accessLevel') == 'fulltext' and resolved
-                and excerpt in resolved[1] and has_device_memory_measurement(excerpt))
+    if not (source and source.get('accessLevel') == 'fulltext' and resolved
+            and excerpt in resolved[1] and has_device_memory_measurement(excerpt, direct=direct)):
+        return False
+    return not direct or any(excerpt.rstrip('。；;') in sentence and has_device_memory_measurement(sentence, direct=True)
+                             for sentence in _STATEMENT_BREAKS.split(resolved[1]))
 
 
-def has_device_memory_measurement(text):
+def has_device_memory_measurement(text, *, direct=False):
+    if direct:
+        return any(_DIRECT_MEMORY_VALUE.search(part) and not _NONMEASUREMENT.search(part)
+                   and not _ESTIMATE.search(part) for part in _STATEMENT_BREAKS.split(text))
     return (not _NONMEASUREMENT.search(text)
             and any(_GPU_MEMORY.search(part) and _MEMORY_VALUE.search(part)
-                    for part in re.split(r'[。；;\n]|(?<=[.!?])\s+', text)))
+                    for part in _STATEMENT_BREAKS.split(text)))
 
 
 def requests_device_memory(text):
@@ -207,7 +220,7 @@ def device_memory_test_first(text):
     return True
 
 
-def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_preflight=False):
+def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_preflight=False, direct_device_memory=False):
     audit=verdict.get('adviceAudit')
     fields = {'purpose', 'targetPath', 'appropriate', 'premises'}
     if device_memory and isinstance(audit, dict) and 'deviceMemory' in audit:
@@ -226,6 +239,6 @@ def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_pr
     if fixed_deployment_preflight and (audit['purpose'] != 'other_nonexperimental'
                                       or audit.get('deviceMemory') != {'mode': 'test_first'}):
         return ['advice_purpose_not_established']
-    if device_memory and not _device_memory_supported(claim, audit, own):
+    if device_memory and not _device_memory_supported(claim, audit, own, direct=direct_device_memory):
         return ['device_memory_premise_not_established']
     return []

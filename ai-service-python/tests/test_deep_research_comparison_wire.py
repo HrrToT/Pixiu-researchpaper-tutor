@@ -3,12 +3,34 @@ import json
 from unittest.mock import Mock
 
 import pytest
-
 from services.deep_research.comparison_cells import plan_cells, compile_cells
 from services.deep_research.comparison_wire import table_catalog, targets
 from services.deep_research.authored_body import decode
 from services.deep_research.verification import make_evidence, verify_claims
 from test_deep_research_comparison_layout import fixture as layout_fixture, QUESTION
+
+
+def test_proxy_memory_amount_keeps_structured_test_first_decision():
+    plan = {
+        'cells': [],
+        'roles': {'choice': {'kind': 'joint', 'question': '显存受限时如何选择？',
+                              'sourceAliases': ['P1', 'P2']}},
+        'jointDeliverables': {'choice': [{'kind': 'conditional_advice', 'requirement': '显存受限时如何选择？'}]},
+        'evidence': {
+            'E1': {'source': 'P1', 'accessLevel': 'fulltext',
+                   'quote': 'Rendering requires GPU memory for the model and an additional 30–500 MB buffer.'},
+            'E2': {'source': 'P2', 'accessLevel': 'abstract', 'quote': 'Peak GPU memory was 4 GB.'},
+        },
+        'structuredTestFirst': True,
+        'directDeviceMemory': True,
+    }
+    target, = targets(plan)
+    assert target['deviceMemoryMeasurementEvidenceIds'] == []
+    assert target['decisionMode'] == 'measure_both_before_recommending_either'
+    plan['evidence']['E2']['accessLevel'] = 'fulltext'
+    target, = targets(plan)
+    assert target['deviceMemoryMeasurementEvidenceIds'] == ['E2']
+    assert 'decisionMode' not in target
 
 
 def fixture():

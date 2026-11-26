@@ -133,9 +133,11 @@ def targets(plan):
                                'question': part['requirement'], 'deliverable': part['kind']}
                 from services.deep_research.general_advice import has_device_memory_measurement, requests_device_memory
                 if part['kind'] == 'conditional_advice' and requests_device_memory(part['requirement']):
+                    direct = plan.get('directDeviceMemory') is True
                     part_target['deviceMemoryMeasurementEvidenceIds'] = [
                         eid for eid in target['evidenceIds']
-                        if has_device_memory_measurement(plan['evidence'][eid].get('quote', ''))]
+                        if (not direct or plan['evidence'][eid].get('accessLevel') == 'fulltext')
+                        and has_device_memory_measurement(plan['evidence'][eid].get('quote', ''), direct=direct)]
                     if plan.get('structuredTestFirst') and not part_target['deviceMemoryMeasurementEvidenceIds']:
                         part_target['decisionMode'] = 'measure_both_before_recommending_either'
                 if part['kind'] == 'matched_example' and plan.get('structuredTableExample'):

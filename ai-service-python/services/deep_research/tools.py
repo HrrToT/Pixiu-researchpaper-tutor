@@ -1448,16 +1448,21 @@ The dataAvailability object is an internal audit, not new experimental results.
         if complete_factual_batch:
             full_review_inputs=True
         device_memory = False
+        direct_device_memory = False
         preflight_ids = ()
         if advice_mode:
             from services.deep_research.general_advice import is_fixed_deployment_preflight, prompt as advice_prompt
             policy = self._device_memory_advice
             policy = policy() if callable(policy) else policy
-            device_memory = policy is True or type(policy) is int and policy in (2, 3, 4)
-            if type(policy) is int and policy == 4:
+            device_memory = policy is True or type(policy) is int and policy in (2, 3, 4, 5)
+            direct_device_memory = type(policy) is int and policy == 5
+            if type(policy) is int and policy in (4, 5):
                 preflight_ids = tuple(claim['claimId'] for claim in claims if is_fixed_deployment_preflight(claim))
             prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory,
-                                 deployment_preflight=type(policy) is int and policy in (3, 4), preflight_ids=preflight_ids)
+                                 deployment_preflight=type(policy) is int and policy in (3, 4, 5), preflight_ids=preflight_ids)
+            if direct_device_memory:
+                prompt += ('\nBind a direct measured device-memory value. A buffer requirement, capacity, estimate '
+                           'or file size is insufficient. Keep training and rendering measurements separate.\n')
         version_policy=self._source_version_review
         version_policy=(version_policy() if callable(version_policy) else version_policy) is True
         if version_policy:
@@ -1696,7 +1701,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if advice_mode:
                     from services.deep_research.general_advice import validate as validate_advice
                     errors=validate_advice(target,verdict,visible_evidence,device_memory=device_memory,
-                                           fixed_deployment_preflight=target['claimId'] in preflight_ids)
+                                           fixed_deployment_preflight=target['claimId'] in preflight_ids,
+                                           direct_device_memory=direct_device_memory)
                     if errors:
                         verdict['status']='failed'
                         verdict['reason'] = ('显存选择缺少可核对的实际显存测量。文件大小不能用来推断显存收益。'

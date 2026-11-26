@@ -103,6 +103,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['paired_protocol_notes'] = True
     if record.get('comparisonJointReportsContractVersion') in (11, 12, 13, 14, 15, 16):
         plan_options['structured_test_first'] = True
+    if record.get('recommendationReviewContractVersion') == 5:
+        plan_options['direct_device_memory'] = True
     if record.get('comparisonJointReportsContractVersion') in (12, 13, 14, 15, 16):
         plan_options['structured_table_example'] = True
     if record.get('comparisonJointReportsContractVersion') in (13, 14, 15, 16):
