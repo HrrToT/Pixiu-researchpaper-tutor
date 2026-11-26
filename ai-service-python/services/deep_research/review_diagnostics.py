@@ -2,6 +2,10 @@
 from copy import deepcopy
 import hashlib
 import json
+import re
+
+
+_MIP_NERF_360 = re.compile(r'(?<![A-Za-z0-9_])Mip-NeRF\s*360(?![A-Za-z0-9_%％×倍]|\.\d)', re.I)
 
 
 class DiagnosticAudit(dict):
@@ -35,7 +39,7 @@ override a failed decision or any other audit; the server checks them independen
 
 
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
-         revision_row_counts=False):
+         revision_row_counts=False, bound_benchmark_names=False):
     if type(target_structure) is not bool:raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
     if type(revision_row_counts) is not bool:raise ValueError('Invalid revision row count policy')
@@ -48,6 +52,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if not isinstance(reason,str) or not reason.strip():
         errors.append('diagnostic_reason_invalid');reason=''
     covered_numbers = set()
+    numeric_reason = reason
     own = {e['evidenceId']: e for e in evidence if e.get('evidenceId') in claim.get('evidenceRefs', [])}
     numbers=lambda text:_measurement_numbers(text,word_counts=True)
     if source_parameter_ids:
@@ -87,14 +92,20 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         if resolved is None or normalize_quote(fact['excerpt']) not in normalize_quote(resolved[1]):
             errors.append('diagnostic_source_not_bound')
             continue
-        covered_numbers |= (review_numbers(fact['statement']) & numbers(fact['excerpt']))
+        statement, excerpt = fact['statement'], fact['excerpt']
+        if bound_benchmark_names:
+            cleaned = _MIP_NERF_360.sub('Mip-NeRF', statement)
+            if _MIP_NERF_360.search(excerpt):
+                numeric_reason = numeric_reason.replace(statement, cleaned)
+            statement = cleaned
+            excerpt = _MIP_NERF_360.sub('Mip-NeRF', excerpt)
+        covered_numbers |= (review_numbers(statement) & numbers(excerpt))
         if revision_row_counts and fact['path'] == ['quote']:
             table_notes.append((resolved[0], fact['statement'], fact['excerpt']))
     target = claim.get('text', '') + ' ' + json.dumps(claim.get('conditions', {}), ensure_ascii=False)
-    numeric_reason = reason
     if revision_row_counts:
         from services.deep_research.review_target_structure import revision_row_count_view
-        numeric_reason, references = revision_row_count_view(reason, table_notes, numbers)
+        numeric_reason, references = revision_row_count_view(numeric_reason, table_notes, numbers)
         target_references.extend(references)
     introduced = review_numbers(numeric_reason) - numbers(target)
     missing = introduced - covered_numbers
@@ -105,6 +116,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
              'bindingCount': len(facts), 'newNumberCount': len(introduced),
              'unboundNewNumberCount': len(missing), 'errors': list(dict.fromkeys(errors))})
     if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
+    if bound_benchmark_names:audit['sourceParameterIdentityContractVersion']=2
     if target_structure:
         audit.update(reviewTargetStructureContractVersion=1,targetStructureReferences=target_references)
     if revision_row_counts:

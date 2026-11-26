@@ -95,21 +95,22 @@ def test_checker_uses_visible_fields_without_changing_request_or_model_decision(
     assert result['status']==('passed' if supported else 'failed')
 
 
-def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_path):
+@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 2, 2)])
+def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_path, cells_version, version, policy):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
-    facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
+    facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=cells_version)
     key='reviewParameterIdentityContractVersion'
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,key:False},start_async=False)
-        assert type(row[key]) is int and row[key]==1
-        assert facade._make_semantic_checker(row['runId'])._diagnostic_parameter_ids() is True
+        assert type(row[key]) is int and row[key]==version
+        assert facade._make_semantic_checker(row['runId'])._diagnostic_parameter_ids() is policy
         old=deepcopy(row);old.update(runId='old',idempotencyKey='old');old.pop(key);repo.create_run(old)
         assert facade._make_semantic_checker('old')._diagnostic_parameter_ids() is False
         for run_id in (row['runId'],'old'):
             with pytest.raises(ValueError,match='Immutable'):
-                repo.update_run(run_id,lambda r:{**r,key:2})
+                repo.update_run(run_id,lambda r:{**r,key:3})
     finally:facade.shutdown()
 
 
@@ -121,6 +122,52 @@ def test_bound_parameter_label_does_not_hide_an_unbound_algorithm_line():
     assert result['reviewDiagnosticAudit']['newNumberCount']==2
     assert result['reviewDiagnosticAudit']['unboundNewNumberCount']==1
     assert result['executionState']=='received_invalid'
+
+
+@pytest.mark.parametrize(('source', 'reason', 'valid'), [
+    ('Quality is comparable to Mip-NeRF360.', '与Mip-NeRF 360相当。', True),
+    ('Quality is comparable to Mip-NeRF 360.', '与Mip-NeRF 360相当。', True),
+    ('Quality is comparable to Mip-NeRF 360.', '与Mip-NeRF 360相当，使用360张图。', False),
+    ('Quality is comparable to Mip-NeRF 360.', '与Mip-NeRF 360相当，比例为360%。', False),
+    ('The method uses 360 images.', '与Mip-NeRF 360相当。', False),
+    ('Quality is comparable to another benchmark.', '与Mip-NeRF 360相当。', False),
+])
+def test_bound_benchmark_label_preserves_measurement_checks(source, reason, valid):
+    verdict, claim, evidence_rows = inputs(reason, source)
+    verdict['diagnosticFacts'] = [{'statement': reason, 'evidenceId': 'own',
+                                  'path': ['quote'], 'excerpt': source}]
+    result = bind(verdict, claim, evidence_rows, source_parameter_ids=True, bound_benchmark_names=True)
+    assert (not result['reviewDiagnosticAudit']['errors']) is valid
+    assert result['status'] == 'failed'
+
+
+def test_benchmark_spacing_requires_exact_bound_excerpt():
+    verdict, claim, evidence_rows = inputs('与Mip-NeRF 360相当。', 'Quality is comparable to Mip-NeRF360.')
+    assert bind(verdict, claim, evidence_rows, bound_benchmark_names=True)['executionState'] == 'received_invalid'
+    verdict['diagnosticFacts'] = [{'statement': verdict['reason'], 'evidenceId': 'own',
+                                  'path': ['quote'], 'excerpt': 'Quality is comparable.'}]
+    assert 'diagnostic_source_not_bound' in bind(verdict, claim, evidence_rows,
+                                                bound_benchmark_names=True)['reviewDiagnosticAudit']['errors']
+
+
+def test_checker_uses_bound_benchmark_policy_with_short_diagnostic_guidance():
+    reason = 'Quality is comparable to Mip-NeRF 360.'
+    source = 'Quality is comparable to Mip-NeRF360.'
+    _, claim, evidence_rows = inputs(reason, source)
+    raw = {**response(True), 'reason': reason, 'diagnosticFacts': [
+        {'statement': reason, 'evidenceId': 'E1', 'path': ['quote'], 'excerpt': source},
+    ]}
+    calls = []
+
+    def invoke(**kwargs):
+        calls.append(kwargs)
+        return {'content': json.dumps([raw])}
+
+    checked = checker(invoke, review_diagnostic_bindings=True, diagnostic_parameter_ids=lambda: 2)
+    verdict = checked([claim], evidence_rows)[0]
+    assert 'Avoid adding counts of the listed steps' in calls[0]['prompt']
+    assert verdict['status'] == 'passed'
+    assert verdict['reviewDiagnosticAudit']['sourceParameterIdentityContractVersion'] == 2
 
 
 def test_assigned_coefficient_still_requires_exact_bound_source():

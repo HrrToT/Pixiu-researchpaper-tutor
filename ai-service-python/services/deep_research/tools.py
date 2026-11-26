@@ -1477,12 +1477,17 @@ The dataAvailability object is an internal audit, not new experimental results.
         from services.deep_research.source_version_review import eligible as diagnostic_eligible
         diagnostic_policy=diagnostic_policy and diagnostic_eligible(claims)
         if diagnostic_policy:
+            parameter_policy = self._diagnostic_parameter_ids
+            parameter_policy = parameter_policy() if callable(parameter_policy) else parameter_policy
             from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
             if reason_parts:
                 from services.deep_research.review_reason_parts import GUIDANCE as diagnostic_guidance
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
+            if parameter_policy == 2:
+                prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
+                           'Describe the steps directly and retain any quantities required for the verdict.\n')
         if scope_observations and source_field_references:
             prompt += ('\nFor reasonParts and scopeAudit.premises, copy a path exactly from '
                        'availableSourcePaths for the cited evidence ID. Use a nonempty string leaf.\n')
@@ -1677,14 +1682,13 @@ The dataAvailability object is an internal audit, not new experimental results.
             by_id = {c['claimId']: c for c in claims}
             if diagnostic_policy:
                 from services.deep_research.review_diagnostics import bind as bind_diagnostic
-                parameter_policy=self._diagnostic_parameter_ids
-                parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
                 structure_policy=getattr(self,'_diagnostic_target_structure',False)
                 structure_policy=(structure_policy() if callable(structure_policy) else structure_policy) is True
                 count_policy=self._diagnostic_revision_row_counts
                 count_policy=(count_policy() if callable(count_policy) else count_policy) is True
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
-                    **({'source_parameter_ids':True} if parameter_policy else {}),
+                    source_parameter_ids=parameter_policy is True or parameter_policy == 2,
+                    bound_benchmark_names=parameter_policy == 2,
                     **({'target_structure':True} if structure_policy else {}),
                     **({'revision_row_counts':True} if count_policy else {})) for v in parsed]
             if comparison_enabled:

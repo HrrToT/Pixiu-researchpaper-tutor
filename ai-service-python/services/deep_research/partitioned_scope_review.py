@@ -246,13 +246,14 @@ Targets:
     if diagnostics:
         from services.deep_research.review_diagnostics import bind as bind_diagnostic
         parameter_policy=getattr(checker,'_diagnostic_parameter_ids',False)
-        parameter_policy=(parameter_policy() if callable(parameter_policy) else parameter_policy) is True
+        parameter_policy=parameter_policy() if callable(parameter_policy) else parameter_policy
         # Operator inputs are typed propositions, not the original target prose.
         # Their unseen prose cannot authorize structural navigation exemptions.
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
             review_evidence,reverse,
-            **({'source_parameter_ids':True} if parameter_policy else {})) for row in rows]
+            source_parameter_ids=parameter_policy is True or parameter_policy == 2,
+            bound_benchmark_names=parameter_policy == 2) for row in rows]
         invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
         if invalid:
             return {'claimId':claim['claimId'],'status':'failed','reason':invalid['reason'],
