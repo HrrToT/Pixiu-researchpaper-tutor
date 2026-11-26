@@ -97,6 +97,19 @@ coherent=false requires issues; coherent=true requires issues:[].
 Input:
 '''
 
+INDEXED_REFERENCE_INSTRUCTIONS = REFERENCE_INSTRUCTIONS.replace(
+    'factChecks=[checkId,factId];', 'factChecks=[checkId,factId,exactFactTextPointer];',
+).replace(
+    'Do not repeat field text.',
+    'For array elements use zero-based positions, never IDs (e.g. /steps/0/name). '
+    'Copy the supplied fact pointer for fact text. Do not repeat field text.',
+)
+
+
+def reference_review_enabled(record):
+    version = record.get(REFERENCE_MARKER)
+    return type(version) is int and version in (1, 2)
+
 
 def _generation(record):
     g = record.get('state', {}).get('sharedExperimentGeneration')
@@ -149,7 +162,7 @@ def descriptor(record, check_ids=None):
     ids = [t['checkId'] for t in targets(record)]
     literal_text = {'type':'string', 'minLength':1, 'maxLength':600, 'pattern':r'\S'}
     text = {'$ref':'#/$defs/text'}
-    references = record.get(REFERENCE_MARKER) == 1
+    references = reference_review_enabled(record)
     if check_ids is not None:
         if (not references or not isinstance(check_ids, list) or not 1 <= len(check_ids) <= MAX_CHECKS_PER_REVIEW
                 or any(not isinstance(check_id, str) or check_id not in ids for check_id in check_ids)
@@ -226,9 +239,13 @@ def build(record, input_data, aliases, *, required_domains=()):
                     'Use short literal spans that carry the substantive checks. Review the full proposal for coherence.\nInput:\n')
     else:
         data['reviewTargets'] = review_targets
-    reference_policy = {REFERENCE_MARKER: 1} if record.get(REFERENCE_MARKER) == 1 else {}
+    reference_policy = {REFERENCE_MARKER: record[REFERENCE_MARKER]} if reference_review_enabled(record) else {}
     if reference_policy:
         instructions = REFERENCE_INSTRUCTIONS
+        if record[REFERENCE_MARKER] == 2 and 'factChecks' in data:
+            instructions = INDEXED_REFERENCE_INSTRUCTIONS
+            data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
+                                  for t in review_targets if t['kind'] == 'source_fact']
     elif record.get('sharedExperimentFactContextVersion') == 1:
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
@@ -399,6 +416,45 @@ def _decode_batch(answer, check_ids, validator):
     return part
 
 
+def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references):
+    problems = []
+    checks = value['checks']
+    passed = {}
+    for check in checks:
+        target = expected[check['checkId']]
+        bindings = check['planBindings']
+        if references:
+            bindings = [_resolved_plan_binding(path, proposal) for path in bindings]
+        for binding in bindings:
+            if not _plan_binding(binding,proposal): problems.append('invalid_plan_binding')
+        if check['status'] == 'passed':
+            if not bindings or not any(_substantive(b) and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
+                                          for prefix in target['pathPrefixes']) for b in bindings):
+                problems.append('missing_target_binding')
+            if target['kind'] in ('source_fact','attribution') and not check['evidenceBindings']:
+                problems.append('missing_original_support')
+        fact_id = target.get('factId') if target['kind'] == 'source_fact' and check['status'] == 'passed' else None
+        if fact_id is not None:
+            passed[fact_id] = []
+        for binding in check['evidenceBindings']:
+            row = rows.get(binding['evidenceId'])
+            supplied = evidence_by_check[check['checkId']]
+            if (row is None or supplied is not None and binding['evidenceId'] not in supplied
+                    or target.get('allowedEvidenceIds') is not None and binding['evidenceId'] not in target['allowedEvidenceIds']):
+                problems.append('foreign_evidence_binding'); continue
+            text = row.get('quote','') if binding['field'] == 'quote' else row.get('sourceContext',{}).get(binding['field'],'')
+            excerpt = text if references else binding['text']
+            if not isinstance(excerpt, str) or not excerpt.strip() or excerpt not in text:
+                problems.append('nonliteral_evidence_binding')
+            elif fact_id is not None:
+                passed[fact_id].append({**binding, 'text': excerpt})
+    for issue in value['issues']:
+        bindings = ([_resolved_plan_binding(path, proposal) for path in issue['planBindings']]
+                    if references else issue['planBindings'])
+        if any(not _plan_binding(b,proposal) for b in bindings): problems.append('invalid_issue_binding')
+    return problems, passed
+
+
 def assess(record, input_data, aliases, response):
     """Validate verdict coverage and literal bindings, never infer a missing pass."""
     from jsonschema import Draft202012Validator
@@ -432,40 +488,8 @@ def assess(record, input_data, aliases, response):
         if len(checks) != len(expected) or {c['checkId'] for c in checks} != set(expected):
             raise ValueError('Review target coverage')
         rows = {e['evidenceId']:e for e in input_data['evidence']}
-        references = record.get(REFERENCE_MARKER) == 1
-        passed = {}
-        for check in checks:
-            target = expected[check['checkId']]
-            bindings = check['planBindings']
-            if references:
-                bindings = [_resolved_plan_binding(path, proposal) for path in bindings]
-            for binding in bindings:
-                if not _plan_binding(binding,proposal): problems.append('invalid_plan_binding')
-            if check['status'] == 'passed':
-                if not bindings or not any(_substantive(b) and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
-                                              for prefix in target['pathPrefixes']) for b in bindings):
-                    problems.append('missing_target_binding')
-                if target['kind'] in ('source_fact','attribution') and not check['evidenceBindings']:
-                    problems.append('missing_original_support')
-            fact_id = target.get('factId') if target['kind'] == 'source_fact' and check['status'] == 'passed' else None
-            if fact_id is not None:
-                passed[fact_id] = []
-            for binding in check['evidenceBindings']:
-                row = rows.get(binding['evidenceId'])
-                supplied = evidence_by_check[check['checkId']]
-                if (row is None or supplied is not None and binding['evidenceId'] not in supplied
-                        or target.get('allowedEvidenceIds') is not None and binding['evidenceId'] not in target['allowedEvidenceIds']):
-                    problems.append('foreign_evidence_binding'); continue
-                text = row.get('quote','') if binding['field'] == 'quote' else row.get('sourceContext',{}).get(binding['field'],'')
-                excerpt = text if references else binding['text']
-                if not isinstance(excerpt, str) or not excerpt.strip() or excerpt not in text:
-                    problems.append('nonliteral_evidence_binding')
-                elif fact_id is not None:
-                    passed[fact_id].append({**binding, 'text': excerpt})
-        for issue in value['issues']:
-            bindings = ([_resolved_plan_binding(path, proposal) for path in issue['planBindings']]
-                        if references else issue['planBindings'])
-            if any(not _plan_binding(b,proposal) for b in bindings): problems.append('invalid_issue_binding')
+        problems, passed = _binding_findings(value, proposal, expected, rows, evidence_by_check,
+                                             references=reference_review_enabled(record))
         if not problems and record.get('sharedExperimentFactContextVersion') == 1:
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
@@ -486,7 +510,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved is None:
         saved = {**built,'version':1,'status':'pending'}
         if built['hardIssues']: saved['status'] = 'not_started_precheck'
-        elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or built.get(REFERENCE_MARKER) == 1)
+        elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or reference_review_enabled(built))
               and len(built['targets']) > MAX_CHECKS_PER_REVIEW and not built.get('batches')):
             saved['status'] = 'not_started_capacity'
         checkpoint(deepcopy(saved))
@@ -506,12 +530,27 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 or 'batchResponses' in saved and digest(responses) != saved.get('batchResponsesDigest')):
             raise DeepResearchError('invalid_shared_experiment_review_state','已保存的审核分组响应已改变。')
         validator = Draft202012Validator(descriptor(record)['schema']) if built.get(STOP_INVALID_BATCH_MARKER) == 1 else None
+        check_bindings_before_next = validator is not None and built.get(REFERENCE_MARKER) == 2
+        if check_bindings_before_next:
+            proposal = _generation(record)['boundProposal']['proposal']
+            expected = {target['checkId']: target for target in built['targets']}
+            rows = {row['evidenceId']: row for row in input_data['evidence']}
 
         def stop_after_invalid(index, answer):
             if validator is None:
                 return False
+            packet = built['batches'][index]
             try:
-                _decode_batch(answer, built['batches'][index]['checkIds'], validator)
+                part = _decode_batch(answer, packet['checkIds'], validator)
+                if check_bindings_before_next:
+                    scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
+                    problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True)
+                    if (not problems and record.get('sharedExperimentFactContextVersion') == 1
+                            and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
+                        problems.append('missing_numeric_source_binding')
+                    if problems:
+                        saved['invalidBatchBindings'] = sorted(set(problems))
+                        raise ValueError('Review batch bindings')
             except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
                 saved['stoppedAfterInvalidBatch'] = index
                 return True
@@ -522,7 +561,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
             if stopped:
                 break
             req = requests[index]
-            if built.get(REFERENCE_MARKER) == 1:
+            if reference_review_enabled(built):
                 expected_scope = (built['batches'][index]['checkIds'] if 'batches' in built
                                   else [target['checkId'] for target in built['targets']])
                 if req['extra'].get(CHECK_IDS_OPTION) != expected_scope:

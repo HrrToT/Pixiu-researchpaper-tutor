@@ -82,7 +82,7 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
             selected = checks[start:start + max_checks]
             packet = {**data, 'factChecks': [], 'sectionChecks': [], 'humanChecks': [], key: selected}
             if key == 'factChecks':
-                cited = set().union(*(fact_sources[fact_id] for _, fact_id in selected))
+                cited = set().union(*(fact_sources[entry[1]] for entry in selected))
                 rows = [row for row in data['evidence'] if row['evidenceId'] in cited]
                 supplied = [row['evidenceId'] for row in rows]
                 if set(supplied) != cited:

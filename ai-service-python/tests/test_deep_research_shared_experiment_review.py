@@ -219,14 +219,15 @@ def test_truncated_review_batch_stops_later_sends_and_restores_from_checkpoint(m
     assert invoke.call_count == 2
 
 
-def test_reference_review_scope_reaches_the_provider_without_private_options():
+@pytest.mark.parametrize('version', [1, 2])
+def test_reference_review_scope_reaches_the_provider_without_private_options(version):
     from jsonschema import Draft202012Validator
     from llm.responses_transport import payload
     from services.deep_research.planning_transport import options_for_record
     from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, REFERENCE_MARKER
 
     record, data, _ = ready()
-    record[REFERENCE_MARKER] = 1
+    record[REFERENCE_MARKER] = version
     checks = verdict(record, data)['checks']
     selected = [checks[0]['checkId']]
     options = options_for_record(record, NODE, {CHECK_IDS_OPTION: selected, 'max_tokens': 4096})
@@ -241,6 +242,46 @@ def test_reference_review_scope_reaches_the_provider_without_private_options():
     assert not validator.is_valid({**body, 'checks': [row, row]})
     with pytest.raises(ValueError):
         options_for_record(record, NODE, {CHECK_IDS_OPTION: selected * 2})
+
+
+@pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
+def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record[review.REFERENCE_MARKER] = 2
+    record[review.COMPACT_REVIEW_MARKER] = 2
+    checks = verdict(record, data)['checks'][:2]
+    for row in checks:
+        row['planBindings'] = [binding['path'] for binding in row['planBindings']]
+        row['evidenceBindings'] = [{k: v for k, v in binding.items() if k != 'text'}
+                                   for binding in row['evidenceBindings']]
+    checks[0]['planBindings'] = [path]
+    request_ids = [[row['checkId']] for row in checks]
+    batches = [{'checkIds': ids, 'suppliedEvidenceAliases': list(aliases),
+                'request': {'prompt': 'fixture', 'extra': {review.CHECK_IDS_OPTION: ids}}}
+               for ids in request_ids]
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: {
+        'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': targets(record),
+        review.STOP_INVALID_BATCH_MARKER: 1, review.REFERENCE_MARKER: 2})
+    monkeypatch.setattr('services.deep_research.planning_transport.dispatch_options', lambda *args: {})
+    invoke = Mock(side_effect=[reply({'checks': [row], 'coherent': True, 'issues': []}) for row in checks])
+    checkpoints = []
+
+    def checkpoint(value):
+        record['state']['sharedExperimentReview'] = deepcopy(value)
+        checkpoints.append(deepcopy(value))
+
+    result = prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    invalid = path == '/sourceFacts/F1/text'
+    assert invoke.call_count == (1 if invalid else 2)
+    assert result.get('stoppedAfterInvalidBatch') == (0 if invalid else None)
+    if invalid:
+        assert result['status'] == 'invalid_response'
+        saved = next(value for value in checkpoints if value['status'] == 'pending' and value.get('batchResponses'))
+        record['state']['sharedExperimentReview'] = saved
+        assert prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+        assert invoke.call_count == 1
 
 
 @pytest.mark.parametrize('mutation', ['missing','duplicate','unknown','fake_plan','wrong_section','identifier_only',

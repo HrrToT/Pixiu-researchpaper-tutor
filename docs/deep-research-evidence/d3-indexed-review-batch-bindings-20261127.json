@@ -1,0 +1,44 @@
+{
+  "sourceRunId": "dr_run_ab476889e05d53ac972d650f79e2c580",
+  "historicalSecondBatch": {
+    "expectedChecks": 8,
+    "rawReturnedChecks": 27,
+    "foreignCheckIds": 19,
+    "finishReason": "length",
+    "outputTokens": 4096
+  },
+  "candidate": {
+    "allFrozenChecksRetained": 27,
+    "fullProposalInEveryBatch": true,
+    "factTextPointersVerified": [
+      "/sourceFacts/0/text",
+      "/sourceFacts/1/text",
+      "/sourceFacts/2/text",
+      "/sourceFacts/3/text",
+      "/sourceFacts/4/text",
+      "/sourceFacts/5/text",
+      "/sourceFacts/6/text",
+      "/sourceFacts/7/text",
+      "/sourceFacts/8/text",
+      "/sourceFacts/9/text"
+    ],
+    "sourceFactAliasesRetained": true,
+    "requestSizesBytes": [
+      22762,
+      31913,
+      31873
+    ],
+    "initialBatchPrecheckIssues": []
+  },
+  "convertedHistoricResponse": {
+    "stoppedAtBatch": 0,
+    "skipLaterBatches": 2,
+    "mockDispatchCountAfterReopen": 1
+  },
+  "modelCalls": 0,
+  "scientificApproval": false,
+  "inputSha256": {
+    "D3-DENSIFICATION-FACTORIAL-v20.payload.json": "7717aede469c01637851db4cd07071b24e39f0a00befe796ab10bac65f2e067f",
+    "D3-DENSIFICATION-FACTORIAL-v20.calls.json": "f4039cd2ba7e10ad71ce70bc4695a2fcea4f34753310b66c5ea414d274594b8c"
+  }
+}

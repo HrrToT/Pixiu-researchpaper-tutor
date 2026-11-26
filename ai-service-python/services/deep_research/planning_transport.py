@@ -183,8 +183,8 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
 def options_for_record(record,node,options):
     """Own transport selection; caller/source options cannot inject an adapter."""
     if API_KEY in options:raise ValueError('Transport selection is server-owned')
-    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE as REVIEW_NODE, REFERENCE_MARKER
-    if CHECK_IDS_OPTION in options and (node != REVIEW_NODE or record.get(REFERENCE_MARKER) != 1
+    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE as REVIEW_NODE, reference_review_enabled
+    if CHECK_IDS_OPTION in options and (node != REVIEW_NODE or not reference_review_enabled(record)
                                         or options[CHECK_IDS_OPTION] is None or not enabled(record, node)):
         raise ValueError('Review check scope is server-owned and versioned')
     from services.deep_research import workflow_representation_stage as representation
