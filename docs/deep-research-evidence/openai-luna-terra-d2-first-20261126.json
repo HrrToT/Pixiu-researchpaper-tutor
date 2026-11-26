@@ -37,6 +37,24 @@
     }
   },
   "pricingBoundary": "Calculated from provider token totals, with no cache discount. The actual API billing line and grant deduction were not checked.",
+  "offlineInitialReviewWindowReplay": {
+    "sourceReceiptSha256": "f41f30d3c66ff52f48b271c876f548bc9131d2de4c097e37a843936c9b33d27d",
+    "sourceClaims": "Eight claims in the saved terminal report body; the replay does not reconstruct the original pre-review draft.",
+    "replayCodeCommit": "fa7525a44",
+    "workflowNode": "verify",
+    "savedAuthoringContractVersion": 16,
+    "testedWindowBytes": [32000, 28000, 24000],
+    "requestCountPerWindow": 3,
+    "requestDigestsUnchangedAcrossWindows": true,
+    "reservationUpperBoundsPerRequest": [26321, 26579, 21800],
+    "historicalContractVersion2Control": {
+      "32000": { "requestCount": 3, "sumReservationUpperBounds": 96935 },
+      "24000": { "requestCount": 4, "sumReservationUpperBounds": 118791 }
+    },
+    "providerRequests": 0,
+    "liveLedgerMutations": 0,
+    "boundary": "Empty fixture verdicts approve no claims. Identical request digests show that changing this window alone did not reduce the replayed requests; reservation bounds are not billing or estimated savings. Coverage and repair are outside the replay."
+  },
   "qualityReview": {
     "literalCitationsChecked": 12,
     "literalCitationsMatchedTheirPdfPage": 12,
