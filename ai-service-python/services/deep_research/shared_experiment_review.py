@@ -109,7 +109,7 @@ INDEXED_REFERENCE_INSTRUCTIONS = REFERENCE_INSTRUCTIONS.replace(
 
 def reference_review_enabled(record):
     version = record.get(REFERENCE_MARKER)
-    return type(version) is int and version in (1, 2)
+    return type(version) is int and version in (1, 2, 3)
 
 
 def _fact_context_enabled(record):
@@ -180,8 +180,10 @@ def descriptor(record, check_ids=None):
     evidence = _object({'evidenceId':text, 'field':{'enum':['quote', 'before', 'after']},
                         **({} if references else {'text':text})})
     reason = {**literal_text, 'maxLength':300} if references else text
+    plan_binding_cap = 16 if record.get(REFERENCE_MARKER) == 3 else 8
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
-                     'planBindings':_array(binding, maximum=8), 'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
+                     'planBindings':_array(binding, maximum=plan_binding_cap),
+                     'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
     scoped_facts = (check_ids is not None and record.get(FACT_CONTEXT_MARKER) == 4
                     and any(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids))
     if scoped_facts:
@@ -270,7 +272,7 @@ def build(record, input_data, aliases, *, required_domains=()):
     reference_policy = {REFERENCE_MARKER: record[REFERENCE_MARKER]} if reference_review_enabled(record) else {}
     if reference_policy:
         instructions = REFERENCE_INSTRUCTIONS
-        if record[REFERENCE_MARKER] == 2 and 'factChecks' in data:
+        if record[REFERENCE_MARKER] in (2, 3) and 'factChecks' in data:
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
@@ -286,6 +288,12 @@ def build(record, input_data, aliases, *, required_domains=()):
                         'Verify those fields and include them on a pass that relies on their numbers or figure labels. '
                         'Include any other evidence needed to support the complete fact. Hints do not approve a fact.\nInput:\n',
                     )
+        if record[REFERENCE_MARKER] == 3:
+            instructions = instructions.replace(
+                'Input:\n', 'Bind the shortest sufficient set of scalar paths, up to 16 for a check; '
+                'each distinct condition still needs support. A full contrast weights array may be bound by its exact '
+                '/analysis/contrasts/INDEX/weights path. No other array bindings.\nInput:\n',
+            )
     elif _fact_context_enabled(record):
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
@@ -484,7 +492,23 @@ def _decode_batch(answer, check_ids, validator):
     return part
 
 
-def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references):
+def _resolved_plan_bindings(paths, proposal, contrast_arrays):
+    import re
+
+    bindings = []
+    for path in paths:
+        if contrast_arrays and re.fullmatch(r'/analysis/contrasts/[0-2]/weights', path):
+            weights = _pointer(proposal, path)
+            if (not isinstance(weights, list) or len(weights) != 4
+                    or any(type(weight) not in (int, float) for weight in weights)):
+                raise ValueError('Review contrast pointer must name four numeric weights')
+            bindings.extend(_resolved_plan_binding(f'{path}/{index}', proposal) for index in range(4))
+        else:
+            bindings.append(_resolved_plan_binding(path, proposal))
+    return bindings
+
+
+def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references, contrast_arrays=False):
     problems = []
     checks = value['checks']
     passed = {}
@@ -492,7 +516,7 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
         target = expected[check['checkId']]
         bindings = check['planBindings']
         if references:
-            bindings = [_resolved_plan_binding(path, proposal) for path in bindings]
+            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays)
         for binding in bindings:
             if not _plan_binding(binding,proposal): problems.append('invalid_plan_binding')
         if check['status'] == 'passed':
@@ -517,7 +541,7 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
             elif fact_id is not None:
                 passed[fact_id].append({**binding, 'text': excerpt})
     for issue in value['issues']:
-        bindings = ([_resolved_plan_binding(path, proposal) for path in issue['planBindings']]
+        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays)
                     if references else issue['planBindings'])
         if any(not _plan_binding(b,proposal) for b in bindings): problems.append('invalid_issue_binding')
     return problems, passed
@@ -557,7 +581,8 @@ def assess(record, input_data, aliases, response):
             raise ValueError('Review target coverage')
         rows = {e['evidenceId']:e for e in input_data['evidence']}
         problems, passed = _binding_findings(value, proposal, expected, rows, evidence_by_check,
-                                             references=reference_review_enabled(record))
+                                             references=reference_review_enabled(record),
+                                             contrast_arrays=record.get(REFERENCE_MARKER) == 3)
         if not problems and _fact_context_enabled(record):
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
@@ -598,7 +623,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 or 'batchResponses' in saved and digest(responses) != saved.get('batchResponsesDigest')):
             raise DeepResearchError('invalid_shared_experiment_review_state','已保存的审核分组响应已改变。')
         validator = Draft202012Validator(descriptor(record)['schema']) if built.get(STOP_INVALID_BATCH_MARKER) == 1 else None
-        check_bindings_before_next = validator is not None and built.get(REFERENCE_MARKER) == 2
+        check_bindings_before_next = validator is not None and built.get(REFERENCE_MARKER) in (2, 3)
         if check_bindings_before_next:
             proposal = _generation(record)['boundProposal']['proposal']
             expected = {target['checkId']: target for target in built['targets']}
@@ -612,7 +637,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 part = _decode_batch(answer, packet['checkIds'], validator)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
-                    problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True)
+                    problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
+                                                         contrast_arrays=built.get(REFERENCE_MARKER) == 3)
                     if (not problems and _fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                         problems.append('missing_numeric_source_binding')

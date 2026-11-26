@@ -313,6 +313,39 @@ def test_fact_review_wire_schema_limits_each_check_to_its_own_reference_and_text
     assert not accept({**row,'planBindings':['/sourceFacts/1/text']})
 
 
+def test_reference_review_allows_bounded_multi_section_bindings_for_a_human_check():
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import REFERENCE_MARKER
+
+    record, _, _ = ready()
+    target = next(t for t in targets(record) if t['kind'] == 'human_requirement')
+    row = {'checkId':target['checkId'],'status':'passed','planBindings':[f'/steps/{i}/operation/action' for i in range(11)],
+           'evidenceBindings':[],'reason':'Fixture for transport capacity only'}
+    answer = {'checks':[row],'coherent':True,'issues':[]}
+    record[REFERENCE_MARKER] = 2
+    assert not Draft202012Validator(descriptor(record, [target['checkId']])['schema']).is_valid(answer)
+    record[REFERENCE_MARKER] = 3
+    validator = Draft202012Validator(descriptor(record, [target['checkId']])['schema'])
+    assert validator.is_valid(answer)
+    row['planBindings'].extend(f'/metrics/{i}/procedure' for i in range(6))
+    assert not validator.is_valid(answer)
+
+
+def test_reference_review_expands_only_a_complete_contrast_weight_vector():
+    from services.deep_research.shared_experiment_review import _resolved_plan_bindings
+
+    value = proposal()
+    path = '/analysis/contrasts/0/weights'
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings([path], value, False)
+    assert _resolved_plan_bindings([path], value, True) == [
+        {'path':f'{path}/{index}', 'text':json.dumps(weight)}
+        for index,weight in enumerate(value['analysis']['contrasts'][0]['weights'])
+    ]
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings(['/groups'], value, True)
+
+
 @pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
 def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
     from services.deep_research import shared_experiment_review as review
