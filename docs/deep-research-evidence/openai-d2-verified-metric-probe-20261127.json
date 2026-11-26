@@ -1,0 +1,33 @@
+{
+  "sourceBase": "cb87a2654",
+  "candidate": "exact_metric_header_binding_correction",
+  "case": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_replay_with_live_target_and_final_audit",
+  "runId": "dr_verified_metric_probe_20261127",
+  "outcome": "complete",
+  "newProviderCalls": 2,
+  "providerModel": "gpt-6.1-terra",
+  "actualTotalTokens": 14316,
+  "reusedOtherVerifiedClaims": 10,
+  "actualProviderNodes": [
+    "verify",
+    "verify_answer_coverage"
+  ],
+  "verifiedClaims": 11,
+  "matchingCitations": 21,
+  "verifiedMatchedTableCells": 10,
+  "coverage": "checked",
+  "coherent": true,
+  "gaps": 0,
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-verified-metric-20261127",
+  "sha256": {
+    "intent.json": "5ac0eeaecc27daf04d688ba0af18083a8fa5e1fc19ebb99da5812f07d88deb29",
+    "calls.json": "dd7ebb44ebb1f0008043673449f8d2c95599bb4417b6b16aab5c41e5a51fc9ca",
+    "run.json": "7700e1cc291c7086db36c72ac0c6766c68db532764bf1a77b669b1c659c07ee8",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "306fc05e83bb3a2bfca66f01015af905207e5e798505ba05b0c28d8f8c3b6a55",
+    "citation-audit.json": "67557c2f1feb33165a7000542695940d329f8d9f2a8899bc4de5b1ef8fa2e253",
+    "report.md": "9f4edbbb8799fc64e9d49acf6824b3e00c646807a07efb1af0dd7a65de27d300"
+  }
+}
