@@ -8,6 +8,8 @@ RetrievalAttention v2 从空任务经系统代理发现并下载 16 页指定版
 
 复用同一份真实生成的报告验证工作区交付。隔离 Java/Python 通过真实 HTTP 保存机器原稿和可编辑成果，重复投递未产生新成果。重启 Java 后，报告正文和两个成果版本均可找回。第 14 页引用可读取哈希一致的 v2 PDF，跨任务和无效来源访问返回 404。将 Java 保存的成果传入现用 React 组件后，引用按钮定位到第 14 页并保留任务、运行和版本身份。该流程未调用模型或写入生产工作区。 [工作区交付验收](deep-research-evidence/h3-external-workspace-handoff-20261127.json)
 
+当前前端生产构建在 Chromium 的 1366×768 和 1024×700 视口验证了同一报告。引用弹窗显示附录原文，点击跳转后浏览器下载哈希一致的 16 页 PDF，第 14 页画布实际绘制并进入视口。关闭阅读器可返回报告，刷新后可重新打开同一报告。请求走隔离 Java/Python 的真实响应，任务快照一致，零工作区写入、零模型调用。 [Chromium 验收回执](deep-research-evidence/h3-external-report-chromium-20261127.json)
+
 限制原句绑定和数字示例范围的组合版本完成 501 个模块、9,818 项全量离线回归，保留上一轮 9,817 个用例，零失败、零错误、零跳过。 [组合版本全量回归](deep-research-evidence/comparison-inline-limit-host-full-20261124.json)
 
 ## 2026-11-25 H1 首次独立执行
