@@ -84,6 +84,23 @@ def test_model_groups_require_drawn_boundaries_and_confirm_exact_values():
     assert 5 in {number for number, _, _ in retained['rows']}
 
 
+def test_model_groups_recover_a_merged_tei_row_only_with_exact_complete_tuples():
+    from core.pdf_model_table import verify_model_groups
+
+    section, runs, rules = model_groups_fixture()
+    rows = section['tableRows']
+    name = rows[2][0]
+    merged = {**rows[2][1], 'text': '4bit (fake) Grouped-4 4 7 5 8 6 9'}
+    rows[2:4] = [[name, merged]]
+    result = verify_model_groups(section, runs, rules)
+    assert result['rebuiltRows'] is True
+    assert result['rows'][1:3] == [[3, 'Model-A / 4bit (fake )', ['4', '5', '6']],
+                                   [4, 'Model-A / Grouped-4', ['7', '8', '9']]]
+    merged['text'] = merged['text'].replace('6 9', '6 90')
+    result = verify_model_groups(section, runs, rules)
+    assert result is None or 'rebuiltRows' not in result
+
+
 def fused_tables_fixture():
     section, runs, rules = model_groups_fixture()
 

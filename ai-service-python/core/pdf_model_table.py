@@ -126,6 +126,10 @@ def verify_model_groups(section, runs, rules):
             config = printed_config
         checked.append([number, f'{model} / {config}', values])
         group_rows.setdefault(model_index, []).append(number)
+    if len(checked) < len(physical):
+        rebuilt = _recover_merged_rows(rows, physical)
+        if rebuilt:
+            return {'groups': [['', metrics]], 'rows': rebuilt, 'rebuiltRows': True}
     if not checked or any(index not in group_rows or not min(group_rows[index]) <= index <= max(group_rows[index])
                           for index, _ in models):
         return None
@@ -147,6 +151,54 @@ def _consume_chunks(text, chunks):
     return text
 
 
+def _matches_merged_row(text, group):
+    configs = [_compact(entry[2]) for entry in group]
+    values = [''.join(entry[3]) for entry in group]
+    if not all(configs) or len(set(configs)) != len(group):
+        return False
+    if _consume_chunks(text, [entry[-1] for entry in group]) == '':
+        return True
+    after_configs = _consume_chunks(text, configs)
+    if after_configs is None:
+        return False
+    if _consume_chunks(after_configs, values) == '':
+        return True
+    # TEI can merge vertically within each metric cell and emit its tokens
+    # in drawing order. Consume every metric column independently. Only the
+    # physical grid determines which of those values belongs to each row.
+    for column in zip(*(entry[3] for entry in group), strict=True):
+        after_configs = _consume_chunks(after_configs, column)
+        if after_configs is None:
+            return False
+    return after_configs == ''
+
+
+def _recover_merged_rows(rows, physical):
+    """Rebuild the table only if every source row matches its physical model band."""
+    offset = 0
+    for row in rows[1:]:
+        if not row or offset == len(physical):
+            return None
+        band, model, _, _, key = physical[offset]
+        if row[0]['text'].strip() and _compact(row[0]['text']) != _compact(model):
+            return None
+        text = _compact(''.join(cell['text'] for cell in row[1:]))
+        if text == key:
+            offset += 1
+            continue
+        band_end = next((index for index in range(offset + 1, len(physical))
+                         if physical[index][0] != band), len(physical))
+        stops = [stop for stop in range(offset + 2, band_end + 1)
+                 if _matches_merged_row(text, physical[offset:stop])]
+        if len(stops) != 1:
+            return None
+        offset = stops[0]
+    if offset != len(physical):
+        return None
+    return [[number, f'{model} / {config}', cells]
+            for number, (_, model, config, cells, _) in enumerate(physical, 2)]
+
+
 def verify_fused_model_groups(section, runs, rules):
     """Recover only groups whose complete tuples agree with the fused TEI cells."""
     grid = _model_grid(section, runs, rules, named_method_column=True)
@@ -157,14 +209,8 @@ def verify_fused_model_groups(section, runs, rules):
     checked = []
     for index, model in models:
         group = [entry for entry in physical if entry[0] == index]
-        configs = [_compact(entry[2]) for entry in group]
-        values = [''.join(entry[3]) for entry in group]
-        if len(group) < 2 or not all(configs) or len(set(configs)) != len(group):
-            return None
         tei = _compact(''.join(cell['text'] for cell in source_rows[index - 1][1:]))
-        interleaved = _consume_chunks(tei, [entry[-1] for entry in group])
-        after_configs = _consume_chunks(tei, configs)
-        if interleaved != '' and (after_configs is None or _consume_chunks(after_configs, values) != ''):
+        if len(group) < 2 or not _matches_merged_row(tei, group):
             return None
         for _, _, config, cells, _ in group:
             checked.append([len(checked) + 2, f'{model} / {config}', cells])

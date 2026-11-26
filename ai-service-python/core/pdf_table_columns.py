@@ -461,6 +461,7 @@ def attach_verified_table_columns(sections, pdf_path):
         except (KeyError, ValueError, TypeError, ImportError, AttributeError):
             verified = None
         if verified:
+            rebuilt_rows = verified.pop('rebuiltRows', False)
             section['tableVerifiedData'] = verified
             section['tableColumnMappingVersion'] = 2
             # Keep normalized table text and the checked packet identical for
@@ -474,6 +475,12 @@ def attach_verified_table_columns(sections, pdf_path):
                 section['tableId']=f"pdf-page-{index+1}-table-{caption['number']}"
                 if lines:lines[0]='Table caption: '+caption['text']
                 section['tablePrefix']='\n'.join(lines[:2])
+            if rebuilt_rows:
+                # Renumber from the recovered physical rows so no legacy TEI
+                # row can conflict with an independently checked coordinate.
+                section['content'] = '\n'.join([*lines[:2], *(f'Table row {n}: ' + ' | '.join([label, *cells])
+                    for n, label, cells in verified['rows'])])
+                continue
             replacements = {f'Table row {n}: ': ' | '.join([method, *values])
                             for n, method, values in verified['rows']}
             section['content'] = '\n'.join(next((prefix + value for prefix, value in replacements.items()
