@@ -288,10 +288,13 @@ def build(record, input_data, aliases, *, required_domains=()):
     request = request_identity(record, NODE, prompt, {'temperature': 0.0, 'max_tokens': output_tokens,
                                                      'timeout_seconds': 90})
     overhead = overhead_bytes(record, NODE, request['extra'])
+    output_policy = ({'sharedExperimentFitObservationOutputVersion': 1}
+                     if record.get('sharedExperimentFitObservationOutputVersion') == 1 else {})
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
             'requiredDomains': sorted(set(required_domains)), 'inputBytes': len(prompt.encode('utf-8')) + overhead,
             'promptBytes': len(prompt.encode('utf-8')), 'transportOverheadBytes': overhead,
-            'inputDigest': digest({'context': context_digest, 'request': request}),
+            'inputDigest': digest({'context': context_digest, 'request': request, **output_policy}),
+            **output_policy,
             'tokensAndTimeFitEstablished': False, 'scientificApproval': False}
 
 
@@ -332,7 +335,8 @@ def _validate_response(response, profile, built):
     if profile in (3, 4, 5, 6, 7, 8):
         from services.deep_research.shared_experiment_references import compile_plan
         value, issues = compile_plan(value, evidence_ids, required_domains=domains,
-                                     profile=4 if profile == 5 else profile)
+                                     profile=4 if profile == 5 else profile,
+                                     fit_observation_outputs=built.get('sharedExperimentFitObservationOutputVersion') == 1)
     else:
         issues = validate(value, evidence_ids, required_domains=domains)
     if not complete:

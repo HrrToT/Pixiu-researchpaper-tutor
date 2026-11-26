@@ -89,6 +89,20 @@ def test_multiple_rows_keep_each_versions_values_and_require_matching_coordinate
     assert materialize(incomplete, sources, '1', multiple_rows=True) == (incomplete, [])
 
 
+def test_invalid_sibling_does_not_block_exact_revision_cells():
+    sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
+    bindings = [{'evidenceId': row['evidenceId'], 'rowNumber': 2, 'groupIndex': 0,
+                 'metric': '1%', 'value': value}
+                for row, value in zip(sources, ('18.51', '16.91'), strict=True)]
+    claim = {'claimId': 'cells', 'kind': 'reported', 'text': 'Draft', 'evidenceRefs': ['e1', 'e2'],
+             'tableBindings': bindings}
+    sibling = {**claim, 'claimId': 'blocked'}
+    body, fixed = materialize({'claims': [claim, sibling]}, sources, '1',
+                              excluded_claim_ids={'blocked'})
+    assert fixed == ['cells'] and body['claims'][1] == sibling
+    assert validate_table_bindings(body['claims'][0], sources) is None
+
+
 def test_flat_column_reference_reconciles_only_a_unique_exact_cell():
     sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
     bindings = [{'evidenceId': source['evidenceId'], 'rowNumber': 2, 'groupIndex': 4,

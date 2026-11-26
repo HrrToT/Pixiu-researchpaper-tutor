@@ -1990,13 +1990,16 @@ space with unsupported global absence or incidental iteration/performance values
         revision_table_ids = []
         multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2, 3, 4, 5)
         reconcile_revision_coordinates = record.get('revisionTableMultipleRowsVersion') in (3, 4, 5)
+        isolate_revision_cells = record.get('revisionTablePointRenderingVersion') == 1
         if (requested_table and record.get('namedTableScopeVersion') == 2
-                and not blocked_draft_ids and (not scope_expression_audit or reconcile_revision_coordinates)):
+                and (not blocked_draft_ids or isolate_revision_cells)
+                and (not scope_expression_audit or reconcile_revision_coordinates)):
             from services.deep_research.revision_table_display import materialize as materialize_revision_table
             supplied_ids = {evidence_aliases[row['evidenceId']] for row in evidence_summaries}
             parsed, revision_table_ids = materialize_revision_table(
                 parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table,
-                multiple_rows=multiple_revision_rows, reconcile_coordinates=reconcile_revision_coordinates)
+                multiple_rows=multiple_revision_rows, reconcile_coordinates=reconcile_revision_coordinates,
+                excluded_claim_ids=blocked_draft_ids)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):

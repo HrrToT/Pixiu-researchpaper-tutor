@@ -1,0 +1,22 @@
+{
+  "sourceReceipts": "context-and-revision-row-real-20261126.json",
+  "networkModelCalls": 0,
+  "targetedTestsPassed": 132,
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v18": {
+      "replayedStage": "compile_plan",
+      "priorStructuralIssues": 8,
+      "currentStructuralIssues": 0,
+      "captureAssociationPreserved": {"stepId": "fit_arm", "recordStateId": "arm_peak_mem"},
+      "fixtureReadingObservationBeforeFitRejected": true
+    },
+    "H4-AWQ-VERSIONS-v9": {
+      "replayedStage": "synthesize",
+      "tableBindingsRetained": 12,
+      "priorTablePrecheck": "table_condition_not_displayed",
+      "currentTablePrecheck": "passed",
+      "remainingRejectedClaim": {"claimId": "c3", "reason": "invalid_scope_expression"}
+    }
+  },
+  "scientificContentAccepted": false
+}

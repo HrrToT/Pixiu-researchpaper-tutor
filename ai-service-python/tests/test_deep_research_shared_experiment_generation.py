@@ -395,6 +395,16 @@ def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fau
         assert result is None and code in {issue['code'] for issue in issues}
     else:
         assert not issues and result == canonical
+        annotated = deepcopy(draft)
+        for factor in annotated['factors']:
+            factor['affectedStateIds'].append('peak')
+        annotated['steps'][-2]['updates'].append('peak')
+        assert compile_plan(annotated, ['E1'], profile=8)[0] is None
+        assert compile_plan(annotated, ['E1'], profile=8, fit_observation_outputs=True) == (canonical, [])
+        intervention = next(step for step in annotated['steps'] if step['kind'] == 'intervene')
+        intervention['reads'].append('peak')
+        invalid, invalid_issues = compile_plan(annotated, ['E1'], profile=8, fit_observation_outputs=True)
+        assert invalid is None and any(issue['code'] == 'plan.future_state' for issue in invalid_issues)
         record, data, aliases = context()
         record[MARKER] = 8
         current, _, checkpoint = harness(record)

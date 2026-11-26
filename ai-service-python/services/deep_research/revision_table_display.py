@@ -109,13 +109,15 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
     return normalized, labels, columns, groups
 
 
-def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False):
+def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
+                excluded_claim_ids=()):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
     fixed = []
     for claim in report['claims']:
         if (not isinstance(claim, dict) or claim.get('kind') != 'reported' or not claim.get('claimId')
+                or claim['claimId'] in excluded_claim_ids
                 or not isinstance(claim.get('evidenceRefs'), list) or not claim.get('evidenceRefs')
                 or any(not isinstance(ref, str) or ref not in supplied for ref in claim['evidenceRefs'])
                 or claim.get('scopeExpression') or claim.get('body')):

@@ -94,7 +94,32 @@ def _expand_owned_states(proposal, issues):
             step['metricIds'].append(metric['id'])
 
 
-def compile_plan(value, evidence_ids, *, required_domains=(), profile=3):
+def _separate_fit_observations(proposal):
+    """Resolve a fit's newly captured observation, which is an output of that fit."""
+    steps = proposal['steps']
+    creators = {state_id: [index for index, step in enumerate(steps) if state_id in step['creates']]
+                for metric in proposal['metrics'] for capture in metric['fitMemoryCaptures']
+                for state_id in (capture['recordStateId'],)}
+    interventions = [(index, step) for index, step in enumerate(steps) if step['kind'] == 'intervene']
+    for metric in proposal['metrics']:
+        for capture in metric['fitMemoryCaptures']:
+            state_id = capture['recordStateId']
+            owners = creators[state_id]
+            if len(owners) != 1:
+                continue
+            index, = owners
+            fit = steps[index]
+            if (fit['id'] != capture['stepId'] or fit['kind'] != 'fit'
+                    or state_id in fit['reads']
+                    or any(position >= index or state_id in step['reads'] or state_id in step['updates']
+                           for position, step in interventions)):
+                continue
+            fit['updates'] = [sid for sid in fit['updates'] if sid != state_id]
+            for factor in proposal['factors']:
+                factor['affectedStateIds'] = [sid for sid in factor['affectedStateIds'] if sid != state_id]
+
+
+def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False):
     errors = Draft202012Validator(wire_schema(profile)).iter_errors(value)
     issues = [
         {'code': 'plan.wire_schema', 'path': '/' + '/'.join(map(str, error.absolute_path))}
@@ -114,6 +139,8 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3):
                 step['groups'] = [group for group in GROUPS if int(group[axis]) == factor['level']]
     if profile in (4, 6, 7, 8):
         _expand_owned_states(proposal, issues)
+    if profile == 8 and fit_observation_outputs:
+        _separate_fit_observations(proposal)
     factors = {row['id']: row for row in proposal['factors']}
     provided_inputs = {row['id'] for row in proposal['data']['inputs'] if row['availability'] == 'provided'}
     creators = {}
