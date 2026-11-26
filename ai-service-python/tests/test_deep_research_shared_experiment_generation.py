@@ -74,6 +74,24 @@ def test_topology_guidance_is_bound_to_the_new_run_and_validates_the_same_plan()
     invoke.assert_called_once()
 
 
+def test_frozen_prerequisite_policy_places_acquisition_and_stops_in_the_plan():
+    from services.deep_research.shared_experiment_generation import PREREQUISITE_PLACEMENT_MARKER
+
+    r, data, aliases = context()
+    r[MARKER] = 8
+    legacy = build(r, data, aliases)
+    r[PREREQUISITE_PLACEMENT_MARKER] = 1
+    current = build(r, data, aliases)
+    assert current['contextDigest'] == legacy['contextDigest']
+    assert current['allowedEvidenceIds'] == legacy['allowedEvidenceIds']
+    assert current['inputDigest'] != legacy['inputDigest']
+    prompt = current['request']['prompt']
+    assert 'acquisition, acceptance checks and stop conditions in shared preparation' in prompt
+    assert 'Use unresolved only for unanswered scientific or design decisions' in prompt
+    assert 'Do not claim the prerequisite is already met.' in prompt
+    assert 'Use unresolved only for unanswered' not in legacy['request']['prompt']
+
+
 def test_single_generation_is_durable_unchecked_and_reused_without_second_send():
     r, data, aliases = context(); current, states, checkpoint = harness(r); invoke = Mock(return_value=response())
     result = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)

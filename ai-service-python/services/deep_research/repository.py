@@ -354,6 +354,7 @@ class DeepResearchRepository:
                                      'sharedExperimentFitObservationOutputVersion', 'sharedExperimentDerivedPairingVersion',
                                      'sharedExperimentDerivedAnalysisVersion',
                                      'sharedExperimentFinalAuditPacketVersion',
+                                     'sharedExperimentPrerequisitePlacementVersion',
                                      'sharedExperimentStopInvalidReviewBatchVersion',
                                      'sharedExperimentReviewReferenceVersion',
                                      'sharedExperimentProtocolEvidenceVersion',

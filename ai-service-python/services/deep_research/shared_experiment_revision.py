@@ -3,7 +3,9 @@ from copy import deepcopy
 import json
 
 from services.deep_research.contracts import DeepResearchError,digest
-from services.deep_research.shared_experiment_generation import enabled,prepare as original_generation,_parse
+from services.deep_research.shared_experiment_generation import (
+    PREREQUISITE_PLACEMENT, PREREQUISITE_PLACEMENT_MARKER, _parse, enabled, prepare as original_generation,
+)
 from services.deep_research.shared_experiment_plan import _object,_array,validate,bind_for_review,validate_bound,MAX_BYTES
 
 NODE='repair_experiment_shared'
@@ -196,6 +198,12 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         instructions = PATH_INSTRUCTIONS + instructions
     fact_only = record.get(PATH_MARKER) in (2, 3) and bool(paths) and all(
         'factId' in issue for issue in feedback.get('hardIssues', []))
+    if not fact_only and record.get(PREREQUISITE_PLACEMENT_MARKER) == 1:
+        instructions = instructions.replace(
+            'If unresolved prerequisites remain, list them honestly.',
+            PREREQUISITE_PLACEMENT.replace('inputsToPrepare', 'data.inputs with availability="prepare"')
+            + ' Keep any remaining unresolved design decisions.',
+        )
     reference_candidates = {}
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}
     if paths:
