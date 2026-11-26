@@ -8,13 +8,17 @@ from jsonschema import Draft202012Validator
 from services.deep_research.shared_experiment_plan import GROUPS, _array, _object, schema, validate
 
 
-def wire_schema(profile=3, *, derive_pairing=False):
+def wire_schema(profile=3, *, derive_pairing=False, derive_analysis=False):
     wire = schema(3 if profile == 8 else 2 if profile in (4, 6, 7) else 1)
     if profile == 8 and derive_pairing:
         pairing = wire['properties']['pairing']
         for name in ('sharedStateIds', 'cloneStepIds'):
             del pairing['properties'][name]
             pairing['required'].remove(name)
+    if profile == 8 and derive_analysis:
+        analysis = wire['properties']['analysis']
+        del analysis['properties']['metricIds']
+        analysis['required'].remove('metricIds')
     states = wire['properties']['states']['items']['properties']
     input_source = states['source']
     input_source['properties']['kind'] = {'const': 'input'}
@@ -133,8 +137,9 @@ def _derive_pairing(proposal):
 
 
 def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False,
-                 derive_pairing=False):
-    errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing)).iter_errors(value)
+                 derive_pairing=False, derive_analysis=False):
+    errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing,
+                                             derive_analysis=derive_analysis)).iter_errors(value)
     issues = [
         {'code': 'plan.wire_schema', 'path': '/' + '/'.join(map(str, error.absolute_path))}
         for error in islice(errors, 64)
@@ -143,6 +148,15 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_obs
         return None, issues
 
     proposal = deepcopy(value)
+    if profile == 8 and derive_analysis:
+        # Shared work runs once before cloning. An explicit listing of all
+        # four arms repeats its scope. Subsets still fail canonical validation.
+        groups = set(GROUPS)
+        for collection in ('steps', 'budgets'):
+            for row in proposal[collection]:
+                if row['scope'] == 'shared' and len(row['groups']) == len(groups) and set(row['groups']) == groups:
+                    row['groups'] = []
+        proposal['analysis']['metricIds'] = [metric['id'] for metric in proposal['metrics']]
     if profile in (6, 7, 8):
         _expand_asset_catalog(proposal)
     if profile in (7, 8):

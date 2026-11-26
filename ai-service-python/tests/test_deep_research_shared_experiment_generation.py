@@ -402,6 +402,17 @@ def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fau
         assert derived == {**canonical, 'pairing': {**canonical['pairing'],
                            'sharedStateIds': sorted(canonical['pairing']['sharedStateIds'])}}
         assert compile_plan(draft, ['E1'], profile=8, derive_pairing=True)[0] is None
+        wire = deepcopy(pairing_wire)
+        del wire['analysis']['metricIds']
+        for row in (wire['steps'][0], wire['budgets'][0]):
+            row['groups'] = ['11', '01', '00', '10']
+        assert compile_plan(wire, ['E1'], profile=8, derive_pairing=True,
+                            derive_analysis=True) == (derived, [])
+        assert compile_plan(pairing_wire, ['E1'], profile=8, derive_pairing=True,
+                            derive_analysis=True)[0] is None
+        wire['steps'][0]['groups'].pop()
+        invalid, issues = compile_plan(wire, ['E1'], profile=8, derive_pairing=True, derive_analysis=True)
+        assert invalid is None and {'code':'plan.step_scope','path':'/steps/0'} in issues
         clone = next(step for step in pairing_wire['steps'] if step['kind'] == 'clone')
         clone['reads'].append('not_created')
         invalid, invalid_issues = compile_plan(pairing_wire, ['E1'], profile=8, derive_pairing=True)

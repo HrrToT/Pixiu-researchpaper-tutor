@@ -41,12 +41,15 @@ def descriptor():
 
 def descriptor_for(record, node, initialization_target='component', *, metadata_edits=False, revision_source_refs=None, fit_edits=False,
                    review_check_ids=None):
-    from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE, descriptor as shared_descriptor
+    from services.deep_research.shared_experiment_generation import (
+        DERIVED_ANALYSIS_MARKER, NODE as SHARED_NODE, descriptor as shared_descriptor, enabled as shared_enabled,
+    )
     if node == SHARED_NODE and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared proposal transport mode')
         return shared_descriptor(record['experimentSharedPlanContractVersion'],
-                                 derive_pairing=record.get('sharedExperimentDerivedPairingVersion') == 1)
+                                 derive_pairing=record.get('sharedExperimentDerivedPairingVersion') == 1,
+                                 derive_analysis=record.get(DERIVED_ANALYSIS_MARKER) == 1)
     if node == 'review_experiment_shared' and shared_enabled(record):
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared review transport mode')
