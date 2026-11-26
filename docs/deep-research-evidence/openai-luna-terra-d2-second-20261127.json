@@ -176,6 +176,22 @@
     "targetedTestsPassed": 78,
     "modelCalls": 0
   },
+  "wholeAnswerReviewOfflineReplay": {
+    "candidateComparisonAuditVersion": 12,
+    "originalMinimumBytes": 24503,
+    "candidateMinimumBytes": 23593,
+    "candidateRequestBytes": 23700,
+    "candidateRequestLimitBytes": 23738,
+    "candidateOutputAllowanceTokens": 2538,
+    "requiredEvidenceRows": 14,
+    "suppliedEvidenceRows": 15,
+    "fixedChecks": 8,
+    "decodedRequiredInputsIdentical": true,
+    "truncatedFixtureRejected": true,
+    "targetedTestsPassed": 126,
+    "providerRequests": 0,
+    "scientificContentAccepted": false
+  },
   "sha256": {
     "intent.json": "be9e700cdfea942882cd9630a41a76725e47693593cb56b49813d84496d76713",
     "provider.jsonl": "f5ffcc6d4deeb333597037c68d9b27b413b9628719cb4adc8d47f4a356c98b9d",

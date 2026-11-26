@@ -6,6 +6,7 @@ from services.deep_research.contracts import BudgetExhaustedError
 
 MIN_COVERAGE_OUTPUT_TOKENS = 3500
 SHORT_COMPARISON_OUTPUT_TOKENS = 1200
+SMALL_COMPARISON_PROCESS_OUTPUT_TOKENS = 2500
 
 
 def coverage_output_tokens(plan, claims):
@@ -41,7 +42,8 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
 
 
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
-                       transformation_processes=False,require_covered_bindings=False,root_coherence=False):
+                       transformation_processes=False,require_covered_bindings=False,root_coherence=False,
+                       share_comparison_evidence_sentences=False):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -277,7 +279,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     literal_limits=literal_limits, coherence=coherence, object_envelope=comparison_audit_envelope,
                     compact_layout=compact_comparison_layout, compact_checks=compact_comparison_checks,
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
-                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields, check_labels=check_labels, inline_limit_bindings=bool(inline_limits), require_covered_bindings=require_covered_bindings)
+                    source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields, check_labels=check_labels, inline_limit_bindings=bool(inline_limits), require_covered_bindings=require_covered_bindings,
+                    share_evidence_sentences=share_comparison_evidence_sentences)
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -293,6 +296,10 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 attempts.append(MIN_COVERAGE_OUTPUT_TOKENS)
             if fit_compact_comparison_budget and rendered_comparison_packet:
                 checks = [check for row in fixed_requirements for check in row['checks']]
+                if (share_comparison_evidence_sentences and len(checks) <= 8
+                        and sum(bool(check.get('processRequired')) for check in checks) == 1
+                        and not any(check.get('responseType') == 'limitation' for check in checks)):
+                    attempts.append(SMALL_COMPARISON_PROCESS_OUTPUT_TOKENS)
                 if len(checks) <= 12 and not any(
                         check.get('processRequired') or check.get('responseType') == 'limitation' for check in checks):
                     attempts.append(SHORT_COMPARISON_OUTPUT_TOKENS)
@@ -315,7 +322,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     admission_error = exc
                     continue
                 output_tokens = allowance
-                if allowance == SHORT_COMPARISON_OUTPUT_TOKENS:
+                if allowance in (SHORT_COMPARISON_OUTPUT_TOKENS, SMALL_COMPARISON_PROCESS_OUTPUT_TOKENS):
                     # All checks and cited rows fit. Give unused capacity back
                     # to the response; truncated verdicts still fail closed.
                     spare = limit - len(prompt.encode('utf8'))

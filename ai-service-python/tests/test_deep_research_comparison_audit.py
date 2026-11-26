@@ -29,7 +29,7 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
           compact_checks=False, budget=None, fit_compact_budget=False, dispatches=None,
           comparison=None, claims=CLAIMS, require_joint=False, compact_instructions=False, bounded_packet=False,
           rendered_packet=False, plan=PLAN, local_check_fields=False, label_checks=False, inline_limits=False,
-          require_covered_bindings=False):
+          require_covered_bindings=False, share_evidence_sentences=False):
     evidence = deepcopy(EVIDENCE if evidence is None else evidence)
     sent = []
     def invoke(rid, node, prompt, options, **kwargs):
@@ -113,6 +113,8 @@ def audit(mutation=None, evidence=None, wire_mode=None, explicit_shapes=False, c
         label_comparison_checks=label_checks,
         inline_comparison_limits=inline_limits,
         require_covered_bindings=require_covered_bindings,
+        share_comparison_evidence_sentences=share_evidence_sentences,
+        transformation_processes=share_evidence_sentences,
         **({'comparison_audit_envelope':True} if wire_mode=='object_v1' else {}))
     assert before == (plan, claims, evidence)
     return result, sent
@@ -367,6 +369,42 @@ def test_small_rendered_audit_can_fit_short_output_and_still_denies_truncation()
     assert sent == packets and result == reference and limited == [(size, 1200)]
     truncated, sent = audit('truncated', **options, budget=budget)
     assert truncated['status'] == 'invalid_response' and len(sent) == 1
+
+
+def test_evidence_sentence_sharing_preserves_all_source_fields():
+    sentence = 'The original input preserves the exact method, version, scope, and result. ' * 5
+    evidence = [{'evidenceId': f'E{i}', 'source': 'paper', 'quote': f'Observation {i}. {sentence}',
+                 'sourceContext': {'before': sentence + f'Before {i}.', 'after': f'After {i}. {sentence}',
+                                   'truncated': bool(i % 2)}} for i in range(6)]
+    old = renderer(QUESTION, [], CLAIMS, {}, presentation())(evidence)
+    new = renderer(QUESTION, [], CLAIMS, {}, presentation(), share_evidence_sentences=True)(evidence)
+    assert len(new.encode('utf-8')) < len(old.encode('utf-8'))
+    assert 'join in order with no separator' in new
+    restored = decode(new)
+    for row in restored['evidence']:
+        for obj, field in ((row, 'quote'), (row['sourceContext'], 'before'), (row['sourceContext'], 'after')):
+            if isinstance(obj[field], list):
+                obj[field] = ''.join(obj[field])
+    assert restored == decode(old)
+
+
+def test_single_process_comparison_can_fit_fallback_without_accepting_truncation():
+    plan = deepcopy(PLAN)
+    plan[0]['obligations'][0]['completionCriteria'][1].update(
+        responseType='explanation', requirement='Explain the compression transformations reported by LightGaussian '
+        'and any conditions or relationships needed to understand how they apply.')
+    options = dict(wire_mode='object_v1', explicit_shapes=True, compact_layout=True, compact_checks=True,
+                   fit_compact_budget=True, compact_instructions=True, bounded_packet=True, rendered_packet=True,
+                   plan=plan, share_evidence_sentences=True)
+    initial = []
+    _, packets = audit('truncated', **options, dispatches=initial)
+    assert sum(bool(c.get('processRequired')) for row in packets[0]['requirements'] for c in row['checks']) == 1
+    size, _ = initial[0]
+    budget = {'maxTokens': size + 1024 + 2500, 'maxModelCalls': 1, 'reserveModelCalls': 1}
+    limited = []
+    result, sent = audit('truncated', **options, budget=budget, dispatches=limited)
+    assert sent == packets and limited == [(size, 2500)]
+    assert result['status'] == 'invalid_response' and not result['verdicts']
 
 
 def test_joint_deliverable_cannot_be_closed_by_checked_paper_cells():

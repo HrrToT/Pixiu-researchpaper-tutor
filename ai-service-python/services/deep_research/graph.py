@@ -2362,6 +2362,8 @@ def make_verify_node(
                     comparison_audit_args['inline_comparison_limits'] = True
                 if audit_version >= 11:
                     comparison_audit_args['require_covered_bindings'] = True
+                if audit_version >= 12:
+                    comparison_audit_args['share_comparison_evidence_sentences'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                 if joint_comparison_delivery(record):
