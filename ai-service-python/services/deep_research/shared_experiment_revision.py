@@ -194,7 +194,8 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     if record.get(PATH_MARKER) in (1, 2, 3) and proposal.get('version') == 3:
         paths = fact_edit_paths(proposal, feedback.get('hardIssues', []))
         instructions = PATH_INSTRUCTIONS + instructions
-    fact_only = record.get(PATH_MARKER) in (2, 3) and bool(paths)
+    fact_only = record.get(PATH_MARKER) in (2, 3) and bool(paths) and all(
+        'factId' in issue for issue in feedback.get('hardIssues', []))
     reference_candidates = {}
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}
     if paths:

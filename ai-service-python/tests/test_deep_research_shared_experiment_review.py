@@ -298,6 +298,58 @@ def test_existing_number_precheck_stops_before_independent_model_request():
     assert assess(r,data,aliases,reply(verdict(r,data)))['scientificApproval'] is False
 
 
+@pytest.mark.parametrize(('origin', 'formula', 'reason'), [
+    ('', 'floor', 'split_index_origin_missing'),
+    ('Use zero-based indices. ', 'floor', 'split_holdout_count_mismatch'),
+    ('Use one-based indices. ', 'ceil', 'split_holdout_count_mismatch'),
+    ('Use one-based indices. ', 'floor', None),
+    ('Use zero-based indices. ', 'ceil', None),
+    ('Use zero-based indices. If N is divisible by 8, ', 'floor', None),
+])
+def test_modulo_split_verifies_count_without_confusing_index_origins(origin, formula, reason):
+    from services.deep_research.shared_experiment_protocol_checks import detect
+
+    p = proposal()
+    p['data']['splitPrecheck'] = f'{origin}Select i mod 8 = 0. Test count equals {formula}(N/8).'
+    issues = detect(p)
+    assert [issue['reason'] for issue in issues] == ([reason] if reason else [])
+    if reason == 'split_holdout_count_mismatch':
+        witness, = issues
+        start = 0 if 'zero' in origin else 1
+        n = witness['exampleImageCount']
+        assert witness['selected'] == sum(i % 8 == 0 for i in range(start, start + n))
+        assert witness['selected'] != witness['claimed']
+
+
+def test_paired_arm_defect_reaches_precheck_without_reviewer_call():
+    from services.deep_research.shared_experiment_protocol_checks import MARKER, detect
+
+    p = proposal()
+    p['data']['independentUnit'] = 'One trained arm on one selected scene is one independent unit.'
+    record, data, aliases = ready(p)
+    record[MARKER] = 1
+    invoke = Mock()
+    result = prepare(record, data, aliases, invoke=invoke, checkpoint=Mock())
+    assert result['status'] == 'not_started_precheck'
+    assert result['hardIssues'] == [
+        {'path': '/data/independentUnit', 'reason': 'paired_arm_is_not_independent_replicate'}]
+    invoke.assert_not_called()
+    assert not assess(record, data, aliases, reply(verdict(record, data)))['valid']
+
+    p['data']['independentUnit'] = 'Each arm is not an independent unit; the matched scene and seed is the block.'
+    assert detect(p) == []
+
+
+def test_protocol_checks_recognize_direct_chinese_assertions():
+    from services.deep_research.shared_experiment_protocol_checks import detect
+
+    p = proposal()
+    p['data']['splitPrecheck'] = '索引从0开始。选 i % 8 == 0，测试图像数应等于 floor(N/8)。'
+    p['data']['independentUnit'] = '每个实验组是一个独立重复单位。'
+    assert [issue['reason'] for issue in detect(p)] == [
+        'split_holdout_count_mismatch', 'paired_arm_is_not_independent_replicate']
+
+
 def test_unknown_review_is_preserved_and_not_automatically_repeated():
     r,data,aliases=ready(); sent=Mock(side_effect=UnknownCallError('original'))
     def checkpoint(v): r['state']['sharedExperimentReview']=deepcopy(v)

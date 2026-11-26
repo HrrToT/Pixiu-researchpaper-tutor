@@ -181,6 +181,7 @@ def build(record, input_data, aliases, *, required_domains=()):
     from services.deep_research.shared_strings import input_text
     from services.deep_research.experiment_planning import request_identity
     from services.deep_research.planning_transport import overhead_bytes
+    from services.deep_research import shared_experiment_protocol_checks as protocol
     _generation(record)
     def no_action(*args, **kwargs): raise AssertionError('Ready generation must not invoke or checkpoint')
     prepare_generation(record, input_data, aliases, invoke=no_action, checkpoint=no_action,
@@ -263,13 +264,15 @@ def build(record, input_data, aliases, *, required_domains=()):
         supplied = None
     stop_policy = ({STOP_INVALID_BATCH_MARKER: 1}
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
+    protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
-                                  **({'batches':batches} if batches else {}), **stop_policy, **reference_policy}),
+                                  **({'batches':batches} if batches else {}), **stop_policy, **reference_policy,
+                                  **protocol_policy}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
-            **stop_policy, **reference_policy,
-            'targets':targets(record), 'hardIssues':_fact_prechecks(record, aliases, input_data), 'scientificApproval':False}
+            **stop_policy, **reference_policy, **protocol_policy,
+            'targets':targets(record), 'hardIssues':_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
 def _visible_numeric_context(input_data, by_id, aliases):
@@ -329,6 +332,14 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
                  'factId':by_claim[r['claimId']]['id'], 'evidenceRefs':by_claim[r['claimId']]['evidenceRefs']}
                 for r in checked['rejected']]
     return [{'claimId':r['claimId'],'reason':r['reason']} for r in checked['rejected']]
+
+
+def _prechecks(record, aliases, input_data):
+    from services.deep_research import shared_experiment_protocol_checks as protocol
+    issues = _fact_prechecks(record, aliases, input_data)
+    if protocol.enabled(record):
+        issues.extend(protocol.detect(_generation(record)['boundProposal']['proposal']))
+    return issues
 
 
 def _pointer(value, path):
@@ -395,7 +406,7 @@ def assess(record, input_data, aliases, response):
     problems = []
     try:
         current = build_generation(record,input_data,aliases,required_domains=generation['boundProposal']['requiredDomains'])
-        if current['contextDigest'] != generation['boundProposal']['contextDigest'] or _fact_prechecks(record, aliases, input_data):
+        if current['contextDigest'] != generation['boundProposal']['contextDigest'] or _prechecks(record, aliases, input_data):
             raise ValueError('Original context or fact prechecks')
         expected = {t['checkId']:t for t in targets(record)}
         assembled = (build(record,input_data,aliases,required_domains=generation['boundProposal']['requiredDomains'])

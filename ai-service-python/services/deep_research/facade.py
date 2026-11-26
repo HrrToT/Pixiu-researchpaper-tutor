@@ -342,6 +342,7 @@ class ResearchFacade:
             **({"sharedExperimentStopInvalidReviewBatchVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewReferenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

@@ -1,0 +1,23 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "mode": "offline replay of original saved proposal and evidence",
+  "baseline": "derived-pairing-and-table-coordinate-v2-real-20261126.json",
+  "previouslyRecordedHardIssues": [],
+  "protocolPrechecks": [
+    {"path": "/data/splitPrecheck", "reason": "split_index_origin_missing", "period": 8, "residue": 0},
+    {"path": "/data/independentUnit", "reason": "paired_arm_is_not_independent_replicate"}
+  ],
+  "counterexampleIfOnlyZeroBasedOriginWasAdded": {
+    "images": 9,
+    "selectedByModulo": 2,
+    "countClaimedByFloor": 1
+  },
+  "reviewStatus": "not_started_precheck",
+  "reviewCallsSent": 0,
+  "repairInputBytes": 31914,
+  "repairInputLimitBytes": 32000,
+  "repairDispatchInterceptedOffline": true,
+  "newProviderCalls": 0,
+  "historicalRunModified": false,
+  "scientificAcceptance": false
+}
