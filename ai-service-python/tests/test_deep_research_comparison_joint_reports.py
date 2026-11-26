@@ -136,6 +136,37 @@ def test_deployment_memory_context_stays_in_the_active_source_and_target_scope()
     assert not has_device_memory_measurement(prose, direct=True)
 
 
+def test_user_memory_advice_survives_narrow_speed_role_without_changing_scope():
+    from services.deep_research.comparison_joint_reports import (
+        preferred_deployment_memory_reads, preserve_requested_memory_advice, split_joint_deliverables,
+    )
+    speed = '为什么不能直接拿两篇的FPS排名'
+    advice = '并给出显存受限时的有条件选择建议'
+    literal = f'说明能比较什么、{speed}，{advice}'
+    role = {'kind': 'joint', 'requestExcerpt': speed}
+    obligation = {'obligationId': 'choice', 'question': speed, 'requestExcerpt': literal,
+                  'comparisonRole': role, 'requiredSources': ['left', 'right'],
+                  'completionCriteria': [{'criterionId': 'speed', 'requirement': speed,
+                                          'responseType': 'explanation'}]}
+    plan = [{'itemId': 'compare', 'obligations': [obligation]}]
+    updated, changes = preserve_requested_memory_advice(plan, literal)
+    revised, = updated[0]['obligations']
+    assert changes == [{'obligationId': 'choice', 'change': 'preserved_memory_advice'}]
+    assert revised['requiredSources'] == obligation['requiredSources']
+    assert updated != plan and len(obligation['completionCriteria']) == 1
+    assert preserve_requested_memory_advice(updated, literal) == (updated, [])
+    assert preserve_requested_memory_advice(plan, speed) == (plan, [])
+    split = split_joint_deliverables({'choice': role}, [revised], literal, split_speed_and_advice=True)
+    assert split['choice'] == [{'kind': 'comparability', 'requirement': speed},
+                               {'kind': 'conditional_advice', 'requirement': advice}]
+    page = {'sourceId': 'context', 'workId': 'left', 'versionId': 'v1',
+            'accessLevel': 'fulltext', 'text': 'Rendering requires GPU memory for the trained model.'}
+    foreign = {**page, 'sourceId': 'foreign', 'workId': 'outside'}
+    assert preferred_deployment_memory_reads([foreign, page], {'choice': revised}, 12, ()) == []
+    assert preferred_deployment_memory_reads([foreign, page], {'choice': revised}, 12, (),
+                                             completion_criteria=True) == [page]
+
+
 @pytest.mark.parametrize('change', [None, 'ordinary_gap', 'partial_audit', 'invalid_audit', 'stale_layout',
                                    'wrong_version', 'wrong_value', 'missing_bindings', 'unverified'])
 def test_verified_same_table_example_closes_only_the_joint_readiness_gap(change):

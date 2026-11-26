@@ -39,12 +39,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4))
 
 
 def _evaluation_protocol_score(text):
@@ -57,7 +57,7 @@ def _evaluation_protocol_score(text):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') != 3 or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -104,12 +104,14 @@ def preferred_evaluation_reads(rows, obligations, limit, extracted):
     return [row for _, row in list(found.values())[:limit // 3]]
 
 
-def preferred_deployment_memory_reads(rows, obligations, limit, extracted):
+def preferred_deployment_memory_reads(rows, obligations, limit, extracted, *, completion_criteria=False):
     from services.deep_research.general_advice import deployment_memory_context, requests_device_memory
     from services.deep_research.obligation_binding import eligible_obligation_ids
     from services.deep_research.reading_roles import quality
 
-    active = {oid: row for oid, row in obligations.items() if requests_device_memory(row.get('question', ''))}
+    active = {oid: row for oid, row in obligations.items() if requests_device_memory(row.get('question', ''))
+              or completion_criteria and any(requests_device_memory(criterion['requirement'])
+                                            for criterion in row.get('completionCriteria', []))}
     found = {}
     for row in rows:
         if (row.get('accessLevel') == 'fulltext' and row.get('versionId') and not row.get('tableData')
@@ -216,6 +218,43 @@ def preserve_requested_numeric_example(plan, question):
         'completionCriteria':[{'criterionId':'matched_example','requirement':requirement,
                                'responseType':'identification'}]})
     return result
+
+
+def preserve_requested_memory_advice(plan, question):
+    """Recover a literal advice clause omitted from a merged comparison goal."""
+    from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+    from services.deep_research.evidence_requirements import _request_parts
+    from services.deep_research.general_advice import requests_device_memory
+
+    if not explicitly_requests_cross_paper_speed(question):
+        return plan, []
+
+    def is_memory_advice(text):
+        return bool(requests_device_memory(text) and _ADVICE.search(text))
+
+    obligations = [obligation for step in plan for obligation in step['obligations']]
+    if any(is_memory_advice(criterion['requirement']) for obligation in obligations
+           for criterion in obligation.get('completionCriteria', [])):
+        return plan, []
+    layers = getattr(question, 'instruction_layers', (str(question),))
+    result = deepcopy(plan)
+    for step in result:
+        for obligation in step['obligations']:
+            role = obligation.get('comparisonRole', {})
+            excerpt = obligation.get('requestExcerpt', '')
+            criteria = obligation.get('completionCriteria', [])
+            if (role.get('kind') != 'joint' or len(criteria) != 1 or not excerpt
+                    or not any(excerpt in layer for layer in layers)
+                    or not explicitly_requests_cross_paper_speed(criteria[0]['requirement'])):
+                continue
+            clauses = [part for part in _request_parts(excerpt)
+                       if is_memory_advice(part) and not _SPEED.search(part)]
+            if len(clauses) != 1 or criteria[0]['criterionId'] == 'literal_memory_advice':
+                continue
+            criteria.append({'criterionId': 'literal_memory_advice', 'requirement': clauses[0],
+                             'responseType': 'explanation'})
+            return result, [{'obligationId': obligation['obligationId'], 'change': 'preserved_memory_advice'}]
+    return plan, []
 
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,

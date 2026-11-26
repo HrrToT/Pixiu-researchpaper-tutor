@@ -1,0 +1,21 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "baseCase": "D2-BASELINE-COMPRESSION",
+  "previousFailure": "The generated role's narrow FPS excerpt replaced the completion criteria, dropping the user's separate request for advice under constrained device memory.",
+  "replay": {
+    "restoredLiteralCriterion": true,
+    "sourceScopeUnchanged": true,
+    "jointTargets": ["FPS comparability", "Conditional device-memory advice", "Matched numeric example"],
+    "original3DgsProtocolPage": 8,
+    "original3DgsDeploymentMemoryContextPage": 11,
+    "adviceMode": "measure_both_before_recommending_either",
+    "jointStageInputBytes": 23905,
+    "jointStageLimitBytes": 24000,
+    "allFrozenPremiseBundlesRetained": true,
+    "dispatchIntercepted": true
+  },
+  "targetedOfflineTestsPassed": 179,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "remaining": "The compatible input still needs a real generated and verified comparison. This replay does not demonstrate a structured numeric pair in the PDF-only fallback."
+}
