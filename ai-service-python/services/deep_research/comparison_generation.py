@@ -24,6 +24,7 @@ def planning_options(record, question):
         from services.deep_research.comparison_measurement_display import enabled as measurement_display
         from services.deep_research.comparison_measurement_display import paired_protocol_notes, preserve_numeric_example, separate_joint_deliverables
         from services.deep_research.comparison_joint_reports import enabled as joint_reports_enabled
+        from services.deep_research.comparison_joint_reports import scoped_example_presentation
         from services.deep_research.comparison_review_batches import current_profile
         return {'shared_axes':True,'typed_roles':True,'question':question,
                 **({'fixed_slots':True} if record['comparisonPlanningContractVersion'] in (3,4,5,6) else {}),
@@ -41,7 +42,7 @@ def planning_options(record, question):
                 **({'group_example_criteria':True} if record.get('comparisonJointReportsContractVersion') in (14, 15, 16) else {}),
                 **({'split_speed_and_advice':True} if record.get('comparisonCrossPaperBoundaryContractVersion') in (2, 3, 4, 5, 6) else {}),
                 **({'preserve_mixed_speed_criteria':True} if record.get('comparisonCrossPaperBoundaryContractVersion') == 6 else {}),
-                **({'scoped_example_text':2 if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (2, 3) else True}
+                **({'scoped_example_text':scoped_example_presentation(record)}
                    if record.get('comparisonJointReportsContractVersion') == 16 else {}),
                 **({'classify_standalone_joint':True} if preserve_numeric_example(record) else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}

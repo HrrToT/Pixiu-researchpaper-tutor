@@ -94,7 +94,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                         unified_answers=True, local_goal_refs=True,
                         literal_goal_bindings=record.get('comparisonLiteralAxisGoalVersion') == 1)
     from services.deep_research.comparison_measurement_display import enabled as measurement_display
-    from services.deep_research.comparison_joint_reports import benchmark_example_owner
+    from services.deep_research.comparison_joint_reports import benchmark_example_owner, scoped_example_presentation
     from services.deep_research.measurement_table_navigation import benchmark_metric
     if measurement_display(record):
         plan_options['measurement_display'] = True
@@ -113,7 +113,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     if record.get('comparisonJointReportsContractVersion') in (14, 15, 16):
         plan_options['group_example_criteria'] = True
     if record.get('comparisonJointReportsContractVersion') == 16:
-        plan_options['scoped_example_text'] = 2 if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (2, 3) else True
+        plan_options['scoped_example_text'] = scoped_example_presentation(record)
     if record.get('comparisonCrossPaperBoundaryContractVersion') in (2, 3, 4, 5, 6):
         plan_options['split_speed_and_advice'] = True
     if record.get('comparisonCrossPaperBoundaryContractVersion') == 6:

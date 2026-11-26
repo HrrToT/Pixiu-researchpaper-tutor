@@ -376,12 +376,25 @@ def bind_benchmark_example(record, draft, plan):
                and claim['obligationIds'] == [oid]]
     draft['benchmarkExampleClaimId'] = matches[0] if len(matches) == 1 else None
     if strict_benchmark_speed_scope(record):
-        draft['benchmarkSpeedScopeVersion'] = 2 if record['comparisonBenchmarkSpeedScopeContractVersion'] == 3 else 1
+        draft['benchmarkSpeedScopeVersion'] = 2 if record['comparisonBenchmarkSpeedScopeContractVersion'] in (3, 4) else 1
+    if scoped_example_presentation(record) == 3 and len(matches) == 1:
+        from services.deep_research.benchmark_tradeoff_summary import INTRO_PREFIX
+        example = next(claim for claim in draft['report']['claims'] if claim['claimId'] == matches[0])
+        if example.get('body', {}).get('prose', {}).get('text', '').startswith(INTRO_PREFIX):
+            draft['beginnerLeadClaimId'] = matches[0]
 
 
 def strict_benchmark_speed_scope(record):
     version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
-    return type(version) is int and version in (1, 2, 3)
+    return type(version) is int and version in (1, 2, 3, 4)
+
+
+def scoped_example_presentation(record):
+    version = record.get('comparisonBenchmarkSpeedScopeContractVersion')
+    if version == 4:
+        from services.deep_research.audience_rewrite import beginner_requested
+        return 3 if beginner_requested(record) else 2
+    return 2 if version in (2, 3) else True
 
 
 _NUMERIC_FRAME_RATE = re.compile(

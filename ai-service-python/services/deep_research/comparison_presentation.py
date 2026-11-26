@@ -105,6 +105,7 @@ def metadata(draft):
     if shared: fields += ('axisId', 'axisTitle')
     return {'version': version if shared else 1,
             **({'shortProseVersion': 1} if draft.get('shortProseVersion') == 1 else {}),
+            **({'beginnerLeadClaimId': draft['beginnerLeadClaimId']} if draft.get('beginnerLeadClaimId') else {}),
             **({'checkOutputShapeVersion':1} if version==3
                and type(draft.get('answerWireAudit',{}).get('version')) is int
                and draft['answerWireAudit']['version']==2 else {}),
@@ -119,6 +120,8 @@ def metadata(draft):
 def sections(value, claims):
     cell_ids = {cid for row in value['layout'] for cid in row['claimIds']}
     ordinary = [c for c in claims if c['claimId'] not in cell_ids]
+    if value.get('beginnerLeadClaimId'):
+        ordinary.sort(key=lambda claim: claim['claimId'] != value['beginnerLeadClaimId'])
     if value.get('shortProseVersion') == 1:
         paper_points = [claim for claim in claims if claim['claimId'] in cell_ids]
         return [{'title': '比较结论', 'claimIds': [claim['claimId'] for claim in ordinary + paper_points]}]
