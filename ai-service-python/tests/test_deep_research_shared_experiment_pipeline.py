@@ -144,6 +144,20 @@ def test_fact_only_repair_preserves_other_fields_and_unresolved_items():
         apply(base, reply({**change, 'unresolved': ['New unrelated prerequisite']}), allowed_paths=allowed)
 
 
+def test_fact_reference_candidates_stay_within_the_original_source_version():
+    from services.deep_research.shared_experiment_revision import fact_reference_candidates
+
+    original = {'evidenceId':'original', 'sourceWorkId':'paper', 'sourceVersionId':'v1',
+                'ownerMaterialId':'material', 'accessLevel':'fulltext', 'verification':{'literal':'passed'},
+                'quote':'The paper reports two configurations.'}
+    supported = {**original, 'evidenceId':'supported', 'quote':'The paper reports 7000 iterations.'}
+    foreign = {**supported, 'evidenceId':'foreign', 'sourceVersionId':'v2'}
+    record = {'state':{'evidence':[original, supported, foreign]}}
+    aliases = {'E1':'original', 'E2':'supported', 'E3':'foreign'}
+    facts = [{'id':'f','text':'The paper reports 7000 iterations.', 'evidenceRefs':['E1']}]
+    assert fact_reference_candidates(record, aliases, facts, [{'factId':'f','reason':'numeric_mismatch'}]) == {'f':[['E2']]}
+
+
 @pytest.mark.parametrize('fixed',[True,False])
 def test_graph_verifier_repairs_at_most_once_and_rechecks_both_stages(fixed):
     r,data,aliases=ready();r['state']['sharedExperimentInput']={'data':data,'aliases':aliases,'requiredDomains':[]}

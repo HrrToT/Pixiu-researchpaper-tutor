@@ -24,7 +24,28 @@ JUDGEMENT_GUIDANCE = (
 )
 
 
-def _resolve(claim, own, number, *, multiple_rows):
+def _unique_coordinate(binding, source):
+    """Resolve a flat column reference within the same cited row and value."""
+    from services.deep_research.table_evidence import visible_table_packet
+
+    packet = visible_table_packet(source.get('tableData'), source.get('quote', ''))
+    if not packet or type(binding['rowNumber']) is not int or type(binding['groupIndex']) is not int:
+        return None
+    row = next((row for row in packet['rows'] if row[0] == binding['rowNumber']), None)
+    if row is None:
+        return None
+    matches = []
+    offset = 0
+    for group, (label, metrics) in enumerate(packet['groups']):
+        for index, metric in enumerate(metrics):
+            if (binding['metric'] in (metric, f'{label} / {metric}')
+                    and binding['value'] == row[2][offset + index]):
+                matches.append({**binding, 'groupIndex': group, 'metric': metric})
+        offset += len(metrics)
+    return matches[0] if len(matches) == 1 else None
+
+
+def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates):
     bindings = claim.get('tableBindings')
     if not isinstance(bindings, list) or not 2 <= len(bindings) <= 32:
         return None
@@ -47,6 +68,10 @@ def _resolve(claim, own, number, *, multiple_rows):
         if binding['evidenceId'] not in select([source], number)[1]:
             return None
         entries = bound_table_context({**claim, 'tableBindings': [binding]}, [source])
+        if not entries and reconcile_coordinates:
+            binding = _unique_coordinate(binding, source)
+            if binding is not None:
+                entries = bound_table_context({**claim, 'tableBindings': [binding]}, [source])
         if len(entries) != 1:
             return None
         cell = entries[0]
@@ -77,7 +102,7 @@ def _resolve(claim, own, number, *, multiple_rows):
     return normalized, labels, columns, groups
 
 
-def materialize(report, evidence, number, *, multiple_rows=False):
+def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -90,7 +115,8 @@ def materialize(report, evidence, number, *, multiple_rows=False):
             claims.append(claim)
             continue
         own = {ref: supplied[ref] for ref in claim['evidenceRefs']}
-        matched = _resolve(claim, own, number, multiple_rows=multiple_rows)
+        matched = _resolve(claim, own, number, multiple_rows=multiple_rows,
+                           reconcile_coordinates=reconcile_coordinates)
         if not matched:
             claims.append(claim)
             continue

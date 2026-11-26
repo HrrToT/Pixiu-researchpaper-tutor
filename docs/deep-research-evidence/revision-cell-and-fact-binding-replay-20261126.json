@@ -1,0 +1,23 @@
+{
+  "AWQ": {
+    "sourceReceipt": "H4-AWQ-VERSIONS-v5",
+    "canonicalTableBindings": 12,
+    "fixedClaimId": "c1",
+    "separateScopeClaimUnchanged": true,
+    "reportedValuePrecheckPassed": true,
+    "visibleCharactersBeforeOptionalEditing": 264
+  },
+  "D3": {
+    "sourceReceipt": "D3-DENSIFICATION-FACTORIAL-v13",
+    "simulatedChosenReferenceAliases": {
+      "SF4": "E17",
+      "SF5": "E12"
+    },
+    "repairInputBytes": 17088,
+    "readyReviewInputBytes": 31892,
+    "reviewChecks": 23,
+    "remainingHardIssues": []
+  },
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false
+}

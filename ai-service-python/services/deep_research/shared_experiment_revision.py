@@ -48,6 +48,49 @@ def fact_edit_paths(proposal, hard_issues):
     }
 
 
+def fact_reference_candidates(record, aliases, facts, issues):
+    """Suggest precheck-passing alternatives within the originally cited source versions."""
+    from services.deep_research.verification import precheck_claims
+
+    evidence = record['state']['evidence']
+    by_id = {row['evidenceId']: row for row in evidence}
+    eligible = {issue['factId'] for issue in issues
+                if issue.get('reason') in ('numeric_mismatch', 'uncited_device_condition')}
+
+    def source_key(row):
+        return row.get('sourceWorkId'), row.get('sourceVersionId'), row.get('ownerMaterialId')
+
+    choices = {}
+    for fact in facts:
+        if fact['id'] not in eligible:
+            continue
+        refs = fact['evidenceRefs']
+        origins = [by_id[aliases[ref]] for ref in refs]
+        candidates = []
+        for alias, evidence_id in aliases.items():
+            row = by_id[evidence_id]
+            identity = source_key(row)
+            if (alias in refs or not all(identity) or row.get('accessLevel') != 'fulltext'
+                    or row.get('verification', {}).get('literal') != 'passed'):
+                continue
+            for index, original in enumerate(origins):
+                if source_key(original) != identity:
+                    continue
+                revised = list(dict.fromkeys([*refs[:index], alias, *refs[index+1:]]))
+                support = [by_id[aliases[ref]] for ref in revised]
+                claim = {'claimId':fact['id'], 'kind':'reported', 'text':fact['text'],
+                         'evidenceRefs':[item['evidenceId'] for item in support], 'detailLevel':'fulltext'}
+                result = precheck_claims([claim], support,
+                    absence_scope_version=record.get('absenceScopeContractVersion',0),
+                    quantity_spelling_version=record.get('quantitySpellingContractVersion',0),
+                    table_references_version=record.get('tableReferencesContractVersion',0))
+                if not result['rejected'] and revised not in candidates:
+                    candidates.append(revised)
+        if candidates:
+            choices[fact['id']] = candidates[:4]
+    return choices
+
+
 def descriptor():
     text={'type':'string','minLength':1}
     return {'type':'json_schema','name':'shared_experiment_replacements_v1','schema':_object({
@@ -148,10 +191,11 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     proposal = base['boundProposal']['proposal']
     instructions = INSTRUCTIONS
     paths = {}
-    if record.get(PATH_MARKER) in (1, 2) and proposal.get('version') == 3:
+    if record.get(PATH_MARKER) in (1, 2, 3) and proposal.get('version') == 3:
         paths = fact_edit_paths(proposal, feedback.get('hardIssues', []))
         instructions = PATH_INSTRUCTIONS + instructions
-    fact_only = record.get(PATH_MARKER) == 2 and bool(paths)
+    fact_only = record.get(PATH_MARKER) in (2, 3) and bool(paths)
+    reference_candidates = {}
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}
     if paths:
         fields['factEditPaths'] = paths
@@ -160,6 +204,14 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         fields.pop('proposal')
         fields['sourceFacts'] = [fact for fact in proposal['sourceFacts'] if fact['id'] in paths]
         fields['unresolved'] = proposal['unresolved']
+        if record.get(PATH_MARKER) == 3:
+            reference_candidates = fact_reference_candidates(record, aliases, fields['sourceFacts'], feedback['hardIssues'])
+            if reference_candidates:
+                fields['candidateEvidenceRefs'] = reference_candidates
+                instructions = (
+                    'candidateEvidenceRefs lists alternative reference sets that pass literal prechecks. '
+                    'Verify each complete fact against the quoted text before choosing a set. '
+                    'Rephrasing alone does not resolve a citation error.\n' + instructions)
     def measure(data):
         context = {key:value for key,value in data.items() if not fact_only or key != 'requirements'}
         prompt=instructions+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
@@ -170,6 +222,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         from services.deep_research.shared_experiment_review_input import fit_accounted_evidence
         decisions = feedback.get('scientificReview', {}).get('verdict', {}).get('checks', [])
         feedback_refs = {binding['evidenceId'] for decision in decisions for binding in decision['evidenceBindings']}
+        feedback_refs.update(ref for alternatives in reference_candidates.values() for refs in alternatives for ref in refs)
         req, size, supplied = fit_accounted_evidence(record,input_data,aliases,proposal,measure,32000,
                                                      feedback_refs=feedback_refs)
         supply = {'suppliedEvidenceAliases':supplied}

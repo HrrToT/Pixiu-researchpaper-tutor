@@ -1667,7 +1667,7 @@ space with unsupported global absence or incidental iteration/performance values
             prompt += '\n' + table_scope_guidance
             if record.get('namedTableScopeVersion') == 2:
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE
-                prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') == 2
+                prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') in (2, 3)
                                  else GUIDANCE)
         template = prompt
         if premise_mode:
@@ -1976,14 +1976,15 @@ space with unsupported global absence or incidental iteration/performance values
                 return {'error_code':'invalid_synthesis_response'}
         blocked_draft_ids = {row['claimId'] for row in (draft_validation_audit or {}).get('rejected', [])}
         revision_table_ids = []
-        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2)
+        multiple_revision_rows = record.get('revisionTableMultipleRowsVersion') in (1, 2, 3)
+        reconcile_revision_coordinates = record.get('revisionTableMultipleRowsVersion') == 3
         if (requested_table and record.get('namedTableScopeVersion') == 2
-                and not blocked_draft_ids and not scope_expression_audit):
+                and not blocked_draft_ids and (not scope_expression_audit or reconcile_revision_coordinates)):
             from services.deep_research.revision_table_display import materialize as materialize_revision_table
             supplied_ids = {evidence_aliases[row['evidenceId']] for row in evidence_summaries}
             parsed, revision_table_ids = materialize_revision_table(
                 parsed, [row for row in evidence if row['evidenceId'] in supplied_ids], requested_table,
-                multiple_rows=multiple_revision_rows)
+                multiple_rows=multiple_revision_rows, reconcile_coordinates=reconcile_revision_coordinates)
         drafting_audit={}
         synthesis_presentation_audit={}
         if scope_enabled(record):
@@ -2101,8 +2102,13 @@ space with unsupported global absence or incidental iteration/performance values
         if blocked_draft_ids:
             pass  # Never let wording edits hide the rejected structure before review.
         elif scope_expression_audit and scope_compaction_enabled(record):
-            parsed, scope_expression_audit = compact_scope(parsed, scope_expression_audit, question,
+            fixed_table_ids = set(revision_table_ids)
+            original_claims = parsed['claims']
+            scope_edit_input = {**parsed, 'claims': [c for c in original_claims if c.get('claimId') not in fixed_table_ids]}
+            fixed_tables = [c for c in original_claims if c.get('claimId') in fixed_table_ids]
+            parsed, scope_expression_audit = compact_scope(scope_edit_input, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
+                fixed_claims=fixed_tables,
                 **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
                    and record['compactionBudgetContractVersion'] in (1,2) else {}),
                 **({'reserve_scope_budget':True} if type(record.get('compactionBudgetContractVersion')) is int
@@ -2122,6 +2128,10 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'fixed_scope_first':True,'invoke_fixed':fixed_compact_invoke} if fixed_scope_compaction(record,question,output_kind) else {}),
                 **({'explicit_edit_scope':True} if explicit_compaction_scope(record,question,output_kind) else {}),
                 **({'measured_guidance':True} if compact_options else {}))
+            if parsed is not None and fixed_tables:
+                edited = {c['claimId']:c for c in parsed['claims']}
+                parsed['claims'] = [c if c['claimId'] in fixed_table_ids else edited[c['claimId']]
+                                    for c in original_claims]
         else:
             parsed = compact_answer(parsed, question,
                 draft_compact_invoke if editor_options else direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,

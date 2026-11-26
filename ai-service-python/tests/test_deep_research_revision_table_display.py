@@ -87,3 +87,26 @@ def test_multiple_rows_keep_each_versions_values_and_require_matching_coordinate
     assert not contradictory_revision_values(rendered, sources, '1')
     incomplete = {'claims': [{**claim, 'tableBindings': bindings[:-1]}]}
     assert materialize(incomplete, sources, '1', multiple_rows=True) == (incomplete, [])
+
+
+def test_flat_column_reference_reconciles_only_a_unique_exact_cell():
+    sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
+    bindings = [{'evidenceId': source['evidenceId'], 'rowNumber': 2, 'groupIndex': 4,
+                 'metric': 'Activation / 1%', 'value': value}
+                for source, value in zip(sources, ('18.51', '16.91'), strict=True)]
+    report = {'claims': [{'claimId':'measurement','kind':'reported','text':'v1 16.91，v2 18.51。',
+                          'evidenceRefs':['e1','e2'],'tableBindings':bindings}]}
+    assert materialize(report, sources, '1') == (report, [])
+    compiled, fixed = materialize(report, sources, '1', reconcile_coordinates=True)
+    assert fixed == ['measurement']
+    claim, = compiled['claims']
+    assert claim['text'] == '表 1 OPT-1.3B（Activation · 1%）依次为 v1 18.51，v2 16.91。'
+    assert validate_declared_references(claim, sources) is None
+    for source in sources:
+        source['tableData']['groups'].append(['Other', ['1%']])
+        source['tableData']['rows'][0][2].append(source['tableData']['rows'][0][2][0])
+        source['quote'] += ' | ' + source['tableData']['rows'][0][2][0]
+    ambiguous = deepcopy(report)
+    for binding in ambiguous['claims'][0]['tableBindings']:
+        binding['metric'] = '1%'
+    assert materialize(ambiguous, sources, '1', reconcile_coordinates=True) == (ambiguous, [])
