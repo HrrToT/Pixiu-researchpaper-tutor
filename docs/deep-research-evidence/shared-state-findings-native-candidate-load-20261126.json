@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "02294d34e6a5500a83166f3f807edcb4eaa13958",
+  "fullRegression": "shared-state-findings-native-full-20261126.json",
+  "candidate": "academic-dr-shared-state-findings-native-candidate-20261126",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "pinnedPdfFallback": true,
+  "sharedExperimentProfile": 8,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -1,0 +1,91 @@
+{
+  "sourceCommit": "02294d34e6a5500a83166f3f807edcb4eaa13958",
+  "candidate": "academic-dr-shared-state-findings-native-candidate-20261126",
+  "fullRegression": "shared-state-findings-native-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v16": {
+      "runId": "dr_run_8c5f2f05361150e5b3d8460b8041fb2b",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 8,
+      "settledTokens": 48791,
+      "elapsedSeconds": 177.3,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "100825b5c54d5a609c08d87c2dd145e8350b938f96aaa8cf4cf2ff2acb4c5756",
+        ".payload.json": "fdd7fd6e1e7ca8e0000f9036a8bf1c0eaaa6f62c007ad02aac26eddce40e5a14",
+        ".calls.json": "a21040940ba3eff0b516af065ab7aef702178fd2b066353854def95aa95a0118",
+        ".result.json": "a5c4b72bef3aa25afcb68dfe957465b365bb2b00339c567329e82843a65c9b0a",
+        ".execution.json": "f75022b1d29d44326e005a9878a0dde4f161033dc222f724bf0362094892eeef"
+      },
+      "scientificContentAccepted": false,
+      "generatedStructurallyBoundPlan": true,
+      "sharedStateIds": [
+        "shared_gaussians",
+        "shared_optimizer",
+        "shared_controls",
+        "shared_metadata"
+      ],
+      "initialFactPrecheckIssues": [
+        {
+          "claimId": "shared_fact_3",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "16e-1"
+          ],
+          "factId": "SF4",
+          "evidenceRefs": [
+            "E4"
+          ]
+        }
+      ],
+      "revisedFactPrecheckIssues": [],
+      "revisedReviewStatus": "invalid_response",
+      "reviewFinishReason": "length",
+      "reviewOutputTokens": 4096
+    },
+    "H4-AWQ-VERSIONS-v8": {
+      "runId": "dr_run_de2bb3a92a2257b99a8443c7192fc44a",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "modelCalls": 11,
+      "settledTokens": 75519,
+      "elapsedSeconds": 317.6,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "69abc510df126f0969a89dc112e03bdc9f8a0ebb37278ae99936fc2657ce1650",
+        ".payload.json": "743c48100b290c2c1c442145c2c7d67f69320d4f5a708591fe95fdf3d5e69f1c",
+        ".calls.json": "518d926c82e73f428af59b36d8fe7fa17dd1de30ff1d313587a2bfaf0400e408",
+        ".result.json": "49a8f8bdd4ea013b550705d202ea3135ec66868c28c89bae28fd946b1259cd6a",
+        ".execution.json": "5fa10a1fac0dd5522c258804b884b118e2ab4f55bf4527173c02ac0951b9e7c2"
+      },
+      "scientificContentAccepted": false,
+      "draftTableBindings": 12,
+      "draftConclusion": "两版表 1 中，OPT-1.3B 和 OPT-6.7B 的按激活选择 1% 权重保留 FP16 的困惑度均低于 RTN，且高于 FP16。\n两版共同支持：按激活选择 1% 权重保留 FP16 相比 RTN 能降低困惑度，但仍高于 FP16 基线。",
+      "coverageTransport": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "invalid_wrapper"
+      },
+      "coverageRawKeys": [
+        "auditType",
+        "coherent",
+        "issues",
+        "items"
+      ],
+      "sharedConclusionRawVerdicts": [
+        "missing"
+      ],
+      "resultClaimCount": 0,
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true
+  },
+  "scientificContentAccepted": false
+}
