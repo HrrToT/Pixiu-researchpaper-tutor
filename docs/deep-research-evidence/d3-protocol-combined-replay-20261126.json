@@ -1,0 +1,26 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "candidateCommit": "5a0ba59f1",
+  "mode": "offline combined replay with the frozen PDF and production request assembly",
+  "pdfSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "generationInputPhysicalPages": {
+    "opacitySchedule": 5,
+    "opacityScheduleContinuation": 6,
+    "datasetMembership": 7
+  },
+  "ownedPdfReads": 1,
+  "requestSizeLimitBytes": 32000,
+  "interceptedModelStages": [
+    {"node": "plan_experiment_shared", "inputBytes": 31920},
+    {"node": "repair_experiment_shared", "inputBytes": 31251},
+    {"node": "review_experiment_shared", "inputBytes": 31692}
+  ],
+  "originalReview": "not_started_precheck",
+  "fixtureRevision": "awaiting_scientific_review",
+  "fixtureRevisionHardIssues": [],
+  "unresolvedPrerequisitesRetained": true,
+  "modelCalls": 0,
+  "productionRunModified": false,
+  "scientificAcceptance": false,
+  "boundary": "The draft fixture reuses the historical operation structure with one source fact remapped to a literal quote present in the new input. Two diagnosed protocol fields and the linked uncertainty text were replaced by an explicit fixture. Provider dispatch was intercepted. This verifies request fit and review sequencing, without claiming a repaired scientific answer."
+}
