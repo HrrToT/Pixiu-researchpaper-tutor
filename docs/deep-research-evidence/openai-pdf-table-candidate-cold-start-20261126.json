@@ -1,0 +1,33 @@
+{
+  "backendCommit": "a6d2af0e5629f6afba75c079a020d8b64cd2236f",
+  "runtimeImage": "pixiu-research-pdf-proof:20261120",
+  "network": "none",
+  "pypdfVersion": "6.21.4",
+  "asgiLifespanStarted": true,
+  "disabledForIsolatedProbe": ["Startup warm-up", "Periodic monitoring"],
+  "newComparison": {
+    "state": "queued with deferred start",
+    "mainModel": "gpt-6.1-terra",
+    "routineModel": "gpt-6-luna",
+    "pdfTableFallbackEnabled": true,
+    "modelCalls": 0
+  },
+  "pdfFixture": {
+    "version": "LightGaussian arXiv:2311.17245v6",
+    "verifiedPage": 6,
+    "verifiedTableNumber": "1",
+    "checkedPair": [["144", "782MB"], ["237", "45MB"]]
+  },
+  "historicalCopies": {
+    "runsChecked": 2,
+    "callRowsChecked": 86,
+    "dataUnchanged": true,
+    "providerRoutesUnchanged": true,
+    "partialComparisonReopened": true,
+    "pausedUnknownResultCancelableOnly": true
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "liveDeploymentChanged": false,
+  "boundary": "Cold-start and repository compatibility in isolation. No real provider dispatch, live deployment or scientific report acceptance."
+}
