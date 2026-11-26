@@ -1258,6 +1258,7 @@ def make_synthesize_node(
         source_aliases = {}
         source_registry = {}
         from services.deep_research.synthesis_evidence import enabled as premise_enabled,order_premises,result_role,fit_premises
+        from services.deep_research import external_explanation
         from services.deep_research.mechanism_sources import enabled as mechanism_premises
         from services.deep_research.section_premises import requested as requested_sections, priority_enabled as section_priority
         premise_mode=premise_enabled(record)
@@ -1278,6 +1279,7 @@ def make_synthesize_node(
             from services.deep_research.synthesis_instructions import enabled as synthesis_input_enabled
             from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_premises_enabled
+            external_explanation_rows = candidates if external_explanation.enabled(record, output_kind) else ()
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
@@ -1307,6 +1309,9 @@ def make_synthesize_node(
                 **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3,4) else {}),
                 **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (3,4)) else {}),
                 **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3) else {}))
+            if external_explanation_rows:
+                candidates, premise_bundles = external_explanation.prioritize(
+                    external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -1670,6 +1675,11 @@ space with unsupported global absence or incidental iteration/performance values
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE
                 prompt += '\n' + (JUDGEMENT_GUIDANCE if record.get('revisionTableMultipleRowsVersion') in (2, 3, 4)
                                  else GUIDANCE)
+        if premise_mode and external_explanation.enabled(record, output_kind):
+            prompt = external_explanation.prompt(record, question=question, limit=requested_limit, claim_limit=claim_limit,
+                sections=section_templates, obligations=draft_obligations, sources=source_registry,
+                evidence_marker=evidence_marker, table_marker=table_marker, claim_fields=claim_fields,
+                scope_enabled=scope_expression_enabled(record), compact_evidence_wire=compact_evidence_wire)
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}

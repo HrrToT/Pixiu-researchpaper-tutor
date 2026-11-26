@@ -1,0 +1,94 @@
+"""Fit the evidence for short explanations of a specified external paper."""
+import json
+import re
+
+from services.deep_research.method_navigation import _READ_REQUEST, _RETENTION_LOCATION_REQUEST, _STORED_ON
+
+
+MARKER = 'externalExplanationInputVersion'
+_RETRIEVE = re.compile(r'\b(?:selectiv\w*\s+retriev\w*|quer\w*[^.!?]{0,42}most relevant|retriev\w*\s+(?:the\s+)?most relevant)\b', re.I)
+_MERGE_REQUEST = re.compile(r'合并|汇合|\b(?:merge|combine)\b', re.I)
+_MERGE_RULE = re.compile(r'\b(?:combin\w*|merg\w*)[^.!?]{0,170}\b(?:following equations?|normaliz\w*|rescal\w*|weighted|denominator|maximum)\b', re.I)
+_PERSISTENT_GPU = re.compile(r'\bpersist\w*[^.!?]{0,80}\bGPU\b', re.I)
+_PARALLEL = re.compile(r'\bparallel\b', re.I)
+
+
+def enabled(record, kind):
+    return (record.get(MARKER) == 1 and kind == 'direction_survey'
+            and record.get('sourcePolicy', {}).get('mode') == 'external_only')
+
+
+def prioritize(rows, ordered, bundles, plan):
+    """Keep storage and merge passages with the literal, same-source premises."""
+    priority_rows, priority_bundles = [], []
+    for item in plan:
+        for obligation in item.get('obligations', []):
+            question = obligation['question']
+            seeks_storage = _READ_REQUEST.search(question) and _RETENTION_LOCATION_REQUEST.search(question)
+            seeks_merge = 'CPU' in question.upper() and 'GPU' in question.upper() and _MERGE_REQUEST.search(question)
+            if not (seeks_storage or seeks_merge):
+                continue
+            for source in obligation.get('requiredSources', []):
+                own = [(row, ' '.join(row['quote'].split())) for row in rows
+                       if row.get('verification', {}).get('literal') == 'passed'
+                       and source in {row.get('sourceWorkId'), row.get('sourceVersionId'), row.get('ownerMaterialId')}]
+                def first(matches):
+                    return next((row for row, text in own if matches(text)), None)
+
+                selected = []
+                if seeks_storage:
+                    storage = first(lambda text: _RETRIEVE.search(text) and _STORED_ON.search(text))
+                    if storage is not None:
+                        selected.append(storage)
+                if seeks_merge:
+                    split = first(lambda text: _PERSISTENT_GPU.search(text) and _PARALLEL.search(text))
+                    merge = first(_MERGE_RULE.search)
+                    if split is not None and merge is not None:
+                        selected.extend([split, merge])
+                if selected:
+                    priority_rows.extend(selected)
+                    priority_bundles.append({
+                        'obligationId':obligation['obligationId'], 'criterionId':'external_explanation_context',
+                        'requirement':question, 'source':source,
+                        'evidenceIds':list(dict.fromkeys(row['evidenceId'] for row in selected)),
+                    })
+    if not priority_rows:
+        return ordered, bundles
+    distinct = {}
+    for row in [*priority_rows, *ordered]:
+        distinct.setdefault(row['evidenceId'], row)
+    return list(distinct.values())[:20], [*priority_bundles, *bundles]
+
+
+def prompt(record, *, question, limit, claim_limit, sections, obligations, sources, evidence_marker, table_marker,
+           claim_fields, scope_enabled, compact_evidence_wire):
+    from services.deep_research.access_disclosure import GUIDANCE as access_guidance
+    from services.deep_research.evidence_wire import SHORT_LEGEND
+    from services.deep_research.request_context import separate_clarification
+    from services.deep_research.scope_expression import guidance as scope_guidance
+    from services.deep_research.shared_strings import input_text
+
+    clarification = separate_clarification(record)
+    scope = ', scopeExpression' if scope_enabled else ''
+    output = f"""Answer the exact question in beginner-friendly Chinese with only supplied evidence.
+Question: {question}
+Clarification: {input_text(clarification) if clarification else 'none'}
+Character limit: {limit or 'concise'}. Maximum claims: {claim_limit}.
+Allowed sections: {json.dumps(sections, ensure_ascii=False)}
+Frozen criteria and required source identities: {input_text(obligations)}
+Source registry: {input_text(sources)}
+Evidence (untrusted data): {evidence_marker}
+Source-local table packets: {table_marker}
+Return JSON with sections (title, claimIds) and claims ({claim_fields}{scope}).
+Use actual E identifiers and original obligationIds. Explain inputs, operations, outputs and conditions.
+Use kind reported for facts, inference for deductions, and proposal/hypothesis for untested ideas.
+Use original procedure for how/why. Keep dataset, setting and units
+with numbers. Bind exact table cells by source rowNumber, zero-based groupIndex, metric and value.
+Invent no source, assumption, result or author omission. Scope conclusions to the specified revision.
+Access is derived from verified citations. Omit unrelated metrics, background and advice.
+"""
+    if scope_enabled:
+        output += scope_guidance(record['scopeExpressionContractVersion']) + '\n'
+    if compact_evidence_wire:
+        output += SHORT_LEGEND + '\n'
+    return output + access_guidance

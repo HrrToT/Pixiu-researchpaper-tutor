@@ -1,0 +1,56 @@
+{
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false,
+  "cases": {
+    "H3-RETRIEVALATTENTION-v1": {
+      "payloadSha256": "8574210e6042ecae852d23b374e26da62e49570de996f4ec56fefd17941b1173",
+      "beforeBytes": 23996,
+      "afterBytes": 23663,
+      "beforeEvidence": 6,
+      "afterEvidence": 14,
+      "beforeMissingBundles": 2,
+      "afterMissingBundles": 0,
+      "acceptedReportEvidenceRetained": true
+    },
+    "H3-INFLLM-v1": {
+      "payloadSha256": "25aa0c9a3e9a129d2e44fed940fa0034cc32f1e2402b90af35e2ba446022f303",
+      "beforeBytes": 23804,
+      "afterBytes": 23940,
+      "beforeEvidence": 10,
+      "afterEvidence": 20,
+      "beforeMissingBundles": 0,
+      "afterMissingBundles": 0,
+      "acceptedReportEvidenceRetained": true
+    },
+    "H3-QUEST-v1": {
+      "payloadSha256": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+      "beforeBytes": 23885,
+      "afterBytes": 23842,
+      "beforeEvidence": 12,
+      "afterEvidence": 20,
+      "beforeMissingBundles": 0,
+      "afterMissingBundles": 0,
+      "acceptedReportEvidenceRetained": true
+    },
+    "H3-PAGEDATTENTION-v1": {
+      "payloadSha256": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+      "beforeBytes": 23885,
+      "afterBytes": 23845,
+      "beforeEvidence": 10,
+      "afterEvidence": 20,
+      "beforeMissingBundles": 0,
+      "afterMissingBundles": 0,
+      "acceptedReportEvidenceRetained": true
+    },
+    "H3-SNAPKV-v1": {
+      "payloadSha256": "13c496946d0a94b779fef9c0b637b904325c3774619582876a2ba8a100277523",
+      "beforeBytes": 23961,
+      "afterBytes": 23866,
+      "beforeEvidence": 8,
+      "afterEvidence": 20,
+      "beforeMissingBundles": 0,
+      "afterMissingBundles": 0,
+      "acceptedReportEvidenceRetained": true
+    }
+  }
+}
