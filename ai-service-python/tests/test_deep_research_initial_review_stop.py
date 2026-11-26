@@ -119,3 +119,46 @@ def test_decomposed_expression_budget_stop_does_not_promote_partial_parent():
         with pytest.raises(InitialReviewBudgetStop) as caught:
             checker([*ordinary, parent], [*ordinary_evidence, *expression_evidence])
     assert [v['claimId'] for v in caught.value.verdicts] == [c['claimId'] for c in ordinary]
+
+
+def test_comparison_audit_resumes_with_original_allowance_after_review_stop(monkeypatch, tmp_path):
+    from services.deep_research.repository import DeepResearchRepository
+
+    claims, evidence = material()
+    repo = DeepResearchRepository(tmp_path / 'review.sqlite3')
+    repo.initialize()
+    repo.create_run({'runId': 'r', 'status': 'running', 'question': 'Compare the methods.',
+        'comparisonAuthoringContractVersion': 2, 'comparisonPlanningContractVersion': 6,
+        'comparisonReviewBatchContractVersion': 2, 'comparisonAuditEnvelopeContractVersion': 14,
+        'budget': {'maxTokens': 100000, 'tokens': 76000},
+        'state': {'outputKind': 'paper_comparison', 'reportBody': {'claims': claims},
+                  'evidence': evidence, 'plan': [], 'comparisonCellDraft': {'sources': [], 'layout': []}}})
+    monkeypatch.setattr('services.deep_research.comparison_generation.enabled', lambda _: True)
+    monkeypatch.setattr('services.deep_research.comparison_audit_envelope.enabled', lambda _: True)
+    monkeypatch.setattr('services.deep_research.comparison_cells.partition_source_bound_claims',
+                        lambda targets, *_: (targets, []))
+    checker, requests = interrupted_checker(2)
+    audit_budgets = []
+    audit_result = {'status': 'not_checked', 'gaps': [], 'verdicts': [], 'scientificApproval': False}
+
+    def audit(_run_id, _question, _plan, accepted, *_args, budget, **_options):
+        assert [claim['claimId'] for claim in accepted] == ['c0', 'c1']
+        audit_budgets.append(deepcopy(budget))
+        if len(audit_budgets) == 1:
+            repo.update_run('r', lambda record: {**record, 'budget': {**record['budget'], 'tokens': 98000}})
+            raise RuntimeError('interrupted after settlement')
+        return audit_result
+
+    monkeypatch.setattr('services.deep_research.final_coverage.audit_final_answer', audit)
+    node = make_verify_node(verify_claims, checker, repo.update_run, llm_invoke=Mock())
+    with pytest.raises(RuntimeError, match='interrupted after settlement'):
+        node({'run_id': 'r'})
+
+    node({'run_id': 'r'})
+    assert repo.require_run('r')['state']['verifiedReport']['answerCoverage'] == audit_result
+    node({'run_id': 'r'})
+    assert len(requests) == 2
+    assert len(audit_budgets) == 2
+    assert audit_budgets[0] == audit_budgets[1]
+    assert audit_budgets[0]['tokens'] == 76000
+    assert repo.require_run('r')['budget']['tokens'] == 98000

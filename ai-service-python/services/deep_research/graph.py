@@ -2374,7 +2374,7 @@ def make_verify_node(
         def audit_accepted(accepted, snapshot, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') == 13):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             return audit_final_answer(run_id, effective_question(record),
@@ -2424,6 +2424,26 @@ def make_verify_node(
             if initial_review_stop:
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
+                if (comparison_audit_args.get('comparison_audit_envelope')
+                        and record.get('comparisonAuditEnvelopeContractVersion') == 14
+                        and llm_invoke is not None and verification_result.get('accepted')):
+                    # Stopping individual reviews does not by itself exhaust the
+                    # final-answer allowance. Check the retained subset with the
+                    # standard budget and coherence gates before publishing it.
+                    current = repo_update(run_id, lambda r: {**r, 'state': {
+                        'initialReviewFinalAuditBudget': r.get('budget'),
+                        **r.get('state', {}),
+                    }}, expected_revision=None)
+                    audit_state = current['state']
+                    if 'initialAnswerCoverage' in audit_state:
+                        if audit_state['initialVerification'] != verification_result:
+                            raise ValueError('Stopped initial review audit inputs changed')
+                        answer_coverage = audit_state['initialAnswerCoverage']
+                    else:
+                        # Rebuild the identical charged request when resuming
+                        # after settlement but before saving the audit result.
+                        snapshot = {**current, 'budget': audit_state['initialReviewFinalAuditBudget']}
+                        answer_coverage = audit_accepted(verification_result['accepted'], snapshot)
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                     'initialVerification': verification_result,
                     'initialAnswerCoverage': answer_coverage}}, expected_revision=None)
