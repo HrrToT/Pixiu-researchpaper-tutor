@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "db13ba8d8",
+  "sourceCase": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_frozen_draft_review",
+  "runId": "dr_joint_verify_probe_20261127",
+  "outcome": "partial",
+  "reusedIndependentlyCheckedClaims": 7,
+  "freshClaimsChecked": 4,
+  "providerCalls": 7,
+  "providerModel": "gpt-6.1-terra",
+  "actualTotalTokens": 39499,
+  "callsByNode": {
+    "verify_advice": 1,
+    "verify": 3,
+    "verify_answer_coverage": 1,
+    "repair_claims": 2
+  },
+  "verifiedClaims": 11,
+  "publishedClaimsInIsolatedStore": 11,
+  "wholeAnswerCoverage": "checked",
+  "wholeAnswerCoherent": true,
+  "coverageGap": {
+    "obligationId": "answer_scope",
+    "wholeQuestion": true
+  },
+  "repairStop": {
+    "kind": "modelCalls",
+    "limit": 7,
+    "used": 7
+  },
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-joint-verification-20261127",
+  "sha256": {
+    "intent.json": "076ffa14332430e9013963a75c35def849f567610764adc98a2c625229d38a49",
+    "calls.json": "03ca6225abc577a9b4205c53eeceec593218503031d91e91d895f74d1ffe2042",
+    "run.json": "074cc8332347f346f25a78bab86a38051cad24c4239545dd69c5f0c88729acda",
+    "verify-return.json": "2d7b21a425ab5f75540106d458983e25244882405b1e2472823a7147dd1dbb36",
+    "publish-return.json": "cfcca634d27c0e3907cf985e7cd25e6593a11f7b6eca94577e4d6a537c023778"
+  }
+}
