@@ -1,0 +1,32 @@
+{
+  "backendCommit": "e2c9c1ac9b65f4cc31c7fabc45142a6092d6fdec",
+  "offlineRegression": "d2-device-memory-navigation-host-full-20261126.json",
+  "runtimeImage": "pixiu-research-pdf-proof:20261120",
+  "runtimeImageUse": "Existing dependencies with the current backend source mounted read-only",
+  "network": "none",
+  "pypdfVersion": "6.21.4",
+  "fonttoolsVersion": "4.68.0",
+  "asgiLifespanStarted": true,
+  "disabledForIsolatedProbe": ["Startup warm-up", "Periodic monitoring"],
+  "capabilityChecks": {
+    "enabled": true,
+    "externalAcademic": true,
+    "fulltext": true
+  },
+  "cachedDevelopmentPdf": {
+    "arxivVersion": "2403.17888v3",
+    "parsedPages": 13,
+    "unreadableGlyphPages": [4, 9]
+  },
+  "historicalCopies": {
+    "runsChecked": 2,
+    "callRowsChecked": 86,
+    "dataUnchanged": true,
+    "partialComparisonReopened": true,
+    "pausedUnknownResultCancelableOnly": true
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "liveDeploymentChanged": false,
+  "boundary": "The candidate started in an isolated environment. Capability flags enable external acquisition but the container was disconnected. No live provider or holdout was exercised."
+}
