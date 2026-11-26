@@ -135,6 +135,24 @@ def test_numeric_source_context_requires_contiguous_frozen_fulltext():
     assert _visible_numeric_context({'evidence': [source]}, {'original': row}, {'E1': 'original'}) == {}
 
 
+def test_gaussian_replacement_count_uses_only_explicit_cited_context():
+    from services.deep_research.verification import precheck_claims
+
+    passage = 'We replace such Gaussians\nby two new ones, and divide their scale by a factor of 1.6.'
+    row = {'evidenceId':'source','quote':'Positions are sampled from the original Gaussian.',
+           'accessLevel':'fulltext','verification':{'literal':'passed'}}
+    claim = {'claimId':'fact','kind':'reported','text':'论文用2个新高斯替换原高斯，尺度除以1.6。',
+             'evidenceRefs':['source'],'detailLevel':'fulltext'}
+    options = {'numeric_context': {'source': [passage]}}
+    assert precheck_claims([claim], [row], quantity_spelling_version=17, **options)['rejected']
+    assert precheck_claims([claim], [row], quantity_spelling_version=18, **options)['candidates']
+    assert precheck_claims([claim], [row], quantity_spelling_version=18)['rejected']
+    for text in ('We replace such Gaussians by three new ones, with a scale factor of 1.6.',
+                 'We inspect Gaussians and two new ones, with a scale factor of 1.6.'):
+        assert precheck_claims([claim], [row], quantity_spelling_version=18,
+                               numeric_context={'source': [text]})['rejected']
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []

@@ -64,6 +64,7 @@ Input:
 COMPACT_REVIEW_MARKER = 'sharedExperimentCompactReviewVersion'
 STOP_INVALID_BATCH_MARKER = 'sharedExperimentStopInvalidReviewBatchVersion'
 REFERENCE_MARKER = 'sharedExperimentReviewReferenceVersion'
+FACT_CONTEXT_MARKER = 'sharedExperimentFactContextVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -108,6 +109,11 @@ INDEXED_REFERENCE_INSTRUCTIONS = REFERENCE_INSTRUCTIONS.replace(
 
 def reference_review_enabled(record):
     version = record.get(REFERENCE_MARKER)
+    return type(version) is int and version in (1, 2)
+
+
+def _fact_context_enabled(record):
+    version = record.get(FACT_CONTEXT_MARKER)
     return type(version) is int and version in (1, 2)
 
 
@@ -246,7 +252,7 @@ def build(record, input_data, aliases, *, required_domains=()):
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
-    elif record.get('sharedExperimentFactContextVersion') == 1:
+    elif _fact_context_enabled(record):
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view):
@@ -282,13 +288,14 @@ def build(record, input_data, aliases, *, required_domains=()):
     stop_policy = ({STOP_INVALID_BATCH_MARKER: 1}
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
+    fact_policy = {FACT_CONTEXT_MARKER: 2} if record.get(FACT_CONTEXT_MARKER) == 2 else {}
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
                                   **({'batches':batches} if batches else {}), **stop_policy, **reference_policy,
-                                  **protocol_policy}),
+                                  **protocol_policy, **fact_policy}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
-            **stop_policy, **reference_policy, **protocol_policy,
+            **stop_policy, **reference_policy, **protocol_policy, **fact_policy,
             'targets':targets(record), 'hardIssues':_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
@@ -325,7 +332,9 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
     policy = {'absence_scope_version': record.get('absenceScopeContractVersion', 0),
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0)}
-    if record.get('sharedExperimentFactContextVersion') == 1:
+    if _fact_context_enabled(record):
+        if record.get(FACT_CONTEXT_MARKER) == 2:
+            policy['quantity_spelling_version'] = 18
         contexts = _visible_numeric_context(input_data, by_id, aliases)
         if passed_bindings is None:
             policy['numeric_context'] = {eid: list(spans.values()) for eid, spans in contexts.items()}
@@ -490,7 +499,7 @@ def assess(record, input_data, aliases, response):
         rows = {e['evidenceId']:e for e in input_data['evidence']}
         problems, passed = _binding_findings(value, proposal, expected, rows, evidence_by_check,
                                              references=reference_review_enabled(record))
-        if not problems and record.get('sharedExperimentFactContextVersion') == 1:
+        if not problems and _fact_context_enabled(record):
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
         if problems: raise ValueError('Review binding')
@@ -545,7 +554,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True)
-                    if (not problems and record.get('sharedExperimentFactContextVersion') == 1
+                    if (not problems and _fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                         problems.append('missing_numeric_source_binding')
                     if problems:

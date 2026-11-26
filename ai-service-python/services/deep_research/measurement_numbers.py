@@ -20,6 +20,9 @@ _ENGLISH_UPSAMPLE_SCHEDULE = re.compile(
 _DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
     r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
+_GAUSSIAN_REPLACEMENT_COUNT = re.compile(
+    r'(?P<prefix>\breplac(?:e|es|ed|ing)\s+(?:such\s+|these\s+|the\s+)?(?:large\s+)?Gaussians\s+(?:by|with)\s+)'
+    r'(?P<count>' + '|'.join(_WORDS) + r')(?=\s+new\s+(?:Gaussians|ones)\b)', re.I)
 _RANGE_SCALE = re.compile(
     r'(?<![A-Za-z0-9_.,+\-−])(?P<low>[0-9]+(?:\.[0-9]+)?)'
     r'(?:-|\s*(?:[–—~～]|至|到|\bto\b)\s*)'
@@ -235,10 +238,13 @@ def number_display(identity):
     return identity
 
 
-def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False):
+def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
+    if gaussian_replacement_counts:
+        text = _GAUSSIAN_REPLACEMENT_COUNT.sub(
+            lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)
 
     def distribute(match):
         if match['first'] == match['second']:

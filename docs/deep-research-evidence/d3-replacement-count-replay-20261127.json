@@ -1,0 +1,38 @@
+{
+  "sourceRunSha256": "2693506fae17d08eea84521b66ea5efb42c0203b07925b8bf7aa8d86dfb38a73",
+  "sourceRunId": "dr_run_0d8f9f8cd79959688389c47a167a79cd",
+  "evidenceAlias": "E5",
+  "evidencePage": 5,
+  "oldRevisionIssues": [
+    {
+      "claimId": "shared_fact_3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "factId": "f_splitop",
+      "evidenceRefs": [
+        "E5"
+      ]
+    }
+  ],
+  "replayedRevisionIssues": [],
+  "scopeAndCitationsUnchanged": true,
+  "neverAlteredSourceQuoteOrRevision": true,
+  "explicitBeforeFieldSupportsNumericPrecheck": true,
+  "quoteOnlyStillFails": true,
+  "interceptedFirstScientificReview": {
+    "node": "review_experiment_shared",
+    "inputBytes": 19986,
+    "checkIds": [
+      "fact_0",
+      "fact_1",
+      "fact_2",
+      "fact_3",
+      "fact_4",
+      "fact_5"
+    ]
+  },
+  "scienceApproval": false,
+  "modelCalls": 0
+}
