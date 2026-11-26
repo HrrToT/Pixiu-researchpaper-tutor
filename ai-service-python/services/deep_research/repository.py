@@ -366,7 +366,8 @@ class DeepResearchRepository:
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',
                                      'boundCompositeTableCellsVersion',
-                                     'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion'):
+                                     'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion',
+                                     'openaiResearchModels'):
                     if (updated.get(batch_policy) != current.get(batch_policy)
                             or type(updated.get(batch_policy)) is not type(current.get(batch_policy))
                             or (batch_policy in updated) != (batch_policy in current)):

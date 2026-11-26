@@ -301,7 +301,15 @@ class ScopedModelClient:
                 # Respect the role policy already fingerprinted and reserved by the invoker.
                 # Unspecified/routine nodes stay non-thinking; complex nodes reserve more output.
                 extra = {"thinking": {"type": "disabled"}, **(request.extra_body or {})}
-                return factory().invoke(replace(request, messages=messages, timeout_seconds=timeout, extra_body=extra))
+                models = record.get("openaiResearchModels")
+                if models:
+                    from core.config import settings
+                    from llm.openai_research import OpenAIResearchLLM
+                    client = OpenAIResearchLLM(model=models[1 if routine_node else 0],
+                        api_key=settings.openai_api_key, timeout_seconds=settings.deep_research_request_timeout_seconds)
+                else:
+                    client = factory()
+                return client.invoke(replace(request, messages=messages, timeout_seconds=timeout, extra_body=extra))
 
         return BoundClient()
 
@@ -340,7 +348,7 @@ def initialize_runtime():
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.graph import build_deep_research_graph
-    from llm.client import get_structured_llm, DeepSeekLLM
+    from llm.client import DeepSeekLLM
     from core.config import settings
     path.parent.mkdir(parents=True, exist_ok=True)
     repo = DeepResearchRepository(str(path))
@@ -425,6 +433,8 @@ def initialize_runtime():
 
     from functools import partial
     facade = RuntimeFacade(repo, partial(build_deep_research_graph, extract_batch_size=3), llm_client=model, scope_validator=scope,
+                           openai_research_models=(settings.deep_research_openai_model, settings.deep_research_openai_routine_model)
+                           if settings.deep_research_model_provider == "openai" else None,
                            comparison_cells_version=int(comparison_profile),
                            comparison_review_batch_version=int(comparison_batch_profile),
                            shared_experiment_plan_version=int(shared_profile),

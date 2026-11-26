@@ -112,6 +112,7 @@ class ResearchFacade:
         shared_experiment_plan_version: int = 0,
         shared_experiment_http_observation_version: int = 0,
         comparison_review_batch_version: int = 0,
+        openai_research_models: tuple[str, str] | None = None,
     ):
         if type(comparison_cells_version) is not int or comparison_cells_version not in (0,1):
             raise ValueError('Invalid server comparison cell rollout policy')
@@ -129,6 +130,7 @@ class ResearchFacade:
         self._repo = repo
         self._graph_factory = graph_factory
         self._llm_client = llm_client
+        self._openai_research_models = openai_research_models
         self._retriever = retriever
         self._source_reader = source_reader
         self._scope_validator = scope_validator
@@ -306,6 +308,7 @@ class ResearchFacade:
             "materialSnapshot": material_snapshot,  # Immutable Java snapshot
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
             "promptVersion": "dr-v2.20261116.488",
+            **({"openaiResearchModels": list(self._openai_research_models)} if self._openai_research_models else {}),
             "initialPlanResponseContractVersion": 4 if continuation_context else {4: 2, 5: 3, 6: 3}.get(shared_experiment_profile, 1),
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanExcerptSpanVersion": 1,

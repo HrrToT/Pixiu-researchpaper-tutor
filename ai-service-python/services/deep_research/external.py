@@ -45,7 +45,8 @@ class AcademicAcquisition:
         if record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
             return []
         client = self.client_factory(record)
-        allow_fallback = ((self.direct_pinned_fallback or self.fallback_search)
+        fallback_search = None if record.get("openaiResearchModels") else self.fallback_search
+        allow_fallback = ((self.direct_pinned_fallback or fallback_search)
                           and client.policy.enabled and client.policy.allow_fulltext)
         diagnostics=type(record.get('externalDiagnosticsContractVersion')) is int and record['externalDiagnosticsContractVersion']==1
         adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call,
@@ -86,19 +87,19 @@ class AcademicAcquisition:
                          'versionId': 'arxiv:' + identity, 'title': 'arXiv:' + identity,
                          'url': 'https://arxiv.org/abs/' + identity, 'discoveryProvider': 'pinned_arxiv_pdf'}
                         for identity in request_ids if work_id(identity) != identity and identity not in found)]
-                elif not request_ids and not candidates and self.fallback_search:
+                elif not request_ids and not candidates and fallback_search:
                     version = record.get('searchCandidateResolutionContractVersion')
                     if type(version) is int and version == 1:
                         from services.deep_research.request_context import effective_question
                         from services.deep_research.source_revisions import explicit_revisions
 
-                        candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query,
+                        candidates = adapter.discover_via_deepseek(run_id, fallback_search, query,
                                                                    resolve_revisions=True)
                         pins = explicit_revisions(effective_question(record))
                         candidates = _resolve_search_candidates(adapter, run_id, candidates, pins,
                                                                 client.policy.max_results)
                     else:
-                        candidates = adapter.discover_via_deepseek(run_id, self.fallback_search, query)
+                        candidates = adapter.discover_via_deepseek(run_id, fallback_search, query)
             for candidate in candidates:
                 identity = candidate.get("versionId")
                 if not identity:

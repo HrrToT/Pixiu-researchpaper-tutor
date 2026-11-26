@@ -76,12 +76,12 @@ class PreparedResponse:
         return self._data
 
 
-def read_json(post,observation):
+def read_json(post,observation,*,include_error=False):
     """Run header receipt AND full body read inside the caller's one deadline."""
     response=post()
     try:
         observation.headers(response)
-        if response.status_code>=400:return PreparedResponse(response.status_code)
+        if response.status_code>=400 and not include_error:return PreparedResponse(response.status_code)
         try:data=response.json()
         except ValueError:
             observation.body();return PreparedResponse(response.status_code,invalid_json=True)

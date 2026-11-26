@@ -347,7 +347,7 @@ class TrackedLLMInvoker:
         extra_body: dict[str, Any] | None = None,
         use_reserve: bool = False,
     ) -> dict[str, Any]:
-        from llm.provider import LLMRequest, LLMProviderError
+        from llm.provider import DEFAULT_RESEARCH_OUTPUT_TOKENS, LLMRequest, LLMProviderError
         from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION,DIRECT_REVIEW_OPTION
         from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
         bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
@@ -412,7 +412,7 @@ class TrackedLLMInvoker:
         from services.deep_research.planning_transport import overhead_bytes
         transport_overhead = overhead_bytes(transport_record,node,extra_body)
         estimated_input = prompt_byte_length + 1024 + transport_overhead
-        max_output = (extra_body or {}).get("max_tokens", 2000)
+        max_output = (extra_body or {}).get("max_tokens", DEFAULT_RESEARCH_OUTPUT_TOKENS)
         
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.

@@ -98,7 +98,20 @@ def _fixture_usage(
     )
 
 
-class DeepSeekLLM:
+class CompletionHTTPClient:
+    provider = "deepseek"
+    provider_label = "DeepSeek"
+    request_flags: dict[str, Any] = {}
+
+    def configured_key(self):
+        return self.api_key or settings.deepseek_api_key
+
+    def adapt_payload(self, payload, *, responses_mode):
+        return payload
+
+    def http_error_code(self, response):
+        return response.status_code
+
     def __init__(
         self,
         model: str = DEFAULT_DEEPSEEK_MODEL,
@@ -124,12 +137,13 @@ class DeepSeekLLM:
     def invoke(self, request: LLMRequest) -> LLMResult:
         from services.operation_control import check_cancelled
         check_cancelled()
-        api_key = self.api_key or settings.deepseek_api_key
+        api_key = self.configured_key()
         if not api_key:
             raise LLMProviderError(
-                "DeepSeek credentials are not configured.",
-                provider="deepseek",
+                f"{self.provider_label} credentials are not configured.",
+                provider=self.provider,
                 model=self.model,
+                **({"status_code": 503} if self.provider == "openai" else {}),
             )
 
         resolved_messages = _resolve_messages(request.prompt, request.messages)
@@ -170,6 +184,7 @@ class DeepSeekLLM:
             endpoint='/responses'
             schema_overhead=len(json.dumps({API_KEY:'responses','response_format':transport_options['response_format']},
                 ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
+        payload = self.adapt_payload(payload, responses_mode=responses_mode)
 
         timeout = self.timeout_seconds if self.timeout_seconds is not None else float(settings.deepseek_timeout_seconds)
         if request.timeout_seconds is not None:
@@ -183,7 +198,7 @@ class DeepSeekLLM:
         with trace_step(
             "llm_call",
             input_size=input_size,
-            meta={"provider": "deepseek", "model": self.model, "messageCount": len(resolved_messages)},
+            meta={"provider": self.provider, "model": self.model, "messageCount": len(resolved_messages)},
         ) as step:
             record_counter("llmCalls")
             record_counter("estimatedInputTokens", estimated_input_tokens)
@@ -198,11 +213,13 @@ class DeepSeekLLM:
                         },
                         json=payload,
                         timeout=timeout,
+                        **self.request_flags,
                         **extra,
                     )
                 if observation is not None:
                     from llm.response_observation import read_json
-                    response=call_with_deadline(lambda:read_json(lambda:post(stream=True),observation),timeout)
+                    response=call_with_deadline(lambda:read_json(lambda:post(stream=True),observation,
+                        include_error=self.provider == "openai"),timeout)
                 else:
                     response=call_with_deadline(post,timeout)
             except (requests.RequestException, TimeoutError) as error:
@@ -223,21 +240,23 @@ class DeepSeekLLM:
                 else:
                     failure_kind = "transport_error"
                 raise LLMProviderError(
-                    "DeepSeek request failed.",
-                    provider="deepseek",
+                    f"{self.provider_label} request failed.",
+                    provider=self.provider,
                     model=self.model,
                     retryable=True,
                     failure_kind=failure_kind,
                     provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
 
-            if response.status_code >= 400:
+            if (response.status_code >= 400
+                    or (self.provider == "openai" and response.status_code >= 300)):
+                status_code = self.http_error_code(response)
                 raise LLMProviderError(
-                    f"DeepSeek request failed with HTTP {response.status_code}.",
-                    provider="deepseek",
+                    f"{self.provider_label} request failed with HTTP {response.status_code}.",
+                    provider=self.provider,
                     model=self.model,
-                    retryable=response.status_code == 429 or response.status_code >= 500,
-                    status_code=response.status_code,
+                    retryable=status_code == 429 or status_code >= 500,
+                    status_code=status_code,
                     provider_observation=observation.freeze() if observation is not None else None,
                 )
 
@@ -251,15 +270,15 @@ class DeepSeekLLM:
                 content = data["choices"][0]["message"]["content"]
             except (ValueError, KeyError, IndexError, TypeError) as error:
                 raise LLMProviderError(
-                    "DeepSeek returned an invalid response.",
-                    provider="deepseek",
+                    f"{self.provider_label} returned an invalid response.",
+                    provider=self.provider,
                     model=self.model,
                     provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
             if not isinstance(content, str):
                 raise LLMProviderError(
-                    "DeepSeek returned an invalid response.",
-                    provider="deepseek",
+                    f"{self.provider_label} returned an invalid response.",
+                    provider=self.provider,
                     model=self.model,
                     provider_observation=observation.freeze() if observation is not None else None,
                 )
@@ -275,7 +294,7 @@ class DeepSeekLLM:
             reported_model = data.get('model')
             if not isinstance(reported_model, str) or not reported_model.strip() or len(reported_model) > 256:
                 reported_model = None
-            return LLMResult("deepseek", self.model, content, usage, finish_reason=finish_reason,
+            return LLMResult(self.provider, self.model, content, usage, finish_reason=finish_reason,
                              reported_model=reported_model,
                              provider_observation=observation.freeze() if observation is not None else None)
 
@@ -333,6 +352,10 @@ class DeepSeekLLM:
             pass
 
         return result
+
+
+class DeepSeekLLM(CompletionHTTPClient):
+    pass
 
 
 class FixtureLLM:

@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 
+DEFAULT_RESEARCH_OUTPUT_TOKENS = 2000
+
+
 @dataclass(frozen=True)
 class LLMRequest:
     prompt: str = ""
