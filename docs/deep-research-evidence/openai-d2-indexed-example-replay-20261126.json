@@ -1,0 +1,27 @@
+{
+  "candidateCommit": "aaf03c03d",
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "mode": "Offline replay with a saved indexed table packet from D2-v56 and the current candidate's request builder",
+  "comparisonExample": {
+    "pdfVersion": "2311.17245v6",
+    "pdfSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "physicalPage": 6,
+    "table": "Table 1",
+    "dataset": "Mip-NeRF 360",
+    "baselineProtocol": "Starred 3D-GS retrained with its original code and configuration on NVIDIA A6000, as reported by LightGaussian",
+    "baseline": {"fps": "144", "size": "782MB", "psnr": "27.40", "ssim": "0.813", "lpips": "0.217"},
+    "lightGaussian": {"fps": "237", "size": "45MB", "psnr": "27.13", "ssim": "0.806", "lpips": "0.237"},
+    "sameGroupCellsBound": 10,
+    "tableAndProtocolNoteBound": true
+  },
+  "jointStage": {
+    "targets": ["FPS comparability", "Conditional device-memory advice", "Matched numeric example"],
+    "inputBytes": 23931,
+    "inputLimitBytes": 24000,
+    "allFrozenPremiseBundlesRetained": true
+  },
+  "modelCalls": 0,
+  "caseSubmissions": 0,
+  "scientificAcceptance": false,
+  "boundary": "The indexed row values and note were checked against the frozen PDF page. The run used a retained index packet. It did not add numeric extraction to the PDF-only fallback or verify a generated final comparison."
+}
