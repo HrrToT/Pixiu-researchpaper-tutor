@@ -2,11 +2,14 @@
 from copy import deepcopy
 
 
+EXTENDED_INPUT_BYTES = 32000
+
+
 def enabled(record, node='verify_answer_coverage'):
     from services.deep_research.comparison_intent import operations_enabled
     return (node == 'verify_answer_coverage' and operations_enabled(record)
         and type(record.get('comparisonAuditEnvelopeContractVersion')) is int
-        and record['comparisonAuditEnvelopeContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+        and record['comparisonAuditEnvelopeContractVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
         and type(record.get('answerCoherenceContractVersion')) is int
         and record['answerCoherenceContractVersion'] in (1, 2))
 

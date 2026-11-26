@@ -298,6 +298,10 @@ class TrackedLLMInvoker:
     def prompt_byte_limit(self, run_id: str, node: str) -> int:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
+        from services.deep_research.comparison_audit_envelope import enabled as comparison_audit_enabled, EXTENDED_INPUT_BYTES
+        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') == 15
+                and comparison_audit_enabled(record, node)):
+            return min(self._verification_max_input, EXTENDED_INPUT_BYTES)
         from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
         if node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(record):
             return min(self._experiment_max_input, 32000)

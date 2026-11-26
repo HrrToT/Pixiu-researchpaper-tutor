@@ -68,7 +68,7 @@ def _exercise_server_envelope(tmp_path,monkeypatch,question,kind):
         is_revision = kind == 'claim_verification'
         marker = 'revisionTableCoverageEnvelopeVersion' if is_revision else 'comparisonAuditEnvelopeContractVersion'
         assert revision_coverage_enabled(run) if is_revision else enabled(run)
-        assert run[marker] == (1 if is_revision else 14)
+        assert run[marker] == (1 if is_revision else 15)
         if is_revision:
             direct_prompt = coverage_prompt(question, [], [], {}, 'EVIDENCE', coherence=True, root_coherence=True)
             assert 'root keys beside items' in direct_prompt
@@ -89,7 +89,9 @@ def _exercise_server_envelope(tmp_path,monkeypatch,question,kind):
         def post(url,**kwargs):sends.append(kwargs['json']);return http
         monkeypatch.setattr('llm.client.requests.post',post)
         client=DeepSeekLLM(api_key='fixture',base_url='https://fixture.invalid',timeout_seconds=2)
-        invoke=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,run_record_fn=repo.require_run)
+        invoke=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,run_record_fn=repo.require_run,
+                                verification_max_input_bytes=32000)
+        assert invoke.prompt_byte_limit(rid, 'verify_answer_coverage') == (24000 if is_revision else 32000)
         audit_prompt=direct_prompt if is_revision else 'prompt'
         result=invoke(rid,'verify_answer_coverage',audit_prompt,{'max_tokens':200})
         assert sends[0]['messages'][0]['content']==POLICY and len(sends)==1

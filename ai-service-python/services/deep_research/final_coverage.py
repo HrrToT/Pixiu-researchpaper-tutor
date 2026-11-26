@@ -5,6 +5,7 @@ from services.deep_research.contracts import BudgetExhaustedError
 
 
 MIN_COVERAGE_OUTPUT_TOKENS = 3500
+DEFAULT_COVERAGE_INPUT_BYTES = 24000
 SHORT_COMPARISON_OUTPUT_TOKENS = 1200
 SMALL_COMPARISON_PROCESS_OUTPUT_TOKENS = 2500
 
@@ -20,10 +21,10 @@ def coverage_output_tokens(plan, claims):
     return min(8192, max(MIN_COVERAGE_OUTPUT_TOKENS, 512 + 450 * len(obligations) + 240 * criteria + 120 * len(claims)))
 
 
-def coverage_prompt_byte_limit(budget, output_tokens=3500):
+def coverage_prompt_byte_limit(budget, output_tokens=3500, *, max_input_bytes=DEFAULT_COVERAGE_INPUT_BYTES):
     """Fit to currently available finalization capacity; admission stays atomic."""
     if not budget or 'maxTokens' not in budget:
-        return 24000
+        return max_input_bytes
     from services.deep_research.finalization_pool import prepare_finalization_budget, released_reserve_tokens
     budget = prepare_finalization_budget(budget, {'modelCalls': 1}, True, 'verify_answer_coverage')
     keys = ('maxTokens', 'tokens', 'reserveTokens', 'normalTokens',
@@ -38,12 +39,13 @@ def coverage_prompt_byte_limit(budget, output_tokens=3500):
         if ordinary >= calls - reserved:
             return 0
         remaining = min(remaining, maximum - reserve - normal + released_reserve_tokens(budget))
-    return max(0, min(24000, remaining - output_tokens - 1024))
+    return max(0, min(max_input_bytes, remaining - output_tokens - 1024))
 
 
 def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, *, budget=None,literal_dimensions=False,diagnostics=False,request_contract=False,claim_check=False,task_sources=False,request_semantics=0,binding_catalog=False,scoped_catalog=False,identification_locators=False,coherence=False,shared_evidence_context=False,shared_decision_inputs=False,consolidated_instructions=False,literal_limits=False,correct_process_bindings=False,reasoned_process_bindings=False,comparison_cells=None,comparison_audit_envelope=False,empty_missing_limits=False,compact_comparison_layout=False,compact_comparison_checks=False,fit_compact_comparison_budget=False,require_joint_conclusions=False,compact_comparison_instructions=False,comparison_coherence_excerpts=False,comparison_source_labels=False,empty_missing_process=False,inline_comparison_paper_labels=False,scoped_comparison_coherence=False,bounded_comparison_packet=False,rendered_comparison_packet=False,local_comparison_check_fields=False,label_comparison_checks=False,inline_comparison_limits=False,measure_reservation=False,
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
-                       share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None):
+                       share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
+                       extend_comparison_audit_window=False):
     if measure_reservation and not (claims and plan and invoke):
         return 0
     if rendered_comparison_packet and not bounded_comparison_packet:
@@ -58,6 +60,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
         raise ValueError('Joint conclusion validation requires typed comparison presentation')
     if type(fit_compact_comparison_budget) is not bool or fit_compact_comparison_budget and not compact_comparison_checks:
         raise ValueError('Adaptive audit capacity requires compact comparison checks')
+    if type(extend_comparison_audit_window) is not bool or extend_comparison_audit_window and not fit_compact_comparison_budget:
+        raise ValueError('Extended comparison audit requires adaptive capacity')
     if type(compact_comparison_checks) is not bool or compact_comparison_checks and not comparison_audit_envelope:
         raise ValueError('Compact comparison checks require the comparison audit envelope')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -311,8 +315,12 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.repair_budget import FRAMING_TOKENS
                 return len(render(required_rows).encode('utf-8')) + min(attempts) + FRAMING_TOKENS
             previous_limit = -1
-            for allowance in attempts:
-                limit = coverage_prompt_byte_limit(budget, allowance)
+            windows = [DEFAULT_COVERAGE_INPUT_BYTES]
+            if extend_comparison_audit_window:
+                from services.deep_research.comparison_audit_envelope import EXTENDED_INPUT_BYTES
+                windows.append(EXTENDED_INPUT_BYTES)
+            for window, allowance in ((window, allowance) for window in windows for allowance in attempts):
+                limit = coverage_prompt_byte_limit(budget, allowance, max_input_bytes=window)
                 if limit <= previous_limit:
                     continue
                 previous_limit = limit
