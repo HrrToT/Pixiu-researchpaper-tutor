@@ -1,0 +1,178 @@
+{
+  "sourceCommit": "c3c25219210f608546ad39464ddeab73847e3a5e",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_e93af25d75c5574cac107462bc26a6bc",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "singleSubmission": true,
+  "automaticReruns": 0,
+  "externalSearches": 0,
+  "externalFulltextFetches": 0,
+  "productionWrites": 0,
+  "elapsedSeconds": 179.28,
+  "budgetLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "actualCalls": 16,
+  "actualTotalTokens": 72738,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 14929,
+      "output_tokens": 1432,
+      "total_tokens": 16361,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 14325
+    },
+    "gpt-6.1-terra": {
+      "calls": 11,
+      "input_tokens": 52616,
+      "output_tokens": 3761,
+      "total_tokens": 56377,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 52583
+    }
+  },
+  "usageByWorkflowNode": {
+    "resolve_brief": {
+      "calls": 1,
+      "input_tokens": 592,
+      "output_tokens": 154,
+      "total_tokens": 746,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0
+    },
+    "plan": {
+      "calls": 1,
+      "input_tokens": 1550,
+      "output_tokens": 1134,
+      "total_tokens": 2684,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 1547
+    },
+    "assess_relevance": {
+      "calls": 3,
+      "input_tokens": 12787,
+      "output_tokens": 144,
+      "total_tokens": 12931,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 12778
+    },
+    "synthesize": {
+      "calls": 3,
+      "input_tokens": 19802,
+      "output_tokens": 1452,
+      "total_tokens": 21254,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 19793
+    },
+    "verify_advice": {
+      "calls": 1,
+      "input_tokens": 2048,
+      "output_tokens": 223,
+      "total_tokens": 2271,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 2045
+    },
+    "verify": {
+      "calls": 7,
+      "input_tokens": 30766,
+      "output_tokens": 2086,
+      "total_tokens": 32852,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 30745
+    }
+  },
+  "firstCaseTokens": 76539,
+  "tokenReduction": 3801,
+  "tokenReductionPct": 4.97,
+  "billingBoundary": "Provider usage only. First run did not record cache read/write usage; billing and credits delta were not checked.",
+  "quality": {
+    "draftClaimsVerified": 11,
+    "publicClaims": 0,
+    "publicationCoherence": "held",
+    "wholeAnswerReviewDispatched": false,
+    "wholeAnswerReviewBudget": {
+      "kind": "coveragePromptBytes",
+      "limit": 22738,
+      "used": 24503
+    },
+    "originalPageMatches": 13,
+    "draftEvidenceRefs": 14,
+    "matchedExample": {
+      "paper": "LightGaussian v6",
+      "physicalPage": 6,
+      "table": "1",
+      "dataset": "Mip-NeRF 360",
+      "verifiedTableCells": 10,
+      "appEvidencePageMissing": true,
+      "cells": [
+        {
+          "row": 9,
+          "metric": "FPS",
+          "value": "144"
+        },
+        {
+          "row": 10,
+          "metric": "FPS",
+          "value": "237"
+        },
+        {
+          "row": 9,
+          "metric": "Size",
+          "value": "782MB"
+        },
+        {
+          "row": 10,
+          "metric": "Size",
+          "value": "45MB"
+        },
+        {
+          "row": 9,
+          "metric": "PSNR",
+          "value": "27.40"
+        },
+        {
+          "row": 10,
+          "metric": "PSNR",
+          "value": "27.13"
+        },
+        {
+          "row": 9,
+          "metric": "SSIM",
+          "value": "0.813"
+        },
+        {
+          "row": 10,
+          "metric": "SSIM",
+          "value": "0.806"
+        },
+        {
+          "row": 9,
+          "metric": "LPIPS",
+          "value": "0.217"
+        },
+        {
+          "row": 10,
+          "metric": "LPIPS",
+          "value": "0.237"
+        }
+      ]
+    },
+    "conditionalMemoryAdviceAcceptedAtClaimLevel": true,
+    "requestedCrossPaperFpsConclusionComplete": false,
+    "scientificContentAccepted": false
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-second-20261126",
+  "sha256": {
+    "intent.json": "be9e700cdfea942882cd9630a41a76725e47693593cb56b49813d84496d76713",
+    "provider.jsonl": "f5ffcc6d4deeb333597037c68d9b27b413b9628719cb4adc8d47f4a356c98b9d",
+    "calls.json": "df189eb9776ad54d4e838ebef18f4282d59165c8cce391892a3a22137e50a0eb",
+    "run.json": "8099e9a2ebb7b3009353c085a48ed7fc88a5091a53954dc97ed091d6c82c4fb8",
+    "result.json": "76147b3b3566cb6334fc54cf66085a68dad482363d46f21aefaaea15ba3bed02",
+    "report.md": "2ee1f08fe3b65fa53fc2aebdc7bf96a0639bf5cd0109ac55fcb67fae560a7446",
+    "citation-audit.json": "ccafb4c4d7cd16a280ecc415771ae5af5f1a540dcf6afb61b2a727f7b23e908d"
+  }
+}

@@ -761,7 +761,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 - 用首例报告保存的 8 条论断重建初次核验请求。在现用协议下，将单批限制从 32,000 字节降至 28,000 或 24,000 字节，三批请求摘要及预算预留逐项一致。旧协议对照在 24,000 字节时多拆一批。保留现用窗口。回放以最终报告论断作输入，覆盖核验和修订未纳入，无真实模型调用。 [D2 核验窗口回放](deep-research-evidence/openai-luna-terra-d2-first-20261126.json)
 - 模型调用账本现在保留服务商报告的缓存命中与写入 Token。Chat Completions 和 Responses 均覆盖，历史缺失值保留未知，研究预算仍按总 Token 结算。175 项定向回归通过，覆盖两种接口、用量缺失或不合法、落盘结算和原有传输。首例回执未记录这些字段，本轮未调用真实模型。 [OpenAI 缓存用量说明](https://developers.openai.com/api/docs/guides/prompt-caching)
 - 缓存用量提交的首次本机全量回归有两条运行隔离用例继承了本机 OpenAI 设置，请求被测试拦截。测试现显式使用模拟服务商，离线网络拦截也覆盖 Responses。修复后 86 项定向用例和 10,097 项全量用例均通过。 [首次回归](deep-research-evidence/openai-cache-usage-native-full-20261126.json) · [修复后回归](deep-research-evidence/openai-offline-fixture-native-full-20261126.json)
-- 修复后的 D2 在离线回放中保留双方评测条件、同口径数值示例、显存受限选择和完整的速度引文，三个生成阶段都符合 24,000 字节上限。按当前单例授权已执行一次真实比较，下一次付费复测等待确认。D3、D5 和独立内容验收按下表继续追踪。历史未知请求保留原身份。 [同口径 PDF 对照](deep-research-evidence/openai-d2-pdf-table-fallback-replay-20261126.json) · [速度引文回放](deep-research-evidence/openai-d2-speed-quote-placement-replay-20261126.json)
+- 2026-11-27，修复版 OpenAI D2 单次复测。16 次调用，72,738 Token，约 179 秒，比首例少 3,801 Token。服务商报告缓存命中 0、写入 66,908 Token，未核对实际账单。11 条草稿主张通过逐项核验，原表同数据组的 10 个单元格独立核对一致；表格引文的应用页码仍缺失。整答审核必需输入 24,503 字节，当前预算允许 22,738 字节，审核未发出，发布门槛保留结论。 [第二次实测](deep-research-evidence/openai-luna-terra-d2-second-20261127.json)
 
 ### 固定案例证据
 
@@ -770,7 +770,7 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 首次 Luna／Terra 实测保存部分报告，12 条引用均可定位。报告缺同口径数值示例、帧率可比性结论和显存受限建议。新候选的离线回放证明原文、同表配对与建议依据可以装入联合生成请求。 [首次实测](deep-research-evidence/openai-luna-terra-d2-first-20261126.json) · [同表回放](deep-research-evidence/openai-d2-pdf-table-fallback-replay-20261126.json) | 在下一次获准后复验真实输出中的机制说明、同表数值、帧率可比性、显存建议及终审。 |
+| D2 两论文比较 | 首次 Luna／Terra 实测保存部分报告。修复版草稿取得同表数值与显存建议，11 条逐项审核通过。整答审核在发送前因预算拒绝，未发布结论。 [首次实测](deep-research-evidence/openai-luna-terra-d2-first-20261126.json) · [修复版实测](deep-research-evidence/openai-luna-terra-d2-second-20261127.json) | 用保存回执核对整答审核准入和表格页码，随后复验整答一致性及 FPS 可比性的真实结论。 |
 | D3 四组实验 | v20 已生成结构有效的四组方案，共用高斯初值与优化器状态。事实预检通过，科学审核第二批因输出截断失效。当前候选重放核对 PDF 第 5–7 页相关证据和修订前的方案检查，夹具修订后可进入科学审核。 [v20 实测](deep-research-evidence/derived-pairing-and-table-coordinate-v2-real-20261126.json) · [候选回放](deep-research-evidence/d3-protocol-combined-replay-20261126.json) | 复验真实草稿的共同起点、等预算、指标、主效应、交互效应及适用范围，并通过科学审核。历史未知请求保持冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | v18 沿用 v49 父报告，发布了独立的续问子报告。用前端生产构建分别打开两份既有成果，父子版本各自可找回，往返不覆盖原报告。真实生成中的跨论文设置仍未通过科学核验。 [v18 实测](deep-research-evidence/comparison-and-factorial-real-batch-20261126.json) · [浏览器只读回看](deep-research-evidence/research-real-report-workspace-reopen-20261125.json) | 仍需验证新增解释的可比性判断、证据身份与用户指定范围。 |
