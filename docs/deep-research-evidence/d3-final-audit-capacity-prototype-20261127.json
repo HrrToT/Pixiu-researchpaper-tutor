@@ -1,0 +1,46 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "scope": "offline hypothetical release sizing",
+  "legacyFixedPromptBytesWithoutEvidence": 33106,
+  "legacyInputWindowBytes": 24000,
+  "legacyProviderDispatches": 0,
+  "compiledAnswerBytes": 17140,
+  "packedLegacyFixedPromptBytesWithoutEvidence": 30332,
+  "compactPrototype": {
+    "reviewInputWindowBytes": 32000,
+    "minimumPromptBytesWithCitedEvidence": 31002,
+    "capturedPromptBytes": 31899,
+    "maxOutputTokens": 4802,
+    "questionClaimsMetadataAndBindingCatalogExact": true,
+    "obligations": 5,
+    "frozenChecks": 9,
+    "citedEvidenceRowsRetainedExactly": 9,
+    "optionalEvidenceRowsIncluded": 5,
+    "minimumReservationTokens": 36828,
+    "hypotheticalMockInvocationOnly": true,
+    "mockReviewStatus": "invalid_response"
+  },
+  "historicalBudgetSensitivity": {
+    "standardMaxTokens": 100000,
+    "earlierD3UsedTokens": 28836,
+    "historicalFactRevisionUsedTokens": 5280,
+    "historicalScienceReviewUsedTokens": 31313,
+    "remainingIfThoseHistoricalUsagesRecur": 34571,
+    "minimumAuditShortfallUnderHistoricalScenario": 2257
+  },
+  "proofBoundary": "The old science review was substituted only in memory to exercise the renderer. No verdict, release, provider call, or production code change.",
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "localPacketSha256": {
+    "d3-full-audit-diagnostic-20261127.txt": "794e7b855d545af2e8852e61b084704f12998dfca2c63dd6fbf6783d553f2b3f",
+    "d3-compact-candidate-audit-20261127.txt": "9aa14863f7abf8739313ddaba1ff6d7967a12e71c914b5f980f08b66f6778f1e"
+  },
+  "shortOutputPrototypeAtHistoricalSpend": {
+    "promptBytes": 31002,
+    "maxOutputTokens": 2545,
+    "reservationTokens": 34571,
+    "unreservedTokensAfterAdmission": 0,
+    "mockOnly": true,
+    "liveResponseTruncationRiskUnverified": true
+  }
+}
