@@ -1,5 +1,6 @@
 """Render model-selected cells using their verified PDF revisions."""
 from collections import defaultdict
+from decimal import Decimal
 import re
 
 from services.deep_research.publication_identity import owned_evidence_publication
@@ -14,6 +15,12 @@ _LABEL = re.compile(r'[\w .()+%\-/·]{1,96}')
 _REVISION = re.compile(r'(?<![A-Za-z0-9_.-])v[1-9]\d*(?![A-Za-z0-9_.-])', re.I)
 _DECIMAL = re.compile(r'(?<![A-Za-z0-9_.-])\d+\.\d+(?![A-Za-z0-9.%])')
 _MEASURED = re.compile(r'\bmeasured\s+(?:the\s+)?([^.!?;\n]{1,96})', re.I)
+_PERCENT = re.compile(r'(?<![A-Za-z\d.])\d+(?:\.\d+)?\s*[%％]')
+_COMMON_FINDING = re.compile(
+    r'(?:两|各|不?同)版[^。！？]{0,24}共同[^。！？]{0,12}(?:结论|发现|结果)'
+    r'|\b(?:shared|common) (?:findings?|conclusions?) (?:across|in) (?:both|the) (?:revisions|versions)\b',
+    re.I,
+)
 GUIDANCE = ('For the same row across revisions, put exact bound cells in a reported claim. '
             'The app formats their revision labels from the PDF. In conclusions explain the difference '
             'without repeating numbers already reported in those rows.')
@@ -157,8 +164,42 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measur
     return normalized, labels, columns, groups
 
 
+def _common_order(question, labels, columns, revisions, bindings, cited):
+    if not question or not _COMMON_FINDING.search(question) or len(columns) < 3:
+        return ''
+    requested = {Decimal(v[:-1].strip()) for v in _PERCENT.findall(question)}
+    selected = {Decimal(v[:-1].strip()) for col in columns for v in _PERCENT.findall(col)}
+    if selected != requested:
+        return ''
+    # Matching table coordinates alone do not identify a shared metric. Require
+    # a single measured quantity named in the cited table text of each PDF.
+    measures_by_table = defaultdict(set)
+    for row in cited.values():
+        for match in _MEASURED.finditer(row.get('quote', '')):
+            measure = match[1]
+            if re.search(r'\b(?:and|or)\b|[,/]', measure, re.I):
+                continue
+            measures_by_table[_table_identity(row)].add(_metric_key(measure))
+    table_ids = {_table_identity(cited[binding['evidenceId']]) for binding in bindings}
+    common_measures = set.intersection(*(measures_by_table[table_id] for table_id in table_ids))
+    if len(common_measures) != 1 or any(measures_by_table[table_id] != common_measures for table_id in table_ids):
+        return ''
+    units = {value.endswith('%') for revision in revisions.values() for value in revision.values()}
+    if len(units) != 1:
+        return ''
+    common = None
+    for revision in revisions.values():
+        for label in labels:
+            values = {column: Decimal(revision[label, column].rstrip('%').replace('−', '-')) for column in columns}
+            order = sorted(columns, key=values.__getitem__)
+            if len(set(values.values())) != len(columns) or (common is not None and order != common):
+                return ''
+            common = order
+    return '各版所列模型的数值均从低到高为 ' + '、'.join(common) + '。'
+
+
 def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
-                excluded_claim_ids=(), measured_metric_alias=False):
+                excluded_claim_ids=(), measured_metric_alias=False, shared_findings_question=None):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -191,6 +232,7 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
         else:
             rows = '；'.join(f'{label} 为 {values[label]}' for label in labels)
             text = f'表 {number}（{heading}）{rows}。'
+        text += _common_order(shared_findings_question, labels, columns, revisions, bindings, own)
         claims.append({**claim, 'text': text, 'tableBindings': bindings})
         fixed.append(claim['claimId'])
     return {**report, 'claims': claims}, fixed

@@ -452,6 +452,7 @@ class ResearchFacade:
             "revisionTableCoverageEnvelopeVersion": 1,
             "revisionTablePointRenderingVersion": 1,
             "revisionTableMeasuredMetricAliasVersion": 1,
+            "revisionTableCommonOrderVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
             "comparisonRepairBatchEnvelopeVersion": 3,
             "boundCompositeTableCellsVersion": 2,

@@ -103,6 +103,32 @@ def test_invalid_sibling_does_not_block_exact_revision_cells():
     assert validate_table_bindings(body['claims'][0], sources) is None
 
 
+@pytest.mark.parametrize('new_values, question, new_metric, ordered', [
+    (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', True),
+    (['15', '100', '14'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),
+    (['15', '100', '15'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),
+    (['15', '100', '17'], '核对 0.1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),
+    (['15', '100', '17'], '仅列出两版表项的数值。', 'perplexity', False),
+    (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'accuracy', False),
+])
+def test_shared_order_comes_only_from_matching_verified_settings(new_values, question, new_metric, ordered):
+    sources = [revision('20', 1, 'a' * 64), revision('17', 2, 'b' * 64)]
+    groups = [['', ['FP16', 'RTN']], ['FP16% Activation', ['1%']]]
+    bindings = []
+    for row, values, metric_name in zip(sources, (['16', '200', '20'], new_values), ('perplexity', new_metric), strict=True):
+        row['tableData'] = {'groups': groups, 'rows': [[2, 'OPT-1.3B', values]]}
+        row['quote'] = f'We measured {metric_name}.\nTable row 2: OPT-1.3B | ' + ' | '.join(values)
+        bindings.extend({'evidenceId':row['evidenceId'], 'rowNumber':2, 'groupIndex':group,
+                         'metric':metric, 'value':value}
+                        for (group, metric), value in zip(((0, 'FP16'), (0, 'RTN'), (1, '1%')), values, strict=True))
+    claim = {'claimId':'values','kind':'reported','text':'Draft','evidenceRefs':['e1','e2'],'tableBindings':bindings}
+    result, fixed = materialize({'claims':[claim]}, sources, '1', shared_findings_question=question)
+    rendered, = result['claims']
+    assert fixed == ['values'] and rendered['tableBindings'] == bindings
+    assert ('各版所列模型的数值均从低到高为 FP16、FP16% Activation · 1%、RTN。' in rendered['text']) is ordered
+    assert validate_table_bindings(rendered, sources) is None
+
+
 def test_reported_metric_name_resolves_only_a_unique_value_in_the_verified_row():
     sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
     bindings = []

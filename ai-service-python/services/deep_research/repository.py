@@ -368,6 +368,7 @@ class DeepResearchRepository:
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',
                                      'revisionTableCoverageEnvelopeVersion', 'revisionTablePointRenderingVersion',
                                      'revisionTableMeasuredMetricAliasVersion',
+                                     'revisionTableCommonOrderVersion',
                                      'initialPlanExcerptSpanVersion', 'externalExplanationInputVersion',
                                      'singleBenchmarkCriteriaVersion',
                                      'comparisonRepairBatchEnvelopeVersion',

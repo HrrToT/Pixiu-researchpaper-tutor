@@ -1,0 +1,22 @@
+{
+  "case": "H4-AWQ-VERSIONS-v7",
+  "sourceRunId": "dr_run_e0dcf81e7c3f5c3eb86acf389e5f1d9c",
+  "sourcePayloadSha256": "063739b3b9c25a29c0707bd1085423ef415e0c97d2f7d7e98f33b4d9dda13273",
+  "baseCommit": "6a8c1c8e8a15d9db467341b343cb0c8e535ddcd0",
+  "sourceRevisionLabels": [
+    "v1",
+    "v2"
+  ],
+  "matchedTableNumber": 1,
+  "verifiedCellsRetained": 12,
+  "actualOrderingFromCells": "各版所列模型的数值均从低到高为 FP16、FP16% (based on act.) · 1%、RTN (w3-g128)。",
+  "charsBefore": 276,
+  "charsAfter": 331,
+  "charLimit": 400,
+  "historicalSiblingClaimsUnchanged": true,
+  "oldScientificVerdictUnchanged": true,
+  "productionPublication": false,
+  "providerCalls": 0,
+  "releaseReviewRequired": true,
+  "relatedTestsPassed": 56
+}
