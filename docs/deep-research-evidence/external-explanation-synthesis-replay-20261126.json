@@ -1,6 +1,22 @@
 {
   "networkModelCalls": 0,
   "scientificContentAccepted": false,
+  "currentCandidateRecheck": {
+    "sourceCommit": "a02e2d6e6",
+    "requestByteLimit": 24000,
+    "sourceReceiptHashesMatched": 5,
+    "allRequestSizesAndEvidenceCountsMatched": true,
+    "missingPremiseBundles": 0,
+    "acceptedReportEvidenceRetainedByCase": {
+      "H3-RETRIEVALATTENTION-v1": 3,
+      "H3-INFLLM-v1": 4,
+      "H3-QUEST-v1": 2,
+      "H3-PAGEDATTENTION-v1": 3,
+      "H3-SNAPKV-v1": 2
+    },
+    "providerDispatches": 0,
+    "scientificContentAccepted": false
+  },
   "cases": {
     "H3-RETRIEVALATTENTION-v1": {
       "payloadSha256": "8574210e6042ecae852d23b374e26da62e49570de996f4ec56fefd17941b1173",
