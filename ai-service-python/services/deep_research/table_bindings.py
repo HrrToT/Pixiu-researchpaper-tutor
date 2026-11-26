@@ -301,10 +301,13 @@ def validate_table_bindings(claim, evidence, *, translated_metrics=False, datase
                 revisions[identity] = evidence_revision(source)
         match = re.fullmatch(rf'({_VALUE})([A-Za-z]*)', value)
         if match:
-            supported.add((match[1], metric.upper()))
+            # Binding identity above still requires the exact header key.
+            # Prose can name the same verified metric without its arrow.
+            metric_name = metric.rstrip('↑↓').strip().upper()
+            supported.add((match[1], metric_name))
             if match[2]:
                 supported.add((match[1], match[2].upper()))
-            if metric.upper() == 'PSNR':
+            if metric_name == 'PSNR':
                 supported.add((match[1], 'DB'))
     if composite_series and not all_composite_series_bound(fields, composite_cells, _method_visible, revisions):
         return 'ambiguous_table_series'
@@ -317,5 +320,8 @@ def _metric_visible(metric,text,translated):
     # Only literal column-name translations. No method/dataset aliases, unit
     # conversions, inferred synonyms or semantic approval are supplied here.
     if _key(metric) in _key(text):return True
+    if metric.rstrip().endswith(('↑', '↓')):
+        name = _key(metric.rstrip().rstrip('↑↓'))
+        return bool(name and re.search(re.escape(name) + r'(?![↑↓])', _key(text)))
     labels={'size':('大小',),'mem':('内存',)} if translated else {}
     return any(label in text for label in labels.get(metric.casefold(),()))

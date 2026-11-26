@@ -30,6 +30,19 @@ def test_reported_cells_pass_only_with_visible_dataset_method_and_exact_binding(
     assert check(ev, claim)['accepted']
 
 
+def test_marked_header_is_exact_in_binding_but_optional_in_prose():
+    ev, claim = fixture()
+    ev['tableData']['groups'][0][1][0] = 'FPS↑'
+    header = 'Table row 1: Method | Dataset A / FPS↑ | Dataset A / Mem | Dataset B / FPS | Dataset B / Mem'
+    ev['quote'] = ev['sourceContext'] = header + '\n' + ev['quote']
+    claim['tableBindings'][0]['metric'] = 'FPS↑'
+    assert check(ev, claim)['accepted']
+    wrong_direction = {**claim, 'text': claim['text'].replace('FPS ', 'FPS↓ ')}
+    assert check(ev, wrong_direction)['rejected'][0]['reason'] == 'table_condition_not_displayed'
+    claim['tableBindings'][0]['metric'] = 'FPS'
+    assert check(ev, claim)['rejected'][0]['reason'] == 'unverified_table_cell'
+
+
 @pytest.mark.parametrize('method,display,accepted', [
     ('3D-GS [16]', '3D-GS', True),
     ('3D-GS [16, 17]', '3D-GS', True),
