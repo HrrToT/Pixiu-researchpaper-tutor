@@ -28,6 +28,45 @@ def boundary_row(proposition):
             'premises':[{'evidenceId':'E1','path':['quote']}]}
 
 
+@pytest.mark.parametrize(('fits', 'fails', 'sizes'), [
+    (True, False, [3, 1]), (True, True, [3]), (False, False, [1, 1, 1, 1]),
+])
+def test_combined_comparison_observations_respect_fitted_batches(fits, fails, sizes):
+    from unittest.mock import Mock
+    from services.deep_research.partitioned_scope_review import review
+
+    claim, expression, _, evidence = inputs(boundaries=False)
+    expression['observedSettings'] = [
+        {**expression['observedSettings'][0], 'value': value}
+        for value in ('66%', '67%', '68%', '69%')
+    ]
+    checker = BudgetedSemanticChecker(Mock(), 'r', isolate_factual_claims=True,
+        comparison_review_batches=True, scope_observation_assertions=5,
+        short_circuit_scope_observations=True)
+    checker._check_batch = Mock(side_effect=lambda batch, *args, **kw: {
+        'inputBytes': len(batch) * (10 if fits else 30), 'maxInputBytes': 32,
+    })
+    packets = []
+
+    def check(batch, sent_evidence, *args, scope_observations):
+        assert sent_evidence == evidence and scope_observations
+        packets.append(batch)
+        return [{'claimId': c['claimId'],
+                 'status': 'failed' if fails and index == 0 else 'passed',
+                 'reason': 'Fixture review'} for index, c in enumerate(batch)]
+
+    checker._check = Mock(side_effect=check)
+    result = review(checker, claim, expression, evidence, 'verify')
+    assert [len(batch) for batch in packets] == sizes
+    assert all([c['claimId'] for c in batch] == [f'O{i+1}' for i in range(len(batch))] for batch in packets)
+    expected = observation_claims(claim, expression, assertions=True, literal=True)
+    audit = result['partitionedScopeAudit']
+    assert [r['claimId'] for r in audit['observedSettings']] == [c['claimId'] for c in expected[:sum(sizes)]]
+    assert result['status'] == ('failed' if fails else 'passed')
+    if fails:
+        assert audit['unreviewedObservationIds'] == [expected[-1]['claimId']]
+
+
 def checker_for(claim,expression,record,evidence,*,modify=None,fact_failure=False,flags=True,consistent=False):
     calls=[]
     def invoke(**kw):

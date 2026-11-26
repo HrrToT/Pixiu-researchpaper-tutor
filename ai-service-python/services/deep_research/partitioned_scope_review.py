@@ -14,7 +14,7 @@ def enabled(record):
 
 def assertions_enabled(record):
     version=record.get('scopeObservationContractVersion')
-    return (version if version>=2 else True) if type(version) is int and version in (1,2,3,4) else False
+    return (version if version>=2 else True) if type(version) is int and version in (1,2,3,4,5) else False
 
 
 def consistent_premises_enabled(record):
@@ -56,20 +56,23 @@ def review(checker, claim, expression, evidence, node):
     """
     policy = checker._scope_observation_assertions
     policy = policy() if callable(policy) else policy
-    atomic_comparison = type(policy) is int and policy in (3, 4)
-    literal = type(policy) is int and policy in (2, 3, 4)
+    atomic_comparison = type(policy) is int and policy in (3, 4, 5)
+    literal = type(policy) is int and policy in (2, 3, 4, 5)
     assertions = policy is True or literal
     observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
     review_options = {'scope_observations': True} if atomic_comparison else {}
     observation_metadata = {'observationContractVersion': policy if literal else 1} if assertions else {}
 
+    def wire_targets(targets):
+        ids = {f'O{index + 1}': target['claimId'] for index, target in enumerate(targets)}
+        return [{**target, 'claimId': alias} for alias, target in zip(ids, targets)], ids
+
     def check_observations(targets):
-        if policy != 4:
+        if policy not in (4, 5):
             return checker._check(targets, evidence, [], node, **review_options)
         # The reviewer copies short request-local IDs. Keep the full identity
         # for the parent assertion and every persisted observation audit.
-        ids = {f'O{index + 1}': target['claimId'] for index, target in enumerate(targets)}
-        wire = [{**target, 'claimId': alias} for alias, target in zip(ids, targets)]
+        wire, ids = wire_targets(targets)
         checked = checker._check(wire, evidence, [], node, **review_options)
         if any(row.get('claimId') not in ids for row in checked):
             raise DeepResearchError('invalid_verification_response', '观察条件核查编号无效。')
@@ -83,38 +86,50 @@ def review(checker, claim, expression, evidence, node):
     short_circuit=(short_circuit() if callable(short_circuit) else short_circuit) is True
     if (failure_policy or short_circuit) and isolation:
         from services.deep_research.review_response_failure import invalid as invalid_response
+        batches = [[observation] for observation in observations]
+        batch_policy = getattr(checker, '_comparison_review_batches', False)
+        batch_policy = batch_policy() if callable(batch_policy) else batch_policy
+        if policy == 5 and batch_policy is True:
+            from services.deep_research.comparison_review_batches import groups
+            batches = groups(observations, lambda targets: checker._check_batch(
+                wire_targets(targets)[0], evidence, [], node=node, _preview=True, **review_options))
         checked=[]
-        for index,observation in enumerate(observations):
-            rows=check_observations([observation])
-            if (len(rows)!=1 or rows[0].get('claimId')!=observation['claimId']
-                    or rows[0].get('status') not in ('passed','failed')):
+        for batch in batches:
+            rows=check_observations(batch)
+            if ([row.get('claimId') for row in rows] != [target['claimId'] for target in batch]
+                    or any(row.get('status') not in ('passed','failed') for row in rows)):
                 raise DeepResearchError('invalid_verification_response','观察条件核查未完整返回。')
             checked.extend(rows)
-            if invalid_response(rows[0].get('reviewResponseAudit')):
+            unresolved = next((row for row in rows if invalid_response(row.get('reviewResponseAudit'))
+                              or short_circuit and row['status']=='failed'), None)
+            if unresolved is None:
+                continue
+            remaining = observations[len(checked):]
+            if invalid_response(unresolved.get('reviewResponseAudit')):
                 audit={'version':2,'observedSettings':checked,'notEstablished':[],
-                    'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
+                    'unreviewedObservationIds':[c['claimId'] for c in remaining],
                     **observation_metadata}
                 if short_circuit:
                     audit.update(observationSchedulingVersion=1,
-                        stoppedAfterObservationId=observation['claimId'],
+                        stoppedAfterObservationId=batch[-1]['claimId'],
                         unreviewedPropositionCount=len(expression['notEstablished']))
-                response_audit=deepcopy(rows[0]['reviewResponseAudit'])
-                response_audit['unreviewedObservationCount']=len(observations)-index-1
-                return {'claimId':claim['claimId'],'status':'failed','reason':rows[0]['reason'],
+                response_audit=deepcopy(unresolved['reviewResponseAudit'])
+                response_audit['unreviewedObservationCount']=len(remaining)
+                return {'claimId':claim['claimId'],'status':'failed','reason':unresolved['reason'],
                     'executionState':'received_invalid','reviewResponseAudit':response_audit,
                     'partitionedScopeAudit':audit}
-            if short_circuit and rows[0]['status']=='failed':
+            if short_circuit:
                 audit={'version':2,'observedSettings':checked,'notEstablished':[],
                     'observationSchedulingVersion':1,
-                    'stoppedAfterObservationId':observation['claimId'],
-                    'unreviewedObservationIds':[c['claimId'] for c in observations[index+1:]],
+                    'stoppedAfterObservationId':batch[-1]['claimId'],
+                    'unreviewedObservationIds':[c['claimId'] for c in remaining],
                     'unreviewedPropositionCount':len(expression['notEstablished']),
                     **observation_metadata}
                 return {'claimId':claim['claimId'],'status':'failed',
-                    'reason':'观察条件尚未通过事实核查：'+str(rows[0].get('reason','')),
+                    'reason':'观察条件尚未通过事实核查：'+str(unresolved.get('reason','')),
                     'partitionedScopeAudit':audit,
-                    **{k:rows[0][k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity',
-                        'reviewDiagnosticAudit','reviewResponseAudit') if k in rows[0]}}
+                    **{k:unresolved[k] for k in ('executionState','reviewTimeAdmission','reviewInputCapacity',
+                        'reviewDiagnosticAudit','reviewResponseAudit') if k in unresolved}}
     else:
         checked = check_observations(observations) if observations else []
     expected = [c['claimId'] for c in observations]
