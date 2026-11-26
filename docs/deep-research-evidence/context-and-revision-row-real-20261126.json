@@ -1,0 +1,108 @@
+{
+  "sourceCommit": "a5daec692227c17b5714a9cc6b960630aa01f821",
+  "candidate": "academic-dr-context-and-revision-row-candidate-20261126",
+  "fullRegression": "context-and-revision-row-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v18": {
+      "runId": "dr_run_15b456f90adf5398a43b4caa52c7107c",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_shared_experiment_response",
+      "modelCalls": 6,
+      "settledTokens": 29322,
+      "elapsedSeconds": 117.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "d112f556a9177a1007bc49c8cf155f06be26dbdb3682602cefe515bc3733b0f6",
+        ".payload.json": "7611e073c609d614c6b5bdd492f5c9b07af2b288f25525fbca11e6d929d07bcf",
+        ".calls.json": "be107015e2910c33a4302ab9fde2aba538d440b0ea2454b5b7077df745aa51b6",
+        ".execution.json": "33553ba2645dc0c66a0a1744082acace1d99cc8ab56e60d4d8af996ab6199cf9",
+        ".result.json": "f9d6c16233b43ce303e60a9a502cf773fa1d79752457215d3364d2c24451d52c"
+      },
+      "generationIssues": [
+        {
+          "code": "plan.intervention_operation",
+          "path": "/steps/3"
+        },
+        {
+          "code": "plan.intervention_operation",
+          "path": "/steps/4"
+        },
+        {
+          "code": "plan.intervention_operation",
+          "path": "/steps/5"
+        },
+        {
+          "code": "plan.intervention_operation",
+          "path": "/steps/6"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/7"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/7"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/7"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/7"
+        }
+      ],
+      "scientificReviewReached": false
+    },
+    "H4-AWQ-VERSIONS-v9": {
+      "runId": "dr_run_8ae6df0e6ec8530cb8a399ff46417cbd",
+      "status": "completed",
+      "outcome": "partial",
+      "errorCode": "",
+      "modelCalls": 10,
+      "settledTokens": 63440,
+      "elapsedSeconds": 247.6,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "5d2988cc8909793bcb2d0f8c9b36fe30b9de7b1cfb07a8787c88cdffe1032e38",
+        ".payload.json": "322c55f989ca27ae1431404b3ca182357881d85bcbd6a5b5b2be123d428ba22b",
+        ".calls.json": "138eea2422a7c81a659237012cad6c9308a3a223a2604424d5be39cd70d3fb26",
+        ".execution.json": "e7df2e95336143ab340901cba1738579414a692ee82a707c723a191c3e459052",
+        ".result.json": "49c18b1e426eab2505f75e993d49eb6aafeee293ff9e221e05c2e0361e7dc146"
+      },
+      "verifiedClaimIds": [
+        "c2"
+      ],
+      "numericDraftCells": 12,
+      "semanticOrStructuralRejections": [
+        {
+          "claimId": "c1",
+          "reason": "table_condition_not_displayed"
+        },
+        {
+          "claimId": "c3",
+          "reason": "invalid_scope_expression"
+        }
+      ],
+      "coverageTransport": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "comparison_audit_v1",
+        "receivedShape": "comparison_audit_v1"
+      },
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_8ae6df0e6ec8530cb8a399ff46417cbd"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}
