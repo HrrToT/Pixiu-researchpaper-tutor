@@ -69,6 +69,22 @@ def test_explicit_rows_survive_joint_planning_roles_without_new_goals_or_source_
     assert len(old['cells'])==4 and not old.get('fixedSlots')
 
 
+def test_literal_row_goal_binding_does_not_assign_mechanism_to_speed():
+    requirements, sources, evidence = fixture()
+    outcomes = deepcopy(requirements[0])
+    outcomes.update(obligationId='outcomes', question='Storage, image quality and speed')
+    outcomes['comparisonRole'].update(label='Reported outcomes', requestExcerpt='存储与画质、渲染速度')
+    cp = plan_cells([*requirements, outcomes], sources, evidence, shared_axes=True, typed_roles=True,
+                    question=QUESTION, fixed_slots=True, literal_goal_bindings=True)
+    for entry in cp['cells']:
+        assert entry['allowedObligationIds'] == [
+            {'表示与压缩机制': 'method', '额外处理成本': 'cost', '存储与画质': 'outcomes', '渲染速度': 'outcomes'}
+            [entry['axisTitle']]]
+    assert cp['conclusionSlots'] == 2
+    assert all(cell['evidenceIds'] == [e['evidenceId'] for e in evidence if e['source'] == cell['source']]
+               for cell in cp['cells'])
+
+
 def test_fixed_slots_compile_real_goal_bindings_but_grant_no_factual_approval():
     cp=plan();raw=payload(cp);before=deepcopy(raw)
     draft=compile_cells(raw,cp,max_claims=10);draft['sources']=cp['sources']

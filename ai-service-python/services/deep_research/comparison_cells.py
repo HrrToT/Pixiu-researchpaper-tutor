@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False, structured_test_first=False, structured_table_example=False, separate_example_boundary=False, group_example_criteria=False, scoped_example_text=False, split_speed_and_advice=False, direct_device_memory=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False, structured_test_first=False, structured_table_example=False, separate_example_boundary=False, group_example_criteria=False, scoped_example_text=False, split_speed_and_advice=False, direct_device_memory=False, literal_goal_bindings=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
@@ -121,7 +121,7 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
             'sources': deepcopy(sources), 'evidence': rows, 'cells': cells}
     if fixed_slots:
         from services.deep_research.comparison_layout import apply_slots
-        result=apply_slots(result,question)
+        result=apply_slots(result,question,literal_goal_bindings=literal_goal_bindings)
     if unified_answers:result['answerWireVersion']=2 if local_goal_refs else 1
     if measurement_display:result['measurementDisplayVersion']=1
     if separate_joint_deliverables:

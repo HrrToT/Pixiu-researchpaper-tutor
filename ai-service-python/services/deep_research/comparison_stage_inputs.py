@@ -91,7 +91,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         raise ValueError('Invalid comparison stage evidence aliases')
     plan_options = dict(shared_axes=True, typed_roles=True, joint_reports=True,
                         question=question, literal_axes=True, fixed_slots=True,
-                        unified_answers=True, local_goal_refs=True)
+                        unified_answers=True, local_goal_refs=True,
+                        literal_goal_bindings=record.get('comparisonLiteralAxisGoalVersion') == 1)
     from services.deep_research.comparison_measurement_display import enabled as measurement_display
     from services.deep_research.comparison_joint_reports import benchmark_example_owner
     from services.deep_research.measurement_table_navigation import benchmark_metric

@@ -62,7 +62,7 @@ def explicit_axes(question):
     return []
 
 
-def apply_slots(plan,question):
+def apply_slots(plan,question,*,literal_goal_bindings=False):
     """Separate display rows from frozen research goals and source scopes."""
     result=deepcopy(plan);result['fixedSlots']=True
     roles=plan['roles'];axes=explicit_axes(question)
@@ -72,6 +72,12 @@ def apply_slots(plan,question):
             for source_index,(source,info) in enumerate(plan['sources'].items()):
                 allowed=[oid for oid,role in roles.items() if role['kind']!='supporting'
                          and source in role['sourceAliases']]
+                if literal_goal_bindings:
+                    exact = [oid for oid in allowed if roles[oid]['kind'] == 'per_paper'
+                             and (roles[oid]['requestExcerpt'] == label or label in
+                                  [part.strip() for part in re.split(r'[、,]', roles[oid]['requestExcerpt'])])]
+                    if exact:
+                        allowed = exact
                 if not allowed:continue
                 from services.deep_research.source_labels import source_display_title
                 cells.append({'cellId':f'table_{axis_index}_{source_index}',

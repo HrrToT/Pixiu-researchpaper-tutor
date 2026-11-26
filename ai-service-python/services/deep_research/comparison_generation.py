@@ -27,6 +27,7 @@ def planning_options(record, question):
         from services.deep_research.comparison_review_batches import current_profile
         return {'shared_axes':True,'typed_roles':True,'question':question,
                 **({'fixed_slots':True} if record['comparisonPlanningContractVersion'] in (3,4,5,6) else {}),
+                **({'literal_goal_bindings':True} if record.get('comparisonLiteralAxisGoalVersion') == 1 else {}),
                 **({'unified_answers':True} if record['comparisonPlanningContractVersion'] in (4,5,6) else {}),
                 **({'local_goal_refs':True} if record['comparisonPlanningContractVersion'] in (5,6) else {}),
                 **({'measurement_display':True} if measurement_display(record) else {}),

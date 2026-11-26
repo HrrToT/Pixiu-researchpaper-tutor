@@ -1,0 +1,20 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "failureObserved": "The original per-paper rendering-speed answer was linked to mechanism and processing-cost goal IDs. Its source quotation also lacked the comparator.",
+  "replay": {
+    "routingOnBothPapers": {
+      "representationAndCompression": ["G1"],
+      "additionalProcessing": ["G2"],
+      "storageAndQuality": ["G3"],
+      "renderingSpeed": ["G3"]
+    },
+    "inputBytes": {"P1": 23962, "P2": 23994, "joint": 23908},
+    "perStageLimitBytes": 24000,
+    "allFrozenPremiseBundlesRetained": true,
+    "pdfOnlyMatchedExampleCellsCompiled": 10
+  },
+  "testsPassed": 195,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "The replay verifies route permissions and request assembly. It does not prove the revised model will choose a complete quote or pass scientific review."
+}
