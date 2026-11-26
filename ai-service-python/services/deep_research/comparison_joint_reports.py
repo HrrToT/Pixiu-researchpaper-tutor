@@ -314,6 +314,50 @@ def benchmark_binding_error(claim, draft):
     return None
 
 
+def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missing):
+    """A verified same-table example can replace an inconclusive joint search."""
+    from services.deep_research.comparison_presentation import audit_digest, metadata
+    from services.deep_research.table_bindings import validate_table_bindings
+
+    if not draft or audit.get('status') != 'checked':
+        return set()
+    cid = draft.get('benchmarkExampleClaimId')
+    rows = [claim for claim in claims if claim.get('claimId') == cid]
+    if not cid or len(rows) != 1:
+        return set()
+    claim, = rows
+    targets = claim.get('obligationIds', [])
+    if (len(targets) != 1 or claim.get('kind') != 'reported' or claim.get('verification') != 'semantic_passed'
+            or not claim.get('tableBindings') or benchmark_binding_error(claim, draft)):
+        return set()
+    oid, = targets
+    if (oid in missing or oid in audit.get('invalidAspectObligations', [])
+            or oid in audit.get('invalidCriterionObligations', [])
+            or [item['kind'] for item in draft.get('jointDeliverables', {}).get(oid, [])] != ['matched_example']):
+        return set()
+    decisions = [row for row in audit.get('verdicts', []) if row.get('obligationId') == oid]
+    if (len(decisions) != 1 or decisions[0].get('status') != 'covered'
+            or {item.get('claimId') for item in decisions[0].get('bindings', [])} != {cid}
+            or audit.get('comparisonPresentationDigest') != audit_digest(metadata(draft), claims)):
+        return set()
+    refs = claim.get('evidenceRefs', [])
+    support = [row for row in evidence if row['evidenceId'] in refs
+               and row.get('accessLevel') == 'fulltext' and row.get('verification', {}).get('literal') == 'passed']
+    aliases = {alias for goal in draft.get('jointGoals', []) if goal['obligationId'] == oid
+               for alias in goal['sourceAliases']}
+    allowed = {(source.get('workId'), source.get('versionId')) for alias, source in draft['sources'].items()
+               if alias in aliases and source.get('workId') and source.get('versionId')}
+    if (len(support) != len(refs) or {row['evidenceId'] for row in support} != set(refs)
+            or any((row.get('sourceWorkId'), row.get('sourceVersionId')) not in allowed for row in support)
+            or validate_table_bindings(claim, support)):
+        return set()
+    # These are per-paper copies of a joint readiness result. Keep the
+    # original retrieval history and every ordinary paper-specific gap.
+    return {(oid, row['sourceWorkId'], row['missingEvidence']) for row in coverage
+            if row.get('obligationId') == oid and row.get('supportKind') == 'joint'
+            and row.get('state') == 'unchecked' and row.get('missingEvidence')}
+
+
 def comparison_protocol_priority(rows, targets):
     """Reserve optional priority for one evaluation-protocol passage per relevant source."""
     relevant_sources = {source for target in targets

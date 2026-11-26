@@ -1,0 +1,16 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v56",
+  "baseline": "research-finalization-real-batch-20261126.json",
+  "mode": "offline replay of the saved report through the production publication node",
+  "verifiedSameTableClaim": "cmp_conclusion_2",
+  "matchedExampleObligation": "requested_numeric_example",
+  "verifiedCoordinates": 10,
+  "before": {"visibleIncompleteObligations": ["ob-2-2", "requested_numeric_example", "ob-1-2"], "outcome": "partial"},
+  "after": {"visibleIncompleteObligations": ["ob-2-2", "ob-1-2"], "outcome": "partial"},
+  "samePublishedClaims": true,
+  "sameOriginalAcquisitionHistory": true,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificAcceptance": false,
+  "boundary": "The final answer had already covered the same-table example and its literal cell coordinates passed revalidation. Only its earlier joint readiness gap was removed from the publication. Measurement conditions and the premises of the memory-constrained recommendation remain open."
+}

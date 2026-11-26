@@ -494,7 +494,8 @@ def _closure_source_ids(evidence,versioned):
     return identities
 
 
-def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False):
+def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
+                             comparison_draft=None, joint_coverage=()):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -516,6 +517,10 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     from services.deep_research.answer_coverage import answer_coverage_gaps
     check_plan = [{'obligations': [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]}]
     missing.update(g.get('obligationId') for g in answer_coverage_gaps(check_plan, claims, audit.get('verdicts')))
+    resolved_joint = set()
+    if comparison_draft:
+        from services.deep_research.comparison_joint_reports import resolved_benchmark_gap_keys
+        resolved_joint = resolved_benchmark_gap_keys(comparison_draft, audit, claims, evidence, joint_coverage, missing)
     accepted = {c.get('claimId'): c for c in claims
                 if c.get('verification') == 'semantic_passed' and c.get('kind') in {'reported', 'inference'}}
     origins = {e.get('evidenceId'): _closure_source_ids(e,versioned_sources) for e in evidence
@@ -531,4 +536,5 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
             for ref in claim.get('evidenceRefs', []):works.update(origins.get(ref,set()))
         covered[oid] = works
     return [gap for gap in gaps if not isinstance(gap, dict)
-            or gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set())]
+            or ((gap.get('obligationId'), gap.get('sourceWorkId'), gap.get('missingEvidence')) not in resolved_joint
+                and gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set()))]

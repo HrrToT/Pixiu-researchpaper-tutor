@@ -58,6 +58,46 @@ def test_shared_reported_example_does_not_force_a_second_source_or_waive_other_g
     assert claim['text'] in text and '10MB' in text and '6MB' in text
 
 
+@pytest.mark.parametrize('change', [None, 'ordinary_gap', 'partial_audit', 'invalid_audit', 'stale_layout',
+                                   'wrong_version', 'wrong_value', 'missing_bindings', 'unverified'])
+def test_verified_same_table_example_closes_only_the_joint_readiness_gap(change):
+    from services.deep_research.final_coverage import remaining_retrieval_gaps
+
+    _, draft, claim, ev, _ = compiled()
+    draft['benchmarkExampleClaimId'] = claim['claimId']
+    draft['jointDeliverables'] = {'example': [{'kind': 'matched_example', 'requirement': '给出同表对照'}]}
+    claim['verification'] = 'semantic_passed'
+    gap = {'obligationId': 'example', 'sourceWorkId': 'right', 'question': '给出同表对照',
+           'missingEvidence': 'Earlier assessment did not find the complete comparison.'}
+    coverage = [{**gap, 'supportKind': 'joint', 'state': 'unchecked'}]
+    advice_gap = {**gap, 'obligationId': 'choice'}
+    verdict = {'obligationId': 'example', 'status': 'covered',
+               'bindings': [{'claimId': claim['claimId'], 'field': 'text', 'excerpt': claim['text']}]}
+    if change == 'ordinary_gap':
+        coverage[0]['supportKind'] = 'regular'
+    if change == 'partial_audit':
+        verdict['status'] = 'partial'
+    if change == 'wrong_version':
+        ev['sourceVersionId'] = 'left-v2'
+    if change == 'wrong_value':
+        claim['tableBindings'][0]['value'] = '999'
+    if change == 'missing_bindings':
+        claim['tableBindings'] = []
+    if change == 'unverified':
+        claim['verification'] = 'unchecked'
+    audit = {'status': 'invalid_response' if change == 'invalid_audit' else 'checked',
+             'gaps': [], 'verdicts': [verdict],
+             'comparisonPresentationDigest': audit_digest(metadata(draft), [claim])}
+    if change == 'stale_layout':
+        audit['comparisonPresentationDigest'] = 'obsolete'
+    gaps = [gap, advice_gap]
+    originals = deepcopy((gaps, coverage, audit, claim, ev))
+    assert remaining_retrieval_gaps(gaps, audit, [claim], [ev]) == gaps
+    assert remaining_retrieval_gaps(gaps, audit, [claim], [ev], comparison_draft=draft,
+                                    joint_coverage=coverage) == ([advice_gap] if change is None else gaps)
+    assert (gaps, coverage, audit, claim, ev) == originals
+
+
 def test_historical_compiler_still_refuses_reported_joint_and_prompt_is_unchanged():
     cp,payload,_,_=fixture(False);draft=compile_cells(payload,cp,max_claims=5)
     assert not draft['report']['claims'] and draft['errors']

@@ -2929,6 +2929,9 @@ def make_publish_node(
         gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
                     accepted_claims, record.get('state', {}).get('evidence', []),
                     plan=brief_state.get('plan', []), question=effective_question(record),
+                    **({'comparison_draft':brief_state.get('comparisonCellDraft'), 'joint_coverage':brief_state.get('coverage', [])}
+                       if cell_enabled(record) and type(record.get('comparisonMatchedExampleGapClosureVersion')) is int
+                       and record['comparisonMatchedExampleGapClosureVersion'] == 1 else {}),
                     **({'versioned_sources':True} if type(record.get('sourceGapClosureContractVersion')) is int and record['sourceGapClosureContractVersion']==1 else {})),
                 *audit.get('gaps', [])]
         
