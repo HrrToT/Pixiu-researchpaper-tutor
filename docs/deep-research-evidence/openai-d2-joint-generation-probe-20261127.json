@@ -1,0 +1,55 @@
+{
+  "sourceCommit": "d1f4cf63db6fec08db326fd7e43355059b5dcdee",
+  "sourceCase": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_joint_generation_only",
+  "providerCalls": 1,
+  "reusedProviderStages": [
+    "P1",
+    "P2"
+  ],
+  "usage": {
+    "total_tokens": 7449,
+    "input_tokens": 7133,
+    "output_tokens": 316,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 7130
+  },
+  "reportedModel": "gpt-6.1-terra",
+  "jointInputBytes": 23889,
+  "compiledTargetIds": [
+    "joint_tradeoffs_comparability",
+    "joint_tradeoffs_conditional_advice",
+    "joint_requested_numeric_example_matched_example"
+  ],
+  "compiledScopeClaims": [
+    "cmp_conclusion_0"
+  ],
+  "citationAudit": [
+    {
+      "sourceVersionId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "page": 7,
+      "literalQuoteMatched": true
+    },
+    {
+      "sourceVersionId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+      "page": 8,
+      "literalQuoteMatched": true
+    },
+    {
+      "sourceVersionId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "page": 6,
+      "literalQuoteMatched": true
+    }
+  ],
+  "wholeAnswerVerified": false,
+  "scientificApproval": false,
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-joint-stage-20261127",
+  "sha256": {
+    "intent.json": "eed73fa3952253baf8df585438214af7384e6d7ec2c0c80b5463a393046654c2",
+    "calls.json": "c8ae1eb83b8bed90956db3b710fbcc8fd77d5d07d4cd008815fb3d06ab9ff3bf",
+    "response.json": "fc42dd0914d76362d9c546caa9f636e48942cd6899608e515feffa9847d39332",
+    "compiled-state.json": "0b86f6d8b52c58763824dc4374fa0dedc8c1893b4a6d95540c42a2bfb88555bc",
+    "result.json": "57ea55e90625489e1dbb0e2a8afcfe22726a5b7cec3faa7ff34102cc09f23e77"
+  }
+}
