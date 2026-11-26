@@ -18,6 +18,24 @@
     "total": {"calls": 15, "inputTokens": 70937, "outputTokens": 5602, "totalTokens": 76539}
   },
   "estimatedUsdAtStandardUncachedRates": 0.0776197,
+  "usageAudit": {
+    "method": "Matched the model and input, output, and total token counts in order for all 15 saved provider events and settled model invocation records. No new calls were made.",
+    "matchedCalls": 15,
+    "localArtifactSha256": {
+      "calls.json": "7760693f280b4449095b0e085d59a47627d04a4f60ee334975094ea0eb5bb2c6",
+      "provider.jsonl": "aeff29b3dc474d2d04f2b669cf9262e84babd92d5136bbb109d58ed3647b0b41"
+    },
+    "byWorkflowNode": {
+      "resolve_brief": { "calls": 1, "inputTokens": 592, "outputTokens": 182 },
+      "plan": { "calls": 1, "inputTokens": 1550, "outputTokens": 1102 },
+      "assess_relevance": { "calls": 3, "inputTokens": 13725, "outputTokens": 282 },
+      "synthesize": { "calls": 3, "inputTokens": 19299, "outputTokens": 1148 },
+      "verify": { "calls": 3, "inputTokens": 13971, "outputTokens": 1420 },
+      "verify_answer_coverage": { "calls": 2, "inputTokens": 12514, "outputTokens": 750 },
+      "repair_claims": { "calls": 1, "inputTokens": 5649, "outputTokens": 339 },
+      "verify_repair": { "calls": 1, "inputTokens": 3637, "outputTokens": 379 }
+    }
+  },
   "pricingBoundary": "Calculated from provider token totals, with no cache discount. The actual API billing line and grant deduction were not checked.",
   "qualityReview": {
     "literalCitationsChecked": 12,
