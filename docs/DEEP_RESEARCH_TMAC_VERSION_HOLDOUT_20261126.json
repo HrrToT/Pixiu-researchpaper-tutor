@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-26T06:25:29.817305+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "tmac_v1": {
+      "path": "tmp/pdfs/h4-tmac-evaluator-20261126/2407.00088v1.pdf",
+      "bytes": 1012555,
+      "sha256": "7bf2e6e8ed79544ccb30fdefa1fcddc94470e0bfb37aaa4f796767da94f610ab",
+      "pageCount": 14,
+      "arxiv": "2407.00088v1",
+      "reference": "https://arxiv.org/abs/2407.00088v1"
+    },
+    "tmac_v2": {
+      "path": "tmp/pdfs/h4-tmac-evaluator-20261126/2407.00088v2.pdf",
+      "bytes": 1020344,
+      "sha256": "f1c2998bde40793dc599dad50c67e710272d4aab6290969424e1ce0c76343d47",
+      "pageCount": 15,
+      "arxiv": "2407.00088v2",
+      "reference": "https://arxiv.org/abs/2407.00088v2"
+    }
+  },
+  "cases": [
+    {
+      "id": "H4-TMAC-VERSIONS",
+      "split": "holdout",
+      "materials": [
+        "tmac_v1",
+        "tmac_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只用任务中的 T-MAC v1 和 v2，核对两版表 4 的 llama.cpp、T-MAC、T-MAC (+FA) 三行在吞吐量和 WinoGrande 准确率上的报告值，说明两版表格是否一致，以及同页正文对 FA 的准确率降幅是否与表格一致。解释该设置下的取舍，引用两版原文，400 字以内。",
+      "required": [
+        "两版相同设置为 Llama-2-7B-4bit、M2-Ultra 单线程，v1 PDF 第 11 页和 v2 第 12 页。",
+        "吞吐量依次为 5.65、7.34、8.97 tokens/s，准确率依次为 70.8、70.8、67.8，两版三行相同。",
+        "正文两版写降 0.3%，表中 70.8 到 67.8 相差 3.0 个百分点。说明是两版各自同页的文字与表格不一致，原因待核实。",
+        "普通 T-MAC 相对 llama.cpp 吞吐提高且保持报告准确率；FA 更快，表中准确率更低。限定在该实验，引用两版原文。"
+      ],
+      "forbidden": [
+        "把 0.3% 写成从表中算出的降幅，或把 3 个百分点写成跨版本降幅。",
+        "认定哪一处是排版错误或推断修订原因；混入其他硬件、任务、配置或表。",
+        "使用任务外来源或超过 400 字。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题核对版本数据。"
+    },
+    "maxAnswerCharacters": 400,
+    "sourceAnchors": [
+      {
+        "paper": "tmac_v1",
+        "page": 11,
+        "section": "Table 4 and Model-level Evaluation",
+        "checks": "Three systems, throughput, WinoGrande accuracy and the conflicting prose about fast aggregation."
+      },
+      {
+        "paper": "tmac_v2",
+        "page": 12,
+        "section": "Table 4 and Model-level Evaluation",
+        "checks": "Three systems, throughput, WinoGrande accuracy and the conflicting prose about fast aggregation."
+      }
+    ],
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "goldInputBoundary": "应用只收到冻结问题、两份 PDF ID、任务材料范围和标准预算。"
+  },
+  "caseDefinitionHashes": {
+    "H4-TMAC-VERSIONS": "94c84332c4fdd93837318204c3a4a76e58e50b180b36b63e2eb52a6a2107cd94"
+  }
+}

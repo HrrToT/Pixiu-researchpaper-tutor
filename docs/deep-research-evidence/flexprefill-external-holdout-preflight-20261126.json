@@ -1,0 +1,21 @@
+{
+  "case": "H3-FLEXPREFILL",
+  "definitionHash": "9ca5400acaaee3e9c4db4a809c4f39ed10c2fdf2933b050a58fbffa8266b6396",
+  "reviewedPages": [
+    4,
+    5
+  ],
+  "liveInventory": {
+    "runs": 499,
+    "runHits": 0,
+    "indexFields": 19825,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 194,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}
