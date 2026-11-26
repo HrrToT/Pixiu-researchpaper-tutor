@@ -1,0 +1,30 @@
+{
+  "sourceBase": "eb486c3ea",
+  "candidate": "scoped_beginner_lead_repair_before_intro_only_guidance",
+  "sourceCase": "D2-BASELINE-COMPRESSION",
+  "outcome": "partial",
+  "providerCalls": 1,
+  "providerModel": "gpt-6.1-terra",
+  "usage": {
+    "total_tokens": 7225,
+    "input_tokens": 6770,
+    "output_tokens": 455,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 6767
+  },
+  "newRepairTargetIds": [
+    "cmp_conclusion_2"
+  ],
+  "retainedClaims": 10,
+  "revisionFactPrecheck": "numeric_mismatch",
+  "releasedRevisions": 0,
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-beginner-repair-20261127",
+  "sha256": {
+    "intent.json": "4c0032365a917eb9a0f0a3891aa7f1bda6bfa6b8b38233dbf34735b292439f60",
+    "calls.json": "24b5c63bc801ee90198ce3a2110117a971d166d5d7c8488c021a183aedf51ad6",
+    "run.json": "68b9ad2c6024bb8fde1fe67f6457f6bb72f2b06172d02079c90faf02e4dbfb3b",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "53b031901d97b8f8e0733bafd8c3a755fde3dfdf39ed201c0fbec873bc3a6e47"
+  }
+}
