@@ -22,5 +22,15 @@
   "modelCalls": 0,
   "productionRunModified": false,
   "scientificAcceptance": false,
+  "currentCandidateRecheck": {
+    "sourceCommit": "98e1f72eb",
+    "originalRunReceiptSha256": "7717aede469c01637851db4cd07071b24e39f0a00befe796ab10bac65f2e067f",
+    "matchedPhysicalPagesAndRequestSizes": true,
+    "originalReviewStoppedByPrecheck": true,
+    "fixtureRevisionReachedReviewDispatchBoundary": true,
+    "modelCalls": 0,
+    "productionRunModified": false,
+    "scientificAcceptance": false
+  },
   "boundary": "The draft fixture reuses the historical operation structure with one source fact remapped to a literal quote present in the new input. Two diagnosed protocol fields and the linked uncertainty text were replaced by an explicit fixture. Provider dispatch was intercepted. This verifies request fit and review sequencing, without claiming a repaired scientific answer."
 }
