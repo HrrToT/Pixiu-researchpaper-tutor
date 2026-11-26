@@ -88,7 +88,8 @@ def _unique_coordinate(binding, source, *, measured_names=(), peers=()):
     return matches[0] if len(matches) == 1 else None
 
 
-def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measured_metric_alias=False):
+def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measured_metric_alias=False,
+             single_revision_display=False):
     bindings = claim.get('tableBindings')
     if not isinstance(bindings, list) or not 2 <= len(bindings) <= 32:
         return None
@@ -149,7 +150,7 @@ def _resolve(claim, own, number, *, multiple_rows, reconcile_coordinates, measur
         work_ids.add(publication['workId'])
         owners_by_revision[revision].add(source['ownerMaterialId'])
         normalized.append(binding)
-    if (len(work_ids) != 1 or len(groups) < 2
+    if (len(work_ids) != 1 or len(groups) < (1 if single_revision_display else 2)
             or any(len(owners) != 1 for owners in owners_by_revision.values())):
         return None
     first = next(iter(groups.values()))
@@ -199,7 +200,8 @@ def _common_order(question, labels, columns, revisions, bindings, cited):
 
 
 def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coordinates=False,
-                excluded_claim_ids=(), measured_metric_alias=False, shared_findings_question=None):
+                excluded_claim_ids=(), measured_metric_alias=False, shared_findings_question=None,
+                single_revision_display=False):
     """Render matching PDF cells once while retaining draft coverage and citations."""
     supplied = {row['evidenceId']: row for row in evidence}
     claims = []
@@ -214,11 +216,24 @@ def materialize(report, evidence, number, *, multiple_rows=False, reconcile_coor
             continue
         own = {ref: supplied[ref] for ref in claim['evidenceRefs']}
         matched = _resolve(claim, own, number, multiple_rows=multiple_rows,
-                           reconcile_coordinates=reconcile_coordinates, measured_metric_alias=measured_metric_alias)
+                           reconcile_coordinates=reconcile_coordinates, measured_metric_alias=measured_metric_alias,
+                           single_revision_display=single_revision_display)
         if not matched:
             claims.append(claim)
             continue
         bindings, labels, columns, revisions = matched
+        if len(revisions) == 1:
+            # Preserve the author's measurement context and existing prose.
+            # Each canonical header belongs to the same already-bound cells.
+            # Ordinary numeric and semantic checks still validate the claim.
+            missing = [column for column in columns if column not in claim['text']]
+            if not missing:
+                claims.append(claim)
+                continue
+            text = claim['text'].rstrip() + '（原表列 ' + '、'.join(missing) + '）'
+            claims.append({**claim, 'text':text, 'tableBindings':bindings})
+            fixed.append(claim['claimId'])
+            continue
         order = sorted(revisions, key=lambda item: int(item[1:]))
         values = {
             label: '，'.join(revision + ' ' + '、'.join(revisions[revision][label, column] for column in columns)

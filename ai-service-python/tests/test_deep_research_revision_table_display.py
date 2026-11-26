@@ -103,6 +103,25 @@ def test_invalid_sibling_does_not_block_exact_revision_cells():
     assert validate_table_bindings(body['claims'][0], sources) is None
 
 
+def test_single_version_display_adds_only_its_verified_original_groups():
+    from services.deep_research.table_bindings import validate_table_bindings
+
+    source = revision('18.51', 1, 'a' * 64)
+    source['tableData']['rows'].append([3, 'OPT-6.7B', ['13.02']])
+    source['quote'] += '\nTable row 3: OPT-6.7B | 13.02'
+    claim = {'claimId':'v1','kind':'reported','text':'v1 的 OPT-1.3B 为 18.51，OPT-6.7B 为 13.02。',
+             'evidenceRefs':['e1'],'tableBindings':[
+        {'evidenceId':'e1','rowNumber':n,'groupIndex':0,'metric':'1%','value':value}
+        for n,value in ((2,'18.51'),(3,'13.02'))]}
+    report={'claims':[claim]}
+    assert materialize(report,[source],'1',multiple_rows=True) == (report,[])
+    rendered, fixed = materialize(report,[source],'1',multiple_rows=True,single_revision_display=True)
+    assert fixed==['v1']
+    assert rendered['claims'][0] == {**claim,'text':claim['text']+'（原表列 Activation · 1%）'}
+    assert validate_table_bindings(rendered['claims'][0],[source]) is None
+    assert materialize(rendered,[source],'1',multiple_rows=True,single_revision_display=True) == (rendered,[])
+
+
 @pytest.mark.parametrize('new_values, question, new_metric, ordered', [
     (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', True),
     (['15', '100', '14'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),
