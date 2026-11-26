@@ -1,0 +1,85 @@
+{
+  "case": "H3-RETRIEVALATTENTION",
+  "verificationClass": "development_regression_after_prior_failed_holdout",
+  "runId": "dr_run_274ef553b83054efa51f2bd223e7fdf7",
+  "codeCommit": "105fb9aa76b4903d09aa6a4be53d14ad86b26aac",
+  "externalAcquisition": {
+    "initialMaterials": 0,
+    "versionId": "arxiv:2409.10516v2",
+    "pdfSha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+    "pages": 16,
+    "cacheHit": false,
+    "publicNetworkDownloadRequests": 1,
+    "searches": 1,
+    "usedSystemProxy": true
+  },
+  "productResult": {
+    "status": "completed",
+    "outcome": "complete",
+    "isolatedPublicationId": "dr_pub_8963e33099a94e2f8fcb2a15adf9aca4",
+    "downstreamDispatch": false,
+    "visibleAnswerCharacters": 252,
+    "productionWrites": 0
+  },
+  "contentReview": {
+    "scores": {
+      "goalResponse": 5,
+      "sourceSupport": 5,
+      "conditions": 5,
+      "synthesis": 4,
+      "actionability": null,
+      "readability": 4
+    },
+    "claimSupport": {
+      "C1": "supported",
+      "C2": "supported"
+    },
+    "citedPhysicalPagesByClaim": {
+      "C2": [
+        6,
+        14
+      ],
+      "C1": [
+        4,
+        5
+      ]
+    },
+    "checks": {
+      "queryAndCpuIndex": true,
+      "gpuPrefixAndLocalWindow": true,
+      "weightedMerge": true,
+      "equivalenceLimitedToSelectedUnion": true,
+      "fulltextDisclosure": true
+    },
+    "notes": [
+      "The answer leaves KV undefined and summarizes the normalization math.",
+      "Actionability does not apply to this explanation of an existing algorithm."
+    ],
+    "passedDevelopmentCase": true,
+    "unseenHoldoutCredit": 0
+  },
+  "usage": {
+    "modelCalls": 13,
+    "provider": {
+      "gpt-6-luna": {
+        "calls": 6,
+        "tokens": 15710
+      },
+      "gpt-6.1-terra": {
+        "calls": 7,
+        "tokens": 38985
+      }
+    },
+    "totalTokens": 54695,
+    "elapsedSeconds": 92.0,
+    "automaticWholeRunRetries": 0,
+    "currencyCost": null
+  },
+  "artifactSha256": {
+    "intent.json": "ebbe24740a175c3128e24efaa4169c6e85efddf468a66d82073909dc07e69d94",
+    "run.json": "5eb0988ee031cddffb518197812587e7107d41f36766035c0241491ca2106926",
+    "calls.json": "0081d1d0e95aee82c12617a10746b27beade68350587d7e6536230e4d9c1ed84",
+    "provider.jsonl": "b4156ff721680fa4bc2791253e91e2965538de3688f188fc04abdf088441456d",
+    "result.json": "3ee79de08ca77b5e7a94e45d6e2bb6372744c89af760135382e505977adc3928"
+  }
+}
