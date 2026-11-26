@@ -1,0 +1,99 @@
+{
+  "sourceCommit": "23caf8e8fa147297bf071bdcfffcbd41afb529f3",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_c5863fd0de5e5f16b2902c296d69b329",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "caseSubmissions": 1,
+  "automaticReruns": 0,
+  "elapsedSecondsAtLastProviderResponse": 219.08,
+  "actualCalls": 14,
+  "actualTotalTokens": 64544,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16466,
+      "output_tokens": 1053,
+      "total_tokens": 17519,
+      "cached_input_tokens": 1547,
+      "cache_write_input_tokens": 14315
+    },
+    "gpt-6.1-terra": {
+      "calls": 9,
+      "input_tokens": 43841,
+      "output_tokens": 3184,
+      "total_tokens": 47025,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 43814
+    }
+  },
+  "callsByWorkflowNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 3,
+    "repair_claims": 1,
+    "verify_repair": 1
+  },
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 19579,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 9,
+    "tokens": 64544,
+    "normalTokens": 34123,
+    "elapsedSeconds": 221.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "productionWrites": 0,
+  "quality": {
+    "verifiedDraftClaims": 9,
+    "unresolvedDraftClaims": [
+      {
+        "claimId": "cmp_5_0",
+        "reason": "semantic_unresolved",
+        "executionState": "received_invalid"
+      }
+    ],
+    "publishedClaims": 0,
+    "initialReviewStop": null,
+    "wholeAnswerReviewDispatched": false,
+    "wholeAnswerReviewStatus": "budget_exhausted",
+    "wholeAnswerCoherence": "not_checked",
+    "wholeAnswerGapIds": [
+      "representation",
+      "tradeoffs",
+      "requested_numeric_example",
+      "answer_scope"
+    ],
+    "claimEvidenceCount": 19,
+    "matchingClaimEvidenceCount": 19,
+    "verifiedTablePages": [
+      6
+    ]
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-fourth-20261127",
+  "sha256": {
+    "intent.json": "afad8b1afbb23a055872d25fbc0c5a81553e2e6dc57982f02e1b766f300a3e23",
+    "provider.jsonl": "9d4f6853e1537069d70a4d87f2131dd2b4c4dfd80fa7941b24e70ad2b5d54aad",
+    "calls.json": "4a86cad33103ef364c1705c1cb99eb42470a2633888e63a0fe365800a8eab13b",
+    "run.json": "4ecef79527be07448c7915a4403ade3042f15ce8fe8e8e04456ce1d9d634b30b",
+    "result.json": "e1b35ba8636b503a6fd1a753e64e6ef8751706e76df8ed72888181a4fae5f54c",
+    "report.md": "0af556e16a3e8a41617261fc8727d3c1ba1b9434d0614aa84885b1904ebbeb22",
+    "citation-audit.json": "a8b9ae41ed85f0a00fc8d20ddbf6a6f21d9316aea85a4645cda662f8376f352e"
+  }
+}
