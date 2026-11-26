@@ -2,6 +2,7 @@
 from datetime import datetime, UTC
 
 OPTION='_bounded_factual_review'
+NAMED_TABLE_OPTION = '_named_table_factual_review'
 REPAIR_OUTPUT_OPTION='_bounded_factual_repair_output'
 DIRECT_REVIEW_OPTION='_direct_comparison_review'
 
@@ -54,8 +55,22 @@ def cell_review_enabled(record):
             and record['factualReviewContractVersion'] == 4 and cells_enabled(record))
 
 
+def named_table_review_enabled(record):
+    version = record.get('namedTableBoundedReviewVersion')
+    if (type(version) is not int or version != 1
+            or (record.get('state') or {}).get('outputKind') != 'claim_verification'):
+        return False
+    from services.deep_research.answer_constraints import requested_character_limit
+    from services.deep_research.named_table_scope import requested_number
+    from services.deep_research.request_context import effective_question
+
+    question = effective_question(record)
+    limit = requested_character_limit(question)
+    return type(limit) is int and 0 < limit <= 700 and requested_number(question) is not None
+
+
 def enabled(record):
-    if cell_review_enabled(record):
+    if cell_review_enabled(record) or named_table_review_enabled(record):
         return True
     if type(record.get('factualReviewContractVersion')) is not int or record['factualReviewContractVersion'] not in (1,2,3):
         return False

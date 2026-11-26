@@ -45,6 +45,45 @@ def test_cell_review_does_not_depend_on_an_explicit_whole_answer_character_cap()
     assert not enabled(current)
 
 
+def test_named_table_review_requires_versioned_short_single_table_request():
+    current = {
+        **cell_record(),
+        'namedTableBoundedReviewVersion': 1,
+        'question': '只核对 Table 2 的数字，450字以内。',
+        'state': {'outputKind': 'claim_verification'},
+    }
+    assert enabled(current)
+    assert not enabled({**current, 'namedTableBoundedReviewVersion': True})
+    assert not enabled({**current, 'namedTableBoundedReviewVersion': None})
+    assert not enabled({**current, 'question': '只核对 Table 2 的数字，900字以内。'})
+    assert not enabled({**current, 'question': '核对 Table 2 和 Table 3，450字以内。'})
+    assert not enabled({**current, 'state': {'outputKind': 'explanation'}})
+
+
+def test_named_table_review_bounds_output_and_preserves_admission_guard():
+    from services.deep_research.factual_review import NAMED_TABLE_OPTION
+
+    current = {
+        **cell_record(),
+        'namedTableBoundedReviewVersion': 1,
+        'question': '只核对 Table 2 的数字，450字以内。',
+        'state': {'outputKind': 'claim_verification'},
+    }
+    options = {NAMED_TABLE_OPTION: True}
+    assert research_model_options('verify', options) == {
+        'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low', 'max_tokens': 6144,
+    }
+    with pytest.raises(ValueError):
+        research_model_options('verify_answer_coverage', options)
+    current['budget']['elapsedSeconds'] = 357
+    provider, reserve = Mock(), Mock()
+    tracked = TrackedLLMInvoker(provider, reserve, Mock(), run_record_fn=lambda _: current)
+    result = tracked('r', 'verify', 'Full original table evidence', options)
+    assert result['notStarted'] == 'factual_review_time_budget'
+    reserve.assert_not_called()
+    provider.invoke.assert_not_called()
+
+
 def test_new_comparison_point_review_refuses_a_three_second_send_before_reservation():
     current=cell_record();current['budget']['elapsedSeconds']=357
     provider=Mock();reserve=Mock();complete=Mock()

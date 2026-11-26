@@ -25,7 +25,7 @@ def enabled():
 def research_model_options(node, options):
     """Apply role options BEFORE the ledger reserves tokens and fingerprints input."""
     from services.deep_research.factual_reasoning import OPTION,DIRECT_REPAIR_OPTION,HIGH_SYNTHESIS_OPTION,COMPACTION_OPTION,DIRECT_SYNTHESIS_OPTION
-    from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION,DIRECT_REVIEW_OPTION
+    from services.deep_research.factual_review import OPTION as REVIEW_OPTION,REPAIR_OUTPUT_OPTION,DIRECT_REVIEW_OPTION,NAMED_TABLE_OPTION
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
     from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
@@ -37,7 +37,7 @@ def research_model_options(node, options):
         profiles = (
                 OPTION, DIRECT_REPAIR_OPTION, HIGH_SYNTHESIS_OPTION, COMPACTION_OPTION,
                 DIRECT_SYNTHESIS_OPTION, REVIEW_OPTION, REPAIR_OUTPUT_OPTION,
-                EXPERIMENT_OPTION, DIRECT_PLAN_OPTION, BINDING_OPTION)
+                EXPERIMENT_OPTION, DIRECT_PLAN_OPTION, BINDING_OPTION, NAMED_TABLE_OPTION)
         if node != 'verify' or any(options.get(key, False) is not False for key in profiles):
             raise ValueError('Direct comparison review requires an isolated factual review')
         cap = options.get('max_tokens', 4000)
@@ -57,6 +57,12 @@ def research_model_options(node, options):
     direct_synthesis = options.pop(DIRECT_SYNTHESIS_OPTION,False)
     binding_reasoning=options.pop(BINDING_OPTION,False)
     other_profiles=(short_factual,direct_repair,high_synthesis,bounded_review,experiment_reasoning,direct_plan,compact_reasoning,direct_synthesis,repair_output)
+    named_table_review = options.pop(NAMED_TABLE_OPTION, False)
+    if type(named_table_review) is not bool or named_table_review and (
+            node != 'verify' or binding_reasoning is not False or any(v is not False for v in other_profiles)):
+        raise ValueError('Named table review requires an isolated factual review')
+    if named_table_review:
+        return {**options, 'thinking': {'type': 'enabled'}, 'reasoning_effort': 'low', 'max_tokens': 6144}
     if (type(binding_reasoning) is not bool or binding_reasoning and (node!='verify_answer_coverage'
             or any(type(v) is not bool or v for v in other_profiles))):
         raise ValueError('Invalid coverage binding reasoning profile')
