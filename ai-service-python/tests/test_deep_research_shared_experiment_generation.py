@@ -465,6 +465,15 @@ def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fau
         assert report['markdown'].count('共用 100 秒准备预算') == 1
         assert '完整拟合窗口记录峰值' in report['markdown']
         assert report['publishable'] is False
+        assert '对每个实验组取本组各拟合窗口中的最大值' in report['markdown']
+
+        from services.deep_research.shared_experiment_result import MEMORY_REPORT_MARKER
+        current[MEMORY_REPORT_MARKER] = 1
+        scoped_report = compile_candidate(current,data,aliases)
+        assert '按配对重复分开，每组取当次完整窗口中的最大值' in scoped_report['markdown']
+        assert '对每个实验组取本组各拟合窗口中的最大值' not in scoped_report['markdown']
+        assert scoped_report['generationBindingDigest'] == report['generationBindingDigest']
+        assert scoped_report['reviewDigest'] == report['reviewDigest']
 
 
 @pytest.mark.parametrize('failure,code', [

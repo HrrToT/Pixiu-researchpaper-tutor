@@ -7,6 +7,9 @@ from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.shared_experiment_review import prepare, _generation, review_slot
 
 
+MEMORY_REPORT_MARKER = 'sharedExperimentMemoryReportVersion'
+
+
 def _cell(value):
     return str(value).replace('\\','\\\\').replace('|',r'\|').replace('\r','').replace('\n',' / ')
 
@@ -101,7 +104,12 @@ def compile_candidate(record, input_data, aliases):
                   '  涉及状态：'+names(metric['stateIds'])+'；仅对状态实际存在的组计量。']
         if captures := metric.get('fitMemoryCaptures'):
             intervals = '、'.join(f'步骤 {step_numbers[capture["stepId"]]}' for capture in captures)
-            lines.append(f'  在{intervals}各自的完整拟合窗口记录峰值。对每个实验组取本组各拟合窗口中的最大值。')
+            if record.get(MEMORY_REPORT_MARKER) == 1:
+                lines.append(
+                    f'  在{intervals}各自的完整拟合窗口记录峰值。按配对重复分开，每组取当次完整窗口中的最大值。'
+                )
+            else:
+                lines.append(f'  在{intervals}各自的完整拟合窗口记录峰值。对每个实验组取本组各拟合窗口中的最大值。')
     lines += ['', '## 效应与判断', '', '各指标单独分析：越大越好的指标取负号作为损失，越小越好的指标保留原值，不混合不同单位。',
               '按 00、10、01、11 顺序，对损失使用以下对比权重：']
     labels = {'A':'因素 A 平均主效应','B':'因素 B 平均主效应','interaction':'交互效应'}
