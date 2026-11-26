@@ -47,9 +47,17 @@ def payload(messages, options, *, model, temperature):
     if '_shared_review_check_ids' in options:
         ids = options['_shared_review_check_ids']
         checks = fmt['schema'].get('properties', {}).get('checks', {})
-        id_schema = checks.get('items', {}).get('properties', {}).get('checkId', {})
-        if (fmt['name'] != 'shared_experiment_review_references_v1' or not isinstance(ids, list)
-                or not ids or id_schema.get('enum') != ids
+        items = checks.get('items', {})
+        if fmt['name'] == 'shared_experiment_review_references_v1':
+            supplied = items.get('properties', {}).get('checkId', {}).get('enum')
+        elif fmt['name'] == 'shared_experiment_review_bound_facts_v1':
+            variants = items.get('anyOf', [])
+            bindings = [variant.get('properties', {}).get('checkId', {}).get('enum') for variant in variants]
+            supplied = [row[0] for row in bindings] if all(isinstance(row, list) and len(row) == 1
+                                                        for row in bindings) else None
+        else:
+            supplied = None
+        if (not isinstance(ids, list) or not ids or supplied != ids
                 or checks.get('minItems') != len(ids) or checks.get('maxItems') != len(ids)):
             raise ValueError('Invalid shared review check binding')
     cap=options.get('max_tokens')

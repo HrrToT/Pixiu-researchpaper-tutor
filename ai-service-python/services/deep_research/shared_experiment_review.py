@@ -114,7 +114,7 @@ def reference_review_enabled(record):
 
 def _fact_context_enabled(record):
     version = record.get(FACT_CONTEXT_MARKER)
-    return type(version) is int and version in (1, 2, 3)
+    return type(version) is int and version in (1, 2, 3, 4)
 
 
 def _generation(record):
@@ -165,7 +165,8 @@ CHECK_IDS_OPTION = '_shared_review_check_ids'
 
 
 def descriptor(record, check_ids=None):
-    ids = [t['checkId'] for t in targets(record)]
+    checks_by_id = {target['checkId']: target for target in targets(record)}
+    ids = list(checks_by_id)
     literal_text = {'type':'string', 'minLength':1, 'maxLength':600, 'pattern':r'\S'}
     text = {'$ref':'#/$defs/text'}
     references = reference_review_enabled(record)
@@ -181,6 +182,23 @@ def descriptor(record, check_ids=None):
     reason = {**literal_text, 'maxLength':300} if references else text
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
                      'planBindings':_array(binding, maximum=8), 'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
+    scoped_facts = (check_ids is not None and record.get(FACT_CONTEXT_MARKER) == 4
+                    and any(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids))
+    if scoped_facts:
+        variants = []
+        for cid in ids:
+            target = checks_by_id[cid]
+            props = {**check['properties'], 'checkId': {'enum': [cid]}, 'reason': {'$ref': '#/$defs/factReason'}}
+            if target['kind'] == 'source_fact':
+                props.update(
+                    planBindings=_array({'enum': target['pathPrefixes']}, maximum=8),
+                    evidenceBindings=_array(_object({
+                        'evidenceId': {'enum': target['allowedEvidenceIds']},
+                        'field': {'enum': ['quote', 'before', 'after']},
+                    }), maximum=8),
+                )
+            variants.append(_object(props))
+        check = {'anyOf': variants}
     compact_version = record.get(COMPACT_REVIEW_MARKER)
     minimum = 1 if compact_version in (1, 2) else len(ids)
     maximum = min(len(ids), MAX_CHECKS_PER_REVIEW) if compact_version == 2 else len(ids)
@@ -190,9 +208,13 @@ def descriptor(record, check_ids=None):
         'checks':_array(check, minimum, maximum), 'coherent':{'type':'boolean'},
         'issues':_array(_object({'reason':reason, 'planBindings':_array(binding, maximum=8)}), maximum=8)})
     result['$defs']={'text':literal_text}
+    if scoped_facts:
+        result['$defs']['factReason'] = reason
     if not references:
         result['$defs']['binding'] = _object({'path':text,'text':text})
     name = 'shared_experiment_review_references_v1' if references else 'shared_experiment_review_v1'
+    if scoped_facts:
+        name = 'shared_experiment_review_bound_facts_v1'
     return {'type':'json_schema','name':name,'schema':result}
 
 
@@ -252,7 +274,7 @@ def build(record, input_data, aliases, *, required_domains=()):
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
-            if record.get(FACT_CONTEXT_MARKER) == 3:
+            if record.get(FACT_CONTEXT_MARKER) in (3, 4):
                 hints = _fact_context_hints(record, aliases, input_data, bound['proposal']['sourceFacts'])
                 if hints:
                     for row in data['factChecks']:
@@ -301,7 +323,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
     fact_policy = ({FACT_CONTEXT_MARKER: record[FACT_CONTEXT_MARKER]}
-                   if record.get(FACT_CONTEXT_MARKER) in (2, 3) else {})
+                   if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) else {})
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
                                   **({'batches':batches} if batches else {}), **stop_policy, **reference_policy,
@@ -346,7 +368,7 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0)}
     if _fact_context_enabled(record):
-        if record.get(FACT_CONTEXT_MARKER) in (2, 3):
+        if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4):
             policy['quantity_spelling_version'] = 18
         contexts = _visible_numeric_context(input_data, by_id, aliases)
         if passed_bindings is None:

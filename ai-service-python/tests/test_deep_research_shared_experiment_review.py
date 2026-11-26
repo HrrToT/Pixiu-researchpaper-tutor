@@ -290,6 +290,29 @@ def test_reference_review_scope_reaches_the_provider_without_private_options(ver
         options_for_record(record, NODE, {CHECK_IDS_OPTION: selected * 2})
 
 
+def test_fact_review_wire_schema_limits_each_check_to_its_own_reference_and_text():
+    from jsonschema import Draft202012Validator
+    from llm.responses_transport import payload
+    from services.deep_research.planning_transport import options_for_record
+    from services.deep_research.shared_experiment_review import (
+        CHECK_IDS_OPTION, FACT_CONTEXT_MARKER, REFERENCE_MARKER,
+    )
+
+    record, _, _ = ready()
+    record.update({REFERENCE_MARKER: 2, FACT_CONTEXT_MARKER: 4})
+    options = options_for_record(record, NODE, {CHECK_IDS_OPTION: ['fact_0'], 'max_tokens': 4096})
+    wire = payload([{'role':'user','content':'fixture'}], options, model='fixture', temperature=0)
+    assert wire['text']['format']['name'] == 'shared_experiment_review_bound_facts_v1'
+    validator = Draft202012Validator(wire['text']['format']['schema'])
+    row = {'checkId':'fact_0','status':'passed','planBindings':['/sourceFacts/0/text'],
+           'evidenceBindings':[{'evidenceId':'E1','field':'before'}],'reason':'Fixture only'}
+    def accept(check):
+        return validator.is_valid({'checks':[check],'coherent':True,'issues':[]})
+    assert accept(row)
+    assert not accept({**row,'evidenceBindings':[{'evidenceId':'E2','field':'quote'}]})
+    assert not accept({**row,'planBindings':['/sourceFacts/1/text']})
+
+
 @pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
 def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
     from services.deep_research import shared_experiment_review as review
