@@ -1,0 +1,30 @@
+{
+  "sourceRunId": "dr_d3_scientific_repair_20261127",
+  "runSha256": "3100ccdf961bc76a70a4d0c03b586ff063b3f9ecf330c2a1796f10246edbb60e",
+  "legacyBytesWithoutBatches": 34831,
+  "batches": [
+    {
+      "checks": 7,
+      "inputBytes": 14845,
+      "reservationTokens": 19965
+    },
+    {
+      "checks": 8,
+      "inputBytes": 31913,
+      "reservationTokens": 37033
+    },
+    {
+      "checks": 7,
+      "inputBytes": 31746,
+      "reservationTokens": 36866
+    }
+  ],
+  "checksRetained": 22,
+  "fullProposalInTwoDesignPackets": true,
+  "noCitedFactEvidenceLost": true,
+  "requiredDesignPremisesRetained": 6,
+  "remainingTokensInSavedRun": 32260,
+  "middleBatchReservationExceedsSavedRemaining": true,
+  "providerCalls": 0,
+  "scientificApproval": false
+}

@@ -72,8 +72,8 @@ def partition_review(record, data, aliases, proposal, build_request, limit):
     ]
 
 
-def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks):
-    """Bound verdict count while preserving the full proposal in every review."""
+def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks, *, scoped=False):
+    """Keep the full design in design reviews; facts may use their own source packet."""
     fact_sources = {fact['id']: set(fact['evidenceRefs']) for fact in proposal['sourceFacts']}
     batches = []
     for key in ('factChecks', 'sectionChecks', 'humanChecks'):
@@ -90,8 +90,27 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
                 refs = {row.get('tableDataRef') for row in rows}
                 packet.update(requirements=[], evidence=rows,
                               tables={k: v for k, v in data['tables'].items() if k in refs})
+                if scoped:
+                    # Preserve order so /sourceFacts/INDEX/text still points
+                    # to the same original value within the full proposal.
+                    packet['proposal'] = {'sourceFacts': proposal['sourceFacts']}
                 request, size = build_request(packet)
             else:
+                if scoped and key == 'sectionChecks':
+                    packet['requirements'] = []
+                elif scoped:
+                    wanted = {(oid, cid) for _, oid, cid in selected}
+                    requirements = []
+                    for row in packet['requirements']:
+                        oid = row['obligationId']
+                        if (oid, 'whole') in wanted:
+                            requirements.append(row)
+                            continue
+                        criteria = [c for c in row.get('completionCriteria', [])
+                                    if (oid, c['criterionId']) in wanted]
+                        if criteria:
+                            requirements.append({**row, 'completionCriteria': criteria})
+                    packet['requirements'] = requirements
                 # Preserve sources cited by the proposal as well as required
                 # premises for the section and human-criteria reviews.
                 request, size, supplied = fit_accounted_evidence(

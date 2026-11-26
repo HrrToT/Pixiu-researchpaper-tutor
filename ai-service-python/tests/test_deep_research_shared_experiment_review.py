@@ -112,6 +112,11 @@ def test_output_bounded_review_partitions_even_when_input_fits():
         ['fact'], ['section'], ['user_0', 'user_1', 'user_2'], ['user_3', 'user_4']]
     assert parts[0]['suppliedEvidenceAliases'] == ['E1']
     assert all(part['request']['proposal'] == proposal for part in parts)
+    scoped = partition_bounded_review(record, data, aliases, proposal, measure, 24, 3, scoped=True)
+    assert [part['checkIds'] for part in scoped] == [part['checkIds'] for part in parts]
+    assert scoped[0]['request']['proposal'] == {'sourceFacts': proposal['sourceFacts']}
+    assert scoped[1]['request']['requirements'] == []
+    assert all(part['request']['proposal'] == proposal for part in scoped[1:])
     assert all(part['suppliedEvidenceAliases'] == ['E1', 'E2'] for part in parts[1:])
     assert all(part['request']['requirements'] == data['requirements'] for part in parts[1:])
 
