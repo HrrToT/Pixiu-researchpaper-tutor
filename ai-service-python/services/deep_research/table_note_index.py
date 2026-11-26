@@ -86,14 +86,38 @@ def matched_protocols(rows, owners):
     by_id = {row['evidenceId']: row for row in rows}
     result = {}
     for table in candidates['tables']:
-        # A marker appearing in a general note is insufficient to select it.
-        if len(table['markedRows']) != 1:
-            continue
-        marked, = table['markedRows']
+        options = table['markedRows']
+        marked = options[0] if len(options) == 1 else None
+        if marked is None:
+            source = by_id[table['tableEvidenceId']]
+            location = source.get('location') or {}
+            if location.get('tableColumnMappingUnverified') is not False:
+                continue
+            packet = visible_table_packet(source.get('tableData'), source.get('quote', ''))
+            if not packet:
+                continue
+
+            def bare(label):
+                return re.sub(r'\s+|[*∗⋆†‡]|\[\s*\d+\s*\]', '', label).casefold()
+
+            unmarked = Counter(bare(label) for _, label, _ in packet['rows']
+                               if not any(marker in label for group in _GROUPS for marker in group))
+            twins = [item for item in options if unmarked[bare(item['method'])] == 1]
+            if len(twins) != 1:
+                continue
+            marked, = twins
         symbols = next(group for group in _GROUPS if marked['marker'] in group)
         suffix = r'\s*[' + re.escape(''.join(symbols)) + r']'
         explicit = [note for note in table['candidateNoteEvidenceIds']
                     if re.search(_MATCHED_RETRAINING.pattern + suffix, by_id[note].get('quote', ''), re.I)]
+        if len(options) > 1:
+            def explicitly_names_baseline(note):
+                text = by_id[note].get('quote', '')
+                match = re.search(r'\bre[-\s]?train\w*\s+(.{1,160}?)\s+using\b', ' '.join(text.split()), re.I)
+                names = re.split(r'\s+and\s+|\s*,\s*', match[1], flags=re.I) if match else []
+                return bare(marked['method']) in {bare(name) for name in names}
+
+            explicit = [note for note in explicit if explicitly_names_baseline(note)]
         if len(explicit) == 1:
             result[table['tableEvidenceId']] = {'rowNumber': marked['rowNumber'],
                                                'noteEvidenceId': explicit[0]}

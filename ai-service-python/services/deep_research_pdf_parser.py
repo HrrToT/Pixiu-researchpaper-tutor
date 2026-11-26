@@ -62,7 +62,7 @@ def _extract_page_text(page):
         cache.clear()
 
 
-def parse_pdf(body: bytes, max_pages: int) -> list[dict]:
+def parse_pdf(body: bytes, max_pages: int, *, include_tables=False) -> list[dict]:
     reader_type = PdfReader
     if reader_type is None:
         from PyPDF2 import PdfReader as reader_type
@@ -94,6 +94,14 @@ def parse_pdf(body: bytes, max_pages: int) -> list[dict]:
                 row['extraction']={"engine":"PyPDF2","fallbackEngine":"pypdf",
                     "fallbackVersion":pypdf.__version__,"status":"unreadable_glyphs",
                     "originalControlCount":controls}
+        if include_tables:
+            from core.pdf_repeated_metric_tables import verified_metric_tables
+            try:
+                tables = verified_metric_tables(page, text)
+            except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
+                tables = []  # Optional geometry cannot make readable PDF prose unavailable.
+            if tables:
+                row['verifiedTables'] = tables
         pages.append(row)
     return pages
 
@@ -106,7 +114,7 @@ def main():
         body = sys.stdin.buffer.read(max_bytes + 1)
         if len(body) > max_bytes:
             return 2
-        result = parse_pdf(body, max_pages)
+        result = parse_pdf(body, max_pages, include_tables=sys.argv[3:] == ['--verified-tables'])
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
         return 0
     except Exception as error:

@@ -1,0 +1,19 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "baseCase": "D2-BASELINE-COMPRESSION",
+  "source": "LightGaussian v6, physical PDF page 6, Table 1",
+  "retrievalMode": "Hash-checked original PDF with vector and table indexes disabled",
+  "verification": {
+    "tableGeometryMatchedPdfText": true,
+    "methodAndDatasetLabelsRetained": true,
+    "markedBaselineAndSamePageNoteBound": true,
+    "sameDatasetCellsCompiled": 10,
+    "jointStageInputBytes": 23908,
+    "jointStageLimitBytes": 24000,
+    "allFrozenPremiseBundlesRetained": true
+  },
+  "modelCalls": 0,
+  "caseSubmissions": 0,
+  "scientificAcceptance": false,
+  "boundary": "The candidate rebuilt the matched example from this PDF, with no historic table packet supplied. The replay intercepted dispatch and does not establish final report quality. Unsupported or ambiguous layouts remain prose-only."
+}

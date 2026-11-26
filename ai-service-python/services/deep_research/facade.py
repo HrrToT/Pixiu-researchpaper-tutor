@@ -323,6 +323,8 @@ class ResearchFacade:
             "comparisonCellsContractVersion": self._comparison_cells_version,
             **({'comparisonMechanismReadContractVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonEvaluationProtocolVersion': 4} if self._comparison_cells_version == 1 else {}),
+            **({'comparisonPdfTableFallbackVersion': 1} if self._comparison_cells_version == 1
+                and request.get('outputKind') == 'paper_comparison' else {}),
             **({'shortComparisonLayoutContractVersion': 1} if continuation_context and self._comparison_cells_version == 1 else {}),
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,

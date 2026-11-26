@@ -22,7 +22,7 @@ class LocalTaskRetriever:
     def __init__(self, repo, run_id, validate, *, origin, get=requests.get, parse=None):
         self.repo, self.run_id, self.validate = repo, run_id, validate
         self.origin, self.get = origin.rstrip('/'), get
-        self.parse = parse or _parse_pdf
+        self.parse = parse
         self.pages = {}
         self.index_tables = {}
         self.index_context = {}
@@ -117,7 +117,15 @@ class LocalTaskRetriever:
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
-        precision = self.repo.require_run(self.run_id).get('sourcePrecisionContractVersion')
+        record = self.repo.require_run(self.run_id)
+        if record.get('comparisonPdfTableFallbackVersion') == 1 and limit >= 2:
+            metrics = _requested_metrics(query)
+            if not metrics and re.search(r'\bbaseline\b|基线', query, re.I) and re.search(r'\bbenchmark\b|对照', query, re.I):
+                metrics = {'FPS', 'SIZE', 'PSNR', 'SSIM', 'LPIPS'}
+            if metrics:
+                found = _include_metric_tables(found, [row for row in passages if row.get('tableData')],
+                                               query, metrics, min(limit, 5))
+        precision = record.get('sourcePrecisionContractVersion')
         if type(precision) is int and precision in (3,4,5,6,7,8):
             from services.deep_research.requested_measurements import include_pdf_measurements
             if not self.validate(self.run_id,pdf_id):
@@ -237,6 +245,19 @@ class LocalTaskRetriever:
                     passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': passage,
                         'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
                         'title': material.get('title', pdf_id), 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'})
+            for table in page.get('verifiedTables', []):
+                number, packet = table['number'], table['tableData']
+                header = ' | '.join(f'{group} / {metric}' for group, metrics in packet['groups'] for metric in metrics)
+                lines = [f"Table caption: {table['caption']}", f'Table row 1: Method | {header}']
+                lines.extend(f'Table row {n}: ' + ' | '.join([label, *values]) for n, label, values in packet['rows'])
+                location = {'page': page['page'], 'pageIndex': page['page'] - 1, 'pageResolution': 'exact',
+                            'section': f'Table {number}', 'table': f"pdf-page-{page['page']}-table-{number}",
+                            'tableColumnMappingUnverified': False}
+                identity = hashlib.sha256(f"{pdf_id}:{material['contentHash']}:{location}".encode()).hexdigest()
+                passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': '\n'.join(lines),
+                    'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
+                    'title': material.get('title', pdf_id), 'accessLevel': 'fulltext',
+                    'retrievalMode': 'pdf_verified_table', 'tableData': packet})
         return passages
 
 
@@ -314,7 +335,10 @@ class LocalTaskRetriever:
                 body = b''.join(chunks)
                 if not body.startswith(b'%PDF-') or hashlib.sha256(body).hexdigest() != material['contentHash']:
                     raise DeepResearchError('source_changed', '论文内容与研究快照不同')
-                self.pages[key] = self.parse(body)
+                if self.parse is not None:
+                    self.pages[key] = self.parse(body)
+                else:
+                    self.pages[key] = _parse_pdf(body, include_tables=record.get('comparisonPdfTableFallbackVersion') == 1)
             return material, self.pages[key]
 
 
@@ -401,8 +425,11 @@ def _bm25(query, documents):
     return scores
 
 
-def _parse_pdf(body):
-    process = subprocess.run([sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)],
+def _parse_pdf(body, *, include_tables=False):
+    args = [sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)]
+    if include_tables:
+        args.append('--verified-tables')
+    process = subprocess.run(args,
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:
         from services.deep_research.pdf_worker_errors import details
