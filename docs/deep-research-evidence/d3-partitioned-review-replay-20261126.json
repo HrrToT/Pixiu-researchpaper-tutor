@@ -1,0 +1,26 @@
+{
+  "sourceReceipt": "D3-DENSIFICATION-FACTORIAL-v12",
+  "oldUnpartitionedReviewBytesAfterRepair": 35471,
+  "perRequestLimitBytes": 32000,
+  "fullProposalPreservedInBothParts": true,
+  "batches": [
+    {
+      "inputBytes": 28468,
+      "checks": 12,
+      "evidenceAliases": 13
+    },
+    {
+      "inputBytes": 31794,
+      "checks": 17,
+      "evidenceAliases": 12
+    }
+  ],
+  "totalChecks": 29,
+  "unresolvedPrerequisitesPreserved": 4,
+  "resumedWithOnlySecondBatch": true,
+  "cachedReplayAddedCalls": 0,
+  "swappedBatchesRejected": true,
+  "crossBatchEvidenceRejected": true,
+  "scientificContentAccepted": false,
+  "networkModelCalls": 0
+}

@@ -39,3 +39,34 @@ def fit_accounted_evidence(record, data, aliases, proposal, build_request, limit
             chosen.add(position)
             compact = candidate
     return compact
+
+
+def partition_review(record, data, aliases, proposal, build_request, limit):
+    """Retain the complete proposal in both parts; partition checks and evidence duties."""
+    if not data['factChecks'] or not data['sectionChecks'] or not data['humanChecks']:
+        return []
+    # The fact part carries every cited original. The scheme-level part
+    # retains all frozen premise bundles and as much additional evidence as fits.
+    facts = {**data, 'requirements': [], 'sectionChecks': [], 'humanChecks': []}
+    cited = {ref for fact in proposal['sourceFacts'] for ref in fact['evidenceRefs']}
+    facts['evidence'] = [row for row in data['evidence'] if row['evidenceId'] in cited]
+    packets = {row.get('tableDataRef') for row in facts['evidence']}
+    facts['tables'] = {key: value for key, value in data['tables'].items() if key in packets}
+    if {row['evidenceId'] for row in facts['evidence']} != cited:
+        return []
+    first_request, first_size = build_request(facts)
+    if first_size > limit:
+        return []
+    plan = {**data, 'factChecks': []}
+    second_request, second_size, second_refs = fit_accounted_evidence(
+        record, plan, aliases, {**proposal, 'sourceFacts': []}, build_request, limit)
+    if second_size > limit:
+        return []
+    return [
+        {'request': first_request, 'inputBytes': first_size,
+         'checkIds': [entry[0] for entry in data['factChecks']],
+         'suppliedEvidenceAliases': [row['evidenceId'] for row in facts['evidence']]},
+        {'request': second_request, 'inputBytes': second_size,
+         'checkIds': [entry[0] for entry in [*data['sectionChecks'], *data['humanChecks']]],
+         'suppliedEvidenceAliases': second_refs},
+    ]

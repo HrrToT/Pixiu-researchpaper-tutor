@@ -349,6 +349,7 @@ class DeepResearchRepository:
                 for batch_policy in ('comparisonReviewBatchContractVersion', 'comparisonAuthoringContractVersion',
                                      'comparisonExplorationContractVersion', 'comparisonCrossPaperBoundaryContractVersion',
                                      'experimentArmCloneLayoutVersion', 'sharedExperimentRevisionPathsVersion',
+                                     'sharedExperimentCompactReviewVersion',
                                      'comparisonMechanismReadContractVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',

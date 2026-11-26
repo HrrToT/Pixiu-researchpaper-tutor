@@ -333,6 +333,7 @@ class ResearchFacade:
             "experimentSharedPlanContractVersion": shared_experiment_profile,
             **({"experimentArmCloneLayoutVersion": 1} if shared_experiment_profile in (6, 7, 8) else {}),
             **({"sharedExperimentRevisionPathsVersion": 2} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentCompactReviewVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

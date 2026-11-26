@@ -64,6 +64,33 @@ def test_resource_review_window_keeps_frozen_premises_and_bound_feedback_evidenc
     assert supplied == list(aliases) and size == 40
 
 
+def test_partition_covers_each_check_with_original_support_and_keeps_full_proposal():
+    from services.deep_research.shared_experiment_review_input import partition_review
+
+    aliases = {'E1': 'a', 'E2': 'b', 'E3': 'c', 'E4': 'd'}
+    allocation = {'requiredEvidenceIds': ['d'], 'suppliedEvidenceIds': list(aliases.values()),
+                  'allFrozenPremiseBundlesRetained': True}
+    record = {'state': {'sharedExperimentMaterialAllocation': allocation}}
+    proposal = {'sourceFacts': [{'evidenceRefs': ['E1', 'E2']}], 'steps': [{'id': 'step'}]}
+    data = {
+        'question': 'Frozen request', 'proposal': proposal, 'requirements': [{'obligationId': 'o'}],
+        'evidence': [{'evidenceId': alias, 'tableDataRef': alias} for alias in aliases],
+        'tables': {alias: {'id': alias} for alias in aliases},
+        'factChecks': [['fact', 'F']], 'sectionChecks': [['section', 'criterion', ['/steps']]],
+        'humanChecks': [['user', 'o', 'whole']],
+    }
+    def measure(view):
+        return view, len(view['evidence']) * 10
+
+    facts, plan = partition_review(record, data, aliases, proposal, measure, 20)
+    assert facts['checkIds'] == ['fact'] and facts['suppliedEvidenceAliases'] == ['E1', 'E2']
+    assert plan['checkIds'] == ['section', 'user'] and 'E4' in plan['suppliedEvidenceAliases']
+    assert all(part['request']['proposal'] == proposal and part['inputBytes'] <= 20 for part in (facts, plan))
+    assert all(set(part['request']['tables']) == set(part['suppliedEvidenceAliases']) for part in (facts, plan))
+    assert plan['request']['requirements'] == data['requirements']
+    assert partition_review(record, data, aliases, proposal, measure, 10) == []
+
+
 def check(r,data,aliases,v=None):
     sent = Mock(return_value=reply(verdict(r,data) if v is None else v))
     states = []
