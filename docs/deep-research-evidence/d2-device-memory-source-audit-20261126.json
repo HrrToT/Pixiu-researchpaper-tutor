@@ -36,6 +36,16 @@
     "directMeasurementClassifierReturnedMeasurement": false,
     "scientificEffect": "A component requirement cannot unlock measured device-memory advice."
   },
+  "jointStageReplay": {
+    "originalPdfPage": 11,
+    "evidenceInjection": "The version-checked physical passage was added after literal extraction for this fixture. This run does not re-test search recall.",
+    "allowedForDeviceMemoryAdvice": true,
+    "decisionMode": "measure_both_before_recommending_either",
+    "jointStageBytes": 23974,
+    "jointStageLimitBytes": 24000,
+    "generationIntercepted": true,
+    "productionWrites": 0
+  },
   "newModelCalls": 0,
   "scientificAcceptance": false
 }
