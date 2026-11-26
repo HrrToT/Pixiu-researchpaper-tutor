@@ -29,5 +29,21 @@
   "modelCalls": 0,
   "productionWrites": 0,
   "liveDeploymentChanged": false,
+  "currentCandidateRecheck": {
+    "backendCommit": "f344b148b0413bbf7c028e7791b2137dba4da461",
+    "offlineRegression": "openai-offline-fixture-native-full-20261126.json",
+    "allRegressionSourceHashesMatched": true,
+    "coldStartupPassed": true,
+    "newComparisonModelSnapshot": ["gpt-6.1-terra", "gpt-6-luna"],
+    "historicalRunsChecked": 2,
+    "historicalCallRowsChecked": 86,
+    "historicalResultsAndProviderRoutesUnchanged": true,
+    "partialComparisonReopened": true,
+    "pausedUnknownResultAllowedActions": ["cancel"],
+    "pdfTableOnPage6Verified": true,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "network": "none"
+  },
   "boundary": "Cold-start and repository compatibility in isolation. No real provider dispatch, live deployment or scientific report acceptance."
 }
