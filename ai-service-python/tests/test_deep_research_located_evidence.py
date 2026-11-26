@@ -77,6 +77,31 @@ def test_only_verified_serialized_table_row_preserves_geometry():
     assert 'page' not in ev['location']
 
 
+@pytest.mark.parametrize('version, change, expected_page', [
+    (2, None, 6), (1, None, None), (2, 'page', None), (2, 'source', None),
+])
+def test_only_matching_owned_pdf_table_passage_retains_page(version, change, expected_page):
+    from services.deep_research.local_sources import LocalTaskRetriever
+
+    create, source, record, local = setup()
+    material, = record['materials']
+    source['contentHash'] = material['contentHash']
+    record['comparisonPdfTableFallbackVersion'] = version
+    packet = {'groups': [['Scenes', ['FPS']]], 'rows': [[2, 'Baseline', ['60']], [3, 'Ours', ['120']]]}
+    page = {'page': 6, 'verifiedTables': [{'number': '1', 'caption': 'Comparison', 'tableData': packet}]}
+    table, = LocalTaskRetriever._pdf_passages('paper', material, [page])
+    row = {**table, **source}
+    record['state']['sources'] = [row]
+    location = {**table['location'], 'sourcePassageStart': 0, 'sourcePassageEnd': len(table['text'])}
+    if change == 'page':
+        location.update(page=9, pageIndex=8)
+    if change == 'source':
+        row['sourceId'] = 'other-table'
+    evidence = create(source, table['text'], table['text'], location=location, obligation_ids=['o'])
+    assert evidence['location'].get('page') == expected_page
+    assert local.load_pages.call_count == (0 if expected_page else 1)
+
+
 def test_page_match_does_not_bypass_literal_evidence_check():
     create, source, _, _ = setup()
     with pytest.raises(ValueError, match='Quotation'):

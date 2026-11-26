@@ -46,9 +46,7 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
         material = next((m for m in record.get('materials', [])
                          if m.get('materialId') == source.get('workId')), None)
         if material and source.get('accessLevel') == 'fulltext':
-            # Verified table rows are a parser serialization, not literal PDF
-            # prose. Keep their existing geometric locator only when the exact
-            # persisted source packet proves this is such a row.
+            # A parser-serialized table cannot be matched against prose.
             from services.deep_research.table_evidence import visible_table_packet
             table_row = False
             for item in record.get('state', {}).get('sources', []):
@@ -60,6 +58,8 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
                 if packet:
                     table_row = any(quote == f'Table row {n}: ' + ' | '.join([method, *values])
                                     for n, method, values in packet['rows'])
+                    if not table_row and record.get('comparisonPdfTableFallbackVersion') == 2:
+                        table_row = _verified_pdf_table_passage(item, material, quote, original, location)
                 if table_row:
                     break
             if not table_row:
@@ -104,3 +104,25 @@ def located_evidence_factory(repo, run_id, local, *, cache_failed_batches=False)
         return batch_diagnostics.snapshot() if batch_diagnostics else deepcopy(last_diagnostics)
     create.physical_page_diagnostics = diagnostics
     return create
+
+
+def _verified_pdf_table_passage(item, material, quote, original, location):
+    from hashlib import sha256
+    import re
+    from services.deep_research.table_evidence import visible_table_packet
+
+    anchor = item.get('location') or {}
+    page = anchor.get('page')
+    table_id = anchor.get('table')
+    table = re.fullmatch(r'pdf-page-([1-9]\d*)-table-([1-9]\d*)', table_id) if isinstance(table_id, str) else None
+    if (type(page) is not int or not table or table[1] != str(page)
+            or anchor.get('pageResolution') != 'exact' or anchor.get('pageIndex') != page - 1
+            or anchor.get('tableColumnMappingUnverified') is not False
+            or anchor.get('section') != f'Table {table[2]}'
+            or any(location.get(k) != v for k, v in anchor.items())
+            or not material.get('contentHash') or item.get('contentHash') != material['contentHash']
+            or item.get('text') != original or quote not in original):
+        return False
+    identity = f"{material['materialId']}:{material['contentHash']}:{anchor}"
+    return (item.get('sourceId') == 'src_' + sha256(identity.encode()).hexdigest()
+            and visible_table_packet(item.get('tableData'), quote) is not None)

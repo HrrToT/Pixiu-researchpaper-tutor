@@ -119,7 +119,7 @@ class LocalTaskRetriever:
         scores = _bm25(query, [value['text'] for value in passages])
         ranked = sorted(zip(scores, passages), key=lambda value: -value[0])
         found = [value for score, value in ranked[:min(max(int(limit), 0), 5)] if score > 0]
-        if record.get('comparisonPdfTableFallbackVersion') == 1 and limit >= 2:
+        if record.get('comparisonPdfTableFallbackVersion') in (1, 2) and limit >= 2:
             metrics = _requested_metrics(query)
             if not metrics and re.search(r'\bbaseline\b|基线', query, re.I) and re.search(r'\bbenchmark\b|对照', query, re.I):
                 metrics = {'FPS', 'SIZE', 'PSNR', 'SSIM', 'LPIPS'}
@@ -347,7 +347,7 @@ class LocalTaskRetriever:
                 if self.parse is not None:
                     self.pages[key] = self.parse(body)
                 else:
-                    self.pages[key] = _parse_pdf(body, include_tables=record.get('comparisonPdfTableFallbackVersion') == 1)
+                    self.pages[key] = _parse_pdf(body, include_tables=record.get('comparisonPdfTableFallbackVersion') in (1, 2))
             return material, self.pages[key]
 
 

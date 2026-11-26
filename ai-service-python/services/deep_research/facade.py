@@ -324,7 +324,7 @@ class ResearchFacade:
             **({'comparisonMechanismReadContractVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonEvaluationProtocolVersion': 4} if self._comparison_cells_version == 1 else {}),
             **({'comparisonLiteralAxisGoalVersion': 1} if self._comparison_cells_version == 1 else {}),
-            **({'comparisonPdfTableFallbackVersion': 1} if self._comparison_cells_version == 1
+            **({'comparisonPdfTableFallbackVersion': 2} if self._comparison_cells_version == 1
                 and request.get('outputKind') == 'paper_comparison' else {}),
             **({'comparisonPdfPassageBoundaryVersion': 2} if self._comparison_cells_version == 1
                 and request.get('outputKind') == 'paper_comparison' else {}),
