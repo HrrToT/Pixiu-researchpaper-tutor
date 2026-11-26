@@ -47,6 +47,70 @@ def test_changed_bytes_never_reach_parser(monkeypatch):
     parse.assert_not_called()
 
 
+def test_shared_experiment_reads_explicit_protocol_sources_within_existing_slots(monkeypatch):
+    from services.deep_research.experiment_protocol_sources import (
+        MARKER, premise_bundles, preferred_reads,
+    )
+
+    local, get, parse, _ = fixture(monkeypatch)
+    query = 'densification optimization opacity reset'
+    membership = 'dataset benchmark subset scene sample membership names available count'
+    obligations = {
+        'reset': {'obligationId': 'reset', 'searchQuery': query, 'requiredSources': ['p']},
+        'data': {'obligationId': 'data', 'searchQuery': membership, 'requiredSources': ['p'],
+                 'dataPrerequisiteContractVersion': 1},
+    }
+    run = local.repo.require_run.return_value
+    run['state'] = {'plan': [{'obligations': list(obligations.values())}]}
+    parse.return_value = [
+        {'page': 1, 'text': (query + ' ' + membership + ' ') * 10},
+        {'page': 2, 'text': (query + ' ' + membership + ' ') * 5},
+        {'page': 5, 'text': 'We set the alpha value close to zero every N = 3000 iterations to control growth.'},
+        {'page': 7, 'text': 'The scenes are, from top down: Kite, Grove and Hall from the Example dataset.'},
+    ]
+    assert {row['location']['page'] for row in local(query, 'p', limit=2)} == {1, 2}
+    run[MARKER] = 1
+    resets = local(query, 'p', limit=2)
+    members = local(membership, 'p', limit=2)
+    assert {row['location']['page'] for row in resets} == {1, 5}
+    assert {row['location']['page'] for row in members} == {1, 7}
+    assert get.call_count == parse.call_count == 1
+
+    reset = {**resets[-1], 'ownerMaterialId': 'p'}
+    member = {**members[-1], 'ownerMaterialId': 'p'}
+    foreign = {**member, 'sourceId': 'foreign', 'ownerMaterialId': 'q'}
+    assert preferred_reads([foreign, reset, member], obligations, 12, ()) == [reset, member]
+    evidence = [
+        {'evidenceId': 'reset', 'quote': reset['text'], 'accessLevel': 'fulltext',
+         'obligationIds': ['reset'], 'verification': {'literal': 'passed'}},
+        {'evidenceId': 'data', 'quote': member['text'], 'accessLevel': 'fulltext',
+         'obligationIds': ['data'], 'verification': {'literal': 'passed'}},
+    ]
+    assert premise_bundles(evidence, obligations) == [{'evidenceIds': ['reset']}, {'evidenceIds': ['data']}]
+    evidence[1]['verification']['literal'] = 'failed'
+    assert premise_bundles(evidence, obligations) == [{'evidenceIds': ['reset']}]
+
+
+def test_split_protocol_schedule_requires_adjacent_owned_version():
+    from services.deep_research.experiment_protocol_sources import (
+        OPACITY, continuation_range, continuation_spans, has_passage, include_passages,
+    )
+
+    anchor = {'sourceId': 'anchor', 'pdfId': 'p', 'versionId': 'v1',
+              'accessLevel': 'fulltext', 'location': {'page': 5},
+              'text': 'We set the alpha value close to zero every N = 3000'}
+    adjacent = {**anchor, 'sourceId': 'adjacent', 'location': {'page': 6},
+                'text': 'iterations. The optimization then increases the alpha when needed.'}
+    foreign = {**adjacent, 'sourceId': 'other', 'versionId': 'v2'}
+    assert not has_passage([anchor, foreign], OPACITY)
+    assert has_passage([anchor, adjacent], OPACITY)
+    assert include_passages([], [anchor, foreign, adjacent], (OPACITY,), 2) == [anchor, adjacent]
+    assert continuation_spans([anchor, foreign, adjacent]) == {'adjacent'}
+    text = 'Previous figure caption. ' + adjacent['text'].replace('. The', '.\nThe')
+    start, end = continuation_range(text)
+    assert text[start:end] == adjacent['text'].replace('. The', '.\nThe').rstrip('.')
+
+
 def test_indexed_retrieval_disables_untracked_query_rewrite_through_registry(monkeypatch):
     from services.tools import retrieval_tools
     from rag.store import DummyRAG

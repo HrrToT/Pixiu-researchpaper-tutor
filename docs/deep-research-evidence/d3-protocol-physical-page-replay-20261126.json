@@ -1,0 +1,31 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "mode": "offline local-PDF acquisition, reading, literal extraction and generation request assembly",
+  "originalPlanAndBudgetLimitsRetained": true,
+  "material": {
+    "displayId": "arXiv:2308.04079v1",
+    "sha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+  },
+  "before": {
+    "acquired": 15,
+    "read": 12,
+    "ownedFileFetches": 1,
+    "generationInputBytes": 31764,
+    "literalProtocolPagesInGenerationInput": []
+  },
+  "after": {
+    "acquired": 17,
+    "read": 12,
+    "ownedFileFetches": 1,
+    "generationInputBytes": 31920,
+    "generationInputLimitBytes": 32000,
+    "literalProtocolPagesInGenerationInput": [
+      {"page": 5, "role": "opacity schedule and interval number"},
+      {"page": 6, "role": "physical continuation with units"},
+      {"page": 7, "role": "named evaluation scene membership"}
+    ]
+  },
+  "newProviderCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "The replay used the production parser and frozen PDF bytes via a mock content transport. It exercised the local PDF fallback without a vector service. The generation dispatch was intercepted after request preparation."
+}

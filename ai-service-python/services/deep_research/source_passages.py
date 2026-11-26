@@ -111,6 +111,8 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     rejected_states=rejected_state_enabled(record)
     frozen_projection=lambda ev:projection(ev,literal_state=rejected_states)
     sources = state.get('readResults', [])
+    from services.deep_research import experiment_protocol_sources as protocol
+    continuations = protocol.continuation_spans(sources) if protocol.enabled(record) else set()
     obligations = {o['obligationId']:o for p in state.get('plan', []) for o in p['obligations']}
     old_evidence = state.get('evidence', [])
     evidence = deepcopy(old_evidence); by_id = {e['evidenceId']:e for e in evidence}
@@ -169,6 +171,10 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             offset = body_start(source, location, text, owned_title=owned_wrapper_title(record,source))
             body = text[offset:]
             ranges = list(spans(body))
+            if source['sourceId'] in continuations:
+                original_span = protocol.continuation_range(body)
+                if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):
+                    ranges.append(original_span)
             packet = visible_table_packet(source.get('tableData'), body)
             # Preserve a parser-established row atomically if a prose boundary
             # would divide it. Never reconstruct cells from partial text.

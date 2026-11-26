@@ -110,7 +110,8 @@ class LocalTaskRetriever:
             # Keep optional PDF read failures outside the index-backend
             # fallback catch; a programming error must not trigger a second GET.
             indexed=self._supplement_pdf_measurements(indexed_for_pdf, query, pdf_id, limit)
-            return self._stamp_identity(self._scope_evidence(indexed,self.index_context.get(pdf_id,[]),query,pdf_id,limit), pdf_id)
+            found = self._scope_evidence(indexed, self.index_context.get(pdf_id, []), query, pdf_id, limit)
+            return self._stamp_identity(self._experiment_protocol_passages(found, query, pdf_id, limit), pdf_id)
         material, pages = self.load_pages(pdf_id)
         passages = self._pdf_passages(pdf_id, material, pages)
         scores = _bm25(query, [value['text'] for value in passages])
@@ -129,7 +130,33 @@ class LocalTaskRetriever:
             found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5),
                 **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision in (7,8) else {}),
                 **({'conditions':acquisition_conditions(self.repo.require_run(self.run_id),query,pdf_id)} if precision==8 else {}))
-        return self._stamp_identity(self._scope_evidence(found,passages,query,pdf_id,limit), pdf_id)
+        found = self._scope_evidence(found, passages, query, pdf_id, limit)
+        return self._stamp_identity(
+            self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages), pdf_id)
+
+    def _experiment_protocol_passages(self, rows, query, pdf_id, limit, *, passages=None):
+        from services.deep_research import experiment_protocol_sources as protocol
+
+        record = self.repo.require_run(self.run_id)
+        if limit < 2 or not protocol.enabled(record):
+            return rows
+        roles = protocol.query_roles(record, query, pdf_id)
+        if not roles or all(protocol.has_passage(rows, role) for role in roles):
+            return rows
+        if passages is None:
+            try:
+                material, pages = self.load_pages(pdf_id)
+            except DeepResearchError as error:
+                if (error.code not in {'source_unavailable', 'source_too_large', 'source_parse_failed'}
+                        or error.details.get('status_code') in {401, 403}):
+                    raise
+                return rows
+            except (requests.RequestException, subprocess.TimeoutExpired):
+                return rows
+            passages = self._pdf_passages(pdf_id, material, pages)
+        if not self.validate(self.run_id, pdf_id):
+            raise DeepResearchError('scope_revoked', '论文范围已变更')
+        return protocol.include_passages(rows, passages, roles, limit)
 
 
     def _scope_evidence(self,rows,candidates,query,pdf_id,limit):

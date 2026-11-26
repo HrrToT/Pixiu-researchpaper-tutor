@@ -779,12 +779,14 @@ def make_read_node(
             from services.deep_research.comparison_measurement_display import local_contributions
             from services.deep_research.table_note_index import prefers_protocol_note
             from services.deep_research.named_benchmark_navigation import enabled as benchmark_navigation, human_text
+            from services.deep_research import experiment_protocol_sources as protocol
             obligations={o['obligationId']:o for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])}
             table_navigation = {}
             if record['readingPriorityContractVersion'] == 9 and local_contributions(record):
                 table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
                 **({'named_table_question': effective_question(record)} if record.get('namedTableScopeVersion') == 2
                    and record['state'].get('outputKind') == 'claim_verification' else {}),
@@ -1264,6 +1266,14 @@ def make_synthesize_node(
         premise_mode=premise_enabled(record)
         premise_bundles=[];table_registry={};table_keys={}
         candidates = distinct_evidence_candidates(evidence)
+        from services.deep_research import experiment_protocol_sources as protocol
+        protocol_rows = {}
+        protocol_bundles = []
+        if output_kind == 'experiment_design' and premise_mode and protocol.enabled(record):
+            obligations = {o['obligationId']: o for item in brief_state.get('plan', []) for o in item['obligations']}
+            protocol_bundles = protocol.premise_bundles(candidates, obligations)
+            protocol_ids = {eid for bundle in protocol_bundles for eid in bundle['evidenceIds']}
+            protocol_rows = {row['evidenceId']: row for row in candidates if row['evidenceId'] in protocol_ids}
         requested_table, requested_table_evidence = None, set()
         if (output_kind == 'claim_verification' and type(record.get('namedTableScopeVersion')) is int
                 and record['namedTableScopeVersion'] in (1, 2)):
@@ -1325,6 +1335,9 @@ def make_synthesize_node(
             candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question,
                 **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}),
                 keep_revisions_together=record.get('revisionTableMultipleRowsVersion') in (4, 5))
+        if protocol_rows:
+            candidates = [*protocol_rows.values(), *(row for row in candidates if row['evidenceId'] not in protocol_rows)]
+            premise_bundles = [*protocol_bundles, *premise_bundles]
         selected_candidates=candidates if premise_mode else balanced_sample(candidates,
             lambda item:(item.get('sourceWorkId',''),tuple(item.get('obligationIds',[]))),20)
         versioned_sources = cell_mode or requested_table is not None

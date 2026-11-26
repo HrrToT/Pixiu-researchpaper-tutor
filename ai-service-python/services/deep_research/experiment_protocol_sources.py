@@ -1,0 +1,153 @@
+"""Bounded navigation to literal experiment prerequisites in an owned PDF."""
+
+import re
+
+from services.deep_research.obligation_binding import eligible_obligation_ids
+
+MARKER = 'sharedExperimentProtocolEvidenceVersion'
+OPACITY = 'opacity_schedule'
+MEMBERSHIP = 'dataset_membership'
+OPACITY_CONTINUATION = 'opacity_schedule_continuation'
+
+_OPACITY_REQUEST = re.compile(r'\bopacity\b|不透明度', re.I)
+_COMPLETE_SCHEDULE = re.compile(
+    r'\b(?:every|at intervals of)\s*(?:[Nn𝑁]\s*=\s*)?\d[\d, ]*\s*(?:iterations?|steps?)\b'
+    r'|每\s*\d[\d, ]*\s*(?:次迭代|步)', re.I)
+_OPEN_SCHEDULE = re.compile(r'\bevery\s+[Nn𝑁]\s*=\s*\d+(?:,\d{3})*\b', re.I)
+_CONTINUATION = re.compile(
+    r'\b(?:iterations|steps)\.\s+(?:The\s+)?(?:optimization|training)'
+    r'\b.{0,105}?(?:opacity|alpha|[α𝛼])[^.!?]{0,110}', re.I | re.S)
+_OPACITY_ACTION = re.compile(
+    r'\b(?:reset\w*|set|clamp\w*)\b.{0,48}(?:opacity|alpha|[α𝛼])'
+    r'|\bopacity\b.{0,32}\b(?:reset\w*|set|clamp\w*)\b|不透明度.{0,20}(?:重置|设为)', re.I)
+_SCENE_LIST = re.compile(
+    r'\b(?:scenes|sequences|samples)\s+(?:are|include)\b.{0,55}?[:：]?\s*'
+    r'[A-Z][\w-]+\s*,\s*[A-Z][\w-]+.{0,210}?\b(?:from|of|in)\s+(?:the\s+)?[\w-]+\s+dataset\b',
+    re.I)
+
+
+def enabled(record):
+    return type(record.get(MARKER)) is int and record[MARKER] == 1
+
+
+def roles(obligation):
+    if obligation.get('dataPrerequisiteContractVersion') == 1:
+        return (MEMBERSHIP,)
+    text = obligation.get('searchQuery') or obligation.get('question', '')
+    return (OPACITY,) if _OPACITY_REQUEST.search(text) else ()
+
+
+def query_roles(record, query, material_id):
+    return tuple(dict.fromkeys(
+        role for item in record['state'].get('plan', []) for obligation in item['obligations']
+        if query in (obligation.get('searchQuery'), obligation.get('question'))
+        and (not obligation.get('requiredSources') or material_id in obligation['requiredSources'])
+        for role in roles(obligation)
+    ))
+
+
+def matches(text, role):
+    body = ' '.join(text.split())
+    if role == OPACITY:
+        return any(_OPACITY_ACTION.search(body[max(0, hit.start() - 120):hit.end() + 72])
+                   for pattern in (_COMPLETE_SCHEDULE, _OPEN_SCHEDULE) for hit in pattern.finditer(body))
+    if role == OPACITY_CONTINUATION:
+        return bool(_CONTINUATION.search(body))
+    return role == MEMBERSHIP and bool(_SCENE_LIST.search(body))
+
+
+def companion(first, rows, field):
+    """Keep cross-page units separate and restricted to the same document version."""
+    page = first.get('location', {}).get('page')
+    if (type(page) is not int or _COMPLETE_SCHEDULE.search(' '.join(first[field].split()))
+            or not (first.get('versionId') or first.get('sourceVersionId'))):
+        return None
+    identity_keys = ('pdfId', 'workId', 'versionId', 'sourceWorkId', 'sourceVersionId', 'ownerMaterialId')
+    return next((row for row in rows if row.get('location', {}).get('page') == page + 1
+                 and all(row.get(key) == first.get(key) for key in identity_keys)
+                 and matches(row[field], OPACITY_CONTINUATION)), None)
+
+
+def continuation_spans(sources):
+    """Preserve the original unit and following action across sentence splitting."""
+    tails = [row for row in sources if row.get('accessLevel') == 'fulltext'
+             and matches(row['text'], OPACITY_CONTINUATION)]
+    result = set()
+    for row in sources:
+        if row.get('accessLevel') == 'fulltext' and matches(row['text'], OPACITY):
+            adjacent = companion(row, tails, 'text')
+            if adjacent:
+                result.add(adjacent['sourceId'])
+    return result
+
+
+def continuation_range(text):
+    match = _CONTINUATION.search(text)
+    return match.span() if match else None
+
+
+def has_passage(rows, role):
+    owned = [row for row in rows if row.get('accessLevel') == 'fulltext']
+    return any(matches(row['text'], role) and (role != OPACITY
+               or _COMPLETE_SCHEDULE.search(' '.join(row['text'].split()))
+               or companion(row, owned, 'text')) for row in owned)
+
+
+def include_passages(rows, passages, requested, limit):
+    """Protect the lead hit and use one existing slot per missing role."""
+    selected = list(rows[:limit])
+    protected = {row['sourceId'] for row in selected[:1]}
+    for role in requested:
+        current = next((row for row in selected if row.get('accessLevel') == 'fulltext'
+                        and matches(row['text'], role)), None)
+        if role == OPACITY and current and not has_passage(selected, role):
+            # A PDF anchor can carry the matching document version needed to
+            # read its physical continuation. An index chunk may lack it.
+            current = None
+        candidate = current or next((row for row in passages if matches(row['text'], role)), None)
+        if candidate is None:
+            continue
+        protected.add(candidate['sourceId'])
+        adjacent = companion(candidate, [*selected, *passages], 'text') if role == OPACITY else None
+        if adjacent:
+            protected.add(adjacent['sourceId'])
+        for row in (candidate, adjacent):
+            if row is None or any(item['sourceId'] == row['sourceId'] for item in selected):
+                continue
+            if len(selected) >= limit:
+                index = next((i for i in reversed(range(len(selected)))
+                              if selected[i]['sourceId'] not in protected and not selected[i].get('tableData')), None)
+                if index is None:
+                    continue
+                selected.pop(index)
+            selected.append(row)
+    return selected
+
+
+def preferred_reads(sources, obligations, limit, extracted):
+    selected = {}
+    for role in (OPACITY, MEMBERSHIP):
+        eligible = {oid: row for oid, row in obligations.items() if role in roles(row)}
+        source = next((row for row in sources if row.get('accessLevel') == 'fulltext'
+                       and (row['sourceId'], row.get('contentHash')) not in extracted
+                       and eligible_obligation_ids(row, eligible) and matches(row['text'], role)), None)
+        if source:
+            selected[source['sourceId']] = source
+            adjacent = companion(source, [row for row in sources if eligible_obligation_ids(row, eligible)], 'text') if role == OPACITY else None
+            if adjacent and (adjacent['sourceId'], adjacent.get('contentHash')) not in extracted:
+                selected[adjacent['sourceId']] = adjacent
+    return list(selected.values())[:limit // 3]
+
+
+def premise_bundles(candidates, obligations):
+    bundles = []
+    for role in (OPACITY, MEMBERSHIP):
+        ids = {oid for oid, row in obligations.items() if role in roles(row)}
+        eligible = [item for item in candidates if item.get('accessLevel') == 'fulltext'
+                    and item.get('verification', {}).get('literal') == 'passed'
+                    and ids.intersection(item.get('obligationIds', []))]
+        row = next((item for item in eligible if matches(item['quote'], role)), None)
+        if row:
+            adjacent = companion(row, eligible, 'quote') if role == OPACITY else None
+            bundles.append({'evidenceIds': [row['evidenceId'], *([adjacent['evidenceId']] if adjacent else [])]})
+    return bundles
