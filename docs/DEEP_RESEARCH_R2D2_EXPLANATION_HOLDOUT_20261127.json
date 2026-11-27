@@ -2,7 +2,7 @@
   "version": 1,
   "frozenAt": "2026-11-27",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_pending_first_execution",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
   "materials": {
     "r2d2_v1": {
@@ -77,5 +77,7 @@
   },
   "caseDefinitionHashes": {
     "H1-R2D2": "2b675560ed17060ec16f3e164d2d8970925f2921856bfa0a4d84d636b4e28a20"
-  }
+  },
+  "firstExecutionReceipt": "deep-research-evidence/r2d2-h1-first-frozen-20261127.json",
+  "liveInventoryReceipt": "deep-research-evidence/r2d2-h1-live-preflight-20261127.json"
 }

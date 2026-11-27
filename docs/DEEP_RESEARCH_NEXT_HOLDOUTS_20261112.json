@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "asOf": "2026-11-26",
+  "asOf": "2026-11-27",
   "scope": "Original H1-H6 replacements: content definitions and separately assessed operational fault case",
   "independentAccepted": 0,
   "slots": [
@@ -25,6 +25,14 @@
         "preflight": "deep-research-evidence/lightglue-h1-live-preflight-20261127.json",
         "result": "deep-research-evidence/lightglue-h1-first-frozen-20261127.json",
         "developmentPublication": "deep-research-evidence/lightglue-citation-display-real-coverage-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "r2d2Execution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-R2D2",
+        "manifest": "DEEP_RESEARCH_R2D2_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/r2d2-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/r2d2-h1-first-frozen-20261127.json",
         "scientificContentCredit": 0
       }
     },
