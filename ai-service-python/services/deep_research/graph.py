@@ -1729,6 +1729,10 @@ space with unsupported global absence or incidental iteration/performance values
                 sections=section_templates, obligations=draft_obligations, sources=source_registry,
                 evidence_marker=evidence_marker, table_marker=table_marker, claim_fields=claim_fields,
                 scope_enabled=scope_expression_enabled(record), compact_evidence_wire=compact_evidence_wire)
+        from services.deep_research.audience_schedule import DIRECT_READER_GUIDANCE, direct_reader_candidate
+        direct_reader = direct_reader_candidate(record, output_kind)
+        if direct_reader:
+            prompt += DIRECT_READER_GUIDANCE
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -2149,12 +2153,14 @@ space with unsupported global absence or incidental iteration/performance values
                     for item in current.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
                    if current.get('audienceRewriteContractVersion') in (2,3,4,5,6,7,8,9) else {}))
 
-        from services.deep_research.audience_schedule import reader_first as use_reader_first
+        from services.deep_research.audience_schedule import keep_fitting_direct_draft, reader_first as use_reader_first
         direct_comparison_authoring = (cell_mode and isinstance(comparison_cell_draft,dict)
                                        and comparison_cell_draft.get('answerWireAudit',{}).get('version') in (1,2))
         reader_first = (not direct_comparison_authoring and not blocked_draft_ids and not revision_table_ids
                         and use_reader_first(record, parsed, output_kind))
-        if reader_first:
+        keep_direct_draft = (reader_first and direct_reader and not scope_expression_audit
+                             and keep_fitting_direct_draft(record, parsed, evidence, question, output_kind))
+        if reader_first and not keep_direct_draft:
             parsed = adapt_reader(parsed,pending_compaction=True)
 
         from services.deep_research.scope_compaction import enabled as scope_compaction_enabled, compact as compact_scope

@@ -6,11 +6,17 @@ from services.deep_research.graph import make_synthesize_node
 from test_deep_research_factual_prompt import node_capture
 
 
-def run(monkeypatch,flag=1,outcome='applied'):
+def run(monkeypatch,flag=1,outcome='applied',*,local=False,text=None,literal=True):
     _,_,record=node_capture(1)
     record.update(question='给新手解释方法，限100字。',audienceRewriteContractVersion=9,
         audienceFirstContractVersion=flag)
     record['state']['outputKind']='claim_verification'
+    if local:
+        record.update(sourcePolicy={'mode':'task_only'},materials=[{'workId':'left'}],
+                      audiencePublicationBudgetContractVersion=1,reportPresentationContractVersion=4)
+        record['state']['evidence']=record['state']['evidence'][:1]
+        if not literal:
+            record['state']['evidence'][0]['verification']['literal']='unchecked'
     events=[];edits=[]
     def update(rid,fn,**kw):
         nonlocal record
@@ -25,8 +31,9 @@ def run(monkeypatch,flag=1,outcome='applied'):
     def invoke(rid,node,prompt,options,**kw):
         events.append(node)
         if node=='synthesize':
+            assert ('keep the distinction in' in prompt) == (local and type(flag) is int and flag==2)
             return {'content':json.dumps({'sections':[],'claims':[{'claimId':'c','kind':'reported',
-                'text':'很长的机制说明。'*35,'evidenceRefs':['E1'],'obligationIds':['o'],
+                'text':text or '很长的机制说明。'*35,'evidenceRefs':['E1'],'obligationIds':['o'],
                 'detailLevel':'fulltext','conditions':{}}]})}
         assert node=='synthesize_compact'
         return {'content':json.dumps({'claims':[{'claimId':'c','text':'从观测中计算深度，再融合为表面。','conditions':{}}]})}
@@ -55,10 +62,24 @@ def test_unknown_reader_transport_propagates_without_compaction_fallback(monkeyp
     assert events==['synthesize','reader']
 
 
-@pytest.mark.parametrize('flag',[None,True,False,0,2,1.0,'1'])
+@pytest.mark.parametrize('flag',[None,True,False,0,3,1.0,'1'])
 def test_legacy_or_invalid_flag_keeps_original_order(monkeypatch,flag):
     events,_,_=run(monkeypatch,flag=flag)
     assert events==['synthesize','synthesize_compact','reader']
+
+
+def test_short_single_paper_draft_keeps_operations_without_a_second_writer(monkeypatch):
+    text='先测量各像素的深度，再把来自不同视角的深度融合为表面。'
+    events,record,edits=run(monkeypatch,flag=2,local=True,text=text)
+    assert events==['synthesize'] and not edits
+    assert record['state']['reportBody']['claims'][0]['text']==text
+    assert not record['state'].get('verifiedReport')
+
+
+@pytest.mark.parametrize('text,literal', [(None, True), ('待核对的机制说明。', False)])
+def test_direct_author_still_allows_reader_edit_on_length_or_literal_support_gap(monkeypatch,text,literal):
+    events,_,_=run(monkeypatch,flag=2,local=True,text=text,literal=literal)
+    assert events==['synthesize','reader']
 
 
 @pytest.mark.parametrize('question', ['详细解释方法，限100字。','给新手解释方法。',
@@ -77,7 +98,7 @@ def test_server_owns_immutable_schedule_and_old_runs_cannot_acquire_it(tmp_path)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'给新手解释方法，限100字。','deferStart':True,
             'audienceFirstContractVersion':False},start_async=False)
-        assert type(r['audienceFirstContractVersion']) is int and r['audienceFirstContractVersion']==1
+        assert type(r['audienceFirstContractVersion']) is int and r['audienceFirstContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'audienceFirstContractVersion':False})
         old=deepcopy(r);old.pop('audienceFirstContractVersion');old.update(runId='legacy',idempotencyKey='old');repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('legacy',lambda r:{**r,'audienceFirstContractVersion':1})
