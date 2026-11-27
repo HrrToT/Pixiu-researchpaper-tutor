@@ -1,0 +1,73 @@
+{
+  "candidate": "ee9c64b01c74bf5841dd5fc846b3062520ed277f",
+  "runId": "dr_d3_sh_indexed_full_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "carriedRoutineTokens": 17377,
+  "carriedRoutineCalls": 5,
+  "generationRequestBytes": 31936,
+  "generationRequestDigest": "91f8619885ccc8f851bf13e6451ce733d926edbf2ce99714241363d0c5dbe794",
+  "maxNewCalls": 13,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "newCalls": 5,
+  "newModelTokens": 47698,
+  "cumulativeTokens": 65075,
+  "elapsedSeconds": 144.62,
+  "scienceChecksPassed": 23,
+  "scienceChecksTotal": 24,
+  "scientificOpenCheck": {
+    "checkId": "section_6",
+    "status": "failed",
+    "planBindings": [
+      "/metrics/0/procedure",
+      "/metrics/1/procedure",
+      "/steps/3/operation/action",
+      "/steps/9/operation/action",
+      "/steps/10/operation/action",
+      "/states/7/representation",
+      "/states/12/representation"
+    ],
+    "evidenceBindings": [
+      {
+        "evidenceId": "E3",
+        "field": "quote"
+      },
+      {
+        "evidenceId": "E4",
+        "field": "quote"
+      }
+    ],
+    "reason": "质量和后续训练显存的计量明确，但共同预训练也属于训练阶段：warmpeak 被记录却未被 measure 读取或纳入指标。故不能据此得到从初始化到完成的完整训练峰值显存，尤其预训练峰值可能更高。"
+  },
+  "actualRevisionStatus": "invalid_response",
+  "revisionBytes": 31953,
+  "replaySameRevisionReplyCompiled": true,
+  "replayRequiredSharedAndArmRecords": [
+    {
+      "stepId": "warm",
+      "recordStateId": "warmpeak"
+    },
+    {
+      "stepId": "fit",
+      "recordStateId": "peak"
+    }
+  ],
+  "replayRejectsMissingSharedRead": true,
+  "replayNewReviewInputs": [
+    16072,
+    34720,
+    34939
+  ],
+  "replayFactBatchReused": true,
+  "newGenerationRequestBytes": 31850,
+  "reviewAfterRepairSent": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "a47771dddd8b897af57f76af9e4f01f141a9638e7875171d3ffe55ae23534fb5",
+    "run.json": "3a53c9241745eb1d22052b2a3cc2875bb18a28e233fcc375b71c01af3925a126",
+    "calls.json": "ad9f967d135a53ba23b9bbfde4a26706942ab3f1fb3a0b5a12a5e2c952a66ed3",
+    "result.json": "b9600bdde85d4f68f64c57f7086400a99b0eed9285f10e72993a1957ad52848c"
+  }
+}
