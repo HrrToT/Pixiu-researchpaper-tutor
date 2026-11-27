@@ -1,0 +1,191 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_b80f380b6d985fb893f7a50312ae56d8",
+  "sourceCommit": "f79397b97267abc89303ca0080c8681d1e8a0805",
+  "frozenDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "automaticRetry": false,
+  "submittedRuns": 1,
+  "productionWrites": false,
+  "budget": {
+    "modelCalls": 15,
+    "modelCallLimit": 18,
+    "tokens": 73780,
+    "tokenLimit": 100000,
+    "elapsedSeconds": 151.0,
+    "wallLimit": 360,
+    "externalSearches": 0,
+    "fulltextFetches": 0
+  },
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "tokens": 17635
+    },
+    "gpt-6.1-terra": {
+      "calls": 10,
+      "tokens": 56145
+    }
+  },
+  "previousFullRun": {
+    "tokens": 78541,
+    "publishedCells": 6,
+    "elapsedSeconds": 144
+  },
+  "result": {
+    "outcome": "partial",
+    "status": "completed",
+    "scientificAcceptance": false
+  },
+  "publishedCells": [
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P1",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P2",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P1",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": [
+        "cmp_2_0"
+      ]
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P2",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": [
+        "cmp_3_0"
+      ]
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P1",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": [
+        "cmp_4_0"
+      ]
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P2",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": [
+        "cmp_5_0"
+      ]
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P1",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": [
+        "cmp_6_0"
+      ]
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P2",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    }
+  ],
+  "publishedClaimIds": [
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_6_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "initialRejections": {
+    "cmp_0_0": {
+      "reason": "semantic_unresolved",
+      "detail": "整体流程和未量化属性有依据，但所引材料未说明SH系数表示随视角变化的外观。\n流程先拟合多视图场景，再进行剪枝恢复、SH蒸馏和量化。\n高重要性SH及所列几何和不透明度属性跳过VQ，以float16保存。"
+    },
+    "cmp_1_0": {
+      "reason": "semantic_unresolved",
+      "detail": "表示和自适应密度控制有依据，但所引材料未建立SH系数表示颜色随视角变化。\n原文列出优化属性及优化中的高斯增删。"
+    },
+    "cmp_7_0": {
+      "reason": "semantic_unresolved",
+      "detail": "原文说明测试渲染使用原始输入分辨率，并给出同硬件条件下 Mip-NeRF360 的渲染时间。\n图中列出所提方法与 Mip-NeRF360 的渲染速度。\n但所引证据未明确把该速度比较与相同硬件条件绑定，因此无法支持完整断言。"
+    },
+    "cmp_conclusion_0": {
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：原始3DGS论文的实验使用了完整Mip-NeRF 360场景集及两个Tanks and Temples场景。\n但该实验还使用了其他场景和合成数据集，因此若将所列数据集视为完整实验范围，表述不完整。"
+    }
+  },
+  "citationChecks": {
+    "literal_page": 17,
+    "table_row_check_required": 1
+  },
+  "matchedTable": {
+    "tableNumber": 1,
+    "physicalPage": 6,
+    "dataset": "Mip-NeRF 360 Datasets",
+    "metrics": [
+      "FPS↑",
+      "Size↓",
+      "PSNR↑",
+      "SSIM↑",
+      "LPIPS↓"
+    ],
+    "baseline": [
+      "144",
+      "782MB",
+      "27.40",
+      "0.813",
+      "0.217"
+    ],
+    "LightGaussian": [
+      "237",
+      "45MB",
+      "27.13",
+      "0.806",
+      "0.237"
+    ],
+    "verifiedCells": 10
+  },
+  "finalAuditStatus": "checked",
+  "finalAuditGapIds": [
+    "obl1",
+    "obl2",
+    "answer_scope"
+  ],
+  "repair": {
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    },
+    "dispatched": false
+  },
+  "diagnosis": {
+    "originalPropertyTranslationCorrect": true,
+    "originalRepresentationDefinitionPhysicalPage": 4,
+    "originalRepresentationDefinitionEvidenceId": "ev_ce3d9add1505c2e693c87c8b707e78cb03926ea778d27852f36f5e791f1df968",
+    "definitionBoundToMechanism": true,
+    "definitionAlreadyExtracted": true,
+    "definitionIncludedInSynthesis": false,
+    "originalSpeedClaimIntroducedUnboundSameHardwareStatement": true,
+    "conditionalAdviceComparedMemoryQualitySpeedAndProcessing": true
+  },
+  "rawFilesSha256": {
+    "intent.json": "417937791785703573568507bcfd10a2cc7dd1bb044afd2cf469cb075b283df6",
+    "run.json": "cf4892bcb26a02bc60d01fe330200d862a15be6427e9eeb067f56d08224a3c6e",
+    "calls.json": "241edb9efb1010a2814233f075c2ed629102be61e362ccef73fcde88e2a5ad59",
+    "result.json": "50800b749f15d44ead881de53cb83c742ad438e5dc336e403387ced813268a1f",
+    "provider.jsonl": "53898dc6fe90c67abf6a978fe27ba66e130d7ef7cf701dfb0c3f7a9fa3abb2cb",
+    "report.md": "64692c21ae66a066717917b03111e289cc788786b64c7f7deb58d54b11ea0248",
+    "citation-physical-check.json": "37498519f6978448ad7100182bdb635d2fcf81afa420ffbc26e9a44023ac3ea8"
+  }
+}
