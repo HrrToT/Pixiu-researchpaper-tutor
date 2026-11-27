@@ -4,7 +4,7 @@ import json
 
 def enabled(record):
     return (type(record.get('initialPlanInstructionsContractVersion')) is int
-        and record['initialPlanInstructionsContractVersion'] in (1, 2)
+        and record['initialPlanInstructionsContractVersion'] in (1, 2, 3)
         and type(record.get('planCompletionContractVersion')) is int
         and record['planCompletionContractVersion']==1
         and type(record.get('requestSemanticsContractVersion')) is int
@@ -114,7 +114,7 @@ def prompt(record,data_guidance):
         shape['items'][0]['obligations'][0]['comparisonRole'] = {
             'kind':'per_paper','label':'<short axis label>','requestExcerpt':'<literal axis substring>'}
         comparison_rules = '\n' + comparison_guidance(record)
-    dependency_rules = DEPENDENCY_RULES if record.get('initialPlanInstructionsContractVersion') == 2 else ''
+    dependency_rules = DEPENDENCY_RULES if record.get('initialPlanInstructionsContractVersion') in (2, 3) else ''
     return (RULES+dependency_rules+comparison_rules+response_rule+followup_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
         +'\nInput data (goals, not paper facts):\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
         +'\nOnly output shape (choose appropriate responseType and purpose values):\n'

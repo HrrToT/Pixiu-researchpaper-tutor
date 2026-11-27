@@ -43,7 +43,7 @@ def test_actual_plan_has_one_native_compatible_shape_and_preserves_exact_inputs(
     assert saved['state']['plan'][0]['obligations'][0]['completionCriteria']==valid_plan()[0]['obligations'][0]['completionCriteria']
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,3,1.0,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,4,1.0,'1'])
 def test_old_or_non_exact_flag_keeps_legacy_prompt_byte_identical(value):
     r=record(value);assert not enabled(r)
     _,_,a=capture(r,{'content':json.dumps(valid_plan())})
@@ -60,6 +60,7 @@ def test_v2_distinguishes_reading_order_from_an_execution_prerequisite():
     assert current.replace(DEPENDENCY_RULES, '') == legacy
     assert 'retrieve definitions, illustrative' in current
     assert 'Keep experiment or' in current
+    assert prompt(record(3), 'Data rules.') == current
 
 
 @pytest.mark.parametrize('response',[{'content':'null','rawContent':'[{"purpose":"a","purpose":"a"}]'},
@@ -79,7 +80,7 @@ def test_server_owns_immutable_policy_and_legacy_records_cannot_acquire_it(tmp_p
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'initialPlanInstructionsContractVersion':value},start_async=False)
-        assert enabled(r) and r['initialPlanInstructionsContractVersion'] == 2
+        assert enabled(r) and r['initialPlanInstructionsContractVersion'] == 3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda r:{**r,'initialPlanInstructionsContractVersion':value})
         old=deepcopy(r);old.pop('initialPlanInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')

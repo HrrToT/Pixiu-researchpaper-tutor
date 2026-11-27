@@ -407,7 +407,9 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     from services.deep_research.audience_schedule import direct_reader_candidate
                     if record.get('requestGroundingContractVersion') == 5 and direct_reader_candidate(record, output_kind):
                         from services.deep_research.compound_questions import retain_unassigned_questions
-                        validated, retained = retain_unassigned_questions(validated, question)
+                        validated, retained = retain_unassigned_questions(
+                            validated, question, **({'multiple_items': True}
+                                if record.get('initialPlanInstructionsContractVersion') == 3 else {}))
                         requirement_changes.extend(retained)
                     validated = validate_plan(validated)
                 except ValueError as exc:

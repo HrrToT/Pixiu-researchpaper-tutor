@@ -4,6 +4,7 @@ import re
 _EXPLANATORY=re.compile(r'为什么|为何|如何|怎样|怎么|\b(?:why|how)\b',re.I)
 _QUESTION=re.compile(r'为什么|为何|如何|怎样|怎么|是否|能否|什么|哪些|多少|何时|\b(?:why|how|what|which|whether|when)\b',re.I)
 _JOIN=re.compile(r'[,，、]\s*(?:以及|并且?|同时|and\b\s*)?|以及|并且|和|与|\band\b',re.I)
+_STRONG_JOIN=re.compile(r'[,，、]|以及|并且|同时')
 _NEGATIVE=re.compile(r'不(?:要|需|用|必|是)|无需|并非|并不|没有|未说明|\b(?:not|never|without|don\x27t)\b',re.I)
 
 DRAFT_GUIDANCE='''For this bounded answer, use one allowed section unless the human
@@ -26,7 +27,7 @@ def explanatory(text):
     return bool(_EXPLANATORY.search(visible(text)))
 
 
-def split_questions(text):
+def split_questions(text, *, coordinated_subjects=False):
     from services.deep_research.evidence_requirements import _COMMAND
     masked=visible(text);command=_COMMAND.match(masked)
     first=_QUESTION.search(masked)
@@ -41,7 +42,8 @@ def split_questions(text):
         prefix=tail[:query.start()]
         # Do not split the object list before the actual new question, or turn
         # quoted/negated commentary into another requested deliverable.
-        if _JOIN.search(prefix) or re.search(r'[。！？;；\n]',prefix) or _NEGATIVE.search(prefix):continue
+        subject_join = (_STRONG_JOIN if coordinated_subjects and _STRONG_JOIN.search(join.group()) else _JOIN)
+        if subject_join.search(prefix) or re.search(r'[。！？;；\n]',prefix) or _NEGATIVE.search(prefix):continue
         cuts.append((join.start(),join.end()));start=join.end()
     parts=[];start=0
     for end,next_start in cuts:
@@ -52,53 +54,62 @@ def split_questions(text):
     return parts
 
 
-def retain_unassigned_questions(plan, question):
+def retain_unassigned_questions(plan, question, *, multiple_items=False):
     """Keep explicit joined asks that neither generated obligation actually anchors."""
     from copy import deepcopy
     from services.deep_research.evidence_requirements import _request_parts, _requested_type
 
-    if type(question) is not str or len(plan) != 1:
+    if type(question) is not str or not plan or (len(plan) != 1 and not multiple_items):
         return plan, []
-    item = plan[0]
-    obligations = item['obligations']
-    query = item.get('searchQuery')
-    if (not query or not 1 <= len(obligations) <= 2
+    obligations = [row for item in plan for row in item['obligations']]
+    if (not all(item.get('searchQuery') and 1 <= len(item['obligations']) <= 2 for item in plan)
             or any(row.get('purpose') != 'answer_requirement' for row in obligations)):
         return plan, []
     # Standalone context and examples are excluded. Each group must contain
     # explicit joined questions, parsed from the literal human request.
     parts = []
     for clause in _request_parts(question):
-        joined = split_questions(clause)
+        joined = split_questions(clause, coordinated_subjects=multiple_items)
         if len(joined) > 1 and any(explanatory(part) for part in joined):
             parts.extend(joined)
     parts = list(dict.fromkeys(parts))
     if not 2 <= len(parts) <= 4:
         return plan, []
-    anchored = [value for row in obligations for value in (
+    anchors = [[value for row in item['obligations'] for value in (
         row.get('requestExcerpt'), *(c['requirement'] for c in row.get('completionCriteria', [])))
-        if isinstance(value, str) and len(value.strip()) >= 8]
-    missing = [part for part in parts if not any(part in value or value in part for value in anchored)]
-    if not missing or len(missing) == len(parts):
+        if isinstance(value, str) and len(value.strip()) >= 8] for item in plan]
+    owners = [next((index for index, values in enumerate(anchors)
+                    if any(part in value or value in part for value in values)), None) for part in parts]
+    if all(owner is None for owner in owners) or all(owner is not None for owner in owners):
         return plan, []
+    by_owner = {}
+    for position, part in enumerate(parts):
+        if owners[position] is None:
+            preceding = next((owner for owner in reversed(owners[:position]) if owner is not None), None)
+            owner = preceding if preceding is not None else next(owner for owner in owners if owner is not None)
+            by_owner.setdefault(owner, []).append(part)
     ids = {row['obligationId'] for row in obligations}
     obligation_id = 'remaining-request'
-    while obligation_id in ids:
-        obligation_id += '-part'
     result = deepcopy(plan)
-    result[0]['obligations'].append({
-        'obligationId': obligation_id,
-        'question': '；'.join(missing),
-        'requiredSources': [],  # The graph binds the same permitted task material.
-        'searchQuery': query,
-        'purpose': 'answer_requirement',
-        'requestExcerpt': missing[0],
-        'completionCriteria': [
-            {'criterionId': f'human_aspect_{index}', 'requirement': part,
-             'responseType': 'explanation' if explanatory(part) or part.startswith(('说清', '讲清'))
-             else _requested_type(part)}
-            for index, part in enumerate(missing, 1)
-        ],
-    })
-    return result, [{'obligationId': obligation_id, 'change': 'retained_unassigned_human_aspects',
-                     'criterionCount': len(missing)}]
+    audit = []
+    for owner, missing in by_owner.items():
+        while obligation_id in ids:
+            obligation_id += '-part'
+        ids.add(obligation_id)
+        result[owner]['obligations'].append({
+            'obligationId': obligation_id,
+            'question': '；'.join(missing),
+            'requiredSources': [],  # The graph binds the same permitted task material.
+            'searchQuery': plan[owner]['searchQuery'],
+            'purpose': 'answer_requirement',
+            'requestExcerpt': missing[0],
+            'completionCriteria': [
+                {'criterionId': f'human_aspect_{index}', 'requirement': part,
+                 'responseType': 'explanation' if explanatory(part) or part.startswith(('说清', '讲清'))
+                 else _requested_type(part)}
+                for index, part in enumerate(missing, 1)
+            ],
+        })
+        audit.append({'obligationId': obligation_id, 'change': 'retained_unassigned_human_aspects',
+                      'criterionCount': len(missing)})
+    return result, audit

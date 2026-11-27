@@ -128,6 +128,28 @@ def test_quoted_example_does_not_create_an_unassigned_obligation():
     assert retain_unassigned_questions(original, question) == (original, [])
 
 
+def test_multi_item_plan_keeps_missing_how_question_before_a_coordinated_subject():
+    from services.deep_research.compound_questions import retain_unassigned_questions
+
+    first = '怎样从分布得到连续位置'
+    missing = '位置的导数怎样传回分布'
+    last = '拟合损失和局部约束分别控制什么'
+    question = f'给新手解释{first}、{missing}，以及{last}。不超过300字。'
+    extraction, = plan(first)
+    training, = plan(last)
+    for item, item_id, target in ((extraction, 'mechanism', first), (training, 'training', last)):
+        item.update(itemId=item_id, searchQuery=item_id, dependencies=[])
+        item['obligations'][0].update(obligationId=item_id, requestExcerpt=target, purpose='answer_requirement')
+    original = [extraction, training]
+    repaired, audit = retain_unassigned_questions(original, question, multiple_items=True)
+    assert len(audit) == 1
+    assert repaired[1] == training and repaired[0]['dependencies'] == extraction['dependencies']
+    assert len(original[0]['obligations']) == 1
+    added = repaired[0]['obligations'][1]
+    assert added['searchQuery'] == 'mechanism'
+    assert [(c['requirement'], c['responseType']) for c in added['completionCriteria']] == [(missing, 'explanation')]
+
+
 def test_repeating_the_whole_question_cannot_supply_both_process_input_and_output():
     from services.deep_research.process_explanations import validate_links
     requirement='这些深度图怎样用于几何重建？'
