@@ -180,6 +180,28 @@ def test_scheduled_sh_band_cardinality_stays_bound_to_explicit_source(quote, mis
         assert verify_claims([c], [ev], quantity_spelling_version=21)['rejected'][0]['missingReportedNumbers'] == ['1e0']
 
 
+@pytest.mark.parametrize('caption,supported', [
+    ('If small-scale geometry is represented by one large splat, we split it in two.', True),
+    ('If geometry is represented by a large Gaussian,\nwe split it into two.', True),
+    ('If geometry is represented by a large Gaussian, we split it into two parts.', False),
+    ('Some regions are represented by one large splat. For the dataset, we split it in two.', False),
+])
+def test_explicit_gaussian_figure_split_uses_its_same_clause_antecedent(caption, supported):
+    claim, evidence = setup('论文将覆盖过度的大高斯分裂成两个。', caption)
+    assert verify_claims([claim], [evidence], quantity_spelling_version=23)['rejected']
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    checked = verify_claims([claim], [evidence], checker, quantity_spelling_version=24)
+    assert bool(checked['accepted']) is supported
+    assert checker.call_count == int(supported)
+
+
+def test_gaussian_figure_rule_does_not_reinterpret_other_numbered_objects():
+    from services.deep_research.measurement_numbers import normalize_explicit_quantity_phrases
+
+    text = 'If geometry is represented by a large Gaussian, we split it into two phases.'
+    assert normalize_explicit_quantity_phrases(text, gaussian_figure_split=True) == text
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()

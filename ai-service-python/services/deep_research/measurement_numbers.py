@@ -32,6 +32,9 @@ _SH_BAND_AT_INTERVAL = re.compile(
 _GAUSSIAN_REPLACEMENT_COUNT = re.compile(
     r'(?P<prefix>\breplac(?:e|es|ed|ing)\s+(?:such\s+|these\s+|the\s+)?(?:large\s+)?Gaussians\s+(?:by|with)\s+)'
     r'(?P<count>' + '|'.join(_WORDS) + r')(?=\s+new\s+(?:Gaussians|ones)\b)', re.I)
+_GAUSSIAN_FIGURE_SPLIT = re.compile(
+    r'(?P<prefix>\brepresented\s+by\s+(?:one|a)\s+large\s+(?:splat|Gaussian),\s+we\s+split\s+it\s+in(?:to)?\s+)'
+    r'two(?=\s*[.!?])', re.I)
 _RANGE_SCALE = re.compile(
     r'(?<![A-Za-z0-9_.,+\-−])(?P<low>[0-9]+(?:\.[0-9]+)?)'
     r'(?:-|\s*(?:[–—~～]|至|到|\bto\b)\s*)'
@@ -266,13 +269,16 @@ def number_display(identity):
 
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
                                         image_pair_articles=False, explicit_forward_pass=False,
-                                        explicit_sh_band_schedule=False, evaluation_counts=False):
+                                        explicit_sh_band_schedule=False, evaluation_counts=False,
+                                        gaussian_figure_split=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
     if gaussian_replacement_counts:
         text = _GAUSSIAN_REPLACEMENT_COUNT.sub(
             lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)
+    if gaussian_figure_split:
+        text = _GAUSSIAN_FIGURE_SPLIT.sub(r'\g<prefix>2', text)
     if explicit_forward_pass:
         text = _SINGLE_FORWARD_PASS.sub('1', text)
     if explicit_sh_band_schedule:

@@ -64,7 +64,8 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
                                                    image_pair_articles=explicit_quantity_phrases >= 19,
                                                    explicit_forward_pass=explicit_quantity_phrases >= 20,
                                                    explicit_sh_band_schedule=explicit_quantity_phrases >= 22,
-                                                   evaluation_counts=explicit_quantity_phrases >= 23)
+                                                   evaluation_counts=explicit_quantity_phrases >= 23,
+                                                   gaussian_figure_split=explicit_quantity_phrases >= 24)
         if explicit_quantity_phrases >= 20:
             text, dimensions = split_dimension_series(text)
         if explicit_quantity_phrases >= 21:
@@ -132,7 +133,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 23 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 24 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3

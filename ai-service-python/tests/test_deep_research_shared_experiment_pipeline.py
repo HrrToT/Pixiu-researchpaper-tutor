@@ -295,6 +295,10 @@ def test_fact_reference_candidates_stay_within_the_original_source_version():
     aliases = {'E1':'original', 'E2':'supported', 'E3':'foreign'}
     facts = [{'id':'f','text':'The paper reports 7000 iterations.', 'evidenceRefs':['E1']}]
     assert fact_reference_candidates(record, aliases, facts, [{'factId':'f','reason':'numeric_mismatch'}]) == {'f':[['E2']]}
+    proposed = [{**facts[0], 'text': 'The paper compares two configurations. This proposed experiment uses 7000 iterations.'}]
+    issues = [{'factId':'f','reason':'numeric_mismatch'}]
+    assert fact_reference_candidates(record, aliases, proposed, issues) == {'f':[['E2']]}
+    assert not fact_reference_candidates({**record, 'sharedExperimentFactBoundaryVersion': 1}, aliases, proposed, issues)
 
 
 @pytest.mark.parametrize('fixed',[True,False])

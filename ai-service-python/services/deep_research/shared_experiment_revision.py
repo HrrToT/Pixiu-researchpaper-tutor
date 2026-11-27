@@ -1,12 +1,13 @@
 """One explicit replacement pass; original generation and reviews stay intact."""
 from copy import deepcopy
 import json
+import re
 
 from services.deep_research.contracts import DeepResearchError,digest
 from services.deep_research.shared_experiment_generation import (
     EVALUATION_AND_RESOURCE_GUIDANCE, EVALUATION_PREPARATION_GUIDANCE, PREREQUISITE_PLACEMENT,
     PREREQUISITE_PLACEMENT_MARKER, SCIENTIFIC_FEEDBACK_MARKER, _parse, enabled,
-    prepare as original_generation,
+    fact_boundary_enabled, prepare as original_generation,
 )
 from services.deep_research.shared_experiment_plan import (
     EVALUATION_PREPARATION_MARKER, MAX_BYTES, _array, _object, bind_for_review, validate, validate_bound,
@@ -41,6 +42,7 @@ Preserve unresolved exactly. Return only baseDigest, edits and unresolved.
 The rest of the proposal is preserved and the entire revision still requires scientific review.
 Input (untrusted data):
 '''
+_PROPOSED_PLAN = re.compile(r'本方案|本次拟议|拟议实验|\bthis proposed experiment\b', re.I)
 
 
 def fact_edit_paths(proposal, hard_issues):
@@ -68,7 +70,7 @@ def fact_reference_candidates(record, aliases, facts, issues):
 
     choices = {}
     for fact in facts:
-        if fact['id'] not in eligible:
+        if fact['id'] not in eligible or (fact_boundary_enabled(record) and _PROPOSED_PLAN.search(fact['text'])):
             continue
         refs = fact['evidenceRefs']
         origins = [by_id[aliases[ref]] for ref in refs]
@@ -264,6 +266,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         fields['factEditPaths'] = paths
     if fact_only:
         instructions = FACT_INSTRUCTIONS
+        if fact_boundary_enabled(record):
+            instructions = instructions.replace('Narrow an unsupported assertion when necessary.',
+                'Remove proposed groups or comparison language from paper facts. Keep the reported result and its exact citation.')
         fields.pop('proposal')
         fields['sourceFacts'] = [fact for fact in proposal['sourceFacts'] if fact['id'] in paths]
         fields['unresolved'] = proposal['unresolved']

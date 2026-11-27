@@ -601,7 +601,10 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0)}
     if _fact_context_enabled(record):
-        if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) and policy['quantity_spelling_version'] != 22:
+        from services.deep_research.shared_experiment_generation import fact_boundary_enabled
+        if fact_boundary_enabled(record):
+            policy['quantity_spelling_version'] = 24
+        elif record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) and policy['quantity_spelling_version'] != 22:
             policy['quantity_spelling_version'] = 18
         contexts = _visible_numeric_context(input_data, by_id, aliases)
         if passed_bindings is None:
