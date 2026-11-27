@@ -53,7 +53,7 @@ def test_invalid_next_chunk_cannot_bridge_to_a_later_one(change):
 def test_ambiguous_successor_and_old_or_non_explanation_runs_keep_old_selection():
     selected, candidates = sample()
     assert include_section_context(selected, candidates + [candidates[1]], record(), 'p', 3) == selected
-    for marker in [None, False, True, 0, 9]:
+    for marker in [None, False, True, 0, 10]:
         r = record();r['localSectionContextContractVersion'] = marker
         assert include_section_context(selected, candidates, r, 'p', 3) == selected
     for question in ['解释方法。', '不要解释第5节。', '比较第5节中的性能。']:
@@ -203,9 +203,30 @@ def test_new_activation_is_server_owned_and_immutable(tmp_path):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'one', 'question': 'Explain',
             'deferStart': True, 'localSectionContextContractVersion': 0}, start_async=False)
-        assert r['localSectionContextContractVersion'] == 8
-        for value in [None, True, 0, 2, 3, 4, 5, 6, 7, 9]:
+        assert r['localSectionContextContractVersion'] == 9
+        for value in [None, True, 0, 2, 3, 4, 5, 6, 7, 8, 10]:
             with pytest.raises(ValueError, match='Immutable run field'):
                 repo.update_run(r['runId'], lambda x: {**x, 'localSectionContextContractVersion': value})
     finally:
         facade.shutdown()
+
+
+def test_inline_formula_labels_on_same_page_form_separate_literal_method_passages():
+    from services.deep_research.section_context import include_pdf_method_passages
+
+    r = {**record(), 'localSectionContextContractVersion':9, 'sourcePolicy':{'mode':'task_only'},
+         'materials':[{'materialId':'p'}], 'question':'给新手解释训练采样和匹配，限300字。',
+         'audienceFirstContractVersion':4, 'audienceRewriteContractVersion':9,
+         'audiencePublicationBudgetContractVersion':1, 'reportPresentationContractVersion':4}
+    material = {'materialId':'p','contentHash':'a'*64,'versionId':'p-v1','title':'ACME: Image Processing'}
+    a = 'Feature distributionP (F|I). We sample a feature from each region and retain it using its detection probability.\n'
+    b = 'Match distribution P(M|F). We sample forward and backward matches with probabilities based on descriptor distances.\n'
+    text = '3 Method\n'+a+b+'4 Experiments\n'+('Matching sampling benchmark. '*8)
+    pages = [{'page':3,'text':text}]
+    sources = include_pdf_method_passages([],pages,r,'feature sampling match probabilities',material,3)
+    assert {source['text'] for source in sources} == {a,b}
+    assert {source['location']['section'] for source in sources} == {'3 Method / Feature distribution','3 Method / Match distribution'}
+    assert all(text.startswith(source['text'],source['location']['offset']) for source in sources)
+    legacy = include_pdf_method_passages([],pages,{**r,'localSectionContextContractVersion':8},
+                                         'feature sampling match probabilities',material,3)
+    assert len(legacy) == 1 and legacy[0]['location']['section'] == '3 Method'

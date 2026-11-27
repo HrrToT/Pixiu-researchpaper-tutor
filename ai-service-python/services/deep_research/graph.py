@@ -808,7 +808,7 @@ def make_read_node(
                 table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
-                **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8) else {}),
+                **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8, 9) else {}),
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'comparison_evaluation_protocol': True} if evaluation_protocols_enabled(record)
                    and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
@@ -1354,7 +1354,7 @@ def make_synthesize_node(
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
                 **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3,4) else {}),
                 **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (3,4)) else {}),
-                **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3, 4, 5, 6, 7, 8) else {}))
+                **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3, 4, 5, 6, 7, 8, 9) else {}))
             from services.deep_research.section_context import prioritize_pdf_heading, prioritize_pdf_methods
             candidates, premise_bundles = prioritize_pdf_heading(literal_candidates, candidates, premise_bundles, record)
             candidates, premise_bundles = prioritize_pdf_methods(literal_candidates, candidates, premise_bundles, record)

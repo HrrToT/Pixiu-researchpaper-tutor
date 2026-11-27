@@ -10,6 +10,10 @@ _PDF_HEADING = re.compile(r'(?m)^[ \t]*(?P<number>[1-9]\d?(?:\.\d{1,2}){0,3})\.?
                           r'(?P<title>[A-Z][\w \t-]{2,90})[ \t]*$')
 _HEADING_GLUE = {'a', 'an', 'and', 'for', 'in', 'of', 'on', 'the', 'to', 'with'}
 _INLINE_METHOD_HEAD = re.compile(r'(?m)^\s*\d{1,2}\)[ \t]+([A-Za-z][A-Za-z -]{2,68}):[ \t]+')
+_INLINE_FORMULA_HEAD = re.compile(
+    r'(?m)^[ \t]*([A-Z][a-z]+(?: [a-z][a-z-]+){1,3})[ \t]*[A-Z][ \t]*\([^\n]{1,100}?\)\.')
+_INLINE_PROCEDURE_HEAD = re.compile(
+    r'(?m)^[ \t]*([A-Z][a-z]+(?: [a-z][a-z-]+){0,2} (?:estimator|objective|procedure|update))\.[ \t]+(?=[A-Z])')
 _BACKGROUND_PATH = re.compile(r'\brelated works?\b', re.I)
 
 
@@ -22,10 +26,10 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     policy = record.get('localSectionContextContractVersion')
-    if (policy not in (5, 6, 7, 8) or limit < 2
+    if (policy not in (5, 6, 7, 8, 9) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
-    numbered = policy in (6, 7, 8)
+    numbered = policy in (6, 7, 8, 9)
     annotated = spans(pages, outline=True, normalize_headings=True, terminal_number_period=numbered)
     numbered_layout = numbered and any(
         part['role'] == 'method' and re.match(r'^\d{1,2}\s+[^/]+ /', part['section'])
@@ -47,6 +51,12 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
     phrases = {(a[:4], b[:4]) for a,b in zip(tokens, tokens[1:]) if a not in ignored and b not in ignored}
     if not terms:
         return rows
+    focused_terms = set()
+    if policy == 9:
+        related = {word[:4] for item in record.get('state', {}).get('plan', [])
+                   for obligation in item['obligations'] if obligation.get('searchQuery') != query
+                   for word in _tokens(obligation.get('searchQuery', ''))}
+        focused_terms = terms - related - {word[:4] for word in title_words}
     preceding_section, preceding_head = None, ''
     for page, sections in annotated:
         full_text = page['text']
@@ -59,8 +69,11 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
             section_hits = len(terms & {word[:4] for word in _tokens(path) if word not in ignored})
             heads = list(_INLINE_METHOD_HEAD.finditer(full_text, start, end))
             head_by_offset = {h.start(): h[1] for h in heads}
+            run_in_heads = ({h.start():h[1] for pattern in (_INLINE_FORMULA_HEAD,_INLINE_PROCEDURE_HEAD)
+                             for h in pattern.finditer(full_text,start,end)} if policy == 9 else {})
+            head_by_offset.update(run_in_heads)
             inherited = preceding_head if start == 0 and section['section'] == preceding_section else ''
-            cuts = [start, *(h.start() for h in heads if h.start() > start), end]
+            cuts = [start, *(offset for offset in sorted(head_by_offset) if offset > start), end]
             for left, right in zip(cuts, cuts[1:]):
                 head = head_by_offset.get(left, inherited if left == start else '')
                 heading_hits = len(terms & {word[:4] for word in _tokens(head) if word not in ignored})
@@ -73,18 +86,22 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
                     if hits:
                         loc = {'page': page['page'], 'offset': offset, 'section': section['section'],
                                'sectionRole': 'method', 'matchedPdfMethodPassage': True}
+                        if left in run_in_heads:
+                            loc['section'] += ' / ' + run_in_heads[left]
+                            loc['matchedPdfRunInHeading'] = True
                         adjacent = len(phrases.intersection(zip(words, words[1:]))) if numbered_layout else 0
-                        candidates.append((text, loc, hits, heading_hits, section_hits, adjacent))
+                        focused_hits = len(focused_terms & {word[:4] for word in _tokens(head)}) if left in run_in_heads else 0
+                        candidates.append((text, loc, hits, heading_hits, section_hits, adjacent, focused_hits))
             preceding_section, preceding_head = section['section'], heads[-1][1] if heads else inherited
     if not candidates:
         return rows
-    scores = _bm25(query, [text for text, _, _, _, _, _ in candidates])
+    scores = _bm25(query, [candidate[0] for candidate in candidates])
     ranked = sorted(zip(scores, candidates),
-                    key=lambda pair: (pair[1][3], pair[1][5], pair[1][4], len(pair[1][2]), pair[0]), reverse=True)
+                    key=lambda pair: (pair[1][6], pair[1][3], pair[1][5], pair[1][4], len(pair[1][2]), pair[0]), reverse=True)
     owner, content_hash = material['materialId'], material['contentHash']
     additions, locations_seen = [], set()
-    for _, (text, location, _, _, _, _) in ranked:
-        key = (location['page'], location['section']) if numbered_layout else location['page']
+    for _, (text, location, *_ranking) in ranked:
+        key = (location['page'], location['section']) if numbered_layout or location.get('matchedPdfRunInHeading') else location['page']
         if key in locations_seen:
             continue
         locations_seen.add(key)
@@ -113,7 +130,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     if (type(record.get('localSectionContextContractVersion')) is not int
-            or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8) or limit < 2
+            or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8, 9) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
     terms = set(re.findall(r'[a-z]+', query.casefold()))
@@ -158,7 +175,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
 
 def prioritize_pdf_heading(rows, ordered, bundles, record):
     """Keep a verified, contiguous subsection intact under the synthesis cap."""
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8, 9):
         return ordered, bundles
     state = record['state']
     read = [source for source in state.get('readResults', [])
@@ -206,7 +223,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     from services.deep_research.synthesis_evidence import readiness_bundles
 
     policy = record.get('localSectionContextContractVersion')
-    if policy not in (5, 6, 7, 8) or len(record.get('materials', ())) != 1:
+    if policy not in (5, 6, 7, 8, 9) or len(record.get('materials', ())) != 1:
         return ordered, bundles
     material, = record['materials']
     owner, content_hash = material.get('materialId'), material.get('contentHash')
@@ -222,7 +239,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
 
     reads = {source['sourceId']: source for source in state.get('readResults', []) if owned_method(source)}
     saved_refs = {}
-    if policy == 8:
+    if policy in (8,9):
         from services.deep_research.contracts import digest
         from services.deep_research.source_passages import projection
         from services.deep_research.source_passage_reuse import rejected_state_enabled
@@ -264,7 +281,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
         return reads.get(row['sourceId']) or saved_refs[row['evidenceId']]
 
     preferred, navigation, exact_navigation = [], [], []
-    whole_passages = policy in (6, 7, 8)
+    whole_passages = policy in (6, 7, 8, 9)
     for item in state.get('plan', []):
         for obligation in item['obligations']:
             oid = obligation['obligationId']
@@ -285,7 +302,8 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
                     source_text = source_for(row)['text']
                     units = sorted((part for part in owned if part['sourceId'] == row['sourceId']),
                                    key=lambda part: part['location'].get('sourcePassageStart', -1))
-                    if len(source_text) <= 1500 and ''.join(part['quote'] for part in units) == source_text:
+                    limit = 1800 if policy == 9 and row['location'].get('matchedPdfRunInHeading') else 1500
+                    if len(source_text) <= limit and ''.join(part['quote'] for part in units) == source_text:
                         exact_navigation.append((order, {'obligationId':oid,'criterionId':'pdf_method_section',
                             'requirement':obligation['question'],'source':owner,
                             'evidenceIds':[part['evidenceId'] for part in units]}))
@@ -306,7 +324,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6, 7, 8):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6, 7, 8, 9):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question
@@ -367,7 +385,7 @@ def include_explanation_method(rows, candidates, record, query, owner, limit):
 
     selected = list(rows[:limit])
     version = record.get('localSectionContextContractVersion')
-    if (type(version) is not int or version not in (3, 4, 5, 6, 7, 8) or limit < 2 or not selected
+    if (type(version) is not int or version not in (3, 4, 5, 6, 7, 8, 9) or limit < 2 or not selected
             or record.get('sourcePolicy', {}).get('mode') != 'task_only'
             or len(record.get('materials', [])) != 1 or not explanation_only(record, require_section=False)):
         return selected
