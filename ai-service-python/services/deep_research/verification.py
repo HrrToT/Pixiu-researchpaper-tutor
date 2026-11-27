@@ -114,7 +114,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
-                    bind_composite_revisions=False, named_revision_table=None, numeric_context=None) -> dict:
+                    bind_composite_revisions=False, named_revision_table=None, numeric_context=None,
+                    cited_passage_scope=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -170,7 +171,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         if any(item.get("verification", {}).get("literal") != "passed" for item in support):
             reason = reason or "unverified_quotation"
         from services.deep_research.prose_checks import absence_not_established, leaks_internal_reference
-        if absence_not_established(claim, support, scope_version=absence_scope_version):
+        if absence_not_established(claim, support, scope_version=absence_scope_version,
+                                   cited_passage_scope=cited_passage_scope):
             reason = reason or 'absence_not_established'
         if type(absence_scope_version) is int and absence_scope_version in (6,7,8):
             from services.deep_research.result_scope import purpose_not_established

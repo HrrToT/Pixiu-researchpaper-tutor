@@ -10,6 +10,7 @@ EXPLICIT_ABSENCE = re.compile(r'\b(?:do|does|did) not\b|\bnot (?:report|evaluat|
 _PAPER = re.compile(r'论文|文中|作者|原文|摘要|\b(?:paper|authors?|article|abstract)\b', re.I)
 _SCOPED = re.compile(r'当前取得|本次检索|所读片段|选定片段|所选证据|当前片段|已取得(?:的)?片段'
     r'|\b(?:selected|retrieved) (?:passages|evidence)\b', re.I)
+_CITED_PASSAGE_SUBJECT = re.compile(r'^\s*所引(?:的)?(?:论文|原文)?(?:的)?(?:段落|片段)(?:中|内)?\s*$')
 _CURRENT_EVIDENCE_SUBJECT = re.compile(
     r'(?:(?:现有|当前)(?:的)?(?:证据|材料|片段)|本次(?:取得|获得|检索|选定)?(?:的)?(?:证据|材料|片段))'
     r'(?:中)?(?:尚|仍)?\s*$'
@@ -92,7 +93,7 @@ _NONASSERTIVE_ABSENCE = re.compile(
     r'[^，,；;。.!?]*$|\b(?:if|whether|cannot conclude|cannot claim|cannot say|does not imply)\b[^,;.!?]*$',re.I)
 
 
-def absence_not_established(claim, support, *, scope_version=0):
+def absence_not_established(claim, support, *, scope_version=0, cited_passage_scope=False):
     inverted_owner=type(scope_version) is int and scope_version==8
     if inverted_owner:scope_version=7  # Retain every existing version7 check.
     if type(scope_version) is int and scope_version in (6,7) and claim.get('kind') in {'reported','inference'}:
@@ -117,10 +118,24 @@ def absence_not_established(claim, support, *, scope_version=0):
                     # source noun follows the negation, including in advice.
                     if not _NONASSERTIVE_ABSENCE.search(sentence[:match.start()]):return True
     factual = claim.get('kind') in {'reported', 'inference'}
+    located_passages = cited_passage_scope and bool(support) and all(
+        row.get('accessLevel') == 'fulltext' and row.get('verification', {}).get('literal') == 'passed'
+        and bool(row.get('quote'))
+        and isinstance(row.get('location'), dict)
+        and type(row['location'].get('page')) is int and row['location']['page'] > 0
+        and type(row['location'].get('sourcePassageStart')) is int
+        and type(row['location'].get('sourcePassageEnd')) is int
+        and 0 <= row['location']['sourcePassageStart'] < row['location']['sourcePassageEnd']
+        for row in support
+    )
     for text in claim_prose(claim):
         for sentence in re.split(r'[。！？；;.!?\n]', text):
             for missing in (_EXTENDED_ABSENCE if reporting_scope else ABSENCE).finditer(sentence):
                 prefix = sentence[:missing.start()]
+                if located_passages and _CITED_PASSAGE_SUBJECT.fullmatch(prefix):
+                    # This limits scope to the located quotation. Semantic review
+                    # still checks the stated omission against that exact passage.
+                    continue
                 if type(scope_version) is int and scope_version in (4,5,6,7):
                     # Nominal headings and attributive untested dimensions under
                     # a negative epistemic modal do not assert author omission.

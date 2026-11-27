@@ -408,6 +408,7 @@ class ResearchFacade:
             **({"sharedExperimentDensificationEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDensificationExecutionVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewPlannedPrerequisitesVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentReviewCitedPassageScopeVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentCompactScienceRevisionVersion": 3} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentRevisionDigestSchemaVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),

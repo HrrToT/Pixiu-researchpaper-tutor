@@ -4,7 +4,7 @@ import pytest
 
 from services.deep_research.facade import ResearchFacade
 from services.deep_research.repository import DeepResearchRepository
-from services.deep_research.verification import verify_claims
+from services.deep_research.verification import precheck_claims, verify_claims
 
 
 def fixture(text):
@@ -49,6 +49,21 @@ def test_scope_rule_is_opt_in_and_does_not_reinterpret_old_runs():
     check = Mock()
     assert verify_claims([claim], [evidence], check)['rejected'][0]['reason'] == 'absence_not_established'
     check.assert_not_called()
+
+
+@pytest.mark.parametrize('text,located,allowed', [
+    ('所引论文段落未说明父子优化器状态。', True, True),
+    ('所引论文段落未说明父子优化器状态。', False, False),
+    ('所引论文未说明父子优化器状态。', True, False),
+    ('所引论文段落未说明父子优化器状态；整篇论文未报告该规则。', True, False),
+    ('所引论文段落未说明父子优化器状态，详见E5。', True, False),
+])
+def test_cited_passage_scope_needs_located_text_and_excludes_whole_paper_claims(text, located, allowed):
+    claim, evidence = fixture(text)
+    if located:
+        evidence['location'] = {'page': 5, 'sourcePassageStart': 600, 'sourcePassageEnd': 850}
+    result = precheck_claims([claim], [evidence], absence_scope_version=8, cited_passage_scope=True)
+    assert bool(result['rejected']) is not allowed
 
 
 @pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 2])
