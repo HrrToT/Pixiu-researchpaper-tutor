@@ -14,11 +14,11 @@ def enabled(record):
 
 
 def grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2,3,4)
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (1,2,3,4,5)
 
 
 def imperative_grounded(record):
-    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (2,3,4)
+    return type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (2,3,4,5)
 
 
 def criteria(obligation):

@@ -50,3 +50,55 @@ def split_questions(text):
     if not 2<=len(parts)<=4 or any(not 4<=len(part)<=500 or not has_question(part) for part in parts):
         return [text]
     return parts
+
+
+def retain_unassigned_questions(plan, question):
+    """Keep explicit joined asks that neither generated obligation actually anchors."""
+    from copy import deepcopy
+    from services.deep_research.evidence_requirements import _request_parts, _requested_type
+
+    if type(question) is not str or len(plan) != 1:
+        return plan, []
+    item = plan[0]
+    obligations = item['obligations']
+    query = item.get('searchQuery')
+    if (not query or not 1 <= len(obligations) <= 2
+            or any(row.get('purpose') != 'answer_requirement' for row in obligations)):
+        return plan, []
+    # Standalone context and examples are excluded. Each group must contain
+    # explicit joined questions, parsed from the literal human request.
+    parts = []
+    for clause in _request_parts(question):
+        joined = split_questions(clause)
+        if len(joined) > 1 and any(explanatory(part) for part in joined):
+            parts.extend(joined)
+    parts = list(dict.fromkeys(parts))
+    if not 2 <= len(parts) <= 4:
+        return plan, []
+    anchored = [value for row in obligations for value in (
+        row.get('requestExcerpt'), *(c['requirement'] for c in row.get('completionCriteria', [])))
+        if isinstance(value, str) and len(value.strip()) >= 8]
+    missing = [part for part in parts if not any(part in value or value in part for value in anchored)]
+    if not missing or len(missing) == len(parts):
+        return plan, []
+    ids = {row['obligationId'] for row in obligations}
+    obligation_id = 'remaining-request'
+    while obligation_id in ids:
+        obligation_id += '-part'
+    result = deepcopy(plan)
+    result[0]['obligations'].append({
+        'obligationId': obligation_id,
+        'question': '；'.join(missing),
+        'requiredSources': [],  # The graph binds the same permitted task material.
+        'searchQuery': query,
+        'purpose': 'answer_requirement',
+        'requestExcerpt': missing[0],
+        'completionCriteria': [
+            {'criterionId': f'human_aspect_{index}', 'requirement': part,
+             'responseType': 'explanation' if explanatory(part) or part.startswith(('说清', '讲清'))
+             else _requested_type(part)}
+            for index, part in enumerate(missing, 1)
+        ],
+    })
+    return result, [{'obligationId': obligation_id, 'change': 'retained_unassigned_human_aspects',
+                     'criterionCount': len(missing)}]

@@ -402,8 +402,13 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 try:
                     validated, requirement_changes = normalize_generated_requirements(validated, question,
                         literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
-                        **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4 else {}),
+                        **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (4, 5) else {}),
                         **({'comparison_roles':True} if comparison_intent_enabled(record) else {}))
+                    from services.deep_research.audience_schedule import direct_reader_candidate
+                    if record.get('requestGroundingContractVersion') == 5 and direct_reader_candidate(record, output_kind):
+                        from services.deep_research.compound_questions import retain_unassigned_questions
+                        validated, retained = retain_unassigned_questions(validated, question)
+                        requirement_changes.extend(retained)
                     validated = validate_plan(validated)
                 except ValueError as exc:
                     return invalid_plan(exc)
@@ -1700,7 +1705,7 @@ space with unsupported global absence or incidental iteration/performance values
                     'Do not add method-selection advice, experiments, rankings or a reading plan merely to populate a template. '\
                     'When advice is actually requested, preserve it and its necessary conditions. '\
                     'Explain required scientific relationships without expanding the requested scope.\n'
-        if (type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion']==4
+        if (type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (4, 5)
                 and output_kind=='claim_verification' and type(requested_limit) is int and 0<requested_limit<=700):
             from services.deep_research.compound_questions import DRAFT_GUIDANCE as compound_guidance
             prompt+='\n'+compound_guidance

@@ -82,6 +82,52 @@ def test_actual_plan_node_freezes_each_part_without_an_extra_model_request(versi
     assert [c['requirement'] for c in record['state']['plan'][0]['obligations'][0]['completionCriteria']]==expected
 
 
+@pytest.mark.parametrize('version,missing_added', [(4, False), (5, True)])
+def test_short_single_paper_plan_retains_joined_questions_outside_model_excerpts(version, missing_added):
+    how = '怎样决定什么时候结束'
+    why = '为什么不能只看一个点'
+    second_rule = '继续时又怎样决定跳过哪些点'
+    computation = '说清两种决定各省了什么计算'
+    question = f'给新手解释它{how}、{second_rule}。{computation}，以及{why}。限300字。'
+    original = plan(how)
+    item = original[0]
+    item['searchQuery'] = 'adaptive stopping and pruning'
+    first = item['obligations'][0]
+    first.update(requestExcerpt=how, purpose='answer_requirement')
+    second = {**deepcopy(first), 'obligationId': 'why', 'question': why, 'requestExcerpt': why}
+    item['obligations'].append(second)
+    record = {'question':question, 'evidenceCoverageContractVersion':3,
+              'requestGroundingContractVersion':version, 'planCompletionContractVersion':1,
+              'audienceFirstContractVersion':2, 'audienceRewriteContractVersion':9,
+              'audiencePublicationBudgetContractVersion':1, 'reportPresentationContractVersion':4,
+              'sourcePolicy':{'mode':'task_only'}, 'materials':[{'materialId':'paper'}],
+              'state':{'outputKind':'claim_verification'}}
+
+    def update(run, change, **kwargs):
+        nonlocal record
+        record = change(record)
+        return deepcopy(record)
+
+    invoke = Mock(return_value={'content':json.dumps(original,ensure_ascii=False)})
+    result = make_plan_node(invoke, update, validate_plan)({'run_id':'r'})
+    assert not result.get('error_code') and invoke.call_count == 1
+    obligations = record['state']['plan'][0]['obligations']
+    assert len(obligations) == (3 if missing_added else 2)
+    assert all(row['requiredSources'] == ['paper'] for row in obligations)
+    if missing_added:
+        assert obligations[2]['searchQuery'] == item['searchQuery']
+        assert [c['requirement'] for c in obligations[2]['completionCriteria']] == [second_rule, computation]
+        assert all(c['responseType'] == 'explanation' for c in obligations[2]['completionCriteria'])
+
+
+def test_quoted_example_does_not_create_an_unassigned_obligation():
+    from services.deep_research.compound_questions import retain_unassigned_questions
+    question = '解释它怎样完成匹配。例子是“为什么要停止，以及怎样忽略某些点”。'
+    original = plan('怎样完成匹配')
+    original[0]['obligations'][0].update(purpose='answer_requirement', requestExcerpt='怎样完成匹配')
+    assert retain_unassigned_questions(original, question) == (original, [])
+
+
 def test_repeating_the_whole_question_cannot_supply_both_process_input_and_output():
     from services.deep_research.process_explanations import validate_links
     requirement='这些深度图怎样用于几何重建？'

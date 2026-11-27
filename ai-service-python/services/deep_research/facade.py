@@ -479,7 +479,7 @@ class ResearchFacade:
             "repairEvidencePriorityVersion": 1,
             "comparisonReasoningContractVersion": 5,
             "namedRowIdentityContractVersion": 1,
-            "requestGroundingContractVersion": 4,
+            "requestGroundingContractVersion": 5,
             "factRedraftContractVersion": 3,
             "verificationFeedbackContractVersion": 2,
             "completeReviewFeedbackContractVersion": 1,
