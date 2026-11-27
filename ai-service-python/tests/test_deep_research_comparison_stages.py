@@ -35,14 +35,20 @@ def prepared():
     return r,prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)
 
 
-@pytest.mark.parametrize('requested, bound', [(True, True), (True, False), (False, True)])
-def test_only_owned_figure_counts_for_requested_measurement_are_highlighted(requested, bound):
+@pytest.mark.parametrize('requested, bound, version', [(True, True, 1), (True, False, 1), (False, True, 1),
+                                                      (True, True, 2), (True, False, 2)])
+def test_only_owned_figure_counts_for_requested_measurement_are_highlighted(requested, bound, version):
     r, plan, rows, aliases, bundles = fixture()
     excerpt = 'BenchMark-X 定量结果' if requested else 'BenchMark-X 方法机制'
     r.update(question=f'比较两篇论文的{excerpt}。', comparisonPlanningContractVersion=6,
              comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=16,
-             comparisonJointReportsContractVersion=16, comparisonFigureCountSynthesisVersion=1)
+             comparisonJointReportsContractVersion=16, comparisonFigureCountSynthesisVersion=version)
     goal = plan['requirements'][0]
+    if version == 2:
+        goal['searchQuery'] = 'BenchMark-X quantitative result'
+        r['state']['plan'] = [{'obligations': [deepcopy(goal)]}]
+        goal.pop('searchQuery')
+        excerpt = '定量结果'
     goal.update(question=excerpt, requestExcerpt=excerpt,
                 comparisonRole={'kind': 'per_paper', 'label': excerpt, 'requestExcerpt': excerpt})
     # This fixture needs just one goal for each paper. Distinct permissions

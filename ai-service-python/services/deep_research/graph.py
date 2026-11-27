@@ -820,7 +820,7 @@ def make_read_node(
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
                 **({'supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
-                **({'figure_counts': True} if record.get('comparisonFigureCountSynthesisVersion') == 1 else {}),
+                **({'figure_counts': True} if record.get('comparisonFigureCountSynthesisVersion') in (1, 2) else {}),
                 **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8, 9) else {}),
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'comparison_evaluation_protocol': True} if evaluation_protocols_enabled(record)
@@ -2022,7 +2022,7 @@ space with unsupported global absence or incidental iteration/performance values
                 comparison_cell_draft['evidenceAliases'] = dict(evidence_aliases)
                 from services.deep_research.comparison_layout import short_prose_enabled
                 if short_prose_enabled(record, question, requested_limit):
-                    comparison_cell_draft['shortProseVersion'] = 1
+                    comparison_cell_draft['shortProseVersion'] = 2 if record.get('comparisonGroupedProseVersion') == 1 else 1
                 parsed = comparison_cell_draft['report']
                 from services.deep_research.comparison_presentation import metadata as comparison_metadata
                 parsed['comparisonCells'] = comparison_metadata(comparison_cell_draft)

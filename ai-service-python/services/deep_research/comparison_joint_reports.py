@@ -88,15 +88,20 @@ def named_quantitative_benchmarks(question, obligation):
     return requested_threshold_benchmarks(question, obligation.get('searchQuery') or obligation['question'])
 
 
-def paper_figure_count_evidence(question, targets, requirements, rows):
+def paper_figure_count_evidence(record, question, targets, requirements, rows):
     """Find an owned figure count for each explicitly requested quantitative result."""
     goals = {row['obligationId']: row for row in requirements}
+    plan_queries = {}
+    if record.get('comparisonFigureCountSynthesisVersion') == 2:
+        plan_queries = {o['obligationId']: o['searchQuery'] for item in record.get('state', {}).get('plan', [])
+                        for o in item.get('obligations', []) if o.get('searchQuery')}
     result = {}
     for target in targets:
         if target['role'] != 'paper_cell':
             continue
         numeric_goals = {oid: names for oid in target['allowedObligationIds']
-                         if (names := named_quantitative_benchmarks(question, goals[oid]))}
+                         if (names := named_quantitative_benchmarks(question, {
+                             **goals[oid], 'searchQuery': plan_queries.get(oid) or goals[oid].get('searchQuery')}))}
         if not numeric_goals:
             continue
         allowed = set(target['evidenceIds'])

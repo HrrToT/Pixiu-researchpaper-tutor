@@ -142,7 +142,7 @@ def render_report(payload, *, _counting=False):
     if isinstance(comparison, dict) and type(comparison.get('version')) is int and comparison['version'] in (1,2,3):
         from services.deep_research.comparison_presentation import sections as comparison_sections
         sections = comparison_sections(comparison, list(claims.values()))
-        if comparison.get('shortProseVersion') == 1:
+        if comparison.get('shortProseVersion') in (1, 2):
             from services.deep_research.comparison_presentation import prose_attribution
             short_attribution = prose_attribution(comparison, list(claims.values()), sources, counting=_counting)
     # This server-compiled answer is already a complete, audited document.
@@ -193,6 +193,8 @@ def render_report(payload, *, _counting=False):
             if key in short_attribution:
                 text, paper, ref = short_attribution[key]
                 if paper:
+                    if comparison.get('shortProseVersion') == 2 and content and not _counting:
+                        content.append('')
                     prefix = f'[{paper}](#research-evidence-{ref})' if ref and not _counting else paper
                     label = prefix + '：' + label
             content.append(f"{'' if _counting else '- '}{label}{text} {citations}".rstrip())

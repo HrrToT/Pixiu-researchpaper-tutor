@@ -530,9 +530,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         data['requestContext']['researchGoals'] = data.pop('requirements')
         cells = {c['cellId']: c for c in plan['cells']}
         figure_counts = {}
-        if 'joint' not in scopes and record.get('comparisonFigureCountSynthesisVersion') == 1:
+        if 'joint' not in scopes and record.get('comparisonFigureCountSynthesisVersion') in (1, 2):
             from services.deep_research.comparison_joint_reports import paper_figure_count_evidence
-            figure_counts = paper_figure_count_evidence(question, targets(plan), plan['requirements'], evidence)
+            figure_counts = paper_figure_count_evidence(record, question, targets(plan), plan['requirements'], evidence)
         for paper in data['papers']:
             for target in paper['targets']:
                 cell = cells[target['targetId']]

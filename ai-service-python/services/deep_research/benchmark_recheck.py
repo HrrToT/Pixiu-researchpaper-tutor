@@ -11,6 +11,9 @@ _DESIGN = re.compile(r'随机分配|随机对照|训练新|重新训练|重新�
                       r'design\s+(?:an?\s+)?experiment)\b', re.I)
 _DECLINES = re.compile(r'不(?:要|用|需|必)|无需|\b(?:do not|no need to|without)\b', re.I)
 _PREDICTS = re.compile(r'必然|一定会|保证|将会(?:超过|优于|领先)|\b(?:guarantee\w*|will outperform|will win)\b', re.I)
+_SHARED_METRIC_COMPARISON = re.compile(
+    r'(?:比较|评估|测量)[^。！？；;]{0,10}(?:同一|相同|一致的)指标'
+    r'|\b(?:compare|evaluate|measure)\b[^.!?;]{0,36}\b(?:same|shared) (?:metric|measure)\b', re.I)
 _COMPARISON_BOUNDARY = re.compile(r'排序|排名|可比范围|结论范围|能支持什么|'
                                   r'\b(?:rank\w*|comparison limits|comparability limits)\b', re.I)
 
@@ -98,7 +101,8 @@ def separate_recheck_requirement(plan, question):
 
 def bounded_text(text):
     aligned = _ALIGN.search(text) or re.search(r'统一|一致|相同|同一|\b(?:align\w*|match\w*|same)\b', text, re.I)
-    return bool(aligned and _RECHECK.search(text) and not (_DESIGN.search(text) or _PREDICTS.search(text)))
+    return bool(aligned and (_RECHECK.search(text) or _SHARED_METRIC_COMPARISON.search(text))
+                and not (_DESIGN.search(text) or _PREDICTS.search(text)))
 
 
 def target_ids(record, question, claims):

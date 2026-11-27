@@ -16,7 +16,7 @@ def audit_view(value, claims):
     layout = [{**row, 'claimIds': [cid for cid in row['claimIds'] if cid in known]}
               for row in value['layout']]
     refs = list(dict.fromkeys(ref for claim in claims for ref in claim.get('evidenceRefs', [])))
-    short = value.get('shortProseVersion') == 1
+    short = value.get('shortProseVersion') in (1, 2)
     table, _ = ('', set()) if short else render_table(value, claims, {ref: i+1 for i, ref in enumerate(refs)}, counting=True)
     if short:
         from services.deep_research.contracts import digest
@@ -41,7 +41,7 @@ def audit_view(value, claims):
             joint_binding={'jointReportedClaimsSha256':hashlib.sha256(json.dumps(joint,ensure_ascii=False,
                 sort_keys=True,separators=(',',':')).encode()).hexdigest()}
     return {'version': value['version'], 'sources': deepcopy(value['sources']), 'layout': layout,
-            **({'shortProseVersion': 1} if short else {}),
+            **({'shortProseVersion': value['shortProseVersion']} if short else {}),
             'sections': sections(value, claims), 'table': table,
             **({'jointGoals':deepcopy(value['jointGoals'])} if value['version']==3 else {}),
             **({'jointDeliverables':deepcopy(value['jointDeliverables'])} if value.get('jointDeliverables') else {}),
@@ -104,7 +104,7 @@ def metadata(draft):
     fields = ('obligationId', 'question', 'source', 'claimIds')
     if shared: fields += ('axisId', 'axisTitle')
     return {'version': version if shared else 1,
-            **({'shortProseVersion': 1} if draft.get('shortProseVersion') == 1 else {}),
+            **({'shortProseVersion': draft['shortProseVersion']} if draft.get('shortProseVersion') in (1, 2) else {}),
             **({'beginnerLeadClaimId': draft['beginnerLeadClaimId']} if draft.get('beginnerLeadClaimId') else {}),
             **({'checkOutputShapeVersion':1} if version==3
                and type(draft.get('answerWireAudit',{}).get('version')) is int
@@ -122,8 +122,11 @@ def sections(value, claims):
     ordinary = [c for c in claims if c['claimId'] not in cell_ids]
     if value.get('beginnerLeadClaimId'):
         ordinary.sort(key=lambda claim: claim['claimId'] != value['beginnerLeadClaimId'])
-    if value.get('shortProseVersion') == 1:
+    if value.get('shortProseVersion') in (1, 2):
         paper_points = [claim for claim in claims if claim['claimId'] in cell_ids]
+        if value['shortProseVersion'] == 2:
+            owners = {cid: row['source'] for row in value['layout'] for cid in row['claimIds']}
+            paper_points.sort(key=lambda claim: owners[claim['claimId']])
         return [{'title': '比较结论', 'claimIds': [claim['claimId'] for claim in ordinary + paper_points]}]
     return [
         {'title': '比较结论', 'claimIds': [c['claimId'] for c in ordinary
@@ -152,6 +155,7 @@ def prose_attribution(value, claims, evidence, *, counting=False):
             titles.setdefault(display, []).append(alias)
     pattern = re.compile('|'.join(re.escape(title) for title in sorted(titles, key=len, reverse=True))) if titles else None
     result = {}
+    labeled = set()
     for claim in claims:
         cid = claim['claimId']
         owned_refs = {}
@@ -173,7 +177,12 @@ def prose_attribution(value, claims, evidence, *, counting=False):
                 label = labels[alias]
                 return label if counting else f'[{label}](#research-evidence-{owned_refs[alias]})'
             text = pattern.sub(title_label, text)
-        result[cid] = (text, labels.get(paper, ''), owned_refs.get(paper))
+        paper_label = labels.get(paper, '')
+        if value.get('shortProseVersion') == 2 and paper in labeled:
+            paper_label = ''
+        if paper_label:
+            labeled.add(paper)
+        result[cid] = (text, paper_label, owned_refs.get(paper))
     return result
 
 

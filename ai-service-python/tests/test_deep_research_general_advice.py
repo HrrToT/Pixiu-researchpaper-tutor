@@ -90,7 +90,8 @@ def test_old_policy_keeps_original_experiment_review_path():
     assert 'prospective experimental design' in invoke.call_args.kwargs['prompt']
 
 
-@pytest.mark.parametrize('variant', ['valid', 'rerun-wording', 'single-paper', 'unrequested', 'formal-design', 'new-training', 'predicted-winner'])
+@pytest.mark.parametrize('variant', ['valid', 'rerun-wording', 'compact-wording', 'single-paper', 'unrequested',
+                                     'formal-design', 'new-training', 'predicted-winner'])
 def test_benchmark_recheck_is_scoped_and_binds_both_papers(variant):
     from services.deep_research.benchmark_recheck import target_ids
 
@@ -108,6 +109,8 @@ def test_benchmark_recheck_is_scoped_and_binds_both_papers(variant):
     row = verdict('benchmark_recheck')
     if variant == 'rerun-wording':
         c['text'] = '用相同数据和输入、统一协议重跑两种方法，比较同一指标。'
+    elif variant == 'compact-wording':
+        c['text'] = '选共同可用的图像对，统一输入尺寸、点数预算、匹配及验证规则，比较同一指标。'
     elif variant == 'unrequested':
         question = '请比较两篇论文，并分别解释评测设置。'
     elif variant == 'formal-design':
@@ -122,9 +125,10 @@ def test_benchmark_recheck_is_scoped_and_binds_both_papers(variant):
     checker = BudgetedSemanticChecker(invoke, 'r', research_question=question, general_advice_review=True,
         benchmark_recheck_targets=lambda q, claims: target_ids(record, q, claims))
     decision = checker([c], papers)[0]
-    assert (decision['status'] == 'passed') is (variant in {'valid', 'rerun-wording'})
+    assert (decision['status'] == 'passed') is (variant in {'valid', 'rerun-wording', 'compact-wording'})
     prompt = invoke.call_args.kwargs['prompt']
-    assert ('Benchmark recheck target IDs: ["c"]' in prompt) is (variant in {'valid', 'rerun-wording', 'single-paper'})
+    assert ('Benchmark recheck target IDs: ["c"]' in prompt) is (
+        variant in {'valid', 'rerun-wording', 'compact-wording', 'single-paper'})
     if variant == 'single-paper':
         assert 'benchmark_recheck_requires_both_papers' in decision['reason']
 

@@ -146,6 +146,33 @@ def test_short_comparison_prose_links_exact_papers_and_preserves_facts_and_budge
     assert titles[0] in render_report(payload, _counting=True)
 
 
+def test_grouped_prose_counts_one_attribution_per_paper_and_preserves_point_citations():
+    from services.deep_research.comparison_presentation import audit_digest
+
+    payload = fixture()
+    meta = payload['comparisonCells']
+    meta.update(version=3, jointGoals=[], shortProseVersion=1)
+    for row in meta['layout']:
+        row.update(axisId='method', axisTitle='方法')
+    for i, (paper, claim) in enumerate(zip(('P1', 'P2'), list(payload['claims'][:2]))):
+        alias = f'additional-{i}'
+        payload['claims'].append({**claim, 'claimId': alias, 'text': f'方法条件{i}。'})
+        meta['layout'].append({'source': paper, 'axisId': 'conditions', 'axisTitle': '条件',
+                               'claimIds': [alias]})
+    previous_count = visible_answer_character_count(payload)
+    previous_audit = audit_digest(meta, payload['claims'])
+    meta['shortProseVersion'] = 2
+    rendered = render_report(payload).split('<summary>原文依据')[0]
+    assert rendered.index('需结合部署条件选择') < rendered.index('剪除冗余基元')
+    assert rendered.index('剪除冗余基元') < rendered.index('方法条件0') < rendered.index('量化属性') < rendered.index('方法条件1')
+    assert rendered.count('论文1：') == rendered.count('论文2：') == 1
+    assert '方法条件0。 [1](#research-evidence-e-a)' in rendered
+    assert '方法条件1。 [2](#research-evidence-e-b)' in rendered
+    assert '保持相同数据与预算' in rendered
+    assert visible_answer_character_count(payload) == previous_count - len('论文1：论文2：')
+    assert audit_digest(meta, payload['claims']) != previous_audit
+
+
 def test_version_labels_require_a_verified_publication_identity():
     from services.deep_research.publication_identity import from_verified_pages
     payload=fixture()

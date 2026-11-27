@@ -350,7 +350,7 @@ class ResearchFacade:
             **({'comparisonNamedBenchmarkProtocolVersion': 2}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
-            **({'comparisonFigureCountSynthesisVersion': 1}
+            **({'comparisonFigureCountSynthesisVersion': 2, 'comparisonGroupedProseVersion': 1}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             **({'comparisonSupervisionPremisesVersion': 1}
