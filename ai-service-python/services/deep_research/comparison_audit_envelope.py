@@ -9,7 +9,7 @@ def enabled(record, node='verify_answer_coverage'):
     from services.deep_research.comparison_intent import operations_enabled
     return (node == 'verify_answer_coverage' and operations_enabled(record)
         and type(record.get('comparisonAuditEnvelopeContractVersion')) is int
-        and 1 <= record['comparisonAuditEnvelopeContractVersion'] <= 19
+        and 1 <= record['comparisonAuditEnvelopeContractVersion'] <= 20
         and type(record.get('answerCoherenceContractVersion')) is int
         and record['answerCoherenceContractVersion'] in (1, 2))
 

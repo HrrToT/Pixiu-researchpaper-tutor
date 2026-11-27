@@ -1,0 +1,40 @@
+{
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "recordedCode": "291ac951ea7e7d78e0f757751634f02eb86db6e7",
+  "frozen": {
+    "notes": [
+      720,
+      720
+    ],
+    "dispatch": [],
+    "auditStatus": "budget_exhausted",
+    "budgetLimit": {
+      "kind": "coveragePromptBytes",
+      "limit": 27900,
+      "used": 28586
+    },
+    "tokens": 69876,
+    "providerCalls": 0
+  },
+  "current": {
+    "notes": [
+      174,
+      174
+    ],
+    "dispatch": [
+      [
+        "verify_answer_coverage",
+        27878,
+        1222
+      ]
+    ],
+    "auditStatus": null,
+    "budgetLimit": null,
+    "tokens": 69876,
+    "providerCalls": 0
+  },
+  "excludedNoAcceptedClaims": true,
+  "changedBudgetLimits": false,
+  "providerCalls": 0,
+  "fullAnswerVerified": false
+}

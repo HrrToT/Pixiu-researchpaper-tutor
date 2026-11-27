@@ -70,7 +70,7 @@ Never invent access or put duplicate access declarations into scientific prose.
 '''
 
 
-def citation_display_note(wire_claims, selected):
+def citation_display_note(wire_claims, selected, *, compact=False):
     """Describe only linked original excerpts the publication can actually render."""
     original_quotes = {row['evidenceId'] for row in selected
                        if row.get('accessLevel') in {'fulltext', 'abstract'}
@@ -81,6 +81,9 @@ def citation_display_note(wire_claims, selected):
     visible = {claim: refs for claim, refs in cited.items() if refs}
     if not visible:
         return ''
+    if compact and all(visible.get(claim['claimId'], []) == claim.get('evidenceRefs', []) for claim in wire_claims):
+        return ('\nEach claim evidenceRefs links to its verified verbatim excerpt in the rendered answer. '
+                'Require a quote in prose only if requested. Links cannot replace substantive answers.\n')
     return ('\nRendered citation links by claim: ' + json.dumps(visible, ensure_ascii=False, separators=(',', ':'))
             + '''. Each listed link opens its verified verbatim original excerpt under 原文依据.
 A request to cite the original source (e.g. 引用原文) can be met through these links.

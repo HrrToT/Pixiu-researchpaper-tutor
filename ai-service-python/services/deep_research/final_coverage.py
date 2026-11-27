@@ -47,7 +47,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
-                       requested_endpoint=False, share_comparison_evidence_overlaps=False):
+                       requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -303,7 +303,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     compact_instructions=compact_comparison_instructions, coherence_excerpts=comparison_coherence_excerpts,
                     source_labels=comparison_source_labels, inline_paper_labels=inline_comparison_paper_labels, scoped_coherence=scoped_comparison_coherence, bounded_packet=bounded_comparison_packet, rendered_packet=rendered_comparison_packet, local_check_fields=local_comparison_check_fields, check_labels=check_labels, inline_limit_bindings=bool(inline_limits), require_covered_bindings=require_covered_bindings,
                     share_evidence_sentences=share_comparison_evidence_sentences,
-                    share_evidence_overlaps=share_comparison_evidence_overlaps)
+                    share_evidence_overlaps=share_comparison_evidence_overlaps,
+                    compact_rendered_citations=compact_rendered_citations)
                 if localize_comparison_gap and check_labels and identity in check_labels:
                     from services.deep_research.comparison_gap_excerpt import guidance
                     original_render = render
@@ -312,7 +313,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                         render = lambda rows: original_render(rows) + guidance(request_code, explain=explain_comparison_gap)
             if rendered_citation_links:
                 from services.deep_research.coverage_instructions import citation_display_note
-                note = citation_display_note(wire_claims, selected)
+                note = citation_display_note(wire_claims, selected, compact=compact_rendered_citations)
                 prior_render = render
                 render = lambda rows: prior_render(rows) + note
             fixed_bytes = len(render([]).encode('utf-8'))

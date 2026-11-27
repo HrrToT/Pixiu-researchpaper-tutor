@@ -103,6 +103,19 @@ def test_source_citation_guidance_lists_only_accepted_claims_own_original_text()
     assert 'Require verbatim prose in the main answer only if the user specifically asks for it there' in note
     assert 'cannot fill a missing scientific explanation' in note
     assert citation_display_note(claims, evidence[1:]) == ''
+    assert citation_display_note(claims, evidence, compact=True) == note
+
+
+def test_compact_citation_guidance_reuses_the_complete_existing_claim_references():
+    from services.deep_research.coverage_instructions import citation_display_note
+
+    claims = [{'claimId': 'claim', 'evidenceRefs': ['E1']}, {'claimId': 'advice', 'evidenceRefs': []}]
+    evidence = [{'evidenceId': 'E1', 'quote': 'Verbatim original.', 'accessLevel': 'fulltext',
+                 'verification': {'literal': 'passed'}}]
+    note = citation_display_note(claims, evidence, compact=True)
+    assert 'Each claim evidenceRefs links to its verified verbatim excerpt' in note
+    assert 'Links cannot replace substantive answers.' in note
+    assert '"claim":["E1"]' not in note
 
 
 def test_requested_endpoint_preserves_process_checks_without_demanding_future_predictions():

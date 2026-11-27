@@ -1,0 +1,162 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "sourceCommit": "291ac951ea7e7d78e0f757751634f02eb86db6e7",
+  "frozenDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "automaticRetry": false,
+  "submittedRuns": 1,
+  "productionWrites": false,
+  "budget": {
+    "modelCalls": 14,
+    "modelCallLimit": 18,
+    "tokens": 69876,
+    "tokenLimit": 100000,
+    "elapsedSeconds": 155.0,
+    "wallLimit": 360,
+    "externalSearches": 0,
+    "fulltextFetches": 0
+  },
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "tokens": 18384
+    },
+    "gpt-6.1-terra": {
+      "calls": 9,
+      "tokens": 51492
+    }
+  },
+  "previousFullRun": {
+    "tokens": 73780,
+    "publishedCells": 5,
+    "elapsedSeconds": 151
+  },
+  "result": {
+    "outcome": "inconclusive",
+    "status": "completed",
+    "scientificAcceptance": false
+  },
+  "publishedCells": [
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P1",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P2",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P1",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P2",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P1",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P2",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P1",
+      "material": "arxiv:2308.04079v1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P2",
+      "material": "arxiv:2311.17245v6",
+      "releaseClaimIds": []
+    }
+  ],
+  "publishedClaimIds": [],
+  "initialRejections": {
+    "cmp_6_0": {
+      "reason": "numeric_mismatch",
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  },
+  "citationChecks": {},
+  "matchedTable": null,
+  "completeDefinitions": {
+    "arxiv:2308.04079v1": {
+      "page": 4,
+      "literal": "passed",
+      "inPaperPrompt": true,
+      "evidenceId": "ev_d1ca06719f1ab6a480ffe3ba309a90f4168b5db6fd5fb1ceee2270e339a80637",
+      "usedInIndividuallyVerifiedClaim": true,
+      "usedInReleasedClaim": false
+    },
+    "arxiv:2311.17245v6": {
+      "page": 4,
+      "literal": "passed",
+      "inPaperPrompt": true,
+      "evidenceId": "ev_bcb72e34c04a7aefbc6d722fb2b8e6be5cc17870d28f566d921450a94f907775",
+      "usedInIndividuallyVerifiedClaim": true,
+      "usedInReleasedClaim": false
+    }
+  },
+  "finalAuditStatus": "budget_exhausted",
+  "finalAuditGapIds": [
+    "obl1",
+    "obl2",
+    "obl3",
+    "obl4",
+    "requested_numeric_example",
+    "answer_scope",
+    "answer_scope"
+  ],
+  "repair": {
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    },
+    "dispatched": false
+  },
+  "rawFilesSha256": {
+    "intent.json": "10e82131bbf7b5d6aeb163f5bb3903db2ceed1c1a0b377220ec1e482083412f5",
+    "run.json": "e873f695090ac9c2858c5bed176182eff5e69facbd6b1dad321223ea41a76851",
+    "calls.json": "f38a16eee633e786ccd054ac4a498155ca951849655e48c0134548013a97a366",
+    "result.json": "65a3bb94248b971e6623862d53e04de9168072c4c9cd63b17d060409f6375dc3",
+    "provider.jsonl": "606f3ca44debe665d2e5c911592875d8991347b8d4294b5affa4bb346b4f2771",
+    "report.md": "09aa1ffc89ea3a6541332cee09fc3438a6980e3c25bdd425fdff3b8bd6348651",
+    "citation-physical-check.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+  },
+  "individuallyAcceptedClaimIds": [
+    "cmp_0_0",
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_7_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "finalAuditBudgetLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 27900,
+    "used": 28586
+  },
+  "integratedRegressionPassed": 367
+}

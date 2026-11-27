@@ -243,7 +243,8 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
              inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
              local_check_fields=False, check_labels=None, inline_limit_bindings=False,
-             require_covered_bindings=False, share_evidence_sentences=False, share_evidence_overlaps=False):
+             require_covered_bindings=False, share_evidence_sentences=False, share_evidence_overlaps=False,
+             compact_rendered_citations=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -438,7 +439,11 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
                      + json.dumps(expected, separators=(',', ':'))
                      + '. Include all rows. Mark unsupported checks missing; do not omit them.\n')
         if require_covered_bindings:
-            checklist += ('For every covered check, including the full-question row, bind the actual accepted answer '
+            if compact_rendered_citations:
+                checklist += ('All covered checks, including the full question, bind sufficient accepted fields. '
+                              'Partial binds relevant fields; missing uses [].\n')
+            else:
+                checklist += ('For every covered check, including the full-question row, bind the actual accepted answer '
                           'fields that satisfy it. Use multiple claim IDs if needed. If a requested part is absent '
                           'choose partial with the relevant fields, or missing with [] if none apply. '
                           'Never return covered with bindings:[].\n')
