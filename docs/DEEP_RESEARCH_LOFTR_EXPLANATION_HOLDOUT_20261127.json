@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "frozenTimestamp": "2026-11-27T04:35:56.142036+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_before_submission_pending_live_inventory",
+  "independentCredit": 0,
+  "archivedInventory": {
+    "databaseSnapshot": "research-reference-and-resource-window-backup-20261126.sqlite3",
+    "researchRunsChecked": 482,
+    "matchingArxivIdTitleOrPdfHash": 0
+  },
+  "materials": {
+    "loftr_v1": {
+      "path": "tmp/pdfs/h1-loftr-evaluator-20261127/2104.00680v1.pdf",
+      "sha256": "d2f18e76fd92f234362f72d01ecf99d37d144f488360aca809bdeefed7fd2cef",
+      "bytes": 8175934,
+      "pageCount": 10,
+      "arxiv": "2104.00680v1",
+      "reference": "https://arxiv.org/abs/2104.00680v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-LOFTR",
+      "split": "holdout",
+      "materials": [
+        "loftr_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前的 LoFTR v1 论文，向初学者解释它怎样从两张图得到亚像素级的对应位置。说清它为何可以省去单独找关键点，怎样筛选粗匹配、在哪里细化，以及这对低纹理区域有什么帮助。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "说明直接在两张图的粗层特征上建立对应，单图内和跨图注意力使特征利用两张图的上下文。",
+        "说明粗匹配根据置信度阈值和双向最近邻筛选，直观解释两边互选的含义。",
+        "说明围绕粗匹配位置取局部窗口，生成另一张图局部位置的匹配概率图，按概率加权得到亚像素位置。",
+        "说明较大范围的图像上下文能帮助纹理不足的区域匹配，结论保留适用边界。"
+      ],
+      "forbidden": [
+        "写成先用独立关键点检测器选点，或称整个模型不提取图像特征。",
+        "把细化写成重新在整张图搜索，或以整数格点的最高分代替概率期望。",
+        "声称任意低纹理区域都有可靠对应，或把双图条件当成无需观察第二张图。",
+        "引用别的论文或版本，或加入没有原文支持的数值与性能保证。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H1-LOFTR": "e9e70e3a61834115eea6bbeab7f0bb01790d56f67ca8b83b26256598f13a2e60"
+  },
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 1,
+        "section": "Abstract and §1",
+        "checks": "Detector-free matching and low texture."
+      },
+      {
+        "page": 3,
+        "section": "Figure 2 and §3.1–3.2",
+        "checks": "Image features, self/cross attention, and coarse-to-fine outline."
+      },
+      {
+        "page": 5,
+        "section": "§3.3–3.4",
+        "checks": "Mutual nearest neighbors, confidence threshold, local correlation and expected location."
+      }
+    ],
+    "preSubmission": "核对应用任务、研究运行与索引中无该论文的已用记录，并确认当前独立候选已准备好。任何用于调试的首跑按开发证据保留。",
+    "goldInputBoundary": "仅把冻结问题、单篇论文范围和预算传给应用，评分规则与页锚点仅供验收。"
+  }
+}

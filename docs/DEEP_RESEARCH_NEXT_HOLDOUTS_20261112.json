@@ -9,7 +9,12 @@
       "state": "executed_content_not_accepted",
       "case": "H1-GSC",
       "manifest": "DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json",
-      "result": "deep-research-evidence/gsc-explanation-h1-first-real-20261124.json"
+      "result": "deep-research-evidence/gsc-explanation-h1-first-real-20261124.json",
+      "nextCandidate": {
+        "state": "frozen_before_submission_pending_live_inventory",
+        "case": "H1-LOFTR",
+        "manifest": "DEEP_RESEARCH_LOFTR_EXPLANATION_HOLDOUT_20261127.json"
+      }
     },
     {
       "id": "H2",
