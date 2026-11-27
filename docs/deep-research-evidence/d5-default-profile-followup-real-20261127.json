@@ -1,0 +1,66 @@
+{
+  "case": "D5-short-paper-followup-default-profile",
+  "sourceCommit": "17f8c2b9df766a12eb87ec860d5b90dc4c8fe45e",
+  "runId": "dr_run_31960704a88b58618f3b7beec434b7a1",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "contractVersions": {
+    "shortComparisonLayoutContractVersion": 2,
+    "comparisonEvaluationProtocolVersion": 4,
+    "scopeExpressionReviewContractVersion": 6
+  },
+  "entryStage": "synthesize",
+  "inheritedEvidence": 43,
+  "newRetrieval": false,
+  "productionWorkspaceWrites": 0,
+  "parentReceiptUnchanged": true,
+  "automaticRetry": false,
+  "isolatedPublication": true,
+  "outcome": "partial",
+  "wallClockSeconds": 51.0,
+  "answerCharacters": 156,
+  "userLimitCharacters": 200,
+  "modelCalls": [
+    {
+      "node": "synthesize",
+      "model": "gpt-6.1-terra",
+      "tokens": 8491
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 4092
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 3788
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 3323
+    },
+    {
+      "node": "verify_answer_coverage",
+      "model": "gpt-6.1-terra",
+      "tokens": 5810
+    }
+  ],
+  "tokens": 25504,
+  "verifiedClaims": 1,
+  "coverageVerdicts": {
+    "o1": "partial",
+    "answer_scope": "partial"
+  },
+  "observedBothHardwareStatements": true,
+  "passedScientificAcceptance": false,
+  "remainingContentGap": "Explain why settings affect FPS independently of the method, so a raw quotient cannot isolate method speed.",
+  "sha256": {
+    "intent.json": "7c330fce21aee5687e255bc9beef46ae93d36d963163cf637b24f4028d41a37b",
+    "run.json": "dab14ebb33482eae3620872f1b1cd9f43b6a98bdc45304471cea5fa929453ef0",
+    "calls.json": "30ef573517797b9f262dddc14aa290288e12c3aa8537626c3ec5a11860bc5ad2",
+    "synthesize-return.json": "23c7caafa7aa13b7d73e9b8f903779123758540f1e64516141b33f6429c36994",
+    "verify-return.json": "b1b33d37e6a325039ced7a7a3812e291b766cc69adbbc8b16aa820e8a625d175",
+    "publish-return.json": "c875e96d21d059af65f8910dc24336a37a8394fcd18b768c7fb9e9b5846f1201"
+  }
+}
