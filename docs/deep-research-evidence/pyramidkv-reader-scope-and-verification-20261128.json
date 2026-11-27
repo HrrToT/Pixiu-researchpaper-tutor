@@ -1,0 +1,56 @@
+{
+  "case": "H3-PYRAMIDKV",
+  "qualification": "Exposed development verification using saved synthesis and an isolated repository",
+  "sourceEvidence": "pyramidkv-selection-scope-synthesis-20261128.json",
+  "sourceVersion": "arxiv:2406.02069v1",
+  "codeCommit": "4adcdef17f06710cd48c6a933ac898734057b42f",
+  "readerRewriteAndReview": {
+    "runId": "dr_pyramidkv_selection_verified_development_20261128",
+    "reusedExactSynthesisResponse": true,
+    "audiencePromptBytes": 11985,
+    "actualNewCallsByNode": {"synthesize_audience": 1, "verify": 2, "verify_answer_coverage": 1},
+    "actualNewTokens": 16411,
+    "elapsedSeconds": 30,
+    "rewriteKeptPerHeadSelection": true,
+    "rewriteExplainedAttentionHead": true,
+    "rewriteSpecifiedDiscardedObjectsAsCachedKeyValueStates": true,
+    "rewriteNeededScopeFallback": false,
+    "publishedClaims": ["C1"],
+    "outcome": "partial",
+    "wholeAnswerAuditStatus": "checked",
+    "rejection": "C2 was unresolved because the edited claim added a hyperparameter statement absent from its own cited excerpts.",
+    "localArtifactDirectory": "tmp/openai-h3-pyramidkv-selection-verified-20261128",
+    "sha256": {
+      "calls.json": "a3d3429d4d0d5189ad23b0dacbf42b6e06c21565db5cd9a5c1cb96f66be9cb23",
+      "intent.json": "abe1746e491962717dc56b435b36c7ab5e544613d8636994d972ed3a2ad3f312",
+      "run.json": "655d250b6d19629f6b9f975c3386896f45acd729640effb19d62d8b66c651814"
+    }
+  },
+  "boundedReviewOfSingleSentenceDeletion": {
+    "runId": "dr_pyramidkv_trimmed_selection_development_20261128",
+    "manuallyDeletedOneUnsupportedDetail": true,
+    "reusedAcceptedC1": true,
+    "preservedC2Evidence": true,
+    "actualNewCallsByNode": {"verify": 1, "verify_answer_coverage": 1},
+    "actualNewTokens": 9300,
+    "elapsedSeconds": 18,
+    "publishedClaims": ["C1"],
+    "outcome": "partial",
+    "wholeAnswerAuditStatus": "checked",
+    "rejection": "The reviewer accepted the tail-window, pooling, per-head retention and cache discard statements, but found a possible indexing ambiguity between the scoring prose and equation (3). The system preserved the unresolved verdict.",
+    "reviewedOriginalLocation": "PyramidKV v1, physical page 6, section 4.2.2 and equations (2)–(3)",
+    "localArtifactDirectory": "tmp/openai-h3-pyramidkv-trimmed-selection-20261128",
+    "sha256": {
+      "calls.json": "c31a6579f5e5e17fd72389e512edaf6d2ad5cc880c0f86f37e5482928f7f9837",
+      "intent.json": "f0e521c9fcc2e7d97ff858c70c06e994c71530b363e750f5a76d80fd432e67be",
+      "run.json": "fd5c9f524d444f4f0c763635f74b897284aee0fb6b357879c4d97a17fdd55f67"
+    }
+  },
+  "newSearches": 0,
+  "newFulltextGets": 0,
+  "productionWrites": 0,
+  "automaticRetries": 0,
+  "regressionTestsPassed": 87,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

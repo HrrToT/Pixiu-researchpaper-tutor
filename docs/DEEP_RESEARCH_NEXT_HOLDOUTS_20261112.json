@@ -146,6 +146,7 @@
         "preflight": "deep-research-evidence/pyramidkv-external-holdout-preflight-20261128.json",
         "result": "deep-research-evidence/pyramidkv-h3-first-and-access-label-replay-20261128.json",
         "developmentRegression": "deep-research-evidence/pyramidkv-selection-scope-synthesis-20261128.json",
+        "developmentReview": "deep-research-evidence/pyramidkv-reader-scope-and-verification-20261128.json",
         "scientificContentCredit": 0
       }
     },

@@ -766,6 +766,8 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 
 PyramidKV 原写稿请求已经含有第 6 页逐注意力头选取的正文，但未把该段直接对应到「如何选取」义务。新版在同一版本的证据中将排名单位绑定到相应子问题，并要求解释陌生术语。复用原取证只调用一次 Terra，耗用 5,941 Token。223 字的草稿区分了各层分配容量与各注意力头按分数选取，保留末尾窗口，省略可选的 α 符号并解释「词元」。草稿五处引文逐字核对第 5、6 页，两条陈述均通过本地预检。仍需解释注意力头，明确丢弃的是键值缓存，独立语义及整答审核还未执行。原 H3 首次结果保持部分完成。 [单次写稿验证](deep-research-evidence/pyramidkv-selection-scope-synthesis-20261128.json)
 
+复用上一步综合回执验证新手改写及审核。编辑保留逐头选择，解释注意力头，明确被丢弃的是缓存中的键值状态。4 次 Terra 共用 16,411 Token，整答审核完成，隔离报告仍为部分。独立审核指出新增的窗口长度超参数说明在该主张所引段落中缺少支撑。仅删除这句附带说明形成离线夹具后，沿用原引文和通过的 C1，再用 2 次 Terra、9,300 Token 核验 C2 及整答。审核认可多数选择步骤，但认为方法第 6 页式（3）的索引与文字描述之间存在歧义，C2 仍未发布。两次均复用综合结果和来源，未重复联网或自动重试。首个独立 H3 结果仍为部分。 [改写与两次核验记录](deep-research-evidence/pyramidkv-reader-scope-and-verification-20261128.json)
+
 ### 当前候选与复测顺序
 
 - 后端候选 `535a23900` 的 Python 离线回归通过 10,104 项，上一版 10,097 项全部保留。`01d093964` 的 Java 全量离线回归通过 171 项。此前候选 `f344b148b` 通过禁网冷启动，核对两次历史运行、86 条调用记录与 Luna／Terra 新运行配置。 [Python 回归](deep-research-evidence/openai-d2-audit-and-table-native-full-20261127.json) · [Java 回归及发布检查](deep-research-evidence/current-publication-and-rollback-20261126.json) · [候选冷启动](deep-research-evidence/openai-pdf-table-candidate-cold-start-20261126.json)
