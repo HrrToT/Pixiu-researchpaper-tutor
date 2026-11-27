@@ -1,0 +1,59 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceCommit": "aab163090e738845075d56204266959bbce7c974",
+  "runId": "dr_d2_joint_with_pdf_note_20261127",
+  "sourceRunId": "dr_run_e2b489b1c41d585e9f196a0118738d4f",
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "providerCalls": 1,
+  "providerModel": "gpt-6.1-terra",
+  "tokens": 7330,
+  "jointInputBytes": 23827,
+  "jointTargetsCompiled": 3,
+  "pairedNumericExamples": 1,
+  "matchedBenchmark": "Mip-NeRF 360 Datasets",
+  "methods": [
+    "3D-GS∗[16]",
+    "Ours"
+  ],
+  "exactTablePage": 6,
+  "metrics": [
+    "FPS↑",
+    "Size↓",
+    "PSNR↑",
+    "SSIM↑",
+    "LPIPS↓"
+  ],
+  "reportedValues": {
+    "3D-GS∗[16]": [
+      "144",
+      "782MB",
+      "27.40",
+      "0.813",
+      "0.217"
+    ],
+    "Ours": [
+      "237",
+      "45MB",
+      "27.13",
+      "0.806",
+      "0.237"
+    ]
+  },
+  "numberOfCellsCheckedAgainstPdf": 10,
+  "samePageRetrainingNote": true,
+  "scopeReturned": true,
+  "testFirstMemoryAdviceReturned": true,
+  "singlePaperDraftsRerun": false,
+  "automaticRetry": false,
+  "productionWrites": 0,
+  "factualAndWholeAnswerAuditDispatched": false,
+  "scientificAcceptance": false,
+  "sha256": {
+    "intent.json": "5294e232f96f2727a146d7c56f0ce3f25c79e3fc21a24b905a6366039e74201f",
+    "run.json": "634d754278622680d7286c5774ae33b9dbec2be05604016e42b16529aa82f4cc",
+    "calls.json": "94ffad50a89bf9a83d2b7c93be4a0e373a38ed07f249348e0455fc60886b82f4",
+    "compiled.json": "cfc9f4f3f8a9048d60a20d6c4015df546bd2e999b7a70ed86819c3d307dea2cb"
+  }
+}
