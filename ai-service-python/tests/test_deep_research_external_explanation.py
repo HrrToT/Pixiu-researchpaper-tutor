@@ -36,3 +36,25 @@ def test_external_navigation_keeps_the_same_revision_and_complete_groups():
                                    include_selection_rule=True)
     assert selected == [storage, split, merge, window, background]
     assert bundles[1]['evidenceIds'] == ['split', 'merge', 'window']
+
+
+def test_external_layer_selection_prioritizes_literal_ranking_scope_for_the_requested_revision():
+    question = '每层拿到容量后又怎样决定保留哪些内容'
+    plan = [{'obligations': [{'obligationId': 'retention', 'question': question,
+                              'requiredSources': ['arxiv:2400.00000v2']}]}]
+    background = {'evidenceId': 'summary', 'quote': 'The cache size varies over layers.'}
+    scope = {'evidenceId': 'method', 'sourceVersionId': 'arxiv:2400.00000v2',
+             'verification': {'literal': 'passed'},
+             'quote': 'For each head, the tokens with the highest scores are retained.'}
+    wrong_version = {**scope, 'evidenceId': 'v1', 'sourceVersionId': 'arxiv:2400.00000v1'}
+    unchecked = {**scope, 'evidenceId': 'unchecked', 'verification': {'literal': 'unchecked'}}
+    coarse = {**scope, 'evidenceId': 'coarse', 'quote': 'The highest scores are retained.'}
+    evidence = [wrong_version, unchecked, coarse, scope]
+
+    assert prioritize(evidence, [background], [], plan) == ([background], [])
+    ordered, bundles = prioritize(evidence, [background], [], plan, include_selection_unit=True)
+    assert ordered == [scope, background]
+    assert bundles[0]['obligationId'] == 'retention' and bundles[0]['evidenceIds'] == ['method']
+
+    plan[0]['obligations'][0]['question'] = '各层的缓存容量为何不同'
+    assert prioritize(evidence, [background], [], plan, include_selection_unit=True) == ([background], [])

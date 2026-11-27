@@ -446,7 +446,7 @@ class ResearchFacade:
             "answerCoherenceContractVersion": 2,
             "synthesisEvidenceContractVersion": 6,
             "externalReadingContractVersion": 5,
-            "externalExplanationInputVersion": 4,
+            "externalExplanationInputVersion": 5,
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 2,
             "reviewSourceFieldReferenceContractVersion": 1,

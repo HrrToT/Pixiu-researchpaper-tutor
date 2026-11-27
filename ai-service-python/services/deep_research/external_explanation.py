@@ -14,10 +14,14 @@ _PARALLEL = re.compile(r'\bparallel\b', re.I)
 _STATIC_SELECTION = re.compile(r'\b(?:static pattern|fixed (?:pattern|set)|GPU)\b', re.I)
 _INITIAL_TOKENS = re.compile(r'\b(?:initial|first|starting)\b[^.!?]{0,30}\btokens?\b', re.I)
 _LOCAL_WINDOW = re.compile(r'\b(?:local|recent|sliding)\s+window\b', re.I)
+_LAYERS = re.compile(r'层|\b(?:layers?|layer-wise)\b', re.I)
+_SELECT_RETENTION = re.compile(r'保留哪|如何保留|选择.{0,16}保留|\b(?:which|select|choose)\b[^.!?]{0,70}\b(?:retain|keep|cache)\b', re.I)
+_PER_HEAD = re.compile(r'\b(?:each|every|per)\s+(?:attention\s+)?head\b', re.I)
+_RETAIN_TOP = re.compile(r'\b(?:highest|top)[^.!?]{0,180}\b(?:scores?|rank)\b[^.!?]{0,180}\b(?:retain\w*|kept|cached)\b', re.I)
 
 
 def enabled(record, kind):
-    return (record.get(MARKER) in (1, 2, 3, 4) and kind == 'direction_survey'
+    return (record.get(MARKER) in (1, 2, 3, 4, 5) and kind == 'direction_survey'
             and record.get('sourcePolicy', {}).get('mode') == 'external_only')
 
 
@@ -25,7 +29,7 @@ def asks_split_merge(question):
     return 'CPU' in question.upper() and 'GPU' in question.upper() and bool(_MERGE_REQUEST.search(question))
 
 
-def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False):
+def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False, include_selection_unit=False):
     """Keep storage and merge passages with the literal, same-source premises."""
     priority_rows, priority_bundles = [], []
     for item in plan:
@@ -33,7 +37,8 @@ def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False):
             question = obligation['question']
             seeks_storage = _READ_REQUEST.search(question) and _RETENTION_LOCATION_REQUEST.search(question)
             seeks_merge = asks_split_merge(question)
-            if not (seeks_storage or seeks_merge):
+            seeks_unit = include_selection_unit and _LAYERS.search(question) and _SELECT_RETENTION.search(question)
+            if not (seeks_storage or seeks_merge or seeks_unit):
                 continue
             for source in obligation.get('requiredSources', []):
                 own = [(row, ' '.join(row['quote'].split())) for row in rows
@@ -43,6 +48,10 @@ def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False):
                     return next((row for row, text in own if matches(text)), None)
 
                 selected = []
+                if seeks_unit:
+                    selection_unit = first(lambda text: _PER_HEAD.search(text) and _RETAIN_TOP.search(text))
+                    if selection_unit is not None:
+                        selected.append(selection_unit)
                 if seeks_storage:
                     storage = first(lambda text: _RETRIEVE.search(text) and _STORED_ON.search(text))
                     if storage is not None:
@@ -99,9 +108,12 @@ with numbers. Bind exact table cells by source rowNumber, zero-based groupIndex,
 Invent no source, assumption, result or author omission. Scope conclusions to the specified revision.
 Access is derived from verified citations. Omit unrelated metrics, background and advice.
 """
-    if record.get(MARKER) in (2, 3, 4) and asks_split_merge(question):
+    if record.get(MARKER) in (2, 3, 4, 5) and asks_split_merge(question):
         output += ('For split computation, explain the evidenced selection rule for each branch and '
                    'how the branch results are combined. Distinguish implementation settings from the general method.\n')
+    if record.get(MARKER) == 5:
+        output += ('For selection, state the evidenced unit to which ranking applies, separately from how its budget is set. '
+                   'Cite the passage with that scope. Explain unfamiliar terms at first use; replace optional symbols with plain words.\n')
     if scope_enabled:
         output += scope_guidance(record['scopeExpressionContractVersion']) + '\n'
     if compact_evidence_wire:
