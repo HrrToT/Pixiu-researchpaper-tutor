@@ -1,0 +1,148 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "qualification": "isolated_review_diagnostic_and_offline_transport_replay",
+  "independentCredit": 0,
+  "liveDiagnostic": {
+    "runId": "dr_d3_revision_five_check_diagnostic_20261127",
+    "sourceRunId": "dr_d3_scientific_repair_20261127",
+    "proposalBindingDigest": "bd178fcde8df6993c6860581dd10616e366233180c83d1bcc958341bc0655e42",
+    "providerCalls": 1,
+    "usage": {
+      "total_tokens": 9503,
+      "input_tokens": 8586,
+      "output_tokens": 917,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 8583
+    },
+    "model": "gpt-6.1-terra",
+    "finishReason": "stop",
+    "inputBytes": 31671,
+    "assignedCheckIds": [
+      "section_1",
+      "section_2",
+      "section_6",
+      "requirement_0_1",
+      "requirement_3_0"
+    ],
+    "automaticRetries": 0,
+    "schemaAccepted": false,
+    "schemaErrors": [
+      [
+        "checks",
+        0,
+        "reason"
+      ],
+      [
+        "checks",
+        1,
+        "reason"
+      ],
+      [
+        "checks",
+        2,
+        "reason"
+      ],
+      [
+        "checks",
+        3,
+        "reason"
+      ],
+      [
+        "checks",
+        4,
+        "reason"
+      ]
+    ],
+    "returnedFindings": [
+      {
+        "checkId": "section_1",
+        "status": "passed",
+        "reason": "Bicycle identity and the paper's every-eighth-photo split are supported. Assets and registration remain conditional, and the locked splits are checked for disjointness and nonemptiness. Both registration routes specify implementable acceptance criteria and do not update the training model with test data."
+      },
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "reason": "The declared splits state includes accepted test cameras and is created by lock, but those cameras are generated later by start, which reads splits without updating it. This leaves the state dependency and persistence of the accepted cameras inconsistent, despite otherwise explicit checkpoint and pairing checks."
+      },
+      {
+        "checkId": "section_6",
+        "status": "passed",
+        "reason": "PSNR is computed against locked test images. The memory window covers checkpoint loading through synchronized completion, uses device-wide sampled maxima, and separately reports reset allocator peaks and their coverage limits. Failed windows are diagnostic only and cannot substitute for complete peaks."
+      },
+      {
+        "checkId": "requirement_0_1",
+        "status": "failed",
+        "reason": "The proposal specifies conditional assets, splits, registration, initialization and equal recovery budgets, but its camera-state dependency is inconsistent. It also leaves the SfM procedure and several initialization details, including the precise scale construction and color-to-SH conversion, to an unspecified implementation rather than fully parameterizing preparation."
+      },
+      {
+        "checkId": "requirement_3_0",
+        "status": "failed",
+        "reason": "The factorial contrasts, paired starts, common opacity handling and failure rules are specified, and the paper's separate ablations are distinguished from the proposal. Whole-plan execution nevertheless has an inconsistent test-camera state dependency and incompletely specified shared preparation. No results or asset availability are established."
+      }
+    ],
+    "originalProposalReused": true,
+    "productionWrites": 0,
+    "receiptSha256": {
+      "intent.json": "4555715b8e92efdd1a83471f7cae964be08f192951523068c6e79e019558ad71",
+      "calls.json": "865040b033d2597ee41773245cb6cf692bd248967970a05f38c05761225c69fb"
+    }
+  },
+  "independentStateInspection": {
+    "stateId": "splits",
+    "stateDeclaredSource": {
+      "kind": "step",
+      "id": "lock"
+    },
+    "declaredProducerCreates": [
+      "splits",
+      "env"
+    ],
+    "actualRegistrationStep": "start",
+    "registrationReads": [
+      "raw",
+      "splits",
+      "env"
+    ],
+    "registrationCreates": [
+      "sharedstart"
+    ],
+    "registrationUpdates": [],
+    "measurementReads": [
+      "apar",
+      "peak",
+      "splits",
+      "env"
+    ],
+    "finding": "Locked split claims already accepted test poses, but the later pose registration declares no such created or updated state. Measurement consumes the prematurely declared split state.",
+    "implementationBoundary": "The existing contract permits evaluation data use only on a measurement step, which is read-only. A separate pose-only preparation stage must preserve the training/evaluation boundary."
+  },
+  "offlineReviewTransport": {
+    "providerCalls": 0,
+    "responseSchemaNowDecodes": true,
+    "oldUnresolvablePaths": [
+      "/steps/10/operation/action",
+      "/steps/2/reads"
+    ],
+    "stillUnresolvablePaths": [
+      "/steps/10/operation/action"
+    ],
+    "rawDiagnosticAccepted": false,
+    "allChecks": 22,
+    "reusesEarlierUnchangedFactBatch": true,
+    "batchInputBytes": [
+      14873,
+      31697,
+      31921
+    ],
+    "inputLimitBytes": 32000,
+    "currentOriginalBudgetStop": {
+      "batchIndex": 1,
+      "limit": 100000,
+      "spent": 67740,
+      "reservation": 36817
+    },
+    "regressionTestsPassed": 94
+  },
+  "scientificApproval": false,
+  "publicationPerformed": false
+}
