@@ -879,6 +879,8 @@ PyramidKV 原写稿请求已经含有第 6 页逐注意力头选取的正文，�
 
 将新版开头加入最近一次语义审核已接受的十条主张，隔离运行未能为这条开头预留 23,132 Token，当时只剩 20,270 Token，故未发送新开头的语义核验。一轮真实终审消耗 9,257 Token，并保存十条主张组成的部分报告。新版只为单独核验新手开头的直答请求使用 1,024 Token 输出上限，原输入与审核字段不变，预计预留 20,156 Token。完整输出、来源和终审门槛继续执行。 [部分报告与预算回放](deep-research-evidence/d2-beginner-review-budget-real-20261128.json)
 
+候选 `c9ec1472f` 的真实单条核验按 20,156 Token 成功预留，新手开头获通过，其余十条已核验主张逐字段保持一致。整答审核一致性通过，但仍有一项未覆盖，即面向初学者的部署取舍。隔离库保存部分成果。两次调用增加 15,105 Token，分支累计 94,835 Token，前一复测分支另计。新版在原有显存实测建议前明确磁盘空间、渲染流畅度和画质的不同选择条件，保留建议类型、原引用及实测后再选择的要求。原三份生成请求逐字不变，可直接复用；更新建议仅做了离线编译。 [真实语义与整答核验](deep-research-evidence/d2-bounded-beginner-review-real-20261128.json) · [部署建议回放](deep-research-evidence/d2-beginner-deployment-render-20261128.json)
+
 ### 固定案例证据
 
 D3-v20 保存的第二批审核只分配了 8 项检查，原始截断回复却返回 27 个检查 ID，其中 19 个属于别批。第一批完整回复也含以方案内部 ID 代替数组下标的无效路径。新版向审核提供事实正文的精确路径，并在下一批发出前验证上一批的方案路径、引用范围和原文绑定。用同一份保存方案生成三个请求，分别为 22,762、31,913、31,873 字节，完整方案和 27 项冻结检查均保留。仅转换旧回复的传输格式后回放，第一批因原有无效绑定停止，恢复时未重复调用，后两批未发送。本轮没有真实模型调用，科学验收仍待通过。 [请求与检查回放](deep-research-evidence/d3-indexed-review-batch-bindings-20261127.json)
@@ -972,7 +974,7 @@ OpenAI 科学审核的原子预留优先按字节上界。仅当上界导致 Tok
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 11 条主张经过真实核验，整答一致性通过，审核仍指出新手部署取舍说明不足。旧部分报告在隔离工作区重启后可找回。 [真实终审](deep-research-evidence/d2-counted-audit-final-gates-real-20261128.json) · [工作区交付](deep-research-evidence/d2-final-audit-workspace-delivery-20261128.json) | 新手开头已通过离线预检，待独立语义核验及整答审核。 [开头回放](deep-research-evidence/d2-beginner-tradeoff-compile-replay-20261128.json) |
+| D2 两论文比较 | 新手开头经独立语义核验通过，沿用其他十条已核验主张，整答一致性通过，隔离库保存部分报告。 [真实终审](deep-research-evidence/d2-bounded-beginner-review-real-20261128.json) | 整答还缺面向初学者的部署取舍，新版建议已离线编译，待整答复测。 [部署建议回放](deep-research-evidence/d2-beginner-deployment-render-20261128.json) |
 | D3 四组实验 | 加入 SH 颜色参数化后，完整科学审核 24 项通过 23 项，剩余共享预训练峰值已经真实修订并通过新版结构校验。 [真实生成与审核](deep-research-evidence/d3-sh-and-shared-peak-real-20261128.json) | 修订后第一批设计回复经字段回放确认显存计量已补齐，仍指出克隆方向符号、内参来源及新高斯 ID 的复现要求。余下复审、整答终审和发布未执行。 [修订后复审](deep-research-evidence/d3-shared-peak-review-field-real-20261128.json) |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
