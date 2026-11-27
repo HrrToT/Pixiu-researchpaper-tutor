@@ -54,6 +54,70 @@ def test_valid_initial_plan_does_not_spend_a_correction():
     assert result['plan_ids']==['i'] and invoke.call_count==1 and AUDIT not in saved['state']
 
 
+def overflowing_plan():
+    value = plan()
+    item = value[0]
+    source = item['obligations'][0]
+    item['obligations'].extend({**deepcopy(source), 'obligationId': f'extra_{i}'} for i in (2, 3))
+    return value
+
+
+def test_independent_overflow_reuses_initial_response_and_keeps_all_obligations():
+    value = overflowing_plan()
+    collision = deepcopy(plan()[0])
+    collision.update(itemId='i_split_2',
+                     obligations=[{**collision['obligations'][0], 'obligationId': 'independent'}])
+    value.append(collision)
+    record = {**run_record(), 'initialPlanResponseContractVersion': 5}
+    result, saved, invoke = execute([response(value)], record)
+    assert invoke.call_count == 1
+    assert result['plan_ids'] == ['i', 'i_split_3', 'i_split_2']
+    assert [o for item in saved['state']['plan'] for o in item['obligations']] == [
+        o for item in value for o in item['obligations']]
+    assert saved['state']['planItemRegrouping']['changes'] == [
+        {'fromItemId': 'i', 'toItemId': 'i_split_3', 'obligationIds': ['extra_3']}]
+    assert AUDIT not in saved['state']
+
+
+def test_new_comparison_run_selects_independent_regrouping(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+
+    repo = DeepResearchRepository(tmp_path / 'regroup.sqlite3')
+    repo.initialize()
+    facade = ResearchFacade(repo, lambda **kwargs: None, llm_client=object(), comparison_cells_version=1)
+    comparison, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'comparison',
+        'question': '比较两篇论文。', 'outputKind': 'paper_comparison'}, start_async=False)
+    verification, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'verification',
+        'question': '核查论文观点。', 'outputKind': 'claim_verification'}, start_async=False)
+    assert repo.require_run(comparison['runId'])['initialPlanResponseContractVersion'] == 5
+    assert repo.require_run(verification['runId'])['initialPlanResponseContractVersion'] == 1
+
+
+@pytest.mark.parametrize('case', ['has_dependencies', 'invalid_criterion', 'too_many_items', 'legacy'])
+def test_plan_overflow_keeps_existing_correction_when_it_cannot_regroup(case):
+    value = overflowing_plan()
+    record = {**run_record(), 'initialPlanResponseContractVersion': 5}
+    if case == 'has_dependencies':
+        dependant = deepcopy(plan()[0])
+        dependant.update(itemId='depends_on_i', dependencies=['i'],
+                         obligations=[{**dependant['obligations'][0], 'obligationId': 'dependant'}])
+        value.append(dependant)
+    if case == 'invalid_criterion':
+        value[0]['obligations'][-1]['completionCriteria'][0]['responseType'] = 'invented'
+    if case == 'too_many_items':
+        for index in range(3):
+            item = deepcopy(plan()[0])
+            item.update(itemId=f'independent_{index}',
+                        obligations=[{**item['obligations'][0], 'obligationId': f'own_{index}'}])
+            value.append(item)
+    if case == 'legacy':
+        record['initialPlanResponseContractVersion'] = 1
+    result, saved, invoke = execute([response(value), response()], record)
+    assert result['plan_ids'] == ['i'] and invoke.call_count == 2
+    assert saved['state'][AUDIT]['status'] == 'validated'
+    assert 'planItemRegrouping' not in saved['state']
+
+
 def test_unique_noncontiguous_list_excerpt_uses_the_literal_source_span_once():
     value = plan()
     obligation = value[0]['obligations'][0]

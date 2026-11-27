@@ -368,6 +368,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 enabled as initial_plan_response_enabled,
                 followup_anchor_layers,
                 normalize_obligation_leaf_fields,
+                regroup_independent_items,
                 validate_shape as validate_initial_plan_shape,
             )
             followup_layers = followup_anchor_layers(record, question)
@@ -377,6 +378,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
             from services.deep_research.comparison_intent import enabled as comparison_intent_enabled
             comparison_roles = comparison_intent_enabled(record)
             parsed, leaf_paths = normalize_obligation_leaf_fields(record, parsed, comparison_roles=comparison_roles)
+            parsed, regrouped_items = regroup_independent_items(record, parsed)
             if initial_plan_response_enabled(record):
                 try:validate_initial_plan_shape(parsed, question, comparison_roles=comparison_roles,
                                                 followup_layers=followup_layers)
@@ -551,6 +553,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                     **({'planLeafNormalization': {'version': record['initialPlanResponseContractVersion'],
                                                   'paths': leaf_paths}} if leaf_paths else {}),
                     **({'planRequestExcerptNormalization':{'version':1,'changes':excerpt_changes}} if excerpt_changes else {}),
+                    **({'planItemRegrouping': {'version': 1, 'changes': regrouped_items}} if regrouped_items else {}),
                     **({'planSourceRevisionNormalization':revision_audit} if revision_constraints else {}),
                     **({'planAccessRequestProjection':access_projection} if access_projection_enabled(record) else {}),
                     **({'planRequestSemanticsNormalization':semantics_changes} if semantics_enabled(record) else {}),

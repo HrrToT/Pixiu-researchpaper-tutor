@@ -313,7 +313,9 @@ class ResearchFacade:
             "contextMaterials": (material_snapshot or {}).get("contextMaterials", []) if isinstance(material_snapshot, dict) else [],
             "promptVersion": "dr-v2.20261116.488",
             **({"openaiResearchModels": list(self._openai_research_models)} if self._openai_research_models else {}),
-            "initialPlanResponseContractVersion": 4 if continuation_context else {4: 2, 5: 3, 6: 3}.get(shared_experiment_profile, 1),
+            "initialPlanResponseContractVersion": 4 if continuation_context else {4: 2, 5: 3, 6: 3}.get(
+                shared_experiment_profile,
+                5 if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else 1),
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanExcerptSpanVersion": 1,
             "initialPlanInstructionsContractVersion": 3,

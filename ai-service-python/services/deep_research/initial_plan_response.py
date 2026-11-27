@@ -10,7 +10,7 @@ def enabled(record,node='plan'):
     from services.deep_research.initial_plan_instructions import enabled as instructions_enabled
     return (node=='plan' and isinstance(record,dict)
         and type(record.get('initialPlanResponseContractVersion')) is int
-        and record['initialPlanResponseContractVersion'] in (1, 2, 3, 4)
+        and record['initialPlanResponseContractVersion'] in (1, 2, 3, 4, 5)
         and instructions_enabled(record))
 
 
@@ -109,12 +109,52 @@ def validate_shape(plan,question,*,comparison_roles=False,followup_layers=()):
                     raise ValueError('Invalid initial plan response type')
 
 
+def regroup_independent_items(record, plan):
+    """Fit independent items to the existing limit without changing any obligation."""
+    if not enabled(record) or record['initialPlanResponseContractVersion'] != 5:
+        return plan, []
+    if not isinstance(plan, list) or any(
+        not isinstance(item, dict)
+        or not isinstance(item.get('itemId'), str)
+        or item.get('dependencies') != []
+        or not isinstance(item.get('obligations'), list)
+        or not item['obligations']
+        or any(not isinstance(obligation, dict) for obligation in item['obligations'])
+        for item in plan
+    ):
+        return plan, []
+    used_ids = {item['itemId'] for item in plan}
+    count = sum((len(item['obligations']) + 1) // 2 for item in plan)
+    if len(used_ids) != len(plan) or count > 4 or count == len(plan):
+        return plan, []
+    normalized, changes = [], []
+    for item in plan:
+        obligations = item['obligations']
+        normalized.append({**item, 'obligations': obligations[:2]})
+        for start in range(2, len(obligations), 2):
+            batch = obligations[start:start + 2]
+            base = item['itemId'][:100] + '_split'
+            index = start // 2 + 1
+            item_id = f'{base}_{index}'
+            while item_id in used_ids:
+                index += 1
+                item_id = f'{base}_{index}'
+            used_ids.add(item_id)
+            normalized.append({**item, 'itemId': item_id,
+                               'question': batch[0].get('question'),
+                               'searchQuery': batch[0].get('searchQuery'),
+                               'obligations': batch})
+            changes.append({'fromItemId': item['itemId'], 'toItemId': item_id,
+                            'obligationIds': [o.get('obligationId') for o in batch]})
+    return normalized, changes
+
+
 def normalize_obligation_leaf_fields(record, plan, *, comparison_roles=False):
     """Remove empty child lists and, in profiles 3 and 4, surplus null leaf fields."""
     if not enabled(record) or not isinstance(plan, list):
         return plan, []
     profile = record['initialPlanResponseContractVersion']
-    if profile == 1:
+    if profile in (1, 5):
         return plan, []
     expected = set(OBLIGATION_FIELDS.split())
     if comparison_roles:
