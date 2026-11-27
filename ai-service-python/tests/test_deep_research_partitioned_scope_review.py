@@ -110,7 +110,8 @@ def test_failed_fact_is_never_upgraded_by_an_epistemic_operator():
 
 @pytest.mark.parametrize('variant, expected', [('scope_gap', 'passed'), ('unbound_number', 'failed'),
                                                 ('invisible_path', 'failed'), ('entailed', 'failed')])
-def test_focused_boundary_review_uses_visible_fields_and_preserves_verdict_gates(variant, expected):
+@pytest.mark.parametrize('policy', [5, 6])
+def test_focused_boundary_review_uses_visible_fields_and_preserves_verdict_gates(variant, expected, policy):
     claim, expression, record, evidence = inputs(settings=False)
     evidence[0]['sourceContext'] = 'Other setting. Method A retained quality at 66%.'
 
@@ -127,12 +128,13 @@ def test_focused_boundary_review_uses_visible_fields_and_preserves_verdict_gates
 
     checker, calls = checker_for(claim, expression, record, evidence, modify=respond, consistent=True)
     checker._review_diagnostic_bindings = True
-    checker._focused_boundary_review = True
+    checker._focused_boundary_review = policy
     result = checker([claim], evidence)[0]
     assert result['status'] == expected and len(calls) == 1
     prompt = calls[0]['prompt']
     assert 'one short reason naming the decisive condition or clause' in prompt
     assert 'Never use titles or section' in prompt
+    assert ('without counting them' in prompt) is (policy == 6)
     assert '"E1":[["quote"],["sourceContext","before"]]' in prompt
     assert 'unrelated universal theorem' not in prompt
 

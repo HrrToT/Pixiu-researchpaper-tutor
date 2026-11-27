@@ -9,7 +9,7 @@ from services.deep_research.scope_expression_review import validate
 
 def enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (2,3,4,5))
+            and record['scopeExpressionReviewContractVersion'] in (2,3,4,5,6))
 
 
 def assertions_enabled(record):
@@ -19,17 +19,17 @@ def assertions_enabled(record):
 
 def consistent_premises_enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (3,4,5))
+            and record['scopeExpressionReviewContractVersion'] in (3,4,5,6))
 
 
 def short_circuit_enabled(record):
     return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] in (4,5))
+            and record['scopeExpressionReviewContractVersion'] in (4,5,6))
 
 
-def focused_boundary_enabled(record):
-    return (type(record.get('scopeExpressionReviewContractVersion')) is int
-            and record['scopeExpressionReviewContractVersion'] == 5)
+def focused_boundary_policy(record):
+    version = record.get('scopeExpressionReviewContractVersion')
+    return version if type(version) is int and version in (5, 6) else False
 
 
 def observation_claims(claim, expression, *, assertions=False, literal=False):
@@ -190,8 +190,9 @@ Targets:
         prompt+='\nPrefer one source binding form per premise. If both path and quote are returned, the quote must be a contiguous excerpt of that exact visible field of the same evidenceId; both are checked. Extra fields, conflicting text and cross-field matches fail.\n'
     diagnostics=getattr(checker,'_review_diagnostic_bindings',False)
     diagnostics=(diagnostics() if callable(diagnostics) else diagnostics) is True
-    focused = getattr(checker, '_focused_boundary_review', False)
-    focused = (focused() if callable(focused) else focused) is True
+    policy = getattr(checker, '_focused_boundary_review', False)
+    policy = policy() if callable(policy) else policy
+    focused = policy is True or policy in (5, 6)
     if diagnostics:
         from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
         prompt+='\n'+diagnostic_guidance
@@ -211,6 +212,11 @@ Targets:
             prompt += ('\nIf the reason adds no positive source fact, return diagnosticFacts: []. '
                        'For each necessary new source fact, copy the exact statement from your final reason '
                        'and the contiguous original excerpt from the specified field of its own evidence.')
+            if policy == 6:
+                prompt += (' Use "the compared measurements" or "the cited results" in your reason '
+                           'without counting them. State the specific missing condition. '
+                           'A number remains appropriate only when it is needed to decide the proposition '
+                           'and is present in the target or bound to original evidence.')
     from services.deep_research.tools import TrackedLLMInvoker
     limit = checker._invoke.prompt_byte_limit(checker._run_id,node) if isinstance(checker._invoke,TrackedLLMInvoker) else 24000
     mechanism=getattr(checker,'_mechanism_grounding',False)

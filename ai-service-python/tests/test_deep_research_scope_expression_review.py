@@ -124,14 +124,14 @@ def test_policy_is_server_owned_immutable_and_facade_only_supplies_matching_new_
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'核查','deferStart':True,
             'scopeExpressionReviewContractVersion':replacement},start_async=False)
-        assert run['scopeExpressionReviewContractVersion']==5
-        attempted_change = 4 if replacement == 5 else replacement
+        assert run['scopeExpressionReviewContractVersion']==6
+        attempted_change = 5 if replacement == 6 else replacement
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(run['runId'],lambda r:{**r,'scopeExpressionReviewContractVersion':attempted_change})
         run=repo.update_run(run['runId'],lambda r:{**r,'state':record['state']})
         checker=facade._build_semantic_checker(run['runId'],Mock())
         assert checker._short_circuit_scope_observations() is True
-        assert checker._focused_boundary_review() is True
+        assert checker._focused_boundary_review() == 6
         assert checker._scope_expression_context([row])=={'c':expression}
         assert checker._scope_expression_context([materialize(raw,2)[0]])=={}
         old=deepcopy(run);old.update(runId='old',idempotencyKey='old');old.pop('scopeExpressionReviewContractVersion')

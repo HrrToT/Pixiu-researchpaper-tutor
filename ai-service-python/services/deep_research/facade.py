@@ -450,7 +450,7 @@ class ResearchFacade:
             "processExplanationVocabularyVersion": 1,
             "claimCheckContractVersion": 9,
             "scopeObservationContractVersion": 5 if self._comparison_cells_version == 1 else 2,
-            "scopeExpressionReviewContractVersion": 5,
+            "scopeExpressionReviewContractVersion": 6,
             "scopeEvidenceContractVersion": 1,
             "namedBenchmarkNavigationVersion": 1,
             "namedTableScopeVersion": 2,
@@ -1409,7 +1409,7 @@ class ResearchFacade:
         from services.deep_research.scope_expression_review import context_for_record
         from services.deep_research.partitioned_scope_review import (
             enabled as partitioned_scope_enabled, assertions_enabled, consistent_premises_enabled,
-            focused_boundary_enabled, short_circuit_enabled,
+            focused_boundary_policy, short_circuit_enabled,
         )
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
         from services.deep_research.general_advice import enabled as general_advice_enabled
@@ -1472,7 +1472,7 @@ class ResearchFacade:
             scope_observation_assertions=lambda: assertions_enabled(self._repo.require_run(run_id)),
             consistent_scope_premises=lambda: consistent_premises_enabled(self._repo.require_run(run_id)),
             short_circuit_scope_observations=lambda: short_circuit_enabled(self._repo.require_run(run_id)),
-            focused_boundary_review=lambda: focused_boundary_enabled(self._repo.require_run(run_id)),
+            focused_boundary_review=lambda: focused_boundary_policy(self._repo.require_run(run_id)),
             complete_factual_scope=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int
                 and self._repo.require_run(run_id)['factualScopeContractVersion'] in (3,4),
             result_attribution=lambda: type(self._repo.require_run(run_id).get('factualScopeContractVersion')) is int

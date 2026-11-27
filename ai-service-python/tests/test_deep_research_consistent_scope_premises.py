@@ -89,7 +89,7 @@ def test_actual_partitioned_review_preserves_both_fields_and_applies_new_policy_
 
 @pytest.mark.parametrize('value',[None,True,False,0,1,2,'3',5,6])
 def test_new_premise_policy_requires_exact_server_version(value):
-    assert consistent_premises_enabled({'scopeExpressionReviewContractVersion':value}) is (value == 5)
+    assert consistent_premises_enabled({'scopeExpressionReviewContractVersion':value}) is (value in (5, 6))
     assert consistent_premises_enabled({'scopeExpressionReviewContractVersion':3})
     assert consistent_premises_enabled({'scopeExpressionReviewContractVersion':4})
     assert consistent_premises_enabled({'scopeExpressionReviewContractVersion':5})
