@@ -1,0 +1,135 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "qualification": "offline_current_plan_pdf_to_model_readiness_input_only",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "independentCredit": 0,
+  "providerCalls": 0,
+  "savedPlanAndBaseline": "deep-research-evidence/local-features-h2-condition-bound-live-20261127.json",
+  "readinessBudgetModelCallsAlreadyUsed": 2,
+  "readinessBudgetTokensAlreadyUsed": 3732,
+  "thresholdTableSourceId": "src_ee6ef7f9aef89c4681cba5d747b6f1e6b3388544da461dfaeccee9f109f65e28",
+  "thresholdTableLocation": {
+    "page": 7,
+    "pageIndex": 6,
+    "pageResolution": "exact",
+    "section": "Table 3",
+    "table": "pdf-page-7-table-3",
+    "tableColumnMappingUnverified": false,
+    "thresholdColumnsVerified": true
+  },
+  "samePageBenchmarkProtocol": {
+    "sourceId": "src_f65e9b2e400ecfd089e219effc14dc676a20b8c32236a82dccf493a465cdeb10",
+    "location": {
+      "page": 7,
+      "offset": 3997,
+      "section": "7.3 HPatches Homography Estimation",
+      "benchmarkProtocolFor": "src_ee6ef7f9aef89c4681cba5d747b6f1e6b3388544da461dfaeccee9f109f65e28",
+      "sourcePassageStart": 0,
+      "sourcePassageEnd": 1127
+    },
+    "evidenceId": "ev_c2e603af11bc33b3c64a37a682bb667945e395c4187cadf0d5d24add6b1ee20f",
+    "sameWork": true,
+    "sameVersion": true,
+    "textLength": 1127,
+    "quoteSha256": "107e01b8135cd00223943fc68bc2da16a5f26d61eeea2adf2c6ee4806f63115e",
+    "readinessUnits": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7"
+    ]
+  },
+  "targetUnitsWithBothPapers": [
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7"
+  ],
+  "d2NetOriginalFigure4FeatureAndMatchingCounts": {
+    "sourceEvidencePackets": 1,
+    "quantitativeReadinessUnits": 5,
+    "treatment": "Literal PDF excerpt with printed column names and caption, kept as figure text."
+  },
+  "d2NetProtocolSignalsByReadinessUnit": {
+    "G3": {
+      "reprojection": 1,
+      "mutual": 3,
+      "threshold": 1,
+      "metric": 1
+    },
+    "G4": {
+      "reprojection": 1,
+      "mutual": 3,
+      "threshold": 1,
+      "metric": 1
+    },
+    "G5": {
+      "reprojection": 1,
+      "mutual": 3,
+      "threshold": 1,
+      "metric": 1
+    },
+    "G6": {
+      "reprojection": 1,
+      "mutual": 3,
+      "threshold": 1,
+      "metric": 1
+    },
+    "G7": {
+      "reprojection": 1,
+      "mutual": 3,
+      "threshold": 1,
+      "metric": 2
+    }
+  },
+  "readinessUnits": [
+    {
+      "unit": "G1",
+      "requirement": "怎样取得训练监督",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G2",
+      "requirement": "怎样产生关键点和描述子",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G3",
+      "requirement": "为每篇论文提供一条原文定量结果及其对应评测条件。",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G4",
+      "requirement": "引用原文以支持所选结果及条件。",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G5",
+      "requirement": "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G6",
+      "requirement": "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G7",
+      "requirement": "提出在共同评测条件下复核两种方法的建议，并说明需统一或记录的评测设置。",
+      "requiredSourceCount": 2
+    }
+  ],
+  "localRegressionPassed": 204,
+  "rawArtifact": {
+    "file": "h2-named-benchmark-protocol-offline-replay-20261127.json",
+    "sha256": "426e98804e29620748714130d7da241bc22c60c4f14168f8bbb57ffcbca7ed51"
+  },
+  "limitations": [
+    "Model assessment and final report generation were neither invoked nor verified.",
+    "Local lexical fallback and isolated PDF download were exercised; no live indexing backend was used."
+  ]
+}
