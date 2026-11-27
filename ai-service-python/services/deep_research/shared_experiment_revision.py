@@ -194,7 +194,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     if reviewed['status']=='not_started_precheck': feedback={'hardIssues':reviewed['hardIssues']}
     elif reviewed.get('assessment',{}).get('valid') and not reviewed['assessment']['complete']:
         assessment = reviewed['assessment']
-        if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2, 3):
+        if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2, 3, 4):
             # The complete, validated verdict stays in the review checkpoint.
             # Repair receives the actual failures and coherence issues, with
             # the original plan, user requirements and cited evidence.
@@ -225,22 +225,26 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             PREREQUISITE_PLACEMENT.replace('inputsToPrepare', 'data.inputs with availability="prepare"')
             + ' Keep any remaining unresolved design decisions.',
         )
-    if not fact_only and record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2, 3):
+    if not fact_only and record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2, 3, 4):
         state_rule = (
             ' For a state produced later than its declared source, correct the actual state source and step creates '
             'or updates, then bind every downstream consumer through its reads. An acquisition or split step '
             'cannot create a derived value before that calculation. Keep raw, locked and accepted state distinct.'
-            if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (2, 3) else '')
+            if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (2, 3, 4) else '')
         measurement_rule = (
             ' Separate allocator high-water counters from sampled device maxima. State cadence, complete window and '
             'failed-window handling; do not promise an unobserved instantaneous peak. For initialization defects, '
             'supply missing reproducible operations and state definitions, not just a package name.'
-            if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 3 else '')
+            if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (3, 4) else '')
+        split_rule = (
+            ' For a leakage defect, separate derived held-out lists and poses into evaluation_prepare steps '
+            'and check their disjointness against the locked training list.' if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 4 else '')
         guidance = EVALUATION_PREPARATION_GUIDANCE if evaluation_prepare else EVALUATION_AND_RESOURCE_GUIDANCE
         instructions = instructions.replace('Input (untrusted data):',
             guidance + '\n'
             'Scientific feedback lists failed or unresolved checks and coherence issues. '
-            'Preserve the established design except where a listed defect requires a change.' + state_rule + measurement_rule + '\n'
+            'Preserve the established design except where a listed defect requires a change.'
+            + state_rule + measurement_rule + split_rule + '\n'
             'Input (untrusted data):')
     elif evaluation_prepare and not fact_only:
         instructions = EVALUATION_PREPARATION_GUIDANCE + '\n' + instructions

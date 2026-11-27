@@ -570,6 +570,20 @@ def test_shared_evaluation_preparation_is_visible_only_to_evaluation(fault, expe
         assert {**bound, 'states': order(bound)} == {**canonical, 'states': order(canonical)}
 
 
+def test_generation_distinguishes_held_out_list_from_training_state():
+    from services.deep_research.shared_experiment_generation import (
+        EVALUATION_PREPARATION_MARKER, SCIENTIFIC_FEEDBACK_MARKER, instructions,
+    )
+
+    record = {MARKER: 8, EVALUATION_PREPARATION_MARKER: 1, SCIENTIFIC_FEEDBACK_MARKER: 4}
+    prompt = instructions(record)
+    assert 'create them in evaluation_prepare, separate from training outputs' in prompt
+    assert 'never train on evaluation states' in prompt
+    assert 'label device max as observed, not instantaneous' in prompt
+    previous = instructions({**record, SCIENTIFIC_FEEDBACK_MARKER: 3})
+    assert 'create them in evaluation_prepare, separate from training outputs' not in previous
+
+
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
     r, data, aliases = context()
     r[MARKER] = 2

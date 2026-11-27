@@ -378,7 +378,7 @@ class ResearchFacade:
             **({"sharedExperimentEvaluationPreparationVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentFinalAuditPacketVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentPrerequisitePlacementVersion": 2} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentScientificRepairVersion": 3} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentScientificRepairVersion": 4} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentStopInvalidReviewBatchVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewReferenceVersion": 4} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentScopedReviewPacketVersion": 6} if shared_experiment_profile == 8 else {}),
