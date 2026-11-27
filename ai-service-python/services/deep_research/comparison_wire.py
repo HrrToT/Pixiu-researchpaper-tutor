@@ -133,12 +133,20 @@ def targets(plan):
                                'question': part['requirement'], 'deliverable': part['kind']}
                 from services.deep_research.general_advice import has_device_memory_measurement, requests_device_memory
                 if part['kind'] == 'conditional_advice' and requests_device_memory(part['requirement']):
-                    direct = plan.get('directDeviceMemory') is True
-                    part_target['deviceMemoryMeasurementEvidenceIds'] = [
-                        eid for eid in target['evidenceIds']
-                        if (not direct or plan['evidence'][eid].get('accessLevel') == 'fulltext')
-                        and has_device_memory_measurement(plan['evidence'][eid].get('quote', ''), direct=direct)]
-                    if plan.get('structuredTestFirst') and not part_target['deviceMemoryMeasurementEvidenceIds']:
+                    compare_deployment = plan.get('compareDeploymentMemory') is True
+                    direct = plan.get('directDeviceMemory') is True or compare_deployment
+                    measured = {}
+                    for eid in target['evidenceIds']:
+                        row = plan['evidence'][eid]
+                        quote = row.get('quote', '')
+                        if ((not direct or row.get('accessLevel') == 'fulltext')
+                                and has_device_memory_measurement(quote, direct=direct,
+                                                                  deployment=compare_deployment)):
+                            measured[eid] = row['source']
+                    part_target['deviceMemoryMeasurementEvidenceIds'] = list(measured)
+                    missing_measurements = not measured or (
+                        compare_deployment and not set(target['sources']).issubset(measured.values()))
+                    if plan.get('structuredTestFirst') and missing_measurements:
                         part_target['decisionMode'] = 'measure_both_before_recommending_either'
                 if part['kind'] == 'matched_example' and plan.get('structuredTableExample'):
                     part_target['exampleMode'] = 'server_renders_selected_cells'
@@ -322,8 +330,9 @@ def resolve_point(point, target, registry, *, measurement_display=False):
     if deliverable == 'conditional_advice':
         if point['kind'] not in ('proposal', 'suggestion'):
             raise ValueError('joint_advice_requires_advice_kind')
-        if ('deviceMemoryMeasurementEvidenceIds' in target
-                and not set(refs).intersection(target['deviceMemoryMeasurementEvidenceIds'])):
+        if (target.get('decisionMode') == 'measure_both_before_recommending_either'
+                or ('deviceMemoryMeasurementEvidenceIds' in target
+                    and not set(refs).intersection(target['deviceMemoryMeasurementEvidenceIds']))):
             from services.deep_research.general_advice import device_memory_test_first
             prose = point['body'].get('prose') if isinstance(point['body'], dict) else None
             if not isinstance(prose, dict) or not isinstance(prose.get('text'), str) or not device_memory_test_first(

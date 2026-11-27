@@ -32,6 +32,20 @@ def test_proxy_memory_amount_keeps_structured_test_first_decision():
     assert target['deviceMemoryMeasurementEvidenceIds'] == ['E2']
     assert 'decisionMode' not in target
 
+    plan['compareDeploymentMemory'] = True
+    plan['evidence']['E2']['quote'] = ('During training, GPU memory peaked at 4 GB. '
+                                     'Rendering requires GPU memory for the model.')
+    target, = targets(plan)
+    assert target['deviceMemoryMeasurementEvidenceIds'] == []
+    plan['evidence']['E2']['quote'] = 'During rendering, GPU memory peaked at 4 GB.'
+    target, = targets(plan)
+    assert target['deviceMemoryMeasurementEvidenceIds'] == ['E2']
+    assert target['decisionMode'] == 'measure_both_before_recommending_either'
+    plan['evidence']['E1']['quote'] = 'During rendering, GPU memory peaked at 8 GB.'
+    target, = targets(plan)
+    assert target['deviceMemoryMeasurementEvidenceIds'] == ['E1', 'E2']
+    assert 'decisionMode' not in target
+
 
 def fixture():
     requirements, sources, evidence = layout_fixture()

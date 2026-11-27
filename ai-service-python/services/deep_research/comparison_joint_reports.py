@@ -41,12 +41,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7))
 
 
 def _evaluation_protocol_score(text):
@@ -59,7 +59,7 @@ def _evaluation_protocol_score(text):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -305,12 +305,14 @@ def place_cross_paper_speed_criterion(plan, question):
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,
                              separate_example_boundary=False, group_example_criteria=False,
-                             split_speed_and_advice=False, preserve_mixed_speed_criteria=False):
+                             split_speed_and_advice=False, preserve_mixed_speed_criteria=False,
+                             standalone_memory_scope=False):
     """Assign distinct outputs without losing or duplicating any frozen criterion."""
     from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+    from services.deep_research.general_advice import requests_device_memory
     split_speed_and_advice = split_speed_and_advice and explicitly_requests_cross_paper_speed(question)
     numeric_example = joint_numeric_example(roles, question)
-    if not (numeric_example or split_speed_and_advice):
+    if not (numeric_example or split_speed_and_advice or standalone_memory_scope):
         return {}
     result = {}
     for obligation in requirements:
@@ -342,6 +344,13 @@ def split_joint_deliverables(roles, requirements, question, *, classify_standalo
             if len(speed) == len(advice) == 1:
                 result[oid] = [{'kind':'comparability','requirement':speed[0]['requirement']},
                                {'kind':'conditional_advice','requirement':advice[0]['requirement']}]
+                continue
+        if classify_standalone and standalone_memory_scope and len(criteria) == 1:
+            anchor = roles[oid]['requestExcerpt']
+            requirement = criteria[0]['requirement']
+            if (_ADVICE.search(anchor) and requests_device_memory(anchor) and requests_device_memory(requirement)
+                    and not (_SPEED.search(requirement) or _NUMERIC.search(requirement))):
+                result[oid] = [{'kind': 'conditional_advice', 'requirement': obligation['question']}]
                 continue
         if not numeric_example:
             continue

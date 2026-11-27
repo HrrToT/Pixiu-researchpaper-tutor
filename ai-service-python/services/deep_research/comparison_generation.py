@@ -45,6 +45,7 @@ def planning_options(record, question):
                 **({'scoped_example_text':scoped_example_presentation(record)}
                    if record.get('comparisonJointReportsContractVersion') == 16 else {}),
                 **({'classify_standalone_joint':True} if preserve_numeric_example(record) else {}),
+                **({'standalone_memory_scope': True} if record.get('comparisonEvaluationProtocolVersion') == 7 else {}),
                 **({'joint_reports':True} if joint_reports_enabled(record) else {})}
     # The frozen review profile separates new runs from historical cell inputs.
     return ({'shared_axes': True, 'question': question}

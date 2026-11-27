@@ -192,10 +192,12 @@ def _device_memory_supported(claim, audit, own, *, direct=False):
                              for sentence in _STATEMENT_BREAKS.split(resolved[1]))
 
 
-def has_device_memory_measurement(text, *, direct=False):
+def has_device_memory_measurement(text, *, direct=False, deployment=False):
     if direct:
         return any(_DIRECT_MEMORY_VALUE.search(part) and not _NONMEASUREMENT.search(part)
-                   and not _ESTIMATE.search(part) for part in _STATEMENT_BREAKS.split(text))
+                   and not _ESTIMATE.search(part)
+                   and (not deployment or deployment_memory_context(part))
+                   for part in _STATEMENT_BREAKS.split(text))
     return (not _NONMEASUREMENT.search(text)
             and any(_GPU_MEMORY.search(part) and _MEMORY_VALUE.search(part)
                     for part in _STATEMENT_BREAKS.split(text)))
@@ -213,7 +215,7 @@ def deployment_memory_context(text):
     for sentence in _STATEMENT_BREAKS.split(body):
         if (requests_device_memory(sentence)
                 and re.search(r'\b(?:render\w*|deployment|inference)\b|渲染|部署|推理', sentence, re.I)
-                and re.search(r'\b(?:required?|requires|store|buffer\w*|allocat\w*|peak)\b|需要|占用|峰值|缓存',
+                and re.search(r'\b(?:required?|requires|store|buffer\w*|allocat\w*|peak(?:ed|s)?)\b|需要|占用|峰值|缓存',
                               sentence, re.I)):
             return True
     return False

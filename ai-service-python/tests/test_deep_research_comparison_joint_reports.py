@@ -192,6 +192,23 @@ def test_deployment_memory_context_stays_in_the_active_source_and_target_scope()
     assert not has_device_memory_measurement(prose, direct=True)
 
 
+def test_standalone_memory_choice_uses_user_anchor_after_planner_rephrases_goal():
+    from services.deep_research.comparison_joint_reports import split_joint_deliverables
+
+    anchor = '显存受限时的有条件选择建议'
+    requirement = '说明显存受限情形下选择原始表示或压缩部署的适用条件'
+    roles = {'choice': {'kind': 'joint', 'requestExcerpt': anchor}}
+    goals = [{'obligationId': 'choice', 'question': requirement,
+              'completionCriteria': [{'criterionId': 'choice', 'requirement': requirement}]}]
+    assert split_joint_deliverables(roles, goals, anchor, classify_standalone=True) == {}
+    options = dict(classify_standalone=True, standalone_memory_scope=True)
+    assert split_joint_deliverables(roles, goals, anchor, **options) == {
+        'choice': [{'kind': 'conditional_advice', 'requirement': requirement}],
+    }
+    goals[0]['completionCriteria'][0]['requirement'] += '并比较两篇的 FPS'
+    assert split_joint_deliverables(roles, goals, anchor, **options) == {}
+
+
 def test_user_memory_advice_survives_narrow_speed_role_without_changing_scope():
     from services.deep_research.comparison_joint_reports import (
         preferred_deployment_memory_reads, preserve_requested_memory_advice, split_joint_deliverables,

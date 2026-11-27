@@ -22,7 +22,7 @@ class ComparisonDraftOverflow(ValueError):
         self.limit = limit
 
 
-def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False, structured_test_first=False, structured_table_example=False, separate_example_boundary=False, group_example_criteria=False, scoped_example_text=False, split_speed_and_advice=False, direct_device_memory=False, literal_goal_bindings=False, preserve_mixed_speed_criteria=False):
+def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=None, typed_roles=False,joint_reports=False,literal_axes=False,fixed_slots=False,unified_answers=False,local_goal_refs=False,measurement_display=False,separate_joint_deliverables=False,paired_protocol_notes=False,classify_standalone_joint=False, structured_test_first=False, structured_table_example=False, separate_example_boundary=False, group_example_criteria=False, scoped_example_text=False, split_speed_and_advice=False, direct_device_memory=False, literal_goal_bindings=False, preserve_mixed_speed_criteria=False, standalone_memory_scope=False):
     """Keep every frozen obligation, with source-local citation permissions."""
     if type(measurement_display) is not bool or measurement_display and not local_goal_refs:
         raise ValueError('Measurement display requires explicit local-goal wire')
@@ -130,11 +130,14 @@ def plan_cells(requirements, sources, evidence, *, shared_axes=False, question=N
                                                                 classify_standalone=classify_standalone_joint,
                                                                 separate_example_boundary=separate_example_boundary,
                                                                 group_example_criteria=group_example_criteria, split_speed_and_advice=split_speed_and_advice,
-                                                                preserve_mixed_speed_criteria=preserve_mixed_speed_criteria)
+                                                                preserve_mixed_speed_criteria=preserve_mixed_speed_criteria,
+                                                                standalone_memory_scope=standalone_memory_scope)
     if paired_protocol_notes and result.get('jointDeliverables'):
         result['pairedProtocolNotes'] = True
     if structured_test_first and result.get('jointDeliverables'):
         result['structuredTestFirst'] = True
+        if standalone_memory_scope:
+            result['compareDeploymentMemory'] = True
     if direct_device_memory and result.get('jointDeliverables'):
         result['directDeviceMemory'] = True
     if structured_table_example and result.get('jointDeliverables'):
