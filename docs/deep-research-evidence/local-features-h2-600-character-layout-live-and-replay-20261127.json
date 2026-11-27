@@ -329,5 +329,118 @@
     "published": false,
     "independentCredit": 0,
     "boundary": "The unchanged historical editor output reaches the normal deterministic precheck despite exceeding the publication limit. The final report retains the human limit. Publication tests assemble full, partial and held payloads from fixture verdicts separately. No scientific verdict or live publication was produced."
+  },
+  "boundedPublicationRealDevelopmentRun": {
+    "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+    "sourceTree": "2daeae1f120868044e67521cd7c3b25e1d24918b",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 13,
+    "providerTokens": 62129,
+    "callsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 8
+    },
+    "callsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "verify_advice": 1,
+      "verify": 2,
+      "repair_claims": 1,
+      "verify_answer_coverage": 1
+    },
+    "elapsedSeconds": 142.0,
+    "automaticRetry": false,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 269,
+      "pdf": 4
+    },
+    "publicationId": "dr_pub_9a93134c60ad45a5936695ae447ab5f1",
+    "visibleCharacters": 274,
+    "characterLimit": 600,
+    "publicClaimCount": 4,
+    "publishedClaimIds": [
+      "cmp_0_0",
+      "cmp_1_0",
+      "cmp_3_0",
+      "cmp_conclusion_1"
+    ],
+    "rejectedClaimReasons": {
+      "cmp_2_0": "numeric_mismatch",
+      "cmp_conclusion_0": "semantic_unresolved"
+    },
+    "initialWronglyJointMeasurementTarget": "joint_obl_results",
+    "benchmarkRecheckReviewedAndPublished": true,
+    "applicationScopedPublication": true,
+    "dispatchedToExistingUserWorkspace": false,
+    "independentCredit": 0,
+    "rawReceiptSha256": {
+      "run.json": "8cb49fb33e52e29edb2d4808f48ab6a1d543cce110bb9e0a5cb547d4fa109e6c",
+      "calls.json": "57fd6ae7c19cfef24cf9e2f637886443d4213f12a895900ae85c74b1a805a9c0",
+      "provider.jsonl": "28f5974d31d25f2e48e9fa69ae4706dc0a0fba92d67f41a768f307e3a34b7eae",
+      "result.json": "4d454dacc162a5de6b4647f73ca5d4cc432d3be0c38e7bfcacfff069d950c35d"
+    }
+  },
+  "boundedPublicationPostRunReplays": {
+    "measurementRoles": {
+      "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "providerCalls": 0,
+      "planRoleChange": {
+        "obligationId": "obl_results",
+        "change": "per_paper_quantitative_result_role"
+      },
+      "bothMeasurementTargets": [
+        {
+          "sourceVersionId": "arxiv:1712.07629v1",
+          "targetId": "cell_1_0",
+          "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050"
+        },
+        {
+          "sourceVersionId": "arxiv:1905.03561v1",
+          "targetId": "cell_1_1",
+          "evidenceId": "ev_0955077ee48dd8bbbc82676bf57419f5f55ab8cabe47f0f4dd6d81a960040664"
+        }
+      ],
+      "inputLimitBytes": 24000,
+      "stages": [
+        {
+          "stageId": "P1",
+          "inputBytes": 23987,
+          "targets": [
+            "cell_0_0_axis_0",
+            "cell_0_0_axis_1",
+            "cell_1_0"
+          ]
+        },
+        {
+          "stageId": "P2",
+          "inputBytes": 23990,
+          "targets": [
+            "cell_0_1_axis_0",
+            "cell_0_1_axis_1",
+            "cell_1_1"
+          ]
+        },
+        {
+          "stageId": "joint",
+          "inputBytes": 23977,
+          "targets": [
+            "joint_obl_comparability",
+            "joint_obl_rerun"
+          ]
+        }
+      ]
+    },
+    "bicubicTerminology": {
+      "claimId": "cmp_2_0",
+      "providerCalls": 0,
+      "priorReason": "numeric_mismatch",
+      "exactSameClaimNowEligibleForSemanticReview": true,
+      "actualThreeRepeatedOperationsStillRejected": true
+    },
+    "boundary": "The recorded plan was normalized and the two frozen PDFs were retrieved again locally. Both distinct paper targets have the exact measured evidence and the joint scope remains independent. Numeric precheck separately reused the unchanged original SuperPoint claim. The replays sent no provider request and did not certify semantic content or an independent holdout."
   }
 }
