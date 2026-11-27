@@ -273,9 +273,10 @@ Targets:
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
             review_evidence,reverse,
-            source_parameter_ids=parameter_policy is True or parameter_policy in (2, 3),
-            bound_benchmark_names=parameter_policy in (2, 3),
-            alignment_words=parameter_policy == 3) for row in rows]
+            source_parameter_ids=parameter_policy is True or parameter_policy in (2, 3, 4),
+            bound_benchmark_names=parameter_policy in (2, 3, 4),
+            alignment_words=parameter_policy in (3, 4),
+            explicit_condition_pairs=parameter_policy == 4) for row in rows]
         invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
         if invalid:
             return {'claimId':claim['claimId'],'status':'failed','reason':invalid['reason'],

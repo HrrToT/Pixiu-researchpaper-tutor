@@ -95,7 +95,7 @@ def test_checker_uses_visible_fields_without_changing_request_or_model_decision(
     assert result['status']==('passed' if supported else 'failed')
 
 
-@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 3, 3)])
+@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 4, 4)])
 def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_path, cells_version, version, policy):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -110,8 +110,30 @@ def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_
         assert facade._make_semantic_checker('old')._diagnostic_parameter_ids() is False
         for run_id in (row['runId'],'old'):
             with pytest.raises(ValueError,match='Immutable'):
-                repo.update_run(run_id,lambda r:{**r,key:4})
+                repo.update_run(run_id,lambda r:{**r,key:5})
     finally:facade.shutdown()
+
+
+@pytest.mark.parametrize('quote,phrase,bound,supported', [
+    ('Mean accuracy over both condi-\ntions.', '两种条件', True, True),
+    ('Mean accuracy over the two conditions.', '两种条件', True, True),
+    ('Mean accuracy over 2 conditions.', '两种评测条件', True, True),
+    ('Mean accuracy over both views.', '两种条件', True, False),
+    ('Mean accuracy over 12 conditions.', '两种条件', True, False),
+    ('Mean accuracy over 2.2 conditions.', '两种条件', True, False),
+    ('Mean accuracy over both conditions.', '三种条件', True, False),
+    ('Mean accuracy over both conditions.', '两种条件', False, False),
+])
+def test_explicit_condition_pair_needs_own_bound_source_field(quote, phrase, bound, supported):
+    verdict, claim, ev = inputs(f'原文报告{phrase}下的平均准确率。', quote)
+    verdict['status'] = 'passed'
+    if bound:
+        verdict['diagnosticFacts'] = [{'statement': verdict['reason'], 'evidenceId': 'own',
+                                      'path': ['quote'], 'excerpt': quote}]
+    updated = bind(verdict, claim, ev, source_parameter_ids=True, explicit_condition_pairs=True)
+    assert (updated['status'] == 'passed') is supported
+    assert updated['reviewDiagnosticAudit']['unboundNewNumberCount'] == (0 if supported else 1)
+    assert updated['reviewDiagnosticAudit']['newNumberCount'] == 1
 
 
 @pytest.mark.parametrize(('reason', 'old_count', 'new_count'), [
