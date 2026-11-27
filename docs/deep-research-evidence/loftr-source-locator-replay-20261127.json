@@ -1,0 +1,26 @@
+{
+  "case": "H1-LOFTR",
+  "classification": "development_replay",
+  "baseline": "loftr-h1-first-frozen-20261127.json",
+  "baselineOutcome": "partial",
+  "fixCommit": "f06a20afa",
+  "citationPresentationContractVersion": 5,
+  "input": "Saved first-attempt synthesis, audience rewrite, repair draft, and source evidence",
+  "checks": {
+    "legacyClaimsIdenticalToArchivedRun": true,
+    "legacyInitialRejection": "section 3 treated as a reported number",
+    "legacyRepairRejection": "page 2 treated as a reported number",
+    "replayedInitialClaimsEligibleForSemanticReview": ["c1", "c2"],
+    "replayedRepairEligibleForSemanticReview": true,
+    "boundEvidenceRefsUnchanged": true,
+    "unsupportedMeasurementStillRejected": true,
+    "visibleDraftCharacters": 218,
+    "targetedTestsPassed": 250
+  },
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "semanticReviewExecuted": false,
+  "independentAcceptanceCredit": false,
+  "remainingQualityGap": "Reader rewrite generalized the distinct image-local and cross-image attention operations. Check preservation of those roles separately before spending on another first-attempt acceptance case.",
+  "localReplayReportSha256": "5334d0569c54e732d29ac2fd2fb456bca3b3feb95d8e83b72d390464e4acf507"
+}
