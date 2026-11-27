@@ -1,0 +1,44 @@
+{
+  "sourceRun": "dr_d3_compact_science_revision_20261128",
+  "factBatchReused": true,
+  "checksPreserved": 26,
+  "allPerCheckQuestionsCriteriaProposalEvidencePreserved": true,
+  "legacyBatchBytes": [
+    17788,
+    31744,
+    31899,
+    31813,
+    31997
+  ],
+  "newBatchBytes": [
+    17788,
+    34980,
+    34918
+  ],
+  "oldDesignBytes": 127453,
+  "newDesignBytes": 69898,
+  "modelCalls": 0,
+  "scientificApproval": false,
+  "published": false,
+  "providerInputCountCalls": 2,
+  "realInputCounts": [
+    {
+      "requestDigest": "39039fe7df0bfd519724a560a4ba7f192967f0745eff751086e2789ed322c3e1",
+      "requestBytes": 34980,
+      "inputTokens": 9528,
+      "outputLimit": 4096,
+      "checks": 8
+    },
+    {
+      "requestDigest": "582c9928c7d6719babe4bea77211c7e005c2ad8879ebd2a6fe84a1a06f4482e9",
+      "requestBytes": 34918,
+      "inputTokens": 9631,
+      "outputLimit": 4096,
+      "checks": 9
+    }
+  ],
+  "maxNewReviewBytes": 35000,
+  "previousTokensBeforeRevisionReview": 65061,
+  "conservativeAdmissionThroughLastDesignBatch": 93436,
+  "wholeAnswerBudgetEstablished": false
+}
