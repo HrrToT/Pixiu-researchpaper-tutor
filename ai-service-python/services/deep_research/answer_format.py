@@ -36,8 +36,16 @@ def requested_points(question):
         found = [(m.start(), None) for m in _CANCEL.finditer(layer)]
         for pattern in (_CHINESE, _ENGLISH):
             for match in pattern.finditer(layer):
-                if re.search(r'(?:不要|不用|无需|不必|不能|不是|不再|\b(?:not|never)(?:\s+(?:use|write|list|give|return))?)\s*$', layer[:match.start()], re.I):
+                prefix = layer[:match.start()]
+                if re.search(r'(?:不要|不用|无需|不必|不能|不是|不再|\b(?:not|never)(?:\s+(?:use|write|list|give|return))?)\s*$', prefix, re.I):
                     continue
+                if pattern is _CHINESE:
+                    # “引用一条” requests a citation, and “各列出一条”
+                    # distributes a count across subjects. Neither is a total.
+                    if match[1] == '用' and prefix.endswith('引'):
+                        continue
+                    if re.search(r'各(?:自)?\s*$', prefix):
+                        continue
                 number = _number(match[2])
                 if not 1 <= number <= 20:
                     continue

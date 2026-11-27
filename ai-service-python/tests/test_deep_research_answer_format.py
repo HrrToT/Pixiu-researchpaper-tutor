@@ -15,6 +15,7 @@ from services.deep_research.request_context import ResearchQuestion
 @pytest.mark.parametrize('question,count,mode', [
     ('解释原因，只写三点，350字以内。', 3, 'exact'), ('分两点解释', 2, 'exact'),
     ('只列出4条', 4, 'exact'), ('用十二点来说明', 12, 'exact'),
+    ('为每篇论文各引用一条结果，最后用三点概括。', 3, 'exact'),
     ('最多五点', 5, 'max'), ('分三点以内', 3, 'max'),
     ('Use exactly 3 bullet points.', 3, 'exact'), ('No more than 2 points', 2, 'max'),
 ])
@@ -23,7 +24,9 @@ def test_explicit_display_count(question, count, mode):
 
 
 @pytest.mark.parametrize('question', ['论文有三点贡献，请解释第二点。', '不要只写三点。',
-    '实验只规划一个子问题。', 'Do not use exactly 3 points.', '先阅读三篇论文。'])
+    '实验只规划一个子问题。', 'Do not use exactly 3 points.', '先阅读三篇论文。',
+    '为两篇论文各引用一条带评测条件的定量结果，600字以内。',
+    '分别核对两篇论文，各自列出一条定量结果。'])
 def test_subject_counts_and_negated_instructions_do_not_create_display_counts(question):
     assert requested_points(question) is None
 

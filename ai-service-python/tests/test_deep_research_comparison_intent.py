@@ -242,6 +242,30 @@ def test_joint_comparison_retains_following_explicit_requests():
     assert [row['requirement'] for row in scoped[0]['obligations'][1]['completionCriteria']] == [internal]
 
 
+def test_per_paper_comparison_retains_two_explicit_questions_under_one_short_anchor():
+    from services.deep_research.evidence_requirements import normalize_generated_requirements
+
+    supervision = '怎样取得训练监督'
+    features = '怎样产生关键点和描述子'
+    excerpt = f'说明二者各自{supervision}、{features}'
+    question = f'{excerpt}，并各引用一条原文结果。'
+    method = obligation('method', 'per_paper', '训练与检测', supervision)
+    method['requestExcerpt'] = excerpt
+    value = [{'itemId': 'facts', 'question': excerpt, 'obligations': [method]}]
+    opts = dict(literal_questions=True, literal_imperatives=True, atomic_dimensions=True,
+                compound_questions=True, comparison_roles=True)
+
+    original, _ = normalize_generated_requirements(value, question, **opts)
+    fixed, _ = normalize_generated_requirements(value, question, **opts, per_paper_comparison_requests=True)
+    assert [r['requirement'] for r in original[0]['obligations'][0]['completionCriteria']] == [supervision]
+    assert [r['requirement'] for r in fixed[0]['obligations'][0]['completionCriteria']] == [
+        f'说明二者各自{supervision}', features]
+
+    value[0]['obligations'].append(obligation('features', 'per_paper', '特征产生', features))
+    fixed, _ = normalize_generated_requirements(value, question, **opts, per_paper_comparison_requests=True)
+    assert [r['requirement'] for r in fixed[0]['obligations'][0]['completionCriteria']] == [supervision]
+
+
 def packets():
     sources={f'P{i+1}':{'workId':work,'versionId':work+'-v1','title':work}
              for i,work in enumerate(('left','right','other'))}

@@ -98,7 +98,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -108,7 +108,8 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
     """
     human = question.instruction_layers if isinstance(question, ResearchQuestion) else (question,)
     result, changes = deepcopy(plan), []
-    comparison_obligations = [row for item in result for row in item['obligations']] if joint_comparison_requests else []
+    comparison_obligations = [row for item in result for row in item['obligations']] if (
+        joint_comparison_requests or per_paper_comparison_requests) else []
     if comparison_roles and comparison_obligations:
         from services.deep_research.comparison_intent import validate_role
         comparison_spans = {id(row): validate_role(row, question)['requestExcerpt']
@@ -131,28 +132,33 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
             for criterion in original:
                 criterion['requirement'] = neutral(criterion['requirement'], oid, 'requirement')
             excerpt = obligation.get('requestExcerpt', '')
-            joint_parts = None
+            anchored_parts = None
             if comparison_roles:
                 from services.deep_research.comparison_intent import validate_role
                 role = validate_role(obligation, question)
                 # The longer context excerpt can straddle adjacent dimensions.
                 # Its typed short span identifies this obligation's actual axis.
-                if (joint_comparison_requests and role['kind'] == 'joint'
+                preserve_explicit = (joint_comparison_requests and role['kind'] == 'joint'
+                                     or per_paper_comparison_requests and role['kind'] == 'per_paper')
+                if (preserve_explicit
                         and isinstance(excerpt,str) and role['requestExcerpt'] in excerpt
                         and any(excerpt in layer for layer in human)):
                     clauses = _question_parts(excerpt)
+                    if compound_questions and role['kind'] == 'per_paper':
+                        from services.deep_research.compound_questions import split_questions
+                        clauses = [part for clause in clauses for part in split_questions(clause)]
                     if 2 <= len(clauses) <= 4 and all(
                             _ASK.search(_outside_examples(clause)) or _COMMAND.match(clause) for clause in clauses):
                         other_spans = [span for identity, span in comparison_spans.items() if identity != id(obligation)]
                         owned = [clause for clause in clauses if not any(
                             span in clause or clause in span for span in other_spans)]
                         if len(owned) >= 2 and any(role['requestExcerpt'] in clause for clause in owned):
-                            joint_parts = owned
-                if joint_parts is None:
+                            anchored_parts = owned
+                if anchored_parts is None:
                     excerpt = role['requestExcerpt']
             if not isinstance(excerpt, str) or not excerpt or not any(excerpt in layer for layer in human):
                 continue
-            parts = joint_parts or (_request_parts(excerpt) if literal_imperatives else _question_parts(excerpt))
+            parts = anchored_parts or (_request_parts(excerpt) if literal_imperatives else _question_parts(excerpt))
             if compound_questions:
                 from services.deep_research.compound_questions import split_questions,has_question,explanatory
                 parts=[piece for part in parts for piece in split_questions(part)]
@@ -182,7 +188,7 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                 # The generated criterion can add an unprovided attribute list
                 # even when the user asked one simple question. Use the literal
                 # question, not a model paraphrase of the desired answer.
-                obligation['question'] = '；'.join(joint_parts) if joint_parts else excerpt
+                obligation['question'] = '；'.join(anchored_parts) if anchored_parts else excerpt
                 anchored.append(obligation['question'])
             changes.append({'obligationId': oid, 'change': 'anchored_literal_human_aspects' if literal_questions else 'separated_literal_human_aspects',
                             'criterionCount': len(resolved)})

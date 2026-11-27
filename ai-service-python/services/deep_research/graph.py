@@ -404,7 +404,8 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                         literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
                         **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (4, 5) else {}),
                         **({'comparison_roles':True} if comparison_intent_enabled(record) else {}),
-                        **({'joint_comparison_requests':True} if record.get('comparisonJointRequestCoverageVersion') == 1 else {}))
+                        **({'joint_comparison_requests':True} if record.get('comparisonJointRequestCoverageVersion') in (1, 2) else {}),
+                        **({'per_paper_comparison_requests':True} if record.get('comparisonJointRequestCoverageVersion') == 2 else {}))
                     from services.deep_research.audience_schedule import direct_reader_candidate
                     if record.get('requestGroundingContractVersion') == 5 and direct_reader_candidate(record, output_kind):
                         from services.deep_research.compound_questions import retain_unassigned_questions
