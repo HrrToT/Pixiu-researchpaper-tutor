@@ -363,6 +363,7 @@ class DeepResearchRepository:
                                      'sharedExperimentProtocolEvidenceVersion',
                                      'sharedExperimentProtocolPrecheckVersion',
                                      'comparisonMechanismReadContractVersion', 'comparisonFigureCountSynthesisVersion',
+                                     'comparisonSupervisionPremisesVersion',
                                      'comparisonEvaluationProtocolVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',

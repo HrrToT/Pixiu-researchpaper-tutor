@@ -75,6 +75,7 @@ class LocalTaskRetriever:
                             from services.deep_research.criterion_sources import acquisition_questions,include_indexed_criteria,acquisition_modules,acquisition_conditions
                             questions=acquisition_questions(precision_record,query,owned)
                             indexed=include_indexed_criteria(indexed,self.index_context[pdf_id],questions,owned,limit,
+                                supervision=precision_record.get('comparisonSupervisionPremisesVersion') == 1,
                                 **({'modules':acquisition_modules(precision_record,query,owned)}
                                    if precision_record['sourcePrecisionContractVersion'] in (7,8) else {}),
                                 **({'conditions':acquisition_conditions(precision_record,query,owned)}
@@ -150,6 +151,7 @@ class LocalTaskRetriever:
             from services.deep_research.criterion_sources import acquisition_questions,include_pdf_criteria,acquisition_modules,acquisition_conditions
             questions=acquisition_questions(self.repo.require_run(self.run_id),query,pdf_id)
             found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5),
+                supervision=record.get('comparisonSupervisionPremisesVersion') == 1,
                 **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision in (7,8) else {}),
                 **({'conditions':acquisition_conditions(self.repo.require_run(self.run_id),query,pdf_id)} if precision==8 else {}))
         found = self._scope_evidence(found, passages, query, pdf_id, limit)

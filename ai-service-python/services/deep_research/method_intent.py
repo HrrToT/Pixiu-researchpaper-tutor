@@ -5,7 +5,13 @@ Scores select passages only; they do not prove relevance, identity or support.
 import re
 
 
-def query_intents(query):
+def training_supervision_requested(text):
+    return bool(re.search(r'训练监督|监督(?:信号|标签|来源)|(?:训练|伪)标签.{0,16}(?:来源|生成|获得)'
+                          r'|\b(?:training supervision|supervision source|training labels|'
+                          r'pseudo.labels|supervisory signals?)\b', text, re.I))
+
+
+def query_intents(query, *, supervision=False):
     """All explicit acquisition aspects, not a factual or completion verdict.
 
     A compound request can ask for inputs AND temporal representation AND
@@ -18,6 +24,8 @@ def query_intents(query):
         ('operation',r'\b(?:mechanism|intervention|implementation|anneal\w*|smoothing)\b|退火|平滑|实现机制|方法操作'),
         ('data_membership',r'\b(?:dataset|subset|membership)\b|数据集|子集|场景.{0,8}(?:身份|成员|哪些)'))
     found=[intent for intent,pattern in patterns if re.search(pattern,query,re.I)]
+    if supervision and training_supervision_requested(query):
+        found.insert(0, 'training_supervision')
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
             found.append('measurement:'+metric.lower())
@@ -60,6 +68,21 @@ def operation_score(body, section, intent, *, operational=False):
     own = bool(re.search(r'\bwe\b|\bour\b|我们的|本文', text, re.I))
     if not method and not own and not (measurement or comparison_result or operational and intent=='data_membership'):
         return 0
+    if intent == 'training_supervision' and operational:
+        text = ' '.join(text.split())
+        target = r'\b(?:pseudo[ -](?:ground[ -]truth|labels?)|ground[ -]truth|labels?|correspondences?)\b'
+        action = r'\b(?:generat\w*|creat\w*|construct\w*|supervis\w*|project\w*|obtain\w*|derive\w*|extract\w*|label\w*)\b'
+        origin = r'\b(?:synthetic|simulat\w*|reconstruct\w*|homograph\w*|depth maps?|annotations?|3D points|SfM)\b'
+        links = sum(bool(re.search(left + r'[^.!?]{0,140}' + right, text, re.I))
+                    for left, right in ((action, target), (target, action), (origin, target), (target, origin)))
+        if (not links or not re.search(origin, text, re.I) or not re.search(target, text, re.I)
+                or not re.search(r'\b(?:train\w*|supervis\w*|label\w*)\b', text, re.I)):
+            return 0
+        source_steps = sum(bool(re.search(pattern, text, re.I)) for pattern in (
+            r'\b(?:pre.train\w*|train\w*)\b[^.!?]{0,110}\b(?:synthetic|simulated)\b',
+            r'\bhomograph\w*\b[^.!?]{0,100}\b(?:label\w*|pseudo.ground.truth)\b',
+            r'\b(?:depth maps?|SfM|COLMAP)\b[^.!?]{0,120}\b(?:project\w*|reconstruct\w*|correspondences?)\b'))
+        return 4 * links + 5 * source_steps + 2 * method + own
     if comparison_result:
         metric=intent.split(':',1)[1]
         if not re.search(r'(?<![A-Za-z_])'+re.escape(metric)+r'(?![A-Za-z_])',text,re.I):

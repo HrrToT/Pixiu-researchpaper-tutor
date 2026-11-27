@@ -20,7 +20,8 @@ def acquisition_questions(record,query,owned_id):
     return list(dict.fromkeys(questions))
 
 
-def criterion_targets(obligations, *, membership_intents=False, module_intents=False, condition_intents=False):
+def criterion_targets(obligations, *, membership_intents=False, module_intents=False, condition_intents=False,
+                      supervision=False):
     """Private ranking views; real obligation IDs and requirements stay intact."""
     targets=[]
     for oid,obligation in obligations.items():
@@ -37,7 +38,7 @@ def criterion_targets(obligations, *, membership_intents=False, module_intents=F
             question=criterion['requirement']
             view={**obligation,'question':question,'searchQuery':'','requestExcerpt':question,
                   'completionCriteria':[criterion]}
-            intents=query_intents(question)
+            intents=query_intents(question, supervision=supervision)
             if membership_intents:
                 from services.deep_research.dataset_membership import requested
                 if requested(question) and 'data_membership' not in intents:
@@ -47,21 +48,22 @@ def criterion_targets(obligations, *, membership_intents=False, module_intents=F
     return targets
 
 
-def include_indexed_criteria(indexed,candidates,questions,owned_id,limit, *, modules=(), conditions=()):
+def include_indexed_criteria(indexed,candidates,questions,owned_id,limit, *, modules=(), conditions=(), supervision=False):
     from services.deep_research.method_details import include_method_details
     selected=list(indexed[:limit]);protected=set()
     for name in modules[:2]:
         selected=include_method_details(selected,candidates,name+' input output',owned_id,limit,
             preserve_targets=protected)
     intents=['data_condition:'+name for name in conditions[:2]]
-    intents+=list(dict.fromkeys(i for q in questions for i in query_intents(q)))[:8]
+    intents+=list(dict.fromkeys(i for q in questions for i in query_intents(q, supervision=supervision)))[:8]
     for intent in intents:
         selected=include_method_details(selected,candidates,'',owned_id,limit,
             semantic_intent=True,operational_intent=True,intent_override=intent,preserve_targets=protected)
     return selected
 
 
-def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limit, *, modules=(), conditions=()):
+def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limit, *,
+                         modules=(), conditions=(), supervision=False):
     """PDF fallback keeps the same snapshot/hash, source IDs and whole snippets."""
     selected=list(indexed[:limit])
     owned=[r for r in candidates if r.get('pdfId')==owned_id and r.get('contentHash')==content_hash
@@ -71,7 +73,7 @@ def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limi
     protected={selected[0]['sourceId']}
     targets=[('shared_module:'+name) for name in modules[:2]]
     targets+=['data_condition:'+name for name in conditions[:2]]
-    targets+=list(dict.fromkeys(i for q in questions for i in query_intents(q)))[:8]
+    targets+=list(dict.fromkeys(i for q in questions for i in query_intents(q, supervision=supervision)))[:8]
     for intent in targets:
         def score(row):
             if intent.startswith('shared_module:'):

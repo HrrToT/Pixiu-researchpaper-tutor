@@ -57,7 +57,7 @@ def readiness_bundles(rows, obligations, coverage):
 
 
 def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_location=False,membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False,comparison_supervision=False):
     if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
     if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
     if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
@@ -97,12 +97,30 @@ def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_loc
                 for row in group:
                     if row['evidenceId'] not in seen:chosen.append(row);seen.add(row['evidenceId'])
     for oid,view,intent in criterion_targets(obligations,membership_intents=membership_intents,module_intents=module_intents,
-                                           condition_intents=condition_intents):
+                                           condition_intents=condition_intents,supervision=comparison_supervision):
         criterion_id = (view.get('completionCriteria') or [{}])[0].get('criterionId', 'whole_obligation')
         for source in view.get('requiredSources') or works:
-            if (oid, criterion_id, source) in ready_keys:
+            supervision = intent == 'training_supervision'
+            if (oid, criterion_id, source) in ready_keys and not supervision:
                 continue
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
+            if supervision:
+                def supervision_score(row):
+                    if oid not in row.get('obligationIds', ()) or row.get('accessLevel') != 'fulltext' or row.get('tableData'):
+                        return 0
+                    return operation_score(row['quote'], row.get('location', {}).get('section', ''),
+                                           'training_supervision', operational=True)
+                selected = max(own, key=supervision_score, default=None)
+                if selected is not None and supervision_score(selected):
+                    eid = selected['evidenceId']
+                    if not any(b['obligationId'] == oid and b['criterionId'] == criterion_id and eid in b['evidenceIds']
+                               for b in bundles):
+                        bundles.append({'obligationId': oid, 'criterionId': criterion_id, 'requirement': view['question'],
+                                        'source': source, 'evidenceIds': [eid]})
+                    if eid not in seen:
+                        chosen.append(selected)
+                        seen.add(eid)
+                continue
             from services.deep_research.operational_premises import requested_operation
             active_intent=('operation' if operational_context and intent is None and requested_operation(view) else intent)
             def score(row):

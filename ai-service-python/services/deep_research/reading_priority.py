@@ -9,7 +9,8 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                         benchmark_human=None, named_table_question=None, experiment_protocol=False,
                         comparison_evaluation_protocol=False, comparison_deployment_memory=False,
                         comparison_memory_criteria=False, named_table_grouped_rows=False, local_pdf_methods=False,
-                        threshold_benchmarks=None, named_benchmark_protocol=False):
+                        threshold_benchmarks=None, named_benchmark_protocol=False, supervision=False,
+                        figure_counts=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -88,6 +89,24 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
         from services.deep_research.comparison_joint_reports import preferred_deployment_memory_reads
         preferred = [*preferred_deployment_memory_reads(ordered, obligations, limit, extracted,
                                                        completion_criteria=comparison_memory_criteria), *preferred]
+    if supervision:
+        from services.deep_research.method_intent import operation_score, training_supervision_requested
+        requested = {oid: o for oid, o in obligations.items()
+                     if any(training_supervision_requested(c['requirement']) for c in
+                            (o.get('completionCriteria') or [{'requirement': o['question']}]))}
+        matched = {}
+        for source in ordered:
+            if not eligible_obligation_ids(source, requested) or source.get('tableData'):
+                continue
+            if (source['sourceId'], source.get('contentHash')) in extracted:
+                continue
+            score = operation_score(source.get('text', ''), source.get('location', {}).get('section', ''),
+                                    'training_supervision', operational=True)
+            identity = (source['workId'], source.get('versionId'))
+            if score > matched.get(identity, (0, None))[0]:
+                matched[identity] = (score, source)
+        supervision_reads = [source for _, source in matched.values()]
+        preferred = [*supervision_reads[:max(1, limit // 3)], *preferred]
     if threshold_benchmarks:
         from services.deep_research.measurement_table_navigation import preferred_threshold_reads
         tables = preferred_threshold_reads(ordered, obligations, threshold_benchmarks, limit, extracted)
@@ -96,7 +115,22 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
             from services.deep_research.pdf_benchmark_protocol import preferred_protocol_reads
             read_tables = preferred_threshold_reads(ordered, obligations, threshold_benchmarks, limit, ())
             protocols = preferred_protocol_reads(ordered, read_tables, obligations, extracted)[:limit // 4]
-        preferred = [*tables, *protocols, *preferred]
+        figures = []
+        if figure_counts:
+            from services.deep_research.comparison_joint_reports import named_feature_matching_counts, named_quantitative_benchmarks
+            from services.deep_research.selection import balanced_sample
+            benchmark_goals = {oid: names for oid, o in obligations.items()
+                               if (names := named_quantitative_benchmarks(threshold_benchmarks, o))}
+            candidates = []
+            for source in ordered:
+                if (source['sourceId'], source.get('contentHash')) in extracted:
+                    continue
+                names = set().union(*(benchmark_goals[oid] for oid in eligible_obligation_ids(source, obligations)
+                                      if oid in benchmark_goals and oid in source.get('obligationIds', ())))
+                if named_feature_matching_counts({**source, 'quote': source.get('text', '')}, names):
+                    candidates.append(source)
+            figures = balanced_sample(candidates, lambda source: (source['workId'], source.get('versionId')), limit // 4)
+        preferred = [*tables, *protocols, *figures, *preferred]
     ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:

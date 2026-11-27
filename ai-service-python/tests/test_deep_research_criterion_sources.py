@@ -52,6 +52,61 @@ def test_only_matching_source_permitted_frozen_criteria_supply_hints():
     assert record==before
 
 
+def test_requested_training_supervision_keeps_owned_literal_premise_through_acquisition_and_synthesis():
+    from services.deep_research.synthesis_evidence import order_premises
+
+    criterion = {'criterionId': 'origin', 'requirement': '说明训练监督信号从哪里来', 'responseType': 'explanation'}
+    goal = {**obligation(), 'completionCriteria': [criterion]}
+    overview = 'We train the system and run three evaluations.'
+    supervision = ('We pre-train the detector on synthetic data, then apply homographic '
+                   'adaptation to automatically label unlabeled images for training.')
+    source = {'pdfId': 'p', 'workId': 'p', 'versionId': 'v', 'contentHash': 'h', 'accessLevel': 'fulltext',
+              'location': {'section': 'Method'}, 'obligationIds': ['o']}
+    top = {**source, 'sourceId': 'top', 'text': overview}
+    spare = {**source, 'sourceId': 'spare', 'text': 'Results are reported in the table.'}
+    origin = {**source, 'sourceId': 'origin', 'text': supervision}
+    other = {**origin, 'sourceId': 'other', 'pdfId': 'foreign', 'workId': 'foreign'}
+    rows = [top, spare, origin, other]
+    args = ([top, spare], rows, [criterion['requirement']], 'p', 'h', 2)
+    assert include_pdf_criteria(*args) == [top, spare]
+    assert include_pdf_criteria(*args, supervision=True) == [top, origin]
+    assert select_read_sources(rows, {'o': goal}, 2, supervision=True)[0] == origin
+
+    def evidence(row):
+        return {'evidenceId': row['sourceId'], 'sourceWorkId': row['workId'], 'sourceVersionId': row['versionId'],
+                'accessLevel': 'fulltext', 'quote': row['text'], 'obligationIds': ['o'],
+                'location': row['location'], 'verification': {'literal': 'passed'}}
+
+    found, bundles = order_premises([evidence(row) for row in rows], [{'obligations': [goal]}],
+                                   comparison_supervision=True)
+    assert found[0]['evidenceId'] == 'origin'
+    assert len(bundles) == 1 and bundles[0]['evidenceIds'] == ['origin']
+    assert bundles[0]['criterionId'] == 'origin'
+    assert found[0]['quote'] == supervision
+
+
+def test_named_figure_survives_read_allocation_with_other_papers_supervision():
+    supervision = {**obligation('p'), 'completionCriteria': [
+        {'criterionId': 'origin', 'requirement': '说明训练监督信号的来源', 'responseType': 'explanation'}]}
+    measured = {'obligationId': 'm', 'question': '提供 BenchMark-X 定量结果',
+                'searchQuery': 'BenchMark-X quantitative result', 'requiredSources': ['q'],
+                'comparisonRole': {'kind': 'per_paper'}}
+    rows = [{'sourceId': f'p-{i}', 'workId': 'p', 'versionId': 'vp', 'accessLevel': 'fulltext',
+             'text': 'Overview of how we train the model.', 'obligationIds': ['o']} for i in range(5)]
+    origin = {**rows[0], 'sourceId': 'labels', 'text': 'We generate training labels from synthetic data.'}
+    quote = ('Method # Features # Matches\nMethod A 1.2K 920\nMethod B 3K 1.4K\n'
+             'Figure 2: Evaluation on BenchMark-X image pairs.')
+    figure = {'sourceId': 'figure', 'workId': 'q', 'versionId': 'vq', 'accessLevel': 'fulltext',
+              'text': quote, 'obligationIds': ['m']}
+    other = {**figure, 'sourceId': 'other-paper', 'workId': 'foreign'}
+    required = {'o': supervision, 'm': measured}
+    result = select_read_sources([*rows, origin, other, figure], required, 4, supervision=True,
+                                 threshold_benchmarks='比较 BenchMark-X 定量结果', figure_counts=True)
+    assert len(result) == 4
+    assert {'labels', 'figure'} <= {r['sourceId'] for r in result}
+    assert other not in result
+
+
 def test_each_owned_aspect_gets_an_existing_slot_and_never_replaces_previous_aspects():
     selected=[passage(i,'General overview of input time representation training.',section='Introduction') for i in range(5)]
     details=[passage(15,'The input to our method is monocular images with calibrated camera poses.'),

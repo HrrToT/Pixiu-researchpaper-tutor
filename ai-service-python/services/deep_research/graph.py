@@ -819,6 +819,8 @@ def make_read_node(
                 table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
+                **({'figure_counts': True} if record.get('comparisonFigureCountSynthesisVersion') == 1 else {}),
                 **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8, 9) else {}),
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'comparison_evaluation_protocol': True} if evaluation_protocols_enabled(record)
@@ -1337,6 +1339,7 @@ def make_synthesize_node(
             external_explanation_rows = candidates if external_explanation.enabled(record, output_kind) else ()
             literal_candidates = candidates
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'comparison_supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
                    and record['comparisonJointReportsContractVersion'] in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else {}),

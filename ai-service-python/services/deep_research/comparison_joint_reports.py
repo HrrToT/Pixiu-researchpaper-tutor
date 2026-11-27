@@ -79,26 +79,30 @@ def named_feature_matching_counts(row, benchmarks):
     return False
 
 
-def paper_figure_count_evidence(question, targets, requirements, rows):
-    """Find an owned figure count for each explicitly requested quantitative result."""
+def named_quantitative_benchmarks(question, obligation):
     from services.deep_research.measurement_table_navigation import requested_threshold_benchmarks
 
+    if (obligation.get('comparisonRole', {}).get('kind') != 'per_paper'
+            or not _NUMERIC.search(obligation.get('requestExcerpt') or obligation['question'])):
+        return set()
+    return requested_threshold_benchmarks(question, obligation.get('searchQuery') or obligation['question'])
+
+
+def paper_figure_count_evidence(question, targets, requirements, rows):
+    """Find an owned figure count for each explicitly requested quantitative result."""
     goals = {row['obligationId']: row for row in requirements}
     result = {}
     for target in targets:
         if target['role'] != 'paper_cell':
             continue
-        numeric_goals = {oid for oid in target['allowedObligationIds'] if
-                         _NUMERIC.search(goals[oid].get('requestExcerpt') or goals[oid]['question'])}
-        benchmarks = set().union(*(requested_threshold_benchmarks(question, goals[oid].get('searchQuery')
-                                                                  or goals[oid]['question'])
-                                   for oid in numeric_goals))
-        if not benchmarks:
+        numeric_goals = {oid: names for oid in target['allowedObligationIds']
+                         if (names := named_quantitative_benchmarks(question, goals[oid]))}
+        if not numeric_goals:
             continue
         allowed = set(target['evidenceIds'])
         matches = [row for row in rows if row['evidenceId'] in allowed and row['source'] == target['source']
-                   and numeric_goals.intersection(row.get('obligations', ()))
-                   and named_feature_matching_counts(row, benchmarks)]
+                   and named_feature_matching_counts(row, set().union(*(numeric_goals[oid]
+                       for oid in row.get('obligations', ()) if oid in numeric_goals)))]
         if matches:
             best = min(matches, key=lambda row: (len(row['quote']), row['evidenceId']))
             result[target['targetId']] = best['evidenceId']
