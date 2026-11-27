@@ -8,6 +8,8 @@ from typing import Any, Callable
 
 from services.deep_research.asset_availability import requires_existing_asset, enforce_asset_prerequisites
 
+_MIP_NERF_360 = re.compile(r'(?<![A-Za-z0-9_])Mip[-‐‑–]NeRF\s*360(?![A-Za-z0-9_]|[.,][0-9])', re.I)
+
 
 def normalize_quote(text: str) -> str:
     # Whitespace is the only permitted transformation of an exact quotation.
@@ -58,10 +60,11 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
     dimensions = set()
     if explicit_quantity_phrases:
         text = normalize_explicit_quantity_phrases(text, shared_range_scale=explicit_quantity_phrases >= 17,
-                                                   gaussian_replacement_counts=explicit_quantity_phrases in (18, 22),
+                                                   gaussian_replacement_counts=explicit_quantity_phrases == 18 or explicit_quantity_phrases >= 22,
                                                    image_pair_articles=explicit_quantity_phrases >= 19,
                                                    explicit_forward_pass=explicit_quantity_phrases >= 20,
-                                                   explicit_sh_band_schedule=explicit_quantity_phrases >= 22)
+                                                   explicit_sh_band_schedule=explicit_quantity_phrases >= 22,
+                                                   evaluation_counts=explicit_quantity_phrases >= 23)
         if explicit_quantity_phrases >= 20:
             text, dimensions = split_dimension_series(text)
         if explicit_quantity_phrases >= 21:
@@ -129,7 +132,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 22 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 23 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3
@@ -214,6 +217,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
             source_texts = [item['quote'] for item in support]
+            if spelling >= 23 and any(_MIP_NERF_360.search(text) for text in source_texts):
+                # PDF body text commonly joins this benchmark's name. Match
+                # the cited identity and exclude it on both sides of the numeric check.
+                claim_text = _MIP_NERF_360.sub('', claim_text)
+                source_texts = [_MIP_NERF_360.sub('', text) for text in source_texts]
             if numeric_context:
                 source_texts.extend(text for item in support for text in numeric_context.get(item['evidenceId'], ()))
             if conceptual_articles:

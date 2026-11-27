@@ -14,6 +14,27 @@ def check(quote, text, semantic=True):
     return verify_claims([claim], [evidence], verdict if semantic else None), evidence
 
 
+@pytest.mark.parametrize(('quote', 'text', 'wrong_text'), [
+    ('Evaluation on Mip-NeRF360 showed comparable metrics with 3D-GS.',
+     '在 Mip-NeRF 360 数据集上，作者报告相近的画质指标。',
+     '在 Mip-NeRF 360 数据集上，模型达到 360 FPS。'),
+    ('We restricted Ficus to 5k Gaussians in both configurations.',
+     'Ficus 的两种配置均限制高斯数量。', 'Ficus 的三种配置均限制高斯数量。'),
+    ('Quantitative evaluation of our method, computed over three datasets.',
+     '这张表汇总了三个数据集的结果。', '这张表汇总了四个数据集的结果。'),
+])
+def test_comparison_numeric_precheck_recognizes_cited_evaluation_labels_and_counts(quote, text, wrong_text):
+    _, evidence = check(quote, text)
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text,
+             'evidenceRefs': [evidence['evidenceId']]}
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=22)['rejected']
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=23)['candidates'] == [claim]
+    modified = {**claim, 'text': wrong_text}
+    assert precheck_claims([modified], [evidence],
+                           quantity_spelling_version=23)['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert not verify_claims([claim], [evidence], quantity_spelling_version=23)['accepted']
+
+
 @pytest.mark.parametrize(('quote', 'text'), [
     ('LPIPS is introduced after 150,000 steps.', '15万步后加入LPIPS损失'),
     ('LPIPS is introduced after 150000 steps.', '15 万步后加入LPIPS损失'),

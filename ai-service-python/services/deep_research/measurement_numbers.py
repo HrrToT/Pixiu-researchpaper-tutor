@@ -50,6 +50,9 @@ _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|pos
     r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
     r'[\s\-‐‑–]+(?:dimensions?|dimensional|components?|channels?|outputs?|views?|frames?|images?|'
     r'samples?|trials?|runs?|scenes?|layers?|stages?|phases?|steps?|seeds?|points?|iterations?|groups?)\b', re.I)
+_EVALUATION_COUNTS = re.compile(
+    r'(?<![A-Za-z0-9_‐‑–-])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
+    r'(?P<count>' + '|'.join(_WORDS) + r'|both)\s+(?=datasets?\b|configurations?\b)', re.I)
 _CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
     r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十]{1,3})\s*'
     r'(?P<count_unit>个|维|次|帧|层|组|张|条|篇|种|项)')
@@ -263,7 +266,7 @@ def number_display(identity):
 
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
                                         image_pair_articles=False, explicit_forward_pass=False,
-                                        explicit_sh_band_schedule=False):
+                                        explicit_sh_band_schedule=False, evaluation_counts=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
@@ -274,6 +277,14 @@ def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gauss
         text = _SINGLE_FORWARD_PASS.sub('1', text)
     if explicit_sh_band_schedule:
         text = _SH_BAND_AT_INTERVAL.sub(r'\g<verb>1', text)
+    if evaluation_counts:
+        def evaluation_count(match):
+            count = match['count'].lower()
+            value = 2 if count == 'both' else _WORDS[count]
+            negative = (match['sign'] or '').lower() in {'minus', 'negative', '-', '−'}
+            return f'{-value if negative else value} '
+
+        text = _EVALUATION_COUNTS.sub(evaluation_count, text)
     if image_pair_articles:
         # In a transformation description, “a source image and another
         # image” introduces the pair members. Exact or per-input counts and
