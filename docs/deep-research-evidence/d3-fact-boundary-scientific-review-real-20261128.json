@@ -1,0 +1,114 @@
+{
+  "candidate": "0ac2134c6031f50fddf648729f5ab10bce76ac45",
+  "predecessor": "dr_run_d93e6bed7d8f5a59a6ca53b9b4f36c92",
+  "isolatedRun": "dr_d3_fact_boundary_science_20261128",
+  "fixtureEditedOnlyFactId": "f4",
+  "priorRealTokens": 34464,
+  "newScienceTokens": 27438,
+  "totalTokens": 61902,
+  "countRequests": 0,
+  "newGenerations": 3,
+  "totalGenerations": 10,
+  "sameSource": "arxiv:2308.04079v1",
+  "sourceFactPassed": 6,
+  "checksPassed": 18,
+  "checksTotal": 23,
+  "reviewChecked": true,
+  "scienceComplete": false,
+  "finalAnswerAuditSent": false,
+  "published": false,
+  "failedChecks": [
+    {
+      "checkId": "section_2",
+      "status": "failed",
+      "reason": "初始化和复制状态有描述，但每事件“训练视图投影中心梯度范数的平均值”未定义对不可见高斯的分母、空观测和跨视图像素尺度，无法唯一确定操作候选及状态更新。"
+    },
+    {
+      "checkId": "section_3",
+      "status": "failed",
+      "reason": "开关及父子、Adam状态有定义，但密化候选所用梯度统计对不可见高斯和空观测未规定，无法唯一执行两项干预；论文图示仅支持克隆和二分的概念。"
+    },
+    {
+      "checkId": "requirement_0_0",
+      "status": "failed",
+      "reason": "假设和四组明确，也区分逐项禁用消融，但未给出论文对两项操作及其消融结果的充分原文描述，包括克隆位移和分裂子体生成与尺度，以及论文报告的质量影响。"
+    },
+    {
+      "checkId": "requirement_0_1",
+      "status": "failed",
+      "reason": "初始化、划分和步数明确，但训练损失中的D-SSIM具体计算、相机注册算法和判定投影有效的标准未指定；依赖获取的实现填补关键选择，不能确保方案唯一可执行。"
+    },
+    {
+      "checkId": "requirement_2_0",
+      "status": "failed",
+      "reason": "仅概述小高斯克隆、大高斯一分为二，未充分查明论文对克隆位移、分裂子体采样和缩放的描述，也未明确论文是否说明优化器状态；拟议Adam规则不能替代原文核查。"
+    }
+  ],
+  "coherenceIssues": [
+    {
+      "reason": "密化筛选的梯度均值未规定不可见高斯的处理、无观测时的规则和跨视图像素尺度；这些选择会改变候选集合，需在执行前固定。",
+      "planBindings": [
+        "/steps/8/operation/action"
+      ]
+    },
+    {
+      "reason": "训练D-SSIM实现、测试相机注册算法及投影有效性的验收阈值未确定，而实现只要求获取并固定，不能保证不同执行者采用相同的关键程序。",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/data/inputs/2/preparation"
+      ]
+    },
+    {
+      "reason": "论文操作依据仅给出示意性概述，未充分说明原文克隆和分裂细节及优化器状态描述的边界；拟议操作虽明确标注为选择，不能替代用户要求的原论文核查。",
+      "planBindings": [
+        "/sourceFacts/0/text",
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action",
+        "/analysis/limitations"
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "node": "review_experiment_shared",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 7809,
+        "input_tokens": 7345,
+        "output_tokens": 464,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 7342
+      }
+    },
+    {
+      "node": "review_experiment_shared",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 9732,
+        "input_tokens": 8534,
+        "output_tokens": 1198,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 8531
+      }
+    },
+    {
+      "node": "review_experiment_shared",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 9897,
+        "input_tokens": 8611,
+        "output_tokens": 1286,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 8608
+      }
+    }
+  ],
+  "rawFilesSha256": {
+    "run.json": "0e8486e2637def6b76c0e3df86c7d20a5b095525e894b1849fe1e8a0965a9249",
+    "intent.json": "10c2351ee20c2ce1ad4a47bce0c82ac83f442778a215e7cb27c271ea59c3ffbe",
+    "calls.json": "b768f1b4a84e109d0b51c5c6d09907779a4d8cc32223a0e6c208d2b976de4714",
+    "dispatch-summary.json": "13aabc6c77f63d45f32a12bc5d4b4f85f0fd2e401535fb55a6ab00adeaf060d0",
+    "stage-result.json": "46b0b9cc4d82dc7f4b1345b96f6a936270a45f4f4254ea68eb49eccc5ee37080"
+  }
+}
