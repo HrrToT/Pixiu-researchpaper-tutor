@@ -4,6 +4,10 @@ import re
 
 _TABLE_MENTION = re.compile(r'表格|\btable\b', re.I)
 _TABLE_PROHIBITION = re.compile(r'(?:不要|不用|无需|取消|去掉)[^。！？\n]{0,8}表格|\b(?:no|without)\s+(?:a\s+)?table\b', re.I)
+_TABLE_LAYOUT = re.compile(
+    r'(?:用|以|输出|给出|生成|制作|列成|整理成|汇总成)[^，。！？；\n]{0,6}表格(?!里|中|内|的)'
+    r'|表格(?:的)?(?:形式|呈现|展示|对照|对比|比较)'
+    r'|\b(?:as|in|using|use|make|include|give|provide|present)\s+(?:a\s+)?(?:comparison\s+)?table\b', re.I)
 _SPEED_COMPARISON_REASON = re.compile(
     r'(?:为什么|为何|说明原因)[^。！？\n]{0,70}(?:相除|比值|排名)'
     r'|\b(?:why|explain why)\b[^.!?\n]{0,100}\b(?:divide|ratio|quotient|rank)\w*\b', re.I)
@@ -12,13 +16,14 @@ _SPEED_COMPARISON_REASON = re.compile(
 def short_prose_enabled(record, question, limit):
     """Use prose for new, explicitly length-limited comparisons without a table requirement."""
     version = record.get('shortComparisonLayoutContractVersion')
-    if type(version) is not int or version not in (1, 2, 3, 4) or type(limit) is not int or not 0 < limit <= 300:
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5)
+            or type(limit) is not int or limit <= 0 or (version < 5 and limit > 300)):
         return False
     layers = getattr(question, 'point_instruction_layers', (str(question),))
     for layer in layers:
         if _TABLE_PROHIBITION.search(layer):
             return True
-        if _TABLE_MENTION.search(layer):
+        if (_TABLE_LAYOUT if version == 5 else _TABLE_MENTION).search(layer):
             return False
     return True
 
@@ -30,7 +35,7 @@ def short_speed_reason_requested(question):
 
 
 def requires_speed_explanation_prose(record, question, limit, targets, paper_subjects):
-    if record.get('shortComparisonLayoutContractVersion') != 4 or len(targets) != 1:
+    if record.get('shortComparisonLayoutContractVersion') not in (4, 5) or len(targets) != 1:
         return False
     target, = targets
     return (target['targetId'] in paper_subjects and not target.get('deliverable')
@@ -41,7 +46,7 @@ def short_prose_guidance(record, question, limit, target_count):
     if not short_prose_enabled(record, question, limit):
         return ''
     share = max(1, (limit - min(30, limit // 5)) // max(1, target_count))
-    if record.get('shortComparisonLayoutContractVersion') in (3, 4):
+    if record.get('shortComparisonLayoutContractVersion') in (3, 4, 5):
         if short_speed_reason_requested(question):
             return (f'Render short cited paragraphs within {limit} characters total, roughly {share} per point. '
                     'For a requested speed ratio or ranking explanation, give the conclusion and why: '

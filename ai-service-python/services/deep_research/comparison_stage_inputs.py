@@ -232,7 +232,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         prose_explanation = requires_speed_explanation_prose(record, question, character_limit,
             [target for target in all_targets if target['targetId'] in target_ids], stage_papers)
         setting_statements = (stage_papers and not pairs and not prose_explanation
-                              and record.get('shortComparisonLayoutContractVersion') in (2, 3, 4)
+                              and record.get('shortComparisonLayoutContractVersion') in (2, 3, 4, 5)
                               and short_prose_enabled(record, question, character_limit))
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),

@@ -1,10 +1,46 @@
 from copy import deepcopy
 import pytest
 
-from services.deep_research.comparison_layout import explicit_axes
+from services.deep_research.comparison_layout import explicit_axes, short_prose_enabled
 from services.deep_research.comparison_cells import plan_cells,compile_cells,partition_source_bound_claims
 
 QUESTION='用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。说明可比性和选择建议。'
+
+
+@pytest.mark.parametrize('question,limit,version,expected', [
+    ('比较两篇论文并引用表格里的原文，600字以内。', 600, 5, True),
+    ('Compare the methods and cite Table 3 in 600 characters.', 600, 5, True),
+    ('用表格比较两篇论文，600字以内。', 600, 5, False),
+    ('Present in a comparison table in 600 characters.', 600, 5, False),
+    ('比较两篇论文，600字以内。', 600, 4, False),
+    ('比较两篇论文。', 0, 5, False),
+])
+def test_bounded_comparison_prefers_prose_unless_user_requests_table(question, limit, version, expected):
+    assert short_prose_enabled({'shortComparisonLayoutContractVersion': version}, question, limit) is expected
+
+
+@pytest.mark.parametrize('merge', [False, True])
+def test_compaction_measures_the_same_comparison_layout_as_publication(merge):
+    import json
+    from services.deep_research.answer_constraints import compact_answer, visible_count
+
+    report = {'claims': [{'claimId': 'a', 'text': '初稿包含重复背景说明。' * 20, 'kind': 'reported',
+                          'conditions': {}, 'evidenceRefs': ['E1']}],
+              'comparisonCells': {'version': 3, 'jointGoals': [], 'sources': {'P1': {
+                  'title': 'A source title that counts in the paper column'}}, 'layout': [
+                      {'source': 'P1', 'axisId': 'a', 'axisTitle': '比较条件', 'claimIds': ['a']}]}}
+    row_id = {'sourceClaimIds': ['a']} if merge else {'claimId': 'a'}
+    text = '两项原文条件均需保留。'
+    result = {'content': json.dumps({'claims': [{**row_id, 'text': text, 'conditions': {}}]})}
+    question = '用表格比较，50字以内。'
+    args = (question, lambda _prompt: result, json.loads)
+    options = {'output_kind': 'paper_comparison', 'presentation_version': 4, 'draft_merge': merge}
+    assert compact_answer(report, *args, **options) is None
+    layout = {**report['comparisonCells'], 'shortProseVersion': 1}
+    rewritten = compact_answer({**report, 'comparisonCells': layout}, *args, **options)
+    assert rewritten['comparisonCells'] == layout
+    assert rewritten['claims'][0]['text'] == text
+    assert visible_count(rewritten, 50, 'paper_comparison', presentation_version=4) <= 50
 
 
 def fixture():

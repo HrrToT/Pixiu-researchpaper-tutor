@@ -100,6 +100,8 @@ def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation
     if constraint and (len(merged)!=constraint['count'] if constraint['mode']=='exact' else len(merged)>constraint['count']):return None
     # Rebuild presentation from final claims instead of retaining stale section IDs.
     candidate={'claims':merged}
+    if 'comparisonCells' in report:
+        candidate['comparisonCells'] = report['comparisonCells']
     count=visible_count(candidate,limit,output_kind,evidence,presentation_version)
     try:original_digest,candidate_digest=_digest(report),_digest(candidate)
     except (ValueError,TypeError):return None

@@ -251,4 +251,6 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
                              for c in core if c.get('claimId') in fixed_ids or c.get('claimId') in revised]
     if 'sections' not in compact and 'sections' in report:
         compact['sections'] = report['sections']
+    if 'comparisonCells' in report:
+        compact['comparisonCells'] = report['comparisonCells']
     return compact if count(compact) <= limit else None

@@ -4,7 +4,7 @@ import re
 
 _ALIGN = re.compile(r'同(?:一|样|等)?(?:的)?条件|相同条件|评测条件(?:保持)?一致|同一评测设置|'
                     r'\b(?:like-for-like|same (?:evaluation )?(?:conditions|settings|protocol))\b', re.I)
-_RECHECK = re.compile(r'复核|复测|重新评测|同条件对照|\b(?:recheck|re-test|re-evaluate|rerun)\b', re.I)
+_RECHECK = re.compile(r'复核|复测|重新评测|重跑|同条件对照|\b(?:recheck|re-test|re-evaluate|rerun)\b', re.I)
 _PROPOSAL = re.compile(r'建议|如何|怎样|怎么|\b(?:recommend\w*|suggest\w*|how|should)\b', re.I)
 _DESIGN = re.compile(r'随机分配|随机对照|训练新|重新训练|重新划分|新(?:的)?消融|干预|'
                       r'设计[^。！？；;]{0,24}实验|\b(?:train from scratch|retrain|randomi[sz]e|ablation|intervention|'
@@ -16,7 +16,9 @@ _COMPARISON_BOUNDARY = re.compile(r'排序|排名|可比范围|结论范围|能�
 
 DRAFT_GUIDANCE = (
     'For a requested like-for-like recheck, propose only how to rerun the existing methods under '
-    'the same data, input and evaluation protocol and compare the same metric. Use kind proposal '
+    'the same data, input and evaluation protocol and compare the same metric. Name the concrete '
+    'alignment choices that matter in this benchmark, such as sample pairs, input size or sample '
+    'budget, matching or validation rules, and the measured metric. Use kind proposal '
     'with separate evidenceRefs for the existing setups from both papers. Do not claim a recheck '
     'has been performed, predict a winner, introduce new training or alter the methods.'
 )
