@@ -157,5 +157,45 @@
     "presentInHistoricalSynthesis": false,
     "scientificApproval": false,
     "boundary": "The unchanged literal quote was restored to the owning paper quantitative target before model dispatch. The replay did not generate, review or publish a figure claim."
+  },
+  "trainingSupervisionFromPdfReplay": {
+    "sourceRun": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "providerCalls": 0,
+    "literalSupervisionPremises": [
+      {
+        "versionId": "arxiv:1905.03561v1",
+        "targetId": "cell_0_0_axis_0",
+        "page": 1,
+        "evidenceId": "ev_d22d940da66a2e3004836d0f7a0525ce198bb0341dca41b240a3c16213a69e93",
+        "exactQuoteSha256": "ebaa7ab4a914cf677ce782ed41f71f955424472a01303db09c3bf6c6beaa9d72"
+      },
+      {
+        "versionId": "arxiv:1712.07629v1",
+        "targetId": "cell_0_1_axis_0",
+        "page": 2,
+        "evidenceId": "ev_5512e098b124b92d78f0a0598d868bfbdd9764a2fc86250196f36f7952e39190",
+        "exactQuoteSha256": "3cba4fe43559d1fbf9bf119a56fcd15efb7191f638fb77e92cbefffe6741386e"
+      }
+    ],
+    "requiredOriginalTableRetained": true,
+    "namedFigureCountRetained": true,
+    "pdfReads": 2,
+    "inputLimitBytes": 24000,
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23991
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23915
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23983
+      }
+    ],
+    "scientificApproval": false,
+    "boundary": "Fresh local PDF retrieval, source allocation, literal extraction and stage preparation used the saved plan and exact material identities. A no-provider stop precedes generation. Supervision evidence for each paper, the threshold table and the named figure remain in the same bounded preparation."
   }
 }
