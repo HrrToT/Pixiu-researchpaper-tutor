@@ -3,8 +3,10 @@
   "frozenAt": "2026-11-27",
   "frozenTimestamp": "2026-11-27T09:53:41.832051+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_unexecuted",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
   "independentCredit": 0,
+  "firstExecutionReceipt": "deep-research-evidence/disk-h1-first-frozen-20261127.json",
+  "developmentReplay": "deep-research-evidence/disk-font-and-method-routing-replay-20261127.json",
   "materials": {
     "disk_v1": {
       "filename": "2006.13566v1.pdf",

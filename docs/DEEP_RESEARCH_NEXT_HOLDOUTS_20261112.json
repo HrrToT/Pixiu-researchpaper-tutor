@@ -56,11 +56,13 @@
         "readerOperationsDevelopmentReceipt": "deep-research-evidence/silk-reader-operations-real-20261127.json",
         "scientificContentCredit": 0
       },
-      "diskCandidate": {
-        "state": "preflight_ready_unexecuted",
+      "diskExecution": {
+        "state": "executed_content_not_accepted_retired_after_development_use",
         "case": "H1-DISK",
         "manifest": "DEEP_RESEARCH_DISK_EXPLANATION_HOLDOUT_20261127.json",
         "preflight": "deep-research-evidence/disk-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/disk-h1-first-frozen-20261127.json",
+        "developmentReplay": "deep-research-evidence/disk-font-and-method-routing-replay-20261127.json",
         "scientificContentCredit": 0
       }
     },
