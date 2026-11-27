@@ -42,6 +42,7 @@ def test_raw_passages_keep_all_sources_and_are_not_semantically_approved(tmp_pat
 
 
 @pytest.mark.parametrize(('version', 'source_version', 'repeat', 'whole'), [
+    (8, 'v1', 1, True),
     (7, 'v1', 1, True),
     (6, 'v1', 1, False),
     (7, 'v2', 1, False),
@@ -70,6 +71,22 @@ def test_short_local_method_quote_keeps_all_steps_in_one_exact_evidence_row(
     extract_node({'run_id': 'r'})
     assert repo.require_run('r')['state']['evidence'] == evidence
     invoke.assert_not_called()
+    if version == 8:
+        from services.deep_research.section_context import prioritize_pdf_methods
+
+        saved = repo.require_run('r')
+        saved['state'].update(readResults=[], sources=reads)
+        saved['state']['plan'][0]['obligations'][0]['requiredSources'] = ['paper']
+        _, bundles = prioritize_pdf_methods(evidence, [], [], saved)
+        assert any(b['evidenceIds'] == [row['evidenceId']] for b in bundles)
+        for field, changed in [('contentHash', 'other'), ('text', text + 'Changed.'), ('obligationIds', ['other'])]:
+            modified = deepcopy(saved)
+            modified['state']['sources'][0][field] = changed
+            assert prioritize_pdf_methods(evidence, [], [], modified) == ([], [])
+        modified = deepcopy(saved)
+        entry, = modified['state']['sourcePassageExtraction']['entries'].values()
+        entry['evidenceDigest'] = 'changed'
+        assert prioritize_pdf_methods(evidence, [], [], modified) == ([], [])
 
 
 @pytest.mark.parametrize('text',['中文原文。'*1700,'A complete clause. '*900,'x'*10001,'🦊'*1200],ids=['chinese','english','longword','emoji'])

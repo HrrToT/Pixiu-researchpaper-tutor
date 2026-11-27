@@ -22,10 +22,10 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     policy = record.get('localSectionContextContractVersion')
-    if (policy not in (5, 6, 7) or limit < 2
+    if (policy not in (5, 6, 7, 8) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
-    numbered = policy in (6, 7)
+    numbered = policy in (6, 7, 8)
     annotated = spans(pages, outline=True, normalize_headings=True, terminal_number_period=numbered)
     numbered_layout = numbered and any(
         part['role'] == 'method' and re.match(r'^\d{1,2}\s+[^/]+ /', part['section'])
@@ -113,7 +113,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     if (type(record.get('localSectionContextContractVersion')) is not int
-            or record['localSectionContextContractVersion'] not in (4, 5, 6, 7) or limit < 2
+            or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
     terms = set(re.findall(r'[a-z]+', query.casefold()))
@@ -158,7 +158,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
 
 def prioritize_pdf_heading(rows, ordered, bundles, record):
     """Keep a verified, contiguous subsection intact under the synthesis cap."""
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6, 7):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6, 7, 8):
         return ordered, bundles
     state = record['state']
     read = [source for source in state.get('readResults', [])
@@ -205,7 +205,8 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     from services.deep_research.selection import balanced_sample
     from services.deep_research.synthesis_evidence import readiness_bundles
 
-    if record.get('localSectionContextContractVersion') not in (5, 6, 7) or len(record.get('materials', ())) != 1:
+    policy = record.get('localSectionContextContractVersion')
+    if policy not in (5, 6, 7, 8) or len(record.get('materials', ())) != 1:
         return ordered, bundles
     material, = record['materials']
     owner, content_hash = material.get('materialId'), material.get('contentHash')
@@ -213,13 +214,44 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     if not all((owner, content_hash, version)):
         return ordered, bundles
     state = record['state']
-    reads = {s['sourceId']:s for s in state.get('readResults', [])
-             if s.get('location', {}).get('matchedPdfMethodPassage') is True
-             and s.get('ownerMaterialId') == s.get('workId') == owner and s.get('versionId') == version
-             and s.get('contentHash') == content_hash and s.get('accessLevel') == 'fulltext'}
+    def owned_method(source):
+        return (source.get('location', {}).get('matchedPdfMethodPassage') is True
+                and source.get('ownerMaterialId') == source.get('workId') == owner
+                and source.get('versionId') == version and source.get('contentHash') == content_hash
+                and source.get('accessLevel') == 'fulltext')
+
+    reads = {source['sourceId']: source for source in state.get('readResults', []) if owned_method(source)}
+    saved_refs = {}
+    if policy == 8:
+        from services.deep_research.contracts import digest
+        from services.deep_research.source_passages import projection
+        from services.deep_research.source_passage_reuse import rejected_state_enabled
+
+        # A supplemental wave can replace readResults while the same scoped
+        # source and its exact extraction entry remain available.
+        saved_sources = {source['sourceId']: source for source in state.get('sources', [])
+                         if owned_method(source) and source['sourceId'] not in reads}
+        journal = state.get('sourcePassageExtraction', {}).get('entries', {})
+        original = {row['evidenceId']: row for row in rows}
+        for key, entry in journal.items():
+            frozen = entry['input']
+            source = saved_sources.get(frozen.get('sourceId'))
+            row = original.get(entry['evidenceId'])
+            if not source or not row:
+                continue
+            text = source['text']
+            location = frozen['location']
+            first, last = location.get('sourcePassageStart'), location.get('sourcePassageEnd')
+            if (type(first) is not int or type(last) is not int or not 0 <= first < last <= len(text)
+                    or frozen['quote'] != text[first:last] or frozen['originalTextDigest'] != digest(text)
+                    or key != digest(frozen) or entry['evidenceDigest'] != digest(projection(
+                        row, literal_state=rejected_state_enabled(record)))):
+                continue
+            if all(frozen.get(field) == source.get(field) for field in ('workId', 'versionId', 'contentHash', 'accessLevel')):
+                saved_refs[entry['evidenceId']] = source
     candidates = []
     for row in rows:
-        read = reads.get(row.get('sourceId'))
+        read = reads.get(row.get('sourceId')) or saved_refs.get(row['evidenceId'])
         if (read and row.get('verification', {}).get('literal') == 'passed'
                 and row.get('sourceWorkId') == owner and row.get('sourceVersionId') == version
                 and row.get('contentHash') == content_hash and row.get('accessLevel') == 'fulltext'
@@ -227,15 +259,20 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
             candidates.append(row)
     if not candidates:
         return ordered, bundles
+
+    def source_for(row):
+        return reads.get(row['sourceId']) or saved_refs[row['evidenceId']]
+
     preferred, navigation, exact_navigation = [], [], []
-    whole_passages = record.get('localSectionContextContractVersion') in (6, 7)
+    whole_passages = policy in (6, 7, 8)
     for item in state.get('plan', []):
         for obligation in item['obligations']:
             oid = obligation['obligationId']
             if owner not in obligation.get('requiredSources', []):
                 continue
             terms = {w[:4] for w in _tokens(obligation.get('searchQuery', ''))}
-            owned = [e for e in candidates if oid in e.get('obligationIds', []) and oid in reads[e['sourceId']].get('obligationIds', [])]
+            owned = [e for e in candidates if oid in e.get('obligationIds', [])
+                     and oid in source_for(e).get('obligationIds', [])]
             def relevance(row):
                 return (len(terms & {w[:4] for w in _tokens(row['quote'])}), -len(row['quote']))
             ranked = sorted(owned, key=relevance, reverse=True)
@@ -245,7 +282,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
                     navigation.append({'obligationId': oid, 'criterionId': 'pdf_method_passage',
                         'requirement': obligation['question'], 'source': owner, 'evidenceIds': [row['evidenceId']]})
                 if whole_passages:
-                    source_text = reads[row['sourceId']]['text']
+                    source_text = source_for(row)['text']
                     units = sorted((part for part in owned if part['sourceId'] == row['sourceId']),
                                    key=lambda part: part['location'].get('sourcePassageStart', -1))
                     if len(source_text) <= 1500 and ''.join(part['quote'] for part in units) == source_text:
@@ -269,7 +306,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6, 7):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6, 7, 8):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question
@@ -330,7 +367,7 @@ def include_explanation_method(rows, candidates, record, query, owner, limit):
 
     selected = list(rows[:limit])
     version = record.get('localSectionContextContractVersion')
-    if (type(version) is not int or version not in (3, 4, 5, 6, 7) or limit < 2 or not selected
+    if (type(version) is not int or version not in (3, 4, 5, 6, 7, 8) or limit < 2 or not selected
             or record.get('sourcePolicy', {}).get('mode') != 'task_only'
             or len(record.get('materials', [])) != 1 or not explanation_only(record, require_section=False)):
         return selected

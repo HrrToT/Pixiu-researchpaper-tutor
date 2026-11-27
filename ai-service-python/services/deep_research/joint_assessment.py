@@ -348,7 +348,7 @@ def assess(state,record,update,invoke,coverage_gaps):
                 candidates=sorted(candidates,key=lambda e:(*navigation_scores[e['evidenceId']][:-1],
                     e['evidenceId'] not in used.get(gid,set()),navigation_scores[e['evidenceId']][-1]),reverse=True)
             else:candidates=sorted(candidates,key=lambda e:e['evidenceId'] in used.get(gid,set()))
-            if record.get('localSectionContextContractVersion') in (5, 6, 7):
+            if record.get('localSectionContextContractVersion') in (5, 6, 7, 8):
                 member_ids = {m['obligationId'] for m in group['members']}
                 local_sources = {s['sourceId'] for s in domain.get('readResults', [])
                                  if s.get('location', {}).get('matchedPdfMethodPassage') is True

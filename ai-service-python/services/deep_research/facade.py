@@ -513,7 +513,7 @@ class ResearchFacade:
             "sourcePassageReuseContractVersion": 3,
             "mechanismEvidenceContractVersion": 4,
             "sectionPremisesContractVersion": 2,
-            "localSectionContextContractVersion": 7,
+            "localSectionContextContractVersion": 8,
             "continuationContextContractVersion": 1,
             "continuationContext": continuation_context,
             "planResumeContractVersion": 1,

@@ -51,7 +51,7 @@ def spans(text, limit=MAX_PASSAGE_BYTES):
 
 
 def _keep_local_method_passage(record, source, location, body):
-    if (record.get('localSectionContextContractVersion') != 7 or len(record.get('materials', ())) != 1
+    if (record.get('localSectionContextContractVersion') not in (7, 8) or len(record.get('materials', ())) != 1
             or location.get('matchedPdfMethodPassage') is not True or location.get('sectionRole') != 'method'
             or source.get('accessLevel') != 'fulltext' or source.get('tableData')
             or len(source.get('pages', ())) != 1 or not body.strip() or len(body) > 1500
