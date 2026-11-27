@@ -1,0 +1,188 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "exposed_development_run_and_offline_regressions",
+  "independentCredit": 0,
+  "live": {
+    "runId": "dr_run_954132c7a9d75dda911c45d3f7a8b178",
+    "sourceTree": "30b70b196e414957427dd89f4d5ccc0dda97ba79",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 15,
+    "countsByModel": {
+      "gpt-6-luna": 6,
+      "gpt-6.1-terra": 9
+    },
+    "countsByNode": {
+      "resolve_brief": 1,
+      "plan": 2,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "verify_advice": 1,
+      "verify": 4,
+      "verify_answer_coverage": 1
+    },
+    "providerTokens": 62570,
+    "elapsedSeconds": 154.0,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 271,
+      "pdf": 4
+    },
+    "automaticRetry": false,
+    "initialPlanFormatCorrection": "Plan response is not a JSON array",
+    "storedPartialPublicationId": "dr_pub_d0d6e9ee13ba478f8ec18c2760aa50a9",
+    "visibleCharacters": 398,
+    "characterLimit": 600,
+    "verificationSummary": {
+      "accepted": 5,
+      "rejected": 1
+    },
+    "answerCoverage": {
+      "supervision": "covered",
+      "feature-generation": "partial",
+      "reported-results": "partial",
+      "recheck-protocol": "partial",
+      "answer_scope": "partial"
+    },
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairPromptBytes",
+      "limit": 9201,
+      "used": 13644
+    },
+    "rawReceiptSha256": {
+      "run.json": "2e6a0c0e13aa415ff01000ecb879090ab416875e1be6593013c4ed760282bc45",
+      "calls.json": "7058c3f612fa47afc17f61cfaeaa86f6ef243170fb1193d6ffe6a8bac9775bcb",
+      "provider.jsonl": "544a7141de9cbd6798b000a72bb078ee9a96e9a91a96a94999ed26545cd43945",
+      "result.json": "0dd0679241863134a80aacf65c45ddaa331451f9584c4ece8db55cccf68821f7"
+    }
+  },
+  "failureMechanisms": {
+    "joinedComparisonLostPerPaperResult": {
+      "requestExcerpt": "各引用一条带评测条件的原文定量结果。说明能否把两篇论文的 HPatches 数字直接用于排序，D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+      "retainedCriteria": [
+        "能否把两篇论文的 HPatches 数字直接用于排序"
+      ],
+      "liveStages": [
+        {
+          "stageId": "P1",
+          "targets": [
+            "cell_0_0",
+            "cell_1_0"
+          ]
+        },
+        {
+          "stageId": "P2",
+          "targets": [
+            "cell_0_1",
+            "cell_1_1"
+          ]
+        },
+        {
+          "stageId": "joint",
+          "targets": [
+            "joint_reported-results",
+            "joint_recheck-protocol"
+          ]
+        }
+      ]
+    },
+    "reviewKernelFalseCount": {
+      "claimId": "cmp_2_0",
+      "reasonSegment": "在检测位置通过双三次插值采样，随后进行L2归一化。",
+      "diagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "42ae98b001e8f9c2898c2def9f476c0392ffaa142d7ae0c7fb47d3491494acd8",
+        "bindingCount": 2,
+        "newNumberCount": 1,
+        "unboundNewNumberCount": 1,
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ],
+        "sourceParameterIdentityContractVersion": 4,
+        "reviewTargetStructureContractVersion": 2,
+        "targetStructureReferences": []
+      }
+    }
+  },
+  "routingReplay": {
+    "runId": "dr_run_954132c7a9d75dda911c45d3f7a8b178",
+    "providerCalls": 0,
+    "planRoleChange": {
+      "obligationId": "per_paper_result",
+      "change": "retained_per_paper_quantitative_result",
+      "jointObligationId": "reported-results"
+    },
+    "retainedJointCriteria": [
+      "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "D2-Net 论文内部与 SuperPoint 的比较能支持什么"
+    ],
+    "bothMeasurementTargets": [
+      {
+        "sourceVersionId": "arxiv:1712.07629v1",
+        "targetId": "cell_4_0",
+        "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050"
+      },
+      {
+        "sourceVersionId": "arxiv:1905.03561v1",
+        "targetId": "cell_4_1",
+        "evidenceId": "ev_0955077ee48dd8bbbc82676bf57419f5f55ab8cabe47f0f4dd6d81a960040664"
+      }
+    ],
+    "inputLimitBytes": 24000,
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23996,
+        "targets": [
+          "cell_0_0",
+          "cell_1_0",
+          "cell_4_0"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23992,
+        "targets": [
+          "cell_0_1",
+          "cell_1_1",
+          "cell_4_1"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23983,
+        "targets": [
+          "joint_reported-results",
+          "joint_recheck-protocol"
+        ]
+      }
+    ],
+    "sourcePdfsReadLocally": 2,
+    "generationSent": false
+  },
+  "reviewReplay": {
+    "providerCalls": 0,
+    "claimId": "cmp_2_0",
+    "version5DiagnosticAudit": {
+      "version": 1,
+      "reportedStatus": "passed",
+      "reasonSha256": "42ae98b001e8f9c2898c2def9f476c0392ffaa142d7ae0c7fb47d3491494acd8",
+      "bindingCount": 2,
+      "newNumberCount": 0,
+      "unboundNewNumberCount": 0,
+      "errors": [],
+      "sourceParameterIdentityContractVersion": 5,
+      "reviewTargetStructureContractVersion": 2,
+      "targetStructureReferences": []
+    },
+    "sameVisibleQuotes": [
+      "ev_f3e8b73e547e21a2432f3088da4fa946e179e2b6fc6e723a728e9991a98c5172",
+      "ev_c01f15a8f4ae898ce10509d5855d773261df58b8c2d8069db2c9d43c7b3f1a39"
+    ],
+    "unsupportedRepeatedCountHeld": true,
+    "independentCoverageOrPublicationPerformed": false
+  }
+}
