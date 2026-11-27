@@ -708,6 +708,11 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                              'Explain the quotient from both papers’ citations and state what a valid comparison '
                              'would need aligned. If the citations cannot support an explanation, use point:null.\n')
             paper_boundary_policy = ''
+        if data['jointTargets'] and record.get('comparisonBenchmarkRecheckReviewVersion') == 1:
+            from services.deep_research.benchmark_recheck import DRAFT_GUIDANCE, requests_recheck
+
+            if requests_recheck(question):
+                body_guidance += '\n' + DRAFT_GUIDANCE + '\n'
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + short_policy + body_guidance + (paper_boundary_policy if scoped_joint else '')
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

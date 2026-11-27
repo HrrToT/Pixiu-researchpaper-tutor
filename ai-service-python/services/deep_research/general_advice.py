@@ -58,7 +58,7 @@ def is_fixed_deployment_preflight(claim):
 
 
 def prompt(claims_text, question, evidence_marker, *, device_memory=False, deployment_preflight=False,
-           preflight_ids=()):
+           preflight_ids=(), recheck_ids=()):
     preflight_rule = '''For the designated deployment preflight, review a FUTURE device check, not a reported result.
 1. Check that the advice fits the user's deployment decision and compares the two candidate methods fairly.
 2. Check the procedure uses the same device, scene and rendering settings, measures peak GPU memory before choosing,
@@ -106,6 +106,12 @@ Allowed paths: ["quote"], ["sourceContext","before"], ["sourceContext","after"].
 Premise presence alone does not establish support. Fail any unsupported clause or
 misclassification; do not rewrite the target or silently convert an experiment.
 '''
+    if recheck_ids:
+        from services.deep_research.benchmark_recheck import REVIEW_RULES
+
+        base = base.replace('other_nonexperimental|scientific_design',
+                            'other_nonexperimental|benchmark_recheck|scientific_design')
+        base += '\nBenchmark recheck target IDs: ' + json.dumps(list(recheck_ids), separators=(',', ':')) + '\n' + REVIEW_RULES
     if not device_memory:
         return base
     if deployment_preflight:
@@ -236,13 +242,15 @@ def device_memory_test_first(text):
     return True
 
 
-def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_preflight=False, direct_device_memory=False):
+def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_preflight=False,
+             direct_device_memory=False, benchmark_recheck=False):
     audit=verdict.get('adviceAudit')
     fields = {'purpose', 'targetPath', 'appropriate', 'premises'}
     if device_memory and isinstance(audit, dict) and 'deviceMemory' in audit:
         fields.add('deviceMemory')
+    purposes = {'benchmark_recheck'} if benchmark_recheck else {'reading_guidance','research_navigation','other_nonexperimental'}
     if (not isinstance(audit,dict) or set(audit)!=fields
-            or audit.get('purpose') not in {'reading_guidance','research_navigation','other_nonexperimental'}
+            or audit.get('purpose') not in purposes
             or audit.get('targetPath')!=['text'] or audit.get('appropriate') is not True):
         return ['advice_purpose_not_established']
     own={e['evidenceId']:e for e in evidence if e['evidenceId'] in claim.get('evidenceRefs',[])}
@@ -252,6 +260,13 @@ def validate(claim,verdict,evidence, *, device_memory=False, fixed_deployment_pr
     from services.deep_research.audit_source_fields import resolve
     if any(not isinstance(row,dict) or resolve(row,own) is None for row in premises):
         return ['advice_premises_not_bound']
+    if benchmark_recheck:
+        from services.deep_research.benchmark_recheck import bounded_text, covers_two_sources
+
+        if not bounded_text(claim.get('text', '')):
+            return ['advice_purpose_not_established']
+        if not covers_two_sources(premises, own):
+            return ['benchmark_recheck_requires_both_papers']
     if fixed_deployment_preflight and (audit['purpose'] != 'other_nonexperimental'
                                       or audit.get('deviceMemory') != {'mode': 'test_first'}):
         return ['advice_purpose_not_established']

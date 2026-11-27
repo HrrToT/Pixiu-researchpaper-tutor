@@ -765,6 +765,7 @@ class BudgetedSemanticChecker:
         consistent_scope_premises=False,
         general_advice_review=False,
         device_memory_advice=False,
+        benchmark_recheck_targets=None,
         scope_source_paths=False,
         mechanism_grounding=False,
         singleton_factual_response=False,
@@ -796,6 +797,7 @@ class BudgetedSemanticChecker:
         self._research_question = research_question
         self._general_advice_review = general_advice_review
         self._device_memory_advice = device_memory_advice
+        self._benchmark_recheck_targets = benchmark_recheck_targets
         self._isolate_factual_claims = isolate_factual_claims
         self._comparison_reasoning = comparison_reasoning
         self._comparison_audit_version = comparison_audit_version
@@ -1482,6 +1484,7 @@ The dataAvailability object is an internal audit, not new experimental results.
         device_memory = False
         direct_device_memory = False
         preflight_ids = ()
+        recheck_ids = ()
         if advice_mode:
             from services.deep_research.general_advice import is_fixed_deployment_preflight, prompt as advice_prompt
             policy = self._device_memory_advice
@@ -1490,8 +1493,11 @@ The dataAvailability object is an internal audit, not new experimental results.
             direct_device_memory = type(policy) is int and policy == 5
             if type(policy) is int and policy in (4, 5):
                 preflight_ids = tuple(claim['claimId'] for claim in claims if is_fixed_deployment_preflight(claim))
+            if callable(self._benchmark_recheck_targets):
+                recheck_ids = self._benchmark_recheck_targets(question, claims)
             prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory,
-                                 deployment_preflight=type(policy) is int and policy in (3, 4, 5), preflight_ids=preflight_ids)
+                                 deployment_preflight=type(policy) is int and policy in (3, 4, 5),
+                                 preflight_ids=preflight_ids, recheck_ids=recheck_ids)
             if direct_device_memory:
                 prompt += ('\nBind a direct measured device-memory value. A buffer requirement, capacity, estimate '
                            'or file size is insufficient. Keep training and rendering measurements separate.\n')
@@ -1752,7 +1758,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                     from services.deep_research.general_advice import validate as validate_advice
                     errors=validate_advice(target,verdict,visible_evidence,device_memory=device_memory,
                                            fixed_deployment_preflight=target['claimId'] in preflight_ids,
-                                           direct_device_memory=direct_device_memory)
+                                           direct_device_memory=direct_device_memory,
+                                           benchmark_recheck=target['claimId'] in recheck_ids)
                     if errors:
                         verdict['status']='failed'
                         verdict['reason'] = ('显存选择缺少可核对的实际显存测量。文件大小不能用来推断显存收益。'

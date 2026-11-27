@@ -508,6 +508,8 @@ class ResearchFacade:
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 4,
             "recommendationReviewContractVersion": 5 if self._comparison_cells_version == 1 else 2,
+            **({'comparisonBenchmarkRecheckReviewVersion': 1} if self._comparison_cells_version == 1
+               and self._comparison_review_batch_version == 1 and output_kind == 'paper_comparison' else {}),
             "recommendationRepairContractVersion": 1,
             "requestSemanticsContractVersion": 2,
             "answerPreservationContractVersion": 1,
@@ -1424,6 +1426,7 @@ class ResearchFacade:
         )
         from services.deep_research.factual_decision import enabled as factual_decision_enabled
         from services.deep_research.general_advice import enabled as general_advice_enabled
+        from services.deep_research.benchmark_recheck import target_ids as benchmark_recheck_targets
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
         from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile
@@ -1440,6 +1443,8 @@ class ResearchFacade:
                 self._repo.require_run(run_id), claims, context),
             general_advice_review=lambda: general_advice_enabled(self._repo.require_run(run_id)),
             device_memory_advice=lambda: self._repo.require_run(run_id).get('recommendationReviewContractVersion'),
+            benchmark_recheck_targets=lambda question, claims: benchmark_recheck_targets(
+                self._repo.require_run(run_id), question, claims),
             metric_domains=lambda: self._repo.require_run(run_id).get('state', {}).get('metricDomains'),
             research_question=lambda: effective_question(self._repo.require_run(run_id)),
             isolate_factual_claims=(lambda: self._repo.require_run(run_id).get('claimIsolationContractVersion') == 1)

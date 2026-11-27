@@ -90,6 +90,43 @@ def test_old_policy_keeps_original_experiment_review_path():
     assert 'prospective experimental design' in invoke.call_args.kwargs['prompt']
 
 
+@pytest.mark.parametrize('variant', ['valid', 'single-paper', 'unrequested', 'formal-design', 'new-training', 'predicted-winner'])
+def test_benchmark_recheck_is_scoped_and_binds_both_papers(variant):
+    from services.deep_research.benchmark_recheck import target_ids
+
+    goal = '给出同条件复核建议'
+    question = '比较这两篇论文，并' + goal + '。'
+    record = {'comparisonBenchmarkRecheckReviewVersion': 1, 'state': {'outputKind': 'paper_comparison',
+              'plan': [{'obligations': [{'obligationId': 'recheck', 'purpose': 'answer_requirement',
+                        'requestExcerpt': goal, 'comparisonRole': {'kind': 'joint'}}]}]}}
+    papers = [make_evidence({'workId': p, 'versionId': 'v1', 'contentHash': p, 'accessLevel': 'fulltext'},
+                           quote, quote, location={}, obligation_ids=['recheck'])
+              for p, quote in [('left', 'Features were matched on the same image pair.'),
+                               ('right', 'The benchmark uses pairwise matching.')]]
+    c = {'claimId': 'c', 'kind': 'proposal', 'text': '在同一组图像对上复核，统一匹配规则和指标。',
+         'conditions': {}, 'obligationIds': ['recheck'], 'evidenceRefs': [e['evidenceId'] for e in papers]}
+    row = verdict('benchmark_recheck')
+    if variant == 'unrequested':
+        question = '请比较两篇论文，并分别解释评测设置。'
+    elif variant == 'formal-design':
+        question = '请设计一套实验，并给出同条件复核建议。'
+    elif variant == 'new-training':
+        c['text'] += '两种方法都重新训练。'
+    elif variant == 'predicted-winner':
+        c['text'] += '第一种方法将会超过第二种。'
+    if variant != 'single-paper':
+        row['adviceAudit']['premises'].append({'evidenceId': 'E2', 'path': ['quote']})
+    invoke = Mock(return_value={'content': json.dumps([row])})
+    checker = BudgetedSemanticChecker(invoke, 'r', research_question=question, general_advice_review=True,
+        benchmark_recheck_targets=lambda q, claims: target_ids(record, q, claims))
+    decision = checker([c], papers)[0]
+    assert (decision['status'] == 'passed') is (variant == 'valid')
+    prompt = invoke.call_args.kwargs['prompt']
+    assert ('Benchmark recheck target IDs: ["c"]' in prompt) is (variant in {'valid', 'single-paper'})
+    if variant == 'single-paper':
+        assert 'benchmark_recheck_requires_both_papers' in decision['reason']
+
+
 @pytest.mark.parametrize('revision', [False, True])
 @pytest.mark.parametrize('mode, text, quote, approved', [
     (None, '显存受限时优先考虑压缩表示，其文件更小，实际显存需实测。', 'The model file was 45 MB.', False),
