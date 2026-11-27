@@ -40,7 +40,8 @@ override a failed decision or any other audit; the server checks them independen
 
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
          revision_row_counts=False, bound_benchmark_names=False, alignment_words=False):
-    if type(target_structure) is not bool:raise ValueError('Invalid target structure diagnostic policy')
+    if type(target_structure) is not bool and not (type(target_structure) is int and target_structure == 2):
+        raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
     if type(revision_row_counts) is not bool:raise ValueError('Invalid revision row count policy')
     from services.deep_research.audit_source_fields import resolve
@@ -68,7 +69,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         target_text=verification_claim_view(claim).get('text','')
 
         def scan_view(text):
-            scanned, references = view(text, target_text)
+            scanned, references = view(text, target_text,
+                                       named_pairs=target_structure == 2 and result.get('status') == 'passed')
             scanned, table_references = table_locator_view(scanned, claim, own, reverse)
             return scanned, [*references, *table_references]
 
@@ -118,7 +120,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
     if bound_benchmark_names:audit['sourceParameterIdentityContractVersion']=3 if alignment_words else 2
     if target_structure:
-        audit.update(reviewTargetStructureContractVersion=1,targetStructureReferences=target_references)
+        audit.update(reviewTargetStructureContractVersion=2 if target_structure == 2 else 1,
+                     targetStructureReferences=target_references)
     if revision_row_counts:
         audit['reviewRevisionRowCountVersion'] = 1
     result['reviewDiagnosticAudit'] = audit

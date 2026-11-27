@@ -162,11 +162,11 @@ def test_new_profile_is_server_owned_immutable_and_never_added_to_old_runs(tmp_p
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object());key='reviewTargetStructureContractVersion'
     try:
         row,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain',key:False},start_async=False)
-        assert type(row[key]) is int and row[key]==1 and facade._make_semantic_checker(row['runId'])._diagnostic_target_structure() is True
+        assert type(row[key]) is int and row[key]==2 and facade._make_semantic_checker(row['runId'])._diagnostic_target_structure()==2
         old=deepcopy(row);old.pop(key);old.update(runId='old',idempotencyKey='old');repo.create_run(old)
         assert facade._make_semantic_checker('old')._diagnostic_target_structure() is False
         for rid in (row['runId'],'old'):
-            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:2})
+            with pytest.raises(ValueError,match='Immutable'):repo.update_run(rid,lambda r:{**r,key:1})
     finally:facade.shutdown()
 
 
@@ -183,6 +183,24 @@ def test_untransmitted_generated_configuration_prose_cannot_authorize_target_nav
 
 def test_source_owner_after_chinese_target_like_phrase_is_never_exempted():
     assert view('前三句原文说明条件',TEXT)[1]==[]
+
+
+@pytest.mark.parametrize('reason,expected', [
+    ('两种损失的约束作用分别由重投影损失描述和峰值离散损失定义支持。', True),
+    ('两种损失的约束作用分别由重投影损失描述和其他损失定义支持。', False),
+    ('两种损失分别为重投影损失和重投影损失。', False),
+    ('原文只验证了两种损失。', False),
+])
+def test_named_pair_is_only_a_reference_to_distinct_items_already_in_the_target(reason,expected):
+    claim = {'claimId':'c', 'text':'重投影损失约束对应位置，峰值离散损失使分数集中。', 'evidenceRefs':[]}
+    original = {'claimId':'c', 'status':'passed', 'reason':reason, 'diagnosticFacts':[]}
+    before = bind(original,claim,[],target_structure=True)
+    after = bind(original,claim,[],target_structure=2)
+    assert before['status']=='failed'
+    assert (after['status']=='passed') is expected
+    assert bool(after['reviewDiagnosticAudit']['targetStructureReferences']) is expected
+    rejected = bind({**original,'status':'failed'},claim,[],target_structure=2)
+    assert rejected['reviewDiagnosticAudit']['errors']==['new_diagnostic_numbers_not_bound']
 
 
 @pytest.mark.parametrize('owner',['E1','E1：','E_1: ','P2：','Q3: ','T4：',

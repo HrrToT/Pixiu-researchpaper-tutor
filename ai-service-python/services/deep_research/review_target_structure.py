@@ -8,6 +8,13 @@ _REFERENCE=re.compile(r'(?P<cnlabel>最后|第|前|后)(?P<cnnumber>[0-9]{1,3}|[
 _SOURCE=re.compile(r'原文|论文|来源|引文|算法|表格|章节|\b(?:source|paper|passage|quote|algorithm|table|section|line|evidence|arxiv|doi)\b'
     r'|(?<![A-Za-z0-9_])(?:[EPQT]_*\d+|ev_[0-9a-f]+)(?![A-Za-z0-9_])',re.I)
 _DEMONSTRATIVE = re.compile(r'[这那](?P<word>一)(?:条件|陈述|断言|分句)')
+_NAMED_PAIR = re.compile(
+    r'(?:^|(?<=[。！？\n]))\s*(?:这)?(?P<count>两|二|2)(?:种|项)(?P<kind>损失|指标|方法)'
+    r'(?:(?:的)?(?:作用|约束作用|用途))?分别(?:由|是|为)'
+    r'(?P<first>[\u4e00-\u9fffA-Za-z_-]{1,20}?(?P=kind))(?:描述|定义)?'
+    r'(?:和|与|及|、)(?P<second>[\u4e00-\u9fffA-Za-z_-]{1,20}?(?P=kind))(?:描述|定义)?'
+    r'(?:支持|说明)?(?=[。！？\n]|$)'
+)
 _TABLE_LOCATOR = re.compile(
     r'(?:^|(?<=[.!?。！？\n]))[ \t]*(?:The\s+)?tableBindings\s+(?:correctly\s+)?'
     r'(?:references?|points?\s+to)\s+(?P<alias>E[1-9]\d*)\s+rows?\s+'
@@ -41,7 +48,7 @@ def _units(text,kind):
     return sum(bool(x.strip()) for x in parts)
 
 
-def view(text,target_text):
+def view(text,target_text, *, named_pairs=False):
     """Return numeric-scanning view plus provenance; never rewrite the verdict.
 
     Only explicit first/last/ordinal references to available target text units
@@ -53,6 +60,15 @@ def view(text,target_text):
     chars=list(text);references=[]
     for match in _DEMONSTRATIVE.finditer(text):
         chars[match.start('word')] = ' '
+    if named_pairs:
+        for match in _NAMED_PAIR.finditer(text):
+            items = (match['first'], match['second'])
+            if items[0] == items[1] or not all(item in target_text for item in items):
+                continue
+            start, end = match.span('count')
+            chars[start:end] = ' ' * (end - start)
+            references.append({'text':match.group().strip(), 'start':match.start(), 'end':match.end(),
+                'kind':'named_target_pair', 'count':2, 'targetItems':list(items)})
     for m in _REFERENCE.finditer(text):
         # A colon introduces an excerpt owned by its source alias (E1: ...).
         # Keep that owner in scope, including full evidence hash identities.
