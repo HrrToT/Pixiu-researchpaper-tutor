@@ -1,0 +1,36 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "sourceReceipt": "d3-unchanged-fact-review-reuse-20261127.json",
+  "packetPolicyBefore": 3,
+  "packetPolicyAfter": 4,
+  "retainedDesignChecks": 15,
+  "retainedPriorFactChecks": 7,
+  "proposalAndHumanRequirementsUnchanged": true,
+  "fullOriginalPassagesRetainedForCitedAndRequiredEvidence": true,
+  "offlineTestsPassed": 264,
+  "observed": {
+    "beforeBytes": [
+      31849,
+      31981
+    ],
+    "afterBytes": [
+      31456,
+      31680
+    ],
+    "mandatoryEvidenceCount": 8,
+    "priorStop": {
+      "batchIndex": 1,
+      "limit": 100000,
+      "spent": 67740,
+      "reservation": 36969
+    },
+    "newStop": {
+      "batchIndex": 1,
+      "limit": 100000,
+      "spent": 67740,
+      "reservation": 36576
+    },
+    "newCalls": 0
+  },
+  "scientificApproval": false
+}

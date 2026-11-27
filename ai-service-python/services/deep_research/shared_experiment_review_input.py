@@ -1,7 +1,8 @@
 """Fit complete proposals and frozen evidence obligations to a review window."""
 
 
-def fit_accounted_evidence(record, data, aliases, proposal, build_request, limit, *, feedback_refs=()):
+def fit_accounted_evidence(record, data, aliases, proposal, build_request, limit, *, feedback_refs=(),
+                           required_only=False):
     rows = data['evidence']
 
     def build(selected):
@@ -13,7 +14,7 @@ def fit_accounted_evidence(record, data, aliases, proposal, build_request, limit
 
     request, size = build_request(data)
     supplied = [row['evidenceId'] for row in rows]
-    if size <= limit:
+    if size <= limit and not required_only:
         return request, size, supplied
     allocation = record.get('state', {}).get('sharedExperimentMaterialAllocation', {})
     required = allocation.get('requiredEvidenceIds')
@@ -29,7 +30,7 @@ def fit_accounted_evidence(record, data, aliases, proposal, build_request, limit
         return request, size, supplied
     chosen = {i for i, row in enumerate(rows) if row['evidenceId'] in needed}
     compact = build([rows[i] for i in sorted(chosen)])
-    if compact[1] > limit:
+    if required_only or compact[1] > limit:
         return compact
     for position in range(len(rows)):
         if position in chosen:
@@ -72,7 +73,8 @@ def partition_review(record, data, aliases, proposal, build_request, limit):
     ]
 
 
-def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks, *, scoped=False):
+def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks, *, scoped=False,
+                             required_design_evidence_only=False):
     """Keep the full design in design reviews; facts may use their own source packet."""
     fact_sources = {fact['id']: set(fact['evidenceRefs']) for fact in proposal['sourceFacts']}
     batches = []
@@ -114,7 +116,8 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
                 # Preserve sources cited by the proposal as well as required
                 # premises for the section and human-criteria reviews.
                 request, size, supplied = fit_accounted_evidence(
-                    record, packet, aliases, proposal, build_request, limit)
+                    record, packet, aliases, proposal, build_request, limit,
+                    required_only=required_design_evidence_only)
             if size > limit:
                 return []
             batches.append({'request': request, 'inputBytes': size,

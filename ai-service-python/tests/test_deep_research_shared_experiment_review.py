@@ -19,7 +19,7 @@ def ready(value=None):
     return r,data,aliases
 
 
-@pytest.mark.parametrize('packet_version', [1, 2, 3])
+@pytest.mark.parametrize('packet_version', [1, 2, 3, 4])
 def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch, packet_version):
     from services.deep_research import shared_experiment_review as review
 
@@ -281,6 +281,44 @@ def test_output_bounded_review_partitions_even_when_input_fits():
     assert all(part['request']['proposal'] == proposal for part in scoped[1:])
     assert all(part['suppliedEvidenceAliases'] == ['E1', 'E2'] for part in parts[1:])
     assert all(part['request']['requirements'] == data['requirements'] for part in parts[1:])
+
+
+def test_revised_design_packets_can_omit_optional_evidence_without_losing_scope():
+    from services.deep_research.shared_experiment_review_input import partition_bounded_review
+
+    aliases = {'E1': 'citation', 'E2': 'frozen_premise', 'E3': 'background'}
+    allocation = {'requiredEvidenceIds': ['frozen_premise'], 'suppliedEvidenceIds': list(aliases.values()),
+                  'allFrozenPremiseBundlesRetained': True}
+    record = {'state': {'sharedExperimentMaterialAllocation': allocation}}
+    proposal = {'sourceFacts': [{'id': 'F1', 'evidenceRefs': ['E1']}],
+                'steps': [{'id': 'fit', 'action': 'Keep the training split fixed.'}]}
+    criterion = {'criterionId': 'criterion', 'requirement': 'Define the split.'}
+    data = {'proposal': proposal, 'requirements': [{'obligationId': 'o', 'completionCriteria': [criterion]}],
+            'evidence': [{'evidenceId': alias, 'tableDataRef': alias} for alias in aliases],
+            'tables': {alias: {'source': alias} for alias in aliases},
+            'factChecks': [['fact', 'F1']], 'sectionChecks': [['section', 'criterion', ['/steps']]],
+            'humanChecks': [['human', 'o', 'criterion']]}
+
+    def measure(view):
+        return view, len(view['evidence']) * 10
+
+    def build(policy):
+        return partition_bounded_review(record, data, aliases, proposal, measure, 40, 3, scoped=True,
+                                        required_design_evidence_only=policy)
+
+    complete = build(False)
+    reduced = build(True)
+    assert reduced[0] == complete[0]
+    for old, new in zip(complete[1:], reduced[1:], strict=True):
+        assert new['checkIds'] == old['checkIds']
+        assert new['request']['proposal'] == proposal
+        assert new['request']['requirements'] == old['request']['requirements']
+        assert new['suppliedEvidenceAliases'] == ['E1', 'E2']
+        assert new['request']['evidence'] == data['evidence'][:2]
+        assert set(new['request']['tables']) == {'E1', 'E2'}
+
+    allocation['allFrozenPremiseBundlesRetained'] = False
+    assert build(True) == complete
 
 
 def test_numeric_source_context_requires_contiguous_frozen_fulltext():

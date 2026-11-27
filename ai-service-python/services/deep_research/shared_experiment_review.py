@@ -253,7 +253,7 @@ def descriptor(record, check_ids=None):
     if check_ids is not None:
         minimum = maximum = len(ids)
     issue_binding = binding
-    if (record.get(SCOPED_PACKET_MARKER) in (1, 2, 3) and check_ids
+    if (record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4) and check_ids
             and all(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids)):
         issue_binding = {'enum': [path for cid in ids for path in checks_by_id[cid]['pathPrefixes']]}
     result=_object({
@@ -272,7 +272,8 @@ def descriptor(record, check_ids=None):
 
 def _reviewed_fact_batch(record, batches, bound, input_data, aliases):
     """Reuse a settled source-fact packet only across an exact proposal repair."""
-    if record.get(SCOPED_PACKET_MARKER) != 3 or not batches or review_slot(record) != 'sharedExperimentRevisionReview':
+    if (record.get(SCOPED_PACKET_MARKER) not in (3, 4) or not batches
+            or review_slot(record) != 'sharedExperimentRevisionReview'):
         return {}
     from jsonschema import Draft202012Validator
 
@@ -423,10 +424,16 @@ def build(record, input_data, aliases, *, required_domains=()):
             from services.deep_research.shared_experiment_review_input import partition_bounded_review
             batches = partition_bounded_review(
                 record, data, aliases, bound['proposal'], measure, MAX_INPUT, MAX_CHECKS_PER_REVIEW)
-            if not batches and record.get(SCOPED_PACKET_MARKER) in (1, 2, 3):
+            if not batches and record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4):
                 batches = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
                     MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True)
+            if record.get(SCOPED_PACKET_MARKER) == 4 and _reviewed_fact_batch(record, batches, bound, input_data, aliases):
+                limited = partition_bounded_review(record, data, aliases, bound['proposal'],
+                    lambda view: measure(view, _scoped_packet_policy(record, view)),
+                    MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, required_design_evidence_only=True)
+                if limited and max(p['inputBytes'] for p in limited) < max(p['inputBytes'] for p in batches):
+                    batches = limited
         elif size > MAX_INPUT and compact_version == 1:
             from services.deep_research.shared_experiment_review_input import partition_review
             batches = partition_review(record, data, aliases, bound['proposal'], measure, MAX_INPUT)
@@ -682,7 +689,7 @@ def assess(record, input_data, aliases, response):
         evidence_by_check = {}
         for packet, answer in parts:
             packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
-                                if batches and record.get(SCOPED_PACKET_MARKER) in (1, 2, 3) else validator)
+                                if batches and record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4) else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator)
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
@@ -713,7 +720,7 @@ def _initial_batch_budget_stop(record, built):
     from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN
     batches = built.get('batches')
     budget = record.get('budget') or {}
-    if record.get(SCOPED_PACKET_MARKER) not in (1, 2, 3) or not batches:
+    if record.get(SCOPED_PACKET_MARKER) not in (1, 2, 3, 4) or not batches:
         return None
     offset = 1 if 'reusedFactBatch' in built else 0
     pending_batches = batches[offset:]
@@ -782,7 +789,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
             packet = built['batches'][index]
             try:
                 packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
-                                    if record.get(SCOPED_PACKET_MARKER) in (1, 2, 3) else validator)
+                                    if record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4) else validator)
                 part = _decode_batch(answer, packet['checkIds'], packet_validator)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
