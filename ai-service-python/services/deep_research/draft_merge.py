@@ -28,7 +28,7 @@ def _union(rows,key):
 
 
 def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation_version,limit,audit,measured=False,
-                preserve_measurement_display=False):
+                preserve_measurement_display=False, defer_length_check=False):
     from services.deep_research.answer_constraints import visible_count,answer_character_count
     from services.deep_research.answer_format import requested_points
     from services.deep_research.table_bindings import bound_table_context
@@ -107,5 +107,6 @@ def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation
     except (ValueError,TypeError):return None
     audit.update(version=1,originalDraft=deepcopy(report),originalDigest=original_digest,groups=groups,
         candidateDigest=candidate_digest,visibleCharacters=count,characterLimit=limit,
-        status='edited_unverified' if count<=limit else 'rejected_length',verification='unchecked')
-    return candidate if count<=limit else None
+        status=('edited_unverified' if count<=limit else 'length_deferred' if defer_length_check else 'rejected_length'),
+        verification='unchecked')
+    return candidate if defer_length_check or count<=limit else None

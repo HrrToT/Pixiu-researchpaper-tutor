@@ -92,7 +92,7 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
                    presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None,measured_merge=False,selective_fixed_edit=False,
-                   preserve_measurement_display=False):
+                   preserve_measurement_display=False, defer_length_check=False):
     if type(selective_fixed_edit) is not bool or selective_fixed_edit and not (explicit_edit_scope and preserve_claims):
         raise ValueError('Selective fixed editing requires explicit preserved claim scope')
     if type(measured_merge) is not bool:raise ValueError('Invalid measured merge policy')
@@ -120,7 +120,8 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
         from services.deep_research.draft_merge import consolidate
         return consolidate(report,question,invoke,parse,output_kind=output_kind,evidence=evidence,
             presentation_version=presentation_version,limit=limit,audit=merge_audit if merge_audit is not None else {},
-            preserve_measurement_display=preserve_measurement_display,**({'measured':True} if measured_merge else {}))
+            preserve_measurement_display=preserve_measurement_display,defer_length_check=defer_length_check,
+            **({'measured':True} if measured_merge else {}))
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
     core = report['claims'] if preserve_claims else _core_claims(report['claims'], limit, output_kind, evidence)
@@ -253,4 +254,4 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
         compact['sections'] = report['sections']
     if 'comparisonCells' in report:
         compact['comparisonCells'] = report['comparisonCells']
-    return compact if count(compact) <= limit else None
+    return compact if defer_length_check or count(compact) <= limit else None

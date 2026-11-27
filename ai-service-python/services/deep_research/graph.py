@@ -2213,6 +2213,8 @@ space with unsupported global absence or incidental iteration/performance values
         draft_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**editor_options})
         draft_merge_audit={}
         preserve_measurement_display = record.get('comparisonMeasurementCompactionVersion') == 1
+        defer_comparison_length = (cell_mode and bool(requested_limit)
+                                   and record.get('comparisonLengthFinalizationVersion') == 1)
         if blocked_draft_ids:
             pass  # Never let wording edits hide the rejected structure before review.
         elif scope_expression_audit and scope_compaction_enabled(record):
@@ -2223,6 +2225,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed, scope_expression_audit = compact_scope(scope_edit_input, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
                 fixed_claims=fixed_tables, preserve_measurement_display=preserve_measurement_display,
+                defer_length_check=defer_comparison_length,
                 **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
                    and record['compactionBudgetContractVersion'] in (1,2) else {}),
                 **({'reserve_scope_budget':True} if type(record.get('compactionBudgetContractVersion')) is int
@@ -2250,6 +2253,7 @@ space with unsupported global absence or incidental iteration/performance values
             parsed = compact_answer(parsed, question,
                 draft_compact_invoke if editor_options else direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
                 output_kind=output_kind, evidence=evidence, preserve_measurement_display=preserve_measurement_display,
+                defer_length_check=defer_comparison_length,
                 preserve_claims=bool(revision_table_ids or point_constraint and point_constraint['mode'] == 'exact'),
                 **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),
@@ -2268,6 +2272,13 @@ space with unsupported global absence or incidental iteration/performance values
             repo_update(run_id,lambda r:{**r,'state':{**r.get('state',{}),'synthesisDraftMergeAudit':draft_merge_audit}},expected_revision=None)
         if parsed is None:
             return {"error_code": "invalid_synthesis_response"}
+        length_checkpoint = {}
+        if defer_comparison_length:
+            from services.deep_research.answer_constraints import visible_count
+            actual = visible_count(parsed, requested_limit, output_kind, evidence,
+                                   record.get('reportPresentationContractVersion', 0))
+            if actual > requested_limit:
+                length_checkpoint = {'synthesisDeferredCharacterLimit': {'limit': requested_limit, 'characters': actual}}
 
         if (not direct_comparison_authoring and not reader_first and not blocked_draft_ids and not revision_table_ids
                 and eligible(record, parsed, output_kind)):
@@ -2314,6 +2325,7 @@ space with unsupported global absence or incidental iteration/performance values
                     **(r.get("state") or {}),
                     "reportVersionId": report_version_id,
                     "reportBody": parsed,
+                    **length_checkpoint,
                     **({'comparisonAuthoring':{'version':1,'readerExpression':'first_draft','verification':'unchecked'}} if direct_comparison_authoring else {}),
                     "synthesisContainer": container_kind,
                     **({'synthesisDraftAdmission': {**draft_admission, 'status': 'compiled_unverified',
@@ -3093,15 +3105,10 @@ def make_publish_node(
                     **({'versioned_sources':True} if type(record.get('sourceGapClosureContractVersion')) is int and record['sourceGapClosureContractVersion']==1 else {})),
                 *audit.get('gaps', [])]
         
-        factual_claims = [claim for claim in accepted_claims if claim.get("kind") in {"reported", "inference"}]
         from services.deep_research.reporting import (
             build_sections, conversation_summary, publication_gap_labels, publication_notices,
         )
         presentation_version = record.get('reportPresentationContractVersion',0)
-        sections = build_sections(accepted_claims, output_kind, verified_report.get("sections"),
-            presentation_version=presentation_version)
-        visible_notice, folded_notice = publication_notices(accepted_claims, presentation_version=presentation_version,
-            **({'output_kind':output_kind} if presentation_version in (3,4) else {}))
         repair_notice = ('补充核验未完成；已保留此前核实的内容。'
                          if brief_state.get('repairStatus') == 'verification_invalid_response' else
                          '修订结果未能解析；已保留此前核实的内容。'
@@ -3111,13 +3118,44 @@ def make_publish_node(
         display_fields = {}
         if type(presentation_version) is int and presentation_version in (2,3,4):
             from services.deep_research.answer_constraints import requested_character_limit
-            display_fields = {'presentationVersion':presentation_version, 'characterLimit':requested_character_limit(effective_question(record)),
-                              'verificationNotice':folded_notice}
+            display_fields = {'presentationVersion':presentation_version,
+                              'characterLimit':requested_character_limit(effective_question(record))}
         if cell_enabled(record) and brief_state.get('comparisonCellDraft') is not None:
             from services.deep_research.comparison_presentation import metadata as comparison_metadata
             display_fields = {**display_fields, 'comparisonCells':comparison_metadata(brief_state['comparisonCellDraft'])}
-        display_payload = {**display_fields, 'outputKind':output_kind, 'claims':accepted_claims, 'sections':sections,
-                           'evidence':record.get('state',{}).get('evidence',[]), 'limitations':visible_notice+repair_notice}
+        def display(claims):
+            sections = build_sections(claims, output_kind, verified_report.get("sections"),
+                                      presentation_version=presentation_version)
+            visible, folded = publication_notices(claims, presentation_version=presentation_version,
+                **({'output_kind': output_kind} if presentation_version in (3, 4) else {}))
+            return {**display_fields, 'outputKind': output_kind, 'claims': claims, 'sections': sections,
+                    'evidence': brief_state.get('evidence', []), 'limitations': visible + repair_notice,
+                    **({'verificationNotice': folded} if 'presentationVersion' in display_fields else {})}
+
+        length_release = None
+        display_payload = display(accepted_claims)
+        limit = display_fields.get('characterLimit')
+        layout = display_fields.get('comparisonCells')
+        if (accepted_claims and limit and layout and record.get('comparisonLengthFinalizationVersion') == 1):
+            from services.deep_research.comparison_presentation import select_bounded_factual_cells
+            from services.deep_research.reporting import visible_answer_character_count
+            actual = visible_answer_character_count(display_payload)
+            if actual > limit:
+                kept = select_bounded_factual_cells(layout, accepted_claims, limit,
+                                                    lambda rows: visible_answer_character_count(display(rows)))
+                kept_ids = {c['claimId'] for c in kept}
+                length_release = {'limit': limit, 'verifiedCharacters': actual,
+                                  'omittedClaimIds': [c['claimId'] for c in accepted_claims if c['claimId'] not in kept_ids]}
+                gaps.append({'question': f'在{limit}字内给出完整比较', 'stage': 'answer_format',
+                             'wholeQuestion': True, 'expectedCharacterLimit': limit,
+                             'missingEvidence': ('完整核验结果超过字数上限，本次仅保留可在限内单独呈现的论文事实。'
+                                                 if kept else '已核验内容无法完整地写在指定字数内。')})
+                accepted_claims = kept
+                display_payload = display(accepted_claims)
+                if not kept:
+                    display_payload.update(comparisonLengthHeld=True, limitations='')
+        sections = display_payload['sections']
+        factual_claims = [claim for claim in accepted_claims if claim.get('kind') in {'reported', 'inference'}]
         from services.deep_research.answer_format import publication_format_gaps
         gaps.extend(publication_format_gaps(record, accepted_claims, sections, display_payload=display_payload))
         from services.deep_research.named_table_scope import same_page_prose_requested, same_page_rate_enabled, same_page_rate_gaps
@@ -3154,14 +3192,9 @@ def make_publish_node(
             presentation_version=presentation_version)
         
         publication_payload = {
-            **display_fields,
+            **display_payload,
             "reportVersionId": report_version_id,
-            "outputKind": output_kind,
             "summary": safe_summary,
-            "sections": sections,
-            "claims": accepted_claims,
-            "evidence": evidence if (evidence := record.get("state", {}).get("evidence", [])) else [],
-            "limitations": visible_notice + repair_notice,
             "gaps": publication_gap_labels(gaps, effective_question=effective_question(record)),
             "researchNotes": research_notes,
             "outcome": outcome,
@@ -3192,6 +3225,7 @@ def make_publish_node(
                     "publicationId": pub_record.get("publicationId", ""),
                     "reportText": _render_report_markdown(publication_payload),
                     "plan": final_plan,
+                    **({'publicationCharacterLimit': length_release} if length_release else {}),
                 },
             },
             expected_revision=None,

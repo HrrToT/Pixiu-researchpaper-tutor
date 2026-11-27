@@ -208,7 +208,8 @@ def render_report(payload, *, _counting=False):
                 lines.extend([f"{'' if _counting else '## '}{section['title']}", ''])
             lines.extend([*content, ''])
     if not claims:
-        empty = ("尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
+        empty = ("正文暂缓发布。" if payload.get('comparisonLengthHeld') is True else
+                 "尚未形成通过核验的实验方案。" if payload.get('outputKind') == 'experiment_design'
                  else "本次尚未形成通过核验的结论。")
         lines.extend([empty, ""])
     gaps = _display_gaps(payload.get("gaps", []), presentation_version=payload.get('presentationVersion',0))

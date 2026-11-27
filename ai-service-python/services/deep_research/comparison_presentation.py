@@ -186,6 +186,25 @@ def prose_attribution(value, claims, evidence, *, counting=False):
     return result
 
 
+def select_bounded_factual_cells(layout, claims, limit, measure):
+    """Fit whole verified paper facts. A joint conclusion stays with its full report."""
+    owners = {cid: row['source'] for row in layout['layout'] for cid in row['claimIds']}
+    by_paper = {}
+    for claim in claims:
+        owner = owners.get(claim['claimId'])
+        if owner and claim['kind'] == 'reported':
+            by_paper.setdefault(owner, []).append(claim)
+    # Start with one short fact per paper before adding further details.
+    shortest = [min(rows, key=lambda c: measure([c])) for rows in by_paper.values()]
+    first = {c['claimId'] for c in shortest}
+    selected = []
+    for claim in [*shortest, *(row for rows in by_paper.values() for row in rows if row['claimId'] not in first)]:
+        if measure([*selected, claim]) <= limit:
+            selected.append(claim)
+    chosen = {c['claimId'] for c in selected}
+    return [claim for claim in claims if claim['claimId'] in chosen]
+
+
 def _safe(value):
     # Entities keep pipe/backslash mathematics intact inside a GFM table cell.
     return escape(str(value), quote=False).replace('|', '&#124;').replace('\r\n', '\n').replace('\n', '<br>')

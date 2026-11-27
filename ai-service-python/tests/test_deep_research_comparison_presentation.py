@@ -222,6 +222,51 @@ def test_actual_publication_uses_verified_cells_and_rechecks_source_binding(tamp
         assert '保持相同数据与预算' in text
 
 
+@pytest.mark.parametrize('limit, outcome, expected_count', [(500, 'complete', 4),
+                                                          (70, 'partial', 2), (10, 'inconclusive', 0)])
+def test_current_comparison_publication_enforces_length_with_whole_verified_paper_facts(limit, outcome, expected_count):
+    from unittest.mock import Mock
+    from services.deep_research.comparison_presentation import audit_digest
+    from services.deep_research.graph import make_publish_node
+
+    payload = fixture()
+    claims = deepcopy(payload['claims'])
+    claims[1]['text'] = '量化属性以压缩表示。'
+    claims[2]['text'] *= 15
+    meta = payload['comparisonCells']
+    draft = {'sources': meta['sources'], 'layout': meta['layout'], 'shortProseVersion': 2}
+    evidence = [{'evidenceId': 'e-a', 'sourceWorkId': 'A', 'sourceVersionId': 'a-v1', 'quote': 'A result.'},
+                {'evidenceId': 'e-b', 'sourceWorkId': 'B', 'sourceVersionId': 'b-v1', 'quote': 'B result.'}]
+    record = {'question': f'比较，{limit}字以内', 'comparisonCellsContractVersion': 1,
+              'comparisonLengthFinalizationVersion': 1, 'authoredBodyContractVersion': 3,
+              'scopeExpressionContractVersion': 5, 'factualPromptContractVersion': 3,
+              'synthesisEvidenceContractVersion': 6, 'synthesisInputContractVersion': 2,
+              'draftValidationContractVersion': 1, 'reportPresentationContractVersion': 4,
+              'answerFormatContractVersion': 3,
+              'state': {'outputKind': 'paper_comparison', 'plan': [], 'gaps': [], 'evidence': evidence,
+                        'comparisonCellDraft': draft, 'verifiedReport': {
+                            'verifiedClaims': deepcopy(claims), 'rejectedClaims': [],
+                            'answerCoverage': {'status': 'checked', 'gaps': [],
+                                'comparisonPresentationDigest': audit_digest(metadata(draft), claims)}}}}
+
+    def update(_rid, mutate, **_kwargs):
+        nonlocal record
+        record = mutate(deepcopy(record))
+        return deepcopy(record)
+
+    publish = Mock(return_value=({'publicationId': 'p'}, True))
+    result = make_publish_node(publish, update)({'run_id': 'r', 'report_version_id': 'v'})
+    final = publish.call_args.kwargs['payload']
+    assert result['outcome'] == outcome
+    assert len(final['claims']) == expected_count
+    assert visible_answer_character_count(final) <= limit
+    assert record['state']['verifiedReport']['verifiedClaims'] == claims
+    if expected_count == 2:
+        assert final['claims'] == claims[:2]
+        assert record['state']['publicationCharacterLimit']['omittedClaimIds'] == ['joint', 'advice']
+        assert final['gaps']
+
+
 def _generation_verification_publication(profile):
     import json
     from unittest.mock import Mock

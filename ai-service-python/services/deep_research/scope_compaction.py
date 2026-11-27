@@ -15,7 +15,7 @@ def enabled(record):
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
             fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False,
-            reserve_scope_budget=False, preserve_measurement_display=False):
+            reserve_scope_budget=False, preserve_measurement_display=False, defer_length_check=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -93,6 +93,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
                 preserve_measurement_display=preserve_measurement_display,
+                defer_length_check=defer_length_check,
                 fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],
                 explicit_edit_scope=explicit_edit_scope or reserve_directly,compact_layout=compact_layout,
                 **({'measured_edit_budget':True,'preserve_answers':True} if reserve_directly else {}),
@@ -100,7 +101,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             if edited is None:return None,audits
             result={**source,'claims':[c for c in edited['claims'] if c['claimId'] in original]}
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])
-                    or count(result)>limit):return None,audits
+                    or (not defer_length_check and count(result)>limit)):return None,audits
             return result,[{**deepcopy(a),'verification':'unchecked'} for a in audits]
     from services.deep_research.comparison_measurement_display import COMPACTION_GUIDANCE, fixed_conditions, restore_conditions
     measurements = fixed_conditions(source['claims'], evidence) if preserve_measurement_display else {}
@@ -223,4 +224,4 @@ checked against the original sources. No approval is inherited from this edit.
         revised.append(claim)
         if audit: new_audits.append(audit)
     result = {**source,'claims':revised}
-    return (result,new_audits) if count(result) <= limit else (None,audits)
+    return (result,new_audits) if defer_length_check or count(result) <= limit else (None,audits)
