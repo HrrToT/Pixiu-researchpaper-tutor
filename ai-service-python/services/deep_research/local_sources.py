@@ -375,6 +375,7 @@ class LocalTaskRetriever:
                     self.pages[key] = _parse_pdf(
                         body, include_tables=record.get('comparisonPdfTableFallbackVersion') in (1, 2),
                         **({'include_named_tables':True} if record.get('namedTablePdfFallbackVersion') == 1 else {}),
+                        **({'include_declared_arrows':True} if record.get('sourceGlyphContractVersion') == 2 else {}),
                     )
             return material, self.pages[key]
 
@@ -464,12 +465,14 @@ def _bm25(query, documents):
     return scores
 
 
-def _parse_pdf(body, *, include_tables=False, include_named_tables=False):
+def _parse_pdf(body, *, include_tables=False, include_named_tables=False, include_declared_arrows=False):
     args = [sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)]
     if include_tables:
         args.append('--verified-tables')
     if include_named_tables:
         args.append('--verified-percentage-tables')
+    if include_declared_arrows:
+        args.append('--declared-font-arrows')
     process = subprocess.run(args,
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:

@@ -16,6 +16,52 @@ def _control_count(text):
 FORM_CACHE_ENTRIES = 256
 FORM_CACHE_BYTES = 2 * 1024 * 1024
 _TEXT_SHOW_OPERATOR = re.compile(rb"""T[Jj]|['"]""")
+_FONT_ENCODING_SLOT = re.compile(rb'(?m)^\s*dup\s+(\d{1,3})\s+/([A-Za-z0-9_.-]+)\s+put[ \t]*$')
+_SHORT_ARROWS = {b'shortleftarrow': '←', b'shortrightarrow': '→'}
+
+
+def _font_arrows(font):
+    """Read named slots from the PDF's own embedded Type 1 encoding."""
+    try:
+        if (not font or font.get('/Subtype') != '/Type1' or '/ToUnicode' in font or '/Encoding' in font):
+            return {}
+        stream = font['/FontDescriptor'].get_object()['/FontFile'].get_object()
+        size = stream.get('/Length1')
+        if not isinstance(size, int) or not 1 <= size <= 16384:
+            return {}
+        prefix = stream.get_data()[:size]
+    except (KeyError, AttributeError, TypeError, ValueError):
+        return {}
+    if not prefix.startswith(b'%!') or b'/Encoding 256 array' not in prefix:
+        return {}
+    slots = {}
+    for code, name in _FONT_ENCODING_SLOT.findall(prefix):
+        point = int(code)
+        if point in slots:
+            return {}  # Ambiguous embedded encoding.
+        slots[point] = name
+    return {point: _SHORT_ARROWS[name] for point, name in slots.items()
+            if point < 32 and point not in (9, 10, 13) and name in _SHORT_ARROWS}
+
+
+def _decode_font_arrows(page):
+    original = []
+    decoded = []
+    fonts = {}
+
+    def visit(text, _cm, _tm, font, _size):
+        original.append(text)
+        if _control_count(text):
+            key = id(font)
+            if key not in fonts:
+                fonts[key] = (font, _font_arrows(font))
+            text = text.translate(fonts[key][1])
+        decoded.append(text)
+
+    observed = page.extract_text(visitor_text=visit)
+    if observed == ''.join(original):
+        return ''.join(decoded)
+    return ''
 
 
 def _image_only_form(xform, data):
@@ -76,7 +122,8 @@ def _extract_page_text(page):
         cache.clear()
 
 
-def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_named_tables=False) -> list[dict]:
+def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_named_tables=False,
+              include_declared_arrows=False) -> list[dict]:
     reader_type = PdfReader
     if reader_type is None:
         from PyPDF2 import PdfReader as reader_type
@@ -98,9 +145,16 @@ def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_name
                 if modern.is_encrypted or len(modern.pages) != len(reader.pages):
                     raise ValueError("Inconsistent PDF page identity")
             candidate = (modern.pages[index].extract_text() or "")[:30000]
+            recovered_arrows = False
+            if include_declared_arrows and _control_count(candidate):
+                decoded = _decode_font_arrows(modern.pages[index])[:30000]
+                if decoded.strip() and not _control_count(decoded):
+                    candidate, recovered_arrows = decoded, True
             if candidate.strip() and not _control_count(candidate):
                 row.update(text=candidate, extraction={"engine": "pypdf", "version": pypdf.__version__,
                     "reason": "unreadable_glyphs", "originalControlCount": controls})
+                if recovered_arrows:
+                    row['extraction']['encodingRecovery'] = 'embedded_type1_named_arrows'
             else:
                 # Keep the exact original page, including an unreadable figure.
                 # New-run evidence admission rejects affected source windows;
@@ -138,7 +192,8 @@ def main():
             return 2
         flags = sys.argv[3:]
         result = parse_pdf(body, max_pages, include_tables='--verified-tables' in flags,
-                           include_named_tables='--verified-percentage-tables' in flags)
+                           include_named_tables='--verified-percentage-tables' in flags,
+                           include_declared_arrows='--declared-font-arrows' in flags)
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
         return 0
     except Exception as error:

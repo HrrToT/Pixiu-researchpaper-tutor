@@ -472,7 +472,7 @@ class ResearchFacade:
             "boundCompositeTableCellsVersion": 2,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,
-            "sourceGlyphContractVersion": 1,
+            "sourceGlyphContractVersion": 2,
             "factualReasoningContractVersion": 10,
             "continuationFormatContractVersion": 1,
             "jointEvidenceContractVersion": 6,

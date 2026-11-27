@@ -17,7 +17,7 @@ def rejected_state_enabled(record):
     """A new journal binds literal rejection and its glyph audit immutably."""
     return (type(record.get('sourcePassageReuseContractVersion')) is int
         and record['sourcePassageReuseContractVersion']==3
-        and type(record.get('sourceGlyphContractVersion')) is int and record['sourceGlyphContractVersion']==1
+        and type(record.get('sourceGlyphContractVersion')) is int and record['sourceGlyphContractVersion'] in (1,2)
         and type(record.get('adaptiveExtractionContractVersion')) is int and record['adaptiveExtractionContractVersion']==3)
 
 

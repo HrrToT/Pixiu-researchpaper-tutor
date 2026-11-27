@@ -27,7 +27,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert type(first['experimentStageAllocationContractVersion']) is int and first['experimentStageAllocationContractVersion']==1
         assert type(first['audienceMappedSourceContractVersion']) is int and first['audienceMappedSourceContractVersion']==5
         assert first['factualEnvelopeContractVersion']==2
-        assert first['sourceGlyphContractVersion']==1
+        assert first['sourceGlyphContractVersion']==2
         assert first['diagnosticRepairRoutingContractVersion']==1
         assert first['sourceVersionReviewContractVersion']==1
         assert first['coverageLimitContractVersion']==1

@@ -21,7 +21,7 @@ def literal_state_valid(evidence):
 
 
 def guard(factory,record):
-    if type(record.get('sourceGlyphContractVersion')) is not int or record['sourceGlyphContractVersion']!=1:
+    if type(record.get('sourceGlyphContractVersion')) is not int or record['sourceGlyphContractVersion'] not in (1,2):
         return factory
     def create(source,quote,original,**kwargs):
         evidence=factory(source,quote,original,**kwargs)

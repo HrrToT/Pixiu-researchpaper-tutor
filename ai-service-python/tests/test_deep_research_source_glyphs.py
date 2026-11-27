@@ -27,7 +27,7 @@ def test_clean_quote_cannot_hide_unreadable_needed_context():
     ev=create(guard(make_evidence,{'sourceGlyphContractVersion':1}),'A result.','A result. Formula contains\x0c.')
     assert ev['verification']['literal']=='failed' and ev['quote']=='A result.'
 
-@pytest.mark.parametrize('value',[None,True,False,0,2,1.0,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,3,1.0,'1'])
 def test_legacy_and_noninteger_flags_leave_original_factory_and_result_exact(value):
     assert guard(make_evidence,{'sourceGlyphContractVersion':value}) is make_evidence
     assert create(guard(make_evidence,{}),'old\x0cquote')==create(make_evidence,'old\x0cquote')
@@ -45,7 +45,7 @@ def test_facade_and_immutable_new_profile_keep_old_runs_unchanged(tmp_path):
     key='sourceGlyphContractVersion'
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Read','deferStart':True,key:False},start_async=False)
-        assert type(r[key]) is int and r[key]==1
+        assert type(r[key]) is int and r[key]==2
         assert create(facade._get_make_evidence(r['runId']),'bad\x0csource')['verification']['literal']=='failed'
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda v:{**v,key:False})
         old=deepcopy(r);old.pop(key);old.update(runId='legacy',idempotencyKey='legacy');repo.create_run(old)
