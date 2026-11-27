@@ -136,3 +136,22 @@ def test_sentence_anchors_keep_literal_pdf_text_and_only_bind_own_nonoverlapping
     saved = deepcopy(received(memory))
     execute(memory,lambda *_:pytest.fail('A settled anchor assessment must not be resent'))
     assert received(memory) == saved
+
+
+@pytest.mark.parametrize(('version','extra','nonprocess_valid'),[
+    (5, [], False), (6, [], True), (6, [{'operation':{'anchor':'E1.q1'}}], False), (6, None, False),
+])
+def test_empty_optional_process_field_does_not_erase_a_compatible_unit(version,extra,nonprocess_valid):
+    memory=setup(version)
+
+    def invoke(run,node,prompt,options):
+        rows=json.loads(response(prompt)['content'])
+        rows[0]['processLinks']=extra
+        rows[1]['processLinks']=[]
+        return {'content':json.dumps(rows)}
+
+    result=execute(memory,invoke)
+    saved=received(memory)
+    assert saved['responseAudit']['validUnits']==(['G1'] if nonprocess_valid else [])
+    assert 'G2' in saved['responseAudit']['invalidUnits']
+    assert len(result['gaps']) == (1 if nonprocess_valid else 2)

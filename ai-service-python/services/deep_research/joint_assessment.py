@@ -19,7 +19,7 @@ MAX_UNITS=20
 
 
 def enabled(record):
-    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3,4,5)
+    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3,4,5,6)
 
 
 def _matches(row,source):
@@ -67,9 +67,9 @@ def _unit_key(group,rows):
 def _process_policy(saved):
     value=saved.get('processResponseContractVersion')
     if value is None:return False
-    if type(value) is not int or value not in (1,2,3,4):
+    if type(value) is not int or value not in (1,2,3,4,5):
         raise DeepResearchError('invalid_joint_assessment','过程取证协议无效，不能重发旧请求。')
-    return value if value in (2,3,4) else True
+    return value if value in (2,3,4,5) else True
 
 
 def _response_tokens(units,process=False):
@@ -122,7 +122,7 @@ def _render(units,rows,human,*,process_explanations=False,transformation_process
             from services.deep_research.process_explanations import required
             if required(group['requirement'], transformation_processes=transformation_processes):
                 targets[-1]['processRequired']=True
-    if process_explanations == 4:
+    if process_explanations in (4,5):
         _anchor_wire(wire,rows,{eid for target in targets if target.get('processRequired') for eid in target['evidenceIds']})
     prompt='''Assess JOINT EVIDENCE READINESS for each frozen requested criterion below.
 This routes acquisition only. It is NOT factual approval, answer coverage or permission.
@@ -153,9 +153,11 @@ The final answer will independently verify every factual clause and requested po
 '''
     if any(t.get('processRequired') for t in targets):
         from services.deep_research.process_explanations import GUIDANCE,DISTINCT_GUIDANCE
+        other_units = 'for all other units omit it or use [].' if process_explanations == 5 else 'all other units omit that field.'
         prompt=prompt.replace('Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].',
-            'Use actual supplied IDs, no duplicates or omissions. processRequired=true units additionally require processLinks; all other units omit that field. False uses evidenceIds=[] and processLinks=[].')
-        if process_explanations == 4:
+            'Use actual supplied IDs, no duplicates or omissions. processRequired=true units additionally require processLinks; '
+            +other_units+' False uses evidenceIds=[] and processLinks=[].')
+        if process_explanations in (4,5):
             prompt+='''\nFor each ready process unit, supply one to four processLinks, each with exactly
 input, operation and output. A source role is {"anchor":"E2.q1"}. Select a displayed
 sentence ID from this unit's returned evidenceIds; the text alongside it is the original
@@ -164,8 +166,11 @@ that describes an actual operation. Input and output may also use {"request":"ex
 from the unit's criterion requirement. Role spans in each link must be distinct and
 nonoverlapping. A method name or result alone cannot support an operation. If the
 source anchors do not establish the process, return ready=false with both arrays empty.
-Example link: {"input":{"request":"input image"},"operation":{"anchor":"E2.q1"},"output":{"anchor":"E2.q2"}}.
 '''
+            if process_explanations == 5:
+                prompt+='Copy IDs as shown beside the original text, never a descriptive label. Use a request role only with a literal substring of this criterion; translations and paraphrases do not bind.\n'
+            else:
+                prompt+='Example link: {"input":{"request":"input image"},"operation":{"anchor":"E2.q1"},"output":{"anchor":"E2.q2"}}.\n'
         else:
             prompt+='\n'+(DISTINCT_GUIDANCE if process_explanations in (2,3) else GUIDANCE)+'\nEvidence processLinks IDs must be among returned evidenceIds of the same unit. Never bind sources from another unit.\n'
         if process_explanations==3:
@@ -201,6 +206,8 @@ def _strict_verdicts(saved):
         needs_process=process and target is not None and required(
             target['group']['requirement'], transformation_processes=transformation_processes)
         expected_keys={'unitId','ready','evidenceIds'}|({'processLinks'} if needs_process else set())
+        if process==5 and not needs_process and verdict.get('processLinks') == []:
+            expected_keys.add('processLinks')
         if (set(verdict)!=expected_keys
                 or not isinstance(verdict['unitId'],str) or verdict['unitId'] not in units
                 or type(verdict['ready']) is not bool or not isinstance(verdict['evidenceIds'],list)
@@ -219,8 +226,8 @@ def _strict_verdicts(saved):
             if not verdict['ready'] and verdict['processLinks']:return None
             entities={alias:fields(rows[eid],evidence=True) for alias,eid in aliases.items()}
             anchors = ({key:span for alias in verdict['evidenceIds']
-                        for key,span in evidence_anchors(alias,rows[aliases[alias]]).items()} if process==4 else None)
-            options = {'request_spans':True} if process in (2,4) else {}
+                        for key,span in evidence_anchors(alias,rows[aliases[alias]]).items()} if process in (4,5) else None)
+            options = {'request_spans':True} if process in (2,4,5) else {}
             if anchors is not None:
                 options['source_anchors'] = anchors
             if verdict['ready'] and validate_links(verdict['processLinks'],entities,set(verdict['evidenceIds']),unit['group']['requirement'],**options):return None
@@ -243,9 +250,10 @@ def _review_units(saved):
             or len(set(ids))!=len(ids) or set(ids)!=set(units)):
         return None,{'version':1,'status':'invalid_envelope','validUnits':[],'invalidUnits':[]}
     found={};valid=[];invalid=[]
+    process=_process_policy(saved)
     for row in parsed:
         unit=units[row['unitId']]
-        decision=_strict_verdicts({**saved,'processResponseContractVersion':4 if _process_policy(saved)==4 else 2,
+        decision=_strict_verdicts({**saved,'processResponseContractVersion':process if process in (4,5) else 2,
             'units':[unit],'content':json.dumps([row],ensure_ascii=False)})
         if decision is None:invalid.append(unit['unitId'])
         else:found.update(decision);valid.append(unit['unitId'])
@@ -253,7 +261,7 @@ def _review_units(saved):
 
 
 def _verdicts(saved):
-    return _review_units(saved)[0] if _process_policy(saved) in (3,4) else _strict_verdicts(saved)
+    return _review_units(saved)[0] if _process_policy(saved) in (3,4,5) else _strict_verdicts(saved)
 
 
 def _validate(saved,known):
@@ -292,7 +300,7 @@ def _validate(saved,known):
         keys.add(unit['key'])
     request=saved.get('request')
     process=_process_policy(saved)
-    if process in (3,4) and saved['status']=='received' and saved.get('responseAudit')!=_review_units(saved)[1]:
+    if process in (3,4,5) and saved['status']=='received' and saved.get('responseAudit')!=_review_units(saved)[1]:
         raise DeepResearchError('invalid_joint_assessment','保存的逐项取证审计与原始回复不一致。')
     expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process,
         transformation_processes=transformation_processes),'outputTokens':_response_tokens(saved['units'],process)}
@@ -311,7 +319,7 @@ def assess(state,record,update,invoke,coverage_gaps):
         required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     groups=_groups(obligations,required);known=_evidence(record)
     version=record.get('jointEvidenceContractVersion')
-    process=version-1 if type(version) is int and version in (2,3,4,5) else False
+    process=version-1 if type(version) is int and version in (2,3,4,5,6) else False
     from services.deep_research.process_explanations import transformation_enabled
     transformation_processes=bool(process) and transformation_enabled(record)
     vocabulary={'processExplanationVocabularyVersion':1} if transformation_processes else {}
@@ -438,7 +446,7 @@ def assess(state,record,update,invoke,coverage_gaps):
         else:
             current.update(status='received',content=result.get('content','') if isinstance(result,dict) else getattr(result,'content',''),
                 finishReason=result.get('finishReason',result.get('finish_reason')) if isinstance(result,dict) else getattr(result,'finish_reason',None))
-            if process in (3,4):current['responseAudit']=_review_units(current)[1]
+            if process in (3,4,5):current['responseAudit']=_review_units(current)[1]
             save()
     verdicts=_verdicts(current) if current['status']=='received' else None
     if verdicts is not None:
