@@ -366,6 +366,7 @@ class DeepResearchRepository:
                                      'comparisonSupervisionPremisesVersion', 'comparisonGroupedProseVersion',
                                      'comparisonLengthFinalizationVersion', 'comparisonPerPaperResultRolesVersion',
                                      'comparisonSelectedPairBindingVersion',
+                                     'comparisonBenchmarkRecheckReviewVersion',
                                      'comparisonEvaluationProtocolVersion',
                                      'processExplanationVocabularyVersion',
                                      'namedBenchmarkNavigationVersion', 'namedTableScopeVersion', 'revisionTableMultipleRowsVersion',

@@ -527,9 +527,11 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                         validated = validate_plan(validated)
                         validate_completion_criteria(validated, required=criteria_required)
                         requirement_changes.extend(advice_changes)
-                if record.get('comparisonBenchmarkRecheckReviewVersion') == 2:
+                recheck_version = record.get('comparisonBenchmarkRecheckReviewVersion')
+                if recheck_version in (2, 3):
                     from services.deep_research.benchmark_recheck import separate_recheck_requirement
-                    validated, recheck_changes = separate_recheck_requirement(validated, question)
+                    validated, recheck_changes = separate_recheck_requirement(
+                        validated, question, literal_proposal=recheck_version == 3)
                     if recheck_changes:
                         validated = validate_plan(validated)
                         validate_completion_criteria(validated, required=criteria_required)

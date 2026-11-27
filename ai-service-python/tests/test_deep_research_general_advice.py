@@ -192,6 +192,40 @@ def test_benchmark_recheck_separates_existing_criterion_before_target_allocation
         {**proposal, 'claimId': 'advice', 'obligationIds': [identity]}]) == ('advice',)
 
 
+def test_literal_recheck_survives_generic_explanation_classification():
+    from services.deep_research.benchmark_recheck import separate_recheck_requirement, target_ids
+    from services.deep_research.evidence_requirements import normalize_generated_requirements
+
+    boundary = '说明能否把两篇论文的 HPatches 数字直接用于排序'
+    matched = 'D2-Net 论文内部与 SuperPoint 的比较能支持什么'
+    advice = '并给出同条件复核建议'
+    excerpt = f'{boundary}，{matched}，{advice}'
+    question = f'比较两种论文。{excerpt}。'
+    plan = [{'itemId': 'compare', 'question': question, 'dependencies': [], 'obligations': [{
+        'obligationId': 'comparison', 'purpose': 'answer_requirement', 'question': excerpt,
+        'requestExcerpt': excerpt, 'requiredSources': ['p1', 'p2'],
+        'comparisonRole': {'kind': 'joint', 'label': '比较与建议', 'requestExcerpt': boundary},
+    }]}]
+    grounded, _ = normalize_generated_requirements(
+        plan, question, literal_questions=True, literal_imperatives=True, compound_questions=True,
+        comparison_roles=True, joint_comparison_requests=True, complete_comparison_clauses=True,
+    )
+    assert grounded[0]['obligations'][0]['completionCriteria'][-1]['responseType'] == 'explanation'
+    assert separate_recheck_requirement(grounded, question) == (grounded, [])
+
+    updated, changes = separate_recheck_requirement(grounded, question, literal_proposal=True)
+    joint, proposal = updated[0]['obligations']
+    assert [c['requirement'] for c in joint['completionCriteria']] == [boundary, matched]
+    assert proposal['completionCriteria'][-1]['responseType'] == 'procedure'
+    assert proposal['requestExcerpt'] == advice
+    assert changes[0]['obligationId'] == proposal['obligationId']
+    record = {'comparisonBenchmarkRecheckReviewVersion': 3, 'state': {
+        'outputKind': 'paper_comparison', 'plan': updated}}
+    point = {'kind': 'proposal', 'text': '在同一组图像对上复核，统一匹配规则和指标。',
+             'claimId': 'proposal', 'obligationIds': [proposal['obligationId']]}
+    assert target_ids(record, question, [point]) == ('proposal',)
+
+
 @pytest.mark.parametrize('revision', [False, True])
 @pytest.mark.parametrize('mode, text, quote, approved', [
     (None, '显存受限时优先考虑压缩表示，其文件更小，实际显存需实测。', 'The model file was 45 MB.', False),

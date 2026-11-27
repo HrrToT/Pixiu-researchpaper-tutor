@@ -45,7 +45,7 @@ def requests_recheck(question):
     return False
 
 
-def separate_recheck_requirement(plan, question):
+def separate_recheck_requirement(plan, question, *, literal_proposal=False):
     """Give an explicit, already distinct recheck criterion its own answer goal."""
     from services.deep_research.evidence_requirements import _request_parts
 
@@ -71,7 +71,9 @@ def separate_recheck_requirement(plan, question):
         if len(rechecks) != 1:
             continue
         advice, = rechecks
-        if advice['responseType'] != 'procedure' or _COMPARISON_BOUNDARY.search(advice['requirement']):
+        exact_recheck = literal_proposal and advice['requirement'] == recheck_excerpt
+        if ((advice['responseType'] != 'procedure' and not exact_recheck)
+                or _COMPARISON_BOUNDARY.search(advice['requirement'])):
             continue
         excerpt = obligation.get('requestExcerpt', '')
         boundary_parts = [part for part in _request_parts(excerpt) if len(part) >= 8
@@ -91,7 +93,7 @@ def separate_recheck_requirement(plan, question):
                 'requestExcerpt': boundary_excerpt, 'completionCriteria': remaining,
                 'comparisonRole': {'kind': 'joint', 'label': '可比性', 'requestExcerpt': boundary_excerpt}}
     recheck = {**original, 'obligationId': identity, 'question': recheck_excerpt, 'requestExcerpt': recheck_excerpt,
-               'completionCriteria': [advice],
+               'completionCriteria': [{**advice, 'responseType': 'procedure'}],
                'comparisonRole': {'kind': 'joint', 'label': '同条件复核建议', 'requestExcerpt': recheck_excerpt}}
     result = [{**item, 'obligations': [part for o in item['obligations']
               for part in ((boundary, recheck) if o is original else (o,))]} for item in plan]
@@ -106,7 +108,7 @@ def bounded_text(text):
 
 
 def target_ids(record, question, claims):
-    if (record.get('comparisonBenchmarkRecheckReviewVersion') not in (1, 2)
+    if (record.get('comparisonBenchmarkRecheckReviewVersion') not in (1, 2, 3)
             or record.get('state', {}).get('outputKind') != 'paper_comparison'
             or not requests_recheck(question)):
         return ()
