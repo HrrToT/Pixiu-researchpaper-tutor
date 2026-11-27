@@ -2,8 +2,9 @@
   "version": 1,
   "frozenAt": "2026-11-27",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_pending_first_execution",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
+  "firstExecutionReceipt": "deep-research-evidence/lightglue-h1-first-frozen-20261127.json",
   "materials": {
     "lightglue_v1": {
       "filename": "2306.13643v1.pdf",
