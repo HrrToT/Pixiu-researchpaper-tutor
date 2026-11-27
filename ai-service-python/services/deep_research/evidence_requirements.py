@@ -101,7 +101,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False,complete_comparison_clauses=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False,complete_comparison_clauses=False,correct_per_paper_results=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -140,6 +140,13 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
             if comparison_roles:
                 from services.deep_research.comparison_intent import validate_role
                 role = validate_role(obligation, question)
+                if (correct_per_paper_results and role['kind'] == 'joint'
+                        and len(original) == 1 and isinstance(excerpt, str)
+                        and role['requestExcerpt'] in excerpt and any(excerpt in layer for layer in human)
+                        and _PER_SOURCE_RESULT.fullmatch(excerpt)
+                        and not re.search(r'比较|对照|共同|排名|排序', excerpt)):
+                    role.update(kind='per_paper', requestExcerpt=excerpt)
+                    changes.append({'obligationId': oid, 'change': 'per_paper_quantitative_result_role'})
                 allow_source_results = complete_comparison_clauses and role['kind'] == 'per_paper'
                 # The longer context excerpt can straddle adjacent dimensions.
                 # Its typed short span identifies this obligation's actual axis.

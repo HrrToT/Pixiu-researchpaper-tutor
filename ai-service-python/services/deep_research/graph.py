@@ -404,6 +404,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                         literal_questions=grounded(record),literal_imperatives=imperative_grounded(record),atomic_dimensions=dimensions_enabled(record),
                         **({'compound_questions':True} if type(record.get('requestGroundingContractVersion')) is int and record['requestGroundingContractVersion'] in (4, 5) else {}),
                         **({'comparison_roles':True} if comparison_intent_enabled(record) else {}),
+                        **({'correct_per_paper_results':True} if record.get('comparisonPerPaperResultRolesVersion') == 1 else {}),
                         **({'joint_comparison_requests':True} if record.get('comparisonJointRequestCoverageVersion') in (1, 2, 3) else {}),
                         **({'per_paper_comparison_requests':True} if record.get('comparisonJointRequestCoverageVersion') in (2, 3) else {}),
                         **({'complete_comparison_clauses':True} if record.get('comparisonJointRequestCoverageVersion') == 3 else {}))

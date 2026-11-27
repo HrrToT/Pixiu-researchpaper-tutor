@@ -65,6 +65,9 @@ This role grants no source permission, factual support or completeness approval.
 
 def guidance(record):
     from services.deep_research.comparison_joint_reports import enabled,PLANNING
-    if not enabled(record):return GUIDANCE
-    return GUIDANCE.replace('Use joint for cross-paper comparability, tradeoffs and conditional choice. It requires a joint\n'
-        'judgement, not another summary of each abstract.',PLANNING)
+    result = GUIDANCE.replace('Use joint for cross-paper comparability, tradeoffs and conditional choice. It requires a joint\n'
+        'judgement, not another summary of each abstract.', PLANNING) if enabled(record) else GUIDANCE
+    if record.get('comparisonPerPaperResultRolesVersion') == 1:
+        result += (' A request for a result and its conditions from EACH paper is one per_paper axis '
+                   'with both required papers. A matched comparison or cross-paper judgement is a separate joint axis.')
+    return result

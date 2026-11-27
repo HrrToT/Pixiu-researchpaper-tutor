@@ -152,6 +152,17 @@ def test_only_explicit_single_forward_pass_supports_cardinality(description, sup
     assert bool(result['accepted']) is supported
 
 
+def test_bicubic_interpolation_name_is_not_a_count_of_operations():
+    quote = 'We use bi-cubic interpolation followed by L2 normalization.'
+    c, ev = setup('在检测位置用双三次插值，再做L2归一化。', quote)
+    assert verify_claims([c], [ev], quantity_spelling_version=20)['rejected'][0]['missingReportedNumbers'] == ['3e0']
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    assert verify_claims([c], [ev], checker, quantity_spelling_version=21)['accepted']
+    repeated, ev = setup('在检测位置重复三次双三次插值。', quote)
+    result = verify_claims([repeated], [ev], quantity_spelling_version=21)
+    assert result['rejected'][0]['missingReportedNumbers'] == ['3e0']
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
@@ -159,7 +170,7 @@ def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, rep
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释三个分量',
             'deferStart': True, 'quantitySpellingContractVersion': replacement}, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 20
+        assert run['quantitySpellingContractVersion'] == 21
         changed = 15 if replacement == 16 else replacement
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': changed})

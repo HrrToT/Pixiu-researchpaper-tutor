@@ -233,3 +233,27 @@ def test_requirement_coverage_contract_is_server_owned_and_immutable(tmp_path, r
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'evidenceCoverageContractVersion': replacement})
     finally: facade.shutdown()
+@pytest.mark.parametrize('enabled,excerpt,role', [
+    (False, '各引用一条带评测条件的原文定量结果', 'joint'),
+    (True, '各引用一条带评测条件的原文定量结果', 'per_paper'),
+    (True, '各引用一条用于横向比较的定量结果', 'joint'),
+    (True, '给出一条两篇共同的定量结果', 'joint'),
+])
+def test_explicit_each_paper_measurements_are_not_a_joint_comparison(enabled, excerpt, role):
+    from services.deep_research.evidence_requirements import normalize_generated_requirements
+
+    goal = {'obligationId': 'measure', 'purpose': 'answer_requirement', 'question': excerpt,
+            'requiredSources': ['left', 'right'], 'requestExcerpt': excerpt,
+            'comparisonRole': {'kind': 'joint', 'label': '定量结果', 'requestExcerpt': excerpt},
+            'completionCriteria': [{'criterionId': 'm', 'requirement': excerpt, 'responseType': 'identification'}]}
+    plan = [{'obligations': [goal]}]
+    after, changes = normalize_generated_requirements(plan, '比较两篇论文，' + excerpt + '。',
+        comparison_roles=True, correct_per_paper_results=enabled, complete_comparison_clauses=True,
+        literal_questions=True, literal_imperatives=True, compound_questions=True)
+    measurement = after[0]['obligations'][0]
+    assert measurement['comparisonRole']['kind'] == role
+    assert measurement['requiredSources'] == ['left', 'right']
+    if role == 'per_paper':
+        assert measurement['completionCriteria'][0]['responseType'] == 'identification'
+    assert any(c['change'] == 'per_paper_quantitative_result_role' for c in changes) == (role == 'per_paper')
+    assert goal['comparisonRole']['kind'] == 'joint'

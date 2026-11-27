@@ -60,6 +60,9 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
                                                    explicit_forward_pass=explicit_quantity_phrases >= 20)
         if explicit_quantity_phrases >= 20:
             text, dimensions = split_dimension_series(text)
+        if explicit_quantity_phrases >= 21:
+            # “双三次” names an interpolation kernel, not three executions.
+            text = re.sub(r'双三次(?=(?:插值|重采样))', '双立方', text)
     return dimensions | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
@@ -123,7 +126,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 20 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 21 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3
