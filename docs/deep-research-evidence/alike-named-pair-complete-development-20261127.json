@@ -1,0 +1,65 @@
+{
+  "case": "ALIKE endpoint development replay",
+  "sourceIndependentReceipt": "alike-h1-first-frozen-20261127.json",
+  "scientificContentCredit": 0,
+  "publication": {
+    "runId": "dr_alike_named_pair_coverage_dev",
+    "publicationId": "dr_pub_26bf3e18f39248e7b58008675f3dd047",
+    "outcome": "complete",
+    "scope": "isolated SQLite publication and renderer",
+    "body": "ALIKE v1（arXiv:2112.02906v1，§III-B、C）中，DKD先用非极大值抑制（保留局部最高分）和阈值选像素点；再把点周围窗口分数减去最大值、除以温度，经softmax归一化为权重，对窗口坐标加权求和并加到像素点，得到亚像素位置。位置梯度经加权和、softmax传回窗口分数；离散选点不可微。重投影损失促使变换后的点靠近对应点；峰值离散损失按距关键点的距离惩罚分数，促使分数集中。",
+    "characters": 240,
+    "sourcePages": [
+      3,
+      4,
+      5
+    ],
+    "citations": 6,
+    "coverage": {
+      "dkd-procedure": "covered",
+      "remaining-request": "covered",
+      "loss-constraints": "covered",
+      "answer_scope": "covered"
+    },
+    "productionWrites": 0,
+    "scientificContentCredit": 0,
+    "reportSha256": "ee37da0a7bf1e7b65765225a62404bb393959d0094e366f198350bd3f6305886"
+  },
+  "reviewTargetStructureContractVersion": 2,
+  "targetedOfflineTestsPassed": 119,
+  "verificationBoundary": {
+    "previousUnknownCoverageRequestResent": false,
+    "knownFactResponseRepeatedAtProvider": false,
+    "initialHarnessIssue": "The first replay returned the saved initial rejection for both verification phases. Its repair draft was retained, but its verification result was ignored. An isolated second stage ran the genuine native verifier on that draft."
+  },
+  "diagnosticReplay": {
+    "originalFactualReviewModelStatus": "passed",
+    "firstLocalDisposition": "received_invalid",
+    "reason": "The reviewer grouped already named loss terms using a count.",
+    "replayedSameRequestAndResponse": true,
+    "newDiagnosticDisposition": "accepted",
+    "preservesClaimAndSourceBindings": true
+  },
+  "usage": {
+    "providerCalls": 3,
+    "tokens": 19356,
+    "repair": 7398,
+    "factCheck": 5267,
+    "finalCoverage": 6691
+  },
+  "sha256": {
+    "alike-endpoint-repair-real-20261127": {
+      "calls.json": "e6c70e5d5cf356517130544f8e7cde398f1c30cb0acc0fcf09e8e421ffc31ed1",
+      "run.json": "a3b671e680b811d05191e17000578bbac4fcf70789cbd8a9eeb51362a27e5fde"
+    },
+    "alike-endpoint-verify-real-20261127": {
+      "calls.json": "3e02349070ac45ed6e1119ec91a23765f7edd77478d669abab1afcef4b026558",
+      "run.json": "c6057a3b53e4725025434c580d9b996e59479c2167fc8cb4a0e76fdae36d4b92"
+    },
+    "alike-named-pair-coverage-real-20261127": {
+      "calls.json": "601d2659ac0d4375e0816ce9b1c0632b40e8827c93c0c56154a734b00baa7a65",
+      "publication.json": "ed154a2b38907b73f1228e626ed3d978b82126296f848f7c2700a102814a78f4",
+      "published-report.md": "712280aae5bef2a18665bd8e6a9779a47fa97dc11b428453ed36853635e2fe9e"
+    }
+  }
+}
