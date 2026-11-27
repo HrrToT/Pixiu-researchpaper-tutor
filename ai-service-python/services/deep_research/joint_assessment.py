@@ -348,6 +348,14 @@ def assess(state,record,update,invoke,coverage_gaps):
                 candidates=sorted(candidates,key=lambda e:(*navigation_scores[e['evidenceId']][:-1],
                     e['evidenceId'] not in used.get(gid,set()),navigation_scores[e['evidenceId']][-1]),reverse=True)
             else:candidates=sorted(candidates,key=lambda e:e['evidenceId'] in used.get(gid,set()))
+            if record.get('localSectionContextContractVersion') == 5:
+                member_ids = {m['obligationId'] for m in group['members']}
+                local_sources = {s['sourceId'] for s in domain.get('readResults', [])
+                                 if s.get('location', {}).get('matchedPdfMethodPassage') is True
+                                 and member_ids.intersection(s.get('obligationIds', ()))}
+                local_ids = {e['evidenceId'] for e in domain.get('evidence', [])
+                             if e.get('sourceId') in local_sources}
+                candidates.sort(key=lambda e: e['evidenceId'] not in local_ids)
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
             if not selected or any(not any(_matches(e,source) for e in selected) for source in group['requiredSources']):

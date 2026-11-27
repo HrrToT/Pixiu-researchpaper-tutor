@@ -153,8 +153,9 @@ class LocalTaskRetriever:
                 **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision in (7,8) else {}),
                 **({'conditions':acquisition_conditions(self.repo.require_run(self.run_id),query,pdf_id)} if precision==8 else {}))
         found = self._scope_evidence(found, passages, query, pdf_id, limit)
-        from services.deep_research.section_context import include_pdf_method_heading
+        from services.deep_research.section_context import include_pdf_method_heading, include_pdf_method_passages
         found = include_pdf_method_heading(found, pages, record, query, material, min(limit, 5))
+        found = include_pdf_method_passages(found, pages, record, query, material, min(limit, 5))
         return self._stamp_identity(
             self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages), pdf_id)
 
