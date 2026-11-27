@@ -1,0 +1,63 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "actualRunProfile": {
+    "comparisonCellsContractVersion": 1,
+    "comparisonReviewBatchContractVersion": 2,
+    "comparisonPlanningContractVersion": 6,
+    "comparisonAuthoringContractVersion": 16,
+    "comparisonAuditEnvelopeContractVersion": 17,
+    "comparisonCrossPaperBoundaryContractVersion": 6,
+    "comparisonPdfTableFallbackVersion": 2
+  },
+  "developmentOnly": true,
+  "sourceTree": "1885d0191988094bca8f906cb7ebbd8295e8aff7",
+  "definitionHash": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "runId": "dr_run_24d934399d8f5f9885c3bdaf6c65071c",
+  "caseQuestionSha256": "3ddc35a0f58bec370a2730a7665f03fdfbe6653afa7f9c122c6286008027e2b3",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "materialSha256": [
+    "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732",
+    "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1"
+  ],
+  "retrieval": "production_lexical_pdf_fallback",
+  "scopeBoundary": "isolated_local_material_endpoint",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "status": "queued",
+  "outcome": "none",
+  "errorCode": "",
+  "elapsedSeconds": 0,
+  "externalSearches": 0,
+  "providerRequests": 0,
+  "providerStatuses": {},
+  "providerModels": {},
+  "providerUsage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "cached_input_tokens": 0
+  },
+  "comparisonStageInputPresent": false,
+  "verifiedClaimCount": 0,
+  "publicationDispatched": false,
+  "isolatedSqliteRows": {
+    "outbox": 0,
+    "publications": 0
+  },
+  "materialBoundary": {},
+  "artifactDirectory": "openai-h2-local-features-profile-20261127-preflight",
+  "artifactSha256": {
+    "intent.json": "2360006767435e6c7518810cfbfbba2132db9407a0195b1be958ebbbfb0c846a",
+    "run.json": "3cd692621032c0380893e0fbe389cc1868cb385ba84bae43d7154401073939f4",
+    "calls.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "result.json": "de5c64ca8de27c74a09ae797d8530c0d02e8bedceee65c67f4be1306974059e1",
+    "boundary.json": "e3566b3a06430868d71e9287dfd6c6c520a3da027aabea01951d407ee131dc2f"
+  },
+  "scientificContentCredit": 0,
+  "qualification": "isolated_offline_profile_preflight",
+  "runnerSha256": "5e214111540b41d2ff4722478360b3dc7984b9179a14ae5bcfe059e7f1b61101"
+}

@@ -71,7 +71,16 @@
       "state": "executed_content_not_accepted",
       "case": "H2-ADAPT",
       "manifest": "DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json",
-      "result": "deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json"
+      "result": "deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json",
+      "localFeaturesExecution": {
+        "state": "invalid_profile_first_execution_retired_for_independent_acceptance",
+        "case": "H2-LOCAL-FEATURES",
+        "manifest": "DEEP_RESEARCH_LOCAL_FEATURES_COMPARISON_HOLDOUT_20261127.json",
+        "result": "deep-research-evidence/local-features-h2-default-profile-first-20261127.json",
+        "correctedOfflinePreflight": "deep-research-evidence/local-features-h2-profile-preflight-20261127.json",
+        "scientificContentCredit": 0,
+        "configuredDevelopmentRun": "deep-research-evidence/local-features-h2-configured-development-20261127.json"
+      }
     },
     {
       "id": "H3",

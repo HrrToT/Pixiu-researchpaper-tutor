@@ -1,0 +1,111 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "actualRunProfile": {
+    "comparisonCellsContractVersion": 1,
+    "comparisonReviewBatchContractVersion": 2,
+    "comparisonPlanningContractVersion": 6,
+    "comparisonAuthoringContractVersion": 16,
+    "comparisonAuditEnvelopeContractVersion": 17,
+    "comparisonCrossPaperBoundaryContractVersion": 6,
+    "comparisonPdfTableFallbackVersion": 2
+  },
+  "developmentOnly": true,
+  "sourceTree": "1885d0191988094bca8f906cb7ebbd8295e8aff7",
+  "definitionHash": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "runId": "dr_run_24d934399d8f5f9885c3bdaf6c65071c",
+  "caseQuestionSha256": "3ddc35a0f58bec370a2730a7665f03fdfbe6653afa7f9c122c6286008027e2b3",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "materialSha256": [
+    "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732",
+    "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1"
+  ],
+  "retrieval": "production_lexical_pdf_fallback",
+  "scopeBoundary": "isolated_local_material_endpoint",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "qualification": "configured_development_only",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "stopReason": "max_requery",
+  "providerRequests": 5,
+  "providerModels": {
+    "gpt-6-luna": 5
+  },
+  "providerUsage": {
+    "total_tokens": 17648,
+    "input_tokens": 16269,
+    "output_tokens": 1379,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 15598
+  },
+  "modelNodes": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3
+  },
+  "elapsedSeconds": 82.0,
+  "externalSearches": 0,
+  "materialBoundary": {
+    "scopeCheck": 209,
+    "pdf": 4
+  },
+  "readPages": {
+    "D2-Net: A Trainable CNN for Joint Detection and Description of Local Features": [
+      2,
+      4,
+      6,
+      9,
+      10
+    ],
+    "SuperPoint: Self-Supervised Interest Point Detection and Description": [
+      1,
+      6,
+      7
+    ]
+  },
+  "literalEvidenceCount": 81,
+  "verifiedTablePacketCount": 0,
+  "readinessVerdicts": 10,
+  "positiveReadinessVerdicts": 0,
+  "comparisonStageInputPresent": false,
+  "verifiedClaimCount": 0,
+  "pdfFallbackProbe": {
+    "includeTables": true,
+    "includeNamedTables": true,
+    "includeDeclaredArrows": true,
+    "superpointPage7TableCaptionInText": true,
+    "superpointPage7NormalizedNumericLiteralPresent": false,
+    "d2NetPage6ProtocolTermsAndThresholdInText": true,
+    "verifiedTablePacketsInEitherPdf": 0
+  },
+  "planningReplay": {
+    "scope": "Saved model plan normalized offline with original and revised rules. No model calls.",
+    "rawJointCriteria": [
+      "依据两篇论文报告的评测设置，判断其 HPatches 数字是否足以直接排序，并说明判断依据。",
+      "概述 D2-Net 论文内部与 SuperPoint 比较所能支持的结论及其适用边界。",
+      "提出基于相同评测条件复核两种方法的建议，不要求报告未实施的测量结果。"
+    ],
+    "originalJointCriteria": [
+      "能否把两篇论文的 HPatches 数字直接用于排序"
+    ],
+    "revisedJointCriteria": [
+      "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+      "并给出同条件复核建议"
+    ]
+  },
+  "artifactDirectory": "openai-h2-local-features-profile-20261127-development",
+  "artifactSha256": {
+    "intent.json": "2360006767435e6c7518810cfbfbba2132db9407a0195b1be958ebbbfb0c846a",
+    "run.json": "b078359629095fca2fd83ba68c247eceb29c54642b0ca8216b9123037fb0c93d",
+    "calls.json": "44dfe8d49c4f6cfdffbefcc76c3b432627c5b508626230ad2fee41acb59fba1e",
+    "result.json": "b933815a5ff107a541457deac008e62c29e3aaf0e9fe2cbcf64e32f707189fe2",
+    "boundary.json": "cfc3c58adb40f53551724ec3f03e11053309b5661aca75d5228cf9568f0251a5",
+    "provider.jsonl": "327088db7858fdd99596ee5640e4a7d7c2c2b1087a7b8efdecaf73fef76d5b3a"
+  },
+  "scientificContentCredit": 0
+}
