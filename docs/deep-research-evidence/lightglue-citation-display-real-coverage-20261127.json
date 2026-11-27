@@ -1,0 +1,32 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "isolated_development_publication_from_verified_candidate",
+  "baseline": "lightglue-strict-threshold-coverage-review-20261127.json",
+  "offlinePreflight": "lightglue-citation-display-audit-replay-20261127.json",
+  "codeCommit": "977add5e5",
+  "sourceRevision": "arxiv:2306.13643v1",
+  "providerModel": "gpt-6.1-terra",
+  "providerCalls": [{"node": "verify_answer_coverage", "tokens": 5913, "promptBytes": 21436}],
+  "promptSha256": "cdd9b8afd4e51baf43480a13600bd5ffe46d4ce5a0745639210fed18e7b28124",
+  "candidate": {
+    "previouslyVerifiedClaimReusedExactly": true,
+    "newSynthesisOrClaimReviewCalls": 0,
+    "visibleAnswerCharacters": 221,
+    "citationLinksAndVerbatimExcerpts": 4
+  },
+  "coverage": {
+    "covered": ["early-stopping", "point-pruning", "remaining-request", "answer_scope"],
+    "coherence": "checked",
+    "coherenceIssues": [],
+    "gaps": []
+  },
+  "isolatedReportOutcome": "complete",
+  "isolatedPublicationId": "dr_pub_37cce4cf79244ae39fd98347d29ff4d1",
+  "liveApplicationWrites": 0,
+  "independentAcceptanceCredit": false,
+  "sha256": {
+    "intent.json": "4dc8ba6f60c1862e9a72f6c9a33d57b72fe5903707414c60ab3b296f71c57395",
+    "calls.json": "e050da0e9c54c563b8fa1e57082f9f8131fe09c9641a204e04380d5cbc16ee9d",
+    "run.json": "4669f4843ee67439ca7d81be35b935a6a68e88f639f49fa189f4343be2c5ef8f"
+  }
+}

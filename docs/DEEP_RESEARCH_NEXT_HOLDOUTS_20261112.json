@@ -24,6 +24,7 @@
         "manifest": "DEEP_RESEARCH_LIGHTGLUE_EXPLANATION_HOLDOUT_20261127.json",
         "preflight": "deep-research-evidence/lightglue-h1-live-preflight-20261127.json",
         "result": "deep-research-evidence/lightglue-h1-first-frozen-20261127.json",
+        "developmentPublication": "deep-research-evidence/lightglue-citation-display-real-coverage-20261127.json",
         "scientificContentCredit": 0
       }
     },
