@@ -41,12 +41,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6))
 
 
 def _evaluation_protocol_score(text):
@@ -59,7 +59,7 @@ def _evaluation_protocol_score(text):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 

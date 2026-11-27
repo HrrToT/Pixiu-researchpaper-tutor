@@ -326,7 +326,7 @@ class ResearchFacade:
             "synthesisInputContractVersion": 2,
             "comparisonCellsContractVersion": self._comparison_cells_version,
             **({'comparisonMechanismReadContractVersion': 1} if self._comparison_cells_version == 1 else {}),
-            **({'comparisonEvaluationProtocolVersion': 5} if self._comparison_cells_version == 1 else {}),
+            **({'comparisonEvaluationProtocolVersion': 6} if self._comparison_cells_version == 1 else {}),
             **({'comparisonLiteralAxisGoalVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonPdfTableFallbackVersion': 2} if self._comparison_cells_version == 1
                 and output_kind == 'paper_comparison' else {}),

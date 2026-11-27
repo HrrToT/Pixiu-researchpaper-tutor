@@ -144,7 +144,11 @@ def retain_local_protocol_note(rows, candidates, record, query, limit):
     """Keep one original note when the local results already contain a marked table."""
     from services.deep_research.measurement_table_navigation import planned_query_priority
 
-    if limit < 2 or len(rows) > limit or not prefers_protocol_note(record) or not planned_query_priority(query):
+    pdf_protocol = record.get('comparisonEvaluationProtocolVersion') == 6
+    explicit_benchmark = pdf_protocol and re.search(r'\bbaseline\b', query, re.I) and re.search(
+        r'\bbenchmark\b', query, re.I)
+    if (limit < 2 or len(rows) > limit or not prefers_protocol_note(record)
+            or not (planned_query_priority(query) or explicit_benchmark)):
         return rows
 
     def page_identity(row):
@@ -180,6 +184,7 @@ def retain_local_protocol_note(rows, candidates, record, query, limit):
     if len(rows) < limit:
         return [*rows, note]
     # A generic hit can occupy the first slot; keep tables and targeted premises.
+    replaceable_modes = {'indexed_hybrid', 'pdf_lexical_fallback'} if pdf_protocol else {'indexed_hybrid'}
     replace = next((i for i in range(len(rows) - 1, -1, -1)
-                    if not rows[i].get('tableData') and rows[i].get('retrievalMode') == 'indexed_hybrid'), None)
+                    if not rows[i].get('tableData') and rows[i].get('retrievalMode') in replaceable_modes), None)
     return [*rows[:replace], note, *rows[replace + 1:]] if replace is not None else rows

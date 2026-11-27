@@ -91,6 +91,31 @@ def test_explicit_benchmark_example_retains_and_reads_same_page_protocol():
     assert select_read_sources(ranked, denied, 2, protocol_note=True) == []
 
 
+def test_pdf_benchmark_retains_same_page_note_without_displacing_targeted_scope():
+    from services.deep_research.table_note_index import retain_local_protocol_note
+
+    base = {'pdfId': 'work', 'versionId': 'v1', 'location': {'page': 6},
+            'accessLevel': 'fulltext', 'retrievalMode': 'pdf_lexical_fallback'}
+    table = {**base, 'sourceId': 'table', 'retrievalMode': 'pdf_verified_table',
+             'tableData': {'groups': [['Dataset', ['FPS']]], 'rows': [[1, 'Baseline *', ['20']]]}}
+    prose = {**base, 'sourceId': 'prose', 'text': 'General prose.'}
+    scope = {**prose, 'sourceId': 'scope', 'retrievalMode': 'pdf_scope_condition'}
+    note = {**base, 'sourceId': 'note',
+            'text': 'We re-trained the baseline on our platform, with results marked by ∗.'}
+    old = {'question': '数字只选一组对照作例子。', 'state': {'outputKind': 'paper_comparison'},
+           'comparisonJointReportsContractVersion': 16, 'comparisonEvaluationProtocolVersion': 5}
+    latest = {**old, 'comparisonEvaluationProtocolVersion': 6}
+    query = 'baseline benchmark results evaluation protocol dataset hardware'
+    original = [prose, table, scope]
+    assert retain_local_protocol_note(original, [note], old, query, 3) == original
+    wrong_page = {**note, 'sourceId': 'elsewhere', 'location': {'page': 7}}
+    wrong_version = {**note, 'sourceId': 'older', 'versionId': 'v0'}
+    wrong_paper = {**note, 'sourceId': 'foreign', 'pdfId': 'another'}
+    assert retain_local_protocol_note(original, [wrong_page, wrong_version, wrong_paper], latest, query, 3) == original
+    assert retain_local_protocol_note(original, [note], latest, query, 3) == [note, table, scope]
+    assert retain_local_protocol_note([table, scope], [note], latest, query, 2) == [table, scope]
+
+
 def evidence_packet():
     rows,owners,lit=packet()
     for row in rows:row.update(sourceWorkId='work',sourceVersionId='v1',accessLevel='fulltext',obligationIds=['o'],verification={'literal':'passed'})
