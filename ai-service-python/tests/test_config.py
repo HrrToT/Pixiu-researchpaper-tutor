@@ -35,6 +35,12 @@ def test_features_default_off():
     assert settings.pixiu_allow_reproducibility is False
 
 
+def test_research_pinned_pdf_fallback_defaults_on_and_can_be_disabled(monkeypatch):
+    assert Settings.model_fields['deep_research_pinned_pdf_fallback_enabled'].default is True
+    monkeypatch.setenv('DEEP_RESEARCH_PINNED_PDF_FALLBACK_ENABLED', 'false')
+    assert Settings().deep_research_pinned_pdf_fallback_enabled is False
+
+
 def test_runtime_defaults():
     assert settings.pixiu_agentic_max_iterations == 3
     assert settings.pixiu_max_tokens_per_task == 500_000
