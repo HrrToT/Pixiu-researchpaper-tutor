@@ -1,0 +1,32 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "known_case_replay_from_saved_evidence",
+  "codeCommit": "2d9592fe80897a1aefe0d9ce4741fe552a6091f0",
+  "runId": "dr_tmac_same_page_development_20261127",
+  "priorRunId": "dr_run_5eaa17da2e135c8589f97786d3761953",
+  "executionStatus": "completed",
+  "applicationOutcome": "complete",
+  "scientificContentAccepted": false,
+  "publicationAudit": "Missing explicit author-reported 0.3% in final body. The verifier read same page as the same page number across the two PDFs. Coverage incorrectly returned covered once this claim was removed.",
+  "recoveredExactCells": 12,
+  "tableDifferencePercentagePoints": 3.0,
+  "actualFinalBodyCharacters": 276,
+  "rejectedClaim": {
+    "claimId": "c2",
+    "reason": "semantic_unresolved",
+    "issue": "cross-revision page-number confusion"
+  },
+  "supplementalModelCalls": 5,
+  "supplementalTokens": 30956,
+  "totalTokensIncludingRetainedRun": 66811,
+  "automaticRetries": 0,
+  "independentHoldoutCredit": 0,
+  "sha256": {
+    "intent.json": "3f70c0e5e362767ea45f05f3c65ec6d16281da044c3e06ed49f6eaddeb7c8e12",
+    "run.json": "8613b08a97f2cfd2eb60f69a66ed8bcd7f7827da553d82cb736214af7ead10da",
+    "calls.json": "5dbccbebdf9a55473c27d7e101e5b03df9e5da59f98da74d749b49e0bd5400e8",
+    "synthesize-return.json": "0146e9369839a5354013cea1c167fdfea7d73fe6230ad544cdf6507a7dc06623",
+    "verify-return.json": "92a1e144ceea2ffff8873326744ac76d2f852ae6e73f358947166167704591aa",
+    "publish-return.json": "599535bb8ed547a49e1715f41549ec91eb691de01e41857a00cbbcdc5be06fb2"
+  }
+}
