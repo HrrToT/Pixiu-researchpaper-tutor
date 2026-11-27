@@ -550,11 +550,11 @@ class TrackedLLMInvoker:
                     'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
                         and transport_record['reportingOwnershipContractVersion']==1,
                     **({'factual_reason_parts':True} if type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion']==1 else {}),
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2) else {}),
                     **({'factual_source_fields':True} if type(transport_record.get('reviewSourceFieldReferenceContractVersion')) is int
                        and transport_record['reviewSourceFieldReferenceContractVersion']==1
                        and type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion']==1 else {})}
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2) else {})}
                    if type(transport_record.get('factualEnvelopeContractVersion')) is int
                    and transport_record['factualEnvelopeContractVersion']==2
                    and type(transport_record.get('factualDecisionContractVersion')) is int
@@ -1079,6 +1079,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
         decision_policy=(decision_policy() if callable(decision_policy) else decision_policy) is True
         single_decision=False
         reason_parts=False
+        reason_parts_version=0
         source_field_references=False
         if decision_policy:
             from services.deep_research.factual_decision import eligible, prompt as decision_prompt
@@ -1097,7 +1098,10 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                     schema_policy=((diagnostic_binding() if callable(diagnostic_binding) else diagnostic_binding) is True
                                    and schema_eligible(claims))
                 parts_policy=self._review_reason_parts
-                reason_parts=schema_policy and (parts_policy() if callable(parts_policy) else parts_policy) is True
+                parts_policy = parts_policy() if callable(parts_policy) else parts_policy
+                reason_parts_version = (1 if parts_policy is True else parts_policy
+                                        if type(parts_policy) is int and parts_policy in (1, 2) else 0)
+                reason_parts = schema_policy and bool(reason_parts_version)
                 fields_policy=self._review_source_fields
                 source_field_references=reason_parts and (fields_policy() if callable(fields_policy) else fields_policy) is True
                 prompt=decision_prompt(claims_text,evidence_text,
@@ -1512,7 +1516,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
-            if parameter_policy in (2, 3):
+            if reason_parts and reason_parts_version == 2:
+                from services.deep_research.review_reason_parts import NO_NEW_EXPOSITORY_COUNTS
+                prompt += '\n' + NO_NEW_EXPOSITORY_COUNTS
+            elif parameter_policy in (2, 3):
                 prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
                            'Describe the steps directly and retain any quantities required for the verdict.\n')
         if scope_observations and source_field_references:

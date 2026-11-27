@@ -1,0 +1,25 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "development_replay",
+  "baseline": "lightglue-method-section-real-check-20261127.json",
+  "requestPolicies": {
+    "audienceFirstContractVersion": 3,
+    "reviewReasonPartsContractVersion": 2
+  },
+  "checks": {
+    "revisedSynthesisPromptIncludesEvidenceGapGuidance": true,
+    "revisedSynthesisPromptRetainsLiteralConfidenceDistinction": true,
+    "revisedSynthesisPromptBytes": 23846,
+    "synthesisPromptLimitBytes": 24000,
+    "savedReviewerResponseRejectedUnderBothPolicies": true,
+    "counterfactualRemovingUnnecessaryCountPassedClaimCheck": true,
+    "counterfactualWithFabricatedCountStillRejected": true,
+    "targetedTestsPassed": 258
+  },
+  "preservedReviewBoundary": "The original response still fails diagnostic validation. The modified response was supplied as a test fixture and does not change the historical run or constitute a model verdict.",
+  "wholeAnswerAudited": false,
+  "independentAcceptanceCredit": false,
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "localReviewReplaySha256": "2de4984447dd322523027e95d62b01cf113c9b48e43dcf3c418f91aa5fec64f7"
+}

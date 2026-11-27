@@ -105,13 +105,31 @@ def test_singleton_native_transport_accepts_new_schema_only_with_frozen_flag_and
     assert old['content']=='null'
 
 
-@pytest.mark.parametrize('replacement',[None,True,False,0,'1',2])
+@pytest.mark.parametrize('version', [1, 2])
+def test_new_reviewer_wording_leaves_the_numeric_validation_gate_intact(version):
+    sent = []
+    raw = row()
+    raw['reasonParts'].append({'text': '论文给出了两个条件。'})
+
+    def invoke(**kwargs):
+        sent.append(kwargs['prompt'])
+        return {'content':json.dumps([raw])}
+
+    check = checker(invoke, **{**opts(), 'review_reason_parts':version})
+    rejected = check([target()], evidence())[0]
+    assert rejected['reviewDiagnosticAudit']['errors'] == ['new_diagnostic_numbers_not_bound']
+    assert ('solely to summarize' in sent[-1]) is (version == 2)
+    raw['reasonParts'][-1]['text'] = 'The conditions agree with the cited text.'
+    assert check([target()], evidence())[0]['status'] == 'passed'
+
+
+@pytest.mark.parametrize('replacement',[None,True,False,0,'1',1,3])
 def test_factory_owns_immutable_parts_policy(tmp_path,replacement):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         created,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'核查','reviewReasonPartsContractVersion':replacement},start_async=False)
-        saved=repo.require_run(created['runId']);assert type(saved['reviewReasonPartsContractVersion']) is int and saved['reviewReasonPartsContractVersion']==1
+        saved=repo.require_run(created['runId']);assert type(saved['reviewReasonPartsContractVersion']) is int and saved['reviewReasonPartsContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(saved['runId'],lambda r:{**r,'reviewReasonPartsContractVersion':replacement})
     finally:facade.shutdown()

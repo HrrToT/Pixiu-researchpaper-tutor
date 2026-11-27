@@ -40,7 +40,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['reviewDiagnosticContractVersion']==2
         assert first['perClaimReviewFailureContractVersion']==1
         assert first['audienceEditableSourceContractVersion']==2
-        assert first['audienceFirstContractVersion']==2
+        assert first['audienceFirstContractVersion']==3
         assert first['audienceRequestContractVersion']==1
         assert first['repairInstructionsContractVersion']==5
         assert first['initialPlanResponseContractVersion']==1

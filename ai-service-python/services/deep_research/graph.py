@@ -1737,10 +1737,14 @@ space with unsupported global absence or incidental iteration/performance values
                 sections=section_templates, obligations=draft_obligations, sources=source_registry,
                 evidence_marker=evidence_marker, table_marker=table_marker, claim_fields=claim_fields,
                 scope_enabled=scope_expression_enabled(record), compact_evidence_wire=compact_evidence_wire)
-        from services.deep_research.audience_schedule import DIRECT_READER_GUIDANCE, direct_reader_candidate
+        from services.deep_research.audience_schedule import (
+            DIRECT_READER_GUIDANCE, READER_EVIDENCE_GAP_GUIDANCE, direct_reader_candidate,
+        )
         direct_reader = direct_reader_candidate(record, output_kind)
         if direct_reader:
             prompt += DIRECT_READER_GUIDANCE
+            if record['audienceFirstContractVersion'] == 3:
+                prompt += READER_EVIDENCE_GAP_GUIDANCE
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}

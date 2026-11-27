@@ -21,6 +21,11 @@ a source ID, omitted premise or unreadable expression. Missing support stays unr
 This only encodes the explanation: the whole-claim decision and EVERY independent
 source,scope,comparison,condition and numerical check still apply.'''
 
+NO_NEW_EXPOSITORY_COUNTS = '''Describe required conditions or operations directly.
+Keep quantities necessary to the verdict. Avoid adding a count of conditions,
+steps, facts or reasons solely to summarize them. State the actual prerequisites
+or operations without introducing a count.'''
+
 
 def expand(row, *, field_references=False):
     if type(field_references) is not bool:raise ValueError('Invalid reviewer source-field policy')

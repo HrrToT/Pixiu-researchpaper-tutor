@@ -427,7 +427,7 @@ class ResearchFacade:
             "externalReadingContractVersion": 5,
             "externalExplanationInputVersion": 4,
             "externalDiagnosticsContractVersion": 1,
-            "reviewReasonPartsContractVersion": 1,
+            "reviewReasonPartsContractVersion": 2,
             "reviewSourceFieldReferenceContractVersion": 1,
             "reviewParameterIdentityContractVersion": 3 if self._comparison_cells_version == 1 else 1,
             "reviewTargetStructureContractVersion": 1,
@@ -525,7 +525,7 @@ class ResearchFacade:
             "audienceRewriteContractVersion": 9,
             "audienceMappedSourceContractVersion": 5,
             "audienceRequestContractVersion": 1,
-            "audienceFirstContractVersion": 2,
+            "audienceFirstContractVersion": 3,
             "audienceBudgetContractVersion": 1,
             "plainCompactionContractVersion": 1,
             "coverageRepairRoutingContractVersion": 1,
@@ -1462,8 +1462,7 @@ class ResearchFacade:
                 and {1: True, 2: 2, 3: 3}.get(parameter_version, False)),
             integrated_diagnostic_schema=lambda: type(self._repo.require_run(run_id).get('reviewDiagnosticContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewDiagnosticContractVersion']==2,
-            review_reason_parts=lambda: type(self._repo.require_run(run_id).get('reviewReasonPartsContractVersion')) is int
-                and self._repo.require_run(run_id)['reviewReasonPartsContractVersion']==1,
+            review_reason_parts=lambda: self._repo.require_run(run_id).get('reviewReasonPartsContractVersion', False),
             review_source_fields=lambda: type(self._repo.require_run(run_id).get('reviewSourceFieldReferenceContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewSourceFieldReferenceContractVersion']==1,
             known_single_review_failure=lambda: per_claim_review_failure_enabled(self._repo.require_run(run_id)),
