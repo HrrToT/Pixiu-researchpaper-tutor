@@ -74,14 +74,13 @@ def partition_review(record, data, aliases, proposal, build_request, limit):
 
 
 def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks, *, scoped=False,
-                             required_design_evidence_only=False):
+                             required_design_evidence_only=False, fit_check_count=False):
     """Keep the full design in design reviews; facts may use their own source packet."""
     fact_sources = {fact['id']: set(fact['evidenceRefs']) for fact in proposal['sourceFacts']}
     batches = []
     for key in ('factChecks', 'sectionChecks', 'humanChecks'):
         checks = data[key]
-        for start in range(0, len(checks), max_checks):
-            selected = checks[start:start + max_checks]
+        def build_part(selected):
             packet = {**data, 'factChecks': [], 'sectionChecks': [], 'humanChecks': [], key: selected}
             if key == 'factChecks':
                 cited = set().union(*(fact_sources[entry[1]] for entry in selected))
@@ -118,9 +117,22 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
                 request, size, supplied = fit_accounted_evidence(
                     record, packet, aliases, proposal, build_request, limit,
                     required_only=required_design_evidence_only)
-            if size > limit:
+            return {'request': request, 'inputBytes': size,
+                    'checkIds': [entry[0] for entry in selected],
+                    'suppliedEvidenceAliases': supplied}
+
+        start = 0
+        while start < len(checks):
+            end = min(start + max_checks, len(checks))
+            while end > start:
+                part = build_part(checks[start:end])
+                if part and part['inputBytes'] <= limit:
+                    batches.append(part)
+                    break
+                if not fit_check_count:
+                    return []
+                end -= 1
+            if end == start:
                 return []
-            batches.append({'request': request, 'inputBytes': size,
-                            'checkIds': [entry[0] for entry in selected],
-                            'suppliedEvidenceAliases': supplied})
+            start = end
     return batches

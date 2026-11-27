@@ -26,6 +26,9 @@ _DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
     r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
 _SINGLE_FORWARD_PASS = re.compile(r'\b(?:single|one)(?=[\s-]+forward[\s-]+pass\b)', re.I)
+_SH_BAND_AT_INTERVAL = re.compile(
+    r'\b(?P<verb>introduc(?:e|es|ed|ing)\s+)one'
+    r'(?=\s+band\s+of\s+(?:the\s+)?SH\s+after\s+every\s+[1-9][0-9,]*\s+iterations?\b)', re.I)
 _GAUSSIAN_REPLACEMENT_COUNT = re.compile(
     r'(?P<prefix>\breplac(?:e|es|ed|ing)\s+(?:such\s+|these\s+|the\s+)?(?:large\s+)?Gaussians\s+(?:by|with)\s+)'
     r'(?P<count>' + '|'.join(_WORDS) + r')(?=\s+new\s+(?:Gaussians|ones)\b)', re.I)
@@ -259,7 +262,8 @@ def number_display(identity):
 
 
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
-                                        image_pair_articles=False, explicit_forward_pass=False):
+                                        image_pair_articles=False, explicit_forward_pass=False,
+                                        explicit_sh_band_schedule=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
@@ -268,6 +272,8 @@ def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gauss
             lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)
     if explicit_forward_pass:
         text = _SINGLE_FORWARD_PASS.sub('1', text)
+    if explicit_sh_band_schedule:
+        text = _SH_BAND_AT_INTERVAL.sub(r'\g<verb>1', text)
     if image_pair_articles:
         # In a transformation description, “a source image and another
         # image” introduces the pair members. Exact or per-input counts and

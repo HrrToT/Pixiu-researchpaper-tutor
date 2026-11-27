@@ -306,6 +306,20 @@ def test_output_bounded_review_partitions_even_when_input_fits():
     assert all(part['suppliedEvidenceAliases'] == ['E1', 'E2'] for part in parts[1:])
     assert all(part['request']['requirements'] == data['requirements'] for part in parts[1:])
 
+    def measured_with_checks(view):
+        return view, len(view['evidence']) * 10 + len(view['humanChecks']) * 3
+
+    assert partition_bounded_review(record, data, aliases, proposal, measured_with_checks, 26, 3) == []
+    adaptive = partition_bounded_review(record, data, aliases, proposal, measured_with_checks, 26, 3,
+                                       scoped=True, fit_check_count=True)
+    assert [part['checkIds'] for part in adaptive] == [
+        ['fact'], ['section'], ['user_0', 'user_1'], ['user_2', 'user_3'], ['user_4']]
+    assert all(part['request']['proposal'] == proposal and part['suppliedEvidenceAliases'] == ['E1', 'E2']
+               for part in adaptive[1:])
+    assert all(part['inputBytes'] <= 26 for part in adaptive)
+    assert partition_bounded_review(record, data, aliases, proposal, measured_with_checks, 22, 3,
+                                   scoped=True, fit_check_count=True) == []
+
 
 def test_revised_design_packets_can_omit_optional_evidence_without_losing_scope():
     from services.deep_research.shared_experiment_review_input import partition_bounded_review

@@ -163,6 +163,23 @@ def test_bicubic_interpolation_name_is_not_a_count_of_operations():
     assert result['rejected'][0]['missingReportedNumbers'] == ['3e0']
 
 
+@pytest.mark.parametrize('quote,missing', [
+    ('We introduce one band of the SH after every 1000 iterations until all 4 bands are represented.', []),
+    ('We introduce SH bands after every 1000 iterations until all 4 bands are represented.', ['1e0']),
+    ('One experiment introduces SH bands after every 1000 iterations until all 4 bands are represented.', ['1e0']),
+    ('We introduce one band of the SH after every 2000 iterations until all 4 bands are represented.', ['1e3']),
+])
+def test_scheduled_sh_band_cardinality_stays_bound_to_explicit_source(quote, missing):
+    c, ev = setup('每 1000 次迭代引入一个球谐频带，直至共 4 个频带。', quote)
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    result = verify_claims([c], [ev], checker, quantity_spelling_version=22)
+    if missing:
+        assert result['rejected'][0]['missingReportedNumbers'] == missing
+    else:
+        assert result['accepted']
+        assert verify_claims([c], [ev], quantity_spelling_version=21)['rejected'][0]['missingReportedNumbers'] == ['1e0']
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
@@ -170,7 +187,7 @@ def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, rep
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释三个分量',
             'deferStart': True, 'quantitySpellingContractVersion': replacement}, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 21
+        assert run['quantitySpellingContractVersion'] == 22
         changed = 15 if replacement == 16 else replacement
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': changed})
