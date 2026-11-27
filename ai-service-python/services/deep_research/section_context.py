@@ -21,19 +21,33 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
     from services.deep_research.pdf_outline import normalized_title
     from services.deep_research.text_quality import control_count
 
-    if (record.get('localSectionContextContractVersion') != 5 or limit < 2
+    policy = record.get('localSectionContextContractVersion')
+    if (policy not in (5, 6) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
+    annotated = spans(pages, outline=True, normalize_headings=True, terminal_number_period=policy == 6)
+    numbered_layout = policy == 6 and any(
+        part['role'] == 'method' and re.match(r'^\d{1,2}\s+[^/]+ /', part['section'])
+        for _, sections in annotated for part in sections)
+    if policy == 6 and not numbered_layout:
+        annotated = spans(pages, outline=True, normalize_headings=True)
     candidates = []
-    short_title = re.match(r'^[A-Za-z0-9_-]+(?=:)', material.get('title', ''))
+    title = material.get('title', '')
+    short_title = re.match(r'^[A-Za-z0-9_-]+(?=\s*(?::|--|—))' if numbered_layout
+                           else r'^[A-Za-z0-9_-]+(?=:)', title)
     ignored = {'paper', 'method', 'loss', 'training', 'using'}
     if short_title:
         ignored.add(short_title[0].casefold())
-    terms = {word[:4] for word in _tokens(query) if word not in ignored}
+    tokens = _tokens(query)
+    title_words = _tokens(title)
+    if numbered_layout and title_words and tokens[:len(title_words)] == title_words:
+        tokens = tokens[len(title_words):]
+    terms = {word[:4] for word in tokens if word not in ignored}
+    phrases = {(a[:4], b[:4]) for a,b in zip(tokens, tokens[1:]) if a not in ignored and b not in ignored}
     if not terms:
         return rows
     preceding_section, preceding_head = None, ''
-    for page, sections in spans(pages, outline=True, normalize_headings=True):
+    for page, sections in annotated:
         full_text = page['text']
         for section in sections:
             path = normalized_title(section['section'])
@@ -53,23 +67,26 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
                     text = full_text[offset:min(right, offset + 1800)]
                     if len(text.strip()) < 80 or control_count(text):
                         continue
-                    hits = terms & {word[:4] for word in _tokens(text)}
+                    words = [word[:4] for word in _tokens(text)]
+                    hits = terms.intersection(words)
                     if hits:
                         loc = {'page': page['page'], 'offset': offset, 'section': section['section'],
                                'sectionRole': 'method', 'matchedPdfMethodPassage': True}
-                        candidates.append((text, loc, hits, heading_hits, section_hits))
+                        adjacent = len(phrases.intersection(zip(words, words[1:]))) if numbered_layout else 0
+                        candidates.append((text, loc, hits, heading_hits, section_hits, adjacent))
             preceding_section, preceding_head = section['section'], heads[-1][1] if heads else inherited
     if not candidates:
         return rows
-    scores = _bm25(query, [text for text, _, _, _, _ in candidates])
+    scores = _bm25(query, [text for text, _, _, _, _, _ in candidates])
     ranked = sorted(zip(scores, candidates),
-                    key=lambda pair: (pair[1][3], pair[1][4], len(pair[1][2]), pair[0]), reverse=True)
+                    key=lambda pair: (pair[1][3], pair[1][5], pair[1][4], len(pair[1][2]), pair[0]), reverse=True)
     owner, content_hash = material['materialId'], material['contentHash']
-    additions, pages_seen = [], set()
-    for _, (text, location, _, _, _) in ranked:
-        if location['page'] in pages_seen:
+    additions, locations_seen = [], set()
+    for _, (text, location, _, _, _, _) in ranked:
+        key = (location['page'], location['section']) if numbered_layout else location['page']
+        if key in locations_seen:
             continue
-        pages_seen.add(location['page'])
+        locations_seen.add(key)
         identity = hashlib.sha256(f'{owner}:{content_hash}:{location}'.encode()).hexdigest()
         additions.append({'sourceId': 'src_' + identity, 'pdfId': owner, 'text': text, 'location': location,
                           'contentHash': content_hash, 'versionId': material.get('versionId') or content_hash,
@@ -95,7 +112,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     if (type(record.get('localSectionContextContractVersion')) is not int
-            or record['localSectionContextContractVersion'] not in (4, 5) or limit < 2
+            or record['localSectionContextContractVersion'] not in (4, 5, 6) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
     terms = set(re.findall(r'[a-z]+', query.casefold()))
@@ -140,7 +157,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
 
 def prioritize_pdf_heading(rows, ordered, bundles, record):
     """Keep a verified, contiguous subsection intact under the synthesis cap."""
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6):
         return ordered, bundles
     state = record['state']
     read = [source for source in state.get('readResults', [])
@@ -187,7 +204,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     from services.deep_research.selection import balanced_sample
     from services.deep_research.synthesis_evidence import readiness_bundles
 
-    if record.get('localSectionContextContractVersion') != 5 or len(record.get('materials', ())) != 1:
+    if record.get('localSectionContextContractVersion') not in (5, 6) or len(record.get('materials', ())) != 1:
         return ordered, bundles
     material, = record['materials']
     owner, content_hash = material.get('materialId'), material.get('contentHash')
@@ -209,7 +226,8 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
             candidates.append(row)
     if not candidates:
         return ordered, bundles
-    preferred, navigation = [], []
+    preferred, navigation, exact_navigation = [], [], []
+    whole_passages = record.get('localSectionContextContractVersion') == 6
     for item in state.get('plan', []):
         for obligation in item['obligations']:
             oid = obligation['obligationId']
@@ -220,22 +238,37 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
             def relevance(row):
                 return (len(terms & {w[:4] for w in _tokens(row['quote'])}), -len(row['quote']))
             ranked = sorted(owned, key=relevance, reverse=True)
-            for row in balanced_sample(ranked, lambda e: e['sourceId'], 2):
+            for order, row in enumerate(balanced_sample(ranked, lambda e: e['sourceId'], 2)):
                 if row not in preferred:
                     preferred.append(row)
                     navigation.append({'obligationId': oid, 'criterionId': 'pdf_method_passage',
                         'requirement': obligation['question'], 'source': owner, 'evidenceIds': [row['evidenceId']]})
+                if whole_passages:
+                    source_text = reads[row['sourceId']]['text']
+                    units = sorted((part for part in owned if part['sourceId'] == row['sourceId']),
+                                   key=lambda part: part['location'].get('sourcePassageStart', -1))
+                    if len(source_text) <= 1500 and ''.join(part['quote'] for part in units) == source_text:
+                        exact_navigation.append((order, {'obligationId':oid,'criterionId':'pdf_method_section',
+                            'requirement':obligation['question'],'source':owner,
+                            'evidenceIds':[part['evidenceId'] for part in units]}))
+    shared = Counter(tuple(bundle['evidenceIds']) for _, bundle in exact_navigation)
+    exact = [bundle for _, bundle in sorted(exact_navigation,
+             key=lambda pair:(pair[0], -shared[tuple(pair[1]['evidenceIds'])]))]
+    for bundle in exact:
+        for part in candidates:
+            if part['evidenceId'] in bundle['evidenceIds'] and part not in preferred:
+                preferred.append(part)
     ids = {row['evidenceId'] for row in preferred}
     obligations = {o['obligationId']:o for item in state.get('plan', []) for o in item['obligations']}
     reviewed = readiness_bundles(rows, obligations, state.get('coverage', []))
     required = [bundle for bundle in bundles if bundle in reviewed]
     optional = [bundle for bundle in bundles if bundle not in reviewed]
-    return [*preferred, *(row for row in ordered if row['evidenceId'] not in ids)][:20], [*required, *navigation, *optional]
+    return [*preferred, *(row for row in ordered if row['evidenceId'] not in ids)][:20], [*required, *exact, *navigation, *optional]
 
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question
@@ -296,7 +329,7 @@ def include_explanation_method(rows, candidates, record, query, owner, limit):
 
     selected = list(rows[:limit])
     version = record.get('localSectionContextContractVersion')
-    if (type(version) is not int or version not in (3, 4, 5) or limit < 2 or not selected
+    if (type(version) is not int or version not in (3, 4, 5, 6) or limit < 2 or not selected
             or record.get('sourcePolicy', {}).get('mode') != 'task_only'
             or len(record.get('materials', [])) != 1 or not explanation_only(record, require_section=False)):
         return selected

@@ -2,6 +2,7 @@
 import re
 
 _HEADING = re.compile(r'(?m)^[ \t]*(?P<number>\d{1,2}(?:\.\d{1,2}){0,4})[ \t]+(?P<title>[A-Za-z][^\n]{1,160})')
+_DOTTED_HEADING = re.compile(r'(?m)^[ \t]*(?P<number>\d{1,2}(?:\.\d{1,2}){0,4})\.?[ \t]+(?P<title>[A-Za-z][^\n]{1,160})')
 _REFERENCES = re.compile(r'(?m)^[ \t]*(?:REFERENCES|BIBLIOGRAPHY|参考文献)[ \t]*$')
 _METHOD = re.compile(r'\b(?:method(?:s|ology)?|approach|algorithm|implementation|loss functions?|training procedure|optimization)\b',re.I)
 _OTHER = re.compile(r'\b(?:introduction|related work|background|references|bibliography|conclusion|experiment|evaluation|results?|datasets?|baselines?|comparison|appendix)\b',re.I)
@@ -31,7 +32,7 @@ def enabled(record):
     return type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (1,2,3,4,5)
 
 
-def spans(pages, *, outline=False,normalize_headings=False):
+def spans(pages, *, outline=False,normalize_headings=False, terminal_number_period=False):
     """Keep page text/offsets; inherit numbered section paths across pages.
 
     This is conservative layout metadata. It neither attributes every sentence
@@ -39,10 +40,13 @@ def spans(pages, *, outline=False,normalize_headings=False):
     """
     if type(outline) is not bool:raise ValueError("Invalid PDF outline policy")
     if type(normalize_headings) is not bool or normalize_headings and not outline:raise ValueError('Invalid normalized heading policy')
+    if type(terminal_number_period) is not bool:
+        raise ValueError('Invalid numbered heading policy')
     stack=[];result=[]
+    headings = _DOTTED_HEADING if terminal_number_period else _HEADING
     for page in pages:
         text=page.get('text','');events=[]
-        for m in _HEADING.finditer(text):
+        for m in headings.finditer(text):
             title=m['title'].split('. ',1)[0].strip()
             admission_title=title
             if normalize_headings:

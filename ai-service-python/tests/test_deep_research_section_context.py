@@ -53,7 +53,7 @@ def test_invalid_next_chunk_cannot_bridge_to_a_later_one(change):
 def test_ambiguous_successor_and_old_or_non_explanation_runs_keep_old_selection():
     selected, candidates = sample()
     assert include_section_context(selected, candidates + [candidates[1]], record(), 'p', 3) == selected
-    for marker in [None, False, True, 0, 6]:
+    for marker in [None, False, True, 0, 7]:
         r = record();r['localSectionContextContractVersion'] = marker
         assert include_section_context(selected, candidates, r, 'p', 3) == selected
     for question in ['解释方法。', '不要解释第5节。', '比较第5节中的性能。']:
@@ -174,6 +174,27 @@ def test_pdf_method_reading_admits_the_continuation_of_a_matching_inline_heading
         assert pages[loc['page']-1]['text'].startswith(source['text'], loc['offset'])
 
 
+def test_numbered_local_method_subsections_on_one_page_beat_experiment_text():
+    from services.deep_research.section_context import include_pdf_method_passages
+
+    r = {**record(), 'localSectionContextContractVersion':6, 'sourcePolicy':{'mode':'task_only'},
+         'materials':[{'materialId':'p'}], 'question':'给新手解释邻域匹配，限300字。',
+         'audienceFirstContractVersion':2, 'audienceRewriteContractVersion':9,
+         'audiencePublicationBudgetContractVersion':1, 'reportPresentationContractVersion':4}
+    material = {'materialId':'p','contentHash':'a'*64,'versionId':'p-v1','title':'ACME -- Image Processing'}
+    details = ('3. Methodology\n3.1. Matching Probability\n'
+               'We normalize matching probabilities over candidates in one direction and then in the reverse direction.\n'
+               '3.2. Training\nThe training objective favors matching probabilities around the expected correspondence.\n'
+               '4. Experiments\n4.1. Relative pose estimation\n' + 'Matching probabilities benchmark. ' * 16)
+    pages = [{'page':4,'text':details}]
+    sources = include_pdf_method_passages([],pages,r,'ACME Image Processing matching probabilities training',material,3)
+    assert len(sources) == 2
+    assert all(s['location']['page']==4 and '3 Methodology /' in s['location']['section'] for s in sources)
+    assert all('benchmark' not in s['text'] for s in sources)
+    assert include_pdf_method_passages([],pages,{**r,'localSectionContextContractVersion':5},
+                                       'ACME Image Processing matching probabilities training',material,3) == []
+
+
 def test_new_activation_is_server_owned_and_immutable(tmp_path):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -182,8 +203,8 @@ def test_new_activation_is_server_owned_and_immutable(tmp_path):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'one', 'question': 'Explain',
             'deferStart': True, 'localSectionContextContractVersion': 0}, start_async=False)
-        assert r['localSectionContextContractVersion'] == 5
-        for value in [None, True, 0, 2, 3, 4, 6]:
+        assert r['localSectionContextContractVersion'] == 6
+        for value in [None, True, 0, 2, 3, 4, 5, 7]:
             with pytest.raises(ValueError, match='Immutable run field'):
                 repo.update_run(r['runId'], lambda x: {**x, 'localSectionContextContractVersion': value})
     finally:
