@@ -12,11 +12,18 @@ def compact(text):
     return re.sub(r'\s+', '', str(text)).replace('∗', '*')
 
 
-def drawing_runs(page):
+def drawing_runs(page, *, named_glyphs=None):
     from PyPDF2._cmap import build_char_map
 
     fonts = {name: build_char_map(name, 200, page)[2:5]
              for name in page['/Resources']['/Font']}
+    glyph_slots = {}
+    if named_glyphs:
+        from core.pdf_type1_encoding import declared_slots
+
+        glyph_slots = {name: {point: named_glyphs[glyph] for point, glyph in declared_slots(font).items()
+                             if point < 32 and point not in (9, 10, 13) and glyph in named_glyphs}
+                       for name, (_, _, font) in fonts.items()}
     current_font = [None]
     font_size, horizontal_scale, char_space, word_space = [0], [1], [0], [0]
     runs = []
@@ -25,6 +32,13 @@ def drawing_runs(page):
     def decode(value):
         encoding, cmap, _ = fonts[current_font[0]]
         raw = value if isinstance(value, bytes) else value.original_bytes
+        slots = glyph_slots.get(current_font[0])
+        if slots:
+            return ''.join(slots[code] if code in slots else decode_original(bytes([code]), encoding, cmap)
+                           for code in raw)
+        return decode_original(raw, encoding, cmap)
+
+    def decode_original(raw, encoding, cmap):
         if isinstance(encoding, str):
             decoded = raw.decode(encoding)
         else:

@@ -16,31 +16,14 @@ def _control_count(text):
 FORM_CACHE_ENTRIES = 256
 FORM_CACHE_BYTES = 2 * 1024 * 1024
 _TEXT_SHOW_OPERATOR = re.compile(rb"""T[Jj]|['"]""")
-_FONT_ENCODING_SLOT = re.compile(rb'(?m)^\s*dup\s+(\d{1,3})\s+/([A-Za-z0-9_.-]+)\s+put[ \t]*$')
 _SHORT_ARROWS = {b'shortleftarrow': '←', b'shortrightarrow': '→'}
 
 
 def _font_arrows(font):
     """Read named slots from the PDF's own embedded Type 1 encoding."""
-    try:
-        if (not font or font.get('/Subtype') != '/Type1' or '/ToUnicode' in font or '/Encoding' in font):
-            return {}
-        stream = font['/FontDescriptor'].get_object()['/FontFile'].get_object()
-        size = stream.get('/Length1')
-        if not isinstance(size, int) or not 1 <= size <= 16384:
-            return {}
-        prefix = stream.get_data()[:size]
-    except (KeyError, AttributeError, TypeError, ValueError):
-        return {}
-    if not prefix.startswith(b'%!') or b'/Encoding 256 array' not in prefix:
-        return {}
-    slots = {}
-    for code, name in _FONT_ENCODING_SLOT.findall(prefix):
-        point = int(code)
-        if point in slots:
-            return {}  # Ambiguous embedded encoding.
-        slots[point] = name
-    return {point: _SHORT_ARROWS[name] for point, name in slots.items()
+    from core.pdf_type1_encoding import declared_slots
+
+    return {point: _SHORT_ARROWS[name] for point, name in declared_slots(font).items()
             if point < 32 and point not in (9, 10, 13) and name in _SHORT_ARROWS}
 
 
@@ -123,7 +106,7 @@ def _extract_page_text(page):
 
 
 def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_named_tables=False,
-              include_declared_arrows=False) -> list[dict]:
+              include_declared_arrows=False, include_threshold_tables=False) -> list[dict]:
     reader_type = PdfReader
     if reader_type is None:
         from PyPDF2 import PdfReader as reader_type
@@ -178,6 +161,17 @@ def parse_pdf(body: bytes, max_pages: int, *, include_tables=False, include_name
                 tables = []  # Optional geometry cannot make readable PDF prose unavailable.
             if tables:
                 row['verifiedTables'] = tables
+        if include_threshold_tables:
+            from core.pdf_threshold_tables import verified_threshold_tables
+
+            try:
+                threshold_tables = verified_threshold_tables(page, row['text'])
+            except (KeyError, ValueError, TypeError, ImportError, AttributeError, UnboundLocalError):
+                threshold_tables = []
+            if threshold_tables:
+                tables = row.setdefault('verifiedTables', [])
+                recognized = {table['number'] for table in tables}
+                tables.extend(table for table in threshold_tables if table['number'] not in recognized)
         pages.append(row)
     return pages
 
@@ -193,7 +187,8 @@ def main():
         flags = sys.argv[3:]
         result = parse_pdf(body, max_pages, include_tables='--verified-tables' in flags,
                            include_named_tables='--verified-percentage-tables' in flags,
-                           include_declared_arrows='--declared-font-arrows' in flags)
+                           include_declared_arrows='--declared-font-arrows' in flags,
+                           include_threshold_tables='--verified-threshold-tables' in flags)
         sys.stdout.buffer.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
         return 0
     except Exception as error:

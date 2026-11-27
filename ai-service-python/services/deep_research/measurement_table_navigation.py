@@ -14,6 +14,69 @@ _DOMAINS = (
 _GENERIC = {'the', 'a', 'an', 'each', 'both', 'all', 'this', 'these', 'their', 'our',
             'dataset', 'datasets', 'benchmark', 'benchmarks', 'results', 'result', 'quality',
             'performance', 'conditions', 'paper', 'papers', 'which', 'what', 'it', 'cpu', 'gpu'}
+_RESULT = re.compile(r'定量|结果|指标|评测|数值|\b(?:quantitative|results?|metrics?|evaluation|accuracy|score)\b', re.I)
+_NAME = re.compile(r'(?<![A-Za-z0-9_-])[A-Za-z][A-Za-z0-9-]{3,}(?![A-Za-z0-9_-])')
+
+
+def requested_threshold_benchmarks(question, query):
+    if not _RESULT.search(query):
+        return set()
+    human = _NAME.findall(question)
+    planned = _NAME.findall(query)
+    names = {name.casefold() for name in (*human, *planned) if re.search(r'[A-Z0-9]', name[1:])}
+    return (names & {word.casefold() for word in human} & {word.casefold() for word in planned}) - _GENERIC
+
+
+def _threshold_match(source, benchmarks):
+    if not benchmarks or (source.get('location') or {}).get('thresholdColumnsVerified') is not True:
+        return 0
+    caption = source.get('text', '').split('\n', 1)[0]
+    heading = re.match(r'^Table caption:\s*Table\s*\d+\s*[:.]\s*(.+)', caption)
+    if not heading:
+        return 0
+    words = {name.casefold() for name in _NAME.findall(heading[1].split('. ', 1)[0])}
+    return len(words & benchmarks)
+
+
+def retain_threshold_table(rows, candidates, benchmarks, limit):
+    """Keep one physically verified table for an explicitly requested benchmark."""
+    if not benchmarks or limit < 2:
+        return rows
+    matches = []
+    for row in candidates:
+        if score := _threshold_match(row, benchmarks):
+            matches.append((score, row))
+    if not matches:
+        return rows
+    best = max(score for score, _ in matches)
+    winners = [row for score, row in matches if score == best]
+    if len(winners) != 1 or any(row['sourceId'] == winners[0]['sourceId'] for row in rows):
+        return rows
+    table, = winners
+    protected = {rows[0]['sourceId']} if rows else set()
+    for row in rows:
+        if row.get('tableData'):
+            protected.add(row['sourceId'])
+        if context := row.get('contextForSourceId'):
+            protected.update((row['sourceId'], context))
+    if len(rows) < limit:
+        return [*rows[:1], table, *rows[1:]]
+    replace = next((i for i in reversed(range(len(rows))) if rows[i]['sourceId'] not in protected), None)
+    if replace is None:
+        return rows
+    return [*rows[:1], table, *rows[1:replace], *rows[replace + 1:]]
+
+
+def preferred_threshold_reads(sources, obligations, human, limit, extracted):
+    from services.deep_research.obligation_binding import eligible_obligation_ids
+    from services.deep_research.selection import balanced_sample
+
+    targets = {oid: requested_threshold_benchmarks(human, row.get('searchQuery') or row.get('question', ''))
+               for oid, row in obligations.items()}
+    rows = [source for source in sources
+            if (source['sourceId'], source.get('contentHash')) not in extracted
+            and any(_threshold_match(source, targets[oid]) for oid in eligible_obligation_ids(source, obligations))]
+    return balanced_sample(rows, lambda source: (source['workId'], source.get('versionId')), limit // 4)
 
 
 def _key(text):

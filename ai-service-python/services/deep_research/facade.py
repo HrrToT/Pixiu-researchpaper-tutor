@@ -330,6 +330,8 @@ class ResearchFacade:
             **({'comparisonLiteralAxisGoalVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonPdfTableFallbackVersion': 2} if self._comparison_cells_version == 1
                 and output_kind == 'paper_comparison' else {}),
+            **({'comparisonThresholdTablePdfFallbackVersion': 1} if self._comparison_cells_version == 1
+                and output_kind == 'paper_comparison' else {}),
             **({'namedTablePdfFallbackVersion': 1} if named_table_verification else {}),
             **({'namedTableIndexedPageVersion': 1} if named_table_verification else {}),
             **({'comparisonPdfPassageBoundaryVersion': 2} if self._comparison_cells_version == 1

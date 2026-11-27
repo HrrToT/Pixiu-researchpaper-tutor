@@ -156,6 +156,8 @@ class LocalTaskRetriever:
         from services.deep_research.section_context import include_pdf_method_heading, include_pdf_method_passages
         found = include_pdf_method_heading(found, pages, record, query, material, min(limit, 5))
         found = include_pdf_method_passages(found, pages, record, query, material, min(limit, 5))
+        from services.deep_research.measurement_table_navigation import retain_threshold_table
+        found = retain_threshold_table(found, passages, self._threshold_benchmarks(record, query), min(limit, 5))
         return self._stamp_identity(
             self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages), pdf_id)
 
@@ -182,6 +184,15 @@ class LocalTaskRetriever:
         if not self.validate(self.run_id, pdf_id):
             raise DeepResearchError('scope_revoked', '论文范围已变更')
         return protocol.include_passages(rows, passages, roles, limit)
+
+    @staticmethod
+    def _threshold_benchmarks(record, query):
+        if record.get('comparisonThresholdTablePdfFallbackVersion') != 1:
+            return set()
+        from services.deep_research.measurement_table_navigation import requested_threshold_benchmarks
+        from services.deep_research.named_benchmark_navigation import human_text
+
+        return requested_threshold_benchmarks(human_text(record), query)
 
 
     def _scope_evidence(self,rows,candidates,query,pdf_id,limit):
@@ -287,6 +298,8 @@ class LocalTaskRetriever:
                 location = {'page': page['page'], 'pageIndex': page['page'] - 1, 'pageResolution': 'exact',
                             'section': f'Table {number}', 'table': f"pdf-page-{page['page']}-table-{number}",
                             'tableColumnMappingUnverified': False}
+                if table.get('thresholdProjection') is True:
+                    location['thresholdColumnsVerified'] = True
                 identity = hashlib.sha256(f"{pdf_id}:{material['contentHash']}:{location}".encode()).hexdigest()
                 passages.append({'sourceId': 'src_' + identity, 'pdfId': pdf_id, 'text': '\n'.join(lines),
                     'location': location, 'contentHash': material['contentHash'], 'versionId': material.get('versionId'),
@@ -307,7 +320,9 @@ class LocalTaskRetriever:
             if not material or not material.get('contentHash'):
                 raise DeepResearchError('source_missing','论文版本未保存')
             indexed = owned_measurement_sources(indexed,pdf_id,material['contentHash'])
-            if limit < 2 or not missing_measurements(indexed,query):
+            benchmarks = self._threshold_benchmarks(record, query)
+            missing = missing_measurements(indexed,query)
+            if limit < 2 or not (missing or benchmarks):
                 return indexed
             key = (pdf_id,material['contentHash'])
             failure = self._measurement_read_failures.get(key) if key not in self.pages else None
@@ -335,6 +350,8 @@ class LocalTaskRetriever:
             # An original PDF has a document hash/version, not an index version.
             passages = [{**row,'versionId':material.get('versionId') or material['contentHash']} for row in passages]
             found = include_pdf_measurements(indexed,passages,query,pdf_id,material['contentHash'],limit)
+            from services.deep_research.measurement_table_navigation import retain_threshold_table
+            found = retain_threshold_table(found, passages, benchmarks, limit)
             missing = missing_measurements(found,query)
             note = {'status':'searched','pagesRead':len(self.pages[key]),
                     'unmatchedMeasurements':sorted((str(n),u) for n,u in missing)}
@@ -376,6 +393,7 @@ class LocalTaskRetriever:
                         body, include_tables=record.get('comparisonPdfTableFallbackVersion') in (1, 2),
                         **({'include_named_tables':True} if record.get('namedTablePdfFallbackVersion') == 1 else {}),
                         **({'include_declared_arrows':True} if record.get('sourceGlyphContractVersion') == 2 else {}),
+                        **({'include_threshold_tables':True} if record.get('comparisonThresholdTablePdfFallbackVersion') == 1 else {}),
                     )
             return material, self.pages[key]
 
@@ -465,7 +483,8 @@ def _bm25(query, documents):
     return scores
 
 
-def _parse_pdf(body, *, include_tables=False, include_named_tables=False, include_declared_arrows=False):
+def _parse_pdf(body, *, include_tables=False, include_named_tables=False, include_declared_arrows=False,
+               include_threshold_tables=False):
     args = [sys.executable, '-m', 'services.deep_research_pdf_parser', '100', str(MAX_LOCAL_PDF_BYTES)]
     if include_tables:
         args.append('--verified-tables')
@@ -473,6 +492,8 @@ def _parse_pdf(body, *, include_tables=False, include_named_tables=False, includ
         args.append('--verified-percentage-tables')
     if include_declared_arrows:
         args.append('--declared-font-arrows')
+    if include_threshold_tables:
+        args.append('--verified-threshold-tables')
     process = subprocess.run(args,
         cwd=str(Path(__file__).resolve().parents[2]), input=body, capture_output=True, timeout=20, check=False)
     if process.returncode or len(process.stdout) > 13_000_000:
