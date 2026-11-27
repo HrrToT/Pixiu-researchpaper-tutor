@@ -653,6 +653,26 @@ def test_reference_review_expands_only_a_complete_contrast_weight_vector():
         _resolved_plan_bindings(['/groups'], value, True)
 
 
+def test_group_review_binding_expands_only_the_two_declared_binary_levels():
+    from services.deep_research.shared_experiment_review import _resolved_plan_bindings
+
+    value = {'factors': [{'id': 'A'}, {'id': 'B'}],
+             'groups': [{'id': '10', 'levels': {'A': 1, 'B': 0}}]}
+    path = '/groups/0/levels'
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings([path], value, True)
+    assert _resolved_plan_bindings([path], value, True, group_levels=True) == [
+        {'path': f'{path}/A', 'text': '1'},
+        {'path': f'{path}/B', 'text': '0'},
+    ]
+    for bad in ({'A': 1}, {'A': 1, 'B': 2}, {'A': 1, 'B': False}, {'A': 1, 'C': 0}):
+        changed = {**value, 'groups': [{'id': '10', 'levels': bad}]}
+        with pytest.raises(ValueError, match='binary factor levels'):
+            _resolved_plan_bindings([path], changed, True, group_levels=True)
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings(['/groups/0'], value, True, group_levels=True)
+
+
 @pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
 def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
     from services.deep_research import shared_experiment_review as review

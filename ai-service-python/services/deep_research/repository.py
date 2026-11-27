@@ -392,6 +392,7 @@ class DeepResearchRepository:
                                      'countedExperimentReviewContractVersion',
                                      'countedExperimentAnswerContractVersion',
                                      'sharedExperimentReviewPackingVersion',
+                                     'sharedExperimentReviewGroupBindingsVersion',
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
                                      'comparisonBeginnerLeadContractVersion',
