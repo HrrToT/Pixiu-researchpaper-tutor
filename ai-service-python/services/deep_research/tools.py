@@ -473,6 +473,17 @@ class TrackedLLMInvoker:
         from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
         shared_schema = node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(transport_record)
         admission_bytes = prompt_byte_length + (transport_overhead if workflow_schema(transport_record,node) or shared_schema else 0)
+        from services.deep_research import shared_experiment_review as science
+        science_check_ids = (extra_body or {}).get(science.CHECK_IDS_OPTION)
+        counted_science_window = (
+            node == science.NODE and admission_bytes > science.MAX_INPUT and max_byte_length == science.MAX_INPUT
+            and structured and use_reserve and science.counted_window_enabled(transport_record)
+            and science_check_ids and all(not check.startswith('fact_') for check in science_check_ids)
+            and self.supports_counted_experiment_review(transport_record)
+        )
+        if counted_science_window:
+            max_byte_length = science.COUNTED_MAX_INPUT
+            args_digest = digest({**request_identity, science.COUNTED_WINDOW_MARKER: 1})
         if admission_bytes > max_byte_length:
             raise ValueError(
                 f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "
@@ -502,7 +513,7 @@ class TrackedLLMInvoker:
             return allowance
 
         counted_input = None
-        if counted_audit:
+        if counted_audit or counted_science_window:
             from services.deep_research.contracts import UnresolvedUnknownError
             from services.deep_research.final_coverage import coverage_prompt_byte_limit
             client = routed_client()
@@ -513,9 +524,15 @@ class TrackedLLMInvoker:
                 unknown = [call["callId"] for call in calls if call.get("status") == "unknown"]
                 if unknown:
                     raise UnresolvedUnknownError(run_id, unknown)
-                limit = coverage_prompt_byte_limit(transport_record["budget"], max_output, max_input_bytes=max_byte_length)
+                limit = (max_byte_length if counted_science_window else
+                         coverage_prompt_byte_limit(transport_record["budget"], max_output, max_input_bytes=max_byte_length))
                 if limit <= 0 or transport_record.get("status") != STATUS_RUNNING:
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
+                if counted_science_window:
+                    budget = transport_record["budget"]
+                    minimum = budget["tokens"] + 1 + INPUT_RESERVATION_MARGIN + max_output
+                    if minimum > budget["maxTokens"]:
+                        raise BudgetExhaustedError("tokens", budget["maxTokens"], minimum)
                 counted_input = client.count_audit_input(request)
                 if type(counted_input) is not int or counted_input <= 0:
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
@@ -526,7 +543,7 @@ class TrackedLLMInvoker:
         try:
             call_record, reused = reserve(estimated_input)
         except BudgetExhaustedError as exc:
-            if (node != "review_experiment_shared" or not use_reserve or not structured
+            if (counted_science_window or node != "review_experiment_shared" or not use_reserve or not structured
                     or not self.supports_counted_experiment_review(transport_record)):
                 raise
             budget = self._run_record(run_id)["budget"]
@@ -556,7 +573,7 @@ class TrackedLLMInvoker:
             return call_record.get("result", {"content": "", "usage": {}})
         
         try:
-            if counted_audit:
+            if counted_audit or counted_science_window:
                 result = client.invoke_counted_audit(request)
             else:
                 result = routed_client().invoke(request)

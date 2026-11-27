@@ -12,6 +12,8 @@ from services.deep_research.shared_experiment_plan import validate_bound, _objec
 
 NODE = 'review_experiment_shared'
 MAX_INPUT = 32000
+COUNTED_MAX_INPUT = 35000
+COUNTED_WINDOW_MARKER = 'countedExperimentReviewWindowVersion'
 OUTPUT_TOKENS = 4096
 MAX_CHECKS_PER_REVIEW = 10
 POLICY = ('Independently audit ONE complete UNEXECUTED experimental proposal against the fixed human request '
@@ -188,6 +190,13 @@ def _fact_context_enabled(record):
 def _group_bindings(record):
     version = record.get(GROUP_BINDINGS_MARKER)
     return type(version) is int and version == 1 and record.get(REFERENCE_MARKER) == 4
+
+
+def counted_window_enabled(record):
+    return (isinstance(record, dict) and type(record.get(COUNTED_WINDOW_MARKER)) is int
+            and record[COUNTED_WINDOW_MARKER] == 1 and record.get('openaiResearchModels')
+            and record.get('countedExperimentReviewContractVersion') == 1
+            and record.get(SCOPED_PACKET_MARKER) == 7 and record.get(REFERENCE_MARKER) == 4)
 
 
 def _generation(record):
@@ -557,6 +566,18 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
                         and (not batches or cost(limited) < cost(batches))):
                     batches = limited
+            if counted_window_enabled(record) and len(batches) > 3:
+                wider = partition_bounded_review(
+                    record, data, aliases, bound['proposal'],
+                    lambda view: measure(view, _scoped_packet_policy(record, view)),
+                    COUNTED_MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
+                )
+                previous_scope = {check: set(part['suppliedEvidenceAliases'])
+                                  for part in batches for check in part['checkIds']}
+                if (wider and len(wider) < len(batches) and wider[0] == batches[0]
+                        and all(previous_scope[check] <= set(part['suppliedEvidenceAliases'])
+                                for part in wider for check in part['checkIds'])):
+                    batches = wider
         elif size > MAX_INPUT and compact_version == 1:
             from services.deep_research.shared_experiment_review_input import partition_review
             batches = partition_review(record, data, aliases, bound['proposal'], measure, MAX_INPUT)
@@ -906,11 +927,12 @@ def _initial_batch_budget_stop(record, built, *, can_count_input=False):
 def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=(), can_count_input=False):
     from services.deep_research.planning_transport import dispatch_options
     built = build(record,input_data,aliases,required_domains=required_domains)
+    limit = COUNTED_MAX_INPUT if counted_window_enabled(record) and built.get('batches') else MAX_INPUT
     saved = deepcopy(record.get('state',{}).get(review_slot(record)))
     if saved is None:
         saved = {**built,'version':1,'status':'pending'}
         if built['hardIssues']: saved['status'] = 'not_started_precheck'
-        elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or reference_review_enabled(built))
+        elif (built['inputBytes'] > limit or (record.get(COMPACT_REVIEW_MARKER) == 2 or reference_review_enabled(built))
               and len(built['targets']) > MAX_CHECKS_PER_REVIEW and not built.get('batches')):
             saved['status'] = 'not_started_capacity'
         elif stop := _initial_batch_budget_stop(record, built, can_count_input=can_count_input):
@@ -928,6 +950,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')
     if saved['status'] == 'pending':
+        if built['inputBytes'] > MAX_INPUT and not can_count_input:
+            raise DeepResearchError('shared_experiment_review_count_unavailable', '扩展科学审核批次须先完成实测输入计数。')
         from jsonschema import Draft202012Validator
         requests = [part['request'] for part in built['batches']] if 'batches' in built else [built['request']]
         reused = [built['reusedFactBatch']] if 'reusedFactBatch' in built else []

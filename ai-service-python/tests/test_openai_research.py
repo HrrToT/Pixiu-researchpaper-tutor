@@ -236,22 +236,28 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
         facade.shutdown()
 
 
-@pytest.mark.parametrize("tokens,count,ordinary_calls,expected_sends", [
-    (20000, 8900, None, ["/responses"]),
-    (79000, 8900, None, ["/responses/input_tokens", "/responses"]),
-    (79000, 24000, None, ["/responses/input_tokens"]),
-    (79000, 8900, 7, ["/responses/input_tokens", "/responses"]),
-    (79000, 8900, 13, []),
+@pytest.mark.parametrize("tokens,count,ordinary_calls,wide,expected_sends", [
+    (20000, 8900, None, False, ["/responses"]),
+    (79000, 8900, None, False, ["/responses/input_tokens", "/responses"]),
+    (79000, 24000, None, False, ["/responses/input_tokens"]),
+    (79000, 8900, 7, False, ["/responses/input_tokens", "/responses"]),
+    (79000, 8900, 13, False, []),
+    (20000, 9300, None, True, ["/responses/input_tokens", "/responses"]),
+    (92000, 9300, None, True, ["/responses/input_tokens"]),
+    (98000, 9300, None, True, []),
 ])
-def test_scientific_review_counts_only_after_conservative_reservation_fails(
-        tmp_path, monkeypatch, tokens, count, ordinary_calls, expected_sends):
+def test_scientific_review_counts_when_required_for_admission(
+        tmp_path, monkeypatch, tokens, count, ordinary_calls, wide, expected_sends):
     from services.deep_research.contracts import BudgetExhaustedError
-    from services.deep_research.shared_experiment_review import NODE
+    from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE
     from services.deep_research.tools import TrackedLLMInvoker
     from test_deep_research_shared_experiment_review import ready
 
     record, _, _ = ready()
     record.update(openaiResearchModels=["main", "routine"], countedExperimentReviewContractVersion=1)
+    if wide:
+        record.update(countedExperimentReviewWindowVersion=1, sharedExperimentScopedReviewPacketVersion=7,
+                      sharedExperimentReviewReferenceVersion=4)
     record["budget"].update(tokens=tokens, maxTokens=100000, normalTokens=0)
     if ordinary_calls is not None:
         record["budget"].update(modelCalls=ordinary_calls, reservedModelCalls=5, reserveModelCalls=5,
@@ -263,7 +269,8 @@ def test_scientific_review_counts_only_after_conservative_reservation_fails(
     monkeypatch.setattr(settings, "openai_api_key", "test-key")
     bound = ScopedModelClient(repo, lambda *_: True, Mock()).for_run(record["runId"])
     invoker = TrackedLLMInvoker(bound, repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
-                                call_history_fn=repo.list_calls, verification_max_input_bytes=32000)
+                                call_history_fn=repo.list_calls, verification_max_input_bytes=32000,
+                                experiment_max_input_bytes=32000 if wide else None)
     sends = []
     def post(url, **kwargs):
         path = url.removeprefix("https://api.openai.com/v1")
@@ -284,8 +291,11 @@ def test_scientific_review_counts_only_after_conservative_reservation_fails(
 
     monkeypatch.setattr("llm.client.requests.post", post)
     def send():
-        return invoker(record["runId"], NODE, "Review the JSON proposal. " + "x" * 22000,
-                       {"max_tokens": 4096}, use_reserve=True)
+        options = {"max_tokens": 4096}
+        if wide:
+            options[CHECK_IDS_OPTION] = ["section_0"]
+        return invoker(record["runId"], NODE, "Review the JSON proposal. " + "x" * (32000 if wide else 22000),
+                       options, use_reserve=True)
     if not expected_sends or expected_sends[-1].endswith("/input_tokens"):
         with pytest.raises(BudgetExhaustedError):
             send()
