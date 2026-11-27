@@ -68,7 +68,28 @@ def fields(row, *, evidence=False):
     return result
 
 
-def validate_links(links,entities,allowed,requirement,*,request_spans=False):
+def evidence_anchors(alias, row):
+    """Assign immutable local IDs to sentences in each original visible field."""
+    from services.deep_research.quote_context import _sentence_cuts
+
+    anchors = {}
+    texts = fields(row, evidence=True)
+    for field, prefix in (('quote', 'q'), ('sourceContext.before', 'b'), ('sourceContext.after', 'a')):
+        text = texts.get(field, '')
+        ends = _sentence_cuts(text)
+        if not ends or ends[-1] < len(text):
+            ends.append(len(text))
+        start = 0
+        count = 0
+        for end in ends:
+            if text[start:end].strip():
+                count += 1
+                anchors[f'{alias}.{prefix}{count}'] = (alias, field, start, end)
+            start = end
+    return anchors
+
+
+def validate_links(links,entities,allowed,requirement,*,request_spans=False,source_anchors=None):
     """Exact role bindings are necessary, never a semantic support verdict."""
     if not isinstance(links,list) or not 1<=len(links)<=4:return ['missing_process_links']
     errors=[]
@@ -87,6 +108,18 @@ def validate_links(links,entities,allowed,requirement,*,request_spans=False):
                     positions=[m.start() for m in re.finditer('(?='+re.escape(text)+')',requirement)]
                     if len(positions)>16:errors.append('ambiguous_process_excerpt');continue
                     spans[role]=[('@human_request','literal_requirement',p,p+len(text)) for p in positions]
+                continue
+            if source_anchors is not None:
+                anchor = binding.get('anchor')
+                match = source_anchors.get(anchor) if set(binding) == {'anchor'} and isinstance(anchor,str) else None
+                if not match or match[0] not in allowed:
+                    errors.append('unbound_process_excerpt');continue
+                identity,field,start,end = match
+                full = entities.get(identity,{}).get(field)
+                if not isinstance(full,str) or not 0 <= start < end <= len(full):
+                    errors.append('unbound_process_excerpt');continue
+                resolved[role] = full[start:end]
+                spans[role] = [match]
                 continue
             if set(binding)!={'id','field','excerpt'}:
                 errors.append('invalid_process_binding');continue

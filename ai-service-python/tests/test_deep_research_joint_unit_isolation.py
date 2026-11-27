@@ -99,3 +99,40 @@ def test_saved_unit_audit_cannot_be_tampered_to_upgrade_invalid_source_binding()
     memory=setup();execute(memory,lambda r,n,p,o:response(p));saved=received(memory)
     saved['responseAudit']['invalidUnits']=[]
     with pytest.raises(DeepResearchError):execute(memory,lambda *_:pytest.fail('No send on corrupt audit'))
+
+
+@pytest.mark.parametrize('bad', [None, 'unknown', 'foreign', 'overlap', 'mixed'])
+def test_sentence_anchors_keep_literal_pdf_text_and_only_bind_own_nonoverlapping_spans(bad):
+    from services.deep_research.verification import make_evidence
+
+    memory = setup(5)
+    quote = 'A descriptor is extracted. Apply row-wise normalization to the sim-\nilarity matrix. The values form a distribution.'
+    ev = make_evidence({'workId':'a','versionId':'a-v1','contentHash':'a-hash','accessLevel':'fulltext'},
+                       quote,quote,location={'page':4},obligation_ids=[])
+    memory.record['state']['evidence'] = [ev]
+
+    def invoke(run,node,prompt,options):
+        wire = json.JSONDecoder().raw_decode(prompt.split('Sources and exact available evidence:\n',1)[1])[0]
+        original = wire['evidence']['E1']['quote']
+        assert ''.join(text for _,text in original) == quote
+        assert [anchor for anchor,_ in original] == ['E1.q1','E1.q2','E1.q3']
+        rows = json.loads(response(prompt,bad=False)['content'])
+        link = {'input':{'anchor':'E1.q1'},'operation':{'anchor':'E1.q2'},'output':{'anchor':'E1.q3'}}
+        if bad == 'unknown':
+            link['operation']['anchor'] = 'E1.q99'
+        elif bad == 'foreign':
+            link['operation']['anchor'] = 'E2.q2'
+        elif bad == 'overlap':
+            link['output'] = link['operation']
+        elif bad == 'mixed':
+            link['operation']['excerpt'] = 'Apply row-wise normalization'
+        rows[1]['processLinks'] = [link]
+        return {'content':json.dumps(rows)}
+
+    result = execute(memory,invoke)
+    assert [g['obligationId'] for g in result['gaps']] == ([] if bad is None else ['process'])
+    assert received(memory)['evidence'][0]['quote'] == quote
+    assert memory.record['state']['evidence'][0]['verification']['semantic'] == 'unchecked'
+    saved = deepcopy(received(memory))
+    execute(memory,lambda *_:pytest.fail('A settled anchor assessment must not be resent'))
+    assert received(memory) == saved

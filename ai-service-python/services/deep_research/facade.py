@@ -475,7 +475,7 @@ class ResearchFacade:
             "sourceGlyphContractVersion": 1,
             "factualReasoningContractVersion": 10,
             "continuationFormatContractVersion": 1,
-            "jointEvidenceContractVersion": 4,
+            "jointEvidenceContractVersion": 5,
             "repairEvidencePriorityVersion": 1,
             "comparisonReasoningContractVersion": 5,
             "namedRowIdentityContractVersion": 1,
