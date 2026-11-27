@@ -50,6 +50,7 @@
         "preflight": "deep-research-evidence/silk-h1-live-preflight-20261127.json",
         "result": "deep-research-evidence/silk-h1-first-frozen-20261127.json",
         "offlineMethodReplay": "deep-research-evidence/silk-numbered-method-passages-replay-20261127.json",
+        "developmentAndRepairReceipt": "deep-research-evidence/silk-image-pair-and-method-citation-20261127.json",
         "scientificContentCredit": 0
       }
     },
