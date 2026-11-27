@@ -8,8 +8,8 @@ from jsonschema import Draft202012Validator
 from services.deep_research.shared_experiment_plan import GROUPS, _array, _object, schema, validate
 
 
-def wire_schema(profile=3, *, derive_pairing=False, derive_analysis=False):
-    wire = schema(3 if profile == 8 else 2 if profile in (4, 6, 7) else 1)
+def wire_schema(profile=3, *, derive_pairing=False, derive_analysis=False, evaluation_prepare=False):
+    wire = schema(3 if profile == 8 else 2 if profile in (4, 6, 7) else 1, evaluation_prepare=evaluation_prepare)
     if profile == 8 and derive_pairing:
         pairing = wire['properties']['pairing']
         for name in ('sharedStateIds', 'cloneStepIds'):
@@ -137,9 +137,10 @@ def _derive_pairing(proposal):
 
 
 def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False,
-                 derive_pairing=False, derive_analysis=False):
+                 derive_pairing=False, derive_analysis=False, evaluation_prepare=False):
     errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing,
-                                             derive_analysis=derive_analysis)).iter_errors(value)
+                                             derive_analysis=derive_analysis,
+                                             evaluation_prepare=evaluation_prepare)).iter_errors(value)
     issues = [
         {'code': 'plan.wire_schema', 'path': '/' + '/'.join(map(str, error.absolute_path))}
         for error in islice(errors, 64)

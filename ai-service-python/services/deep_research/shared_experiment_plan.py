@@ -11,6 +11,7 @@ import re
 from services.deep_research.contracts import digest
 
 MAX_BYTES = 24000
+EVALUATION_PREPARATION_MARKER = 'sharedExperimentEvaluationPreparationVersion'
 GROUPS = ('00', '10', '01', '11')
 CONTRASTS = {
     'A': [-0.5, 0.5, -0.5, 0.5],
@@ -28,7 +29,7 @@ def _array(items, minimum=0, maximum=32, unique=False):
             **({'uniqueItems': True} if unique else {})}
 
 
-def schema(version=1):
+def schema(version=1, *, evaluation_prepare=False):
     text = {'type': 'string', 'minLength': 1, 'maxLength': 1600, 'pattern': r'\S'}
     ident = {'type': 'string', 'pattern': r'^[A-Za-z][A-Za-z0-9_-]{0,47}$'}
     ids = _array(ident, maximum=32, unique=True)
@@ -69,7 +70,8 @@ def schema(version=1):
         'steps': _array(_object({'id': ident, 'scope': {'enum': ['shared', 'arm']},
                                  'groups': _array({'enum': list(GROUPS)}, maximum=4, unique=True),
                                  'kind': {'enum': ['prepare', 'clone', 'intervene', 'fit', 'measure']},
-                                 'dataUse': {'enum': ['training', 'evaluation', 'none']},
+                                 'dataUse': {'enum': ['training', 'evaluation', 'none']
+                                             + (['evaluation_prepare'] if version == 3 and evaluation_prepare else [])},
                                  'factor': {'anyOf': [{'type': 'null'}, _object({
                                      'id': {'enum': ['A', 'B']}, 'level': {'enum': [0, 1], 'type': 'integer'}})]},
                                  'metricIds': ids,
@@ -120,7 +122,7 @@ def validate(value, evidence_ids, *, required_domains=()):
         return [{'code': 'plan.json', 'path': '/'}]
     version = value.get('version') if isinstance(value, dict) else None
     typed_inputs = type(version) is int and version in (2, 3)
-    errors = list(Draft202012Validator(schema(version if typed_inputs else 1)).iter_errors(value))
+    errors = list(Draft202012Validator(schema(version if typed_inputs else 1, evaluation_prepare=True)).iter_errors(value))
     if errors:
         return [{'code': 'plan.schema', 'path': '/'+'/'.join(map(str, e.absolute_path))} for e in errors[:64]]
     def indexed(rows, path):
@@ -171,13 +173,16 @@ def validate(value, evidence_ids, *, required_domains=()):
     measured_groups = set()
     factors = {f['id']: f for f in value['factors']}
     ready_inputs = {i['id'] for i in inputs.values() if i['availability'] == 'provided'}
+    evaluation_states = {sid for step in value['steps'] if step['dataUse'] == 'evaluation_prepare'
+                         for sid in step['creates']}
     for i, step in enumerate(value['steps']):
         path = f'/steps/{i}'
+        evaluation_prepare = step['dataUse'] == 'evaluation_prepare'
         if typed_inputs:
             assets = set(step['inputIds'])
             if not assets <= inputs.keys():
                 issue('plan.step_input_identity', path+'/inputIds')
-            elif step['kind'] == 'prepare' and step['scope'] == 'shared':
+            elif step['kind'] == 'prepare' and step['scope'] == 'shared' and not evaluation_prepare:
                 ready_inputs.update(assets)
             elif not assets <= ready_inputs:
                 issue('plan.step_input_unavailable', path+'/inputIds')
@@ -188,6 +193,22 @@ def validate(value, evidence_ids, *, required_domains=()):
             issue('plan.step_scope', path)
         if step['dataUse'] == 'evaluation' and step['kind'] != 'measure':
             issue('plan.evaluation_leakage', path+'/dataUse')
+        if evaluation_prepare:
+            budget = budgets.get(step['budgetId'])
+            if (step['kind'] != 'prepare' or step['scope'] != 'shared' or step['updates'] or not step['creates']
+                    or any(sid not in states or not states[sid]['fixed'] for sid in step['reads'] + step['creates'])
+                    or not budget or budget['scope'] != 'shared' or budget['unit'] != 'wall_seconds'
+                    or budget['cap'] <= 0):
+                issue('plan.evaluation_preparation_scope', path)
+        evaluation_reader = evaluation_prepare or step['kind'] == 'measure' and step['dataUse'] == 'evaluation'
+        if not evaluation_reader and evaluation_states.intersection(step['reads']):
+            issue('plan.evaluation_state_leakage', path+'/reads')
+        if evaluation_states.intersection(step['updates']):
+            issue('plan.evaluation_state_leakage', path+'/updates')
+        evaluation_required = {sid for mid in step['metricIds'] if mid in metrics
+                               for sid in metrics[mid]['stateIds'] if sid in evaluation_states}
+        if evaluation_required and (not evaluation_reader or not evaluation_required <= set(step['reads'])):
+            issue('plan.evaluation_state_leakage', path+'/metricIds')
         if step['kind'] == 'measure' and (step['creates'] or step['updates']):
             issue('plan.measurement_mutation', path)
         if step['kind'] == 'measure':
@@ -273,6 +294,8 @@ def validate(value, evidence_ids, *, required_domains=()):
     pairing = value['pairing']
     if not pairing['sharedStateIds'] or any(s not in states or states[s]['scope'] != 'shared' for s in pairing['sharedStateIds']):
         issue('plan.pairing_source', '/pairing/sharedStateIds')
+    if evaluation_states.intersection(pairing['sharedStateIds']):
+        issue('plan.evaluation_state_leakage', '/pairing/sharedStateIds')
     covered = set()
     for sid in pairing['cloneStepIds']:
         step = steps.get(sid)

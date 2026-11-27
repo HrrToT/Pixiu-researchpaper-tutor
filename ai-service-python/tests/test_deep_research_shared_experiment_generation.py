@@ -504,6 +504,72 @@ def test_profile_5_still_stops_and_retains_oversized_or_incomplete_response(fail
     invoke.assert_called_once()
 
 
+@pytest.mark.parametrize('fault,expected', [
+    ('none', None),
+    ('training_read', 'plan.evaluation_state_leakage'),
+    ('clone_read', 'plan.evaluation_state_leakage'),
+    ('prepare_update', 'plan.evaluation_preparation_scope'),
+    ('prepare_mutable_reference', 'plan.evaluation_preparation_scope'),
+    ('prepare_unavailable_input', 'plan.step_input_unavailable'),
+    ('measurement_without_read', 'plan.evaluation_state_leakage'),
+    ('measurement_before_registration', 'plan.future_state'),
+])
+def test_shared_evaluation_preparation_is_visible_only_to_evaluation(fault, expected):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    canonical['version'] = 3
+    preflight = canonical['steps'][0]
+    preflight.update(kind='prepare', dataUse='none', inputIds=[], updates=[])
+    canonical['states'][0]['fixed'] = True
+    common, matched = canonical['budgets']
+    common.update(unit='wall_seconds', matching='native', allocation='shared_preparation_total')
+    matched['allocation'] = 'single'
+    registration = {**preflight, 'id': 'register', 'dataUse': 'evaluation_prepare',
+                    'reads': [canonical['states'][0]['id']], 'creates': ['test_poses']}
+    canonical['steps'].insert(1, registration)
+    canonical['states'].append({
+        'id': 'test_poses', 'meaning': 'Accepted test cameras',
+        'representation': 'Frozen registered camera matrices', 'fixed': True, 'persisted': False,
+        'scope': 'shared', 'groups': [], 'source': {'kind': 'step', 'id': 'register'},
+    })
+    fit, measure = canonical['steps'][-2:]
+    measure['reads'].append('test_poses')
+    canonical['metrics'][0]['stateIds'].append('test_poses')
+    for metric in canonical['metrics']:
+        metric['fitMemoryCaptures'] = []
+    if fault == 'training_read':
+        fit['reads'].append('test_poses')
+    elif fault == 'clone_read':
+        canonical['steps'][2]['reads'].append('test_poses')
+    elif fault == 'prepare_update':
+        registration['updates'] = registration['reads'].copy()
+    elif fault == 'prepare_mutable_reference':
+        canonical['states'][0]['fixed'] = False
+    elif fault == 'prepare_unavailable_input':
+        canonical['data']['inputs'].append({
+            'id': 'test_input', 'description': 'Unacquired test calibration', 'availability': 'prepare',
+            'preparation': 'Obtain the test calibration before registration.', 'sourceFactIds': [],
+        })
+        registration['inputIds'] = ['test_input']
+    elif fault == 'measurement_without_read':
+        measure['reads'].remove('test_poses')
+    elif fault == 'measurement_before_registration':
+        canonical['steps'].append(canonical['steps'].pop(1))
+    draft = asset_catalog_draft(canonical)
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['groups'] = []
+    assert compile_plan(draft, ['E1'], profile=8)[0] is None
+    bound, issues = compile_plan(draft, ['E1'], profile=8, evaluation_prepare=True)
+    if expected:
+        assert bound is None and expected in {issue['code'] for issue in issues}
+    else:
+        assert not issues
+        order = lambda plan: sorted(plan['states'], key=lambda x: x['id'])
+        assert {**bound, 'states': order(bound)} == {**canonical, 'states': order(canonical)}
+
+
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
     r, data, aliases = context()
     r[MARKER] = 2

@@ -70,7 +70,8 @@ def compile_candidate(record, input_data, aliases):
         lines.append('| '+' | '.join(_cell(v) for v in (state['meaning'],state['representation'],origin,
                      '是' if state['fixed'] else '按步骤更新', '计入' if state['persisted'] else '不持久化',arms(state['groups'])))+' |')
     lines += ['', '## 执行顺序', '']
-    data_uses = {'training':'训练数据', 'evaluation':'评估数据', 'none':'不读取新数据'}
+    data_uses = {'training':'训练数据', 'evaluation':'评估数据', 'evaluation_prepare':'仅准备评估数据',
+                 'none':'不读取新数据'}
     asset_names = {row['id']: row['description'] for row in data['inputs']}
     shared_budget_starts = {}
     for i,step in enumerate(p['steps'],1):

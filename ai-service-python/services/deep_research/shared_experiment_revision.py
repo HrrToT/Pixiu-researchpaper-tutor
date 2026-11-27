@@ -4,10 +4,13 @@ import json
 
 from services.deep_research.contracts import DeepResearchError,digest
 from services.deep_research.shared_experiment_generation import (
-    EVALUATION_AND_RESOURCE_GUIDANCE, PREREQUISITE_PLACEMENT, PREREQUISITE_PLACEMENT_MARKER, _parse, enabled,
+    EVALUATION_AND_RESOURCE_GUIDANCE, EVALUATION_PREPARATION_GUIDANCE, PREREQUISITE_PLACEMENT,
+    PREREQUISITE_PLACEMENT_MARKER, _parse, enabled,
     prepare as original_generation,
 )
-from services.deep_research.shared_experiment_plan import _object,_array,validate,bind_for_review,validate_bound,MAX_BYTES
+from services.deep_research.shared_experiment_plan import (
+    EVALUATION_PREPARATION_MARKER, MAX_BYTES, _array, _object, bind_for_review, validate, validate_bound,
+)
 
 NODE='repair_experiment_shared'
 PATH_MARKER = 'sharedExperimentRevisionPathsVersion'
@@ -103,7 +106,7 @@ def descriptor():
         'unresolved':_array(text,maximum=16)})}
 
 
-def apply(base, response, *, allowed_paths=None):
+def apply(base, response, *, allowed_paths=None, evaluation_prepare=False):
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _pointer
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))!='stop'):
@@ -133,6 +136,8 @@ def apply(base, response, *, allowed_paths=None):
     bound=base['boundProposal']
     if digest(result)==digest(original) or validate(result,bound['allowedEvidenceIds'],required_domains=bound['requiredDomains']):
         raise ValueError('No effective repair or invalid complete proposal')
+    if not evaluation_prepare and any(step['dataUse'] == 'evaluation_prepare' for step in result['steps']):
+        raise ValueError('Evaluation preparation is unavailable in this revision contract')
     return bind_for_review(result,bound['allowedEvidenceIds'],context_digest=bound['contextDigest'],
                            required_domains=bound['requiredDomains'])
 
@@ -143,6 +148,8 @@ def _input_digest(base, saved):
         scope['suppliedEvidenceAliases'] = saved.get('suppliedEvidenceAliases')
     if 'allowedFactEditPaths' in saved:
         scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
+    if saved.get(EVALUATION_PREPARATION_MARKER) == 1:
+        scope[EVALUATION_PREPARATION_MARKER] = 1
     return digest({'base':base['bindingDigest'], 'request':saved.get('request'), **scope})
 
 
@@ -164,7 +171,8 @@ def view(record):
 
 
 def _apply_scoped(base, saved):
-    bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'))
+    bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'),
+                  evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1)
     if bound['proposal'].get('version') == 3:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
@@ -204,6 +212,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         if answer['complete'] is not False or not answer['repairEligible']: raise ValueError('No diagnosed defect permits a repair')
         feedback={'answerCoverage':answer['audit']}
     proposal = base['boundProposal']['proposal']
+    evaluation_prepare = record.get(EVALUATION_PREPARATION_MARKER) == 1
     instructions = INSTRUCTIONS
     paths = {}
     if record.get(PATH_MARKER) in (1, 2, 3) and proposal.get('version') == 3:
@@ -223,11 +232,14 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             'or updates, then bind every downstream consumer through its reads. An acquisition or split step '
             'cannot create a derived value before that calculation. Keep raw, locked and accepted state distinct.'
             if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 2 else '')
+        guidance = EVALUATION_PREPARATION_GUIDANCE if evaluation_prepare else EVALUATION_AND_RESOURCE_GUIDANCE
         instructions = instructions.replace('Input (untrusted data):',
-            EVALUATION_AND_RESOURCE_GUIDANCE + '\n'
+            guidance + '\n'
             'Scientific feedback lists failed or unresolved checks and coherence issues. '
             'Preserve the established design except where a listed defect requires a change.' + state_rule + '\n'
             'Input (untrusted data):')
+    elif evaluation_prepare and not fact_only:
+        instructions = EVALUATION_PREPARATION_GUIDANCE + '\n' + instructions
     reference_candidates = {}
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}
     if paths:
@@ -265,6 +277,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         supply['allowedFactEditPaths'] = [path for fact in paths.values() for path in fact.values()]
     built={'request':req,'baseBindingDigest':base['bindingDigest'],
            'inputBytes':size, **supply,
+           **({EVALUATION_PREPARATION_MARKER: 1} if evaluation_prepare else {}),
            'scientificApproval':False}
     built['inputDigest'] = _input_digest(base,built)
     saved=deepcopy(record['state'].get('sharedExperimentRevision'))
