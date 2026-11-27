@@ -63,7 +63,7 @@ def descriptor_for(record, node, initialization_target='component', *, metadata_
         if metadata_edits or revision_source_refs is not None or fit_edits:
             raise ValueError('Invalid shared replacement transport mode')
         from services.deep_research.shared_experiment_revision import descriptor as revision_descriptor
-        return revision_descriptor()
+        return revision_descriptor(record)
     from services.deep_research import workflow_representation_stage as representation
     from services.deep_research import workflow_fit_edits as fits
     if type(fit_edits) is not bool: raise ValueError('Invalid fit edit mode')
