@@ -1,0 +1,60 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "candidateCommit": "6ce111e63233f913849a8059a75e9905aff481dd",
+  "baselineRun": "dr_run_37b6356fc7405e5eaa42e0ecd4c0c504",
+  "mode": "single real per-paper generation with recorded siblings",
+  "model": "gpt-6.1-terra",
+  "originalSourceRevision": "2308.04079v1",
+  "providerCalls": 1,
+  "automaticRetry": false,
+  "tokens": {
+    "total_tokens": 6813,
+    "input_tokens": 6296,
+    "output_tokens": 517,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 6293
+  },
+  "sameStagePreviousTokens": 6715,
+  "elapsedSeconds": 9.0,
+  "promptSha256": "ad7f171a455e13b85dbdf0137f3ce2f46ff48c67c4ad904871154893a2db9c7f",
+  "stageStatus": "compiled_unverified",
+  "recordedSiblings": [
+    "P2",
+    "joint"
+  ],
+  "physicalSourceSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "verifiedTargetWording": [
+    {
+      "claimId": "cmp_0_0",
+      "claim": "论文用三维高斯表示场景：优化位置、不透明度、各向异性协方差和球谐系数，并在拟合中自适应地增删高斯。球谐系数用于表示颜色；协方差描述高斯的形状。作者认为所得表示较紧凑，并提出可探索借鉴点云压缩方法。",
+      "physicalPages": [
+        2,
+        8,
+        11
+      ],
+      "exactPdfQuotes": true,
+      "manualReview": "The cited optimization list names opacity and the cited text distinguishes future point-cloud compression from the method."
+    },
+    {
+      "claimId": "cmp_6_0",
+      "claim": "在论文图示场景中，该方法的渲染速度快于所列的InstantNGP、Plenoxels和Mip-NeRF360。论文说明结果均在A6000 GPU上运行，Mip-NeRF360除外。",
+      "physicalPages": [
+        1,
+        8
+      ],
+      "exactPdfQuotes": true,
+      "manualReview": "Figure 1 supports the direction for the depicted comparison. Page 8 exempts the Mip-NeRF360 method from the A6000 statement."
+    }
+  ],
+  "sourceBindingPrechecks": "passed",
+  "independentSemanticReviewRun": false,
+  "wholeAnswerAuditRun": false,
+  "productionWrites": false,
+  "scientificAcceptance": false,
+  "rawFilesSha256": {
+    "intent.json": "43f9a8a3b8ab9efc064009fd777f70066e2ee79f06c922e9874545912c14b71a",
+    "response.json": "dfb6c5a9bc99e3af645017f8fb75428461228f7c75c35b8658f46c3bb77cb0be",
+    "calls.json": "0a08f4ef79a858bcd9c4eef46a3f96165b7568e2927504f4da02f52aa5809c47",
+    "compiled.json": "a9d5f79ed33fe1f9e88f94991e8736a45a435cd608e47aa826b322b9d94cd563"
+  }
+}
