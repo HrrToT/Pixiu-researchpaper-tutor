@@ -19,7 +19,7 @@ def ready(value=None):
     return r,data,aliases
 
 
-@pytest.mark.parametrize('packet_version', [1, 2])
+@pytest.mark.parametrize('packet_version', [1, 2, 3])
 def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch, packet_version):
     from services.deep_research import shared_experiment_review as review
 
@@ -76,6 +76,93 @@ def test_scoped_review_checks_calls_in_both_pools_before_first_packet(monkeypatc
 
     record['budget']['maxModelCalls'] = 13
     assert review._initial_batch_budget_stop(record, built) is None
+
+
+@pytest.mark.parametrize('change', [None, 'design_issue', 'fact_issue', 'fact', 'context', 'response', 'evidence_scope'])
+def test_revision_reuses_only_the_original_checked_fact_packet(monkeypatch, change):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    original = record['state']['sharedExperimentGeneration']
+    bound = deepcopy(original['boundProposal'])
+    binding = original['bindingDigest']
+    expected = [target for target in targets(record) if target['kind'] == 'source_fact']
+    ids = [target['checkId'] for target in expected]
+    assert ids == ['fact_0']
+    response = reply({'checks': [{'checkId': ids[0], 'status': 'passed',
+        'planBindings': ['/sourceFacts/0/text'], 'evidenceBindings': [{'evidenceId': 'E1', 'field': 'quote'}],
+        'reason': 'Checked against the cited source.'}], 'coherent': True, 'issues': []})
+    if change in ('design_issue', 'fact_issue'):
+        content = json.loads(response['content'])
+        content.update(coherent=False, issues=[{'reason': 'Prior issue', 'planBindings': [
+            '/data/trainingSplit' if change == 'design_issue' else '/sourceFacts/0/text']}])
+        response = reply(content)
+    prior_batch = {'checkIds': ids, 'suppliedEvidenceAliases': ['E1']}
+    original_responses = [response]
+    record['state'].update(sharedExperimentRevision={}, sharedExperimentReview={
+        'status': 'checked', 'generationBindingDigest': binding, 'batches': [prior_batch],
+        'response': original_responses, 'responseDigest': digest(original_responses),
+        'assessment': {'valid': True, 'generationBindingDigest': binding,
+                       'reviewDigest': digest({'generation': binding, 'response': original_responses})},
+    })
+    record[review.SCOPED_PACKET_MARKER] = 3
+    record[review.REFERENCE_MARKER] = 3
+    record[review.COMPACT_REVIEW_MARKER] = 2
+    monkeypatch.setattr(review, '_generation', lambda _: original)
+    current = deepcopy(prior_batch)
+    if change == 'fact':
+        bound['proposal']['sourceFacts'][0]['text'] += ' A new detail.'
+    elif change == 'context':
+        bound['contextDigest'] = 'changed'
+    elif change == 'response':
+        response['content'] += ' '
+    elif change == 'evidence_scope':
+        current['suppliedEvidenceAliases'] = []
+    replayed = review._reviewed_fact_batch(record, [current], bound, data, aliases)
+    if change in (None, 'design_issue'):
+        assert replayed['reusedFactSourceDigest'] == digest(response)
+        assert json.loads(replayed['reusedFactBatch']['content']) == {
+            'checks': json.loads(response['content'])['checks'], 'coherent': True, 'issues': []}
+    else:
+        assert replayed == {}
+
+
+def test_revision_budget_counts_only_pending_packets():
+    from services.deep_research import shared_experiment_review as review
+
+    record = {review.SCOPED_PACKET_MARKER: 3, 'budget': {
+        'maxModelCalls': 18, 'modelCalls': 12, 'reservedModelCalls': 4,
+        'maxTokens': 100000, 'tokens': 70000}}
+    batches = [{'inputBytes': size, 'request': {'extra': {'max_tokens': 4096}}}
+               for size in (26000, 15000, 16000)]
+    assert review._initial_batch_budget_stop(record, {'batches': batches})['reservation'] == 3
+    assert review._initial_batch_budget_stop(record, {'batches': batches, 'reusedFactBatch': {}}) is None
+
+
+def test_revision_review_sends_only_open_packets_and_reloads_same_response(monkeypatch):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record[review.SCOPED_PACKET_MARKER] = 3
+    reused, design = reply({'check': 'fact fixture'}), reply({'check': 'design fixture'})
+    batches = [{'inputBytes': 100, 'checkIds': [check], 'request': {'prompt': prompt, 'extra': {'max_tokens': 100}}}
+               for check, prompt in [('fact_0', 'reused'), ('section_0', 'design')]]
+    built = {'request': batches[0]['request'], 'inputBytes': 100, 'hardIssues': [],
+             'targets': [], 'batches': batches, 'reusedFactBatch': reused}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: built)
+    assessment = Mock(return_value={'valid': True, 'complete': False, 'scientificApproval': False})
+    monkeypatch.setattr(review, 'assess', assessment)
+    invoke = Mock(return_value=design)
+
+    def checkpoint(saved):
+        record['state'][review.review_slot(record)] = deepcopy(saved)
+
+    settled = prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert invoke.call_count == 1 and invoke.call_args.args[:2] == (NODE, 'design')
+    assert settled['response'] == [reused, design]
+    assert assessment.call_args.args[-1] == [reused, design]
+    assert prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == settled
+    assert invoke.call_count == 1
 
 
 @pytest.mark.parametrize(('check_key', 'instruction'), [
