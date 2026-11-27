@@ -1,4 +1,5 @@
 import sys
+import ssl
 from pathlib import Path
 from unittest.mock import patch
 
@@ -33,6 +34,24 @@ def test_transport_failure_category_is_safe_and_does_not_retry(llm_env, error, k
     assert raised.value.failure_kind == kind
     assert raised.value.status_code is None
     assert 'secret' not in str(raised.value)
+    mock_post.assert_called_once()
+
+
+@pytest.mark.parametrize('ssl_error,diagnostic', [
+    (ssl.SSLCertVerificationError('credential-like private detail'), 'certificate_verification'),
+    (ssl.SSLEOFError('credential-like private detail'), 'tls_stream_closed'),
+    (ssl.SSLError('untrusted WRONG_VERSION_NUMBER text'), None),
+])
+def test_nested_tls_diagnostic_reads_exception_types_without_collecting_messages(llm_env, ssl_error, diagnostic):
+    from urllib3.exceptions import MaxRetryError, SSLError
+
+    mock_post, _ = llm_env
+    mock_post.side_effect = requests.exceptions.SSLError(MaxRetryError(None, 'private path', SSLError(ssl_error)))
+    with pytest.raises(LLMProviderError) as raised:
+        _invoke(DeepSeekLLM(api_key='test-key'))
+    assert raised.value.tls_diagnostic == diagnostic
+    assert raised.value.status_code is None
+    assert 'private' not in str(raised.value)
     mock_post.assert_called_once()
 
 

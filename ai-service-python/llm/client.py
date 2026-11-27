@@ -1,5 +1,6 @@
 import json
 import math
+import ssl
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -21,6 +22,26 @@ load_dotenv()
 DEFAULT_DEEPSEEK_BASE_URL = settings.deepseek_base_url
 DEFAULT_DEEPSEEK_MODEL = settings.deepseek_model
 DEFAULT_DEEPSEEK_TRANSLATION_MODEL = settings.deepseek_translation_model
+
+
+def _tls_diagnostic(error: BaseException) -> Optional[str]:
+    pending = [error]
+    seen = set()
+    while pending and len(seen) < 12:
+        current = pending.pop()
+        if not isinstance(current, BaseException) or id(current) in seen:
+            continue
+        seen.add(id(current))
+        if isinstance(current, ssl.SSLCertVerificationError):
+            return "certificate_verification"
+        if isinstance(current, ssl.SSLError):
+            reason = getattr(current, "reason", None)
+            if reason in ("WRONG_VERSION_NUMBER", "UNSUPPORTED_PROTOCOL", "TLSV1_ALERT_PROTOCOL_VERSION"):
+                return "protocol_mismatch"
+            if reason == "UNEXPECTED_EOF_WHILE_READING" or isinstance(current, ssl.SSLEOFError):
+                return "tls_stream_closed"
+        pending.extend((current.__cause__, current.__context__, getattr(current, "reason", None), *current.args))
+    return None
 
 
 def _resolve_messages(
@@ -255,6 +276,7 @@ class CompletionHTTPClient:
                     model=self.model,
                     retryable=True,
                     failure_kind=failure_kind,
+                    tls_diagnostic=_tls_diagnostic(error) if failure_kind == "tls_error" else None,
                     provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
 

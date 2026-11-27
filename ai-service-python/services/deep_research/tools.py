@@ -483,6 +483,8 @@ class TrackedLLMInvoker:
             if exc.failure_kind in {"proxy_error", "tls_error", "connect_timeout", "read_timeout",
                                     "deadline_exceeded", "connection_error", "transport_error"}:
                 error["failureKind"] = exc.failure_kind
+            if exc.tls_diagnostic:
+                error["tlsDiagnostic"] = exc.tls_diagnostic
             from llm.response_observation import sanitize as sanitize_observation
             observation=sanitize_observation(getattr(exc,'provider_observation',None))
             if observation is not None:error['providerObservation']=observation

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 
 DEFAULT_RESEARCH_OUTPUT_TOKENS = 2000
+TLS_DIAGNOSTIC_CODES = frozenset({"certificate_verification", "protocol_mismatch", "tls_stream_closed"})
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,7 @@ class LLMProviderError(RuntimeError):
         retryable: bool = False,
         status_code: Optional[int] = None,
         failure_kind: Optional[str] = None,
+        tls_diagnostic: Optional[str] = None,
         provider_observation: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__(message)
@@ -57,6 +59,9 @@ class LLMProviderError(RuntimeError):
         self.retryable = retryable
         self.status_code = status_code
         self.failure_kind = failure_kind
+        self.tls_diagnostic = (tls_diagnostic
+                               if failure_kind == "tls_error" and isinstance(tls_diagnostic, str)
+                               and tls_diagnostic in TLS_DIAGNOSTIC_CODES else None)
         self.provider_observation = provider_observation
 
 

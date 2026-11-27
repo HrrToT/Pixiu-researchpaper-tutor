@@ -7,15 +7,18 @@ from services.deep_research.tools import TrackedLLMInvoker
 from services.deep_research.contracts import UnknownCallError
 
 
-@pytest.mark.parametrize('kind', [None, 'deadline_exceeded', 'read_timeout', 'proxy_error', 'secret URL'])
-def test_transport_diagnostics_preserve_unknown_and_reservation_after_reopen(tmp_path, kind):
+@pytest.mark.parametrize('kind,tls_diagnostic', [(None, None), ('deadline_exceeded', None),
+    ('read_timeout', None), ('proxy_error', None), ('secret URL', None),
+    ('tls_error', 'certificate_verification'), ('tls_error', 'secret URL')])
+def test_transport_diagnostics_preserve_unknown_and_reservation_after_reopen(tmp_path, kind, tls_diagnostic):
     repo = DeepResearchRepository(str(tmp_path/'research.sqlite3'))
     repo.initialize()
     repo.create_run({'runId': 'r', 'taskId': 't', 'question': 'Check mechanism'})
     repo.begin_execution('r')
     client = Mock()
     client.invoke.side_effect = LLMProviderError('DeepSeek request failed.', provider='deepseek',
-                                                model='configured', retryable=True, failure_kind=kind)
+                                                model='configured', retryable=True, failure_kind=kind,
+                                                tls_diagnostic=tls_diagnostic)
     invoke = TrackedLLMInvoker(client, repo.reserve_call, repo.complete_call)
     with pytest.raises(LLMProviderError):
         invoke('r', 'resolve_brief', 'Fixed input')
@@ -23,7 +26,8 @@ def test_transport_diagnostics_preserve_unknown_and_reservation_after_reopen(tmp
     restored.initialize()
     call, = restored.list_calls('r')
     assert call['status'] == 'unknown'
-    assert call['error'].get('failureKind') == (kind if kind in {'deadline_exceeded', 'read_timeout', 'proxy_error'} else None)
+    assert call['error'].get('failureKind') == (kind if kind in {'deadline_exceeded', 'read_timeout', 'proxy_error', 'tls_error'} else None)
+    assert call['error'].get('tlsDiagnostic') == (tls_diagnostic if tls_diagnostic == 'certificate_verification' else None)
     assert 'secret' not in str(call['error'])
     assert restored.require_run('r')['budget']['tokens'] > 0
     # An identical request remains protected after reopening; diagnostics must
