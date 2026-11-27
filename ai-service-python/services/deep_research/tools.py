@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from typing import Any, Callable, Protocol
 
 from services.deep_research.contracts import (
@@ -749,6 +750,7 @@ class BudgetedSemanticChecker:
         result_attribution=False,
         bounded_factual_review=False,
         named_table_review=False,
+        same_page_rate_review=False,
         prospective_review=False,
         configuration_consistency=0,
         prospective_envelope=0,
@@ -824,6 +826,7 @@ class BudgetedSemanticChecker:
         self._result_attribution=result_attribution
         self._bounded_factual_review=bounded_factual_review
         self._named_table_review=named_table_review
+        self._same_page_rate_review=same_page_rate_review
         self._qualitative_inference = qualitative_inference
         self._experiment_intent_review = experiment_intent_review
         self._prospective_review = prospective_review
@@ -1491,6 +1494,11 @@ The dataAvailability object is an internal audit, not new experimental results.
         if version_policy:
             from services.deep_research.source_version_review import eligible,GUIDANCE
             if eligible(claims):prompt+='\n'+GUIDANCE
+        same_page_rate = self._same_page_rate_review
+        if (same_page_rate() if callable(same_page_rate) else same_page_rate) and any(
+                re.search(r'同页|\bsame[- ]page\b', claim['text'], re.I) for claim in claims):
+            prompt += ('\nFor an accompanying-prose claim compare each statement to its own revision. '
+                       'Different PDF page numbers across revisions do not contradict a relative same-page claim.')
         diagnostic_policy=self._review_diagnostic_bindings
         diagnostic_policy=(diagnostic_policy() if callable(diagnostic_policy) else diagnostic_policy) is True
         from services.deep_research.source_version_review import eligible as diagnostic_eligible

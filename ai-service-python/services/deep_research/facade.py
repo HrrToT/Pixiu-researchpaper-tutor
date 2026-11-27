@@ -456,6 +456,7 @@ class ResearchFacade:
             "namedTableScopeVersion": 2,
             "namedTableGroupedRowsVersion": 1,
             "namedTableSamePageProseVersion": 1,
+            "namedTableSamePageRateVersion": 1,
             "namedTableBoundedReviewVersion": 1,
             "revisionTableMultipleRowsVersion": 5,
             "revisionTableCoverageEnvelopeVersion": 1,
@@ -1403,6 +1404,7 @@ class ResearchFacade:
         from services.deep_research.factual_scope import enabled as scope_enabled
         from services.deep_research.factual_review import enabled as bounded_review_enabled
         from services.deep_research.factual_review import named_table_review_enabled
+        from services.deep_research.named_table_scope import same_page_rate_enabled
         from services.deep_research.scope_expression_review import context_for_record
         from services.deep_research.partitioned_scope_review import (
             enabled as partitioned_scope_enabled, assertions_enabled, consistent_premises_enabled,
@@ -1476,6 +1478,7 @@ class ResearchFacade:
                 and self._repo.require_run(run_id)['factualScopeContractVersion']==4,
             bounded_factual_review=lambda: bounded_review_enabled(self._repo.require_run(run_id)),
             named_table_review=lambda: named_table_review_enabled(self._repo.require_run(run_id)),
+            same_page_rate_review=lambda: same_page_rate_enabled(self._repo.require_run(run_id)),
             mechanism_grounding=lambda: mechanism_review_policy(self._repo.require_run(run_id)),
             qualitative_inference=lambda: type(self._repo.require_run(run_id).get('audienceRewriteContractVersion')) is int
                 and self._repo.require_run(run_id)['audienceRewriteContractVersion'] in (4,5,6,7,8,9),

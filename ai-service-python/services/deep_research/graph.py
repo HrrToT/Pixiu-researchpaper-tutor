@@ -1705,8 +1705,10 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.named_table_scope import GUIDANCE as table_scope_guidance
             prompt += '\n' + table_scope_guidance
             if named_table_candidates:
-                from services.deep_research.named_table_scope import SAME_PAGE_GUIDANCE
+                from services.deep_research.named_table_scope import SAME_PAGE_GUIDANCE, SAME_PAGE_RATE_GUIDANCE, same_page_rate_enabled
                 prompt += '\n' + SAME_PAGE_GUIDANCE
+                if same_page_rate_enabled(record):
+                    prompt += '\n' + SAME_PAGE_RATE_GUIDANCE
             if record.get('namedTableScopeVersion') == 2:
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE, REQUESTED_FINDINGS_GUIDANCE
                 revision_display = record.get('revisionTableMultipleRowsVersion')
@@ -3038,6 +3040,13 @@ def make_publish_node(
                            'evidence':record.get('state',{}).get('evidence',[]), 'limitations':visible_notice+repair_notice}
         from services.deep_research.answer_format import publication_format_gaps
         gaps.extend(publication_format_gaps(record, accepted_claims, sections, display_payload=display_payload))
+        from services.deep_research.named_table_scope import same_page_prose_requested, same_page_rate_enabled, same_page_rate_gaps
+        if same_page_rate_enabled(record):
+            supplied_ids = set((brief_state.get('synthesisPremiseAllocation') or {}).get('suppliedEvidenceIds', []))
+            supplied = [row for row in brief_state.get('evidence', []) if row.get('evidenceId') in supplied_ids]
+            prose_obligations = [oid for oid, question in research_questions.items() if same_page_prose_requested(question)]
+            target = {'obligationId': prose_obligations[0]} if len(prose_obligations) == 1 else {'wholeQuestion': True}
+            gaps.extend({**gap, **target} for gap in same_page_rate_gaps(effective_question(record), supplied, accepted_claims))
         if output_kind == "experiment_design":
             from services.deep_research.synthesis import OUTPUT_KIND_SECTIONS
             from services.deep_research.experimental_reasoning import DESIGN_ROLE_LABELS, missing_design_roles

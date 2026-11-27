@@ -14,11 +14,22 @@ _SAME_PAGE_PROSE = re.compile(r'同页(?:的)?(?:正文|文字|文中|叙述)|sa
 _NUMERIC_CHANGE = re.compile(r'(?:\b(?:drop|decreas|increas|reduc|improv|chang|differ)\w*\b|下降|降低|减少|提高|差异)'
                              r'[^。；;]{0,80}\d|\d[^。；;]{0,80}(?:\b(?:percent(?:age)?|points)\b|%)', re.I)
 _RATE = r'(?:准确率|成功率|错误率|比例|\b(?:accuracy|precision|recall|success rate|error rate)\b)'
-_RATE_CHANGE = re.compile(_RATE + r'[^。；;]{0,48}\d+(?:\.\d+)?\s*(?:%|百分(?:比|点)|percent(?:age points?)?)', re.I)
+_RATE_VALUE = r'(?<![\d.])(\d+(?:\.\d+)?)\s*(百分(?:比|点)|[%％]|percentage points?|percent)'
+_RATE_CHANGE = re.compile(_RATE + r'[^。；;]{0,48}?' + _RATE_VALUE, re.I)
 
 
 def same_page_prose_requested(question):
     return bool(_SAME_PAGE_PROSE.search(question))
+
+
+def same_page_rate_enabled(record):
+    from services.deep_research.request_context import effective_question
+
+    version = record.get('namedTableSamePageRateVersion')
+    if type(version) is not int or version != 1 or (record.get('state') or {}).get('outputKind') != 'claim_verification':
+        return False
+    question = effective_question(record)
+    return same_page_prose_requested(question) and bool(re.search(_RATE, question, re.I)) and requested_number(question) is not None
 
 
 def _requested_models(models, question):
@@ -274,6 +285,42 @@ def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_r
     return ordered, [*preferred, *bundles]
 
 
+def same_page_rate_gaps(question, supplied, accepted):
+    """A comparison still needs the actual rate stated in the accompanying prose."""
+    from services.deep_research.publication_identity import owned_evidence_publication
+    from services.deep_research.table_evidence import visible_table_packet
+
+    number = requested_number(question)
+    if number is None or not same_page_prose_requested(question) or not re.search(_RATE, question, re.I):
+        return []
+    selected, anchored = select(supplied, number)
+    anchored = [row for row in selected if row['evidenceId'] in anchored
+                and visible_table_packet(row.get('tableData'), row['quote'])]
+    claims = [(set(claim.get('evidenceRefs', [])),
+               {_rate_value(match) for match in re.finditer(_RATE_VALUE, claim['text'], re.I)})
+              for claim in accepted if claim.get('kind') in {'reported', 'inference'}]
+    gaps = []
+    for identity in dict.fromkeys(_identity(row) for row in anchored):
+        pair = [row for row in anchored if _identity(row) == identity]
+        prose = _same_page_prose(selected, pair, question)
+        rates = {_rate_value(match) for match in _RATE_CHANGE.finditer(prose['quote'])} if prose else set()
+        if len(rates) != 1:
+            continue
+        rate, = rates
+        if not any(prose['evidenceId'] in refs and rate in values for refs, values in claims):
+            revision = owned_evidence_publication(prose)['revision']
+            gaps.append({'question': f'核对 {revision} 表格与同页正文的数值',
+                         'missingEvidence': f'正文中作者报告的{rate[1]}数值尚未在已核验答复中明确列出。'})
+    return gaps
+
+
+def _rate_value(match):
+    from decimal import Decimal
+
+    units = '百分点' if 'point' in match[2].casefold() or match[2] == '百分点' else '百分比'
+    return Decimal(match[1]), units
+
+
 GUIDANCE = ('For the explicitly requested numbered table, use only evidence whose location.requestedTable '
             'identifies that table as a candidate. A reference to the table in prose is not a row. '
             'Keep each paper revision separate and require the matching row, column and caption before interpreting '
@@ -283,3 +330,5 @@ GUIDANCE = ('For the explicitly requested numbered table, use only evidence whos
 SAME_PAGE_GUIDANCE = ('When comparing a table to accompanying prose, cite the table cells and the separate '
                       'same-page statement for the same revision. Explain any disagreement without choosing '
                       'which value is correct unless the source resolves it.')
+SAME_PAGE_RATE_GUIDANCE = ('Same page means relative to the table within each revision. The PDF page numbers '
+                           'can differ between revisions. Include the prose number and its unit in the answer.')

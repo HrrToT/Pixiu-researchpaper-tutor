@@ -81,6 +81,8 @@ def test_required_table_bundle_prioritizes_both_revisions_before_optional_rows()
 
 
 def test_named_table_bundle_retains_each_versions_own_same_page_prose_before_fitting():
+    from services.deep_research.named_table_scope import same_page_rate_gaps
+
     def owned(eid, version, digest, **kwargs):
         owner = digest + '.pdf'
         return {**evidence(eid, version=digest, **kwargs), 'sourceWorkId': owner, 'ownerMaterialId': owner,
@@ -102,12 +104,21 @@ def test_named_table_bundle_retains_each_versions_own_same_page_prose_before_fit
                       owned(f'text-{version}', version, digest, page=page,
                             quote='The accuracy drops by 0.5%.')])
     kwargs = {'requested_rows': True, 'keep_revisions_together': True, 'same_page_candidates': [*tables, *prose]}
-    ordered, bundles = prioritize(tables, [], {'table-1', 'table-2'},
-                                  '核对表3 Method-A 的准确率，并比较同页正文的准确率降幅。', **kwargs)
+    question = '核对表3 Method-A 的准确率，并比较同页正文的准确率降幅。'
+    ordered, bundles = prioritize(tables, [], {'table-1', 'table-2'}, question, **kwargs)
     assert [row['evidenceId'] for row in ordered] == ['table-1','table-2','text-1','text-2']
     assert bundles[0]['evidenceIds'] == ['table-1','text-1','table-2','text-2']
     unchanged, _ = prioritize(tables, [], {'table-1','table-2'}, '核对表3 Method-A 的准确率。', **kwargs)
     assert unchanged == tables
+    published = [{'kind': 'inference', 'text': '表中下降 2 个百分点，与正文不一致。',
+                  'evidenceRefs': ['table-1','text-1','table-2','text-2']}]
+    assert len(same_page_rate_gaps(question, ordered, published)) == 2
+    published[0]['text'] += '两版正文都称下降 0.50%。'
+    assert not same_page_rate_gaps(question, ordered, published)
+    published[0]['evidenceRefs'].remove('text-2')
+    assert same_page_rate_gaps(question, ordered, published)[0]['question'].startswith('核对 v2')
+    published[0]['text'] = '正文称下降 0.50 个百分点。'
+    assert len(same_page_rate_gaps(question, ordered, published)) == 2
 
 
 def test_named_model_group_retains_configurations_and_respects_explicit_size_lists():
