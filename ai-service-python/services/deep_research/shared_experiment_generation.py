@@ -223,6 +223,14 @@ def instructions(record):
                         'Use one clone-direction algorithm in factor and fit; if aggregating across cameras, '
                         'map each observation to a common frame before averaging. Label proposed choices. '
                     )
+                if record.get('sharedExperimentDensificationExecutionVersion') == 2:
+                    execution = (
+                        'Fix pretrain/arm camera schedules, seeds and RNG checkpoint/clone rules. Define proposed '
+                        'projection, finite support, visibility and blending with fixed numerical conformance cases. '
+                        'Obtain per-visible Gaussian screen gradients; specify denominator and empty case. '
+                        'Map each observation to a common frame before averaging clone direction. Gate both '
+                        'interventions on gradient first, then classify size. Label proposed choices. '
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

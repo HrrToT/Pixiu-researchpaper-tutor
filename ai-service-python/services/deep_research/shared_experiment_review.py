@@ -71,6 +71,7 @@ SCOPED_PACKET_MARKER = 'sharedExperimentScopedReviewPacketVersion'
 SCOPED_PACKET_VERSIONS = (1, 2, 3, 4, 5, 6, 7)
 PACKING_MARKER = 'sharedExperimentReviewPackingVersion'
 GROUP_BINDINGS_MARKER = 'sharedExperimentReviewGroupBindingsVersion'
+PLANNED_PREREQUISITES_MARKER = 'sharedExperimentReviewPlannedPrerequisitesVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -170,7 +171,12 @@ def _scoped_packet_policy(record, view):
         mixed = (' humanChecks map [checkId,obligationId,criterionId] to requirements '
                  '(whole is the question). Bind substantive fields covering each criterion.'
                  if mixed_checks else '')
-        return bounds + SCOPED_PACKET_CHECKS[key] + mixed + '\nInput:\n'
+        prerequisites = (
+            ' Judge planned acquisition by concrete readiness/stop checks; require current asset proof '
+            'when claimed or explicitly requested.'
+            if key != 'factChecks' and record.get(PLANNED_PREREQUISITES_MARKER) == 1 else ''
+        )
+        return bounds + SCOPED_PACKET_CHECKS[key] + mixed + prerequisites + '\nInput:\n'
     state_rule = (' Reasons: ≤420 characters. Exact /steps/INDEX/{reads,creates,updates} arrays '
                   'may bind state flow; a pass still needs a substantive scalar.'
                   if record.get(REFERENCE_MARKER) == 4 else '')
@@ -473,6 +479,12 @@ def build(record, input_data, aliases, *, required_domains=()):
             data['requirements'] = [item for item in data['requirements'] if item['obligationId'] in human_ids]
             data['sectionChecks'] = [[check, text, paths] for (check, _, paths), text in
                                      zip(data['sectionChecks'], COMPACT_SECTIONS, strict=True)]
+            if record.get(PLANNED_PREREQUISITES_MARKER) == 1:
+                data['sectionChecks'][5][1] = (
+                    'Check optimizer, rates, schedule, amounts and stops. Match causal fit budgets; distinguish '
+                    'native budgets. One uninterrupted shared training-prep cap; stop before cloning incomplete state. '
+                    'Isolated held-out evaluation preparation can have its own cap.'
+                )
             for row in evidence:
                 if isinstance(row.get('location'), dict):
                     for key in ('sourcePassageStart', 'sourcePassageEnd'):

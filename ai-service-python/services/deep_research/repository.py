@@ -397,6 +397,7 @@ class DeepResearchRepository:
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
                                      'sharedExperimentDensificationExecutionVersion',
+                                     'sharedExperimentReviewPlannedPrerequisitesVersion',
                                      'sharedExperimentCompactScienceRevisionVersion',
                                      'comparisonBeginnerLeadContractVersion',
                                      'namedTablePdfFallbackVersion',
