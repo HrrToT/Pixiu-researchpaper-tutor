@@ -1,0 +1,60 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceCommit": "ed97a92a5",
+  "generationCommit": "0ce1da326",
+  "providerModel": "gpt-6.1-terra",
+  "scope": "continue_same_joint_semantic_verification",
+  "reusedSemanticCalls": 3,
+  "newCallUsage": [
+    {
+      "input_tokens": 4706,
+      "output_tokens": 158,
+      "total_tokens": 4864
+    },
+    {
+      "input_tokens": 4428,
+      "output_tokens": 199,
+      "total_tokens": 4627
+    }
+  ],
+  "newTokens": 9491,
+  "cumulativeScopedTokens": 30017,
+  "verifiedJointResults": {
+    "deploymentMemoryAdvice": "proposal_accepted",
+    "matchedNumericExample": "semantic_passed",
+    "crossPaperFpsBoundary": "semantic_passed"
+  },
+  "wholeDraftReplay": {
+    "providerCalls": 0,
+    "exactReusablePaperClaims": [
+      "cmp_0_0",
+      "cmp_4_0",
+      "cmp_5_0",
+      "cmp_6_0",
+      "cmp_7_0"
+    ],
+    "exactReusableJointClaims": [
+      "cmp_conclusion_0",
+      "cmp_conclusion_1",
+      "cmp_conclusion_2"
+    ],
+    "unfilledPaperCells": [
+      "table_0_1",
+      "table_1_0"
+    ],
+    "uncheckedPaperClaims": [
+      "cmp_3_0"
+    ]
+  },
+  "wholeAnswerAuditDispatched": false,
+  "scientificAcceptance": false,
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "sha256": {
+    "review-resume-preflight/pending.json": "fa57d67d7aaf17ebc74a5e129e05aec591ca771484d5f4e57a0175bb73547121",
+    "review-resume/intent.json": "373b3a659feacd6676d5c5a0ff49c3342b0cb222646599b8f5ec0e905b304ab2",
+    "review-resume/calls.json": "56bb1073d042291da836e1c9e2abe8e345817c1e8f4122c883e407e078c00c71",
+    "review-resume/result.json": "1eb7a37509fdf6ec0742b22a7286ba00d36d5caff292e22d7fd419875a75f465",
+    "combined-replay-state.json": "f108875f60ca4b0aa1978bab233341e054a479da40fda18cb800f92c405afef1"
+  }
+}
