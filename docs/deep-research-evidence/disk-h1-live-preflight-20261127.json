@@ -1,0 +1,45 @@
+{
+  "inventory": {
+    "case": "H1-DISK",
+    "caseDefinitionDigest": "07d3988aaf0796797231931eee66ed0aef0402cd7ba9041ff243faa880723878",
+    "currentDefinitionMatches": true,
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "indexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0,
+    "tasksChecked": 195,
+    "taskHits": 0,
+    "productionWrites": 0,
+    "providerCalls": 0
+  },
+  "isolatedIntent": {
+    "case": "H1-DISK",
+    "sourceTree": "f34e86b16817236dd3417ce1fbe2622cf74d6fd7",
+    "definitionHash": "07d3988aaf0796797231931eee66ed0aef0402cd7ba9041ff243faa880723878",
+    "runId": "dr_run_33bc1a16b4225604800204d843d00e7e",
+    "caseQuestionSha256": "128802c80b1fbfe2c0e218d65a6b3a675b9a2960bddea79e7a582898fa05ab7d",
+    "budget": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    },
+    "materialSha256": "e4d38a452c3805ee2c7e683cd35c32d6ada2d8d2d396888ce7383668195267ec",
+    "retrieval": "production_lexical_pdf_fallback",
+    "scopeBoundary": "isolated_local_material_endpoint",
+    "productionWrites": 0,
+    "automaticRetry": false
+  },
+  "parsedPdfPages": 14,
+  "preflightStatus": "ready_unexecuted",
+  "providerCalls": 0,
+  "scientificContentCredit": 0,
+  "artifactSha256": {
+    "intent.json": "6ff2155b3ab96e383438e03940b134b40130c486829921bb70adfd41a2385667",
+    "run.json": "82ba5c5332c8ace097c72be1dd9386f766f83d200163c62d58da1d34e45a62d1",
+    "calls.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "result.json": "47819350c81123e64299fbb401623ef5a721157e87f4d0868aa613a9d69f63e3",
+    "boundary.json": "e3566b3a06430868d71e9287dfd6c6c520a3da027aabea01951d407ee131dc2f"
+  }
+}

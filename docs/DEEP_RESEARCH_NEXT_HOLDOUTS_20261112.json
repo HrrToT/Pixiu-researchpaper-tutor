@@ -53,6 +53,14 @@
         "developmentAndRepairReceipt": "deep-research-evidence/silk-image-pair-and-method-citation-20261127.json",
         "supplementalMethodRetentionReceipt": "deep-research-evidence/silk-supplemental-method-retention-20261127.json",
         "jointProcessAnchorsReceipt": "deep-research-evidence/silk-joint-process-anchors-20261127.json",
+        "readerOperationsDevelopmentReceipt": "deep-research-evidence/silk-reader-operations-real-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "diskCandidate": {
+        "state": "preflight_ready_unexecuted",
+        "case": "H1-DISK",
+        "manifest": "DEEP_RESEARCH_DISK_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/disk-h1-live-preflight-20261127.json",
         "scientificContentCredit": 0
       }
     },

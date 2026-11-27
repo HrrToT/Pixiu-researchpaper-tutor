@@ -1,0 +1,111 @@
+{
+  "case": "H1-SILK",
+  "developmentOnly": true,
+  "sourceCommit": "176bfbf16398479f48f9fc55b2d0fcb47a26b0fe",
+  "runId": "dr_run_9df27b3ca55e5b8ebd4c0f3110dc707a",
+  "status": "completed",
+  "outcome": "complete",
+  "elapsedSeconds": 73.0,
+  "providerCalls": 8,
+  "providerTokens": 41164,
+  "providerTokensByModel": {
+    "gpt-6-luna": 8018,
+    "gpt-6.1-terra": 33146
+  },
+  "externalSearches": 0,
+  "isolatedPublicationId": "dr_pub_481a642f6f3e4e3b8370bf5011e14ba4",
+  "isolatedOutboxDelivered": false,
+  "verifiedClaimCount": 2,
+  "verifiedProseCharacters": 230,
+  "verifiedCitationLocations": [
+    {
+      "evidenceId": "ev_22772ba804baee5248b0dc2c53c2dc4596ca0f764270752c5ed9b557d87db002",
+      "page": 4,
+      "section": "3 Methodology / 3.4 Training / 3.4.4 Descriptor and Keypoint Losses",
+      "version": "arxiv:2304.06194v1"
+    },
+    {
+      "evidenceId": "ev_5a4f40455b2c6d7b7a8bf7ac13b149df3f9d4ef591e4b7420648cde8b626332c",
+      "page": 4,
+      "section": "3 Methodology / 3.3 Descriptors Deﬁne Matching Probability",
+      "version": "arxiv:2304.06194v1"
+    },
+    {
+      "evidenceId": "ev_277a320c16b8a0a39a6ebf62ca3da7bf7188fbb46a1edf1c49691de3b04ae4b1",
+      "page": 4,
+      "section": "3 Methodology / 3.4 Training / 3.4.3 Negative and Positive Selection",
+      "version": "arxiv:2304.06194v1"
+    },
+    {
+      "evidenceId": "ev_d1cd49277b27f7268617e6177c6479fa2c9ea22c10e8a68d3c9b53564818d2da",
+      "page": 4,
+      "section": "3 Methodology / 3.4 Training / 3.4.1 Self-Supervision",
+      "version": "arxiv:2304.06194v1"
+    }
+  ],
+  "answerCoverage": {
+    "single-image-correspondences": "covered",
+    "bidirectional-matching-training": "covered",
+    "keypoint-positive-negative": "covered",
+    "answer_scope": "covered"
+  },
+  "remainingReaderLimit": "The reply gives a gloss for homography and softmax and describes the optimization objective. Discretization and mutual nearest neighbors still lack separate plain-language definitions. The system marks coverage complete.",
+  "jointAssessmentAudits": [
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1",
+        "G3"
+      ],
+      "invalidUnits": [
+        "G2"
+      ]
+    },
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [],
+      "invalidUnits": [
+        "G1"
+      ]
+    }
+  ],
+  "artifactSha256": {
+    "intent.json": "7a0f32c5692f25c57666cdb6ca072d4b4f96ebad19edeea89704f4c09ea4dc06",
+    "run.json": "36cbc125a9bb31d0cfe9f40a55d704ddd0a6b6719a4e18d2a2929faac65aabd1",
+    "calls.json": "4efea8f0c14683d362378f53f6b58af80bf981396477523cc72652d43cfe3a7e",
+    "result.json": "0362a32e830391594624dff0eee687afacc1b63013197a5d525b434b70873e91",
+    "boundary.json": "6571e0e3c34bbe479d7cdc5958dbf4034969d06ec704f6b2aab7b3654ba317e1",
+    "provider.jsonl": "3a3732a03e05992447994bc9e805d3d21839008fefa8d4c9bbcd36c5f6b42c44",
+    "replayed.json": "31cd960ba54903dfc45963b3a4c1a925c1121b275159a4be2e650ee28dc094bb"
+  },
+  "targetedTestsPassed": 249,
+  "offlineInputReplay": {
+    "sourceRunId": "dr_run_ccbca16a38ea524cbc949ed4c49acafc",
+    "policies": {
+      "3": {
+        "inputBytes": 23985,
+        "sourceOperationsVisible": {
+          "inverse_mapping": true,
+          "probability_columns": true,
+          "positive_labels": true,
+          "training_loss": true
+        },
+        "readerInstructionsPresent": false
+      },
+      "4": {
+        "inputBytes": 23888,
+        "sourceOperationsVisible": {
+          "inverse_mapping": true,
+          "probability_columns": true,
+          "positive_labels": true,
+          "training_loss": true
+        },
+        "readerInstructionsPresent": true
+      }
+    },
+    "providerCalls": 0
+  },
+  "scientificContentCredit": 0
+}
