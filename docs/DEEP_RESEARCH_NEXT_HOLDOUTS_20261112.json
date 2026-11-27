@@ -65,6 +65,15 @@
         "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
         "postFixRegression": "deep-research-evidence/research-finalization-real-batch-20261126.json",
         "scientificContentCredit": 0
+      },
+      "tmacExecution": {
+        "state": "first_execution_partial_retired_for_development",
+        "case": "H4-TMAC-VERSIONS",
+        "manifest": "DEEP_RESEARCH_TMAC_VERSION_HOLDOUT_20261126.json",
+        "firstExecution": "deep-research-evidence/tmac-version-h4-first-frozen-20261127.json",
+        "targetedRateVerification": "deep-research-evidence/tmac-rate-finalization-live-20261127.json",
+        "commonSettingReplay": "deep-research-evidence/tmac-table-condition-replay-20261127.json",
+        "scientificContentCredit": 0
       }
     },
     {
