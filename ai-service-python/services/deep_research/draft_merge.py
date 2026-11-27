@@ -27,10 +27,12 @@ def _union(rows,key):
     return list(dict.fromkeys(v for row in rows for v in row.get(key,[])))
 
 
-def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation_version,limit,audit,measured=False):
+def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation_version,limit,audit,measured=False,
+                preserve_measurement_display=False):
     from services.deep_research.answer_constraints import visible_count,answer_character_count
     from services.deep_research.answer_format import requested_points
     from services.deep_research.table_bindings import bound_table_context
+    from services.deep_research.comparison_measurement_display import COMPACTION_GUIDANCE, fixed_conditions, restore_conditions
     rows=deepcopy(report['claims'])
     if any(not isinstance(r,dict) or not isinstance(r.get('claimId'),str) or not r['claimId'].strip()
         or not isinstance(r.get('text'),str) or not isinstance(r.get('conditions',{}),dict)
@@ -39,7 +41,8 @@ def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation
     ids=[r['claimId'] for r in rows]
     if len(set(ids))!=len(ids):return None
     by_id={r['claimId']:r for r in rows};order={key:i for i,key in enumerate(ids)}
-    overhead=visible_count({'claims':[{**r,'text':'','conditions':{}} for r in rows]},limit,
+    measurements = fixed_conditions(rows, evidence) if preserve_measurement_display else {}
+    overhead=visible_count({'claims':[{**r,'text':'','conditions':measurements.get(r['claimId'], {})} for r in rows]},limit,
         output_kind,evidence,presentation_version)
     allowance=max(1,limit-overhead)
     data={'humanQuestion':str(question),'characterLimit':limit,'textAllowance':allowance,
@@ -65,6 +68,8 @@ def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation
             '逐组改写重复解释，目标为 editBudget.draftTarget；每组可重新分配目标。'\
             '至少缩减 minimumReductionToTarget 字；固定展示开销 presentationOverhead 已从 textAllowance 扣除。'\
             '保留全部独有机制、比较关系和科学条件，不得删除原ID对应的唯一内容或把推断改为事实。'
+    if measurements:
+        prompt += '\n' + COMPACTION_GUIDANCE
     result=invoke(prompt)
     if (result.get('finishReason',result.get('finish_reason')) if isinstance(result,dict)
         else getattr(result,'finish_reason',None))=='length':return None
@@ -83,6 +88,11 @@ def consolidate(report,question,invoke,parse,*,output_kind,evidence,presentation
         if len(keys)>1 and item['conditions']!=originals[0].get('conditions',{}):return None
         rebuilt={**deepcopy(originals[0]),'text':item['text'],'conditions':deepcopy(item['conditions']),
             'evidenceRefs':_union(originals,'evidenceRefs')}
+        if keys[0] in measurements:
+            try:
+                rebuilt['conditions'] = restore_conditions(rebuilt['conditions'], measurements[keys[0]])
+            except ValueError:
+                return None
         if any('obligationIds' in r for r in originals):rebuilt['obligationIds']=_union(originals,'obligationIds')
         merged.append(rebuilt);seen.extend(keys);groups.append({'claimId':keys[0],'sourceClaimIds':keys})
     if set(seen)!=set(ids) or [order[g['claimId']] for g in groups]!=sorted(order[g['claimId']] for g in groups):return None

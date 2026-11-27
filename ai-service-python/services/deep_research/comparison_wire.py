@@ -708,7 +708,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                              'Explain the quotient from both papers’ citations and state what a valid comparison '
                              'would need aligned. If the citations cannot support an explanation, use point:null.\n')
             paper_boundary_policy = ''
-        if data['jointTargets'] and record.get('comparisonBenchmarkRecheckReviewVersion') == 1:
+        if data['jointTargets'] and record.get('comparisonBenchmarkRecheckReviewVersion') in (1, 2):
             from services.deep_research.benchmark_recheck import DRAFT_GUIDANCE, requests_recheck
 
             if requests_recheck(question):

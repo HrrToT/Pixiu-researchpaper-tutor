@@ -15,7 +15,7 @@ def enabled(record):
 
 def compact(report, audits, question, invoke, parse, *, output_kind='', evidence=(), presentation_version=0,
             fixed_claims=(),measured_guidance=False,expression_version=2,fixed_scope_first=False,invoke_fixed=None,explicit_edit_scope=False,compact_layout=False,joint_layout=False,authored_body=False,budget_guidance=False,selective_editing=False,prefer_fixed_scope=False,selective_fixed_edit=False,
-            reserve_scope_budget=False):
+            reserve_scope_budget=False, preserve_measurement_display=False):
     """Return revised report and matching unchecked ASTs, or reject atomically.
 
     All existing points, kinds, citations, obligations and table bindings remain.
@@ -92,6 +92,7 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             full={**source,'claims':[*fixed,*source['claims']]}
             edited=compact_answer(full,question,invoke_fixed or invoke,parse_edit,output_kind=output_kind,
                 evidence=evidence,preserve_claims=True,presentation_version=presentation_version,
+                preserve_measurement_display=preserve_measurement_display,
                 fixed_claim_ids=[*expressions,*[c['claimId'] for c in fixed]],
                 explicit_edit_scope=explicit_edit_scope or reserve_directly,compact_layout=compact_layout,
                 **({'measured_edit_budget':True,'preserve_answers':True} if reserve_directly else {}),
@@ -101,7 +102,10 @@ def compact(report, audits, question, invoke, parse, *, output_kind='', evidence
             if (any(not isinstance(c.get('text'),str) or not c['text'].strip() for c in result['claims'])
                     or count(result)>limit):return None,audits
             return result,[{**deepcopy(a),'verification':'unchecked'} for a in audits]
-    overhead = count({**source,'claims':[{**c,'text':'','conditions':{}} for c in source['claims']]})
+    from services.deep_research.comparison_measurement_display import COMPACTION_GUIDANCE, fixed_conditions, restore_conditions
+    measurements = fixed_conditions(source['claims'], evidence) if preserve_measurement_display else {}
+    overhead = count({**source,'claims':[{**c,'text':'','conditions':measurements.get(c['claimId'], {})}
+                                         for c in source['claims']]})
     available = limit - overhead
     if available <= 0: return None, audits
     from services.deep_research.table_bindings import bound_table_context
@@ -177,6 +181,8 @@ checked against the original sources. No approval is inherited from this edit.
     if selective_editing:
         from services.deep_research.compaction_editing import GUIDANCE as editing_permissions
         prompt+='\n'+editing_permissions
+    if measurements:
+        prompt += '\n' + COMPACTION_GUIDANCE
     prompt+='\nInput:\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
     if fixed:
         prompt += '\nAlready accepted points are fixed outside this request; their full text and layout are included in overhead. Never return or rewrite them.\n'
@@ -209,6 +215,8 @@ checked against the original sources. No approval is inherited from this edit.
                     return None, audits
         if not isinstance(row['text'],str) or not isinstance(row['conditions'],dict): return None, audits
         try:
+            if key in measurements:
+                row = {**row, 'conditions': restore_conditions(row['conditions'], measurements[key])}
             claim,audit = materialize({**original[key],**row},expression_version)
         except (ValueError,TypeError): return None, audits
         if not claim['text'].strip(): return None, audits

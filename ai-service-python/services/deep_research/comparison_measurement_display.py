@@ -8,6 +8,8 @@ from copy import deepcopy
 
 CONDITION = '原表测量'
 ISOLATED_INPUT_BYTES = 24000
+COMPACTION_GUIDANCE = ('“原表测量”由应用保留并计入字数。保留对应结果和必要的评测设置，'
+                       '不要在改写的 conditions 或正文里重复原表标签。')
 
 
 def enabled(record):
@@ -135,3 +137,25 @@ def refresh(claim, evidence):
     if declared is not None and declared != new.get(CONDITION):
         raise ValueError('Conflicting repaired measurement display')
     return {**deepcopy(claim), 'conditions': new}
+
+
+def fixed_conditions(claims, evidence):
+    """Keep only fields the application can reproduce from the original cells."""
+    result = {}
+    for claim in claims:
+        declared = claim.get('conditions', {}).get(CONDITION)
+        if not declared or not claim.get('tableBindings') or claim.get('scopeExpression'):
+            continue
+        try:
+            rebuilt = refresh(claim, evidence)['conditions'].get(CONDITION)
+        except ValueError:
+            continue
+        if declared == rebuilt:
+            result[claim['claimId']] = {CONDITION: declared}
+    return result
+
+
+def restore_conditions(conditions, fixed):
+    if any(key in conditions and conditions[key] != value for key, value in fixed.items()):
+        raise ValueError('Editor changed the original measurement display')
+    return {**conditions, **fixed}

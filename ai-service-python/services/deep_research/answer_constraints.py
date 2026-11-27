@@ -91,7 +91,8 @@ def visible_count(candidate, limit, output_kind='', evidence=(), presentation_ve
 
 
 def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=(), preserve_claims=False,
-                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None,measured_merge=False,selective_fixed_edit=False):
+                   presentation_version=0, fixed_claim_ids=(), explicit_edit_scope=False, compact_layout=False,preserve_answers=False,measured_edit_budget=False,lean_edit=False,focused_edit=False,draft_merge=False,merge_audit=None,measured_merge=False,selective_fixed_edit=False,
+                   preserve_measurement_display=False):
     if type(selective_fixed_edit) is not bool or selective_fixed_edit and not (explicit_edit_scope and preserve_claims):
         raise ValueError('Selective fixed editing requires explicit preserved claim scope')
     if type(measured_merge) is not bool:raise ValueError('Invalid measured merge policy')
@@ -118,7 +119,8 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     if draft_merge and not fixed_claim_ids and output_kind!='experiment_design':
         from services.deep_research.draft_merge import consolidate
         return consolidate(report,question,invoke,parse,output_kind=output_kind,evidence=evidence,
-            presentation_version=presentation_version,limit=limit,audit=merge_audit if merge_audit is not None else {},**({'measured':True} if measured_merge else {}))
+            presentation_version=presentation_version,limit=limit,audit=merge_audit if merge_audit is not None else {},
+            preserve_measurement_display=preserve_measurement_display,**({'measured':True} if measured_merge else {}))
     # Reduce the rewrite's scope, not its evidence: original references and kinds
     # are restored by code and the rewritten claims are verified afterwards.
     core = report['claims'] if preserve_claims else _core_claims(report['claims'], limit, output_kind, evidence)
@@ -129,12 +131,15 @@ def compact_answer(report, question, invoke, parse, *, output_kind='', evidence=
     fixed = [c for c in core if c.get('claimId') in fixed_ids]
     editable = [c for c in core if c.get('claimId') not in fixed_ids]
     from services.deep_research.table_bindings import bound_table_context
+    from services.deep_research.comparison_measurement_display import COMPACTION_GUIDANCE, fixed_conditions, restore_conditions
+    measurements = fixed_conditions(editable, evidence) if preserve_measurement_display else {}
     content_limit = limit
     if modern:
         # Only a layout preview is blanked; source/claim inputs sent to the
         # rewrite remain intact, and the final rewrite is still reverified.
-        overhead = count({**report, 'claims': [{**c, 'text': '', 'conditions': {}} for c in core]})
-        overhead += len('适用条件：') * sum(bool(c.get('conditions')) for c in core)
+        overhead = count({**report, 'claims': [{**c, 'text': '', 'conditions': measurements.get(c['claimId'], {})}
+                                               for c in core]})
+        overhead += len('适用条件：') * sum(bool(c.get('conditions')) for c in core if c['claimId'] not in measurements)
         content_limit = max(1, limit - overhead)
     if focused_edit:
         from services.deep_research.compaction_editor import focused_fixed_ids
@@ -199,6 +204,8 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
     if selective_fixed_edit:
         from services.deep_research.compaction_editing import GUIDANCE
         prompt+='\n'+GUIDANCE
+    if measurements:
+        prompt += '\n' + COMPACTION_GUIDANCE
     result = invoke(prompt)
     finish = (result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict)
               else getattr(result, 'finish_reason', None))
@@ -223,6 +230,11 @@ editableClaims：{json.dumps(inputs,ensure_ascii=False)}'''
         if ('kind' in claim and claim['kind'] != before.get('kind')) or ('evidenceRefs' in claim and claim['evidenceRefs'] != before.get('evidenceRefs')):
             return None
         merged = {**before, **claim}
+        if claim['claimId'] in measurements:
+            try:
+                merged['conditions'] = restore_conditions(merged['conditions'], measurements[claim['claimId']])
+            except ValueError:
+                return None
         # Wording-only compaction cannot rewrite the evidence/measurement
         # contract. The final verifier still checks the revised prose.
         if any(key in claim and claim[key] != before.get(key)

@@ -127,6 +127,65 @@ def test_benchmark_recheck_is_scoped_and_binds_both_papers(variant):
         assert 'benchmark_recheck_requires_both_papers' in decision['reason']
 
 
+@pytest.mark.parametrize('variant', ['valid', 'declined', 'mixed_criterion', 'standalone', 'extra_joint'])
+def test_benchmark_recheck_separates_existing_criterion_before_target_allocation(variant):
+    from copy import deepcopy
+    from services.deep_research.benchmark_recheck import separate_recheck_requirement, target_ids
+    from services.deep_research.comparison_cells import plan_cells
+    from services.deep_research.comparison_wire import targets
+    from services.deep_research.coverage import validate_plan
+
+    boundary = '能否把两篇论文的 HPatches 数字直接用于排序'
+    excerpt = '并给出同条件复核建议'
+    question = f'说明{boundary}，D2-Net 论文内部比较能支持什么，{excerpt}。'
+    criteria = [
+        {'criterionId': 'limits', 'requirement': '说明可比范围和内部对比边界。', 'responseType': 'limitation'},
+        {'criterionId': 'advice', 'requirement': '提出面向团队的同条件复核建议；不要求报告未实施的测量结果。',
+         'responseType': 'procedure'},
+    ]
+    joint = {'obligationId': 'limits', 'purpose': 'answer_requirement', 'question': question,
+             'requiredSources': ['p1', 'p2'], 'searchQuery': 'HPatches protocols', 'requestExcerpt': boundary,
+             'completionCriteria': criteria, 'comparisonRole': {'kind': 'joint', 'label': '可比性与复核',
+                                                                'requestExcerpt': excerpt[3:]}}
+    plan = [{'itemId': 'item1', 'question': question, 'dependencies': [], 'obligations': [joint]}]
+    if variant == 'declined':
+        question = question.replace(excerpt, '并且不要给出同条件复核建议')
+    elif variant == 'mixed_criterion':
+        criteria[1]['requirement'] += '还需说明跨论文能否直接排序。'
+    elif variant == 'standalone':
+        joint['completionCriteria'] = criteria[1:]
+    elif variant == 'extra_joint':
+        plan[0]['obligations'].append({**deepcopy(joint), 'obligationId': 'benchmark_recheck',
+            'question': '其他比较边界', 'completionCriteria': deepcopy(criteria[:1])})
+    snapshot = deepcopy(plan)
+    updated, changes = separate_recheck_requirement(plan, question)
+    assert plan == snapshot
+    if variant in {'declined', 'mixed_criterion', 'standalone'}:
+        assert (updated, changes) == (snapshot, [])
+        return
+
+    assert len(changes) == 1
+    identity = changes[0]['obligationId']
+    recheck = updated[0]['obligations'][1]
+    assert recheck['obligationId'] == identity
+    assert recheck['requestExcerpt'] == excerpt
+    assert recheck['searchQuery'] == joint['searchQuery']
+    assert recheck['requiredSources'] == joint['requiredSources']
+    assert recheck['completionCriteria'] == criteria[1:]
+    assert updated[0]['obligations'][0]['completionCriteria'] == criteria[:1]
+    assert separate_recheck_requirement(updated, question) == (updated, [])
+    validate_plan(updated)
+    sources = {p: {'workId': p} for p in ('p1', 'p2')}
+    wire = targets(plan_cells(updated[0]['obligations'], sources, [], question=question, typed_roles=True))
+    assert [(t['targetId'], t['sources']) for t in wire[:2]] == [
+        ('joint_limits', ['p1', 'p2']), ('joint_' + identity, ['p1', 'p2'])]
+    record = {'comparisonBenchmarkRecheckReviewVersion': 2,
+              'state': {'outputKind': 'paper_comparison', 'plan': updated}}
+    proposal = {'kind': 'proposal', 'text': '在同一组图像对上复核，统一匹配规则和指标。'}
+    assert target_ids(record, question, [{**proposal, 'claimId': 'boundary', 'obligationIds': ['limits']},
+        {**proposal, 'claimId': 'advice', 'obligationIds': [identity]}]) == ('advice',)
+
+
 @pytest.mark.parametrize('revision', [False, True])
 @pytest.mark.parametrize('mode, text, quote, approved', [
     (None, '显存受限时优先考虑压缩表示，其文件更小，实际显存需实测。', 'The model file was 45 MB.', False),

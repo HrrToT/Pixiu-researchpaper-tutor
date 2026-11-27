@@ -509,6 +509,14 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                         validated = validate_plan(validated)
                         validate_completion_criteria(validated, required=criteria_required)
                         requirement_changes.extend(advice_changes)
+                if record.get('comparisonBenchmarkRecheckReviewVersion') == 2:
+                    from services.deep_research.benchmark_recheck import separate_recheck_requirement
+                    validated, recheck_changes = separate_recheck_requirement(validated, question)
+                    if recheck_changes:
+                        validated = validate_plan(validated)
+                        validate_completion_criteria(validated, required=criteria_required)
+                        validate_comparison_plan(validated, question)
+                        requirement_changes.extend(recheck_changes)
 
             plan_ids = [item["itemId"] for item in validated]
             from services.deep_research.continuation import rebind_inherited_state
@@ -2201,6 +2209,7 @@ space with unsupported global absence or incidental iteration/performance values
         editor_options=editor_request_options(record,output_kind)
         draft_compact_invoke=lambda prompt:llm_invoke(run_id,'synthesize_compact',prompt,{'max_tokens':2000,'temperature':0.0,**editor_options})
         draft_merge_audit={}
+        preserve_measurement_display = record.get('comparisonMeasurementCompactionVersion') == 1
         if blocked_draft_ids:
             pass  # Never let wording edits hide the rejected structure before review.
         elif scope_expression_audit and scope_compaction_enabled(record):
@@ -2210,7 +2219,7 @@ space with unsupported global absence or incidental iteration/performance values
             fixed_tables = [c for c in original_claims if c.get('claimId') in fixed_table_ids]
             parsed, scope_expression_audit = compact_scope(scope_edit_input, scope_expression_audit, question,
                 compact_invoke, _safe_parse_json, output_kind=output_kind, evidence=evidence,
-                fixed_claims=fixed_tables,
+                fixed_claims=fixed_tables, preserve_measurement_display=preserve_measurement_display,
                 **({'budget_guidance':True} if type(record.get('compactionBudgetContractVersion')) is int
                    and record['compactionBudgetContractVersion'] in (1,2) else {}),
                 **({'reserve_scope_budget':True} if type(record.get('compactionBudgetContractVersion')) is int
@@ -2237,7 +2246,7 @@ space with unsupported global absence or incidental iteration/performance values
         else:
             parsed = compact_answer(parsed, question,
                 draft_compact_invoke if editor_options else direct_compact_invoke if fixed_scope_compaction(record,question,output_kind) else compact_invoke, _safe_parse_json,
-                output_kind=output_kind, evidence=evidence,
+                output_kind=output_kind, evidence=evidence, preserve_measurement_display=preserve_measurement_display,
                 preserve_claims=bool(revision_table_ids or point_constraint and point_constraint['mode'] == 'exact'),
                 **({'preserve_answers':True} if preserve_answer_scope(record) else {}),
                 **({'measured_edit_budget':True} if type(record.get('compactionEditorContractVersion')) is int and record['compactionEditorContractVersion']==2 else {}),

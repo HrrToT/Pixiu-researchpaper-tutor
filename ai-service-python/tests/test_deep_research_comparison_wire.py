@@ -10,6 +10,40 @@ from services.deep_research.verification import make_evidence, verify_claims
 from test_deep_research_comparison_layout import fixture as layout_fixture, QUESTION
 
 
+@pytest.mark.parametrize('editor', ['plain', 'joint_scope', 'merge'])
+def test_editor_preserves_verified_cell_display_before_enforcing_presentation_limit(editor):
+    from services.deep_research.answer_constraints import compact_answer
+    from services.deep_research.scope_compaction import compact
+    from services.deep_research.table_bindings import validate_table_bindings
+
+    plan, _, _ = fixture()
+    evidence = list(plan['evidence'].values())
+    report = {'claims': [{'claimId': 'value', 'kind': 'reported', 'detailLevel': 'fulltext',
+        'text': '本条原报告重复背景。' * 60, 'obligationIds': ['measurement'], 'evidenceRefs': ['E1'],
+        'conditions': {'原表测量': 'Benchmark / Ours-30K：FPS 134'},
+        'tableBindings': [{'evidenceId': 'E1', 'groupIndex': 0, 'rowNumber': 8, 'metric': 'FPS', 'value': '134'}]}]}
+    row_id = {'sourceClaimIds': ['value']} if editor == 'merge' else {'claimId': 'value'}
+
+    def edit(conditions, text='按论文评测设置测得。', *, limit=150):
+        row = {**row_id, 'text': text, 'conditions': conditions}
+        if editor == 'joint_scope':
+            row['scopeExpression'] = None
+        invoke = Mock(return_value={'content': json.dumps({'claims': [row]}, ensure_ascii=False)})
+        args = (f'报告测量结果，{limit}字以内。', invoke, json.loads)
+        options = {'output_kind': 'paper_comparison', 'evidence': evidence, 'preserve_measurement_display': True}
+        result = compact(report, [], *args, **options)[0] if editor == 'joint_scope' else compact_answer(
+            report, *args, draft_merge=editor == 'merge', **options)
+        assert '由应用保留并计入字数' in invoke.call_args.args[0]
+        return result
+
+    result = edit({})
+    assert result['claims'][0]['conditions'] == report['claims'][0]['conditions']
+    assert result['claims'][0]['tableBindings'] == report['claims'][0]['tableBindings']
+    assert validate_table_bindings(result['claims'][0], evidence) is None
+    assert edit({'原表测量': 'Benchmark / Ours-30K：FPS 137'}) is None
+    assert edit({}, text='长' * 135) is None
+
+
 def test_proxy_memory_amount_keeps_structured_test_first_decision():
     plan = {
         'cells': [],

@@ -508,7 +508,8 @@ class ResearchFacade:
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 4,
             "recommendationReviewContractVersion": 5 if self._comparison_cells_version == 1 else 2,
-            **({'comparisonBenchmarkRecheckReviewVersion': 1} if self._comparison_cells_version == 1
+            **({'comparisonBenchmarkRecheckReviewVersion': 2, 'comparisonMeasurementCompactionVersion': 1}
+               if self._comparison_cells_version == 1
                and self._comparison_review_batch_version == 1 and output_kind == 'paper_comparison' else {}),
             "recommendationRepairContractVersion": 1,
             "requestSemanticsContractVersion": 2,
