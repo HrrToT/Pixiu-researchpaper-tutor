@@ -19,11 +19,12 @@ def ready(value=None):
     return r,data,aliases
 
 
-def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch):
+@pytest.mark.parametrize('packet_version', [1, 2])
+def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch, packet_version):
     from services.deep_research import shared_experiment_review as review
 
     record, data, aliases = ready()
-    record[review.SCOPED_PACKET_MARKER] = 1
+    record[review.SCOPED_PACKET_MARKER] = packet_version
     record['budget'] = {'maxTokens': 100000, 'tokens': 67740}
     batches = [
         {'inputBytes': size, 'request': {'extra': {'max_tokens': 4096}}}
@@ -75,6 +76,22 @@ def test_scoped_review_checks_calls_in_both_pools_before_first_packet(monkeypatc
 
     record['budget']['maxModelCalls'] = 13
     assert review._initial_batch_budget_stop(record, built) is None
+
+
+@pytest.mark.parametrize(('check_key', 'instruction'), [
+    ('factChecks', '[checkId,factId,textPointer,optionalContextHints]'),
+    ('sectionChecks', '[checkId,criterion,planPathPrefixes]'),
+    ('humanChecks', '[checkId,obligationId,criterionId]'),
+])
+def test_scoped_packet_policy_explains_its_check_shape(check_key, instruction):
+    from services.deep_research import shared_experiment_review as review
+
+    packet = {key: [] for key in review.SCOPED_PACKET_CHECKS}
+    packet[check_key] = [['example']]
+    policy = review._scoped_packet_policy({review.SCOPED_PACKET_MARKER: 2}, packet)
+    assert instruction in policy and policy.endswith('\nInput:\n')
+    assert 'zero-based indices' in policy
+    assert review._scoped_packet_policy({review.SCOPED_PACKET_MARKER: 1}, packet) == review.SCOPED_PACKET_INSTRUCTIONS
 
 
 def verdict(r, data):

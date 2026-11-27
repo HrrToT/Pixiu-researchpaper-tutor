@@ -360,7 +360,7 @@ class ResearchFacade:
             **({"sharedExperimentScientificRepairVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentStopInvalidReviewBatchVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewReferenceVersion": 3} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentScopedReviewPacketVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentScopedReviewPacketVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentMemoryReportVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),
