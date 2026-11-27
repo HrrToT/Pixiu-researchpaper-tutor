@@ -1,0 +1,50 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "development_wire_replay",
+  "originalRunId": "dr_run_5eaa17da2e135c8589f97786d3761953",
+  "firstFrozenReceipt": "tmac-version-h4-first-frozen-20261127.json",
+  "stages": {
+    "original": {
+      "bytes": 23906,
+      "tableRevisions": [],
+      "samePageProseRevisions": [
+        "v2"
+      ]
+    },
+    "parserOnly": {
+      "bytes": 23845,
+      "tableRevisions": [
+        "v1",
+        "v2"
+      ],
+      "samePageProseRevisions": []
+    },
+    "revisedAllocation": {
+      "bytes": 23901,
+      "tableRevisions": [
+        "v1",
+        "v2"
+      ],
+      "samePageProseRevisions": [
+        "v1",
+        "v2"
+      ]
+    }
+  },
+  "synthesisLimitBytes": 24000,
+  "controlledDraftCharacters": 220,
+  "numericPrecheckPassed": true,
+  "independentSemanticReviewPerformed": false,
+  "targetedTestsPassed": 78,
+  "modelCalls": 0,
+  "independentHoldoutCredit": 0,
+  "sha256": {
+    "new-sources.json": "c2d6c2a9561ddf3f113f4de2837a838c5a8d8d198fa827d939d8246c09c068b3",
+    "premise-after.json": "b39e56ffcb86b4afc76b53a99bf59451ca401f89a524307863ecf314b8199e3f",
+    "premise-before.json": "5a74a0afb5825b34986fd5f5962570f1389116e68eb9d5506188eca48d45e73b",
+    "premise-parser-only.json": "0ba32b67fc78bcc7f33d71e65a333d0cd052735f0e1d7159a4dc5f0f49286f9e",
+    "wire-new.txt": "263348f607db7d7f37bc3303e69ff5ce8c0f07eb41bd1e79687ff96f0c87cac4",
+    "wire-old.txt": "5346f15447572021f26f08017cf596f9455f39a9009f1e8bb9872e67a695657c",
+    "wire-parser-only.txt": "c4da28cb15662d064bb31e85340e0d6d90a079f2fe4366301e91d07188eca72e"
+  }
+}

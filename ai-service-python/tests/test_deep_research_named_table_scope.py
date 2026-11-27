@@ -80,6 +80,36 @@ def test_required_table_bundle_prioritizes_both_revisions_before_optional_rows()
     assert [bundle['evidenceIds'] for bundle in bundles[1:]] == [['v1'],['v2']]
 
 
+def test_named_table_bundle_retains_each_versions_own_same_page_prose_before_fitting():
+    def owned(eid, version, digest, **kwargs):
+        owner = digest + '.pdf'
+        return {**evidence(eid, version=digest, **kwargs), 'sourceWorkId': owner, 'ownerMaterialId': owner,
+                'sourcePublicationIdentity': {'scheme': 'arxiv', 'workId': 'arxiv:2401.12345', 'revision': f'v{version}',
+                    'displayId': f'arxiv:2401.12345v{version}', 'contentHash': digest, 'physicalPage': 1,
+                    'literalStamp': f'arXiv:2401.12345v{version}', 'origin': 'owned_pdf_header'}}
+
+    tables, prose = [], []
+    for version, digest, page in [(1, 'a' * 64, 7), (2, 'b' * 64, 9)]:
+        table = owned(f'table-{version}', version, digest, page=page, section='Table 3', table='t3',
+                      quote='Table row 2: Method-A | 98.0')
+        table.update(tableData={'groups': [['', ['Accuracy']]], 'rows': [[2, 'Method-A', ['98.0']]]},
+                     obligationIds=['results'])
+        tables.append(table)
+        prose.extend([owned(f'other-page-{version}', version, digest, page=page+1,
+                            quote='Method-A accuracy drops by 2%.'),
+                      owned(f'tradeoff-{version}', version, digest, page=page,
+                            quote='Method-A throughput increases 5 percent.'),
+                      owned(f'text-{version}', version, digest, page=page,
+                            quote='The accuracy drops by 0.5%.')])
+    kwargs = {'requested_rows': True, 'keep_revisions_together': True, 'same_page_candidates': [*tables, *prose]}
+    ordered, bundles = prioritize(tables, [], {'table-1', 'table-2'},
+                                  '核对表3 Method-A 的准确率，并比较同页正文的准确率降幅。', **kwargs)
+    assert [row['evidenceId'] for row in ordered] == ['table-1','table-2','text-1','text-2']
+    assert bundles[0]['evidenceIds'] == ['table-1','text-1','table-2','text-2']
+    unchanged, _ = prioritize(tables, [], {'table-1','table-2'}, '核对表3 Method-A 的准确率。', **kwargs)
+    assert unchanged == tables
+
+
 def test_named_model_group_retains_configurations_and_respects_explicit_size_lists():
     packet = {'rows': [[2,'Llama-2-7B / KIVI-2',['8']], [3,'Llama-2-13B / 16bit',['9']],
                        [4,'Llama-2-13B / KIVI-2',['7']], [5,'Llama-2-70B / FP16',['6']],

@@ -170,6 +170,22 @@ def test_new_configuration_requires_a_closed_older_model_group(older_extra):
     assert validate_table_bindings(rendered, [old, new]) is None
 
 
+def test_revision_display_keeps_metric_direction_printed_in_the_table():
+    sources = [revision('81.2', 1, 'a' * 64), revision('81.2', 2, 'b' * 64)]
+    for source in sources:
+        source['tableData']['groups'] = [['Benchmark', ['Accuracy ↑']]]
+    bindings = [{'evidenceId': source['evidenceId'], 'rowNumber': 2, 'groupIndex': 0,
+                 'metric': 'Accuracy ↑', 'value': '81.2'} for source in sources]
+    claim = {'claimId': 'c', 'kind': 'reported', 'text': 'Draft', 'evidenceRefs': ['e1', 'e2'],
+             'tableBindings': bindings}
+    report, fixed = materialize({'claims': [claim]}, sources, '1')
+    assert fixed == ['c']
+    rendered, = report['claims']
+    assert 'Benchmark · Accuracy ↑' in rendered['text']
+    assert rendered['tableBindings'] == bindings
+    assert validate_table_bindings(rendered, sources) is None
+
+
 @pytest.mark.parametrize('new_values, question, new_metric, ordered', [
     (['15', '100', '17'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', True),
     (['15', '100', '14'], '核对 1% 的表项，并说明两版共同支持的结论。', 'perplexity', False),

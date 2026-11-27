@@ -370,6 +370,7 @@ class DeepResearchRepository:
                                      'revisionTableMeasuredMetricAliasVersion',
                                      'revisionTableCommonOrderVersion',
                                      'namedTableGroupedRowsVersion',
+                                     'namedTableSamePageProseVersion',
                                      'namedTableBoundedReviewVersion',
                                      'revisionTableSingleVersionDisplayVersion',
                                      'revisionTableDifferingRowsVersion',

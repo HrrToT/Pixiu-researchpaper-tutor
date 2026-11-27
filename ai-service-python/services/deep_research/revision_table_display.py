@@ -11,7 +11,7 @@ from services.deep_research.table_bindings import bound_table_context
 _FIELDS = {'evidenceId', 'rowNumber', 'groupIndex', 'metric', 'value'}
 _ALTERNATE_FIELDS = {'evidenceId', 'sourceRowNumber', 'groupIndex', 'metricKey', 'value'}
 _SCALAR = re.compile(r'[+−-]?\d+(?:\.\d+)?%?')
-_LABEL = re.compile(r'[\w .()+%\-/·]{1,96}')
+_LABEL = re.compile(r'[\w .()+%\-/·↑↓]{1,96}')
 _ROW_LABEL = re.compile(r'[\w .,()+%\-/·]{1,96}')
 _REVISION = re.compile(r'(?<![A-Za-z0-9_.-])v[1-9]\d*(?![A-Za-z0-9_.-])', re.I)
 _DECIMAL = re.compile(r'(?<![A-Za-z0-9_.-])\d+\.\d+(?![A-Za-z0-9.%])')

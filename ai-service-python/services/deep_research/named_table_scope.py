@@ -10,6 +10,15 @@ _CAPTION = re.compile(r'^\s*(?:table caption:\s*)?' + _TABLE + r'[ \t]*[:：.]',
 _SECTION = re.compile(r'^\s*' + _TABLE + r'[ \t]*[:：.]?[ \t]*$', re.I)
 _SIZED_MODEL = re.compile(r'^([A-Za-z][\w.-]*?)[\s\-‐‑–−]+(\d+(?:\.\d+)?[BM])$', re.I)
 _MODEL_LIST = re.compile(r'^\s*(?:(?:和|与|及|、|,|，|\band\b|\bor\b)\s*\d+(?:\.\d+)?[BM](?![A-Za-z0-9])\s*)+', re.I)
+_SAME_PAGE_PROSE = re.compile(r'同页(?:的)?(?:正文|文字|文中|叙述)|same[- ]page (?:prose|text)|(?:prose|text) on the same page', re.I)
+_NUMERIC_CHANGE = re.compile(r'(?:\b(?:drop|decreas|increas|reduc|improv|chang|differ)\w*\b|下降|降低|减少|提高|差异)'
+                             r'[^。；;]{0,80}\d|\d[^。；;]{0,80}(?:\b(?:percent(?:age)?|points)\b|%)', re.I)
+_RATE = r'(?:准确率|成功率|错误率|比例|\b(?:accuracy|precision|recall|success rate|error rate)\b)'
+_RATE_CHANGE = re.compile(_RATE + r'[^。；;]{0,48}\d+(?:\.\d+)?\s*(?:%|百分(?:比|点)|percent(?:age points?)?)', re.I)
+
+
+def same_page_prose_requested(question):
+    return bool(_SAME_PAGE_PROSE.search(question))
 
 
 def _requested_models(models, question):
@@ -186,14 +195,43 @@ def preferred_read_rows(sources, question, limit, extracted, *, grouped_rows=Fal
             for queue in queues if index < len(queue)][:limit // 2]
 
 
+def _same_page_prose(rows, table_rows, question):
+    from services.deep_research.publication_identity import owned_evidence_publication
+
+    pages = {(row['location'].get('page'), _identity(row)) for row in table_rows
+             if row['location'].get('pageResolution') == 'exact'}
+    revisions = {publication['revision'] for row in table_rows if (publication := owned_evidence_publication(row))}
+    if len(pages) != 1 or len(revisions) != 1:
+        return None
+    page, owner = next(iter(pages))
+    if type(page) is not int or page < 1:
+        return None
+    terms = re.findall(r'\b[A-Za-z][A-Za-z0-9.-]{1,}\b', question)
+    rate_request = bool(re.search(_RATE, question, re.I))
+    context = []
+    for row in rows:
+        location = row.get('location') or {}
+        quote = row['quote']
+        if (location.get('pageResolution') != 'exact' or location.get('page') != page or _identity(row) != owner
+                or row.get('tableData') or location.get('table') or _CAPTION.search(quote)
+                or (owned_evidence_publication(row) or {}).get('revision') not in revisions or not _NUMERIC_CHANGE.search(quote)):
+            continue
+        overlap = sum(bool(re.search(r'(?<![\w.-])' + re.escape(term) + r'(?![\w.-])', quote, re.I))
+                      for term in set(terms))
+        rate_value = rate_request and bool(_RATE_CHANGE.search(quote))
+        context.append((rate_value, overlap, -len(quote), row))
+    return max(context, key=lambda item: item[:3], default=(False, 0, 0, None))[3]
+
+
 def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_revisions_together=False,
-               grouped_rows=False):
+               grouped_rows=False, same_page_candidates=()):
     """Keep a caption and its available result passage together per revision."""
     revisions = defaultdict(list)
     for row in rows:
         if row['evidenceId'] in matched:
             revisions[_identity(row)].append(row)
     preferred = []
+    companions = {}
     for identity, items in revisions.items():
         if requested_rows:
             from services.deep_research.table_evidence import visible_table_packet
@@ -209,6 +247,10 @@ def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_r
                         covered.update(numbers)
                 obligations = next((row['obligationIds'] for row in pair if row.get('obligationIds')), [])
                 if obligations:
+                    if same_page_candidates and same_page_prose_requested(question):
+                        if prose := _same_page_prose(same_page_candidates, pair, question):
+                            pair.append(prose)
+                            companions[prose['evidenceId']] = prose
                     preferred.append({'obligationId': obligations[0], 'criterionId': 'explicit_table_context',
                                       'requirement': question, 'source': identity[0],
                                       'evidenceIds': [row['evidenceId'] for row in pair]})
@@ -226,7 +268,10 @@ def prioritize(rows, bundles, matched, question, *, requested_rows=False, keep_r
         combined = {**preferred[0], 'criterionId': 'explicit_table_context_across_versions',
                     'evidenceIds': list(dict.fromkeys(eid for bundle in preferred for eid in bundle['evidenceIds']))}
         preferred.insert(0, combined)
-    return sorted(rows, key=lambda row: row['evidenceId'] not in matched), [*preferred, *bundles]
+    known = {row['evidenceId'] for row in rows}
+    ordered = sorted(rows, key=lambda row: row['evidenceId'] not in matched)
+    ordered.extend(row for ref, row in companions.items() if ref not in known)
+    return ordered, [*preferred, *bundles]
 
 
 GUIDANCE = ('For the explicitly requested numbered table, use only evidence whose location.requestedTable '
@@ -234,3 +279,7 @@ GUIDANCE = ('For the explicitly requested numbered table, use only evidence whos
             'Keep each paper revision separate and require the matching row, column and caption before interpreting '
             'a numerical value. Unlabelled rows cannot fill missing table cells. Do not infer that a paper omitted '
             'a configuration when the acquired row fragments are incomplete.')
+
+SAME_PAGE_GUIDANCE = ('When comparing a table to accompanying prose, cite the table cells and the separate '
+                      'same-page statement for the same revision. Explain any disagreement without choosing '
+                      'which value is correct unless the source resolves it.')

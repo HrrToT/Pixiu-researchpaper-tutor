@@ -1289,12 +1289,15 @@ def make_synthesize_node(
             protocol_ids = {eid for bundle in protocol_bundles for eid in bundle['evidenceIds']}
             protocol_rows = {row['evidenceId']: row for row in candidates if row['evidenceId'] in protocol_ids}
         requested_table, requested_table_evidence = None, set()
+        named_table_candidates = ()
         if (output_kind == 'claim_verification' and type(record.get('namedTableScopeVersion')) is int
                 and record['namedTableScopeVersion'] in (1, 2)):
-            from services.deep_research.named_table_scope import requested_number, select as select_table_scope
+            from services.deep_research.named_table_scope import requested_number, same_page_prose_requested, select as select_table_scope
             requested_table = requested_number(question)
             if requested_table:
                 candidates, requested_table_evidence = select_table_scope(candidates, requested_table)
+                if record.get('namedTableSamePageProseVersion') == 1 and same_page_prose_requested(question):
+                    named_table_candidates = candidates
         if premise_mode:
             from services.deep_research.experiment_envelope import enabled as compact_experiment_envelope
             if output_kind=='experiment_design' and compact_experiment_envelope(record):
@@ -1350,6 +1353,7 @@ def make_synthesize_node(
             candidates, premise_bundles = prioritize_table_scope(candidates, premise_bundles, requested_table_evidence, question,
                 **({'requested_rows':True} if record.get('namedTableScopeVersion') == 2 else {}),
                 **({'grouped_rows':True} if record.get('namedTableGroupedRowsVersion') == 1 else {}),
+                same_page_candidates=named_table_candidates,
                 keep_revisions_together=record.get('revisionTableMultipleRowsVersion') in (4, 5))
         if protocol_rows:
             candidates = [*protocol_rows.values(), *(row for row in candidates if row['evidenceId'] not in protocol_rows)]
@@ -1700,6 +1704,9 @@ space with unsupported global absence or incidental iteration/performance values
         if requested_table:
             from services.deep_research.named_table_scope import GUIDANCE as table_scope_guidance
             prompt += '\n' + table_scope_guidance
+            if named_table_candidates:
+                from services.deep_research.named_table_scope import SAME_PAGE_GUIDANCE
+                prompt += '\n' + SAME_PAGE_GUIDANCE
             if record.get('namedTableScopeVersion') == 2:
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE, REQUESTED_FINDINGS_GUIDANCE
                 revision_display = record.get('revisionTableMultipleRowsVersion')

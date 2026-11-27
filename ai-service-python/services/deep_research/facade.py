@@ -455,6 +455,7 @@ class ResearchFacade:
             "namedBenchmarkNavigationVersion": 1,
             "namedTableScopeVersion": 2,
             "namedTableGroupedRowsVersion": 1,
+            "namedTableSamePageProseVersion": 1,
             "namedTableBoundedReviewVersion": 1,
             "revisionTableMultipleRowsVersion": 5,
             "revisionTableCoverageEnvelopeVersion": 1,
