@@ -311,5 +311,23 @@
       "actualRunId": "dr_run_2055bf96ae3b5e798bc1172ae2269185"
     },
     "boundary": "Separate local replays reused unchanged received wording for layout and prepared a fresh comparison target packet for the figure. Neither made a provider call, generated new measurement prose, executed semantic review or published a report."
+  },
+  "deferredLengthVerificationReplay": {
+    "sourceRun": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+    "providerCalls": 0,
+    "unchangedOriginalModelOutput": true,
+    "deferredLength": {
+      "limit": 600,
+      "characters": 612
+    },
+    "claimsPreparedForVerification": 8,
+    "deterministicPrecheck": {
+      "candidates": 8,
+      "rejected": []
+    },
+    "semanticReviewPerformed": false,
+    "published": false,
+    "independentCredit": 0,
+    "boundary": "The unchanged historical editor output reaches the normal deterministic precheck despite exceeding the publication limit. The final report retains the human limit. Publication tests assemble full, partial and held payloads from fixture verdicts separately. No scientific verdict or live publication was produced."
   }
 }
