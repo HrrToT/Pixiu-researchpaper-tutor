@@ -79,6 +79,38 @@ def test_parameter_anchor_policy_retains_only_an_edit_that_loses_a_cited_label(n
                                 json.loads, saved_state=states[-1], **options) == result
 
 
+@pytest.mark.parametrize(('new_text', 'cited', 'keeps_original'), [
+    ('每层按分数选择保留的缓存。', True, True),
+    ('每个头是一条独立的注意力计算路径，各头各自按分数保留缓存。', True, False),
+    ('每层按分数选择保留的缓存。', False, False),
+])
+def test_beginner_edits_keep_cited_per_head_selection(new_text, cited, keeps_original):
+    report, evidence = fixture()
+    report['claims'][0]['text'] = '每层每个注意力头按分数保留键值缓存。'
+    scope = {**evidence[0], 'evidenceId': 'scope',
+             'quote': 'For each attention head the tokens with the highest scores are retained.'}
+    evidence.append(scope)
+    if cited:
+        report['claims'][0]['evidenceRefs'] = ['scope']
+    response = {'claims': [{'claimId': 'why', 'text': new_text, 'conditions': {}},
+                           {'claimId': 'how', 'text': '用观测误差调整位置分布。', 'conditions': {}}]}
+    requests, states = [], []
+
+    def invoke(prompt, output):
+        requests.append(prompt)
+        return {'content': json.dumps(response, ensure_ascii=False)}
+
+    question = '给初学者解释，300字以内'
+    options = {'contract_version': 9, 'preserve_selection_scope': True}
+    revised = rewrite_for_beginner(report, evidence, question, invoke, json.loads, checkpoint=states.append, **options)
+    assert ('keep selection separate for each attention head' in requests[0]) == cited
+    assert revised['claims'][0]['text'] == (report['claims'][0]['text'] if keeps_original else new_text)
+    assert revised['claims'][1]['text'] == response['claims'][1]['text']
+    assert states[-1].get('retainedSelectionScopeClaimIds', []) == (['why'] if keeps_original else [])
+    assert rewrite_for_beginner(report, evidence, question, lambda *_: pytest.fail('Unexpected dispatch'),
+                                json.loads, saved_state=states[-1], **options) == revised
+
+
 @pytest.mark.parametrize('version', [None, True, 0, 10, '1'])
 def test_legacy_or_invalid_contract_never_adds_a_beginner_call(version):
     report,_=fixture()

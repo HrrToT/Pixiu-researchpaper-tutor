@@ -471,7 +471,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False, comparison_roles=False, preserve_parameter_anchors=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False, comparison_roles=False, preserve_parameter_anchors=False, preserve_selection_scope=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     Legacy rejected edits retain the original draft. New opt-in handoff retains
@@ -544,6 +544,10 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=mapped_version
     if retain_for_compaction:identity_inputs['audienceCompactionHandoffVersion']=1
     if preserve_parameter_anchors:identity_inputs['audienceParameterAnchorsVersion']=1
+    from services.deep_research.external_explanation import cited_selection_scope, per_head_answer
+    selection_scope = cited_selection_scope(report['claims'], evidence) if preserve_selection_scope else []
+    if selection_scope:
+        identity_inputs['audienceSelectionScopeClaimIds'] = selection_scope
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
@@ -592,11 +596,17 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
             request, comparison_audit = prepare_comparison_roles(request, report, evidence)
             if request is None:
                 reason = comparison_audit['status']
-        if preserve_parameter_anchors and reason is None:
-            guidance = ('\nEach claim must identify its own mechanism or parameter by a source-supported name or symbol. '
+        if reason is None and (preserve_parameter_anchors or selection_scope):
+            prompt = request['prompt']
+            if selection_scope:
+                prompt += ('\nFor claims ' + ', '.join(selection_scope) +
+                           ', keep selection separate for each attention head and explain what a head does in plain words. '
+                           'Identify what is kept or discarded precisely, such as key/value states in cache; '
+                           'do not imply that the input text itself is thrown away.\n')
+            if preserve_parameter_anchors:
+                prompt += ('\nEach claim must identify its own mechanism or parameter by a source-supported name or symbol. '
                         'When several parameters are requested, explain each role in plain words. Keep the necessary '
                         'source label with that explanation and avoid introducing references by ordinal alone.\n')
-            prompt = request['prompt'] + guidance
             if len(prompt.encode('utf8')) <= MAX_INPUT_BYTES:
                 request = {**request, 'prompt': prompt}
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
@@ -661,11 +671,19 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         before={c['claimId']:c for c in report['claims']};after={c['claimId']:c for c in edited['claims']}
         if any(before[k]!=after.get(k) for k in protected_claim_ids):
             reasons.append('structured_scope_changed');edited=None
-    if edited is not None and preserve_parameter_anchors:
-        retained = _retain_named_parameters(report, edited, evidence)
-        state['retainedParameterAnchorClaimIds'] = retained
+    if edited is not None and (preserve_parameter_anchors or selection_scope):
+        retained_parameters = _retain_named_parameters(report, edited, evidence) if preserve_parameter_anchors else []
+        if preserve_parameter_anchors:
+            state['retainedParameterAnchorClaimIds'] = retained_parameters
+        retained_scope = []
+        if selection_scope:
+            for index, claim in enumerate(edited['claims']):
+                if claim['claimId'] in selection_scope and not per_head_answer(claim['text']):
+                    edited['claims'][index] = deepcopy(report['claims'][index])
+                    retained_scope.append(claim['claimId'])
+            state['retainedSelectionScopeClaimIds'] = retained_scope
         limit = requested_character_limit(question)
-        if retained and limit and answer_character_count(edited) > limit:
+        if (retained_parameters or retained_scope) and limit and answer_character_count(edited) > limit:
             reasons.append('character_limit')
             edited = None
     compaction_candidate=None

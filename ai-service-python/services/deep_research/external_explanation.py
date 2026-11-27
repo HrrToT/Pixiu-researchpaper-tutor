@@ -17,16 +17,33 @@ _LOCAL_WINDOW = re.compile(r'\b(?:local|recent|sliding)\s+window\b', re.I)
 _LAYERS = re.compile(r'层|\b(?:layers?|layer-wise)\b', re.I)
 _SELECT_RETENTION = re.compile(r'保留哪|如何保留|选择.{0,16}保留|\b(?:which|select|choose)\b[^.!?]{0,70}\b(?:retain|keep|cache)\b', re.I)
 _PER_HEAD = re.compile(r'\b(?:each|every|per)\s+(?:attention\s+)?head\b', re.I)
+_PER_HEAD_ANSWER = re.compile(r'每\s*(?:一个|个|一)?\s*(?:注意力)?头|各(?:个)?(?:注意力)?头|逐(?:个)?(?:注意力)?头')
 _RETAIN_TOP = re.compile(r'\b(?:highest|top)[^.!?]{0,180}\b(?:scores?|rank)\b[^.!?]{0,180}\b(?:retain\w*|kept|cached)\b', re.I)
 
 
 def enabled(record, kind):
-    return (record.get(MARKER) in (1, 2, 3, 4, 5) and kind == 'direction_survey'
+    return (record.get(MARKER) in (1, 2, 3, 4, 5, 6) and kind == 'direction_survey'
             and record.get('sourcePolicy', {}).get('mode') == 'external_only')
 
 
 def asks_split_merge(question):
     return 'CPU' in question.upper() and 'GPU' in question.upper() and bool(_MERGE_REQUEST.search(question))
+
+
+def per_head_answer(text):
+    return isinstance(text, str) and bool(_PER_HEAD_ANSWER.search(text) or _PER_HEAD.search(text))
+
+
+def _ranked_per_head(text):
+    return _PER_HEAD.search(text) and _RETAIN_TOP.search(text)
+
+
+def cited_selection_scope(claims, evidence):
+    source_ids = {row['evidenceId'] for row in evidence
+                  if row.get('verification', {}).get('literal') == 'passed'
+                  and _ranked_per_head(' '.join(row.get('quote', '').split()))}
+    return [claim['claimId'] for claim in claims
+            if per_head_answer(claim.get('text')) and source_ids.intersection(claim.get('evidenceRefs', []))]
 
 
 def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False, include_selection_unit=False):
@@ -49,7 +66,7 @@ def prioritize(rows, ordered, bundles, plan, *, include_selection_rule=False, in
 
                 selected = []
                 if seeks_unit:
-                    selection_unit = first(lambda text: _PER_HEAD.search(text) and _RETAIN_TOP.search(text))
+                    selection_unit = first(_ranked_per_head)
                     if selection_unit is not None:
                         selected.append(selection_unit)
                 if seeks_storage:
@@ -108,10 +125,10 @@ with numbers. Bind exact table cells by source rowNumber, zero-based groupIndex,
 Invent no source, assumption, result or author omission. Scope conclusions to the specified revision.
 Access is derived from verified citations. Omit unrelated metrics, background and advice.
 """
-    if record.get(MARKER) in (2, 3, 4, 5) and asks_split_merge(question):
+    if record.get(MARKER) in (2, 3, 4, 5, 6) and asks_split_merge(question):
         output += ('For split computation, explain the evidenced selection rule for each branch and '
                    'how the branch results are combined. Distinguish implementation settings from the general method.\n')
-    if record.get(MARKER) == 5:
+    if record.get(MARKER) in (5, 6):
         output += ('For selection, state the evidenced unit to which ranking applies, separately from how its budget is set. '
                    'Cite the passage with that scope. Explain unfamiliar terms at first use; replace optional symbols with plain words.\n')
     if scope_enabled:
