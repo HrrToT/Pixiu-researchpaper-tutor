@@ -95,7 +95,7 @@ def test_checker_uses_visible_fields_without_changing_request_or_model_decision(
     assert result['status']==('passed' if supported else 'failed')
 
 
-@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 2, 2)])
+@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 3, 3)])
 def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_path, cells_version, version, policy):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -110,8 +110,25 @@ def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_
         assert facade._make_semantic_checker('old')._diagnostic_parameter_ids() is False
         for run_id in (row['runId'],'old'):
             with pytest.raises(ValueError,match='Immutable'):
-                repo.update_run(run_id,lambda r:{**r,key:3})
+                repo.update_run(run_id,lambda r:{**r,key:4})
     finally:facade.shutdown()
+
+
+@pytest.mark.parametrize(('reason', 'old_count', 'new_count'), [
+    ('统一条件是合理的比较要求。', 1, 0),
+    ('统一条件后共评估三组。', 2, 1),
+    ('新增了一条约束。', 1, 1),
+])
+def test_alignment_words_do_not_lose_real_counts(reason, old_count, new_count):
+    verdict, claim, evidence = inputs(reason, '对齐测试协议后比较速度。')
+    baseline = bind(verdict, claim, evidence, source_parameter_ids=True, bound_benchmark_names=True)
+    current = bind(verdict, claim, evidence, source_parameter_ids=True, bound_benchmark_names=True,
+                   alignment_words=True)
+    assert baseline['reviewDiagnosticAudit']['unboundNewNumberCount'] == old_count
+    assert current['reviewDiagnosticAudit']['unboundNewNumberCount'] == new_count
+    assert current['status'] == ('failed' if new_count else verdict['status'])
+    if not new_count:
+        assert current['reason'] == reason
 
 
 def test_bound_parameter_label_does_not_hide_an_unbound_algorithm_line():

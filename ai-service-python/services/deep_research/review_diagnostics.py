@@ -39,7 +39,7 @@ override a failed decision or any other audit; the server checks them independen
 
 
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
-         revision_row_counts=False, bound_benchmark_names=False):
+         revision_row_counts=False, bound_benchmark_names=False, alignment_words=False):
     if type(target_structure) is not bool:raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
     if type(revision_row_counts) is not bool:raise ValueError('Invalid revision row count policy')
@@ -57,7 +57,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     numbers=lambda text:_measurement_numbers(text,word_counts=True)
     if source_parameter_ids:
         from services.deep_research.review_parameter_numbers import scanner
-        numbers=scanner(own)
+        numbers=scanner(own, alignment_words=alignment_words)
     review_numbers=numbers
     target_references=[]
     table_notes=[]
@@ -116,7 +116,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
              'bindingCount': len(facts), 'newNumberCount': len(introduced),
              'unboundNewNumberCount': len(missing), 'errors': list(dict.fromkeys(errors))})
     if source_parameter_ids:audit['sourceParameterIdentityContractVersion']=1
-    if bound_benchmark_names:audit['sourceParameterIdentityContractVersion']=2
+    if bound_benchmark_names:audit['sourceParameterIdentityContractVersion']=3 if alignment_words else 2
     if target_structure:
         audit.update(reviewTargetStructureContractVersion=1,targetStructureReferences=target_references)
     if revision_row_counts:

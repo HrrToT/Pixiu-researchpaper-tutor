@@ -1512,7 +1512,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
-            if parameter_policy == 2:
+            if parameter_policy in (2, 3):
                 prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
                            'Describe the steps directly and retain any quantities required for the verdict.\n')
         if scope_observations and source_field_references:
@@ -1718,8 +1718,9 @@ The dataAvailability object is an internal audit, not new experimental results.
                 count_policy=self._diagnostic_revision_row_counts
                 count_policy=(count_policy() if callable(count_policy) else count_policy) is True
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
-                    source_parameter_ids=parameter_policy is True or parameter_policy == 2,
-                    bound_benchmark_names=parameter_policy == 2,
+                    source_parameter_ids=parameter_policy is True or parameter_policy in (2, 3),
+                    bound_benchmark_names=parameter_policy in (2, 3),
+                    alignment_words=parameter_policy == 3,
                     **({'target_structure':True} if structure_policy else {}),
                     **({'revision_row_counts':True} if count_policy else {})) for v in parsed]
             if comparison_enabled:

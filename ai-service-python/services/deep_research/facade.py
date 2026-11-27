@@ -429,7 +429,7 @@ class ResearchFacade:
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 1,
             "reviewSourceFieldReferenceContractVersion": 1,
-            "reviewParameterIdentityContractVersion": 2 if self._comparison_cells_version == 1 else 1,
+            "reviewParameterIdentityContractVersion": 3 if self._comparison_cells_version == 1 else 1,
             "reviewTargetStructureContractVersion": 1,
             "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": 2,
@@ -1459,7 +1459,7 @@ class ResearchFacade:
                 and revision_coverage_enabled(row_count_record)),
             diagnostic_parameter_ids=lambda: (
                 type(parameter_version := self._repo.require_run(run_id).get('reviewParameterIdentityContractVersion')) is int
-                and {1: True, 2: 2}.get(parameter_version, False)),
+                and {1: True, 2: 2, 3: 3}.get(parameter_version, False)),
             integrated_diagnostic_schema=lambda: type(self._repo.require_run(run_id).get('reviewDiagnosticContractVersion')) is int
                 and self._repo.require_run(run_id)['reviewDiagnosticContractVersion']==2,
             review_reason_parts=lambda: type(self._repo.require_run(run_id).get('reviewReasonPartsContractVersion')) is int
