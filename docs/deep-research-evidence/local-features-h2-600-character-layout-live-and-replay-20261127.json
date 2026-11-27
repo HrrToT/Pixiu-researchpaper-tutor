@@ -197,5 +197,119 @@
     ],
     "scientificApproval": false,
     "boundary": "Fresh local PDF retrieval, source allocation, literal extraction and stage preparation used the saved plan and exact material identities. A no-provider stop precedes generation. Supervision evidence for each paper, the threshold table and the named figure remain in the same bounded preparation."
+  },
+  "combinedEvidenceRealDevelopmentRun": {
+    "runId": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+    "sourceTree": "83c7a8cbb8555458e7376709318e31a2d45bf6d4",
+    "status": "failed",
+    "outcome": "none",
+    "providerCalls": 9,
+    "providerTokens": 39599,
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 4
+    },
+    "callsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1
+    },
+    "elapsedSeconds": 106.0,
+    "errorCode": "invalid_synthesis_response",
+    "automaticRetry": false,
+    "localMaterialBoundary": {
+      "scopeCheck": 265,
+      "pdf": 4
+    },
+    "externalSearches": 0,
+    "verificationStarted": false,
+    "reportPublished": false,
+    "independentCredit": 0,
+    "observed": {
+      "draftContainsBothSupervisionOrigins": true,
+      "draftContainsScopedRecheck": true,
+      "draftContainsD2NetReportedMeasurementValue": false,
+      "figureEvidencePresent": true,
+      "figureHintPresent": false
+    },
+    "rawReceiptsSha256": {
+      "run.json": "3b163214541ef41d5c0e179bba00e03e730f8527d4c65af1b508fab31cf888a7",
+      "calls.json": "0a9349ed74b531f915cb3d696bfe44eaade77fadc3a89597958efdf5f498a0cf",
+      "provider.jsonl": "19a0522b5003233a3b4ffc5355d06190c6e874c530f3089fa84848f924d3e5c7",
+      "result.json": "4884f63ea73f3429871c773d54e1c745387b572fbb66103f1fe06cffa664fdc4"
+    }
+  },
+  "combinedEvidencePostRunReplays": {
+    "groupedProse": {
+      "sourceRun": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+      "providerCalls": 0,
+      "historicalEditedCharacters": 612,
+      "groupedEditedCharacters": 596,
+      "unmodifiedEditorResponse": true,
+      "claimIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0",
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_5_0",
+        "cmp_conclusion_0",
+        "cmp_conclusion_1"
+      ],
+      "allClaimsRetained": true,
+      "semanticReviewPerformed": false,
+      "independentCredit": 0,
+      "adviceReviewTarget": "cmp_conclusion_1"
+    },
+    "figurePlanBinding": {
+      "providerCalls": 0,
+      "inputBoundBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23998,
+          "targets": [
+            "cell_0_0_axis_0",
+            "cell_0_0_axis_1",
+            "cell_1_0"
+          ]
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23987,
+          "targets": [
+            "cell_0_1_axis_0",
+            "cell_0_1_axis_1",
+            "cell_1_1"
+          ]
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23993,
+          "targets": [
+            "joint_O3",
+            "joint_O4"
+          ]
+        }
+      ],
+      "figureCounts": {
+        "evidenceId": "ev_997d1915dfb73691fbfb377ca5876acc9bc24de5540f480c5b1153e16c02b118",
+        "stage": "P1",
+        "target": "cell_1_0",
+        "printedVariant": "D2 MS Trained (ours)",
+        "printedCountColumns": [
+          "# Features",
+          "# Matches"
+        ],
+        "printedValues": [
+          "8.3K",
+          "2.8K"
+        ]
+      },
+      "actualRunId": "dr_run_2055bf96ae3b5e798bc1172ae2269185"
+    },
+    "boundary": "Separate local replays reused unchanged received wording for layout and prepared a fresh comparison target packet for the figure. Neither made a provider call, generated new measurement prose, executed semantic review or published a report."
   }
 }
