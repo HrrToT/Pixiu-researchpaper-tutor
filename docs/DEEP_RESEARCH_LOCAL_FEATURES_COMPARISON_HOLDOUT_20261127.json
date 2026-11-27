@@ -102,6 +102,7 @@
     "conditionBoundResultLiveDevelopmentRun": "deep-research-evidence/local-features-h2-condition-bound-live-20261127.json",
     "benchmarkProtocolAndFigureCountsOfflineReplay": "deep-research-evidence/local-features-h2-benchmark-protocol-and-counts-20261127.json",
     "namedProtocolLiveAndOfflineAdmissionReplay": "deep-research-evidence/local-features-h2-named-protocol-live-and-admission-20261127.json",
-    "synthesisLiveAndClauseReplay": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json"
+    "synthesisLiveAndClauseReplay": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
+    "appendixMetricSynthesisBundleReplay": "deep-research-evidence/local-features-h2-appendix-metric-bundle-20261127.json"
   }
 }
