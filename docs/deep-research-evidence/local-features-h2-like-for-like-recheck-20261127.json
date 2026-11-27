@@ -1,0 +1,107 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "real_isolated_recommendation_verdict_validated_offline",
+  "independentCredit": 0,
+  "baseline": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
+  "adviceClaimId": "cmp_conclusion_1",
+  "adviceClaim": "在同一HPatches图像对上复核，统一分辨率、点数、匹配阈值和规则；评估单应性时还须统一RANSAC设置和指标。",
+  "providerCalls": 1,
+  "providerRequests": {
+    "node": "verify_advice",
+    "model": "gpt-6.1-terra",
+    "requestBytes": 9526,
+    "calls": 1,
+    "automaticRetry": false,
+    "status": 200,
+    "usage": {
+      "input_tokens": 2271,
+      "output_tokens": 184,
+      "total_tokens": 2455,
+      "estimated": false,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 2268
+    },
+    "finishReason": "stop",
+    "elapsedSeconds": 6.83
+  },
+  "initialHarnessParse": "invalid_verification_response",
+  "transportLimitation": "Direct harness omitted the production structured-output array envelope. Its raw singleton object was retained and placed inside the expected array offline without changing the verdict.",
+  "verdictAfterOfflineValidation": {
+    "claimId": "cmp_conclusion_1",
+    "status": "passed",
+    "reason": "这是指定范围内的同条件复核建议，未引入训练、干预或预设胜者。E1说明SuperPoint的分辨率、点数、匹配与单应性评估设置；E2和E3涉及D2-Net评测中的匹配阈值、点数与互为最近邻规则。建议统一这些条件及指标是可行的，但具体采用哪些数值和规则仍需团队确定。",
+    "adviceAudit": {
+      "purpose": "benchmark_recheck",
+      "targetPath": [
+        "text"
+      ],
+      "appropriate": true,
+      "premises": [
+        {
+          "evidenceId": "ev_17b84ca9d93afb4af4d99df5514843765f1ef8b1e4b94ba57137aacf2b5ace79",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_76a14679395ece4b3b6b5d6ec0e711ff0759421b51cc63edca7cf03dedfb2ccb",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "evidenceId": "ev_09c98674ac194816d8985e99a0fede0b01bec39e9d5ee4bbdc10d452054a4024",
+          "path": [
+            "sourceContext",
+            "after"
+          ]
+        }
+      ]
+    }
+  },
+  "ownershipGuard": {
+    "onlyOnePaperRejected": true,
+    "actualPaperIds": [
+      "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732.pdf",
+      "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1.pdf"
+    ]
+  },
+  "synthesisStageReplayWithBothPolicies": [
+    {
+      "stageId": "P1",
+      "inputBytes": 23997,
+      "targetCount": 2,
+      "allThreeVisible": true,
+      "targetsAllowingBundle": 2
+    },
+    {
+      "stageId": "P2",
+      "inputBytes": 23668,
+      "targetCount": 2,
+      "allThreeVisible": false,
+      "targetsAllowingBundle": 0
+    },
+    {
+      "stageId": "joint",
+      "inputBytes": 23972,
+      "targetCount": 2,
+      "allThreeVisible": true,
+      "targetsAllowingBundle": 2
+    }
+  ],
+  "localRegressionsPassed": 242,
+  "artifactSha256": {
+    "h2-like-for-like-recheck-offline-replay-20261127.json": "dc9fa725bec11db0e54f317f76dc73714ccc97a5227db8d82f3dc97df60f4606",
+    "h2-appendix-and-recheck-closure-20261127.json": "96f629cc938446567b71fc6c3e4d16b63f6982f92fc8ab648e4fe30aee455554",
+    "intent.json": "730c087f54a1c27bc4b41897e95463e80c0a94aad95e914f6a58de12e4b8e267",
+    "provider.json": "544a4aadce213acf06502435a92d42dbd5b5f2d5d64074fc95f834c0e8bcb9e1",
+    "raw-verdict.json": "971495f2c05f6763a714aab4f56967db37dfbee860e4154930c960ece8de189d",
+    "result.json": "67d52c6b215129326cc064ee1497543c440f0d451316d868f9a3e0219c77ecc4",
+    "offline-envelope-replay.json": "f24be43e121c0cfdc04907a16a5a452764f65c9cd50a667846104627aea430fb"
+  },
+  "followUp": {
+    "fullGraphRerun": false,
+    "scientificContentCredit": 0
+  }
+}
