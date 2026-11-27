@@ -1,0 +1,26 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "recordedRun": "dr_run_32b17e84964d5d39a1aae0aebfc54239",
+  "baselineRunEvidence": "openai-d2-current-candidate-real-20261128.json",
+  "testedAuditEnvelopeVersions": [18, 19],
+  "identicalAfterDecoding": true,
+  "draftClaims": 10,
+  "fixedChecks": 8,
+  "citedEvidenceRows": 20,
+  "minimumAuditInputBytes": {
+    "version18": 27833,
+    "version19": 26552
+  },
+  "repairStageSettledTokens": 75302,
+  "repairStageRemainingTokens": 24698,
+  "measuredAuditReservationTokens": {
+    "version18": 31482,
+    "version19": 30201
+  },
+  "repairAdmission": {
+    "version18": "repairPromptBytes=0",
+    "version19": "repairPromptBytes=0"
+  },
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

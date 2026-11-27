@@ -4,6 +4,24 @@ Uses existing lossless input sharing and keeps the scientific acceptance checks.
 Only the server-compiled comparison presentation v3 selects this path.
 """
 from copy import deepcopy
+from itertools import combinations
+from os.path import commonprefix
+
+
+_EVIDENCE_PARTS_NOTE = (
+    '\nEvidence quote/before/after arrays are exact string pieces: after restoring shared values, '
+    'join in order with no separator to recover the original field.'
+)
+
+
+def _evidence_fields(packet):
+    for row in packet['evidence']:
+        for holder, keys in ((row, ('quote',)), (row.get('sourceContext'), ('before', 'after'))):
+            if isinstance(holder, dict):
+                for key in keys:
+                    value = holder.get(key)
+                    if isinstance(value, str) and value:
+                        yield row.get('source'), holder, key, value
 
 
 def _evidence_sentence_packet(data, encode):
@@ -11,21 +29,45 @@ def _evidence_sentence_packet(data, encode):
     from services.deep_research.quote_context import _sentence_cuts
 
     packed = deepcopy(data)
-    for row in packed['evidence']:
-        context = row.get('sourceContext')
-        fields = [(row, 'quote')]
-        if isinstance(context, dict):
-            fields.extend((context, field) for field in ('before', 'after'))
-        for values, field in fields:
-            original = values.get(field)
-            if not isinstance(original, str):
+    for _, holder, key, original in _evidence_fields(packed):
+        bounds = [0, *_sentence_cuts(original), len(original)]
+        parts = [original[a:b] for a, b in zip(bounds, bounds[1:]) if a < b]
+        if len(parts) > 1:
+            holder[key] = parts
+    return encode(packed) + _EVIDENCE_PARTS_NOTE
+
+
+def _evidence_overlap_packet(data, encode):
+    """Share clipped passages without changing evidence text or provenance."""
+    packed = deepcopy(data)
+    by_source = {}
+    for source, holder, key, text in _evidence_fields(packed):
+        if source and len(text) >= 80:
+            by_source.setdefault(source, []).append((holder, key, text, text[::-1], {0, len(text)}))
+    for fields in by_source.values():
+        for left, right in combinations(fields, 2):
+            _, _, first, first_reversed, first_cuts = left
+            _, _, second, second_reversed, second_cuts = right
+            shorter, longer, longer_cuts = (
+                (first, second, second_cuts) if len(first) <= len(second) else (second, first, first_cuts)
+            )
+            start = longer.find(shorter)
+            if start >= 0:
+                longer_cuts.update((start, start + len(shorter)))
                 continue
-            bounds = [0, *_sentence_cuts(original), len(original)]
-            parts = [original[a:b] for a, b in zip(bounds, bounds[1:]) if a < b]
-            if len(parts) > 1:
-                values[field] = parts
-    return (encode(packed) + '\nEvidence quote/before/after arrays are exact string pieces: after restoring shared values, '
-            'join in order with no separator to recover the original field.')
+            prefix = len(commonprefix((first, second)))
+            suffix = len(commonprefix((first_reversed, second_reversed)))
+            if prefix >= 80:
+                first_cuts.add(prefix)
+                second_cuts.add(prefix)
+            if suffix >= 80:
+                first_cuts.add(len(first) - suffix)
+                second_cuts.add(len(second) - suffix)
+        for holder, key, text, _, cuts in fields:
+            if len(cuts) > 2:
+                bounds = sorted(cuts)
+                holder[key] = [text[a:b] for a, b in zip(bounds, bounds[1:])]
+    return encode(packed) + _EVIDENCE_PARTS_NOTE
 
 CORE = '''Audit the FINAL ACCEPTED ANSWER against the original question and EVERY fixed
 check. Facts were checked separately: never change factual verdicts, rewrite,
@@ -201,7 +243,7 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
              compact_checks=False, compact_instructions=False, coherence_excerpts=False, source_labels=False,
              inline_paper_labels=False, scoped_coherence=False, bounded_packet=False, rendered_packet=False,
              local_check_fields=False, check_labels=None, inline_limit_bindings=False,
-             require_covered_bindings=False, share_evidence_sentences=False):
+             require_covered_bindings=False, share_evidence_sentences=False, share_evidence_overlaps=False):
     from services.deep_research.comparison_presentation import audit_view
     from services.deep_research.shared_strings import input_text
     if type(comparison.get('version')) is not int or comparison['version'] != 3:
@@ -416,6 +458,10 @@ def renderer(question, requirements, claims, metadata, comparison, *, catalog=No
         body = input_text(packet)
         if share_evidence_sentences:
             shared = _evidence_sentence_packet(packet, input_text)
+            if len(shared.encode('utf-8')) < len(body.encode('utf-8')):
+                body = shared
+        if share_evidence_overlaps:
+            shared = _evidence_overlap_packet(packet, input_text)
             if len(shared.encode('utf-8')) < len(body.encode('utf-8')):
                 body = shared
         return (policy + '\nComplete exact decision inputs (evidence detects omissions, never replaces answer):\n'

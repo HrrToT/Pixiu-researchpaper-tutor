@@ -68,7 +68,7 @@ def _exercise_server_envelope(tmp_path,monkeypatch,question,kind):
         is_revision = kind == 'claim_verification'
         marker = 'revisionTableCoverageEnvelopeVersion' if is_revision else 'comparisonAuditEnvelopeContractVersion'
         assert revision_coverage_enabled(run) if is_revision else enabled(run)
-        assert run[marker] == (1 if is_revision else 18)
+        assert run[marker] == (1 if is_revision else 19)
         if is_revision:
             direct_prompt = coverage_prompt(question, [], [], {}, 'EVIDENCE', coherence=True, root_coherence=True)
             assert 'root keys beside items' in direct_prompt

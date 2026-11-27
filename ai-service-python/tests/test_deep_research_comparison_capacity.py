@@ -195,14 +195,15 @@ def test_named_condition_repair_keeps_the_previously_checked_comparison():
 
 @pytest.mark.parametrize('phase', ['initial', 'deferred', 'repaired'])
 @pytest.mark.parametrize('mutate_evidence', [False, True])
-def test_comparison_audit_recovery_keeps_original_admission_budget(monkeypatch, phase, mutate_evidence):
+@pytest.mark.parametrize('audit_version', [18, 19])
+def test_comparison_audit_recovery_keeps_original_admission_budget(monkeypatch, phase, mutate_evidence, audit_version):
     from unittest.mock import Mock
     from services.deep_research.contracts import DeepResearchError
     from services.deep_research.graph import make_verify_node
 
     record = populated_factual_record()
     record.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=16,
-                  comparisonAuditEnvelopeContractVersion=18, answerCoherenceContractVersion=2,
+                  comparisonAuditEnvelopeContractVersion=audit_version, answerCoherenceContractVersion=2,
                   comparisonRepairFlowContractVersion=1)
     record['budget'].update(maxTokens=100000, tokens=72000)
     from services.deep_research.authored_body import decode
@@ -227,6 +228,7 @@ def test_comparison_audit_recovery_keeps_original_admission_budget(monkeypatch, 
         return {'accepted': claims, 'rejected': []}
 
     def audit(*args, budget, **kwargs):
+        assert kwargs.get('share_comparison_evidence_overlaps', False) == (audit_version == 19)
         if kwargs.get('measure_reservation'):
             return 8000
         if phase == 'repaired' and revised not in args[3]:

@@ -2483,6 +2483,8 @@ def make_verify_node(
                     comparison_audit_args['require_covered_bindings'] = True
                 if audit_version >= 12:
                     comparison_audit_args['share_comparison_evidence_sentences'] = True
+                if audit_version >= 19:
+                    comparison_audit_args['share_comparison_evidence_overlaps'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                     if audit_version >= 15:
@@ -2499,13 +2501,13 @@ def make_verify_node(
         def audit_accepted(accepted, snapshot, *, phase=None, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17, 18)):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17, 18, 19)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             question, plan = effective_question(record), saved.get('plan', [])
             budget = snapshot.get('budget')
             if (phase is not None and comparison_audit_args.get('comparison_audit_envelope')
-                    and record['comparisonAuditEnvelopeContractVersion'] == 18):
+                    and record['comparisonAuditEnvelopeContractVersion'] in (18, 19)):
                 from services.deep_research.contracts import DeepResearchError, digest
 
                 identity = digest([question, plan, accepted, evidence, comparison_audit_args, scopes, options])
@@ -2578,7 +2580,7 @@ def make_verify_node(
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
                 if (comparison_audit_args.get('comparison_audit_envelope')
-                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17, 18)
+                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17, 18, 19)
                         and llm_invoke is not None and verification_result.get('accepted')):
                     # Stopping individual reviews does not by itself exhaust the
                     # final-answer allowance. Check the retained subset with the

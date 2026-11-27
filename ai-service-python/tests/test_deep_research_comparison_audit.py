@@ -388,6 +388,33 @@ def test_evidence_sentence_sharing_preserves_all_source_fields():
     assert restored == decode(old)
 
 
+def test_clipped_evidence_sharing_preserves_exact_quote_context_and_source():
+    before = 'Context begins with a heading and continues beyond an extraction boundary: ' * 4
+    snippet = '分辨率和评估条件必须与原文保持一致' * 15
+    ending = ' The same PDF page also records limitations in different paragraph boundaries. ' * 4
+    evidence = [
+        {'evidenceId': 'E1', 'source': 'P1', 'quote': snippet,
+         'sourceContext': {'before': before, 'after': ending, 'truncated': True}},
+        {'evidenceId': 'E2', 'source': 'P1', 'quote': before + snippet + ending,
+         'sourceContext': {'before': '', 'after': 'Different context.', 'truncated': False}},
+        {'evidenceId': 'E3', 'source': 'P2', 'quote': snippet + ' from another version',
+         'sourceContext': {'before': '', 'after': '', 'truncated': False}},
+    ]
+    options = dict(share_evidence_sentences=True)
+    old = renderer(QUESTION, [], CLAIMS, {}, presentation(), **options)(evidence)
+    new = renderer(QUESTION, [], CLAIMS, {}, presentation(), share_evidence_overlaps=True, **options)(evidence)
+    assert len(new.encode('utf-8')) < len(old.encode('utf-8'))
+    assert 'join in order with no separator' in new
+    restored = decode(new)
+    for row in restored['evidence']:
+        for obj, field in ((row, 'quote'), (row['sourceContext'], 'before'), (row['sourceContext'], 'after')):
+            if isinstance(obj[field], list):
+                obj[field] = ''.join(obj[field])
+    assert restored['evidence'] == evidence
+    assert {k: v for k, v in restored.items() if k != 'evidence'} == {
+        k: v for k, v in decode(old).items() if k != 'evidence'}
+
+
 def test_single_process_comparison_can_fit_fallback_without_accepting_truncation():
     plan = deepcopy(PLAN)
     plan[0]['obligations'][0]['completionCriteria'][1].update(
