@@ -64,7 +64,7 @@ def test_ambiguous_unquoted_math_is_preserved_even_when_all_labels_are_cited(val
     assert normalize(claim,ALIASES,QUOTES,version=2)==(claim,None)
 
 
-@pytest.mark.parametrize('replacement',[None,True,'2',0,1,5])
+@pytest.mark.parametrize('replacement',[None,True,'2',0,1,4,6])
 def test_contract_is_server_owned_immutable_and_type_strict(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -73,7 +73,7 @@ def test_contract_is_server_owned_immutable_and_type_strict(tmp_path,replacement
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Read a paper',
             'citationPresentationContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['citationPresentationContractVersion']==4
+        assert value['citationPresentationContractVersion']==5
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'citationPresentationContractVersion':replacement})
     finally:facade.shutdown()
@@ -107,6 +107,31 @@ def test_unknown_pending_cannot_change_presentation_contract():
         repair_rejected(report,checks,evidence,'Q',Mock(),json.loads,**options,
             citation_presentation_version=2,batch_state=frozen,invoke_request=invoke)
     invoke.assert_not_called();assert frozen==states[-1]
+
+
+@pytest.mark.parametrize(('draft', 'published'), [
+    ('在局部窗口细化位置（第3.3、3.4节）。', '在局部窗口细化位置。'),
+    ('原文讨论较大范围的上下文（LoFTR，arXiv:2104.00680v1，第2页及粗到细模块）。',
+     '原文讨论较大范围的上下文（LoFTR，arXiv:2104.00680v1）。'),
+    ('按权重求精确位置（第5页），窗口宽度为5像素。', '按权重求精确位置，窗口宽度为5像素。'),
+])
+def test_display_locators_are_removed_without_altering_citations_or_measurements(draft, published):
+    claim = {'claimId': 'c', 'kind': 'reported', 'text': draft, 'evidenceRefs': ['a']}
+    revised, audit = normalize(claim, ALIASES, QUOTES, version=5)
+    assert revised == {**claim, 'text': published}
+    assert audit['removed'][0]['kind'] == 'redundant_source_locator'
+    assert normalize(claim, ALIASES, QUOTES, version=4) == (claim, None)
+
+
+@pytest.mark.parametrize('text', [
+    '在局部窗口细化位置（第5页，消耗20 GB）。',
+    '训练耗时（第3阶段耗时15秒）。',
+    '把标签 `（第3节）` 保留在示例代码中。',
+    '按矩阵（第5行）读值。',
+])
+def test_citation_locator_normalization_keeps_numerical_and_code_content(text):
+    claim = {'claimId': 'c', 'kind': 'reported', 'text': text, 'evidenceRefs': ['a']}
+    assert normalize(claim, ALIASES, QUOTES, version=5) == (claim, None)
 
 
 @pytest.mark.parametrize('version',[None,2])

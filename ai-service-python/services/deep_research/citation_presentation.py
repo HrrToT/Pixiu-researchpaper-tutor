@@ -25,6 +25,39 @@ _SINGLE_AFTER3=re.compile(r'\s*为(?=[^，,；;。\n]{0,60}(?:场景|数据集|�
 _MATH_AFTER3=re.compile(r'\s*(?:用于|用来)?(?:计算|求值|相除|相乘|相减|相加|减去|加上|比值|比率|差值|差异|商|乘积|'
     r'的(?:比值|比率|比例|差值|差异|差|商|乘积))|\s*(?:为|是|表示|作为)[^，,；;。\n]{0,25}(?:差值|差异|误差|比值|能量)|'
     r'\s+(?:ratio|quotient|product|difference|subtract\w*|divided|multiplied)\b',re.I)
+_LOCATOR_NUMBER = r'[1-9]\d*(?:\.\d+)*'
+_LOCATOR = rf'第\s*{_LOCATOR_NUMBER}(?:\s*[、，,]\s*{_LOCATOR_NUMBER})*\s*(?:页|节)'
+_LOCATOR_PAREN = re.compile(r'（(?P<cjk>[^（）\n]*)）|\((?P<ascii>[^()\n]*)\)')
+_LOCATOR_CONTENT = re.compile(
+    rf'\s*(?:(?P<identity>(?:[A-Za-z][A-Za-z0-9 .-]{{0,60}}\s*[,，]\s*)?'
+    rf'arXiv:\d{{4}}\.\d{{4,5}}v[1-9]\d*)\s*[,，]\s*)?'
+    rf'{_LOCATOR}(?:\s*及\s*[\u4e00-\u9fff]{{1,14}}(?:模块|小节))?\s*', re.I)
+
+
+def normalize_source_locators(claim):
+    """Remove display-only citation coordinates from a claim with citation links."""
+    text = claim.get('text')
+    if (claim.get('kind') not in {'reported', 'inference'} or claim.get('scopeExpression')
+            or not claim.get('evidenceRefs') or not isinstance(text, str)):
+        return claim, None
+    protected = [(match.start(), match.end()) for match in _PROTECTED.finditer(text)]
+    removed = []
+
+    def strip(match):
+        content = _LOCATOR_CONTENT.fullmatch(match['cjk'] if match['cjk'] is not None else match['ascii'])
+        if not content or any(start <= match.start() < end for start, end in protected):
+            return match[0]
+        identity = content['identity']
+        replacement = match[0][0] + identity + match[0][-1] if identity else ''
+        removed.append({'field': 'text', 'marker': match[0], 'offset': match.start(),
+                        'kind': 'redundant_source_locator', 'replacement': replacement})
+        return replacement
+
+    cleaned = _LOCATOR_PAREN.sub(strip, text).strip()
+    if not removed or not cleaned or not re.search(r'[A-Za-z\u4e00-\u9fff]', cleaned):
+        return claim, None
+    return {**claim, 'text': cleaned}, {'claimId': claim.get('claimId'), 'originalText': text,
+                                      'normalizedText': cleaned, 'removed': removed}
 
 
 def normalize(claim,aliases,quotes,*,version=1):
@@ -37,6 +70,7 @@ def normalize(claim,aliases,quotes,*,version=1):
     and the hypothesis's human-readable statement; other config is untouched.
     Version4 also recognizes explicit initialization/training attributions and
     parenthesized "(按E1-E3)" citations. Ambiguous arithmetic stays unchanged.
+    Version5 leaves duplicate page and section labels to the evidence links.
     This grants no references.
     The caller saves the original response and this separate presentation audit.
     """
@@ -44,9 +78,9 @@ def normalize(claim,aliases,quotes,*,version=1):
     own={alias for alias,full in aliases.items() if full in claim.get('evidenceRefs',[]) and alias in quotes}
     protected_symbols={alias for alias in own if any(re.search(r'(?<![A-Za-z0-9_])'+re.escape(alias)+r'(?![A-Za-z0-9_])',
         quotes[key]) for key in own)}
-    extended=type(version) is int and version in (2,3,4)
-    modern=type(version) is int and version in (3,4)
-    operational=type(version) is int and version==4
+    extended=type(version) is int and version in (2,3,4,5)
+    modern=type(version) is int and version in (3,4,5)
+    operational=type(version) is int and version in (4,5)
     removed=[]
     def text(value,path):
         protected=[(m.start(),m.end()) for m in _PROTECTED.finditer(value)]
@@ -117,6 +151,10 @@ def normalize(claim,aliases,quotes,*,version=1):
         if isinstance(value,dict): return {k:values(v,f'{path}.{k}') for k,v in value.items()}
         return value
     if isinstance(result.get('text'),str): result['text']=text(result['text'],'text')
+    if version == 5:
+        result, locators = normalize_source_locators(result)
+        if locators:
+            removed.extend(locators['removed'])
     if 'conditions' in result: result['conditions']=values(result['conditions'],'conditions')
     original_statement=None
     if modern and result.get('designRole')=='hypothesis' and isinstance(result.get('executionSpec'),dict):
