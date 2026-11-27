@@ -52,6 +52,7 @@ _PROCEDURE_COMMAND = re.compile(r'^(?:设计|规划|design|plan)$',re.I)
 _PER_SOURCE_RESULT = re.compile(
     r'^(?:(?:并且?|同时|还要|请)\s*)?(?:各自?|分别)\s*(?:引用|列出|提供|给出|报告|选取)\s*'
     r'(?:一|1)\s*(?:条|项|个|组).{0,75}(?:定量结果|原文结果|测量结果|评测结果|数值)')
+_JOINT_RESULT = re.compile(r'比较|对比|对照|共同|排名|排序|可比')
 
 
 def _outside_examples(text):
@@ -101,7 +102,76 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False,complete_comparison_clauses=False,correct_per_paper_results=False):
+def _split_measurements_from_joint_results(plan, question, human):
+    """Recover a literal per-paper measurement before planning evidence cells."""
+    from services.deep_research.comparison_intent import validate_role
+
+    obligations = [row for item in plan for row in item['obligations']]
+    identities = {row['obligationId'] for row in obligations}
+    owned_measurements = set()
+    changes = []
+    for row in obligations:
+        role = validate_role(row, question)
+        if role['kind'] != 'per_paper':
+            continue
+        excerpt = row.get('requestExcerpt')
+        if isinstance(excerpt, str):
+            measurement = excerpt.rstrip('，,；;？?。\n ')
+            if (_PER_SOURCE_RESULT.fullmatch(measurement) and not _JOINT_RESULT.search(measurement)
+                    and role['requestExcerpt'] in measurement and any(measurement in layer for layer in human)
+                    and role['requestExcerpt'] != measurement):
+                role['requestExcerpt'] = measurement
+                changes.append({'obligationId': row['obligationId'], 'change': 'complete_per_paper_result_excerpt'})
+        owned_measurements.add(role['requestExcerpt'])
+    for item in plan:
+        for row in list(item['obligations']):
+            role = validate_role(row, question)
+            excerpt = row.get('requestExcerpt')
+            if (role['kind'] != 'joint' or not isinstance(excerpt, str)
+                    or role['requestExcerpt'] not in excerpt
+                    or not any(excerpt in layer for layer in human)):
+                continue
+            measurement, *rest = _question_parts(excerpt)
+            if rest and not rest[-1]:
+                rest.pop()
+            if (not rest or not excerpt.startswith(measurement)
+                    or not _PER_SOURCE_RESULT.fullmatch(measurement) or _JOINT_RESULT.search(measurement)
+                    or not all(4 <= len(part) <= 500 and (
+                        _ASK.search(_outside_examples(part)) or _COMMAND.match(part)) for part in rest)
+                    or not any(_JOINT_RESULT.search(_outside_examples(part)) for part in rest)):
+                continue
+            remainder = excerpt[len(measurement):].strip('，,；;？?。\n ')
+            anchor = role['requestExcerpt']
+            if anchor not in remainder:
+                anchor = next(part for part in rest if _JOINT_RESULT.search(_outside_examples(part)))
+            row.update(question=remainder, requestExcerpt=remainder)
+            role.update(label='比较范围', requestExcerpt=anchor)
+            changes.append({'obligationId': row['obligationId'], 'change': 'split_joint_quantitative_result'})
+            if measurement in owned_measurements:
+                continue
+
+            identity = 'per_paper_result'
+            suffix = 1
+            while identity in identities:
+                suffix += 1
+                identity = f'per_paper_result_{suffix}'
+            identities.add(identity)
+            owned_measurements.add(measurement)
+            result = deepcopy(row)
+            result.update(
+                obligationId=identity, question=measurement, requestExcerpt=measurement,
+                comparisonRole={'kind': 'per_paper', 'label': '逐篇定量结果', 'requestExcerpt': measurement},
+                completionCriteria=[{
+                    'criterionId': 'human_aspect_1', 'requirement': measurement, 'responseType': 'identification',
+                }],
+            )
+            item['obligations'].append(result)
+            changes.append({'obligationId': identity, 'change': 'retained_per_paper_quantitative_result',
+                            'jointObligationId': row['obligationId']})
+    return changes
+
+
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False,complete_comparison_clauses=False,correct_per_paper_results=False,split_joined_per_paper_results=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -111,6 +181,9 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
     """
     human = question.instruction_layers if isinstance(question, ResearchQuestion) else (question,)
     result, changes = deepcopy(plan), []
+    if comparison_roles and split_joined_per_paper_results:
+        changes.extend(_split_measurements_from_joint_results(
+            result, question, getattr(question, 'point_instruction_layers', None) or human))
     comparison_obligations = [row for item in result for row in item['obligations']] if (
         joint_comparison_requests or per_paper_comparison_requests) else []
     if comparison_roles and comparison_obligations:

@@ -257,3 +257,45 @@ def test_explicit_each_paper_measurements_are_not_a_joint_comparison(enabled, ex
         assert measurement['completionCriteria'][0]['responseType'] == 'identification'
     assert any(c['change'] == 'per_paper_quantitative_result_role' for c in changes) == (role == 'per_paper')
     assert goal['comparisonRole']['kind'] == 'joint'
+
+
+@pytest.mark.parametrize('mode', ['joined', 'legacy', 'already_owned', 'model_only', 'matched_result'])
+def test_comparison_preserves_measurements_and_joint_scope_when_plan_merges_them(mode):
+    from services.deep_research.request_context import ResearchQuestion
+
+    measurement = ('各引用一条带评测条件的原文定量结果' if mode != 'matched_result'
+                   else '各引用一条用于直接比较的定量结果')
+    ordering = '说明能否把两篇论文的 HPatches 数字直接用于排序'
+    internal = 'D2-Net 论文内部与 SuperPoint 的比较能支持什么'
+    joint = f'{ordering}，{internal}'
+    excerpt = f'{measurement}。{joint}。'
+    sources = ['left', 'right']
+    result = {'obligationId': 'reported-results', 'purpose': 'answer_requirement',
+              'question': excerpt, 'requestExcerpt': excerpt, 'requiredSources': sources,
+              'comparisonRole': {'kind': 'joint', 'label': '结果和范围', 'requestExcerpt': ordering}}
+    rows = [result]
+    if mode == 'already_owned':
+        rows.append({**result, 'obligationId': 'dedicated', 'requestExcerpt': measurement,
+                     'comparisonRole': {'kind': 'per_paper', 'label': '定量结果', 'requestExcerpt': '原文定量结果'}})
+    question = ResearchQuestion(excerpt, [joint] if mode == 'model_only' else [excerpt])
+    after, changes = normalize_generated_requirements(
+        [{'obligations': rows}], question, literal_questions=True, literal_imperatives=True,
+        comparison_roles=True, compound_questions=True, joint_comparison_requests=True,
+        per_paper_comparison_requests=True, complete_comparison_clauses=True,
+        correct_per_paper_results=True, split_joined_per_paper_results=mode != 'legacy')
+    results = after[0]['obligations']
+    assert result['requestExcerpt'] == excerpt
+    if mode in ('legacy', 'model_only', 'matched_result'):
+        assert len(results) == 1
+        assert all(c['change'] != 'split_joint_quantitative_result' for c in changes)
+        return
+    comparison, per_paper = results
+    assert comparison['obligationId'] == 'reported-results'
+    assert comparison['comparisonRole']['kind'] == 'joint'
+    assert comparison['requestExcerpt'] == joint
+    assert [c['requirement'] for c in comparison['completionCriteria']] == [ordering, internal]
+    assert per_paper['requiredSources'] == sources
+    assert per_paper['comparisonRole']['kind'] == 'per_paper'
+    assert per_paper['obligationId'] == ('dedicated' if mode == 'already_owned' else 'per_paper_result')
+    assert per_paper['completionCriteria'] == [
+        {'criterionId': 'human_aspect_1', 'requirement': measurement, 'responseType': 'identification'}]
