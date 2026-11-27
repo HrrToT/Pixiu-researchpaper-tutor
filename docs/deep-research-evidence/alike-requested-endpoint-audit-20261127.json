@@ -1,0 +1,37 @@
+{
+  "case": "ALIKE development audit replay",
+  "sourceRunId": "dr_run_715c5485d4fe5243a4abc3dbfba15359",
+  "sourceReportReceipt": "alike-h1-method-development-20261127.json",
+  "scope": "Coverage-only replay of the exact previously reviewed answer; no re-generation.",
+  "coverageInstructionsContractVersion": 3,
+  "scientificContentCredit": 0,
+  "confirmedProductionWrites": 0,
+  "offlineReplay": {
+    "acceptedBodySha256": "5827aaa19511cf6ee4689ff6592216558ada65ea5398a162c9915d63a9f0f430",
+    "coveragePromptBytes": {
+      "before": 23479,
+      "after": 23742
+    },
+    "repairPromptBytes": {
+      "before": 22281,
+      "after": 22655
+    },
+    "fixedRequirementsAndVerifiableCitationsPreserved": true,
+    "repairInputPreservesOriginalBoundary": true,
+    "targetedTestsPassed": 144
+  },
+  "liveCoverageAudit": {
+    "attempts": 1,
+    "callStatus": "unknown",
+    "failureKind": "tls_error",
+    "tlsDiagnostic": "tls_stream_closed",
+    "providerHTTPStatus": null,
+    "providerTokenUsage": null,
+    "automaticRetry": false
+  },
+  "sha256": {
+    "audit.json": "4d8b3f13ffd9d6cdef443f89a16786a03ee5d1aa4efa133ea6fd2f0c8400f733",
+    "calls.json": "a3a184dbe2a75b3f53aa36b510220f8bc4d668bd0d31da95d9b4fdc935ae411f",
+    "intent.json": "986468e9a07b98858d3e53120d4d1b21d92a0040b15cd280bc5e3bbd63bde879"
+  }
+}
