@@ -69,7 +69,8 @@ def verify(record,update,invoke):
     reviewed=run_science(); release=None
     if reviewed.get('assessment',{}).get('complete'): release=run_answer()
     eligible=(reviewed['status']=='not_started_precheck' or reviewed.get('assessment',{}).get('valid') is True
-              and reviewed['assessment']['complete'] is False or release is not None and release['repairEligible'])
+              and reviewed['assessment']['complete'] is False or bool(reviewed.get('verifiedPrefixFindings'))
+              or release is not None and release['repairEligible'])
     if eligible and 'sharedExperimentRevision' not in current()['state']:
         revised=repair(current(),data,aliases,required_domains=snapshot['requiredDomains'],
             invoke=lambda node,prompt,opts:invoke(rid,node,prompt,opts,use_reserve=True),
@@ -83,6 +84,10 @@ def verify(record,update,invoke):
         certificate.update(candidateDigest=release['candidate']['candidateDigest'],certificateDigest=release['certificateDigest'])
         claims=[claim_for(release['candidate'])];version='report_'+rid+'_shared_'+release['candidate']['candidateDigest'][:16]
     else:
+        if prefix := reviewed.get('verifiedPrefixFindings'):
+            certificate['incompleteReview'] = {
+                'identifiedChecks': len(prefix['checks']), 'uncheckedChecks': len(prefix['uncheckedIds']),
+            }
         claims=[];version='report_'+rid+'_shared_incomplete'
     update(rid,lambda r:{**r,'state':{**r['state'],'sharedExperimentRelease':certificate,'reportVersionId':version}},expected_revision=None)
     return {'claim_ids':[c['claimId'] for c in claims],'report_version_id':version}
@@ -107,7 +112,11 @@ def publish(record,state,update,publish,scope_validator):
                 or final['candidate']['candidateDigest']!=release.get('candidateDigest')):
             raise DeepResearchError('invalid_shared_experiment_release','最终方案或审核身份已改变。')
         claims=[claim_for(final['candidate'])];outcome='complete'
-    else:gaps=[{'wholeQuestion':True,'question':record['question'],'missingEvidence':'实验方案尚有未通过或未完成的核验，草稿与原材料已保留。'}]
+    else:
+        missing = '实验方案尚有未通过或未完成的核验，草稿与原材料已保留。'
+        if counts := release.get('incompleteReview'):
+            missing += f' 已定位 {counts["identifiedChecks"]} 项待修订检查，另有 {counts["uncheckedChecks"]} 项未获得有效结论。'
+        gaps=[{'wholeQuestion':True,'question':record['question'],'missingEvidence':missing}]
     version=record['state'].get('reportVersionId') or 'report_'+rid+'_shared_incomplete'
     payload={'presentationVersion':4,'reportVersionId':version,'outputKind':'experiment_design',
         'sharedExperimentDocumentVersion':1,

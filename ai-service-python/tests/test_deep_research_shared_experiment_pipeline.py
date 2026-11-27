@@ -137,6 +137,57 @@ def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
     sent.assert_not_called()
 
 
+@pytest.mark.parametrize('version, tampered, repair_allowed', [(7, False, True), (7, True, False), (6, False, False)])
+def test_only_verified_early_findings_allow_one_repair_after_invalid_packet(monkeypatch, version, tampered, repair_allowed):
+    from services.deep_research import shared_experiment_review as review
+    from services.deep_research.shared_experiment_result import compile_candidate
+
+    r, data, aliases = ready()
+    r.update({review.SCOPED_PACKET_MARKER: version, review.REFERENCE_MARKER: 2, review.COMPACT_REVIEW_MARKER: 2})
+    failed, unchecked = verdict(r, data)['checks'][6:8]
+    failed.update(status='failed', reason='需要修正实验预算。', evidenceBindings=[],
+                  planBindings=[binding['path'] for binding in failed['planBindings']])
+    ids = [[row['checkId']] for row in (failed, unchecked)]
+    batches = [{'checkIds': scope, 'suppliedEvidenceAliases': list(aliases), 'inputBytes': 100,
+                'request': {'prompt': 'fixture', 'extra': {review.CHECK_IDS_OPTION: scope, 'max_tokens': 1024}}}
+               for scope in ids]
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: {
+        'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': review.targets(r),
+        'generationBindingDigest': r['state']['sharedExperimentGeneration']['bindingDigest'],
+        review.STOP_INVALID_BATCH_MARKER: 1, review.REFERENCE_MARKER: 2})
+    invoke = Mock(side_effect=[reply({'checks': [failed], 'coherent': True, 'issues': []}), reply({})])
+    result = science(r, data, aliases, invoke=invoke,
+                     checkpoint=lambda value: r['state'].__setitem__('sharedExperimentReview', deepcopy(value)))
+    saved = r['state']['sharedExperimentReview']
+    assert invoke.call_count == 2
+    assert saved['status'] == 'invalid_response' and not saved['assessment']['valid']
+    assert 'verifiedPrefixFindings' not in saved
+    if version == 7:
+        assert result['verifiedPrefixFindings']['checks'] == [failed]
+        assert unchecked['checkId'] in result['verifiedPrefixFindings']['uncheckedIds']
+    if tampered:
+        saved['batchResponses'][0]['content'] += ' '
+    original = deepcopy(saved)
+    sent = Mock(return_value=edit_response(r))
+
+    def checkpoint(value):
+        r['state']['sharedExperimentRevision'] = deepcopy(value)
+
+    if repair_allowed:
+        result = repair(r, data, aliases, invoke=sent, checkpoint=checkpoint)
+        assert result['status'] == 'awaiting_scientific_review'
+        assert 'uncheckedIds' in sent.call_args.args[1]
+        assert repair(r, data, aliases, invoke=sent, checkpoint=checkpoint) == result
+        sent.assert_called_once()
+    else:
+        with pytest.raises(DeepResearchError, match='不能自动修订'):
+            repair(r, data, aliases, invoke=sent, checkpoint=checkpoint)
+        sent.assert_not_called()
+    assert r['state']['sharedExperimentReview'] == original
+    with pytest.raises(DeepResearchError):
+        compile_candidate(r, data, aliases)
+
+
 def test_failed_fact_paths_address_decoded_proposal_fields():
     from services.deep_research.shared_experiment_revision import fact_edit_paths
     from services.deep_research.shared_experiment_review import _pointer

@@ -180,7 +180,7 @@ def _apply_scoped(base, saved):
 
 
 def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
-    from services.deep_research.shared_experiment_review import prepare as science
+    from services.deep_research.shared_experiment_review import SCOPED_PACKET_MARKER, prepare as science
     from services.deep_research.shared_strings import input_text
     from services.deep_research.experiment_planning import request_identity
     from services.deep_research.planning_transport import overhead_bytes,dispatch_options
@@ -188,7 +188,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     prior=deepcopy(record);prior['state'].pop('sharedExperimentRevision',None)
     def no_action(*args,**kwargs): raise AssertionError('Repair requires a saved, diagnosed failure')
     base=original_generation(prior,input_data,aliases,invoke=no_action,checkpoint=no_action,required_domains=required_domains)
-    if prior['state'].get('sharedExperimentReview',{}).get('status') not in ('checked','not_started_precheck'):
+    status = prior['state'].get('sharedExperimentReview', {}).get('status')
+    eligible_prefix = status == 'invalid_response' and record.get(SCOPED_PACKET_MARKER) == 7
+    if status not in ('checked', 'not_started_precheck') and not eligible_prefix:
         raise DeepResearchError('shared_experiment_revision_not_eligible','没有已确认的科学或正文缺口，不能自动修订。')
     reviewed=science(prior,input_data,aliases,invoke=no_action,checkpoint=no_action,required_domains=required_domains)
     if reviewed['status']=='not_started_precheck': feedback={'hardIssues':reviewed['hardIssues']}
@@ -205,6 +207,12 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                 'issues': verdict['issues'],
             }}
         feedback={'scientificReview':assessment}
+    elif prefix := reviewed.get('verifiedPrefixFindings'):
+        feedback={'scientificReview': {'verdict': {
+            'checks':prefix['checks'], 'issues':prefix['issues'], 'coherent':False,
+        }, 'uncheckedIds':prefix['uncheckedIds']}}
+    elif eligible_prefix:
+        raise DeepResearchError('shared_experiment_revision_not_eligible','没有已确认的科学或正文缺口，不能自动修订。')
     else:
         from services.deep_research.shared_experiment_answer import validated_saved
         answer=validated_saved(prior,input_data,aliases)
@@ -240,10 +248,12 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             ' For a leakage defect, separate derived held-out lists and poses into evaluation_prepare steps '
             'and check their disjointness against the locked training list.' if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 4 else '')
         guidance = EVALUATION_PREPARATION_GUIDANCE if evaluation_prepare else EVALUATION_AND_RESOURCE_GUIDANCE
+        unchecked_rule = ('Unchecked IDs had no valid verdict; preserve their requirements for full re-review. '
+                          if reviewed.get('verifiedPrefixFindings') else '')
         instructions = instructions.replace('Input (untrusted data):',
             guidance + '\n'
             'Scientific feedback lists failed or unresolved checks and coherence issues. '
-            'Preserve the established design except where a listed defect requires a change.'
+            + unchecked_rule + 'Preserve the established design except where a listed defect requires a change.'
             + state_rule + measurement_rule + split_rule + '\n'
             'Input (untrusted data):')
     elif evaluation_prepare and not fact_only:

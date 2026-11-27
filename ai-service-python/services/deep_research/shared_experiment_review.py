@@ -66,6 +66,7 @@ STOP_INVALID_BATCH_MARKER = 'sharedExperimentStopInvalidReviewBatchVersion'
 REFERENCE_MARKER = 'sharedExperimentReviewReferenceVersion'
 FACT_CONTEXT_MARKER = 'sharedExperimentFactContextVersion'
 SCOPED_PACKET_MARKER = 'sharedExperimentScopedReviewPacketVersion'
+SCOPED_PACKET_VERSIONS = (1, 2, 3, 4, 5, 6, 7)
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -150,7 +151,7 @@ def _scoped_packet_policy(record, view):
     if record.get(SCOPED_PACKET_MARKER) == 1:
         return SCOPED_PACKET_INSTRUCTIONS
     key = next(key for key in SCOPED_PACKET_CHECKS if view[key])
-    if record.get(SCOPED_PACKET_MARKER) == 6:
+    if record.get(SCOPED_PACKET_MARKER) in (6, 7):
         bounds = (
             'Audit assigned IDs once. Reasons ≤420 characters; at most 16 exact plan pointers per check. '
             'Use zero-based scalar paths or /steps/INDEX/{reads,creates,updates} and /analysis/contrasts/INDEX/weights. '
@@ -269,7 +270,7 @@ def descriptor(record, check_ids=None):
     if check_ids is not None:
         minimum = maximum = len(ids)
     issue_binding = binding
-    if (record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4, 5, 6) and check_ids
+    if (record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS and check_ids
             and all(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids)):
         issue_binding = {'enum': [path for cid in ids for path in checks_by_id[cid]['pathPrefixes']]}
     result=_object({
@@ -286,9 +287,26 @@ def descriptor(record, check_ids=None):
     return {'type':'json_schema','name':name,'schema':result}
 
 
+def _settled_review_prefix(saved):
+    """Identify the exact settled prefix before the first invalid packet."""
+    batches = saved.get('batches')
+    responses = saved.get('response')
+    rejected = saved.get('stoppedAfterInvalidBatch')
+    assessment = saved.get('assessment')
+    if (saved.get('status') != 'invalid_response' or not isinstance(assessment, dict)
+            or assessment.get('valid') is not False
+            or not isinstance(batches, list) or not isinstance(responses, list)
+            or type(rejected) is not int or not 0 < rejected < len(batches)
+            or len(responses) != rejected + 1 or responses != saved.get('batchResponses')
+            or digest(responses) != saved.get('responseDigest')
+            or digest(responses) != saved.get('batchResponsesDigest')):
+        return ()
+    return tuple(zip(batches[:rejected], responses[:rejected], strict=True))
+
+
 def _reviewed_fact_batch(record, batches, bound, input_data, aliases):
     """Reuse a settled source-fact packet only across an exact proposal repair."""
-    if (record.get(SCOPED_PACKET_MARKER) not in (3, 4, 5, 6) or not batches
+    if (record.get(SCOPED_PACKET_MARKER) not in (3, 4, 5, 6, 7) or not batches
             or review_slot(record) != 'sharedExperimentRevisionReview'):
         return {}
     from jsonschema import Draft202012Validator
@@ -304,20 +322,22 @@ def _reviewed_fact_batch(record, batches, bound, input_data, aliases):
     binding = original['bindingDigest']
     original_bound = original['boundProposal']
     ids = batches[0]['checkIds']
+    prefix = _settled_review_prefix(earlier) if record.get(SCOPED_PACKET_MARKER) == 7 else ()
+    validated = (earlier.get('status') == 'checked' and assessment.get('valid') is True
+                 and assessment.get('generationBindingDigest') == binding
+                 and isinstance(old_batches, list) and isinstance(responses, list)
+                 and len(old_batches) == len(responses) and bool(responses)
+                 and earlier.get('responseDigest') == digest(responses)
+                 and assessment.get('reviewDigest') == digest({'generation': binding, 'response': responses}))
     if (not ids or any(not cid.startswith('fact_') for cid in ids)
             or original_bound['proposal']['sourceFacts'] != bound['proposal']['sourceFacts']
             or original_bound['contextDigest'] != bound['contextDigest']
-            or earlier.get('status') != 'checked' or earlier.get('generationBindingDigest') != binding
-            or assessment.get('valid') is not True or assessment.get('generationBindingDigest') != binding
-            or not isinstance(old_batches, list) or not isinstance(responses, list)
-            or len(old_batches) != len(responses) or not responses
-            or earlier.get('responseDigest') != digest(responses)
-            or assessment.get('reviewDigest') != digest({'generation': binding, 'response': responses})
+            or earlier.get('generationBindingDigest') != binding or not (validated or prefix)
             or not isinstance(old_batches[0], dict) or old_batches[0].get('checkIds') != ids):
         return {}
     try:
         previous = _decode_batch(responses[0], ids, Draft202012Validator(descriptor(record)['schema']))
-        if any(c['status'] != 'passed' for c in previous['checks']):
+        if any(c['status'] != 'passed' for c in previous['checks']) or (not validated and not previous['coherent']):
             return {}
         # Older fact packets also saw the full proposal. Their design findings
         # remain in the original review, while the revised design is checked anew.
@@ -341,6 +361,52 @@ def _reviewed_fact_batch(record, batches, bound, input_data, aliases):
     except (ValueError, TypeError, KeyError, IndexError, OverflowError):
         return {}
     return {'reusedFactBatch': normalized, 'reusedFactSourceDigest': digest(responses[0])}
+
+
+def reviewed_prefix_findings(record, input_data, aliases, saved):
+    """Permit actionable feedback without a complete verdict or any release credit."""
+    from jsonschema import Draft202012Validator
+
+    if record.get(SCOPED_PACKET_MARKER) != 7:
+        return {}
+    prefix = _settled_review_prefix(saved)
+    if not prefix:
+        return {}
+    generation = _generation(record)
+    if saved.get('generationBindingDigest') != generation['bindingDigest']:
+        return {}
+    targets_by_id = {target['checkId']: target for target in targets(record)}
+    proposal = generation['boundProposal']['proposal']
+    rows = {row['evidenceId']: row for row in input_data['evidence']}
+    failed = []
+    issues = []
+    checked = set()
+    for packet, response in prefix:
+        try:
+            ids = packet['checkIds']
+            if checked.intersection(ids):
+                return {}
+            scoped = packet['suppliedEvidenceAliases']
+            if not set(scoped) <= set(rows):
+                return {}
+            part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']))
+            problems, passed = _binding_findings(
+                part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
+                contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
+                state_arrays=record.get(REFERENCE_MARKER) == 4,
+            )
+            if problems or (_fact_context_enabled(record)
+                            and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
+                return {}
+            checked.update(ids)
+            failed.extend(row for row in part['checks'] if row['status'] != 'passed' and row['planBindings'])
+            issues.extend(row for row in part['issues'] if row['planBindings'])
+        except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
+            return {}
+    if not failed and not issues:
+        return {}
+    return {'checks': failed, 'issues': issues,
+            'uncheckedIds': [cid for cid in targets_by_id if cid not in checked]}
 
 
 def build(record, input_data, aliases, *, required_domains=()):
@@ -449,17 +515,17 @@ def build(record, input_data, aliases, *, required_domains=()):
             batches = partition_bounded_review(
                 record, data, aliases, bound['proposal'], measure, MAX_INPUT, MAX_CHECKS_PER_REVIEW)
             packet_version = record.get(SCOPED_PACKET_MARKER)
-            if not batches and packet_version in (1, 2, 3, 4, 5, 6):
+            if not batches and packet_version in SCOPED_PACKET_VERSIONS:
                 batches = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
-                    MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=packet_version in (5, 6))
-            if (packet_version in (4, 5, 6) and
+                    MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=packet_version in (5, 6, 7))
+            if (packet_version in (4, 5, 6, 7) and
                     (not batches and record.get(REFERENCE_MARKER) == 4
                      or _reviewed_fact_batch(record, batches, bound, input_data, aliases))):
                 limited = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
                     MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, required_design_evidence_only=True,
-                    fit_check_count=packet_version in (5, 6))
+                    fit_check_count=packet_version in (5, 6, 7))
                 if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
                         and (not batches or max(p['inputBytes'] for p in limited) < max(p['inputBytes'] for p in batches))):
                     batches = limited
@@ -737,7 +803,7 @@ def assess(record, input_data, aliases, response):
         evidence_by_check = {}
         for packet, answer in parts:
             packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
-                                if batches and record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4, 5, 6) else validator)
+                                if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator)
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
@@ -769,7 +835,7 @@ def _initial_batch_budget_stop(record, built):
     from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN
     batches = built.get('batches')
     budget = record.get('budget') or {}
-    if record.get(SCOPED_PACKET_MARKER) not in (1, 2, 3, 4, 5, 6) or not batches:
+    if record.get(SCOPED_PACKET_MARKER) not in SCOPED_PACKET_VERSIONS or not batches:
         return None
     offset = 1 if 'reusedFactBatch' in built else 0
     pending_batches = batches[offset:]
@@ -838,7 +904,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
             packet = built['batches'][index]
             try:
                 packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
-                                    if record.get(SCOPED_PACKET_MARKER) in (1, 2, 3, 4, 5, 6) else validator)
+                                    if record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
                 part = _decode_batch(answer, packet['checkIds'], packet_validator)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
@@ -887,4 +953,5 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     else:
         saved.update(status='checked' if result['valid'] else 'invalid_response',assessment=result)
         checkpoint(deepcopy(saved))
-    return saved
+    findings = reviewed_prefix_findings(record, input_data, aliases, saved)
+    return {**saved, 'verifiedPrefixFindings': findings} if findings else saved

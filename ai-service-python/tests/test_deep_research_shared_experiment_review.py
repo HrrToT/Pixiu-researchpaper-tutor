@@ -117,7 +117,10 @@ def test_scoped_review_checks_calls_in_both_pools_before_first_packet(monkeypatc
     assert review._initial_batch_budget_stop(record, built) is None
 
 
-@pytest.mark.parametrize('change', [None, 'design_issue', 'fact_issue', 'fact', 'context', 'response', 'evidence_scope'])
+@pytest.mark.parametrize('change', [
+    None, 'design_issue', 'fact_issue', 'fact', 'context', 'response', 'evidence_scope',
+    'valid_prefix', 'incoherent_prefix', 'tampered_prefix', 'legacy_prefix',
+])
 def test_revision_reuses_only_the_original_checked_fact_packet(monkeypatch, change):
     from services.deep_research import shared_experiment_review as review
 
@@ -131,10 +134,10 @@ def test_revision_reuses_only_the_original_checked_fact_packet(monkeypatch, chan
     response = reply({'checks': [{'checkId': ids[0], 'status': 'passed',
         'planBindings': ['/sourceFacts/0/text'], 'evidenceBindings': [{'evidenceId': 'E1', 'field': 'quote'}],
         'reason': 'Checked against the cited source.'}], 'coherent': True, 'issues': []})
-    if change in ('design_issue', 'fact_issue'):
+    if change in ('design_issue', 'fact_issue', 'incoherent_prefix'):
         content = json.loads(response['content'])
         content.update(coherent=False, issues=[{'reason': 'Prior issue', 'planBindings': [
-            '/data/trainingSplit' if change == 'design_issue' else '/sourceFacts/0/text']}])
+            '/sourceFacts/0/text' if change == 'fact_issue' else '/data/trainingSplit']}])
         response = reply(content)
     prior_batch = {'checkIds': ids, 'suppliedEvidenceAliases': ['E1']}
     original_responses = [response]
@@ -148,6 +151,16 @@ def test_revision_reuses_only_the_original_checked_fact_packet(monkeypatch, chan
     record[review.REFERENCE_MARKER] = 3
     record[review.COMPACT_REVIEW_MARKER] = 2
     monkeypatch.setattr(review, '_generation', lambda _: original)
+    if change and change.endswith('_prefix'):
+        record[review.SCOPED_PACKET_MARKER] = 6 if change == 'legacy_prefix' else 7
+        responses = [response, reply({})]
+        record['state']['sharedExperimentReview'].update(
+            status='invalid_response', stoppedAfterInvalidBatch=1, assessment={'valid': False},
+            batches=[prior_batch, {'checkIds': ['section_0']}], response=deepcopy(responses),
+            responseDigest=digest(responses), batchResponses=deepcopy(responses), batchResponsesDigest=digest(responses),
+        )
+        if change == 'tampered_prefix':
+            record['state']['sharedExperimentReview']['batchResponses'][0]['content'] += ' '
     current = deepcopy(prior_batch)
     if change == 'fact':
         bound['proposal']['sourceFacts'][0]['text'] += ' A new detail.'
@@ -158,7 +171,7 @@ def test_revision_reuses_only_the_original_checked_fact_packet(monkeypatch, chan
     elif change == 'evidence_scope':
         current['suppliedEvidenceAliases'] = []
     replayed = review._reviewed_fact_batch(record, [current], bound, data, aliases)
-    if change in (None, 'design_issue'):
+    if change in (None, 'design_issue', 'valid_prefix'):
         assert replayed['reusedFactSourceDigest'] == digest(response)
         assert json.loads(replayed['reusedFactBatch']['content']) == {
             'checks': json.loads(response['content'])['checks'], 'coherent': True, 'issues': []}
