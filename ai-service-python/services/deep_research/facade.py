@@ -486,7 +486,7 @@ class ResearchFacade:
             "compactionBudgetContractVersion": 2,
             "compactionEditingContractVersion": 3,
             "fixedScopeEditorReasoningContractVersion": 1,
-            "quantitySpellingContractVersion": 17,
+            "quantitySpellingContractVersion": 19,
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 8,

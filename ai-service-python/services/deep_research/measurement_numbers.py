@@ -54,6 +54,11 @@ _CONCEPTUAL_OBJECT = re.compile(r'(?:可学习|可训练|可调节|平衡|调节
     r'(?:参数|变量|目标(?:函数)?|损失(?:函数)?|约束|公式|表达式|权重)')
 _CARDINAL_CONTEXT = re.compile(r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|共|至少|至多|最多|最少|不超过|超过)'
     r'[^，,；;。.!?！？\n]{0,12}$')
+_IMAGE_PAIR_INTRODUCTION = re.compile(
+    r'从一\s*张\s*(?P<source>图像|图片|图)\s*(?P<verb>生成|构造|得到)\s*'
+    r'另一\s*张\s*(?P<target>图像|图片|图)(?=\s*(?:[，,；;。.!?！？]|$))')
+_IMAGE_PAIR_COUNT_CONTEXT = re.compile(
+    r'(?:每(?:次|轮|步|帧|张|个样本)|逐(?:次|张|帧))[^，,；;。.!?！？\n]{0,12}$')
 _SPATIAL_CARDINAL_CONTEXT = re.compile(
     r'(?:只有|仅有|只|仅|唯一|恰好|正好|总共|至少|至多|最多|最少|不超过|超过)'
     r'[^，,；;。.!?！？\n]{0,12}$'
@@ -238,13 +243,26 @@ def number_display(identity):
     return identity
 
 
-def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False):
+def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
+                                        image_pair_articles=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
     if gaussian_replacement_counts:
         text = _GAUSSIAN_REPLACEMENT_COUNT.sub(
             lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)
+    if image_pair_articles:
+        # In a transformation description, “a source image and another
+        # image” introduces the pair members. Exact or per-input counts and
+        # the semantic relationship between the images still need evidence.
+        def without_pair_articles(match):
+            prefix = text[:match.start()]
+            contrast = re.match(r'\s*[,，]\s*(?:而非|而不是|不是)', text[match.end():])
+            if _CARDINAL_CONTEXT.search(prefix) or _IMAGE_PAIR_COUNT_CONTEXT.search(prefix) or contrast:
+                return match[0]
+            return f"从{match['source']}{match['verb']}另{match['target']}"
+
+        text = _IMAGE_PAIR_INTRODUCTION.sub(without_pair_articles, text)
 
     def distribute(match):
         if match['first'] == match['second']:

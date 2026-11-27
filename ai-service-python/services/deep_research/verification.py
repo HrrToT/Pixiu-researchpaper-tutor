@@ -54,7 +54,8 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
     from services.deep_research.measurement_numbers import measurement_numbers, normalize_explicit_quantity_phrases
     if explicit_quantity_phrases:
         text = normalize_explicit_quantity_phrases(text, shared_range_scale=explicit_quantity_phrases >= 17,
-                                                   gaussian_replacement_counts=explicit_quantity_phrases == 18)
+                                                   gaussian_replacement_counts=explicit_quantity_phrases == 18,
+                                                   image_pair_articles=explicit_quantity_phrases == 19)
     return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
@@ -118,7 +119,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 18 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 19 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3

@@ -119,3 +119,34 @@ def test_shared_scale_normalization_leaves_ambiguous_arithmetic_and_units(text):
     from services.deep_research.measurement_numbers import normalize_explicit_quantity_phrases
 
     assert normalize_explicit_quantity_phrases(text, shared_range_scale=True) == text
+
+
+@pytest.mark.parametrize(('text', 'candidate'), [
+    ('用随机单应变换从一张图生成另一张图；将像素中心映射。', True),
+    ('从一张图像构造另一张图片。', True),
+    ('每次从一张图生成另一张图。', False),
+    ('只从一张图生成另一张图。', False),
+    ('从一张图生成另一张图，而非使用同一张图。', False),
+    ('从两张图生成另一张图。', False),
+    ('从1张图生成另一张图。', False),
+    ('从一张图生成另一张图；共使用5张图像训练。', False),
+    ('从一张图生成另一张图；只使用一张图训练。', False),
+])
+def test_image_pair_introduction_preserves_explicit_counts_and_review(text, candidate):
+    quote = 'We obtain image-pair correspondences by applying a random homography to an image.'
+    evidence = make_evidence({'workId': 'paper', 'versionId': 'v1', 'contentHash': 'hash',
+                              'accessLevel': 'fulltext'}, quote, quote, location={'page': 4}, obligation_ids=[])
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text, 'evidenceRefs': [evidence['evidenceId']]}
+    for version in (17, 18):
+        assert precheck_claims([claim], [evidence], quantity_spelling_version=version)['rejected']
+    result = precheck_claims([claim], [evidence], quantity_spelling_version=19)
+    assert result['candidates'] == ([claim] if candidate else [])
+    if not candidate:
+        assert result['rejected'][0]['reason'] == 'numeric_mismatch'
+        return
+
+    def reject(claims, evidence_rows):
+        assert claims[0]['text'] == text and evidence_rows[0]['quote'] == quote
+        return [{'claimId': 'c1', 'status': 'failed', 'reason': 'The source scope must still be checked.'}]
+
+    assert not verify_claims([claim], [evidence], reject, quantity_spelling_version=19)['accepted']
