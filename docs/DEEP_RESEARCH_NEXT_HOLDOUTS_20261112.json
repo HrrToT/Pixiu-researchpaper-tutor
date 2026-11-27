@@ -34,6 +34,14 @@
         "preflight": "deep-research-evidence/r2d2-h1-live-preflight-20261127.json",
         "result": "deep-research-evidence/r2d2-h1-first-frozen-20261127.json",
         "scientificContentCredit": 0
+      },
+      "alikeExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-ALIKE",
+        "manifest": "DEEP_RESEARCH_ALIKE_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/alike-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/alike-h1-first-frozen-20261127.json",
+        "scientificContentCredit": 0
       }
     },
     {
