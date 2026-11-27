@@ -393,6 +393,7 @@ class DeepResearchRepository:
                                      'countedExperimentAnswerContractVersion',
                                      'sharedExperimentReviewPackingVersion',
                                      'sharedExperimentFactBoundaryVersion',
+                                     'sharedExperimentDensificationEvidenceVersion',
                                      'comparisonBeginnerLeadContractVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',

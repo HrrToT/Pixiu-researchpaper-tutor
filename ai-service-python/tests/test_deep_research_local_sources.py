@@ -134,6 +134,36 @@ def test_split_protocol_schedule_requires_adjacent_owned_version():
     assert text[start:end] == adjacent['text'].replace('. The', '.\nThe').rstrip('.')
 
 
+def test_experiment_densification_reads_the_original_operations_not_just_a_caption(monkeypatch):
+    from services.deep_research import experiment_protocol_sources as protocol
+
+    local, _, _, _ = fixture(monkeypatch)
+    run = local.repo.require_run.return_value
+    query = 'Gaussian cloning and splitting'
+    operations = {'obligationId': 'operations', 'searchQuery': query, 'requiredSources': ['p']}
+    run.update({protocol.MARKER: 1, protocol.DENSIFICATION_MARKER: 1})
+    run['state'] = {'plan': [{'obligations': [operations]}]}
+    methods = ('For small Gaussians we clone a copy of the same size, moving it in the direction of the positional gradient. '
+               'Then split large Gaussians. We replace them and reduce their scale, using the original 3D Gaussian as a PDF for sampling.')
+    caption = 'Gaussian cloning and splitting. A large splat is split into two.'
+    lead = {'sourceId': 'caption', 'text': caption, 'accessLevel': 'fulltext', 'ownerMaterialId': 'p'}
+    detail = {**lead, 'sourceId': 'methods', 'text': methods}
+    assert protocol.query_roles(run, query, 'q') == ()
+    assert protocol.query_roles(run, query, 'p') == (protocol.DENSIFICATION,)
+    assert not protocol.matches(caption, protocol.DENSIFICATION)
+    assert local._experiment_protocol_passages([lead], query, 'p', 2, passages=[detail]) == [lead, detail]
+    assert protocol.preferred_reads([lead, detail], {'operations': operations}, 12, (), densification=True) == [detail]
+
+    start, end = protocol.densification_range('Prior sentence. ' + methods + ' Next paragraph.')
+    assert ('Prior sentence. ' + methods + ' Next paragraph.')[start:end] == methods
+    evidence = {'evidenceId': 'methods', 'quote': methods, 'obligationIds': ['operations'],
+                'accessLevel': 'fulltext', 'verification': {'literal': 'passed'}}
+    assert not protocol.premise_bundles([evidence], {'operations': operations})
+    assert protocol.premise_bundles([evidence], {'operations': operations}, densification=True) == [
+        {'evidenceIds': ['methods']},
+    ]
+
+
 def test_indexed_retrieval_disables_untracked_query_rewrite_through_registry(monkeypatch):
     from services.tools import retrieval_tools
     from rag.store import DummyRAG

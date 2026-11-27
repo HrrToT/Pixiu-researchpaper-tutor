@@ -5,9 +5,12 @@ import re
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
 MARKER = 'sharedExperimentProtocolEvidenceVersion'
+DENSIFICATION_MARKER = 'sharedExperimentDensificationEvidenceVersion'
 OPACITY = 'opacity_schedule'
 MEMBERSHIP = 'dataset_membership'
 OPACITY_CONTINUATION = 'opacity_schedule_continuation'
+DENSIFICATION = 'gaussian_densification_operations'
+INITIALIZATION = 'gaussian_covariance_initialization'
 
 _OPACITY_REQUEST = re.compile(r'\bopacity\b|不透明度', re.I)
 _COMPLETE_SCHEDULE = re.compile(
@@ -24,17 +27,39 @@ _SCENE_LIST = re.compile(
     r'\b(?:scenes|sequences|samples)\s+(?:are|include)\b.{0,55}?[:：]?\s*'
     r'[A-Z][\w-]+\s*,\s*[A-Z][\w-]+.{0,210}?\b(?:from|of|in)\s+(?:the\s+)?[\w-]+\s+dataset\b',
     re.I)
+_GAUSSIAN = re.compile(r'\bgaussians?\b|高斯', re.I)
+_CLONE = re.compile(r'\bclon\w*\b|克隆', re.I)
+_SPLIT = re.compile(r'\bsplit\w*\b|分裂', re.I)
+_INITIALIZATION_REQUEST = re.compile(r'\binitiali[sz]\w*\b|初始化|初值|共同起点', re.I)
+_COVARIANCE_INITIALIZATION = re.compile(r'\binitial covariance matrix\b.{0,130}\bisotropic Gaussian\b', re.I)
+_DENSIFICATION_PASSAGE = re.compile(
+    r'\b(?:Since both cases are good candidates for densification.{0,310}?)?'
+    r'For small Gaussians\b.{0,290}?\bclone\b.{0,180}?direction\s+of\s+the\s+positional\s+gradient\.'
+    r'.{0,190}?\bsplit\b.{0,110}?\breplace\b.{0,160}?\bscale\b.{0,175}?'
+    r'\boriginal\s+3D\s+Gaussian\s+as\s+a\s+PDF\s+for\s+sampling\.',
+    re.I | re.S)
 
 
 def enabled(record):
     return type(record.get(MARKER)) is int and record[MARKER] == 1
 
 
-def roles(obligation):
+def densification_enabled(record):
+    version = record.get(DENSIFICATION_MARKER)
+    return type(version) is int and version == 1
+
+
+def roles(obligation, *, densification=False):
     if obligation.get('dataPrerequisiteContractVersion') == 1:
         return (MEMBERSHIP,)
     text = obligation.get('searchQuery') or obligation.get('question', '')
-    return (OPACITY,) if _OPACITY_REQUEST.search(text) else ()
+    result = (OPACITY,) if _OPACITY_REQUEST.search(text) else ()
+    if densification and _GAUSSIAN.search(text):
+        if _CLONE.search(text) and _SPLIT.search(text):
+            result = (*result, DENSIFICATION)
+        if _INITIALIZATION_REQUEST.search(text):
+            result = (*result, INITIALIZATION)
+    return result
 
 
 def query_roles(record, query, material_id):
@@ -42,12 +67,16 @@ def query_roles(record, query, material_id):
         role for item in record['state'].get('plan', []) for obligation in item['obligations']
         if query in (obligation.get('searchQuery'), obligation.get('question'))
         and (not obligation.get('requiredSources') or material_id in obligation['requiredSources'])
-        for role in roles(obligation)
+        for role in roles(obligation, densification=densification_enabled(record))
     ))
 
 
 def matches(text, role):
+    if role == DENSIFICATION:
+        return densification_range(text) is not None
     body = ' '.join(text.split())
+    if role == INITIALIZATION:
+        return bool(_COVARIANCE_INITIALIZATION.search(body))
     if role == OPACITY:
         return any(_OPACITY_ACTION.search(body[max(0, hit.start() - 120):hit.end() + 72])
                    for pattern in (_COMPLETE_SCHEDULE, _OPEN_SCHEDULE) for hit in pattern.finditer(body))
@@ -83,6 +112,11 @@ def continuation_spans(sources):
 
 def continuation_range(text):
     match = _CONTINUATION.search(text)
+    return match.span() if match else None
+
+
+def densification_range(text):
+    match = _DENSIFICATION_PASSAGE.search(text)
     return match.span() if match else None
 
 
@@ -124,25 +158,28 @@ def include_passages(rows, passages, requested, limit):
     return selected
 
 
-def preferred_reads(sources, obligations, limit, extracted):
+def preferred_reads(sources, obligations, limit, extracted, *, densification=False):
     selected = {}
-    for role in (OPACITY, MEMBERSHIP):
-        eligible = {oid: row for oid, row in obligations.items() if role in roles(row)}
+    roles_with_preference = []
+    for role in ((DENSIFICATION, INITIALIZATION, OPACITY, MEMBERSHIP) if densification else (OPACITY, MEMBERSHIP)):
+        eligible = {oid: row for oid, row in obligations.items() if role in roles(row, densification=densification)}
         source = next((row for row in sources if row.get('accessLevel') == 'fulltext'
                        and (row['sourceId'], row.get('contentHash')) not in extracted
                        and eligible_obligation_ids(row, eligible) and matches(row['text'], role)), None)
         if source:
             selected[source['sourceId']] = source
+            roles_with_preference.append(role)
             adjacent = companion(source, [row for row in sources if eligible_obligation_ids(row, eligible)], 'text') if role == OPACITY else None
             if adjacent and (adjacent['sourceId'], adjacent.get('contentHash')) not in extracted:
                 selected[adjacent['sourceId']] = adjacent
-    return list(selected.values())[:limit // 3]
+    extra = int(DENSIFICATION in roles_with_preference and INITIALIZATION in roles_with_preference)
+    return list(selected.values())[:limit // 3 + extra]
 
 
-def premise_bundles(candidates, obligations):
+def premise_bundles(candidates, obligations, *, densification=False):
     bundles = []
-    for role in (OPACITY, MEMBERSHIP):
-        ids = {oid for oid, row in obligations.items() if role in roles(row)}
+    for role in ((DENSIFICATION, OPACITY, MEMBERSHIP, INITIALIZATION) if densification else (OPACITY, MEMBERSHIP)):
+        ids = {oid for oid, row in obligations.items() if role in roles(row, densification=densification)}
         eligible = [item for item in candidates if item.get('accessLevel') == 'fulltext'
                     and item.get('verification', {}).get('literal') == 'passed'
                     and ids.intersection(item.get('obligationIds', []))]
