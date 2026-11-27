@@ -1527,7 +1527,7 @@ The dataAvailability object is an internal audit, not new experimental results.
             if reason_parts and reason_parts_version == 2:
                 from services.deep_research.review_reason_parts import NO_NEW_EXPOSITORY_COUNTS
                 prompt += '\n' + NO_NEW_EXPOSITORY_COUNTS
-            elif parameter_policy in (2, 3, 4):
+            elif parameter_policy in (2, 3, 4, 5):
                 prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
                            'Describe the steps directly and retain any quantities required for the verdict.\n')
         if scope_observations and source_field_references:
@@ -1727,16 +1727,13 @@ The dataAvailability object is an internal audit, not new experimental results.
                 **({'scope_expression':True} if expression_context else {})) for v in parsed]
             by_id = {c['claimId']: c for c in claims}
             if diagnostic_policy:
-                from services.deep_research.review_diagnostics import bind as bind_diagnostic
+                from services.deep_research.review_diagnostics import bind as bind_diagnostic, parameter_options
                 structure_policy=getattr(self,'_diagnostic_target_structure',False)
                 structure_policy=structure_policy() if callable(structure_policy) else structure_policy
                 count_policy=self._diagnostic_revision_row_counts
                 count_policy=(count_policy() if callable(count_policy) else count_policy) is True
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
-                    source_parameter_ids=parameter_policy is True or parameter_policy in (2, 3, 4),
-                    bound_benchmark_names=parameter_policy in (2, 3, 4),
-                    alignment_words=parameter_policy in (3, 4),
-                    explicit_condition_pairs=parameter_policy == 4,
+                    **parameter_options(parameter_policy),
                     **({'target_structure':structure_policy}
                        if structure_policy is True or type(structure_policy) is int and structure_policy == 2 else {}),
                     **({'revision_row_counts':True} if count_policy else {})) for v in parsed]

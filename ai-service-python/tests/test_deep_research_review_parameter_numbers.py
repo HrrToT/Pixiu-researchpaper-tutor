@@ -95,7 +95,7 @@ def test_checker_uses_visible_fields_without_changing_request_or_model_decision(
     assert result['status']==('passed' if supported else 'failed')
 
 
-@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 4, 4)])
+@pytest.mark.parametrize(('cells_version', 'version', 'policy'), [(0, 1, True), (1, 5, 5)])
 def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_path, cells_version, version, policy):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -110,7 +110,7 @@ def test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs(tmp_
         assert facade._make_semantic_checker('old')._diagnostic_parameter_ids() is False
         for run_id in (row['runId'],'old'):
             with pytest.raises(ValueError,match='Immutable'):
-                repo.update_run(run_id,lambda r:{**r,key:5})
+                repo.update_run(run_id,lambda r:{**r,key:6})
     finally:facade.shutdown()
 
 
@@ -134,6 +134,28 @@ def test_explicit_condition_pair_needs_own_bound_source_field(quote, phrase, bou
     assert (updated['status'] == 'passed') is supported
     assert updated['reviewDiagnosticAudit']['unboundNewNumberCount'] == (0 if supported else 1)
     assert updated['reviewDiagnosticAudit']['newNumberCount'] == 1
+
+
+@pytest.mark.parametrize(('reason', 'unbound'), [
+    ('在检测位置通过双三次插值采样，随后进行L2归一化。', 0),
+    ('在检测位置进行三次插值采样，随后进行L2归一化。', 1),
+    ('在检测位置重复三次双三次插值。', 1),
+])
+def test_bicubic_kernel_label_does_not_hide_actual_repetition_count(reason, unbound):
+    from services.deep_research.review_diagnostics import parameter_options
+
+    quote = 'We use bicubic interpolation and L2-normalize the descriptors.'
+    verdict, claim, evidence = inputs(reason, quote)
+    verdict.update(status='passed', diagnosticFacts=[
+        {'statement': reason, 'evidenceId': 'own', 'path': ['quote'], 'excerpt': quote}])
+    updated = bind(verdict, claim, evidence, **parameter_options(5))
+    audit = updated['reviewDiagnosticAudit']
+    assert audit['sourceParameterIdentityContractVersion'] == 5
+    assert audit['unboundNewNumberCount'] == unbound
+    assert (updated['status'] == 'passed') is (unbound == 0)
+    if not unbound:
+        legacy = bind(verdict, claim, evidence, **parameter_options(4))
+        assert legacy['reviewDiagnosticAudit']['unboundNewNumberCount'] == 1
 
 
 @pytest.mark.parametrize(('reason', 'old_count', 'new_count'), [

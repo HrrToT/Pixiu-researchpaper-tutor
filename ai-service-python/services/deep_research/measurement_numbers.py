@@ -5,6 +5,11 @@ import re
 from decimal import Decimal
 
 
+def normalize_interpolation_kernel_labels(text):
+    # 双三次 names the bicubic kernel. Preserve independent repetition counts.
+    return re.sub(r'双三次(?=(?:插值|重采样))', '双立方', text)
+
+
 _SCALES = {'十': 1, '百': 2, '千': 3, '万': 4, '十万': 5, '百万': 6,
            '千万': 7, '亿': 8, '十亿': 9, '百亿': 10, '千亿': 11, '万亿': 12}
 _NUMBER = re.compile(

@@ -51,7 +51,10 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
         from services.deep_research.enumeration_labels import without_enumeration_labels
         text=without_enumeration_labels(text,balanced_parentheses=type(enumeration_labels) is int and enumeration_labels in (8,9),numbered_items=type(enumeration_labels) is int and enumeration_labels==9)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
-    from services.deep_research.measurement_numbers import measurement_numbers, normalize_explicit_quantity_phrases, split_dimension_series
+    from services.deep_research.measurement_numbers import (
+        measurement_numbers, normalize_explicit_quantity_phrases,
+        normalize_interpolation_kernel_labels, split_dimension_series,
+    )
     dimensions = set()
     if explicit_quantity_phrases:
         text = normalize_explicit_quantity_phrases(text, shared_range_scale=explicit_quantity_phrases >= 17,
@@ -61,8 +64,7 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
         if explicit_quantity_phrases >= 20:
             text, dimensions = split_dimension_series(text)
         if explicit_quantity_phrases >= 21:
-            # “双三次” names an interpolation kernel, not three executions.
-            text = re.sub(r'双三次(?=(?:插值|重采样))', '双立方', text)
+            text = normalize_interpolation_kernel_labels(text)
     return dimensions | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
