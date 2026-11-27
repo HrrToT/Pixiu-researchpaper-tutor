@@ -408,7 +408,7 @@ class ResearchFacade:
             **({"sharedExperimentDensificationEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDensificationExecutionVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewPlannedPrerequisitesVersion": 1} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentCompactScienceRevisionVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentCompactScienceRevisionVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
