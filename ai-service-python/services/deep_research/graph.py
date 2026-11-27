@@ -1319,6 +1319,7 @@ def make_synthesize_node(
             from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled
             from services.deep_research.processing_cost_sources import enabled as cost_premises_enabled
             external_explanation_rows = candidates if external_explanation.enabled(record, output_kind) else ()
+            literal_candidates = candidates
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
@@ -1347,7 +1348,9 @@ def make_synthesize_node(
                 **({'mechanism_overview':True} if mechanism_premises(record) else {}),
                 **({'mechanism_components':True} if mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (2,3,4) else {}),
                 **({'section_targets':requested_sections(question)} if (section_priority(record) or mechanism_premises(record) and record['mechanismEvidenceContractVersion'] in (3,4)) else {}),
-                **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3) else {}))
+                **({'indexed_sections':True} if type(record.get('localSectionContextContractVersion')) is int and record['localSectionContextContractVersion'] in (2, 3, 4) else {}))
+            from services.deep_research.section_context import prioritize_pdf_heading
+            candidates, premise_bundles = prioritize_pdf_heading(literal_candidates, candidates, premise_bundles, record)
             if external_explanation_rows:
                 candidates, premise_bundles = external_explanation.prioritize(
                     external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []),

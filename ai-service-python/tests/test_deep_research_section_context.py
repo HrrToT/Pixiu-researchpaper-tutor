@@ -53,7 +53,7 @@ def test_invalid_next_chunk_cannot_bridge_to_a_later_one(change):
 def test_ambiguous_successor_and_old_or_non_explanation_runs_keep_old_selection():
     selected, candidates = sample()
     assert include_section_context(selected, candidates + [candidates[1]], record(), 'p', 3) == selected
-    for marker in [None, False, True, 0, 4]:
+    for marker in [None, False, True, 0, 5]:
         r = record();r['localSectionContextContractVersion'] = marker
         assert include_section_context(selected, candidates, r, 'p', 3) == selected
     for question in ['解释方法。', '不要解释第5节。', '比较第5节中的性能。']:
@@ -108,6 +108,48 @@ def test_single_paper_explanation_gets_relevant_method_within_existing_budget(el
     assert reader._scope_evidence([top, overview], [top, overview, detail, detail], query, 'p', 2) == [top, overview]
 
 
+def test_pdf_candidate_keeps_a_literal_subsection_within_the_existing_slot_limit():
+    from services.deep_research.section_context import include_pdf_method_heading
+
+    r = {**record(), 'localSectionContextContractVersion':4, 'sourcePolicy':{'mode':'task_only'},
+         'materials':[{'materialId':'p'}], 'question':'给新手解释自适应阶段的作用，限300字。',
+         'audienceFirstContractVersion':2, 'audienceRewriteContractVersion':9,
+         'audiencePublicationBudgetContractVersion':1, 'reportPresentationContractVersion':4}
+    material = {'materialId':'p', 'contentHash':'a'*64, 'versionId':'p-v1'}
+    detail = '3.3. Adaptive stages\nThe pipeline shortens its next stage when the observed signal stays stable. The later stages then use fewer inputs.\n'
+    page = {'page':4, 'text':'Prior paragraph.\n'+detail+'3.4. Results\nLimitation.'}
+    rows = [row(2, 'Best semantic source.'), row(3, 'Ablation discussion.')]
+    out = include_pdf_method_heading(rows, [page], r, 'adaptive stages', material, 2)
+    assert out[0] is rows[0] and len(out) == len(rows)
+    assert out[1]['text'] == detail and out[1]['location']['offset'] == page['text'].index(detail)
+    assert out[1]['location']['page'] == 4 and out[1]['versionId'] == 'p-v1'
+    assert include_pdf_method_heading(rows, [page, {**page, 'page':5}], r, 'adaptive stages', material, 2) == rows
+    assert include_pdf_method_heading(rows, [page], r, 'adaptive unrelated', material, 2) == rows
+    assert include_pdf_method_heading(rows, [page], {**r, 'localSectionContextContractVersion':3},
+                                      'adaptive stages', material, 2) == rows
+
+
+def test_synthesis_prioritizes_only_complete_literal_units_from_the_owned_subsection():
+    from services.deep_research.section_context import prioritize_pdf_heading
+
+    material = {'materialId':'p', 'contentHash':'a'*64, 'versionId':'p-v1'}
+    source = {'sourceId':'selected', 'ownerMaterialId':'p', 'workId':'p', 'versionId':'p-v1',
+              'contentHash':material['contentHash'], 'accessLevel':'fulltext', 'obligationIds':['steps'],
+              'text':'First. Second.', 'location':{'page':4, 'matchedPdfSubsection':True}}
+    r = {'localSectionContextContractVersion':4, 'materials':[material],
+         'state':{'readResults':[source], 'plan':[{'obligations':[{'obligationId':'steps','question':'Explain the steps.'}]}]}}
+    shared = {'sourceId':'selected', 'sourceWorkId':'p', 'sourceVersionId':'p-v1',
+              'contentHash':material['contentHash'], 'verification':{'literal':'passed'}, 'obligationIds':['steps']}
+    a = {**shared, 'evidenceId':'a', 'quote':'First. ', 'location':{'sourcePassageStart':0,'sourcePassageEnd':7}}
+    b = {**shared, 'evidenceId':'b', 'quote':'Second.', 'location':{'sourcePassageStart':7,'sourcePassageEnd':14}}
+    other = {'evidenceId':'other', 'sourceId':'other-source'}
+    ordered, bundles = prioritize_pdf_heading([b, a], [other, a], [], r)
+    assert ordered == [a, b, other] and bundles[0]['evidenceIds'] == ['a', 'b']
+    for bad in ({**b,'sourceVersionId':'p-v2'}, {**b,'verification':{'literal':'failed'}},
+                {**b,'location':{'sourcePassageStart':8,'sourcePassageEnd':15}}):
+        assert prioritize_pdf_heading([a, bad], [other], [], r) == ([other], [])
+
+
 def test_new_activation_is_server_owned_and_immutable(tmp_path):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
@@ -116,8 +158,8 @@ def test_new_activation_is_server_owned_and_immutable(tmp_path):
     try:
         r, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'one', 'question': 'Explain',
             'deferStart': True, 'localSectionContextContractVersion': 0}, start_async=False)
-        assert r['localSectionContextContractVersion'] == 3
-        for value in [None, True, 0, 2, 4]:
+        assert r['localSectionContextContractVersion'] == 4
+        for value in [None, True, 0, 2, 3, 5]:
             with pytest.raises(ValueError, match='Immutable run field'):
                 repo.update_run(r['runId'], lambda x: {**x, 'localSectionContextContractVersion': value})
     finally:

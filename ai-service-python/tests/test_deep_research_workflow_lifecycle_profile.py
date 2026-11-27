@@ -54,7 +54,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['sourceWrapperIdentityContractVersion']==1
         assert first['mechanismEvidenceContractVersion']==4
         assert first['sectionPremisesContractVersion']==2
-        assert first['localSectionContextContractVersion']==3
+        assert first['localSectionContextContractVersion']==4
         assert first['processExplanationVocabularyVersion']==1
         assert first['namedBenchmarkNavigationVersion']==1
         assert first['singleBenchmarkCriteriaVersion']==2

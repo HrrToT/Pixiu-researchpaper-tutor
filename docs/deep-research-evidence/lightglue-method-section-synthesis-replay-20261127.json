@@ -1,0 +1,25 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "development_replay",
+  "baseline": "lightglue-h1-first-frozen-20261127.json",
+  "priorReplay": "lightglue-planning-coverage-replay-20261127.json",
+  "localSectionContextContractVersion": 4,
+  "input": "Same repaired plan, frozen PDF, and original saved planning response. Production acquisition, reading, and literal extraction replayed offline. The synthesis request was intercepted before provider dispatch.",
+  "checks": {
+    "samePlanAndSourceRevision": true,
+    "sameSearchQueriesAndCandidateLimits": true,
+    "candidateReplacement": {"previousPdfPage": 9, "currentPdfPage": 4},
+    "readSources": {"previous": 7, "current": 8, "budget": 12},
+    "literalSourcePassagesFromMethodSection": 6,
+    "literalConfidenceDistinctionInLegacySynthesisRequest": false,
+    "literalConfidenceDistinctionInCurrentSynthesisRequest": true,
+    "synthesisInputBytes": 23848,
+    "synthesisInputLimitBytes": 24000,
+    "targetedTestsPassed": 141
+  },
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "independentAcceptanceCredit": false,
+  "wholeAnswerRevalidated": false,
+  "localReplayReportSha256": "43a472278c6d0e063d5281c588efadf0c2a283e78ffadf9f80fc7683317289df02"
+}
