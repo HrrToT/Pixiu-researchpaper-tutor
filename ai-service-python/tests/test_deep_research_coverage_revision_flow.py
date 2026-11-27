@@ -147,3 +147,41 @@ def test_unrelated_or_unchecked_answer_cannot_close_a_source_gap(change):
     else:
         audit['verdicts'] *= 2
     assert remaining_retrieval_gaps([gap], audit, claims, evidence) == [gap]
+
+
+@pytest.mark.parametrize('failure', [None, 'stale_layout', 'wrong_version', 'prerequisite_gap',
+                                     'unchecked_answer', 'budget_stop'])
+def test_comparison_release_reconciles_only_stale_dependency_gaps(failure):
+    from services.deep_research.comparison_presentation import audit_digest, metadata
+    from services.deep_research.dependencies import UNFINISHED_DEPENDENCY
+
+    evidence = [{**EVIDENCE[0], 'sourceVersionId': 'v1'}]
+    root = {'obligationId': 'root', 'requiredSources': ['paper']}
+    child = {'obligationId': 'child', 'requiredSources': ['paper']}
+    plan = [{'itemId': 'fetch', 'obligations': [root]},
+            {'itemId': 'compare', 'dependencies': ['fetch'], 'obligations': [child]}]
+    claims = [{'claimId': oid, 'text': FULL, 'kind': 'reported', 'evidenceRefs': ['e'],
+               'obligationIds': [oid], 'verification': 'semantic_passed'} for oid in ('root', 'child')]
+    draft = {'sources': {'P1': {'workId': 'paper', 'versionId': 'v1'}},
+             'layoutVersion': 3, 'shortProseVersion': 1, 'layout': [], 'jointGoals': []}
+    gap = {'obligationId': 'child', 'checked': False, 'missingEvidence': UNFINISHED_DEPENDENCY}
+    gaps = [gap]
+    audit = {'status': 'checked', 'gaps': [], 'answerCoherence': {'coherent': True},
+             'comparisonPresentationDigest': audit_digest(metadata(draft), claims),
+             'verdicts': [{'obligationId': oid, 'status': 'covered',
+                          'bindings': [{'claimId': oid, 'excerpt': FULL}]}
+                         for oid in ('root', 'child')]}
+    if failure == 'stale_layout':
+        audit['comparisonPresentationDigest'] = 'stale'
+    elif failure == 'wrong_version':
+        evidence[0]['sourceVersionId'] = 'v0'
+    elif failure == 'prerequisite_gap':
+        gaps.append({'obligationId': 'root', 'sourceWorkId': 'other', 'missingEvidence': 'not retrieved'})
+    elif failure == 'unchecked_answer':
+        audit['status'] = 'not_checked'
+    elif failure == 'budget_stop':
+        gap['missingEvidence'] = '预算不足，尚未开始'
+
+    result = remaining_retrieval_gaps(gaps, audit, claims, evidence, plan=plan, comparison_draft=draft,
+                                     reconcile_comparison_dependencies=True)
+    assert result == (gaps if failure else [])

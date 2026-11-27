@@ -550,8 +550,38 @@ def _closure_source_ids(evidence,versioned):
     return identities
 
 
+def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
+    from services.deep_research.dependencies import UNFINISHED_DEPENDENCY
+
+    def pending_dependency(gap):
+        return (isinstance(gap, dict) and gap.get('checked') is False
+                and 'sourceWorkId' not in gap and gap.get('missingEvidence') == UNFINISHED_DEPENDENCY)
+
+    blocking = {gap.get('obligationId') for gap in gaps
+                if isinstance(gap, dict) and not pending_dependency(gap)}
+    supported = {}
+    for item in plan:
+        obligations = item.get('obligations', [])
+        if obligations and all(o['obligationId'] not in blocking and o.get('requiredSources')
+                               and set(o['requiredSources']).issubset(audited_sources.get(o['obligationId'], ()))
+                               for o in obligations):
+            supported[item['itemId']] = item
+
+    resolved = set()
+    while True:
+        ready = {key for key, item in supported.items()
+                 if set(item.get('dependencies', [])).issubset(resolved)} - resolved
+        if not ready:
+            break
+        resolved.update(ready)
+    resolved_dependents = {o['obligationId'] for key in resolved for o in supported[key]['obligations']
+                           if supported[key].get('dependencies')}
+    return [gap for gap in gaps
+            if not (pending_dependency(gap) and gap.get('obligationId') in resolved_dependents)]
+
+
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
-                             comparison_draft=None, joint_coverage=()):
+                             comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -582,15 +612,35 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     origins = {e.get('evidenceId'): _closure_source_ids(e,versioned_sources) for e in evidence
                if e.get('verification', {}).get('literal') == 'passed'}
     covered = {}
+    exact_covered = {}
+    exact_origins = {}
+    if reconcile_comparison_dependencies and comparison_draft and plan:
+        from services.deep_research.comparison_presentation import audit_digest, metadata
+
+        if (audit.get('answerCoherence', {}).get('coherent') is True
+                and audit.get('comparisonPresentationDigest') == audit_digest(metadata(comparison_draft), claims)):
+            versions = {(row['workId'], row['versionId']) for row in comparison_draft['sources'].values()}
+            exact_origins = {e['evidenceId']: e['sourceWorkId'] for e in evidence
+                             if (e.get('sourceWorkId'), e.get('sourceVersionId')) in versions
+                             and e.get('accessLevel') == 'fulltext' and e['evidenceId'] in origins}
     for verdict in audit.get('verdicts', []):
         oid = verdict.get('obligationId')
         if verdict.get('status') != 'covered' or oid in missing:
             continue
         works = set()
+        exact_works = set()
         for binding in verdict.get('bindings', []):
             claim = accepted.get(binding.get('claimId'), {})
-            for ref in claim.get('evidenceRefs', []):works.update(origins.get(ref,set()))
+            for ref in claim.get('evidenceRefs', []):
+                works.update(origins.get(ref, set()))
+                if ref in exact_origins:
+                    exact_works.add(exact_origins[ref])
         covered[oid] = works
-    return [gap for gap in gaps if not isinstance(gap, dict)
-            or ((gap.get('obligationId'), gap.get('sourceWorkId'), gap.get('missingEvidence')) not in resolved_joint
-                and gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set()))]
+        if (oid not in audit.get('invalidAspectObligations', ())
+                and oid not in audit.get('invalidCriterionObligations', ())):
+            exact_covered[oid] = exact_works
+    remaining = [gap for gap in gaps if not isinstance(gap, dict)
+                 or ((gap.get('obligationId'), gap.get('sourceWorkId'), gap.get('missingEvidence')) not in resolved_joint
+                     and gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set()))]
+    return (_remove_reviewed_comparison_dependency_gaps(remaining, plan, exact_covered)
+            if exact_origins else remaining)

@@ -3,6 +3,7 @@ from copy import deepcopy
 
 from services.deep_research.contracts import DeepResearchError, digest
 
+UNFINISHED_DEPENDENCY = '依赖的研究问题尚未完成'
 
 def enabled(record):
     return type(record.get('dependencyContractVersion')) is int and record['dependencyContractVersion'] == 1
@@ -119,7 +120,7 @@ def finish_assessment(state, output, update):
             continue
         for obligation in item['obligations']:
             gaps.append({'obligationId': obligation['obligationId'], 'question': obligation['question'],
-                         'checked': False, 'missingEvidence': '预算不足，尚未开始' if stopped else '依赖的研究问题尚未完成'})
+                         'checked': False, 'missingEvidence': '预算不足，尚未开始' if stopped else UNFINISHED_DEPENDENCY})
     update(state['run_id'], lambda r: {**r, 'state': {**r['state'], 'dependencyExecution': current,
         'gaps': gaps}}, expected_revision=None)
     return {**output, 'gaps': gaps, 'dependency_transition': ''}

@@ -434,7 +434,7 @@ class ResearchFacade:
             "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": 2,
             "sourceGapClosureContractVersion": 1,
-            "comparisonMatchedExampleGapClosureVersion": 1,
+            "comparisonMatchedExampleGapClosureVersion": 2,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 4,
