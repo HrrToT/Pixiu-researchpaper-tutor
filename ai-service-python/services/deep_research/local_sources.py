@@ -157,7 +157,11 @@ class LocalTaskRetriever:
         found = include_pdf_method_heading(found, pages, record, query, material, min(limit, 5))
         found = include_pdf_method_passages(found, pages, record, query, material, min(limit, 5))
         from services.deep_research.measurement_table_navigation import retain_threshold_table
-        found = retain_threshold_table(found, passages, self._threshold_benchmarks(record, query), min(limit, 5))
+        benchmarks = self._threshold_benchmarks(record, query)
+        found = retain_threshold_table(found, passages, benchmarks, min(limit, 5))
+        if record.get('comparisonNamedBenchmarkProtocolVersion') == 1:
+            from services.deep_research.pdf_benchmark_protocol import include_protocol
+            found = include_protocol(found, pages, material, benchmarks, min(limit, 5))
         return self._stamp_identity(
             self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages), pdf_id)
 
@@ -352,6 +356,9 @@ class LocalTaskRetriever:
             found = include_pdf_measurements(indexed,passages,query,pdf_id,material['contentHash'],limit)
             from services.deep_research.measurement_table_navigation import retain_threshold_table
             found = retain_threshold_table(found, passages, benchmarks, limit)
+            if record.get('comparisonNamedBenchmarkProtocolVersion') == 1:
+                from services.deep_research.pdf_benchmark_protocol import include_protocol
+                found = include_protocol(found, self.pages[key], material, benchmarks, limit)
             missing = missing_measurements(found,query)
             note = {'status':'searched','pagesRead':len(self.pages[key]),
                     'unmatchedMeasurements':sorted((str(n),u) for n,u in missing)}

@@ -14,7 +14,7 @@ _DOMAINS = (
 _GENERIC = {'the', 'a', 'an', 'each', 'both', 'all', 'this', 'these', 'their', 'our',
             'dataset', 'datasets', 'benchmark', 'benchmarks', 'results', 'result', 'quality',
             'performance', 'conditions', 'paper', 'papers', 'which', 'what', 'it', 'cpu', 'gpu'}
-_RESULT = re.compile(r'定量|结果|指标|评测|数值|\b(?:quantitative|results?|metrics?|evaluation|accuracy|score)\b', re.I)
+_RESULT = re.compile(r'定量|结果|指标|评测|数值|\b(?:quantitative|results?|metrics?|evaluation|accuracy|score|comparability)\b', re.I)
 _NAME = re.compile(r'(?<![A-Za-z0-9_-])[A-Za-z][A-Za-z0-9-]{3,}(?![A-Za-z0-9_-])')
 
 
@@ -27,7 +27,7 @@ def requested_threshold_benchmarks(question, query):
     return (names & {word.casefold() for word in human} & {word.casefold() for word in planned}) - _GENERIC
 
 
-def _threshold_match(source, benchmarks):
+def threshold_caption_matches(source, benchmarks):
     if not benchmarks or (source.get('location') or {}).get('thresholdColumnsVerified') is not True:
         return 0
     caption = source.get('text', '').split('\n', 1)[0]
@@ -44,7 +44,7 @@ def retain_threshold_table(rows, candidates, benchmarks, limit):
         return rows
     matches = []
     for row in candidates:
-        if score := _threshold_match(row, benchmarks):
+        if score := threshold_caption_matches(row, benchmarks):
             matches.append((score, row))
     if not matches:
         return rows
@@ -75,7 +75,7 @@ def preferred_threshold_reads(sources, obligations, human, limit, extracted):
                for oid, row in obligations.items()}
     rows = [source for source in sources
             if (source['sourceId'], source.get('contentHash')) not in extracted
-            and any(_threshold_match(source, targets[oid]) for oid in eligible_obligation_ids(source, obligations))]
+            and any(threshold_caption_matches(source, targets[oid]) for oid in eligible_obligation_ids(source, obligations))]
     return balanced_sample(rows, lambda source: (source['workId'], source.get('versionId')), limit // 4)
 
 

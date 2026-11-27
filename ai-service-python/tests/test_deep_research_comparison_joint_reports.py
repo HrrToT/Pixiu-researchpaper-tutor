@@ -547,3 +547,15 @@ def test_named_condition_bound_result_requires_condition_in_the_quoted_result():
 
     separate_sentences = 'Our method improves accuracy. We set the matching threshold to 6.5 pixels.'
     assert not named_condition_bound_result({**evidence, 'quote': separate_sentences}, {'benchmark-x'})
+
+
+def test_named_feature_matching_counts_require_printed_columns_and_own_figure_caption():
+    from services.deep_research.comparison_joint_reports import named_feature_matching_counts
+
+    quote = ('Method # Features # Matches\nMethod A 1.2K 920\nMethod B 3K 1.4K\n'
+             'Figure 2: Evaluation on BenchMark-X image pairs.')
+    evidence = {'accessLevel': 'fulltext', 'quote': quote}
+    assert named_feature_matching_counts(evidence, {'benchmark-x'})
+    assert not named_feature_matching_counts(evidence, {'benchmark-y'})
+    assert not named_feature_matching_counts({**evidence, 'quote': quote.replace('# Matches', 'Score')}, {'benchmark-x'})
+    assert not named_feature_matching_counts({**evidence, 'quote': quote.replace('3K 1.4K', '3K')}, {'benchmark-x'})

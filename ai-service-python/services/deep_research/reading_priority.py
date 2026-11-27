@@ -9,7 +9,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                         benchmark_human=None, named_table_question=None, experiment_protocol=False,
                         comparison_evaluation_protocol=False, comparison_deployment_memory=False,
                         comparison_memory_criteria=False, named_table_grouped_rows=False, local_pdf_methods=False,
-                        threshold_benchmarks=None):
+                        threshold_benchmarks=None, named_benchmark_protocol=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -90,7 +90,13 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                                                        completion_criteria=comparison_memory_criteria), *preferred]
     if threshold_benchmarks:
         from services.deep_research.measurement_table_navigation import preferred_threshold_reads
-        preferred = [*preferred_threshold_reads(ordered, obligations, threshold_benchmarks, limit, extracted), *preferred]
+        tables = preferred_threshold_reads(ordered, obligations, threshold_benchmarks, limit, extracted)
+        protocols = []
+        if named_benchmark_protocol:
+            from services.deep_research.pdf_benchmark_protocol import preferred_protocol_reads
+            read_tables = preferred_threshold_reads(ordered, obligations, threshold_benchmarks, limit, ())
+            protocols = preferred_protocol_reads(ordered, read_tables, obligations, extracted)[:limit // 4]
+        preferred = [*tables, *protocols, *preferred]
     ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:

@@ -41,6 +41,10 @@ _BOUNDED_RESULT = re.compile(
     r'\b(?:achiev\w*|outperform\w*|perform\w*|obtain\w*|improv\w*|reduc\w*)\b'
     r'[^.!?。]{0,110}\b(?:thresholds?|at least|at most|above|below|under|over)\b'
     r'[^.!?。]{0,42}\b\d+(?:\.\d+)?\s*(?:pixels?|px|ms|seconds?|fps)\b', re.I)
+_FEATURE_COUNT_HEADER = re.compile(r'^Method\s+#\s*Features\s+#\s*Matches$', re.I)
+_COUNT = r'\d+(?:[.,]\d+)?(?:[KMB])?'
+_FEATURE_COUNT_ROW = re.compile(rf'^\S.*?[ \t]+{_COUNT}[ \t]+{_COUNT}$', re.I)
+_FIGURE_CAPTION = re.compile(r'^Fig(?:ure|\.)\s*\d+\s*[:.]', re.I)
 
 
 def named_condition_bound_result(row, benchmarks):
@@ -55,6 +59,24 @@ def named_condition_bound_result(row, benchmarks):
     locator_text = ' '.join((prose, context.get('before', ''), context.get('after', '')))
     tokens = {token.casefold() for token in re.findall(r'[A-Za-z][A-Za-z0-9-]+', locator_text)}
     return bool(benchmarks & tokens)
+
+
+def named_feature_matching_counts(row, benchmarks):
+    """Retain exact figure-backed counts with their printed column names."""
+    if not benchmarks or row.get('accessLevel') != 'fulltext' or row.get('tableData'):
+        return False
+    lines = [line.strip() for line in row['quote'].splitlines() if line.strip()]
+    for index, line in enumerate(lines):
+        if not _FEATURE_COUNT_HEADER.fullmatch(line):
+            continue
+        for end in range(index + 1, min(index + 21, len(lines))):
+            candidate = lines[end]
+            if _FIGURE_CAPTION.match(candidate):
+                tokens = {token.casefold() for token in re.findall(r'[A-Za-z][A-Za-z0-9-]+', candidate)}
+                return end - index >= 3 and bool(benchmarks & tokens)
+            if not _FEATURE_COUNT_ROW.fullmatch(candidate):
+                break
+    return False
 
 
 def evaluation_protocols_enabled(record):

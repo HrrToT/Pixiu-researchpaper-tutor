@@ -818,6 +818,7 @@ def make_read_node(
                 **({'comparison_memory_criteria': True} if record.get('comparisonEvaluationProtocolVersion') in (4, 5, 6, 7) else {}),
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
                 **({'threshold_benchmarks':human_text(record)} if record.get('comparisonThresholdTablePdfFallbackVersion') == 1 else {}),
+                **({'named_benchmark_protocol':True} if record.get('comparisonNamedBenchmarkProtocolVersion') == 1 else {}),
                 **({'named_table_question': effective_question(record)} if record.get('namedTableScopeVersion') == 2
                    and record['state'].get('outputKind') == 'claim_verification' else {}),
                 **({'named_table_grouped_rows':True} if record.get('namedTableGroupedRowsVersion') == 1 else {}),

@@ -130,6 +130,9 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     sources = state.get('readResults', [])
     from services.deep_research import experiment_protocol_sources as protocol
     continuations = protocol.continuation_spans(sources) if protocol.enabled(record) else set()
+    keep_benchmark_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') == 1
+    if keep_benchmark_protocol:
+        from services.deep_research.pdf_benchmark_protocol import owned_protocol
     obligations = {o['obligationId']:o for p in state.get('plan', []) for o in p['obligations']}
     old_evidence = state.get('evidence', [])
     evidence = deepcopy(old_evidence); by_id = {e['evidenceId']:e for e in evidence}
@@ -189,7 +192,9 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             body = text[offset:]
             # A short same-page method passage can support a sequence of
             # operations under one literal citation, including its final step.
-            ranges = [(0, len(body))] if _keep_local_method_passage(record, source, location, body) else list(spans(body))
+            keep_whole = _keep_local_method_passage(record, source, location, body) or (
+                keep_benchmark_protocol and owned_protocol(source, location, body, record.get('materials', ())))
+            ranges = [(0, len(body))] if keep_whole else list(spans(body))
             if source['sourceId'] in continuations:
                 original_span = protocol.continuation_range(body)
                 if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):

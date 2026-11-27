@@ -403,13 +403,23 @@ def assess(state,record,update,invoke,coverage_gaps):
                              if e.get('sourceId') in local_sources}
                 candidates.sort(key=lambda e: e['evidenceId'] not in local_ids)
             if record.get('comparisonConditionBoundResultReadinessVersion') == 1:
-                from services.deep_research.comparison_joint_reports import named_condition_bound_result
+                from services.deep_research.comparison_joint_reports import named_condition_bound_result, named_feature_matching_counts
                 from services.deep_research.measurement_table_navigation import requested_threshold_benchmarks
 
                 benchmarks = set().union(*(requested_threshold_benchmarks('\n'.join(human),
                     obligations[member['obligationId']].get('searchQuery', '')) for member in group['members']))
                 if benchmarks:
-                    candidates.sort(key=lambda row: not named_condition_bound_result(row, benchmarks))
+                    paired = set()
+                    named_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') == 1
+                    if named_protocol:
+                        from services.deep_research.pdf_benchmark_protocol import readiness_source_ids
+                        literal_sources = {row['evidenceId']: row.get('sourceId') for row in domain.get('evidence', [])
+                                           if row['evidenceId'] in known}
+                        sources = readiness_source_ids(domain.get('sources', []), benchmarks, set(literal_sources.values()))
+                        paired = {eid for eid, source in literal_sources.items() if source in sources}
+                    candidates.sort(key=lambda row: not (
+                        row['evidenceId'] in paired or named_condition_bound_result(row, benchmarks)
+                        or named_protocol and named_feature_matching_counts(row, benchmarks)))
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
             if not selected or any(not any(_matches(e,source) for e in selected) for source in group['requiredSources']):
