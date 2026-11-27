@@ -1,0 +1,42 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceRun": "dr_run_37b6356fc7405e5eaa42e0ecd4c0c504",
+  "sourceCommit": "21f309e4d9271dd11f7ea09874ca57cf9f1c7c31",
+  "originalRunSha256": "b0f57d98233449b7873054356854705162373d99d4c050cf5803a8948aed1a41",
+  "oldStageSnapshotMatchesExactly": true,
+  "jointStageUnchanged": true,
+  "unchangedRequiredEvidenceAndSourcePermissions": true,
+  "retainedOriginalPassages": [
+    "3DGS opacity",
+    "3DGS A6000 exception for the Mip-NeRF360 method",
+    "LightGaussian K-means"
+  ],
+  "stages": [
+    {
+      "stage": "P1",
+      "oldBytes": 23976,
+      "newBytes": 23973,
+      "oldSha256": "20a294e73690001c94c25d1f182477c2fd7e3dcff77a72eed38fff0b30ab6528",
+      "newSha256": "ad7f171a455e13b85dbdf0137f3ce2f46ff48c67c4ad904871154893a2db9c7f",
+      "exactEvidenceCount": 20
+    },
+    {
+      "stage": "P2",
+      "oldBytes": 21946,
+      "newBytes": 21840,
+      "oldSha256": "9362358cbd0ebdbd019485f72bd6040273f6bafd922c9a7451bf273b66a461fb",
+      "newSha256": "d407a64e83da853da63ebcc5aaf9c425fae01391af571b18d95a38a33f0d85cb",
+      "exactEvidenceCount": 20
+    },
+    {
+      "stage": "joint",
+      "oldBytes": 23621,
+      "newBytes": 23621,
+      "oldSha256": "bfeeaea14fe2ba456f382b6746278beff4e89840cef731acb25c333fb4b71f42",
+      "newSha256": "bfeeaea14fe2ba456f382b6746278beff4e89840cef731acb25c333fb4b71f42",
+      "exactEvidenceCount": 20
+    }
+  ],
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

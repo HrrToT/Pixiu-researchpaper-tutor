@@ -443,14 +443,16 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.comparison_generation import planning_options
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
-    facade=ResearchFacade(repo,lambda **kwargs:None,llm_client=object(),comparison_cells_version=1)
+    facade=ResearchFacade(repo,lambda **kwargs:None,llm_client=object(),comparison_cells_version=1,
+                          comparison_review_batch_version=1)
     try:
-        r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,
+        r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,'outputKind':'paper_comparison',
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
         assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 7
         assert r['comparisonRepairFlowContractVersion'] == 2
         assert r['comparisonStageAbstentionContractVersion'] == 1
+        assert r['comparisonPaperWordingContractVersion'] == 1
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         with pytest.raises(ValueError, match='Immutable'):
@@ -468,6 +470,9 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
             with pytest.raises(ValueError, match='Immutable'):
                 repo.update_run(r['runId'], lambda current: {
                     **current, 'comparisonStageAbstentionContractVersion': value})
+            with pytest.raises(ValueError, match='Immutable'):
+                repo.update_run(r['runId'], lambda current: {
+                    **current, 'comparisonPaperWordingContractVersion': value})
     finally:facade.shutdown()
 
 

@@ -621,15 +621,24 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             data['requestContext'] = {
                 'audience': 'beginner' if beginner_requested(record) else 'research reader',
             }
-            policy = policy.replace(
-                'Paper targets answer their own paper and assigned dimension. Joint targets own the\n'
-                'cross-paper contrast, comparability and recommendation. Complete your stage\'s contribution\n'
-                'to the fixed researchGoals and human request. Put conclusions before details in their target.',
+            wording_version = record.get('comparisonPaperWordingContractVersion')
+            assignment_policy = (
                 'For each target, answer its assigned dimension using only the named paper.\n'
                 'Every statement in the point must concern that paper. Do not describe or speculate about\n'
                 'other works, including what they report or whether their text is available.\n'
                 'If you cannot support the assigned point from its own evidence, return point=null.\n'
                 'Put the supported result first and keep measured conditions with it.')
+            if type(wording_version) is int and wording_version == 1:
+                assignment_policy = (
+                    'Answer only the assigned dimension of the named paper. Put the result first. '
+                    'If unsupported, return point=null. Keep the exact technical property; for easily reversed terms '
+                    'use the source term (opacity = 不透明度). Tie settings to their methods and retain quoted scope '
+                    'exceptions.\n')
+            policy = policy.replace(
+                'Paper targets answer their own paper and assigned dimension. Joint targets own the\n'
+                'cross-paper contrast, comparability and recommendation. Complete your stage\'s contribution\n'
+                'to the fixed researchGoals and human request. Put conclusions before details in their target.',
+                assignment_policy)
             policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
                        'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                        'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')

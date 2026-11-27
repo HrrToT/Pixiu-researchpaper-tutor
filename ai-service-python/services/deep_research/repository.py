@@ -390,7 +390,8 @@ class DeepResearchRepository:
                                      'openaiResearchModels', 'comparisonPdfTableFallbackVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',
-                                     'comparisonLiteralAxisGoalVersion', 'comparisonPdfPassageBoundaryVersion'):
+                                     'comparisonLiteralAxisGoalVersion', 'comparisonPdfPassageBoundaryVersion',
+                                     'comparisonPaperWordingContractVersion'):
                     if (updated.get(batch_policy) != current.get(batch_policy)
                             or type(updated.get(batch_policy)) is not type(current.get(batch_policy))
                             or (batch_policy in updated) != (batch_policy in current)):

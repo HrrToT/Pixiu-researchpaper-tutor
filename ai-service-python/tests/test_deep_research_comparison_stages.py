@@ -749,6 +749,24 @@ def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
     assert 'numericExample' not in packet(snapshot['stages'][-1])['requestContext']
 
 
+def test_paper_wording_preserves_properties_and_protocol_exceptions_without_changing_joint_input():
+    record, plan, rows, aliases, bundles = fixture()
+    record.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=3,
+                  comparisonAuthoringContractVersion=16)
+    previous = prepare(record, plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+
+    current = prepare({**record, 'comparisonPaperWordingContractVersion': 1},
+                      plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+
+    assert current['stages'][-1] == previous['stages'][-1]
+    for old, new in zip(previous['stages'][:-1], current['stages'][:-1], strict=True):
+        assert 'opacity = 不透明度' in new['prompt']
+        assert 'retain quoted scope exceptions' in new['prompt']
+        assert 'opacity = 不透明度' not in old['prompt']
+        assert packet(new) == packet(old)
+        assert new['allowedEvidenceByTarget'] == old['allowedEvidenceByTarget']
+
+
 def test_joint_stage_prioritizes_typed_table_when_literal_anchor_only_names_advice():
     r, p, rows, aliases, bundles = fixture()
     r.update(question=QUESTION + '。数字只选一组来源和口径明确的基线对照作例子',
