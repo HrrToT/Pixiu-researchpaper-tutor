@@ -1,0 +1,108 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "independentCredit": 0,
+  "qualification": "exposed_development_run_then_offline_layout_replay",
+  "live": {
+    "runId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "sourceTree": "b4781d1d3e89f6f0ed88872d10b872de55c945d7",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "invalid_synthesis_response",
+    "providerCalls": 9,
+    "countsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1
+    },
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 4
+    },
+    "providerTokens": 40368,
+    "elapsedSeconds": 98.0,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 265,
+      "pdf": 4
+    },
+    "jointTargets": [
+      "joint_o3",
+      "joint_o4"
+    ],
+    "automaticRetry": false,
+    "reportPublished": false,
+    "rawReceiptSha256": {
+      "run.json": "e9fd450dc65e0b3217797ae66dc27fa8341ef1d3fdb09afd802df3d11b96880b",
+      "calls.json": "8e144bdf9ed21dd34647c252af4d328da065abd02795c884492f3cef82e85c3b",
+      "provider.jsonl": "268800050176db5daa1fc5e3cd82018d099bacf73709c0a40bd3ff694223bd7b",
+      "result.json": "7cbf169fd62ae38514a8029938bd58f3f560bf5e734c0910891198f897a82562"
+    }
+  },
+  "diagnosis": {
+    "legacyCountsWithoutComparisonLayout": 499,
+    "legacyCountsWithComparisonTable": 628,
+    "characterLimit": 600
+  },
+  "recordedResponseReplay": {
+    "actualRunId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "providerCalls": 0,
+    "usedRecordedDraftAndEditorResponses": true,
+    "visibleCharacters": 519,
+    "characterLimit": 600,
+    "pointIds": [
+      "cmp_1_0",
+      "cmp_2_0",
+      "cmp_3_0",
+      "cmp_4_0",
+      "cmp_5_0",
+      "cmp_conclusion_0",
+      "cmp_conclusion_1"
+    ],
+    "numericAndCitationPrecheckCandidates": 7,
+    "semanticReviewPerformed": false,
+    "independentCredit": 0,
+    "adviceReviewTarget": "cmp_conclusion_1",
+    "layout": "cited_prose"
+  },
+  "freshStagePreflight": {
+    "providerCalls": 0,
+    "inputBoundBytes": 24000,
+    "stages": [
+      {
+        "id": "P1",
+        "inputBytes": 23991,
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1",
+          "cell_1_0"
+        ]
+      },
+      {
+        "id": "P2",
+        "inputBytes": 23990,
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "id": "joint",
+        "inputBytes": 23997,
+        "targets": [
+          "joint_o3",
+          "joint_o4"
+        ]
+      }
+    ]
+  },
+  "contentGapsInRecordedDraft": [
+    "SuperPoint supervision was absent.",
+    "D2-Net used a threshold attached to a trend instead of a measured result.",
+    "The recheck advice was general instead of specifying benchmark operations."
+  ],
+  "boundary": "Fresh preflight stopped before dispatch. The shorter display used the unchanged recorded draft and editor output. Deterministic checks do not establish semantic review, whole-answer coverage, publication or scientific acceptance."
+}

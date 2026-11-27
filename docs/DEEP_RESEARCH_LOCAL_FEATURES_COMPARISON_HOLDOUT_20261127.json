@@ -105,6 +105,7 @@
     "synthesisLiveAndClauseReplay": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
     "appendixMetricSynthesisBundleReplay": "deep-research-evidence/local-features-h2-appendix-metric-bundle-20261127.json",
     "likeForLikeRecheckValidation": "deep-research-evidence/local-features-h2-like-for-like-recheck-20261127.json",
-    "appendixRecheckLiveAndOfflineFixes": "deep-research-evidence/local-features-h2-appendix-recheck-live-and-offline-fixes-20261127.json"
+    "appendixRecheckLiveAndOfflineFixes": "deep-research-evidence/local-features-h2-appendix-recheck-live-and-offline-fixes-20261127.json",
+    "lengthBoundedComparisonReplay": "deep-research-evidence/local-features-h2-600-character-layout-live-and-replay-20261127.json"
   }
 }
