@@ -323,6 +323,32 @@ def test_cross_paper_settings_keep_real_values_and_drop_only_explicit_unknowns(v
     assert compiled['evidenceRefs'] == point['evidenceRefs']
 
 
+def test_cited_dataset_scope_keeps_values_and_exact_setting_ownership():
+    from services.deep_research.comparison_cross_paper_boundary import compile_point
+
+    papers = ['P1', 'P2']
+    sources = {'P1': {'title': 'Paper One'}, 'P2': {'title': 'Paper Two'}}
+    owners = {'E1': 'P1', 'E2': 'P2'}
+    point = {'evidenceRefs': ['E1', 'E2'], 'body': {'boundary': {
+        'observedSettings': [
+            {'subject': 'P1', 'attribute': '实验数据集', 'value': 'Group A and two scenes from Group B',
+             'evidenceRefs': ['E1']},
+            {'subject': 'P2', 'attribute': 'GPU', 'value': 'A6000 except for the reference method',
+             'evidenceRefs': ['E2']},
+        ],
+        'notEstablished': [{'type': 'comparison_evidence', 'subjects': papers, 'quantity': 'FPS 排名'}],
+    }}}
+    previous = compile_point(point, papers, sources, owners)
+    current = compile_point(point, papers, sources, owners, cited_dataset_scope=True)
+    before = previous['body']['boundary']
+    after = current['body']['boundary']
+    assert after['observedSettings'][0] == {**before['observedSettings'][0], 'attribute': '所引段落列及的数据集'}
+    assert after['observedSettings'][1] == before['observedSettings'][1]
+    assert after['notEstablished'] == before['notEstablished']
+    with pytest.raises(ValueError, match='stage_cross_paper_setting_owner'):
+        compile_point(point, papers, sources, {'E1': 'P2', 'E2': 'P1'}, cited_dataset_scope=True)
+
+
 @pytest.mark.parametrize('with_example', [True, False])
 def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advice(with_example):
     r, plan, rows, aliases, bundles = fixture()

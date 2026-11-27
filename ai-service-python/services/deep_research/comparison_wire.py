@@ -578,8 +578,11 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
         boundary_version = record.get('comparisonCrossPaperBoundaryContractVersion')
-        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5, 6)
-        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY, 6: TYPED_POLICY}.get(boundary_version, POLICY)
+        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5, 6, 7)
+        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY, 6: TYPED_POLICY, 7: TYPED_POLICY}.get(boundary_version, POLICY)
+        if boundary_version == 7:
+            paper_boundary_policy += ('Scope each dataset observation to what its citation lists, and preserve '
+                                      'the scope of reported settings and exceptions.\n')
         for target in scoped_joint:
             target['paperSubjects'] = paper_subjects[target['targetId']]
         length = limit or 'concise, no explicit maximum'
@@ -639,9 +642,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'cross-paper contrast, comparability and recommendation. Complete your stage\'s contribution\n'
                 'to the fixed researchGoals and human request. Put conclusions before details in their target.',
                 assignment_policy)
-            policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
-                       'repeat settings and metrics from other dimensions. Preserve literal metric identity '
-                       'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
+            if boundary_version == 7:
+                policy += ('Use only the assigned measurements; do not copy whole rows or repeat settings. '
+                           'Keep ambiguous metrics literal and distinguish disk size from GPU memory. For speed, '
+                           'report hardware separately unless a citation clearly ties shared hardware to the exact compared runs.\n')
+            else:
+                policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
+                           'repeat settings and metrics from other dimensions. Preserve literal metric identity '
+                           'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
             mechanism_version = record.get('comparisonMechanismReadContractVersion')
             if mechanism_version in (2, 3):
                 from services.deep_research.mechanism_sources import compression_mapping_requested
