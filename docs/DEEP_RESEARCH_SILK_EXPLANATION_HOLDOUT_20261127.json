@@ -2,7 +2,7 @@
   "version": 1,
   "frozenAt": "2026-11-27",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_pending_first_execution",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
   "materials": {
     "silk_v1": {
@@ -77,5 +77,7 @@
   },
   "caseDefinitionHashes": {
     "H1-SILK": "0655c2e2141b8c1e0a3a3665bf91efe12a64f189ee4056458c505957a16dd5fb"
-  }
+  },
+  "firstExecutionReceipt": "deep-research-evidence/silk-h1-first-frozen-20261127.json",
+  "liveInventoryReceipt": "deep-research-evidence/silk-h1-live-preflight-20261127.json"
 }

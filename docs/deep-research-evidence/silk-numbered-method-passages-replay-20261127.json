@@ -1,0 +1,64 @@
+{
+  "runId": "dr_run_2f36dd1d3dd7543abe0c67bab41b7b6a",
+  "materialSha256": "cbb119e43c235221f44a224af08adbd1f2f9e3d968a95bf59dc4ac7b1aadd2bc",
+  "sourceReads": 12,
+  "methodPassageReads": 6,
+  "methodReadPages": {
+    "reverse_homography": [
+      4
+    ],
+    "filtered_correspondence": [
+      4
+    ],
+    "probability_columns": [
+      4
+    ],
+    "positive_round_trips": [
+      4
+    ],
+    "keypoint_binary_loss": [
+      4
+    ]
+  },
+  "synthesisEvidencePages": {
+    "reverse_homography": [
+      4
+    ],
+    "filtered_correspondence": [
+      4
+    ],
+    "probability_columns": [
+      4
+    ],
+    "positive_round_trips": [
+      4
+    ],
+    "keypoint_binary_loss": [
+      4
+    ]
+  },
+  "synthesisInputBytes": 23779,
+  "providerCalls": 0,
+  "scope": "Production planning, PDF retrieval, reading, literal extraction and synthesis input assembly with saved model plan and isolated material/reader; no answer generation or acceptance credit.",
+  "localSectionContextContractVersion": 6,
+  "targetedOfflineTestsPassed": 105,
+  "scientificContentCredit": 0,
+  "alikeCompatibility": {
+    "synthesisEvidencePages": {
+      "soft_argmax": [
+        3,
+        4
+      ],
+      "gradient": [
+        4
+      ],
+      "reprojection": [
+        4
+      ],
+      "peak_spatial": [
+        5
+      ]
+    },
+    "synthesisInputBytes": 23973
+  }
+}

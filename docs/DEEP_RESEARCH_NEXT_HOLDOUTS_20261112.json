@@ -42,6 +42,15 @@
         "preflight": "deep-research-evidence/alike-h1-live-preflight-20261127.json",
         "result": "deep-research-evidence/alike-h1-first-frozen-20261127.json",
         "scientificContentCredit": 0
+      },
+      "silkExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-SILK",
+        "manifest": "DEEP_RESEARCH_SILK_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/silk-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/silk-h1-first-frozen-20261127.json",
+        "offlineMethodReplay": "deep-research-evidence/silk-numbered-method-passages-replay-20261127.json",
+        "scientificContentCredit": 0
       }
     },
     {

@@ -1,0 +1,53 @@
+{
+  "case": "H1-SILK",
+  "attempt": 1,
+  "definitionHash": "0655c2e2141b8c1e0a3a3665bf91efe12a64f189ee4056458c505957a16dd5fb",
+  "codeCommit": "6be8436aab2e498944679b93a720edfc3463f627",
+  "runId": "dr_run_2f36dd1d3dd7543abe0c67bab41b7b6a",
+  "publicationId": "dr_pub_b50161f7a44942b3a0db8b97604abf88",
+  "sourceRevision": "arxiv:2304.06194v1",
+  "materialSha256": "cbb119e43c235221f44a224af08adbd1f2f9e3d968a95bf59dc4ac7b1aadd2bc",
+  "outcome": "partial",
+  "scientificContentCredit": 0,
+  "scope": {
+    "mode": "task_only",
+    "retrieval": "production_lexical_pdf_fallback",
+    "productionWrites": 0,
+    "externalSearches": 0,
+    "scopeCheck": 112,
+    "pdf": 2
+  },
+  "visibleAnswerCharactersIncludingCitationLabels": 185,
+  "referencePages": [
+    3,
+    2
+  ],
+  "findingsByRequirement": {
+    "single-image-correspondences": "partial",
+    "bidirectional-matching-training": "partial",
+    "keypoint-positive-negative": "missing",
+    "answer_scope": "partial"
+  },
+  "manualReview": [
+    "Random homography was named, but inverse mapping, discretization and correspondence rejection were omitted.",
+    "Bidirectional descriptor matching was described broadly without row/column normalization or the true-correspondence training objective.",
+    "The answer did not explain positive and negative keypoint labels. The bounded repair returned an empty list."
+  ],
+  "usage": {
+    "actualProviderCalls": 8,
+    "tokens": 32863,
+    "tokensByModel": {
+      "gpt-6-luna": 13507,
+      "gpt-6.1-terra": 19356
+    },
+    "elapsedSeconds": 53.0
+  },
+  "sha256": {
+    "intent.json": "998448e88bd840c76be20ce4b5f0c3fe6ae3f51392cb92dac83245470ef34b23",
+    "calls.json": "c5afe314a87b66e000e2645b50cfa67ac5cc336a2138405999b8c3438091c9a8",
+    "run.json": "9f18d9ab0325e973d1743d555e61b4960b2d6a485e7ed00c4eeb63cebfaeecb8",
+    "result.json": "55381a378b28a9294922b43311e505c816f81cd2edf748907788a029b42546b1",
+    "boundary.json": "14e74f33fa7a1da40636194cec5cdcdb3ed42bfd26496d6e67fb44b40ffd4fbf",
+    "provider.jsonl": "253afa2ad1db969a27194be67ae917d557a536c228684909e5e6bbfc4208d37e"
+  }
+}
