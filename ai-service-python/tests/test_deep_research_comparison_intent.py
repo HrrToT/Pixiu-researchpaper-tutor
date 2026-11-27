@@ -266,6 +266,30 @@ def test_per_paper_comparison_retains_two_explicit_questions_under_one_short_anc
     assert [r['requirement'] for r in fixed[0]['obligations'][0]['completionCriteria']] == [supervision]
 
 
+def test_comparison_preserves_source_local_results_and_full_within_paper_subject():
+    from services.deep_research.evidence_requirements import normalize_generated_requirements
+
+    mechanism = '怎样提取特征'
+    per_paper_result = '并各引用一条带评测条件的原文定量结果'
+    source_excerpt = f'{mechanism}，{per_paper_result}'
+    comparability = '能否用两篇论文的准确率直接排名'
+    internal = 'Model-B 论文内部与 Model-A 的比较能支持什么'
+    joint_excerpt = f'{comparability}，{internal}'
+    question = f'{source_excerpt}。{joint_excerpt}。'
+    method = obligation('method', 'per_paper', '特征与评测', mechanism)
+    method['requestExcerpt'] = source_excerpt
+    joint = obligation('comparison', 'joint', '论文内外比较', joint_excerpt)
+    joint['requestExcerpt'] = joint_excerpt
+    plan = [{'itemId': 'facts', 'question': question, 'obligations': [method, joint]}]
+
+    fixed, _ = normalize_generated_requirements(plan, question, literal_questions=True, literal_imperatives=True,
+        atomic_dimensions=True, compound_questions=True, comparison_roles=True, joint_comparison_requests=True,
+        per_paper_comparison_requests=True, complete_comparison_clauses=True)
+    method, joint = fixed[0]['obligations']
+    assert [row['requirement'] for row in method['completionCriteria']] == [mechanism, per_paper_result]
+    assert [row['requirement'] for row in joint['completionCriteria']] == [comparability, internal]
+
+
 def packets():
     sources={f'P{i+1}':{'workId':work,'versionId':work+'-v1','title':work}
              for i,work in enumerate(('left','right','other'))}

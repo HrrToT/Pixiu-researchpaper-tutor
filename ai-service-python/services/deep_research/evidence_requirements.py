@@ -49,6 +49,9 @@ _COMMAND = re.compile(r'^(?:(?:请你?|帮我|同时|并且?|然后|还要|再|�
     r'describe\b|analy[sz]e\b|design\b|plan\b|summari[sz]e\b|identify\b)',re.I)
 _LIMIT = re.compile(r'未验证|未核验|边界|限制|适用范围|推广范围|\b(?:unverified|limit\w*|boundar\w*)\b',re.I)
 _PROCEDURE_COMMAND = re.compile(r'^(?:设计|规划|design|plan)$',re.I)
+_PER_SOURCE_RESULT = re.compile(
+    r'^(?:(?:并且?|同时|还要|请)\s*)?(?:各自?|分别)\s*(?:引用|列出|提供|给出|报告|选取)\s*'
+    r'(?:一|1)\s*(?:条|项|个|组).{0,75}(?:定量结果|原文结果|测量结果|评测结果|数值)')
 
 
 def _outside_examples(text):
@@ -98,7 +101,7 @@ def _requested_type(text):
     return 'explanation' if _EXPLAIN.search(text) else 'identification'
 
 
-def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False):
+def normalize_generated_requirements(plan, question, *, literal_questions=False,literal_imperatives=False,atomic_dimensions=False,compound_questions=False,comparison_roles=False,joint_comparison_requests=False,per_paper_comparison_requests=False,complete_comparison_clauses=False):
     """Change only the initial AI plan, never a saved human plan edit.
 
     Separate literal human questions when one generated criterion merged them.
@@ -133,9 +136,11 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                 criterion['requirement'] = neutral(criterion['requirement'], oid, 'requirement')
             excerpt = obligation.get('requestExcerpt', '')
             anchored_parts = None
+            allow_source_results = False
             if comparison_roles:
                 from services.deep_research.comparison_intent import validate_role
                 role = validate_role(obligation, question)
+                allow_source_results = complete_comparison_clauses and role['kind'] == 'per_paper'
                 # The longer context excerpt can straddle adjacent dimensions.
                 # Its typed short span identifies this obligation's actual axis.
                 preserve_explicit = (joint_comparison_requests and role['kind'] == 'joint'
@@ -148,11 +153,15 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                         from services.deep_research.compound_questions import split_questions
                         clauses = [part for clause in clauses for part in split_questions(clause)]
                     if 2 <= len(clauses) <= 4 and all(
-                            _ASK.search(_outside_examples(clause)) or _COMMAND.match(clause) for clause in clauses):
+                            _ASK.search(_outside_examples(clause)) or _COMMAND.match(clause)
+                            or allow_source_results and _PER_SOURCE_RESULT.match(clause) for clause in clauses):
                         other_spans = [span for identity, span in comparison_spans.items() if identity != id(obligation)]
                         owned = [clause for clause in clauses if not any(
                             span in clause or clause in span for span in other_spans)]
-                        if len(owned) >= 2 and any(role['requestExcerpt'] in clause for clause in owned):
+                        anchor = role['requestExcerpt']
+                        has_anchor = any(anchor in clause or complete_comparison_clauses and clause in anchor
+                                         for clause in owned)
+                        if len(owned) >= 2 and has_anchor:
                             anchored_parts = owned
                 if anchored_parts is None:
                     excerpt = role['requestExcerpt']
@@ -161,9 +170,11 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
             parts = anchored_parts or (_request_parts(excerpt) if literal_imperatives else _question_parts(excerpt))
             if compound_questions:
                 from services.deep_research.compound_questions import split_questions,has_question,explanatory
-                parts=[piece for part in parts for piece in split_questions(part)]
+                if not (complete_comparison_clauses and anchored_parts):
+                    parts=[piece for part in parts for piece in split_questions(part)]
             if literal_imperatives:
                 requests = [part for part in parts if _ASK.search(_outside_examples(part)) or _COMMAND.match(part)
+                            or allow_source_results and _PER_SOURCE_RESULT.match(part)
                             or compound_questions and has_question(part)]
             else:
                 requests = [part for part in parts if _ASK.search(part)]
@@ -171,7 +182,8 @@ def normalize_generated_requirements(plan, question, *, literal_questions=False,
                 continue
             resolved = [
                 {'criterionId': f'human_aspect_{i+1}', 'requirement': part,
-                 'responseType': _requested_type(part) if literal_imperatives else
+                 'responseType': 'identification' if allow_source_results and _PER_SOURCE_RESULT.match(part) else
+                     _requested_type(part) if literal_imperatives else
                      'explanation' if _EXPLAIN.search(part) else 'identification'}
                 for i, part in enumerate(requests)]
             if compound_questions:
