@@ -9,7 +9,7 @@ import json
 import re
 
 from services.deep_research.table_evidence import visible_table_packet
-from services.deep_research.general_advice import DEVICE_MEMORY_TEST_FIRST_TEXT
+from services.deep_research.general_advice import BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT, DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
 STAGE_ENVELOPE = '''Write in clear Chinese for the audience in requestContext. Return only
@@ -331,10 +331,8 @@ def resolve_point(point, target, registry, *, measurement_display=False):
             raise ValueError('invalid_joint_device_memory_advice')
         # Compile the requested procedure as advice; cited premises still
         # enter the ordinary source, semantic and whole-answer review.
-        text = DEVICE_MEMORY_TEST_FIRST_TEXT
-        if target.get('scopedExampleText') == 6:
-            text = ('磁盘空间紧时，先看模型文件大小。帧率优先时，在同一场景比较帧率，'
-                    '并确认画质达到自己的要求。文件大小和运行显存要分别看。') + text
+        text = (BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT if target.get('scopedExampleText') == 6
+                else DEVICE_MEMORY_TEST_FIRST_TEXT)
         point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}
     if deliverable == 'conditional_advice':
         if point['kind'] not in ('proposal', 'suggestion'):

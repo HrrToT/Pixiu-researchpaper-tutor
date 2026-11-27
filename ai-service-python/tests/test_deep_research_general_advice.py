@@ -309,15 +309,15 @@ def test_hypotheses_and_experiment_objectives_keep_scientific_path():
 
 
 @pytest.mark.parametrize('change, uses_preflight, expected', [
-    ('none', True, 'passed'), ('named_preference', False, 'failed'),
+    ('none', True, 'passed'), ('beginner', True, 'passed'), ('named_preference', False, 'failed'),
     ('paper_condition', False, 'passed'), ('reviewer_rejects', True, 'failed'),
     ('wrong_purpose', True, 'failed'), ('foreign_binding', True, 'failed'),
 ])
 def test_fixed_deployment_preflight_is_reviewed_as_a_future_check(change, uses_preflight, expected):
-    from services.deep_research.general_advice import DEVICE_MEMORY_TEST_FIRST_TEXT
+    from services.deep_research.general_advice import BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT, DEVICE_MEMORY_TEST_FIRST_TEXT
 
     claim, evidence = fixture()
-    claim['text'] = DEVICE_MEMORY_TEST_FIRST_TEXT
+    claim['text'] = BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT if change == 'beginner' else DEVICE_MEMORY_TEST_FIRST_TEXT
     answer = verdict(purpose='other_nonexperimental')
     answer['adviceAudit']['deviceMemory'] = {'mode': 'test_first'}
     if change == 'named_preference':

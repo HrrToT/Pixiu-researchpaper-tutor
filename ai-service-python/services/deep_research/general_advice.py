@@ -8,6 +8,10 @@ _DESIGN_FIELDS={'designRole','executionSpec','designContractVersion','budgetCont
 DEVICE_MEMORY_TEST_FIRST_TEXT = ('先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。'
                                  '根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。'
                                  '若两种方法都超过显存上限，应调整设置后再比较。')
+BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT = (
+    '磁盘空间紧时，先看模型文件大小。帧率优先时，在同一场景比较帧率，'
+    '并确认画质达到自己的要求。文件大小和运行显存要分别看。'
+) + DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
 def eligible(claim):
@@ -53,7 +57,7 @@ revision still requires normal factual, advice-purpose, scope and coverage check
 
 
 def is_fixed_deployment_preflight(claim):
-    return (eligible(claim) and claim.get('text') == DEVICE_MEMORY_TEST_FIRST_TEXT
+    return (eligible(claim) and claim.get('text') in (DEVICE_MEMORY_TEST_FIRST_TEXT, BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT)
             and claim.get('conditions', {}) == {} and claim.get('tableBindings', []) == [])
 
 
