@@ -22,14 +22,15 @@ def include_pdf_method_passages(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     policy = record.get('localSectionContextContractVersion')
-    if (policy not in (5, 6) or limit < 2
+    if (policy not in (5, 6, 7) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
-    annotated = spans(pages, outline=True, normalize_headings=True, terminal_number_period=policy == 6)
-    numbered_layout = policy == 6 and any(
+    numbered = policy in (6, 7)
+    annotated = spans(pages, outline=True, normalize_headings=True, terminal_number_period=numbered)
+    numbered_layout = numbered and any(
         part['role'] == 'method' and re.match(r'^\d{1,2}\s+[^/]+ /', part['section'])
         for _, sections in annotated for part in sections)
-    if policy == 6 and not numbered_layout:
+    if numbered and not numbered_layout:
         annotated = spans(pages, outline=True, normalize_headings=True)
     candidates = []
     title = material.get('title', '')
@@ -112,7 +113,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
     from services.deep_research.text_quality import control_count
 
     if (type(record.get('localSectionContextContractVersion')) is not int
-            or record['localSectionContextContractVersion'] not in (4, 5, 6) or limit < 2
+            or record['localSectionContextContractVersion'] not in (4, 5, 6, 7) or limit < 2
             or not direct_reader_candidate(record, record.get('state', {}).get('outputKind'))):
         return rows
     terms = set(re.findall(r'[a-z]+', query.casefold()))
@@ -157,7 +158,7 @@ def include_pdf_method_heading(rows, pages, record, query, material, limit):
 
 def prioritize_pdf_heading(rows, ordered, bundles, record):
     """Keep a verified, contiguous subsection intact under the synthesis cap."""
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (4, 5, 6, 7):
         return ordered, bundles
     state = record['state']
     read = [source for source in state.get('readResults', [])
@@ -204,7 +205,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     from services.deep_research.selection import balanced_sample
     from services.deep_research.synthesis_evidence import readiness_bundles
 
-    if record.get('localSectionContextContractVersion') not in (5, 6) or len(record.get('materials', ())) != 1:
+    if record.get('localSectionContextContractVersion') not in (5, 6, 7) or len(record.get('materials', ())) != 1:
         return ordered, bundles
     material, = record['materials']
     owner, content_hash = material.get('materialId'), material.get('contentHash')
@@ -227,7 +228,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
     if not candidates:
         return ordered, bundles
     preferred, navigation, exact_navigation = [], [], []
-    whole_passages = record.get('localSectionContextContractVersion') == 6
+    whole_passages = record.get('localSectionContextContractVersion') in (6, 7)
     for item in state.get('plan', []):
         for obligation in item['obligations']:
             oid = obligation['obligationId']
@@ -268,7 +269,7 @@ def prioritize_pdf_methods(rows, ordered, bundles, record):
 
 def include_section_context(rows, candidates, record, owner, limit):
     selected = list(rows[:limit])
-    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6):
+    if type(record.get('localSectionContextContractVersion')) is not int or record['localSectionContextContractVersion'] not in (1, 2, 3, 4, 5, 6, 7):
         return selected
     from services.deep_research.section_premises import requested, explanation_only
     from services.deep_research.request_context import effective_question
@@ -329,7 +330,7 @@ def include_explanation_method(rows, candidates, record, query, owner, limit):
 
     selected = list(rows[:limit])
     version = record.get('localSectionContextContractVersion')
-    if (type(version) is not int or version not in (3, 4, 5, 6) or limit < 2 or not selected
+    if (type(version) is not int or version not in (3, 4, 5, 6, 7) or limit < 2 or not selected
             or record.get('sourcePolicy', {}).get('mode') != 'task_only'
             or len(record.get('materials', [])) != 1 or not explanation_only(record, require_section=False)):
         return selected

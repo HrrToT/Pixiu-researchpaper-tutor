@@ -50,6 +50,21 @@ def spans(text, limit=MAX_PASSAGE_BYTES):
         start = end
 
 
+def _keep_local_method_passage(record, source, location, body):
+    if (record.get('localSectionContextContractVersion') != 7 or len(record.get('materials', ())) != 1
+            or location.get('matchedPdfMethodPassage') is not True or location.get('sectionRole') != 'method'
+            or source.get('accessLevel') != 'fulltext' or source.get('tableData')
+            or len(source.get('pages', ())) != 1 or not body.strip() or len(body) > 1500
+            or len(body.encode('utf8')) > MAX_PASSAGE_BYTES or body != source.get('text')):
+        return False
+    material, = record['materials']
+    owner = material.get('materialId')
+    content_hash = material.get('contentHash')
+    version = material.get('versionId') or content_hash
+    return bool(owner and content_hash and source.get('ownerMaterialId') == source.get('workId') == owner
+                and source.get('versionId') == version and source.get('contentHash') == content_hash)
+
+
 def body_start(source, location, text, *, owned_title=None):
     prefix = f"Paper: {source.get('title')}\n\nSection: {location.get('section')}\n\nContent:\n"
     if text.startswith(prefix): return len(prefix)
@@ -170,7 +185,9 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             location = {**source.get('location', {}), **{k:v for k,v in page.items() if k != 'text'}}
             offset = body_start(source, location, text, owned_title=owned_wrapper_title(record,source))
             body = text[offset:]
-            ranges = list(spans(body))
+            # A short same-page method passage can support a sequence of
+            # operations under one literal citation, including its final step.
+            ranges = [(0, len(body))] if _keep_local_method_passage(record, source, location, body) else list(spans(body))
             if source['sourceId'] in continuations:
                 original_span = protocol.continuation_range(body)
                 if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):

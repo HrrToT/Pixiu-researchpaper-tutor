@@ -13,9 +13,9 @@ from test_deep_research_extraction import setup
 from test_deep_research_adaptive_extraction import activate
 
 
-def fixture(tmp_path, reads=None):
+def fixture(tmp_path, reads=None, **markers):
     repo, old = setup(tmp_path)
-    repo = activate(repo, adaptiveExtractionContractVersion=3)
+    repo = activate(repo, adaptiveExtractionContractVersion=3, **markers)
     repo.update_run('r', lambda r:{**r,'state':{**r['state'],'evidence':[]}})
     if reads is not None:
         repo.update_run('r', lambda r:{**r,'state':{**r['state'],'readResults':reads}})
@@ -39,6 +39,37 @@ def test_raw_passages_keep_all_sources_and_are_not_semantically_approved(tmp_pat
         assert (e['sourceWorkId'],e['sourceVersionId'],e['contentHash'])==(source['workId'],source['versionId'],source['contentHash'])
     invoke.assert_not_called(); assert saved['budget']==before
     assert not repo.list_calls('r')
+
+
+@pytest.mark.parametrize(('version', 'source_version', 'repeat', 'whole'), [
+    (7, 'v1', 1, True),
+    (6, 'v1', 1, False),
+    (7, 'v2', 1, False),
+    (7, 'v1', 12, False),
+])
+def test_short_local_method_quote_keeps_all_steps_in_one_exact_evidence_row(
+        tmp_path, version, source_version, repeat, whole):
+    text = ('Generate a second image by homography. Map the pixel centers forward. '
+            'Map them back with the inverse. Discretize both directions. Discard non-bijective pairs. ') * repeat
+    reads = [{'sourceId': 'method', 'workId': 'paper', 'ownerMaterialId': 'paper',
+              'versionId': source_version, 'contentHash': 'hash', 'accessLevel': 'fulltext',
+              'text': text, 'obligationIds': ['o'], 'pages': [{'page': 4, 'text': text}],
+              'location': {'page': 4, 'sectionRole': 'method', 'matchedPdfMethodPassage': True}}]
+    repo, invoke, _ = fixture(tmp_path, reads, localSectionContextContractVersion=version,
+                              materials=[{'materialId': 'paper', 'versionId': 'v1', 'contentHash': 'hash'}])
+    extract_node = node(repo, invoke)
+    extract_node({'run_id': 'r'})
+    evidence = repo.require_run('r')['state']['evidence']
+    assert ''.join(row['quote'] for row in evidence) == text
+    assert (len(evidence) == 1) is whole
+    if whole:
+        row, = evidence
+        assert row['location']['page'] == 4
+        assert (row['location']['sourcePassageStart'], row['location']['sourcePassageEnd']) == (0, len(text))
+        assert row['verification'] == {'literal': 'passed', 'semantic': 'unchecked'}
+    extract_node({'run_id': 'r'})
+    assert repo.require_run('r')['state']['evidence'] == evidence
+    invoke.assert_not_called()
 
 
 @pytest.mark.parametrize('text',['中文原文。'*1700,'A complete clause. '*900,'x'*10001,'🦊'*1200],ids=['chinese','english','longword','emoji'])
