@@ -1,6 +1,7 @@
 """Isolated public-PDF parsing worker; parent enforces a process deadline."""
 import io
 import json
+import re
 import sys
 from collections import OrderedDict
 
@@ -14,13 +15,25 @@ def _control_count(text):
 
 FORM_CACHE_ENTRIES = 256
 FORM_CACHE_BYTES = 2 * 1024 * 1024
+_TEXT_SHOW_OPERATOR = re.compile(rb"""T[Jj]|['"]""")
+
+
+def _image_only_form(xform, data):
+    if _TEXT_SHOW_OPERATOR.search(data):
+        return False
+    try:
+        children = xform['/Resources']['/XObject']
+        return bool(children) and all(children[name]['/Subtype'] == '/Image' for name in children)
+    except (KeyError, TypeError, AttributeError):
+        return False
 
 
 def _extract_page_text(page):
     """Reuse Form text within this page without dropping repeated occurrences.
 
     A Form with no T-family operator, quote text operator, or Do invocation
-    cannot contribute text or invoke a nested Form. The raw-byte negative
+    cannot contribute text or invoke a nested Form. A Form with only image
+    children and no text-show operator cannot contribute text either. The raw-byte negative
     filter is conservative: markers in comments/strings only cause extra work.
     Text-bearing or nested Forms still use the original extractor. Visitor
     calls bypass both optimizations so their observable callbacks are retained.
@@ -40,7 +53,8 @@ def _extract_page_text(page):
             cache.move_to_end(key)
             return cache[key][1]
         data = xform.get_data()
-        if isinstance(data, bytes) and not any(mark in data for mark in (b'T', b"'", b'"', b'Do')):
+        if isinstance(data, bytes) and (not any(mark in data for mark in (b'T', b"'", b'"', b'Do'))
+                                        or _image_only_form(xform, data)):
             text = ''
         else:
             text = original(xform, orientations, space_width)

@@ -11,7 +11,7 @@ from PyPDF2.generic import (
 from services import deep_research_pdf_parser as parser
 
 
-def document(*, repeat=4, graphic=False, leaf_content=None, second_page=False):
+def document(*, repeat=4, graphic=False, leaf_content=None, second_page=False, image=False):
     writer = PdfWriter()
     font = writer._add_object(DictionaryObject({
         NameObject('/Type'): NameObject('/Font'),
@@ -38,6 +38,12 @@ def document(*, repeat=4, graphic=False, leaf_content=None, second_page=False):
         # Pure paths have no text operators. Repeat inside and outside forms.
         children['/Shape'] = form(b'q\n' + b'0 0 m 1 1 l 2 0 l h S\n' * 50 + b'Q')
         stream += b'/Shape Do\n' * repeat
+    if image:
+        raster = DecodedStreamObject()
+        raster.set_data(b'\x00')
+        raster[NameObject('/Subtype')] = NameObject('/Image')
+        children['/Backdrop'] = form(b'/Raster Do\n0 0 m 4 3 l S', {'/Raster': writer._add_object(raster)})
+        stream += b'/Backdrop Do\n' * repeat
     branch = form(stream, children)
     top = form(b'/Branch Do\n' * repeat, {'/Branch': branch})
 
@@ -69,6 +75,20 @@ def test_nested_forms_keep_every_occurrence_and_decode_each_identity_once(monkey
     calls.clear()
     actual = parser._extract_page_text(PdfReader(io.BytesIO(body)).pages[0])
     assert actual == expected and len(calls) == 3
+
+
+def test_image_only_child_form_is_skipped_and_nested_text_is_kept(monkeypatch):
+    body = document(repeat=2, image=True)
+    expected = PdfReader(io.BytesIO(body)).pages[0].extract_text()
+    original = PageObject.extract_xform_text
+
+    def counted(self, xform, *args, **kwargs):
+        assert '/Raster' not in xform['/Resources'].get('/XObject', {})
+        return original(self, xform, *args, **kwargs)
+
+    monkeypatch.setattr(PageObject, 'extract_xform_text', counted)
+    text = parser._extract_page_text(PdfReader(io.BytesIO(body)).pages[0])
+    assert text == expected and text.count('evidence 42') == 8
 
 
 @pytest.mark.parametrize('content', [
