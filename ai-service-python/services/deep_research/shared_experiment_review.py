@@ -831,7 +831,7 @@ def assess(record, input_data, aliases, response):
             'reviewDigest':digest({'generation':generation['bindingDigest'],'response':response})}
 
 
-def _initial_batch_budget_stop(record, built):
+def _initial_batch_budget_stop(record, built, *, can_count_input=False):
     from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN
     batches = built.get('batches')
     budget = record.get('budget') or {}
@@ -850,7 +850,8 @@ def _initial_batch_budget_stop(record, built):
         return None
     spent = int(budget.get('tokens') or 0)
     for index, batch in enumerate(pending_batches, start=offset):
-        reservation = batch['inputBytes'] + batch['request']['extra']['max_tokens'] + INPUT_RESERVATION_MARGIN
+        input_allowance = 1 if can_count_input else batch['inputBytes']
+        reservation = input_allowance + batch['request']['extra']['max_tokens'] + INPUT_RESERVATION_MARGIN
         if spent + reservation > limit:
             # Actual usage settles between packets. Only reject if an individual
             # packet cannot fit even before any earlier packet consumes tokens.
@@ -858,7 +859,7 @@ def _initial_batch_budget_stop(record, built):
     return None
 
 
-def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=()):
+def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=(), can_count_input=False):
     from services.deep_research.planning_transport import dispatch_options
     built = build(record,input_data,aliases,required_domains=required_domains)
     saved = deepcopy(record.get('state',{}).get(review_slot(record)))
@@ -868,7 +869,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         elif (built['inputBytes'] > MAX_INPUT or (record.get(COMPACT_REVIEW_MARKER) == 2 or reference_review_enabled(built))
               and len(built['targets']) > MAX_CHECKS_PER_REVIEW and not built.get('batches')):
             saved['status'] = 'not_started_capacity'
-        elif stop := _initial_batch_budget_stop(record, built):
+        elif stop := _initial_batch_budget_stop(record, built, can_count_input=can_count_input):
             saved.update(status='not_started_budget', budgetStop=stop)
         checkpoint(deepcopy(saved))
     elif (not isinstance(saved,dict) or type(saved.get('version')) is not int or saved['version'] != 1

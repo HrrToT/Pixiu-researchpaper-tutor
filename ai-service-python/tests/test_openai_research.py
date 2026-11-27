@@ -234,3 +234,68 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
         assert generated["input"][-1]["content"] == prompt
     finally:
         facade.shutdown()
+
+
+@pytest.mark.parametrize("tokens,count,ordinary_calls,expected_sends", [
+    (20000, 8900, None, ["/responses"]),
+    (79000, 8900, None, ["/responses/input_tokens", "/responses"]),
+    (79000, 24000, None, ["/responses/input_tokens"]),
+    (79000, 8900, 7, ["/responses/input_tokens", "/responses"]),
+    (79000, 8900, 13, []),
+])
+def test_scientific_review_counts_only_after_conservative_reservation_fails(
+        tmp_path, monkeypatch, tokens, count, ordinary_calls, expected_sends):
+    from services.deep_research.contracts import BudgetExhaustedError
+    from services.deep_research.shared_experiment_review import NODE
+    from services.deep_research.tools import TrackedLLMInvoker
+    from test_deep_research_shared_experiment_review import ready
+
+    record, _, _ = ready()
+    record.update(openaiResearchModels=["main", "routine"], countedExperimentReviewContractVersion=1)
+    record["budget"].update(tokens=tokens, maxTokens=100000, normalTokens=0)
+    if ordinary_calls is not None:
+        record["budget"].update(modelCalls=ordinary_calls, reservedModelCalls=5, reserveModelCalls=5,
+                                reserveTokens=50000, normalTokens=26078, finalizationBudgetVersion=1)
+    repo = DeepResearchRepository(tmp_path / "science.sqlite3")
+    repo.initialize()
+    assert repo.create_run(record)[1]
+    repo.begin_execution(record["runId"])
+    monkeypatch.setattr(settings, "openai_api_key", "test-key")
+    bound = ScopedModelClient(repo, lambda *_: True, Mock()).for_run(record["runId"])
+    invoker = TrackedLLMInvoker(bound, repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
+                                call_history_fn=repo.list_calls, verification_max_input_bytes=32000)
+    sends = []
+    def post(url, **kwargs):
+        path = url.removeprefix("https://api.openai.com/v1")
+        sends.append((path, kwargs["json"]))
+        response = Mock(status_code=200, headers={})
+        if path.endswith("/input_tokens"):
+            assert not repo.list_calls(record["runId"])
+            response.json.return_value = {"object": "response.input_tokens", "input_tokens": count}
+        else:
+            (reserved,) = repo.list_calls(record["runId"])
+            assert reserved["status"] == "pending"
+            if len(expected_sends) == 2:
+                assert reserved["reservedTokens"] == count + 1024 + 4096
+            response.json.return_value = {"status":"completed","output":[{"type":"message","content":[
+                {"type":"output_text","text":"{}"},
+            ]}],"usage":{"input_tokens":count,"output_tokens":10,"total_tokens":count+10}}
+        return response
+
+    monkeypatch.setattr("llm.client.requests.post", post)
+    def send():
+        return invoker(record["runId"], NODE, "Review the JSON proposal. " + "x" * 22000,
+                       {"max_tokens": 4096}, use_reserve=True)
+    if not expected_sends or expected_sends[-1].endswith("/input_tokens"):
+        with pytest.raises(BudgetExhaustedError):
+            send()
+        assert not repo.list_calls(record["runId"])
+    else:
+        result = send()
+        assert result.get("auditInputTokens") == (count if len(expected_sends) == 2 else None)
+        assert send() == result
+    assert [path for path, _ in sends] == expected_sends
+    if len(sends) == 2:
+        measured, generated = (payload for _, payload in sends)
+        assert measured == {k:v for k,v in generated.items() if k not in {"store", "max_output_tokens"}}
+        assert measured["text"]["format"]["type"] == "json_schema"

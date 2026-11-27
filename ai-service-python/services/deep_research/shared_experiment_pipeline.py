@@ -58,12 +58,15 @@ def verify(record,update,invoke):
     from services.deep_research.shared_experiment_review import prepare as science,review_slot
     from services.deep_research.shared_experiment_answer import prepare as answer,slot as answer_slot,claim_for
     from services.deep_research.shared_experiment_revision import prepare as repair
+    from services.deep_research.tools import TrackedLLMInvoker
     rid=record['runId']; snapshot=record['state']['sharedExperimentInput']; data=snapshot['data'];aliases=snapshot['aliases']
     def current():return update(rid,lambda r:r,expected_revision=None)
     def run_science():
-        r=current();return science(r,data,aliases,required_domains=snapshot['requiredDomains'],
+        r=current()
+        return science(r,data,aliases,required_domains=snapshot['requiredDomains'],
             invoke=lambda node,prompt,opts:invoke(rid,node,prompt,opts,use_reserve=True),
-            checkpoint=_save(update,rid,review_slot(r)))
+            checkpoint=_save(update,rid,review_slot(r)),
+            can_count_input=isinstance(invoke,TrackedLLMInvoker) and invoke.supports_counted_experiment_review(r))
     def run_answer():
         r=current();return answer(r,data,aliases,invoke=invoke,checkpoint=_save(update,rid,answer_slot(r)))
     reviewed=run_science(); release=None

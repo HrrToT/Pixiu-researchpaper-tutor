@@ -81,6 +81,7 @@ def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeyp
     assert saved['budgetStop'] == {
         'batchIndex': 1, 'limit': 100000, 'spent': 67740, 'reservation': 37033,
     }
+    assert review._initial_batch_budget_stop(record, built, can_count_input=True) is None
     record['state'][review.review_slot(record)] = saved
     checkpoint.reset_mock()
     with pytest.raises(BudgetExhaustedError):
@@ -110,6 +111,7 @@ def test_scoped_review_checks_calls_in_both_pools_before_first_packet(monkeypatc
     with pytest.raises(BudgetExhaustedError) as caught:
         prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
     assert caught.value.details == {'kind': 'modelCalls', 'limit': 12, 'used': 13}
+    assert review._initial_batch_budget_stop(record, built, can_count_input=True)['kind'] == 'modelCalls'
     assert checkpoint.call_args.args[0]['status'] == 'not_started_budget'
     invoke.assert_not_called()
 

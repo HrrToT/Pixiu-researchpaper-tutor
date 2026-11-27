@@ -389,6 +389,7 @@ class DeepResearchRepository:
                                      'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion',
                                      'openaiResearchModels', 'comparisonPdfTableFallbackVersion',
                                      'countedComparisonAuditContractVersion',
+                                     'countedExperimentReviewContractVersion',
                                      'comparisonBeginnerLeadContractVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',

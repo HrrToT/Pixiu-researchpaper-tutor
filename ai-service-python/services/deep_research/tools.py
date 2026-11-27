@@ -12,6 +12,7 @@ import re
 from typing import Any, Callable, Protocol
 
 from services.deep_research.contracts import (
+    BudgetExhaustedError,
     CALL_STATUS_FAILED,
     CALL_STATUS_SUCCEEDED,
     DeepResearchError,
@@ -348,15 +349,20 @@ class TrackedLLMInvoker:
         from services.deep_research.comparison_stage_generation import recorded_response
         return recorded_response(self._run_record(run_id),prompt,options,self._call_history(run_id))
     
-    def supports_counted_comparison_audit(self, record):
-        from services.deep_research.comparison_audit_envelope import enabled
-
-        version = record.get("countedComparisonAuditContractVersion")
-        return (type(version) is int and version == 1 and enabled(record)
-                and bool(record.get("openaiResearchModels"))
+    def _supports_audit_counting(self, record, version_field):
+        version = record.get(version_field)
+        return (type(version) is int and version == 1 and bool(record.get("openaiResearchModels"))
                 and self._call_history is not None and self._run_record is not None
                 and callable(getattr(type(self._client), "count_audit_input", None))
                 and callable(getattr(type(self._client), "invoke_counted_audit", None)))
+
+    def supports_counted_comparison_audit(self, record):
+        from services.deep_research.comparison_audit_envelope import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedComparisonAuditContractVersion")
+
+    def supports_counted_experiment_review(self, record):
+        from services.deep_research.shared_experiment_generation import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedExperimentReviewContractVersion")
 
     def __call__(
         self,
@@ -469,11 +475,19 @@ class TrackedLLMInvoker:
             extra_body=extra_body or {},
             timeout_seconds=(extra_body or {}).get("timeout_seconds"),
         )
+        def routed_client():
+            return self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+
+        def reserve(input_allowance):
+            return self._reserve(run_id=run_id, node=node, tool="llm_invoke", args_digest=args_digest,
+                                 budget_delta={"modelCalls": 1, "tokens": input_allowance + max_output},
+                                 use_reserve=use_reserve)
+
         counted_input = None
         if counted_audit:
-            from services.deep_research.contracts import BudgetExhaustedError, UnresolvedUnknownError
+            from services.deep_research.contracts import UnresolvedUnknownError
             from services.deep_research.final_coverage import coverage_prompt_byte_limit
-            client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+            client = routed_client()
             calls = self._call_history(run_id)
             same_call = any(call.get("node") == node and call.get("tool") == "llm_invoke"
                             and call.get("argsDigest") == args_digest for call in calls)
@@ -489,18 +503,37 @@ class TrackedLLMInvoker:
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
                 estimated_input = counted_input + INPUT_RESERVATION_MARGIN
         
-        # Reserve BEFORE network
-        call_record, reused = self._reserve(
-            run_id=run_id,
-            node=node,
-            tool="llm_invoke",
-            args_digest=args_digest,
-            budget_delta={
-                "modelCalls": 1,
-                "tokens": estimated_input + max_output,
-            },
-            use_reserve=use_reserve,
-        )
+        # A rejected reservation leaves no call or usage behind. The same
+        # scientific Responses packet may then fit using a measured count.
+        try:
+            call_record, reused = reserve(estimated_input)
+        except BudgetExhaustedError as exc:
+            if (node != "review_experiment_shared" or not use_reserve or not structured
+                    or not self.supports_counted_experiment_review(transport_record)):
+                raise
+            budget = self._run_record(run_id)["budget"]
+            if budget["maxTokens"] - budget["tokens"] <= max_output + INPUT_RESERVATION_MARGIN:
+                raise
+            reason = exc.details.get("kind")
+            if reason == "modelCalls":
+                # Once protected call slots fill up, a too-large token
+                # reservation can prevent selection of the normal call pool.
+                # Count only if that pool has a slot at the lowest input cost.
+                from services.deep_research.finalization_pool import select_reservation_pool
+                minimum = {"modelCalls": 1, "tokens": max_output + INPUT_RESERVATION_MARGIN + 1}
+                if select_reservation_pool(budget, minimum, True, node):
+                    raise
+            elif reason not in {"tokens", "normalTokens"}:
+                raise
+            counted_input = routed_client().count_audit_input(request)
+            if type(counted_input) is not int or counted_input <= 0:
+                raise
+            estimated_input = counted_input + INPUT_RESERVATION_MARGIN
+            current = self._run_record(run_id)["budget"]
+            projected = current["tokens"] + estimated_input + max_output
+            if projected > current["maxTokens"]:
+                raise BudgetExhaustedError("tokens", current["maxTokens"], projected)
+            call_record, reused = reserve(estimated_input)
         
         if reused:
             if initial_plan_response:
@@ -512,8 +545,7 @@ class TrackedLLMInvoker:
             if counted_audit:
                 result = client.invoke_counted_audit(request)
             else:
-                client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
-                result = client.invoke(request)
+                result = routed_client().invoke(request)
         except LLMProviderError as exc:
             # LLMProviderError with no status_code means unknown (timeout/connection)
             # Rejected HTTP status means failed

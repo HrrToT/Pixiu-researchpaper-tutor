@@ -30,6 +30,11 @@ class OpenAIResearchLLM(CompletionHTTPClient):
     def _counted_request(self, request):
         body = request.extra_body
         cap = body.get("max_tokens")
+        if (body.get(API_KEY) == "responses" and not request.stop and request.messages
+                and isinstance(body.get("response_format"), dict)
+                and body["response_format"].get("type") == "json_schema"
+                and type(cap) is int and cap > 0):
+            return request
         if (request.stop or not request.messages or body.get("response_format") != {"type": "json_object"}
                 or API_KEY in body or type(cap) is not int or cap <= 0):
             raise ValueError("Counted audit requires bounded JSON-object Responses input")
@@ -45,11 +50,14 @@ class OpenAIResearchLLM(CompletionHTTPClient):
         if not self.configured_key():
             return None
         timeout = min(5, self.timeout_seconds, request.timeout_seconds or self.timeout_seconds)
+        payload = self.adapt_payload(self.build_responses_payload(request.messages, request.extra_body),
+                                     responses_mode=True)
+        context = {key: value for key, value in payload.items() if key not in {"store", "max_output_tokens"}}
         try:
             response = call_with_deadline(lambda: requests.post(
                 f"{self.base_url}/responses/input_tokens",
                 headers={"Authorization": f"Bearer {self.configured_key()}"},
-                json=self._counted_context(request.messages),
+                json=context,
                 timeout=timeout,
                 **self.request_flags,
             ), timeout)
