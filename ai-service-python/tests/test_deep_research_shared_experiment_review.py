@@ -5,6 +5,21 @@ from unittest.mock import Mock
 import pytest
 
 
+def test_fact_packet_explains_its_scope_and_binding_limit():
+    from services.deep_research.shared_experiment_review import (
+        REFERENCE_MARKER, SCOPED_PACKET_MARKER, _scoped_packet_policy,
+    )
+    record = {REFERENCE_MARKER: 4, SCOPED_PACKET_MARKER: 6}
+    facts = _scoped_packet_policy(record, {'factChecks': [['fact_0']]})
+    sections = _scoped_packet_policy(record, {'factChecks': [], 'sectionChecks': [['section_0']]})
+    assert 'omits the design' in facts
+    assert 'sourceFacts only' in facts
+    assert 'omits the design' not in sections
+    assert 'at most 16' in facts and 'at most 16' in sections
+    assert 'omits the design' not in _scoped_packet_policy(
+        {**record, SCOPED_PACKET_MARKER: 5}, {'factChecks': [['fact_0']]})
+
+
 def test_lifecycle_array_binding_proves_absence_without_approving_a_check():
     from services.deep_research.shared_experiment_review import _binding_findings
 
