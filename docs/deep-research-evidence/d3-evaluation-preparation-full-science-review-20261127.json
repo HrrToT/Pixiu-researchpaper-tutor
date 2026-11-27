@@ -1,0 +1,328 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "qualification": "one isolated full science review of the saved development revision",
+  "sourceRunId": "dr_run_db632a41cce05174b2d3f134d7f1316b",
+  "reviewRunId": "dr_d3_evaluation_preparation_scientific_review_20261127",
+  "sourceCommit": "a7c82a1e04b2322c7268435d62dab79cb77fae60",
+  "proposalBindingDigest": "9bd5ca6e6455865a7d7af641f9c1137d4f8ef58e9331d752b8ee047693039d83",
+  "independentCredit": 0,
+  "regressionTestsPassed": 184,
+  "liveReview": {
+    "providerCalls": 4,
+    "newProviderTokens": 33531,
+    "combinedProviderTokens": 67874,
+    "combinedProviderCalls": 11,
+    "elapsedSecondsThroughLastReceipt": 194.465,
+    "earlierElapsedSeconds": 137.0,
+    "noNewGenerationOrRevision": true,
+    "automaticRetry": false,
+    "productionWrites": 0,
+    "factualChecksReportedPassed": 9,
+    "batches": [
+      {
+        "batch": 1,
+        "checkIds": [
+          "fact_0",
+          "fact_1",
+          "fact_2",
+          "fact_3",
+          "fact_4",
+          "fact_5",
+          "fact_6",
+          "fact_7",
+          "fact_8"
+        ],
+        "inputBytes": 19361,
+        "reportedCheckCounts": {
+          "passed": 9
+        },
+        "reportedIssues": [
+          {
+            "reason": "提供的方案仅含论文事实，缺少所请求的可执行 2×2 实验设计，包括四组干预、配对起点、操作和优化器状态、预算与执行顺序、峰值显存计量、效应判断及资源不足处理。",
+            "planBindings": []
+          }
+        ],
+        "reportedNonPassingChecks": [],
+        "validationErrors": []
+      },
+      {
+        "batch": 2,
+        "checkIds": [
+          "section_0",
+          "section_1",
+          "section_2",
+          "section_3",
+          "section_4",
+          "section_5",
+          "section_6",
+          "section_7"
+        ],
+        "inputBytes": 31934,
+        "reportedCheckCounts": {
+          "passed": 5,
+          "unresolved": 2,
+          "failed": 1
+        },
+        "reportedIssues": [
+          {
+            "reason": "共享准备和测试配准在克隆前使用两个独立墙钟上限，未满足要求的单一共享准备上限。",
+            "planBindings": [
+              "/budgets/0/cap",
+              "/budgets/1/cap",
+              "/steps/3/budgetId",
+              "/steps/4/id"
+            ]
+          }
+        ],
+        "reportedNonPassingChecks": [
+          {
+            "checkId": "section_2",
+            "status": "unresolved",
+            "planBindings": [
+              "/states/4/representation",
+              "/states/7/representation",
+              "/steps/2/operation/action",
+              "/steps/9/operation/action",
+              "/data/inputs/1/preparation"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E5",
+                "field": "quote"
+              },
+              {
+                "evidenceId": "E7",
+                "field": "quote"
+              }
+            ],
+            "reason": "状态及主要参数有说明，但检查点和优化器的张量形状、参数组映射及完整可恢复编码未具体规定；所需实现和工具也尚待取得和验收。"
+          },
+          {
+            "checkId": "section_5",
+            "status": "failed",
+            "planBindings": [
+              "/budgets/0/cap",
+              "/budgets/1/cap",
+              "/budgets/2/cap",
+              "/steps/2/operation/action",
+              "/steps/3/operation/action",
+              "/steps/9/operation/action"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E5",
+                "field": "quote"
+              },
+              {
+                "evidenceId": "E4",
+                "field": "before"
+              }
+            ],
+            "reason": "四臂优化步数相等且初始化与调度具体，但克隆前共享准备被拆为 prep 和 testprep 两个独立墙钟上限，不满足一个共享墙钟上限的检查要求。"
+          },
+          {
+            "checkId": "section_6",
+            "status": "unresolved",
+            "planBindings": [
+              "/metrics/0/procedure",
+              "/metrics/2/procedure",
+              "/metrics/3/procedure",
+              "/steps/9/operation/action",
+              "/steps/10/operation/action"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E6",
+                "field": "quote"
+              },
+              {
+                "evidenceId": "E6",
+                "field": "after"
+              }
+            ],
+            "reason": "测试质量与训练显存分开，窗口、同步、重置和失败标记均有规定；但设备级高水位仅要求连续记录及保证捕获，未给出可验证的实际峰值采集机制。"
+          }
+        ],
+        "validationErrors": []
+      },
+      {
+        "batch": 3,
+        "checkIds": [
+          "requirement_0_0",
+          "requirement_0_1",
+          "requirement_0_2",
+          "requirement_0_3",
+          "requirement_1_0",
+          "requirement_2_0",
+          "requirement_3_0"
+        ],
+        "inputBytes": 31998,
+        "reportedCheckCounts": {
+          "passed": 4,
+          "failed": 3
+        },
+        "reportedIssues": [
+          {
+            "reason": "显存协议同时要求连续记录设备级已用显存和保证捕获实际高水位，却未规定具有该保证的计量机制或验证方法；若无法保证则停止，因而主要显存终点尚不可执行。",
+            "planBindings": [
+              "/steps/9/operation/action",
+              "/metrics/3/procedure"
+            ]
+          },
+          {
+            "reason": "初始化和训练依赖尚未取得的原始实现，但未锁定全部必要的初始参数、采样与渲染设置；验收可运行不能替代事先明确实验配置。",
+            "planBindings": [
+              "/data/inputs/1/preparation",
+              "/steps/2/operation/action",
+              "/steps/9/operation/action"
+            ]
+          }
+        ],
+        "reportedNonPassingChecks": [
+          {
+            "checkId": "requirement_0_1",
+            "status": "failed",
+            "planBindings": [
+              "/steps/2/operation/action",
+              "/steps/9/operation/action",
+              "/budgets/2/cap",
+              "/data/splitPrecheck"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E5",
+                "field": "quote"
+              },
+              {
+                "evidenceId": "E7",
+                "field": "quote"
+              }
+            ],
+            "reason": "虽然规定了划分预检、预算和部分优化设置，但未具体规定初始位置以外的高斯参数、训练相机采样和渲染等必要实现细节，仍依赖尚未取得且未锁定的实现，不能据此独立执行。"
+          },
+          {
+            "checkId": "requirement_0_2",
+            "status": "failed",
+            "planBindings": [
+              "/steps/9/operation/action",
+              "/steps/10/operation/action",
+              "/metrics/3/procedure",
+              "/analysis/contrasts/0/weights",
+              "/analysis/contrasts/1/weights",
+              "/analysis/contrasts/2/weights",
+              "/analysis/decisionRule"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E6",
+                "field": "quote"
+              }
+            ],
+            "reason": "对比权重、质量测量和顺序基本明确，但设备级显存要求捕获实际高水位，却未指定可保证捕获短暂峰值的计量方法或验证办法；普通连续采样不能保证该要求。"
+          },
+          {
+            "checkId": "requirement_3_0",
+            "status": "failed",
+            "planBindings": [
+              "/pairing/identityChecks",
+              "/data/trainingSplit",
+              "/data/evaluationSplit",
+              "/budgets/2/cap",
+              "/steps/9/operation/action",
+              "/steps/10/operation/action",
+              "/metrics/3/procedure",
+              "/analysis/limitations"
+            ],
+            "evidenceBindings": [
+              {
+                "evidenceId": "E6",
+                "field": "quote"
+              }
+            ],
+            "reason": "配对、划分、等步数、质量指标和资源不足处理均有规定，但设备级峰值仅要求连续记录并保证实际高水位，未给出能实现或验证这一保证的具体计量方法。"
+          }
+        ],
+        "validationErrors": []
+      },
+      {
+        "batch": 4,
+        "checkIds": [
+          "requirement_4_0"
+        ],
+        "inputBytes": 31705,
+        "reportedCheckCounts": {
+          "passed": 1
+        },
+        "reportedIssues": [],
+        "reportedNonPassingChecks": [],
+        "validationErrors": [
+          {
+            "path": [
+              "checks",
+              0,
+              "planBindings"
+            ],
+            "rule": "maxItems"
+          }
+        ]
+      }
+    ],
+    "result": "invalid_response",
+    "scientificApproval": false,
+    "finalAnswerAuditSent": false,
+    "rawReceiptSha256": {
+      "intent.json": "771c8730cb3fca11abf82336cd491b66c57705b468a1f6af2ad945afc5fd9eaf",
+      "run.json": "cdcd99064299c9bbbcecd7c7b4a156a6ec45f453863e367e23e0e75f159f7c60",
+      "calls.json": "94afac3881c6bdc53fd67c3e71b1ea1ad51671fa46648d9d6a832cc4f70d9cc2"
+    }
+  },
+  "offlineFollowup": {
+    "packetPolicyVersion": 6,
+    "retainsAllCheckIds": true,
+    "projectedReviewBatches": [
+      {
+        "inputBytes": 19314,
+        "checkIds": [
+          "fact_0",
+          "fact_1",
+          "fact_2",
+          "fact_3",
+          "fact_4",
+          "fact_5",
+          "fact_6",
+          "fact_7",
+          "fact_8"
+        ]
+      },
+      {
+        "inputBytes": 31803,
+        "checkIds": [
+          "section_0",
+          "section_1",
+          "section_2",
+          "section_3",
+          "section_4",
+          "section_5",
+          "section_6",
+          "section_7"
+        ]
+      },
+      {
+        "inputBytes": 31989,
+        "checkIds": [
+          "requirement_0_0",
+          "requirement_0_1",
+          "requirement_0_2",
+          "requirement_0_3",
+          "requirement_1_0",
+          "requirement_2_0",
+          "requirement_3_0",
+          "requirement_4_0"
+        ]
+      }
+    ],
+    "newCandidateGenerationInputBytes": 31558,
+    "newProviderCalls": 0,
+    "scientificApproval": false
+  }
+}
