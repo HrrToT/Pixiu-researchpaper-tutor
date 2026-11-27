@@ -1,0 +1,21 @@
+{
+  "case": "H3-PYRAMIDKV",
+  "definitionHash": "f369558b1f311f0fa1906e43ec49b5f42ceed1a417fe650c0aa251cc7cab6e56",
+  "reviewedPages": [
+    5,
+    6
+  ],
+  "liveInventory": {
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 195,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

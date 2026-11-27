@@ -138,6 +138,14 @@
         "preflight": "deep-research-evidence/minference-external-holdout-preflight-20261128.json",
         "result": "deep-research-evidence/minference-h3-first-and-pinned-fallback-20261128.json",
         "scientificContentCredit": 0
+      },
+      "pyramidKVExecution": {
+        "state": "first_execution_acquisition_passed_content_not_accepted",
+        "case": "H3-PYRAMIDKV",
+        "manifest": "DEEP_RESEARCH_PYRAMIDKV_EXTERNAL_HOLDOUT_20261128.json",
+        "preflight": "deep-research-evidence/pyramidkv-external-holdout-preflight-20261128.json",
+        "result": "deep-research-evidence/pyramidkv-h3-first-and-access-label-replay-20261128.json",
+        "scientificContentCredit": 0
       }
     },
     {

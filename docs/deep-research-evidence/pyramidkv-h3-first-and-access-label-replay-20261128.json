@@ -1,0 +1,82 @@
+{
+  "case": "H3-PYRAMIDKV",
+  "definitionHash": "f369558b1f311f0fa1906e43ec49b5f42ceed1a417fe650c0aa251cc7cab6e56",
+  "attempt": 1,
+  "codeCommit": "13648088ad2d57fd2e60ff3054e65586abe2a351",
+  "runId": "dr_run_169422a42dc35ec1bdcb6a697b6213ea",
+  "initialMaterials": 0,
+  "initialSourceCacheEntries": 0,
+  "evaluatorPdfImported": false,
+  "acquisition": {
+    "systemProxy": true,
+    "arxivMetadataSucceeded": true,
+    "pinnedFallbackEnabled": true,
+    "pinnedFallbackNeeded": false,
+    "searches": 1,
+    "realPdfGets": 1,
+    "cacheHit": false,
+    "versionId": "arxiv:2406.02069v1",
+    "physicalPages": 13,
+    "pdfSha256": "5dfea3a4a81f0b212ac586d2a436fe7b1fd5f9677a901b8f5be1072cf3ebdbaf",
+    "matchesEvaluatorPdf": true
+  },
+  "originalReport": {
+    "status": "completed",
+    "outcome": "partial",
+    "visibleCharacters": 245,
+    "characterLimit": 300,
+    "sourceAccessLabel": "本回答引用：全文片段。",
+    "literalCitationsVerified": 3,
+    "claims": [
+      {"claimId": "C1", "physicalPages": [5], "support": "supported", "check": "Lower layers receive more capacity and higher layers less, following the reported attention pattern."},
+      {"claimId": "C2", "physicalPages": [6], "support": "supported", "check": "The input-tail window is retained and its attention scores guide selection of prior positions."}
+    ],
+    "reviewScores": {
+      "goalResponse": 3,
+      "sourceSupport": 5,
+      "conditions": 3,
+      "synthesis": 4,
+      "actionability": null,
+      "readability": 3
+    },
+    "contentGaps": [
+      "The selection is made separately within each attention head under the layer budget.",
+      "The report does not explain the terms KV, token, or the alpha notation to a beginner."
+    ],
+    "wholeAnswerAudit": "invalid_response",
+    "invalidObligation": "answer_scope",
+    "invalidBindingField": "sourceAccessSummary",
+    "productionWrites": 0
+  },
+  "offlineReplay": {
+    "sameSettledAuditResponse": true,
+    "sameAcceptedClaims": 2,
+    "wholeAnswerAudit": "checked",
+    "gapsReportedByAudit": 0,
+    "coherent": true,
+    "realProviderCalls": 0,
+    "scientificAcceptance": false,
+    "effect": "The server recognizes the requested abstract-or-body disclosure and resolves the displayed source label alongside claim prose."
+  },
+  "usage": {
+    "calls": 8,
+    "tokens": 26869,
+    "lunaCalls": 3,
+    "lunaTokens": 5977,
+    "terraCalls": 5,
+    "terraTokens": 20892,
+    "elapsedSeconds": 53,
+    "automaticRetry": false
+  },
+  "independentCredit": 0,
+  "localArtifactDirectory": "tmp/openai-h3-pyramidkv-first-20261128",
+  "sha256": {
+    "calls.json": "c0d7027bf4e33dd061cba50c71011568d1c611c2da4b115dee51db0e59005e57",
+    "citation-audit.json": "73349ce46050f0f68da924613204da5aa5d00d7af6d9ae41b133ffa89a8b51c0",
+    "intent.json": "add58ffb5ef20749515b8b86e72a445f65eafed2980de3637d026111308b06f0",
+    "provider.jsonl": "d389a498cd815923df0c10ebf9126fb24fec577234a4198d9f273a428fddaaee",
+    "rendered-first-report.md": "16fc86edbc0691c9e1bec0a0685c7474a0617d941f6fd98806f0807009d90e32",
+    "result.json": "42a42178f8c7db0cb9799c1474f35f108a96bd3143bdb0d02396afa2f3654bd5",
+    "run.json": "1125763e8b0d66586567d1ab8410c2dde70cc651e97f67bca2eb4e0ae09c515f"
+  }
+}
