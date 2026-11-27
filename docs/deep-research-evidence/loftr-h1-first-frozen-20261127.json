@@ -1,0 +1,67 @@
+{
+  "case": "H1-LOFTR",
+  "attempt": 1,
+  "definitionHash": "0d50d081c3706a5b8f60aebd557a3655fc13631d975704a795920800caf5f124",
+  "codeCommit": "2137855a3ddac0831c5d17a72ab9348b062c8b71",
+  "runId": "dr_run_7859bd765df458f8892e1de392f325b6",
+  "sourceRevision": "arxiv:2104.00680v1",
+  "materialSha256": "d2f18e76fd92f234362f72d01ecf99d37d144f488360aca809bdeefed7fd2cef",
+  "runtimeBoundary": {
+    "researchGraph": "current_production_python_graph",
+    "retrieval": "production_lexical_pdf_fallback",
+    "scope": "isolated_loopback_material_service",
+    "liveIndexUsedForRetrieval": false,
+    "liveApplicationWrites": 0,
+    "lockedPaperPdfReads": 2,
+    "externalSearches": 0
+  },
+  "outcome": "partial",
+  "visibleAnswerCharacters": 131,
+  "contentReview": {
+    "goalResponse": 3,
+    "sourceSupport": 5,
+    "conditions": 3,
+    "synthesis": 3,
+    "actionability": null,
+    "readability": 4,
+    "publishedClaim": {
+      "id": "c2",
+      "support": "supported",
+      "physicalPage": 5,
+      "covers": [
+        "Confidence and mutual matching filter",
+        "Local fine refinement and probability-weighted location"
+      ]
+    },
+    "notPublished": {
+      "id": "c1",
+      "initialRejection": "numeric_mismatch",
+      "initialLocatorInterpretedAsNumber": "第3节",
+      "repairLocatorInterpretedAsNumber": "第2页"
+    },
+    "missing": [
+      "Detector-free feature matching with image-local and cross-image attention",
+      "Why context can help matching in low-texture regions"
+    ]
+  },
+  "usage": {
+    "providerCalls": 9,
+    "tokens": 36415,
+    "tokensByModel": {
+      "gpt-6-luna": 8766,
+      "gpt-6.1-terra": 27649
+    },
+    "elapsedSeconds": 93.0
+  },
+  "sha256": {
+    "intent.json": "e1f9d5fdffea5f2786f3832616354fc032defe2b9980121d8de9ca28403ba7d7",
+    "run.json": "15013869bd9983e445d4bfa187d4185463190df64bbf528bcb75919bb19c42a3",
+    "calls.json": "4d6e5df7295913440433905825e72bc8ad5d4bf4e9855ffb27877502bf337331",
+    "result.json": "33ef0249e2d9d79b668ae91a36627efa31279c54a1fdda30d9c3d5d20de222f5",
+    "boundary.json": "eafbf9203a8222b28bb9ac9595e4ac75afc1ba5e3de2ffd3f6b5b208c46f0ac9",
+    "provider.jsonl": "7db93df909044994d93ccaec2963fa9a6f7081cf475e93dfef767d76ac582e4e",
+    "rendered-report.md": "0b5c0e8ff7784af1b469ecd0b7772738e0a7f9cc4d90c2ed6fd2fa336439fc36"
+  },
+  "automaticRetry": false,
+  "independentCredit": 0
+}

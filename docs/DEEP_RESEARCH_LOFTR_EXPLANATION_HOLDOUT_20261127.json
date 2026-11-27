@@ -3,13 +3,15 @@
   "frozenAt": "2026-11-27",
   "frozenTimestamp": "2026-11-27T04:35:56.142036+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_before_submission_pending_live_inventory",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
   "archivedInventory": {
     "databaseSnapshot": "research-reference-and-resource-window-backup-20261126.sqlite3",
     "researchRunsChecked": 482,
     "matchingArxivIdTitleOrPdfHash": 0
   },
+  "liveInventoryReceipt": "deep-research-evidence/loftr-h1-live-preflight-20261127.json",
+  "firstExecutionReceipt": "deep-research-evidence/loftr-h1-first-frozen-20261127.json",
   "materials": {
     "loftr_v1": {
       "path": "tmp/pdfs/h1-loftr-evaluator-20261127/2104.00680v1.pdf",
@@ -45,7 +47,7 @@
     }
   ],
   "caseDefinitionHashes": {
-    "H1-LOFTR": "e9e70e3a61834115eea6bbeab7f0bb01790d56f67ca8b83b26256598f13a2e60"
+    "H1-LOFTR": "0d50d081c3706a5b8f60aebd557a3655fc13631d975704a795920800caf5f124"
   },
   "review": {
     "minimumApplicableScore": 4,
