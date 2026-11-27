@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 
-from services.deep_research.pdf_benchmark_protocol import include_protocol, readiness_source_ids
+from services.deep_research.pdf_benchmark_protocol import include_protocol, readiness_source_ids, synthesis_metric_bundles
 
 
 PROSE = ('3. Experiments\n'
@@ -57,3 +57,48 @@ def test_requires_literal_same_page_table_identity(fault):
     else:
         rows[1]['pdfId'] = 'another-work'
     assert include_protocol(rows, pages, material, {'benchmark-x'}, 3) == rows
+
+
+@pytest.mark.parametrize('fault', [None, 'missing-reference', 'other-metric', 'other-symbol'])
+def test_cited_appendix_adds_original_definition_only_for_the_tables_metric(fault):
+    rows, pages, material = example()
+    pages[0]['text'] = ('3. Experiments\nFor more details on our evaluation metrics, see Appendix A.\n'
+                        + PROSE.split('\n', 1)[1])
+    pages.append({'page': 5, 'text': 'A. Evaluation Metrics\n'
+                  'Success. We compare projected locations against the registered target coordinates. '
+                  'We use a threshold ε to decide whether the observed error is correct. '
+                  'The scores represent the fraction of correct estimates.\n'
+                  'B. Other Experiments\nOther material.\n'})
+    if fault == 'missing-reference':
+        pages[0]['text'] = pages[0]['text'].replace(' see Appendix A.', ' measure the result.')
+    elif fault == 'other-metric':
+        pages[1]['text'] = pages[1]['text'].replace('Success.', 'Accuracy.')
+    elif fault == 'other-symbol':
+        pages[1]['text'] = pages[1]['text'].replace('threshold ε', 'threshold τ')
+    result = include_protocol(rows, pages, material, {'benchmark-x'}, 4, include_metric_definition=True)
+    definition = [row for row in result if row.get('location', {}).get('benchmarkMetricDefinition')]
+    if fault:
+        assert definition == []
+        return
+    metric, = definition
+    loc = metric['location']
+    assert loc['benchmarkProtocolFor'] == 'table' and loc['page'] == 5
+    assert pages[1]['text'][loc['offset']:loc['offset'] + len(metric['text'])] == metric['text']
+    assert 'Other material' not in metric['text']
+
+
+def test_synthesis_metric_group_cannot_cross_source_version():
+    rows, _, _ = example()
+    table = rows[1]
+    base = {'ownerMaterialId': 'work', 'sourceWorkId': 'work', 'sourceVersionId': 'v1', 'contentHash': 'hash',
+            'verification': {'literal': 'passed'}}
+    evidence = [
+        dict(table, **base, evidenceId='table-ev'),
+        dict(base, evidenceId='protocol-ev', location={'benchmarkProtocolFor': 'table'}),
+        dict(base, evidenceId='metric-ev', location={'benchmarkProtocolFor': 'table', 'benchmarkMetricDefinition': 'Success'}),
+    ]
+    aliases = {'E1': 'table-ev', 'E2': 'protocol-ev', 'E3': 'metric-ev'}
+    stage = [{'evidenceId': e} for e in aliases]
+    assert synthesis_metric_bundles(evidence, stage, aliases) == [('E1', 'E2', 'E3')]
+    evidence[-1]['sourceVersionId'] = 'v2'
+    assert synthesis_metric_bundles(evidence, stage, aliases) == []

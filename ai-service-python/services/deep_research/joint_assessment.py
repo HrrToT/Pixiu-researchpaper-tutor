@@ -410,7 +410,7 @@ def assess(state,record,update,invoke,coverage_gaps):
                     obligations[member['obligationId']].get('searchQuery', '')) for member in group['members']))
                 if benchmarks:
                     paired = set()
-                    named_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') == 1
+                    named_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') in (1, 2)
                     if named_protocol:
                         from services.deep_research.pdf_benchmark_protocol import readiness_source_ids
                         literal_sources = {row['evidenceId']: row.get('sourceId') for row in domain.get('evidence', [])

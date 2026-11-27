@@ -197,6 +197,10 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         visible_protocols = known_protocols if include_joint else None
         optional_pairs = [(protocol['noteEvidenceId'], table_id)
                           for table_id, protocol in (visible_protocols or {}).items()]
+        if record.get('comparisonNamedBenchmarkProtocolVersion') == 2:
+            from services.deep_research.pdf_benchmark_protocol import synthesis_metric_bundles
+            optional_pairs = [*synthesis_metric_bundles(record.get('state', {}).get('evidence', []), own, aliases),
+                              *optional_pairs]
         if not include_joint and record.get('comparisonPdfPassageBoundaryVersion') == 2:
             from services.deep_research.comparison_joint_reports import preferred_speed_result
             speed_result = preferred_speed_result(own, all_targets, scope)

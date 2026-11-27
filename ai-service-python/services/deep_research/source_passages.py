@@ -130,7 +130,7 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     sources = state.get('readResults', [])
     from services.deep_research import experiment_protocol_sources as protocol
     continuations = protocol.continuation_spans(sources) if protocol.enabled(record) else set()
-    keep_benchmark_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') == 1
+    keep_benchmark_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') in (1, 2)
     if keep_benchmark_protocol:
         from services.deep_research.pdf_benchmark_protocol import owned_protocol
     obligations = {o['obligationId']:o for p in state.get('plan', []) for o in p['obligations']}

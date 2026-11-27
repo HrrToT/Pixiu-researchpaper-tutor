@@ -345,7 +345,7 @@ class ResearchFacade:
             **({'comparisonConditionBoundResultReadinessVersion': 1}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
-            **({'comparisonNamedBenchmarkProtocolVersion': 1}
+            **({'comparisonNamedBenchmarkProtocolVersion': 2}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
