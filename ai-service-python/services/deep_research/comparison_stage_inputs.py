@@ -206,6 +206,10 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             speed_result = preferred_speed_result(own, all_targets, scope)
             if speed_result:
                 optional_pairs.append(speed_result)
+        if not include_joint and record.get('comparisonFigureCountSynthesisVersion') == 1:
+            from services.deep_research.comparison_joint_reports import paper_figure_count_evidence
+            counts = paper_figure_count_evidence(question, all_targets, requirements, own)
+            optional_pairs.extend((eid,) for eid in dict.fromkeys(counts.values()))
         def render_stage(selected):
             plan = plan_cells(requirements, sources, selected, **plan_options)
             return render(record, question, plan, tables, character_limit, len(target_ids),

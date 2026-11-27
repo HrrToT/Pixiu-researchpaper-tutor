@@ -35,6 +35,34 @@ def prepared():
     return r,prepare(r,p['requirements'],p['sources'],rows,{},bundles,aliases,merge_joint=False)
 
 
+@pytest.mark.parametrize('requested, bound', [(True, True), (True, False), (False, True)])
+def test_only_owned_figure_counts_for_requested_measurement_are_highlighted(requested, bound):
+    r, plan, rows, aliases, bundles = fixture()
+    excerpt = 'BenchMark-X 定量结果' if requested else 'BenchMark-X 方法机制'
+    r.update(question=f'比较两篇论文的{excerpt}。', comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=16,
+             comparisonJointReportsContractVersion=16, comparisonFigureCountSynthesisVersion=1)
+    goal = plan['requirements'][0]
+    goal.update(question=excerpt, requestExcerpt=excerpt,
+                comparisonRole={'kind': 'per_paper', 'label': excerpt, 'requestExcerpt': excerpt})
+    # This fixture needs just one goal for each paper. Distinct permissions
+    # keep an original figure from becoming evidence for a different goal.
+    requirements = [goal]
+    bundles = [bundle for bundle in bundles if bundle['obligationId'] == goal['obligationId']]
+    rows.append({'evidenceId': 'E3', 'source': 'P2', 'accessLevel': 'fulltext',
+                 'obligations': [goal['obligationId']] if bound else ['another'],
+                 'quote': 'Method # Features # Matches\nMethod A 1.2K 920\nMethod B 3K 1.4K\n'
+                          'Figure 2: Evaluation on BenchMark-X image pairs.'})
+    aliases['E3'] = 'original-E3'
+    staged = prepare(r, requirements, plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    first, second = staged['stages']
+    assert 'E3' not in first['suppliedEvidenceIds']
+    assert ('figureCountEvidenceId' in second['prompt']) is (requested and bound)
+    assert ('Feature and match counts are not accuracy.' in second['prompt']) is (requested and bound)
+    if requested and bound:
+        assert 'E3' in second['suppliedEvidenceIds']
+
+
 @pytest.mark.parametrize('question,short', [
     ('200字以内比较两篇论文的速度。', True),
     ('200字以内用表格比较两篇论文的速度。', False),
