@@ -332,3 +332,5 @@ SAME_PAGE_GUIDANCE = ('When comparing a table to accompanying prose, cite the ta
                       'which value is correct unless the source resolves it.')
 SAME_PAGE_RATE_GUIDANCE = ('Same page means relative to the table within each revision. The PDF page numbers '
                            'can differ between revisions. Include the prose number and its unit in the answer.')
+TABLE_SCOPE_CONDITIONS_GUIDANCE = ('Put source-stated experimental settings common to the compared rows '
+                                   'in the reported claim conditions so formatting the bound rows retains them.')

@@ -129,7 +129,7 @@ def ruled_two_tier_tables(runs, rules, plain_text):
             if not 9 <= divider - top <= 50 or not 12 <= bottom - divider <= 160:
                 continue
             column_runs = [run for run in runs if left - 3 <= run['x'] <= right + 3
-                           and top < run['y'] <= bottom + 24]
+                           and top < run['y'] <= bottom + 40]
             headers = _line_groups([run for run in column_runs if run['y'] < divider])
             body = _line_groups([run for run in column_runs if divider < run['y'] < bottom])
             below = _line_groups([run for run in column_runs if run['y'] > bottom])
@@ -137,7 +137,7 @@ def ruled_two_tier_tables(runs, rules, plain_text):
                 continue
             caption_text = ' '.join(token['text'] for token in _tokens(below[0]))
             caption = _RULED_CAPTION.match(caption_text)
-            if not caption:
+            if not caption or below[0][0]['y'] - bottom > 24:
                 continue
             plain_indices = [i for i, line in enumerate(plain) if i >= len(body) + 1
                              and _compact(line) == _compact(caption_text)]
@@ -169,7 +169,13 @@ def ruled_two_tier_tables(runs, rules, plain_text):
             packet = verify_two_tier_columns(section, runs)
             if not packet or len(packet['rows']) != len(body):
                 continue
-            yield section['tableBounds'], {'number': caption[1], 'text': plain[tail]}, packet
+            caption_text = plain[tail]
+            if caption_text.endswith('-') and tail + 1 < len(plain) and len(below) >= 2:
+                continuation = ' '.join(token['text'] for token in _tokens(below[1]))
+                if (below[1][0]['y'] - below[0][0]['y'] <= 16
+                        and re.match(r'^\w', plain[tail + 1]) and _compact(continuation) == _compact(plain[tail + 1])):
+                    caption_text += plain[tail + 1]
+            yield section['tableBounds'], {'number': caption[1], 'text': caption_text}, packet
 
 
 def may_have_ruled_two_tier_table(text):

@@ -38,7 +38,7 @@ def test_reconstructs_columns_from_two_physical_header_lines_and_exact_rows():
     assert (section, drawing) == baseline
 
 
-@pytest.mark.parametrize('fault', [None, 'foreign_caption', 'swapped_cell', 'missing_rule'])
+@pytest.mark.parametrize('fault', [None, 'wrapped_caption', 'foreign_caption', 'swapped_cell', 'missing_rule'])
 def test_native_two_tier_table_requires_its_own_drawn_caption_and_exact_cells(fault):
     from core.pdf_benchmark_columns import ruled_two_tier_tables
 
@@ -50,18 +50,24 @@ def test_native_two_tier_table_requires_its_own_drawn_caption_and_exact_cells(fa
     rules = [(38, 293, y) for y in (15, 40, 81)]
     plain = ['Table 3. Earlier Results', 'Method Trainable Dataset A Parameters Accuracy (%)',
              'Full tune 31.5M 72.0', 'Low rank 2.2M 73.4', 'Low rank 5.0M 74.0', 'Table 4. Results']
-    if fault == 'foreign_caption':
+    if fault == 'wrapped_caption':
+        caption['text'] = caption['tokens'][0]['text'] = plain[-1] = 'Table 4. Results on Model-'
+        plain.append('A with one worker.')
+        drawing.append({'x': 38, 'y': 99, 'text': plain[-1], 'tokens': [{'x': 38, 'text': plain[-1]}]})
+    elif fault == 'foreign_caption':
         plain[-1] = 'Table 3. Results'
     elif fault == 'swapped_cell':
         plain[3] = 'Low rank 2.2M 74.0'
     elif fault == 'missing_rule':
         rules.pop(1)
     results = list(ruled_two_tier_tables(drawing, rules, '\n'.join(plain)))
-    if fault:
+    if fault and fault != 'wrapped_caption':
         assert not results
         return
     _, located, packet = results[0]
     assert located['number'] == '4'
+    if fault == 'wrapped_caption':
+        assert located['text'] == 'Table 4. Results on Model-A with one worker.'
     assert packet['groups'] == [['Trainable', ['Parameters']], ['Dataset A', ['Accuracy (%)']]]
     assert packet['rows'][2] == [4, 'Low rank', ['5.0M', '74.0']]
 

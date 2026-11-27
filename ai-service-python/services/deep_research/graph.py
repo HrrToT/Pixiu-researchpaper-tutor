@@ -1709,6 +1709,9 @@ space with unsupported global absence or incidental iteration/performance values
                 prompt += '\n' + SAME_PAGE_GUIDANCE
                 if same_page_rate_enabled(record):
                     prompt += '\n' + SAME_PAGE_RATE_GUIDANCE
+                    if record.get('namedTableScopeConditionsVersion') == 1:
+                        from services.deep_research.named_table_scope import TABLE_SCOPE_CONDITIONS_GUIDANCE
+                        prompt += '\n' + TABLE_SCOPE_CONDITIONS_GUIDANCE
             if record.get('namedTableScopeVersion') == 2:
                 from services.deep_research.revision_table_display import GUIDANCE, JUDGEMENT_GUIDANCE, REQUESTED_FINDINGS_GUIDANCE
                 revision_display = record.get('revisionTableMultipleRowsVersion')

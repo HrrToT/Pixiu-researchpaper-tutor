@@ -372,6 +372,7 @@ class DeepResearchRepository:
                                      'namedTableGroupedRowsVersion',
                                      'namedTableSamePageProseVersion',
                                      'namedTableSamePageRateVersion',
+                                     'namedTableScopeConditionsVersion',
                                      'namedTableBoundedReviewVersion',
                                      'revisionTableSingleVersionDisplayVersion',
                                      'revisionTableDifferingRowsVersion',

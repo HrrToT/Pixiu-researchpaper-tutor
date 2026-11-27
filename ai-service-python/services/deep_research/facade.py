@@ -457,6 +457,7 @@ class ResearchFacade:
             "namedTableGroupedRowsVersion": 1,
             "namedTableSamePageProseVersion": 1,
             "namedTableSamePageRateVersion": 1,
+            "namedTableScopeConditionsVersion": 1,
             "namedTableBoundedReviewVersion": 1,
             "revisionTableMultipleRowsVersion": 5,
             "revisionTableCoverageEnvelopeVersion": 1,
