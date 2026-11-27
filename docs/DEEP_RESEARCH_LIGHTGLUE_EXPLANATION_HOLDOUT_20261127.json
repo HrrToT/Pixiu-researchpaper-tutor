@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_pending_first_execution",
+  "independentCredit": 0,
+  "materials": {
+    "lightglue_v1": {
+      "filename": "2306.13643v1.pdf",
+      "sha256": "2d77fcdfdc38cc4704bee343092502f819e9c7119ca4fd907ef10f2efa47891f",
+      "bytes": 15575459,
+      "pageCount": 18,
+      "arxiv": "2306.13643v1",
+      "reference": "https://arxiv.org/abs/2306.13643v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-LIGHTGLUE",
+      "split": "holdout",
+      "materials": [
+        "lightglue_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前的 LightGlue v1 论文，向初学者解释它在匹配两张图时怎样决定什么时候提前结束、继续时又怎样决定哪些点不再处理。说清两种决定各省了什么计算，以及为什么不能只看一个点能否匹配。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "每层评估各点的当前判断是否可靠。可靠可以指已匹配，也可以指确定无法匹配。",
+        "足够比例的点达到该层的置信标准时结束整次推理，省去后续层。全局决定依据两张图中的点，不能用某一点是否匹配替代。",
+        "若整体仍须继续，只剔除有把握无法匹配的点，余下点进入下一层，减少后续计算涉及的点数。",
+        "分别解释少跑层与少处理点。使用第 4 至 5 页第 3.3 节或第 3 页图示支持这些判断。"
+      ],
+      "forbidden": [
+        "将低置信或尚未匹配的点直接判定为应剔除。",
+        "写成任一点有匹配就结束，或把提前结束描述为仅跳过一个点。",
+        "声称任何图像对都提前结束、加速或完全没有精度取舍。",
+        "使用其他论文、版本或未核对的实测数值。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 3,
+        "section": "Figure 2",
+        "checks": "Stopping and pruning affect different scopes."
+      },
+      {
+        "page": 4,
+        "section": "§3.3, equations 9–10",
+        "checks": "Confidence is distinct from matchability, and exit is determined by the ratio of confident points."
+      },
+      {
+        "page": 5,
+        "section": "§3.3, point pruning",
+        "checks": "When continuing, discard confidently unmatchable points before passing remaining points to the next layer."
+      }
+    ],
+    "preSubmission": "Check prior runs, live task materials, index and cache for prior substantive use, then verify the frozen PDF identity and current checkout in an isolated run.",
+    "goldInputBoundary": "Only the frozen question, material identity and budget reach the application. The acceptance criteria and page anchors remain in the reviewer file."
+  },
+  "caseDefinitionHashes": {
+    "H1-LIGHTGLUE": "d94688ece96677f0fcfef4936571dd04fccac6e48ef1d1a2ae03a461851342c0"
+  },
+  "liveInventoryReceipt": "deep-research-evidence/lightglue-h1-live-preflight-20261127.json"
+}
