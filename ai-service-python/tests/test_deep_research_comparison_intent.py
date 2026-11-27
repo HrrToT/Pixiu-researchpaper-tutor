@@ -216,6 +216,32 @@ def test_long_context_excerpt_cannot_recombine_two_typed_dimensions():
     assert all(o['requestExcerpt']=='比较压缩机制、训练代价' for o in result[0]['obligations'])
 
 
+def test_joint_comparison_retains_following_explicit_requests():
+    from services.deep_research.evidence_requirements import normalize_generated_requirements
+
+    anchor = '能否直接比较两篇论文的准确率'
+    internal = '论文内部的对照能支持什么'
+    followup = '并给出同条件复核建议'
+    excerpt = f'说明{anchor}，{internal}，{followup}'
+    question = f'比较两种方法的运行时间。{excerpt}。'
+    joint = obligation('limits', 'joint', '可比性', anchor)
+    joint['requestExcerpt'] = excerpt
+    value = [{'itemId': 'comparison', 'question': excerpt, 'obligations': [joint]}]
+    options = dict(literal_questions=True, literal_imperatives=True, comparison_roles=True,
+                   joint_comparison_requests=True)
+
+    normalized, _ = normalize_generated_requirements(value, question, **options)
+    criteria = normalized[0]['obligations'][0]['completionCriteria']
+    assert [row['requirement'] for row in criteria] == [f'说明{anchor}', internal, followup]
+    assert normalized[0]['obligations'][0]['comparisonRole']['requestExcerpt'] == anchor
+
+    sibling = obligation('internal', 'joint', '论文内对照', internal)
+    value[0]['obligations'].append(sibling)
+    scoped, _ = normalize_generated_requirements(value, question, **options)
+    assert [row['requirement'] for row in scoped[0]['obligations'][0]['completionCriteria']] == [f'说明{anchor}', followup]
+    assert [row['requirement'] for row in scoped[0]['obligations'][1]['completionCriteria']] == [internal]
+
+
 def packets():
     sources={f'P{i+1}':{'workId':work,'versionId':work+'-v1','title':work}
              for i,work in enumerate(('left','right','other'))}
