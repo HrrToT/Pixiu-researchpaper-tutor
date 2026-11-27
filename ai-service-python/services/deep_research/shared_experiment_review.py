@@ -622,8 +622,16 @@ def _initial_batch_budget_stop(record, built):
     from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN
     batches = built.get('batches')
     budget = record.get('budget') or {}
+    if record.get(SCOPED_PACKET_MARKER) != 1 or not batches:
+        return None
+    call_limit = budget.get('maxModelCalls')
+    if call_limit:
+        spent_calls = int(budget.get('modelCalls') or 0) + int(budget.get('reservedModelCalls') or 0)
+        if spent_calls + len(batches) > call_limit:
+            return {'kind': 'modelCalls', 'limit': call_limit, 'spent': spent_calls,
+                    'reservation': len(batches)}
     limit = budget.get('maxTokens')
-    if record.get(SCOPED_PACKET_MARKER) != 1 or not batches or not limit:
+    if not limit:
         return None
     spent = int(budget.get('tokens') or 0)
     for index, batch in enumerate(batches):
@@ -655,7 +663,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         raise DeepResearchError('shared_experiment_review_capacity','完整科学审核超出单批容量，尚未发送。')
     if saved['status'] == 'not_started_budget':
         stop = saved['budgetStop']
-        raise BudgetExhaustedError('tokens', stop['limit'], stop['spent'] + stop['reservation'])
+        raise BudgetExhaustedError(stop.get('kind', 'tokens'), stop['limit'], stop['spent'] + stop['reservation'])
     if saved['status'] == 'not_started_precheck': return saved
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')

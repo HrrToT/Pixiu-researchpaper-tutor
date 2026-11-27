@@ -52,6 +52,31 @@ def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeyp
     assert review._initial_batch_budget_stop(record, built) is None
 
 
+def test_scoped_review_checks_calls_in_both_pools_before_first_packet(monkeypatch):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record[review.SCOPED_PACKET_MARKER] = 1
+    record['budget'] = {'maxModelCalls': 12, 'modelCalls': 5, 'reservedModelCalls': 5,
+                        'maxTokens': 100000, 'tokens': 20000}
+    batches = [
+        {'inputBytes': size, 'request': {'extra': {'max_tokens': 4096}}}
+        for size in (14845, 31913, 31746)
+    ]
+    built = {'inputBytes': 31913, 'hardIssues': [], 'targets': [], 'batches': batches}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: built)
+    invoke, checkpoint = Mock(), Mock()
+
+    with pytest.raises(BudgetExhaustedError) as caught:
+        prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert caught.value.details == {'kind': 'modelCalls', 'limit': 12, 'used': 13}
+    assert checkpoint.call_args.args[0]['status'] == 'not_started_budget'
+    invoke.assert_not_called()
+
+    record['budget']['maxModelCalls'] = 13
+    assert review._initial_batch_budget_stop(record, built) is None
+
+
 def verdict(r, data):
     p = r['state']['sharedExperimentGeneration']['boundProposal']['proposal']
     paths = {'attribution':'/sourceFacts/0/text', 'data':'/data/trainingSplit',
