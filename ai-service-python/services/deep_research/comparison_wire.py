@@ -359,12 +359,13 @@ def resolve_point(point, target, registry, *, measurement_display=False):
                         else '原表在同一数据组中报告了以下两种方法的结果。')
                 if protocol:
                     text += '表注说明带标记的基线在同一平台上重新训练。'
-                if target.get('scopedExampleText') in (2, 3, 4):
+                if target.get('scopedExampleText') in (2, 3, 4, 5):
                     text += '这些结果限于下列数据组和原表测量条件，其他数据组或设置不在这组对照范围内。'
-                if target.get('scopedExampleText') in (3, 4) and protocol:
+                if target.get('scopedExampleText') in (3, 4, 5) and protocol:
                     from services.deep_research.benchmark_tradeoff_summary import summarize
                     summary = summarize([registry[ref] for ref in cells], protocol['rowNumber'],
-                                        explain_metrics=target['scopedExampleText'] == 4)
+                                        explain_metrics=target['scopedExampleText'] in (4, 5),
+                                        plain_tradeoff=target['scopedExampleText'] == 5)
                     if summary:
                         text = summary + text
                 point = {**point, 'body': {'prose': {'text': text, 'conditions': {}}}}

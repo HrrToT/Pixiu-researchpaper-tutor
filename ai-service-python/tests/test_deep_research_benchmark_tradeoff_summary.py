@@ -48,3 +48,38 @@ def test_intro_order_is_bound_to_the_same_audit_as_the_accepted_comparison():
     assert sections(lead, claims)[0]['claimIds'] == ['example', 'boundary']
     assert audit_digest(lead, claims) != audit_digest(layout, claims)
     assert sections(lead, claims[:1])[0]['claimIds'] == ['boundary']
+
+
+@pytest.mark.parametrize('lpips,quality', [
+    ('0.237', '但可比较的画质指标都较差'),
+    ('0.217', '可比较的画质指标有下降'),
+    ('0.201', '画质指标有改善也有下降'),
+])
+def test_plain_intro_explains_the_tradeoff_using_metric_direction(lpips, quality):
+    cells = selected()
+    arrows = {'PSNR': '↑', 'SSIM': '↑', 'LPIPS': '↓'}
+    for cell in cells:
+        binding = cell['binding']
+        if binding['rowNumber'] == 6 and binding['metric'] == 'LPIPS':
+            binding['value'] = lpips
+        binding['metric'] += arrows.get(binding['metric'], '')
+    before = summarize(cells, 5, explain_metrics=True)
+    after = summarize(cells, 5, explain_metrics=True, plain_tradeoff=True)
+    assert '模型体积更小，每秒能渲染更多帧' in after
+    assert quality in after
+    assert 'PSNR更低' in before and '按原表箭头' in after
+    assert all(number not in after for number in ('782', '237', '45MB'))
+
+
+def test_plain_intro_keeps_raw_metric_directions_when_preference_is_unknown():
+    assert summarize(selected(), 5, plain_tradeoff=True) == summarize(selected(), 5)
+
+
+def test_plain_intro_is_versioned_and_remains_specific_to_beginner_requests():
+    from services.deep_research.comparison_joint_reports import scoped_example_presentation
+
+    old = {'comparisonBenchmarkSpeedScopeContractVersion': 7, 'question': '向初学者比较论文'}
+    assert scoped_example_presentation(old) == 4
+    new = {**old, 'comparisonBeginnerLeadContractVersion': 1}
+    assert scoped_example_presentation(new) == 5
+    assert scoped_example_presentation({**new, 'question': '比较论文'}) == 2
