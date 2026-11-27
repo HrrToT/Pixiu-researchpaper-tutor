@@ -48,6 +48,37 @@ def test_short_beginner_answer_is_rewritten_once_without_changing_identity_or_co
         json.loads, saved_state=states[-1]) == result
 
 
+@pytest.mark.parametrize(('new_text', 'keeps_original'), [
+    ('第二个阈值决定累积分数下限。', True),
+    ('第二个阈值 γ 决定累积分数下限。', False),
+    ('累计分数下限决定保留多少位置。', False),
+])
+def test_parameter_anchor_policy_retains_only_an_edit_that_loses_a_cited_label(new_text, keeps_original):
+    report, evidence = fixture()
+    report['claims'][0]['text'] = '正文第5页：累计注意力分数必须达到阈值 γ。'
+    evidence[0]['quote'] = 'The cumulative attention score must meet threshold γ.'
+    evidence[0]['location'] = {'page': 5}
+    edited = {'claims': [{'claimId': 'why', 'text': new_text, 'conditions': {}},
+                         {'claimId': 'how', 'text': '用观测误差调整位置分布。', 'conditions': {}}]}
+    states, requests = [], []
+
+    def respond(prompt, output):
+        requests.append(prompt)
+        return {'content': json.dumps(edited, ensure_ascii=False), 'finishReason': 'stop'}
+
+    options = {'contract_version': 9, 'preserve_parameter_anchors': True}
+    question = '给初学者解释，300字以内'
+    result = rewrite_for_beginner(report, evidence, question, respond, json.loads,
+                                  checkpoint=states.append, **options)
+    assert 'avoid introducing references by ordinal alone' in requests[0]
+    assert result['claims'][0] == ({**report['claims'][0], 'text': '正文：累计注意力分数必须达到阈值 γ。'}
+                                  if keeps_original else {**report['claims'][0], 'text': new_text, 'conditions': {}})
+    assert result['claims'][1]['text'] == edited['claims'][1]['text']
+    assert states[-1]['retainedParameterAnchorClaimIds'] == (['why'] if keeps_original else [])
+    assert rewrite_for_beginner(report, evidence, question, lambda *_: pytest.fail('Unexpected dispatch'),
+                                json.loads, saved_state=states[-1], **options) == result
+
+
 @pytest.mark.parametrize('version', [None, True, 0, 10, '1'])
 def test_legacy_or_invalid_contract_never_adds_a_beginner_call(version):
     report,_=fixture()

@@ -28,6 +28,30 @@ _REQUEST = re.compile(r'(?:用|让|给|向|面向|适合|针对|供|以)[^。！
                       r'|\b(?:(?:for|to) (?:an? )?beginners?|beginner[- ]friendly|plain (?:English|language))\b', re.I)
 _NEGATIVE = re.compile(r'(?:不要|不用|无需|不需要)[^。！？\n]{0,8}(?:通俗|浅显|简化|新手|初学者|小白)'
                        r'|\b(?:not|without) (?:a )?(?:beginner|simplif)', re.I)
+_PARAMETER_ORDINAL = re.compile(r'第\s*(?:[一二三四五六七八九十]+|\d+)\s*[个项]?\s*(?:阈值|参数|系数|权重)')
+_NAMED_PARAMETER = re.compile(r'(?<![A-Za-zα-ωΑ-Ω])[α-ωΑ-Ω](?:_?\d+)?(?![A-Za-zα-ωΑ-Ω0-9_])')
+_LEADING_PAGE_ATTRIBUTION = re.compile(r'^正文\s*第\s*([1-9]\d*)\s*页\s*[：:]')
+
+
+def _retain_named_parameters(original, edited, evidence):
+    """Keep original wording if an edit replaces a cited label with a new ordinal."""
+    literal_rows = {row.get('evidenceId'): row for row in evidence
+                    if row.get('verification', {}).get('literal') == 'passed'}
+    retained = []
+    for index, (before, after) in enumerate(zip(original['claims'], edited['claims'], strict=True)):
+        if set(_PARAMETER_ORDINAL.findall(after['text'])) <= set(_PARAMETER_ORDINAL.findall(before['text'])):
+            continue
+        lost = set(_NAMED_PARAMETER.findall(before['text'])) - set(_NAMED_PARAMETER.findall(after['text']))
+        own = [literal_rows[ref] for ref in before.get('evidenceRefs', []) if ref in literal_rows]
+        if lost and any(lost.intersection(_NAMED_PARAMETER.findall(row.get('quote', ''))) for row in own):
+            restored = deepcopy(before)
+            locator = _LEADING_PAGE_ATTRIBUTION.match(restored['text'])
+            if locator and any(row.get('accessLevel') == 'fulltext'
+                               and row.get('location', {}).get('page') == int(locator[1]) for row in own):
+                restored['text'] = '正文：' + restored['text'][locator.end():]
+            edited['claims'][index] = restored
+            retained.append(before['claimId'])
+    return retained
 
 
 def beginner_requested(record):
@@ -447,7 +471,7 @@ def _merge(report, content, parse, question, *, contract_version=1, allowed_infe
 
 
 def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_state=None, checkpoint=None,
-                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False, comparison_roles=False):
+                         can_start=True, contract_version=1, requirement_context=(), verification_policy=None, objective_framing=False, process_explanations=False, protected_claim_ids=(), protected_edits=False, source_first_single=False, publication_context=None, editable_source_first=False, scoped_editable_source=False, mapped_source_first=False, plain_explanations=False, writing_roles=False, retain_for_compaction=False, lean_reader=False, comparison_roles=False, preserve_parameter_anchors=False):
     """Frozen request + settlement reuse; unknown transports propagate unchanged.
 
     Legacy rejected edits retain the original draft. New opt-in handoff retains
@@ -519,6 +543,7 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
     if editable_source_first:identity_inputs['audienceEditableSourceContractVersion']=2 if scoped_editable_source else 1
     if mapped_source_first:identity_inputs['audienceMappedSourceContractVersion']=mapped_version
     if retain_for_compaction:identity_inputs['audienceCompactionHandoffVersion']=1
+    if preserve_parameter_anchors:identity_inputs['audienceParameterAnchorsVersion']=1
     identity = digest(identity_inputs)
     state = deepcopy(saved_state) if saved_state is not None else None
     if state is not None:
@@ -567,6 +592,13 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
             request, comparison_audit = prepare_comparison_roles(request, report, evidence)
             if request is None:
                 reason = comparison_audit['status']
+        if preserve_parameter_anchors and reason is None:
+            guidance = ('\nEach claim must identify its own mechanism or parameter by a source-supported name or symbol. '
+                        'When several parameters are requested, explain each role in plain words. Keep the necessary '
+                        'source label with that explanation and avoid introducing references by ordinal alone.\n')
+            prompt = request['prompt'] + guidance
+            if len(prompt.encode('utf8')) <= MAX_INPUT_BYTES:
+                request = {**request, 'prompt': prompt}
         state = {'version': contract_version, 'inputDigest': identity, 'status': 'pending',
                  'request': request, 'requestDigest': digest(request)}
         if lean_reader:state['readerInputFormat']='legacy_protected' if protected_claim_ids or protected_edits else 'source_roles_v1'
@@ -629,6 +661,13 @@ def rewrite_for_beginner(report, evidence, question, invoke, parse, *, saved_sta
         before={c['claimId']:c for c in report['claims']};after={c['claimId']:c for c in edited['claims']}
         if any(before[k]!=after.get(k) for k in protected_claim_ids):
             reasons.append('structured_scope_changed');edited=None
+    if edited is not None and preserve_parameter_anchors:
+        retained = _retain_named_parameters(report, edited, evidence)
+        state['retainedParameterAnchorClaimIds'] = retained
+        limit = requested_character_limit(question)
+        if retained and limit and answer_character_count(edited) > limit:
+            reasons.append('character_limit')
+            edited = None
     compaction_candidate=None
     if edited is not None and publication_context is not None:
         from services.deep_research.audience_publication_budget import fits

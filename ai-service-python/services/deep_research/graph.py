@@ -1346,7 +1346,7 @@ def make_synthesize_node(
             if external_explanation_rows:
                 candidates, premise_bundles = external_explanation.prioritize(
                     external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []),
-                    include_selection_rule=record.get(external_explanation.MARKER) in (2, 3))
+                    include_selection_rule=record.get(external_explanation.MARKER) in (2, 3, 4))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -2107,6 +2107,8 @@ space with unsupported global absence or incidental iteration/performance values
                 lambda prompt, output: llm_invoke(run_id, 'synthesize_audience', prompt,
                     {'max_tokens': output, 'temperature': 0.0}), _safe_parse_json,
                 saved_state=current.get('state', {}).get('audienceRewrite'), checkpoint=checkpoint_audience,
+                preserve_parameter_anchors=(external_explanation.enabled(current, output_kind)
+                    and current.get(external_explanation.MARKER) == 4),
                 **({'mapped_source_first':True} if type(current.get('audienceMappedSourceContractVersion')) is int
                    and current['audienceMappedSourceContractVersion'] in (1,2,3,4,5) else {}),
                 **({'plain_explanations':True} if type(current.get('audienceMappedSourceContractVersion')) is int
