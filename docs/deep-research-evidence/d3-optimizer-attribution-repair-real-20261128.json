@@ -1,0 +1,62 @@
+{
+  "candidate": "a77ac0765df548b50ae517b6a64a0b7e5303784b",
+  "runId": "dr_d3_optimizer_attribution_repair_20261128",
+  "sourceRun": "dr_d3_renderer_readiness_20261128",
+  "carriedTokens": 54549,
+  "carriedModelCalls": 9,
+  "carriedElapsedSeconds": 111.61,
+  "revisionRequestBytes": 31960,
+  "revisionRequestDigest": "33cfd459bbb1404a02736c906cf87c1e324e832819110c629569005ad3e81832",
+  "maxNewCalls": 9,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "newModelCalls": 1,
+  "newModelTokens": 9187,
+  "elapsedSeconds": 9.39,
+  "cumulativeTokens": 63736,
+  "actualRevisionStatus": "invalid_response",
+  "reason": "model echoed a hybrid of binding digest and PDF hash",
+  "expectedDigest": "1d00b82764d3e28d8443139c2b958683cd5820d1b03e5f583a523639124ff6b0",
+  "receivedDigest": "1d00b82764d3e28d8443139c2b958683cd58203bc918f51ba07d20cbbe11",
+  "nativeSchemaRejectsObservedReply": true,
+  "sameRevisionInput": true,
+  "newRevisionBytes": 31978,
+  "hypotheticalCorrectDigestCompiled": true,
+  "hypotheticalCorrectionNotUsedInRun": true,
+  "hypotheticalScientificPrecheckIssues": [
+    {
+      "claimId": "shared_fact_2",
+      "reason": "absence_not_established",
+      "factId": "s_clone",
+      "evidenceRefs": [
+        "E5"
+      ]
+    },
+    {
+      "claimId": "shared_fact_3",
+      "reason": "absence_not_established",
+      "factId": "s_split",
+      "evidenceRefs": [
+        "E5"
+      ]
+    }
+  ],
+  "hypotheticalReviewBatchBytes": [
+    17793,
+    31892,
+    31937
+  ],
+  "hypotheticalBoundedWordingPrecheckIssues": [],
+  "hypotheticalBoundedWordingNotUsedInRun": true,
+  "newModelCallsDuringReplay": 0,
+  "scientificApproval": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "d8e2c6c962b7260d9aa599857f717409c23e4c7c1ced2b7c1ac687451dc30a46",
+    "run.json": "e9d306e25ce9d450e8bb8ed5e48f5b8297959ffeb7f5e1c2846ab0b83c9fa2cd",
+    "calls.json": "5762eab6dda22a9ddac0ac508b401abf3b2ff91424abde8566cdc89aeb466903",
+    "result.json": "f9654859916816e45798bec93dc6bc925efcfdd7a0bc16efd6828d3c637f82b4"
+  }
+}
