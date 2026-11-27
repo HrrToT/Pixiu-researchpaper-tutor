@@ -1,0 +1,76 @@
+{
+  "candidate": "f37d4e5d5da0313fa2fb2c3931d25b8bae6031bd",
+  "runId": "dr_d3_located_attribution_review_20261128",
+  "sourceRun": "dr_d3_bound_optimizer_attribution_20261128",
+  "carriedTokens": 63804,
+  "precedingFailedAlternativeTokens": 9187,
+  "carriedModelCalls": 10,
+  "carriedElapsedSeconds": 128.09,
+  "baseRevisionDigest": "5432614d66e083765c2d06be45a5e5538476c0b5cd197f71770b7e4906c514a3",
+  "reviewBatchBytes": [
+    17778,
+    31963,
+    31824,
+    31679
+  ],
+  "maxNewCalls": 5,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "newCalls": 2,
+  "newModelTokens": 14906,
+  "branchTotalTokens": 78710,
+  "newElapsedSeconds": 42.91,
+  "receivedFactChecksPassed": 9,
+  "actualStatus": "invalid_response",
+  "firstInvalidDesignBindings": [
+    {
+      "id": "section_6",
+      "path": "/states/10/representation",
+      "error": "IndexError"
+    }
+  ],
+  "designFindingsFromUnacceptedReply": [
+    {
+      "checkId": "section_2",
+      "status": "failed",
+      "planBindings": [
+        "/states/1/representation",
+        "/states/3/representation",
+        "/states/6/representation",
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/8/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        }
+      ],
+      "reason": "检查点初始化仅指定RGB及其余SH为零，未定义RGB到零阶SH系数的编码，也未定义SH基函数、阶数和求值规则；因此训练及评估的颜色参数化无法唯一实现。"
+    }
+  ],
+  "newReviewBatchBytes": [
+    17778,
+    31998,
+    31922,
+    31777
+  ],
+  "newGenerationRequestBytes": 31936,
+  "factPacketIdentical": true,
+  "noNewCallsDuringReplay": true,
+  "scientificApproval": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "6cc310bc0fd03e413bff234051866e1b12b2b96c23ae18d204a7697d72e5ba0e",
+    "run.json": "71e2a7ab0f3ba87b070fe44b99bf70d2372a17c2d38d5d364c562eda7048820d",
+    "calls.json": "b1e30223fd6b30eb35cfc3a50176757b6457cd4c314ccbc1355dcad77512cc38",
+    "result.json": "302a2837ac22860ec26adf13760a5c734e71061e40fc372dbad46bd4505d6ce5"
+  }
+}

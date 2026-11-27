@@ -957,13 +957,15 @@ OpenAI 科学审核的原子预留优先按字节上界。仅当上界导致 Tok
 
 用提交 `c23d26703` 复测一次绑定基线摘要的修订，新增 9,255 Token，隔离分支累计 63,804 Token，前一版失败修订的用量另计。模型返回了正确的基线，原始修订通过编译。事实预检将两句“所引论文段落未说明”拦下。新版仅对具有页码、原文段落边界和逐字校验的所引全文片段识别这一限定主语。整篇论文范围的缺失断言、无定位片段及正文内的内部引用代号仍被拦截。对未修改的真实修订回执离线回放，两项预检问题清零，26 项科学要求均保留，尚待独立复审与终审。 [真实修订与引文范围回放](deep-research-evidence/d3-bound-attribution-passage-replay-20261128.json)
 
+候选 `f37d4e5d5` 对未修改的真实修订发起科学复审，新增两次 Terra 生成，消耗 14,906 Token，分支累计 78,710 Token。事实批九项全部通过，含克隆及分裂的引文范围。第二批回复指出缺少零阶 SH 编码与基函数求值规则，同时引用不存在的 `/states/10/representation`，整批因绑定错误被拒。后两批、整答终审和发布均未执行。新版生成要求明确 SH 基函数及阶数、RGB 编码、观察方向和求值规则。审核请求提供状态 ID 的零基顺序，保留越界拒绝。离线回放的新增生成输入为 31,936 字节，四个审核请求均保留，事实批逐字一致。 [原始复审与状态索引回放](deep-research-evidence/d3-located-attribution-scientific-review-real-20261128.json)
+
 按原设计记录固定题适用范围。历史人工通过只覆盖所列的开发题和源码版本。完整回归、浏览器交互和隔离启动各保留自身的证据范围。
 
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
 | D2 两论文比较 | 11 条主张经过真实核验，整答一致性通过，审核仍指出新手部署取舍说明不足。旧部分报告在隔离工作区重启后可找回。 [真实终审](deep-research-evidence/d2-counted-audit-final-gates-real-20261128.json) · [工作区交付](deep-research-evidence/d2-final-audit-workspace-delivery-20261128.json) | 新手开头已通过离线预检，待独立语义核验及整答审核。 [开头回放](deep-research-evidence/d2-beginner-tradeoff-compile-replay-20261128.json) |
-| D3 四组实验 | 新版对渲染复现条件给出了具体规则，三批真实审核中 26 项有有效判定，24 项通过。 [真实审核](deep-research-evidence/d3-renderer-readiness-real-20261128.json) | 两项原文归属检查仍待通过。修订摘要与证据边界已离线复核，待真实修订、科学复审、终审和发布。历史未知请求保持冻结。 [修订回放](deep-research-evidence/d3-optimizer-attribution-repair-real-20261128.json) |
+| D3 四组实验 | 真实修订的九项事实复审通过，包含克隆、分裂引文段落的归属说明。 [修订复审](deep-research-evidence/d3-located-attribution-scientific-review-real-20261128.json) | 第二批状态索引错误触发停止，SH 颜色参数化仍须复核。新版索引与生成说明已通过离线回放。完整科学复审、整答终审和发布均未完成。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
