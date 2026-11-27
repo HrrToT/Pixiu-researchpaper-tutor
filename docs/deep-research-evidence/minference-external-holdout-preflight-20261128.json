@@ -1,0 +1,22 @@
+{
+  "case": "H3-MINFERENCE",
+  "definitionHash": "93caaa070aefb7b1d2958f6779900352766fbb5685e95cbe0ce0395fe1f76f55",
+  "reviewedPages": [
+    5,
+    6
+  ],
+  "liveInventory": {
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 195,
+  "priorBibliographyReceipt": "H3-RETRIEVALATTENTION-v1.calls.json",
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

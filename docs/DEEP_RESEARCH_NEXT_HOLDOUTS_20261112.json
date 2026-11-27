@@ -130,6 +130,14 @@
         "result": "deep-research-evidence/flexprefill-h3-first-frozen-20261127.json",
         "developmentRegression": "deep-research-evidence/flexprefill-parameter-anchor-regression-20261127.json",
         "scientificContentCredit": 0
+      },
+      "minferenceExecution": {
+        "state": "first_execution_metadata_transport_failed_fallback_acquisition_passed_in_development",
+        "case": "H3-MINFERENCE",
+        "manifest": "DEEP_RESEARCH_MINFERENCE_EXTERNAL_HOLDOUT_20261128.json",
+        "preflight": "deep-research-evidence/minference-external-holdout-preflight-20261128.json",
+        "result": "deep-research-evidence/minference-h3-first-and-pinned-fallback-20261128.json",
+        "scientificContentCredit": 0
       }
     },
     {

@@ -760,6 +760,8 @@ v16仅提交一次，12次模型调用全部succeeded，61168实际Token、127�
 
 ## 第 19 节案例验收核对
 
+2026-11-28 新独立 H3 使用 MInference v1。首次从空材料任务运行，2 次 Luna 调用共 2,529 Token，arXiv 元数据请求发生 TLS 错误，未获取正文或发布报告。保留首次失败，在独立账本复现该错误并实际经系统代理下载固定版本 PDF 一次。26 页文件与评审件哈希一致，读到 23 段可定位正文，含第 5、6 页的方法段落。再次读取复用账本。新版在外部全文已开启时默认允许固定版本的 PDF 备用链路，部署可设 `DEEP_RESEARCH_PINNED_PDF_FALLBACK_ENABLED=false` 关闭。后续取证未追加模型调用，在线服务未切换，H3 完整的独立内容验收仍待通过。 [冻结题](DEEP_RESEARCH_MINFERENCE_EXTERNAL_HOLDOUT_20261128.json) · [首次回执及备用链路](deep-research-evidence/minference-h3-first-and-pinned-fallback-20261128.json)
+
 ### 当前候选与复测顺序
 
 - 后端候选 `535a23900` 的 Python 离线回归通过 10,104 项，上一版 10,097 项全部保留。`01d093964` 的 Java 全量离线回归通过 171 项。此前候选 `f344b148b` 通过禁网冷启动，核对两次历史运行、86 条调用记录与 Luna／Terra 新运行配置。 [Python 回归](deep-research-evidence/openai-d2-audit-and-table-native-full-20261127.json) · [Java 回归及发布检查](deep-research-evidence/current-publication-and-rollback-20261126.json) · [候选冷启动](deep-research-evidence/openai-pdf-table-candidate-cold-start-20261126.json)
