@@ -233,7 +233,7 @@ def instructions(record):
                         'Use one clone-direction algorithm in factor and fit; if aggregating across cameras, '
                         'map each observation to a common frame before averaging. Label proposed choices. '
                     )
-                if record.get('sharedExperimentDensificationExecutionVersion') in (2, 3):
+                if record.get('sharedExperimentDensificationExecutionVersion') in (2, 3, 4):
                     execution = (
                         'Fix pretrain/arm camera schedules, seeds and RNG checkpoint/clone rules. Define proposed '
                         'projection, finite support, visibility and blending with fixed numerical conformance cases. '
@@ -241,8 +241,10 @@ def instructions(record):
                         'Map each observation to a common frame before averaging clone direction. Gate both '
                         'interventions on gradient first, then classify size. Label proposed choices. '
                     )
-                    if record.get('sharedExperimentDensificationExecutionVersion') == 3:
+                    if record.get('sharedExperimentDensificationExecutionVersion') in (3, 4):
                         execution += 'Define SH basis/order, RGB-to-SH encoding, viewing direction and color evaluation. '
+                    if record.get('sharedExperimentDensificationExecutionVersion') == 4:
+                        execution += 'Fix clone gradient sign, train intrinsics provenance and deterministic new Gaussian IDs. '
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

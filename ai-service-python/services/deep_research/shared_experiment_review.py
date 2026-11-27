@@ -74,6 +74,8 @@ GROUP_BINDINGS_MARKER = 'sharedExperimentReviewGroupBindingsVersion'
 PLANNED_PREREQUISITES_MARKER = 'sharedExperimentReviewPlannedPrerequisitesVersion'
 CITED_PASSAGE_SCOPE_MARKER = 'sharedExperimentReviewCitedPassageScopeVersion'
 INDEXED_STATES_MARKER = 'sharedExperimentReviewIndexedStatesVersion'
+CONTEXT_FIELD_MARKER = 'sharedExperimentReviewContextFieldVersion'
+SEED_BINDINGS_MARKER = 'sharedExperimentReviewSeedBindingsVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -420,12 +422,14 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
             scoped = packet['suppliedEvidenceAliases']
             if not set(scoped) <= set(rows):
                 return {}
-            part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']))
+            part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']),
+                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
             problems, passed = _binding_findings(
                 part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
                 contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                 state_arrays=record.get(REFERENCE_MARKER) == 4,
                 group_levels=_group_bindings(record),
+                seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
             )
             if problems or (_fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
@@ -759,13 +763,19 @@ def _resolved_plan_binding(path, proposal):
     return {'path': path, 'text': text}
 
 
-def _decode_batch(answer, check_ids, validator):
+def _decode_batch(answer, check_ids, validator, *, context_fields=False):
     if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
         raise ValueError('Incomplete review')
     content = answer.get('rawContent', answer.get('content', ''))
     if not isinstance(content, str) or len(content.encode('utf-8')) > 24000:
         raise ValueError('Review capacity')
     part = _parse(content)
+    if context_fields:
+        fields = {'sourceContext.before': 'before', 'sourceContext.after': 'after'}
+        for check in part['checks']:
+            for binding in check['evidenceBindings']:
+                if binding['field'] in fields:
+                    binding['field'] = fields[binding['field']]
     if not validator.is_valid(part):
         raise ValueError('Review schema')
     ids = [check['checkId'] for check in part['checks']]
@@ -782,7 +792,8 @@ def _state_array_path(path):
     return re.fullmatch(r'/steps/(?:0|[1-9][0-9]*)/(?:reads|creates|updates)', path) is not None
 
 
-def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False, group_levels=False):
+def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False, group_levels=False,
+                            seed_array=False):
     import re
 
     bindings = []
@@ -804,6 +815,13 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
             for factor in factors:
                 key = factor.replace('~', '~0').replace('/', '~1')
                 bindings.append(_resolved_plan_binding(f'{path}/{key}', proposal))
+        elif seed_array and path == '/data/seeds':
+            seeds = _pointer(proposal, path)
+            if (not isinstance(seeds, list) or not 1 <= len(seeds) <= 32
+                    or any(type(seed) is not int or not 0 <= seed <= 4294967295 for seed in seeds)
+                    or len(set(seeds)) != len(seeds)):
+                raise ValueError('Review seeds pointer must name the declared integer seeds')
+            bindings.extend(_resolved_plan_binding(f'{path}/{index}', proposal) for index in range(len(seeds)))
         elif state_arrays and _state_array_path(path):
             value = _pointer(proposal, path)
             if not isinstance(value, list) or any(not isinstance(state, str) or not state for state in value):
@@ -815,7 +833,7 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
 
 
 def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references,
-                      contrast_arrays=False, state_arrays=False, group_levels=False):
+                      contrast_arrays=False, state_arrays=False, group_levels=False, seed_array=False):
     problems = []
     checks = value['checks']
     passed = {}
@@ -829,7 +847,7 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
         target = expected[check['checkId']]
         bindings = check['planBindings']
         if references:
-            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays, group_levels)
+            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays, group_levels, seed_array)
         for binding in bindings:
             if not literal(binding): problems.append('invalid_plan_binding')
         if check['status'] == 'passed':
@@ -855,7 +873,7 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
             elif fact_id is not None:
                 passed[fact_id].append({**binding, 'text': excerpt})
     for issue in value['issues']:
-        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays, group_levels)
+        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays, group_levels, seed_array)
                     if references else issue['planBindings'])
         if any(not literal(b) for b in bindings): problems.append('invalid_issue_binding')
     return problems, passed
@@ -886,7 +904,8 @@ def assess(record, input_data, aliases, response):
         for packet, answer in parts:
             packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
                                 if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
-            part = _decode_batch(answer, packet['checkIds'], packet_validator)
+            part = _decode_batch(answer, packet['checkIds'], packet_validator,
+                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
             value['checks'].extend(part['checks'])
@@ -900,7 +919,8 @@ def assess(record, input_data, aliases, response):
                                              references=reference_review_enabled(record),
                                              contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                                              state_arrays=record.get(REFERENCE_MARKER) == 4,
-                                             group_levels=_group_bindings(record))
+                                             group_levels=_group_bindings(record),
+                                             seed_array=record.get(SEED_BINDINGS_MARKER) == 1)
         if not problems and _fact_context_enabled(record):
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
@@ -994,13 +1014,15 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
             try:
                 packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
                                     if record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
-                part = _decode_batch(answer, packet['checkIds'], packet_validator)
+                part = _decode_batch(answer, packet['checkIds'], packet_validator,
+                                     context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
                                                          contrast_arrays=built.get(REFERENCE_MARKER) in (3, 4),
                                                          state_arrays=built.get(REFERENCE_MARKER) == 4,
-                                                         group_levels=_group_bindings(record))
+                                                         group_levels=_group_bindings(record),
+                                                         seed_array=record.get(SEED_BINDINGS_MARKER) == 1)
                     if (not problems and _fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                         problems.append('missing_numeric_source_binding')

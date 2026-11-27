@@ -673,6 +673,22 @@ def test_group_review_binding_expands_only_the_two_declared_binary_levels():
         _resolved_plan_bindings(['/groups/0'], value, True, group_levels=True)
 
 
+def test_seed_review_binding_expands_only_unique_declared_integer_seeds():
+    from services.deep_research.shared_experiment_review import _resolved_plan_bindings
+
+    path = '/data/seeds'
+    value = {'data': {'seeds': [0, 4294967295]}}
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings([path], value, True)
+    assert _resolved_plan_bindings([path], value, True, seed_array=True) == [
+        {'path': f'{path}/0', 'text': '0'},
+        {'path': f'{path}/1', 'text': '4294967295'},
+    ]
+    for invalid in ([True], [3, 3], [4294967296], [], [-1]):
+        with pytest.raises(ValueError, match='integer seeds'):
+            _resolved_plan_bindings([path], {'data': {'seeds': invalid}}, True, seed_array=True)
+
+
 @pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
 def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
     from services.deep_research import shared_experiment_review as review
