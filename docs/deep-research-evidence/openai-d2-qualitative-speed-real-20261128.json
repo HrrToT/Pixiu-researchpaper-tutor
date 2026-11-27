@@ -1,0 +1,42 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceCommit": "6a881db0b5bf7e56bbab82a4e8c76e2bd4d043cf",
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "mode": "one real original-paper generation stage",
+  "originalSourceRevision": "2308.04079v1",
+  "providerCalls": 1,
+  "automaticRetry": false,
+  "model": "gpt-6.1-terra",
+  "usage": {
+    "total_tokens": 6760,
+    "input_tokens": 6260,
+    "output_tokens": 500,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 6257
+  },
+  "elapsedSeconds": 10.0,
+  "promptSha256": "d1971f035c0720fb75ec955ffa5b0d231b670fe7b4f3d54b10c39f2505c6b440",
+  "speedClaim": "论文首页的示例中，本方法渲染快于所列的InstantNGP、Plenoxels和Mip-NeRF360。论文称结果使用A6000 GPU，但Mip-NeRF360除外。",
+  "speedSourcePages": [
+    1,
+    8
+  ],
+  "figureFpsDirectionVerified": true,
+  "hardwareExceptionVerified": true,
+  "sourceBindingPrechecks": "passed",
+  "passedOriginalPaperDrafts": 4,
+  "storedSiblingResponses": [
+    "P2",
+    "joint"
+  ],
+  "independentSemanticReviewRun": false,
+  "wholeAnswerAuditRun": false,
+  "productionWrites": false,
+  "scientificAcceptance": false,
+  "rawFilesSha256": {
+    "intent.json": "47cf688341e4fab5dbd7c2685cd0760e9781515c4e89cfcdfe192e077d066ff7",
+    "response.json": "00a6a81a194dc23950aa86073e9cadf5752038a7f118ceead1f53c7860b0db23",
+    "calls.json": "1dc135ca3524218b924bb4edca38c6f623d6ffb65695ed2891a21b0a3bd3cdaf",
+    "compiled.json": "c2244cf107d20638243484de27e45524e780af519b7af7eed8c9bb7cc1fbd45f"
+  }
+}
