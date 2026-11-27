@@ -64,7 +64,7 @@ def test_ambiguous_unquoted_math_is_preserved_even_when_all_labels_are_cited(val
     assert normalize(claim,ALIASES,QUOTES,version=2)==(claim,None)
 
 
-@pytest.mark.parametrize('replacement',[None,True,'2',0,1,4,6])
+@pytest.mark.parametrize('replacement',[None,True,'2',0,1,4,5,7])
 def test_contract_is_server_owned_immutable_and_type_strict(tmp_path,replacement):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -73,7 +73,7 @@ def test_contract_is_server_owned_immutable_and_type_strict(tmp_path,replacement
     try:
         value,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'Read a paper',
             'citationPresentationContractVersion':replacement,'deferStart':True},start_async=False)
-        assert value['citationPresentationContractVersion']==5
+        assert value['citationPresentationContractVersion']==6
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(value['runId'],lambda r:{**r,'citationPresentationContractVersion':replacement})
     finally:facade.shutdown()

@@ -28,7 +28,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     if (type(compact_repair_policy) is not bool and not (type(compact_repair_policy) is int and compact_repair_policy == 2)
             or compact_repair_policy and not consolidated_instructions):
         raise ValueError('Invalid compact repair policy')
-    if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4,5)):
+    if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4,5,6)):
         raise ValueError('Invalid structured scope citation presentation policy')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (verbatim_repair and authored_body and factual_prompt_version==3):
         raise ValueError('Unified repair instructions require authored verbatim factual repair3')
@@ -71,7 +71,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
         raise ValueError('Unsupported experimental repair input contract')
     if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
         raise ValueError('Unsupported configuration consistency contract')
-    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4,5):
+    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4,5,6):
         raise ValueError('Unsupported citation presentation contract')
     rejected = {row['claimId']: row for row in verification.get('rejected', [])}
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
@@ -640,6 +640,9 @@ If a supported revision is not possible, omit that target rather than bypass sco
                     raise BudgetExhaustedError('repairCharacters',text_edit_plan['budget']['totalCharacters'],text_edit_plan['budget']['reservedCharacters'])
                 template=integrated_prompt(question,length_contract,active_requirements,originals,packed_checks,question_dictionary,context,
                     permissions_marker,evidence_marker,text_edit_plan)
+            if citation_presentation_version == 6:
+                template += ('\nThe interface links each target to its frozen citations. Keep P and E identifiers '
+                             'and duplicate parenthesized citation labels out of the replacement text.\n')
     from services.deep_research.experiment_edits import columnar
     if comparison_authoring in (2, 3, 4):
         from services.deep_research.comparison_repair import table_catalog
@@ -746,7 +749,18 @@ If a supported revision is not possible, omit that target rather than bypass sco
     visible = {aliases[row['evidenceId']] for row in rows}
     allowed = {key: [ref for ref in values if ref in visible] for key, values in allowed.items()}
     if focused:allowed={key:[ref for ref in values if ref in originals[key]['evidenceRefs']] for key,values in allowed.items()}
+    paper_pages = {}
+    if focused and citation_presentation_version == 6:
+        source_aliases = {aliases[row['evidenceId']]: row['sourceRef'] for row in rows if row.get('sourceRef')}
+        for item in selected:
+            source = source_aliases.get(item['evidenceId'])
+            location = item.get('location', {})
+            page = location.get('page')
+            if (source and item.get('accessLevel') == 'fulltext' and location.get('pageResolution') == 'exact'
+                    and type(page) is int and page > 0 and item.get('verification', {}).get('literal') == 'passed'):
+                paper_pages.setdefault(source, {})[item['evidenceId']] = page
     return {**({'compactRepairPolicyVersion':2 if compact_repair_policy == 2 else 1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'prompt': prompt, 'originals': originals, 'aliases': aliases, 'allowed': allowed,
+            **({'presentationPaperPages': paper_pages} if focused and citation_presentation_version == 6 else {}),
             **({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,
                 **({'verifiedTextEditPlan':text_edit_plan} if integrated_text_edits else {})} if focused else {}),
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
@@ -766,8 +780,8 @@ If a supported revision is not possible, omit that target rather than bypass sco
             **({'nestedTablesVersion':1} if experimental_nested_tables else {}),
             **({'representationContractVersion':1} if experimental_representation else {}),
             **({'coverageContractVersion':1} if experimental_coverage else {}),
-            **({'presentationVersion':citation_presentation_version if citation_presentation_version in (2,3,4,5) else 1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
-                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version in (2,3,4,5) else {})}
+            **({'presentationVersion':citation_presentation_version if citation_presentation_version in (2,3,4,5,6) else 1,'presentationQuotes':{row['evidenceId']:row.get('quote','')+'\n'+
+                json.dumps(row.get('sourceContext',{}),ensure_ascii=False) for row in rows}} if compact_factual or citation_presentation_version in (2,3,4,5,6) else {})}
 
 
 def _parse_repair_response(prepared, response, parse, presentation_audit=None,drafting_audit=None, *, strict_response=False,representation_audit=None,coverage_audit=None,scope_audit=None):
@@ -798,6 +812,12 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
     if prepared.get('verifiedTextRepairContractVersion') in (1,2):
         from services.deep_research.verified_text_repair import materialize
         edited=materialize(revised,originals)
+        if prepared.get('presentationVersion') == 6:
+            from services.deep_research.citation_presentation import normalize_source_locators
+            for index, claim in enumerate(edited):
+                edited[index], audit = normalize_source_locators(claim, paper_pages=prepared['presentationPaperPages'])
+                if audit and presentation_audit is not None:
+                    presentation_audit.append(audit)
         if prepared['verifiedTextRepairContractVersion']==2:
             from services.deep_research.verified_text_budget import fits
             if not fits(edited,originals,prepared['verifiedTextEditPlan']):
@@ -931,10 +951,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
                 normalized = refresh(normalized, prepared['comparisonDisplayEvidence'])
             except ValueError:
                 continue
-        if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion'] in (1,2,3,4,5):
+        if type(prepared.get('presentationVersion')) is int and prepared['presentationVersion'] in (1,2,3,4,5,6):
             from services.deep_research.citation_presentation import normalize as normalize_markers
             normalized,audit=normalize_markers(normalized,aliases,prepared['presentationQuotes'],
-                **({'version':prepared['presentationVersion']} if prepared['presentationVersion'] in (2,3,4,5) else {}))
+                **({'version':prepared['presentationVersion']} if prepared['presentationVersion'] in (2,3,4,5,6) else {}))
             if audit and presentation_audit is not None: presentation_audit.append(audit)
         valid.append(materialize_execution_claim(normalized))
     if coverage is not None and coverage_audit is not None:
@@ -977,7 +997,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if (type(compact_repair_policy) is not bool and not (type(compact_repair_policy) is int and compact_repair_policy == 2)
             or compact_repair_policy and not consolidated_instructions):
         raise ValueError('Invalid compact repair policy')
-    if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4,5)):
+    if type(scope_citation_presentation) is not bool or scope_citation_presentation and not (consolidated_instructions and authored_body and citation_presentation_version in (2,3,4,5,6)):
         raise ValueError('Invalid structured scope citation presentation policy')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (verbatim_repair and authored_body and factual_prompt_version==3):
         raise ValueError('Unified repair instructions require authored verbatim factual repair3')
@@ -1050,7 +1070,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
         raise ValueError('Experimental representation requires nested field edits')
     if type(configuration_consistency_version) is not int or configuration_consistency_version not in (0,2):
         raise ValueError('Unsupported configuration consistency contract')
-    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4,5):
+    if type(citation_presentation_version) is not int or citation_presentation_version not in (0,2,3,4,5,6):
         raise ValueError('Unsupported citation presentation contract')
     identity = digest({**({'compactRepairPolicyVersion':2 if compact_repair_policy == 2 else 1} if compact_repair_policy else {}),**({'scopeCitationPresentationVersion':1} if scope_citation_presentation else {}),**({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,**({'textEditContext':text_edit_context} if integrated_text_edits else {})} if verified_text_edits else {}),**({'repairInstructionsContractVersion':1} if consolidated_instructions else {}),**({'verbatimRepairContractVersion':1} if verbatim_repair else {}),**({'authoredBodyContractVersion':1} if authored_body else {}),**({'verifiedRepairTargets':list(verified_target_ids)} if factual_prompt_version in (2,3) else {}),**({'factualRepairPromptContractVersion':factual_prompt_version} if factual_prompt_version else {}),**({'compactLayoutVersion':1} if compact_layout else {}),'report': report, 'verification': verification,
                        **({'requiredScopeIds':list(required_scope_ids)} if required_scope_ids else {}),
@@ -1064,7 +1084,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                        **({'objectiveFramingVersion':1} if objective_framing else {}),
                        **({'processExplanationVersion':1} if process_explanations else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
-                       **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3,4,5) else {}),
+                       **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3,4,5,6) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),
                        **({'factRedraftContractVersion':3 if concise_factual else 2 if source_aware_redraft else 1,'requirementContext':requirement_context}
                           if fact_redraft else {}),
@@ -1148,7 +1168,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
             **({'experimental_nested_tables':True} if experimental_nested_tables else {}),
             **({'experimental_representation':True} if experimental_representation else {}),
             **({'experimental_coverage':True} if experimental_coverage else {}),
-            **({'citation_presentation_version':citation_presentation_version} if citation_presentation_version in (2,3,4,5) else {}),
+            **({'citation_presentation_version':citation_presentation_version} if citation_presentation_version in (2,3,4,5,6) else {}),
             **({'configuration_consistency_version':2} if configuration_consistency_version==2 else {}))
 
     state = deepcopy(batch_state) if batch_state is not None else {

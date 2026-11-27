@@ -42,6 +42,35 @@ def test_materialization_can_only_change_text_and_every_candidate_is_reverified(
     assert not verify_claims(edited,inputs()[2],reject)['accepted']
 
 
+@pytest.mark.parametrize(('locator', 'removed'), [
+    ('（P1，第13页）', True),
+    ('（P1，第13、99页）', False),
+    ('（P2，第13页）', False),
+    ('（P1，第13页，开销为20 GB）', False),
+    ('令Z=（P1，第13页）', False),
+    ('`（P1，第13页）`', False),
+])
+def test_coverage_edit_keeps_only_the_frozen_evidence_and_removes_redundant_page_labels(locator, removed):
+    report, verification, evidence, opts = inputs()
+    for row in evidence:
+        row.update(location={'page': 13, 'pageResolution': 'exact'}, accessLevel='fulltext',
+                   verification={'literal': 'passed', 'semantic': 'unchecked'})
+    current = _prepare_repair(report, verification, evidence, 'Explain the operation.',
+                              verified_text_edits=True, citation_presentation_version=6, **opts)
+    legacy = _prepare_repair(report, verification, evidence, 'Explain the operation.',
+                             verified_text_edits=True, citation_presentation_version=5, **opts)
+    prose = '把原始观测转换成可比较的特征。'
+    raw = {'content': json.dumps([{'claimId': 'c', 'text': prose + locator}])}
+    audit = []
+    [edited] = _parse_repair_response(current, raw, json.loads, presentation_audit=audit)
+    [old] = _parse_repair_response(legacy, raw, json.loads)
+    assert old['text'] == prose + locator
+    assert edited == {**old, 'text': prose if removed else prose + locator}
+    assert bool(audit) is removed
+    assert edited['evidenceRefs'] == report['claims'][0]['evidenceRefs']
+    assert not edited.get('verification')
+
+
 def test_editing_a_verified_number_still_fails_original_numeric_evidence_gate():
     from services.deep_research.verification import make_evidence,verify_claims
     from services.deep_research.verified_text_repair import materialize

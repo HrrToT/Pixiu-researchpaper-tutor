@@ -2071,7 +2071,7 @@ space with unsupported global absence or incidental iteration/performance values
                 if isinstance(claim,dict):
                     normalized,audit=normalize_markers(claim,evidence_aliases,quotation_by_alias,
                         **({'version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
-                           and record['citationPresentationContractVersion'] in (2,3,4,5) else {}))
+                           and record['citationPresentationContractVersion'] in (2,3,4,5,6) else {}))
                     parsed['claims'][index]=normalized
                     if audit:
                         synthesis_presentation_audit[claim.get('claimId','')]=audit
@@ -2235,7 +2235,7 @@ space with unsupported global absence or incidental iteration/performance values
                 and eligible(record, parsed, output_kind)):
             parsed = adapt_reader(parsed)
 
-        if record.get('citationPresentationContractVersion') == 5:
+        if record.get('citationPresentationContractVersion') in (5, 6):
             from services.deep_research.citation_presentation import normalize_source_locators
             for index, claim in enumerate(parsed['claims']):
                 if isinstance(claim, dict) and claim.get('claimId') not in blocked_draft_ids:
@@ -2750,7 +2750,7 @@ def make_verify_node(
                         **({'configuration_consistency_version':2} if type(record.get('configurationConsistencyContractVersion')) is int
                            and record['configurationConsistencyContractVersion']==2 else {}),
                         **({'citation_presentation_version':record['citationPresentationContractVersion']} if type(record.get('citationPresentationContractVersion')) is int
-                           and record['citationPresentationContractVersion'] in (2,3,4,5) else {}),
+                           and record['citationPresentationContractVersion'] in (2,3,4,5,6) else {}),
                         **({'experiment_evidence_context':candidate_context} if candidate_context is not None else {}),
                         **({'strict_response':True} if type(record.get('repairProgressContractVersion')) is int
                            and record['repairProgressContractVersion']==2 else {}),

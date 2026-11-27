@@ -32,9 +32,11 @@ _LOCATOR_CONTENT = re.compile(
     rf'\s*(?:(?P<identity>(?:[A-Za-z][A-Za-z0-9 .-]{{0,60}}\s*[,，]\s*)?'
     rf'arXiv:\d{{4}}\.\d{{4,5}}v[1-9]\d*)\s*[,，]\s*)?'
     rf'{_LOCATOR}(?:\s*及\s*[\u4e00-\u9fff]{{1,14}}(?:模块|小节))?\s*', re.I)
+_PAPER_PAGE_CONTENT = re.compile(
+    r'\s*(?P<paper>P[1-9]\d*)\s*[,，]\s*第\s*(?P<pages>[1-9]\d*(?:\s*[、,，]\s*[1-9]\d*)*)\s*页\s*')
 
 
-def normalize_source_locators(claim):
+def normalize_source_locators(claim, *, paper_pages=None):
     """Remove display-only citation coordinates from a claim with citation links."""
     text = claim.get('text')
     if (claim.get('kind') not in {'reported', 'inference'} or claim.get('scopeExpression')
@@ -44,11 +46,24 @@ def normalize_source_locators(claim):
     removed = []
 
     def strip(match):
-        content = _LOCATOR_CONTENT.fullmatch(match['cjk'] if match['cjk'] is not None else match['ascii'])
-        if not content or any(start <= match.start() < end for start, end in protected):
+        if any(start <= match.start() < end for start, end in protected):
             return match[0]
-        identity = content['identity']
-        replacement = match[0][0] + identity + match[0][-1] if identity else ''
+        value = match['cjk'] if match['cjk'] is not None else match['ascii']
+        content = _LOCATOR_CONTENT.fullmatch(value)
+        if content:
+            identity = content['identity']
+            replacement = match[0][0] + identity + match[0][-1] if identity else ''
+        else:
+            paper = _PAPER_PAGE_CONTENT.fullmatch(value) if paper_pages else None
+            if (not paper or not re.search(r'[。！？.!?]\s*$', text[:match.start()])
+                    or not re.match(r'\s*(?:$|[。！？!?])', text[match.end():])):
+                return match[0]
+            pages = set(re.findall(r'\d+', paper['pages']))
+            own_pages = {str(paper_pages[paper['paper']][ref]) for ref in claim['evidenceRefs']
+                         if ref in paper_pages.get(paper['paper'], {})}
+            if not pages <= own_pages:
+                return match[0]
+            replacement = ''
         removed.append({'field': 'text', 'marker': match[0], 'offset': match.start(),
                         'kind': 'redundant_source_locator', 'replacement': replacement})
         return replacement
@@ -71,6 +86,8 @@ def normalize(claim,aliases,quotes,*,version=1):
     Version4 also recognizes explicit initialization/training attributions and
     parenthesized "(按E1-E3)" citations. Ambiguous arithmetic stays unchanged.
     Version5 leaves duplicate page and section labels to the evidence links.
+    Version6 uses the same rules here and additionally checks paper/page labels
+    against the source registry when applying coverage-only text edits.
     This grants no references.
     The caller saves the original response and this separate presentation audit.
     """
@@ -78,9 +95,9 @@ def normalize(claim,aliases,quotes,*,version=1):
     own={alias for alias,full in aliases.items() if full in claim.get('evidenceRefs',[]) and alias in quotes}
     protected_symbols={alias for alias in own if any(re.search(r'(?<![A-Za-z0-9_])'+re.escape(alias)+r'(?![A-Za-z0-9_])',
         quotes[key]) for key in own)}
-    extended=type(version) is int and version in (2,3,4,5)
-    modern=type(version) is int and version in (3,4,5)
-    operational=type(version) is int and version in (4,5)
+    extended=type(version) is int and version in (2,3,4,5,6)
+    modern=type(version) is int and version in (3,4,5,6)
+    operational=type(version) is int and version in (4,5,6)
     removed=[]
     def text(value,path):
         protected=[(m.start(),m.end()) for m in _PROTECTED.finditer(value)]
@@ -151,7 +168,7 @@ def normalize(claim,aliases,quotes,*,version=1):
         if isinstance(value,dict): return {k:values(v,f'{path}.{k}') for k,v in value.items()}
         return value
     if isinstance(result.get('text'),str): result['text']=text(result['text'],'text')
-    if version == 5:
+    if version in (5, 6):
         result, locators = normalize_source_locators(result)
         if locators:
             removed.extend(locators['removed'])
