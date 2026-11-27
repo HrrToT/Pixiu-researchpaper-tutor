@@ -73,6 +73,7 @@ PACKING_MARKER = 'sharedExperimentReviewPackingVersion'
 GROUP_BINDINGS_MARKER = 'sharedExperimentReviewGroupBindingsVersion'
 PLANNED_PREREQUISITES_MARKER = 'sharedExperimentReviewPlannedPrerequisitesVersion'
 CITED_PASSAGE_SCOPE_MARKER = 'sharedExperimentReviewCitedPassageScopeVersion'
+INDEXED_STATES_MARKER = 'sharedExperimentReviewIndexedStatesVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -538,6 +539,9 @@ def build(record, input_data, aliases, *, required_domains=()):
         if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
             paths = ', '.join(step['id'] for step in steps)
             policy = 'Step IDs in /steps index order (0-based): ' + paths + '.\n' + policy
+            if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
+                state_ids = ', '.join(state['id'] for state in states)
+                policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
         prompt = policy + input_text(view)
         options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
         if reference_policy:

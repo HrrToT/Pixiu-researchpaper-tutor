@@ -399,6 +399,7 @@ class DeepResearchRepository:
                                      'sharedExperimentDensificationExecutionVersion',
                                      'sharedExperimentReviewPlannedPrerequisitesVersion',
                                      'sharedExperimentReviewCitedPassageScopeVersion',
+                                     'sharedExperimentReviewIndexedStatesVersion',
                                      'sharedExperimentCompactScienceRevisionVersion',
                                      'sharedExperimentRevisionDigestSchemaVersion',
                                      'comparisonBeginnerLeadContractVersion',
