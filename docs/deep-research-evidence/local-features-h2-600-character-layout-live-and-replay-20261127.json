@@ -442,5 +442,97 @@
       "actualThreeRepeatedOperationsStillRejected": true
     },
     "boundary": "The recorded plan was normalized and the two frozen PDFs were retrieved again locally. Both distinct paper targets have the exact measured evidence and the joint scope remains independent. Numeric precheck separately reused the unchanged original SuperPoint claim. The replays sent no provider request and did not certify semantic content or an independent holdout."
+  },
+  "isolatedComparabilityBoundaryValidation": {
+    "historicalObservationReplay": {
+      "sourceRun": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "originalClaimId": "cmp_conclusion_0",
+      "providerCalls": 0,
+      "sameRawObservationVerdicts": true,
+      "previousPolicy": {
+        "returnedStatus": "failed",
+        "observations": 2,
+        "boundaryReady": false,
+        "reason": "观察条件尚未通过事实核查：审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ]
+      },
+      "updatedPolicy": {
+        "observationReplay": true,
+        "boundaryReady": true,
+        "providerCalls": 0,
+        "dispatchPoints": 2
+      },
+      "unsupportedThreeConditions": {
+        "returnedStatus": "failed",
+        "observations": 2,
+        "boundaryReady": false,
+        "reason": "观察条件尚未通过事实核查：审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ]
+      },
+      "boundaryEntailmentReviewed": false,
+      "independentCredit": 0
+    },
+    "newEntailmentReview": {
+      "scope": "single_cross_paper_boundary_on_exposed_development_case",
+      "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "claimId": "cmp_conclusion_0",
+      "model": "gpt-6.1-terra",
+      "providerCalls": 1,
+      "providerTokens": 2861,
+      "requestBytes": 10787,
+      "requestDigest": "6fd0089fd7a1c46b4f77d5ffcbab5eca62b2dbf3a53a656d2addca412e81606b",
+      "automaticRetry": false,
+      "status": "passed",
+      "boundary": {
+        "index": 0,
+        "proposition": "当前所引证据提供了足以比较SuperPoint与D2-Net的HPatches图像对及评测指标的对齐的对应数据和必要条件",
+        "relation": "not_entailed",
+        "quantification": "explicit",
+        "isNegation": false,
+        "authorOmission": false,
+        "reason": "引文未提供足以核对两者图像对和评测指标是否对齐的对应数据及必要条件。",
+        "premises": [
+          {
+            "evidenceId": "ev_17b84ca9d93afb4af4d99df5514843765f1ef8b1e4b94ba57137aacf2b5ace79",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_f60debc24f2d1a9596d8152d289f65bf9ddd0205a7f2e3c8ca0028f307d4ccfe",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_f60debc24f2d1a9596d8152d289f65bf9ddd0205a7f2e3c8ca0028f307d4ccfe",
+            "path": [
+              "sourceContext",
+              "before"
+            ]
+          },
+          {
+            "evidenceId": "ev_888db1ba8d460279e4032086df83219e8e147d0b10c3487344ebbc657d26b7e3",
+            "path": [
+              "quote"
+            ]
+          }
+        ],
+        "diagnosticFacts": []
+      },
+      "publicationPerformed": false,
+      "independentCredit": 0,
+      "receiptSha256": {
+        "preflight.json": "42bdb57407ae5090f16001471e87ba3a2ad4c078ef1aadf7c5b13512a05de8b5",
+        "dispatch.json": "0b760931f8d0d185cad4307ad8492f2576b9e6187da849c3491222a7472e614f",
+        "raw.json": "6f8b563d0843f333d59ccbee09c15cc0ee66f73a9cf0eb1b380464c934a89956",
+        "result.json": "26701cffc3f79fa52e80d16657fc730b441bee0f689c7773952366c1eae2a2ac"
+      }
+    },
+    "boundary": "The exact stored observations were replayed through updated numeric diagnostic binding. Only the previously unreached entailment question used a real model and was checked by the production validator. No new answer or publication was produced."
   }
 }
