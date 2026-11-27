@@ -91,7 +91,8 @@
         "appendixRecheckLiveAndOfflineFixes": "deep-research-evidence/local-features-h2-appendix-recheck-live-and-offline-fixes-20261127.json",
         "lengthBoundedComparisonReplay": "deep-research-evidence/local-features-h2-600-character-layout-live-and-replay-20261127.json",
         "compoundResultRoutingAndKernelReviewReplay": "deep-research-evidence/local-features-h2-compound-results-and-kernel-review-20261127.json",
-        "selectedPairBindingLiveAndReplay": "deep-research-evidence/local-features-h2-selected-pair-live-and-replay-20261127.json"
+        "selectedPairBindingLiveAndReplay": "deep-research-evidence/local-features-h2-selected-pair-live-and-replay-20261127.json",
+        "bothResultsAndRecheckRouting": "deep-research-evidence/local-features-h2-both-results-and-recheck-routing-20261127.json"
       }
     },
     {

@@ -1,0 +1,186 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "exposed_development_retest_and_offline_literal_recheck_routing",
+  "independentCredit": 0,
+  "live": {
+    "runId": "dr_run_7f66dd5469495225895f41bb6ffafdfa",
+    "sourceTree": "fbf50ff0d43f854dda8a366ddb853ab23ba5bc17",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 16,
+    "countsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1,
+      "verify": 4,
+      "repair_claims": 1,
+      "verify_repair": 1,
+      "verify_answer_coverage": 1
+    },
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 11
+    },
+    "providerTokens": 71977,
+    "inputTokens": 67058,
+    "outputTokens": 4919,
+    "cachedInputTokens": 1785,
+    "elapsedSeconds": 169.0,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 266,
+      "pdf": 4
+    },
+    "automaticRetry": false,
+    "storedPartialPublicationId": "dr_pub_0c4eda888797448cb717359b64595d2e",
+    "visibleCharacters": 506,
+    "characterLimit": 600,
+    "verificationSummary": {
+      "accepted": 7,
+      "rejected": 0
+    },
+    "coverage": {
+      "supervision": "covered",
+      "feature-generation": "partial",
+      "reported-results": "covered",
+      "comparison-and-recheck": "partial",
+      "answer_scope": "partial"
+    },
+    "jointAspects": [
+      {
+        "requirement": "说明能否把两篇论文的 HPatches 数字直接用于排序",
+        "status": "partial"
+      },
+      {
+        "requirement": "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+        "status": "partial"
+      },
+      {
+        "requirement": "并给出同条件复核建议",
+        "status": "missing"
+      }
+    ],
+    "measurements": [
+      {
+        "claimId": "cmp_4_0",
+        "versionId": "arxiv:1905.03561v1",
+        "pdfPage": 6,
+        "sourceLocation": "Figure 4",
+        "checked": "D2 SS mean 3.0K features and 1.2K mutual-nearest-neighbor matches"
+      },
+      {
+        "claimId": "cmp_5_0",
+        "versionId": "arxiv:1712.07629v1",
+        "pdfPage": 7,
+        "sourceLocation": "Table 3 and section 7.3",
+        "checked": "0.684 at threshold 3 pixels for homography estimation"
+      }
+    ],
+    "rawReceiptSha256": {
+      "run.json": "a866c4123b2c582b65073930be8411fe10ea3f31866a8c18e5c4bfe3060dcab0",
+      "calls.json": "fe77fae8fbbf4521c8188efaa8f52e92590bbdd40ce8316360550622ac8a530a",
+      "provider.jsonl": "7b4099a3a97ece7f6bc6822104986cbc5e550f3b0853a4c4e65765f82f24e160",
+      "result.json": "ba15a41df67576eb44785c0cc0cea1cb6c39dd2d10c76d618363b98f37ed71d0"
+    }
+  },
+  "recheckDiagnosis": {
+    "liveJointTarget": "joint_comparison-and-recheck",
+    "literalCriterion": {
+      "criterionId": "human_aspect_3",
+      "requirement": "并给出同条件复核建议",
+      "responseType": "explanation"
+    },
+    "effect": "The same generation slot held the direct comparison boundary, internally reported scope and future recheck. The last was omitted from the published report."
+  },
+  "offlineReplay": {
+    "runId": "dr_run_7f66dd5469495225895f41bb6ffafdfa",
+    "providerCalls": 0,
+    "recheckPlanChanges": [
+      {
+        "obligationId": "benchmark_recheck",
+        "fromObligationId": "comparison-and-recheck",
+        "criterionId": "human_aspect_3",
+        "change": "separated_benchmark_recheck"
+      }
+    ],
+    "recheckCriterion": {
+      "criterionId": "human_aspect_3",
+      "requirement": "并给出同条件复核建议",
+      "responseType": "procedure"
+    },
+    "retainedJointCriteria": [
+      "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "D2-Net 论文内部与 SuperPoint 的比较能支持什么"
+    ],
+    "bothMeasurementTargets": [
+      {
+        "sourceVersionId": "arxiv:1905.03561v1",
+        "targetId": "cell_2_0",
+        "evidenceId": "ev_0955077ee48dd8bbbc82676bf57419f5f55ab8cabe47f0f4dd6d81a960040664"
+      },
+      {
+        "sourceVersionId": "arxiv:1712.07629v1",
+        "targetId": "cell_2_1",
+        "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050"
+      }
+    ],
+    "jointEvidence": {
+      "joint_comparison-and-recheck": {
+        "sourceVersions": [
+          "arxiv:1712.07629v1",
+          "arxiv:1905.03561v1"
+        ],
+        "d2FigureBaselineRow": true,
+        "d2PublishedMmaThreshold": true,
+        "d2ReciprocalMatchingCondition": true
+      },
+      "joint_benchmark_recheck": {
+        "sourceVersions": [
+          "arxiv:1712.07629v1",
+          "arxiv:1905.03561v1"
+        ],
+        "d2FigureBaselineRow": true,
+        "d2PublishedMmaThreshold": true,
+        "d2ReciprocalMatchingCondition": true
+      }
+    },
+    "inputLimitBytes": 24000,
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23993,
+        "targets": [
+          "cell_0_0",
+          "cell_1_0",
+          "cell_2_0"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23925,
+        "targets": [
+          "cell_0_1",
+          "cell_1_1",
+          "cell_2_1"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23946,
+        "targets": [
+          "joint_comparison-and-recheck",
+          "joint_benchmark_recheck"
+        ]
+      }
+    ],
+    "storedPlannerResponseReused": true,
+    "sourcePdfsReadLocally": 2,
+    "generationSent": false,
+    "semanticReviewOrPublicationPerformed": false,
+    "routingReplaySha256": "52c5570769fa939d57d390220eb11dd822ce0740c986728249a0364f8492a0ab"
+  },
+  "regressionTestsPassed": 289
+}
