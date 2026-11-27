@@ -1,0 +1,128 @@
+{
+  "candidate": "77d20f5ced35361d5a1b0a207377b76b7e80e9d4",
+  "runId": "dr_d3_factor_level_audit_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "previousTokens": 49119,
+  "previousNormalCalls": 5,
+  "previousReserveCalls": 4,
+  "oldFactCallId": "1b8c17c5b5e649d76f55d0d955ea8e97",
+  "factRequestDigest": "93cb2979a7f9b430e49de4efd5b7ce831f1215dabfab1d54e2cc525cde1b51c6",
+  "factResponseDigest": "15fac9f99da7957f84a5de959f2d45f84880a0ad8145c2fc703ee633b296899d",
+  "reviewBytes": [
+    17619,
+    31897,
+    31713,
+    31696,
+    31880
+  ],
+  "maxNewCalls": 5,
+  "authorityWrites": 0,
+  "model": "gpt-6.1-terra",
+  "newProviderCalls": 4,
+  "providerInputCountCalls": 2,
+  "newModelTokens": 38077,
+  "callUsages": [
+    9876,
+    9092,
+    9487,
+    9622
+  ],
+  "newElapsedSeconds": 63.86,
+  "cumulativeTokens": 87196,
+  "scientificReviewValid": true,
+  "scientificApproval": false,
+  "checksPassed": 22,
+  "checksTotal": 24,
+  "unresolved": [
+    {
+      "checkId": "section_2",
+      "status": "unresolved",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/8/operation/action",
+        "/states/3/representation",
+        "/states/4/representation",
+        "/states/7/representation",
+        "/data/inputs/2/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E4",
+          "field": "after"
+        },
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        }
+      ],
+      "reason": "状态和多数初始化有定义，但检查点前5000步的相机序列生成、训练随机状态与四臂预生成序列的衔接，以及每个高斯可见梯度的具体获取尚不足以保证独立实现一致。"
+    },
+    {
+      "checkId": "section_3",
+      "status": "unresolved",
+      "planBindings": [
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action",
+        "/factors/0/offOperation/action",
+        "/factors/1/offOperation/action",
+        "/groups/0/levels",
+        "/groups/1/levels",
+        "/groups/2/levels",
+        "/groups/3/levels",
+        "/steps/8/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E1",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E9",
+          "field": "quote"
+        }
+      ],
+      "reason": "四组及父子状态和共同剔除已定义，但克隆方向一处要求将平均二维梯度对应方向反投影，训练规则却先平均不同相机的二维向量再按各相机映射；不同视角下两者不等，启用操作无法唯一执行。"
+    }
+  ],
+  "coherenceIssues": [
+    {
+      "reason": "克隆方向定义不一致：因子操作使用平均视空间梯度对应方向，训练规则则对跨相机平均的二维向量逐相机映射；应明确逐观测映射后平均还是其他唯一算法。",
+      "planBindings": [
+        "/factors/0/onOperation/action",
+        "/steps/5/operation/action",
+        "/steps/8/operation/action"
+      ]
+    },
+    {
+      "reason": "需明确预训练与四臂相机序列及随机状态如何衔接，并规定逐高斯可见梯度的具体取得方式，以消除执行歧义。",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/8/operation/action",
+        "/pairing/identityChecks"
+      ]
+    }
+  ],
+  "finalAuditSent": false,
+  "published": false,
+  "nextGenerationOffline": {
+    "beforeBytes": 31503,
+    "afterBytes": 31774,
+    "evidenceAndRequirementsIdentical": true
+  },
+  "rawSha256": {
+    "intent.json": "e1cf5dd28a665eb3326556a8f63304e9ffbd64572438b5ce01a746a349cbc164",
+    "run.json": "e030c5c892662f04a8ce855a29b85cc8ff16e53b910d3e3caecdbe9d6596d2f6",
+    "calls.json": "fb2eb855f10206a9323a0c6bec7b1d5f7846de29b4a2e8b783a527b813997459",
+    "result.json": "0f04c86d0307a9c71bfc3ebd8bafe69b7ada7e149b7e1346239f5f281e04b7ab",
+    "provider.jsonl": "f876e76fbb6ef1a81c349bef9b999a52673ac8215e8b4b59143007c178ba8196"
+  }
+}
