@@ -35,12 +35,12 @@ def requests_access_level(excerpt):
         return False
     abstract = re.search(r'摘要|\babstract\b', excerpt, re.I)
     fulltext = re.search(r'全文|\bfull[ -]?text\b|\bfull paper\b', excerpt, re.I)
-    if abstract and fulltext:
+    if abstract and (fulltext or '正文' in excerpt):
         return True
     if re.search(r'访问范围|阅读范围|获取范围|access[ -]?level|access scope', excerpt, re.I):
         return True
     return bool((abstract or fulltext) and re.search(
-        r'实际|取得|获取|读到|读了|标明|写明|说明|\b(?:state|specify|acquired|obtained|accessed)\b', excerpt, re.I))
+        r'实际|取得|获取|读到|读了|注明|标明|写明|说明|\b(?:state|specify|acquired|obtained|accessed)\b', excerpt, re.I))
 
 
 def display_binding_supported(binding, known_claims, metadata):

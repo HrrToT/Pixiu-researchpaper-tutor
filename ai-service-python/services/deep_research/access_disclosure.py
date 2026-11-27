@@ -12,7 +12,7 @@ def access_only(text):
     if not isinstance(text,str):return False
     from services.deep_research.display_metadata import requests_access_level
     if not requests_access_level(text):return False
-    words=r'所依据|依据|提供|获取|取得|实际|阅读|读到|读了|材料|论文|内容|来源|本回答|本次|根据|判断|明确|说明|标明|写明|全文|摘要|片段|还是|是否|仅|只有|访问范围|阅读范围|获取范围|范围|并|是|为|的|了|到|或|和|及'
+    words=r'所依据|依据|提供|获取|取得|实际|阅读|读到|读了|材料|论文|内容|来源|本回答|本次|根据|判断|明确|说明|注明|标明|写明|全文|正文|摘要|片段|还是|是否|仅|只有|访问范围|阅读范围|获取范围|范围|并|是|为|的|了|到|或|和|及'
     remainder=re.sub(words,'',text)
     return not re.sub(r'[\s，。？！、：；,.?!:;（）()“”"\-]','',remainder)
 

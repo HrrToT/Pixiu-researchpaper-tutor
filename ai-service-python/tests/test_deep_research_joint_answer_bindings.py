@@ -35,6 +35,7 @@ def test_joint_binding_needs_real_prose_label_own_citations_and_explicit_access_
     assert not bindings_supported([prose,label],known,{**metadata,'requestSemanticsContractVersion':True},QUESTION)
     assert not bindings_supported([prose,label],known,metadata,'解释压缩方法')
     assert not bindings_supported([prose,label],known,metadata,'解释全文方法与摘要方法的差异')
+    assert not bindings_supported([prose,label],known,metadata,'注明摘要和正文里分别用了哪种压缩方法')
     assert not bindings_supported([prose,{**label,'excerpt':'读完整篇了'}],known,metadata,QUESTION)
     assert not bindings_supported([prose,label],{'c':{**CLAIMS[0],'evidenceRefs':['unknown']}},metadata,QUESTION)
     assert not access_instruction('请解释引文“'+ACCESS+'”的措辞')
@@ -55,14 +56,15 @@ def test_unsolicited_access_proof_location_is_projected_only_in_new_version():
 
 
 @pytest.mark.parametrize('version',[0,2])
-def test_real_fixed_check_shape_handles_joint_scope_without_science_metadata_substitution(version):
+@pytest.mark.parametrize('access',[ACCESS,'注明取得的是摘要还是正文'])
+def test_real_fixed_check_shape_handles_joint_scope_without_science_metadata_substitution(version, access):
     plan=[{'obligations':[
         {'obligationId':'science','question':'用不超过300字说明表3的结果','completionCriteria':[
             {'criterionId':'s','requirement':'用不超过300字说明表3的结果','responseType':'identification'}]},
-        {'obligationId':'access','question':ACCESS,'completionCriteria':[
-            {'criterionId':'a','requirement':ACCESS,'responseType':'identification'}]}]}]
+        {'obligationId':'access','question':access,'completionCriteria':[
+            {'criterionId':'a','requirement':access,'responseType':'identification'}]}]}]
     claims=[{**CLAIMS[0],'text':'表3结果显示剪枝减少冗余高斯。'}]
-    q='用不超过300字说明表3的结果。'+ACCESS+'。'
+    q='用不超过300字说明表3的结果。'+access+'。'
     full_plan=[*plan,{'obligations':[{'obligationId':'answer_scope','question':q}]}]
     rows=[]
     for o in contract(full_plan,q,whole_question_id='answer_scope',literal_request_dimensions=True):
