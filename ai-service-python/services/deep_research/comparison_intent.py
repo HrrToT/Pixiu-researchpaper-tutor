@@ -49,6 +49,17 @@ def validate_plan(plan, question):
             validate_role(obligation, question)
 
 
+def bind_selected_pair(obligation, selected):
+    """Restore one missing ID only when a typed answer already requests the full pair."""
+    requested = obligation.get('requiredSources', [])
+    if (obligation.get('purpose') == 'answer_requirement'
+            and (obligation.get('comparisonRole') or {}).get('kind') in ('per_paper', 'joint')
+            and len(requested) == len(set(requested)) == 2
+            and len(set(requested).intersection(selected)) == 1):
+        return list(selected)
+    return requested
+
+
 GUIDANCE = '''For this comparison, EVERY obligation also has comparisonRole:
 {kind:"per_paper|joint|supporting",label:"short readable axis/judgement",requestExcerpt:"literal user substring"}.
 Use per_paper for ONE factual dimension (mechanism, cost, quality/storage, or speed).

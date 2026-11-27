@@ -198,6 +198,40 @@ def test_full_server_planning_normalizers_preserve_roles_and_use_one_model_call(
     finally:facade.shutdown()
 
 
+@pytest.mark.parametrize('version,focus,policy,requested,repaired', [
+    (1, ['left', 'right'], 'task_only', ['left', 'wrong-right'], True),
+    (0, ['left', 'right'], 'task_only', ['left', 'wrong-right'], False),
+    (1, ['left'], 'task_only', ['left', 'wrong-right'], False),
+    (1, ['left', 'right'], 'academic_external', ['left', 'wrong-right'], False),
+    (1, ['left', 'right'], 'task_only', ['left'], False),
+])
+def test_frozen_comparison_pair_repairs_one_malformed_planner_id(version, focus, policy, requested, repaired):
+    from services.deep_research.coverage import validate_plan
+    from services.deep_research.graph import make_plan_node
+
+    current = record()
+    current.update(runId='r', focusPaperIds=focus, sourcePolicy={'mode': policy},
+                   comparisonSelectedPairBindingVersion=version, evidenceCoverageContractVersion=1)
+    current['state']['outputKind'] = 'paper_comparison'
+    drafted = plan()
+    drafted[1]['obligations'][0]['requiredSources'] = requested
+
+    def update(_run_id, callback, **_kwargs):
+        nonlocal current
+        current = callback(deepcopy(current))
+        return deepcopy(current)
+
+    model = Mock(return_value={'content': json.dumps({'items': drafted})})
+    result = make_plan_node(model, update, validate_plan)({'run_id': 'r'})
+    assert not result.get('error_code')
+    model.assert_called_once()
+    rows = {o['obligationId']: o for item in current['state']['plan'] for o in item['obligations']}
+    assert rows['fairness']['requiredSources'] == (['left', 'right'] if repaired else ['left'])
+    assert drafted[1]['obligations'][0]['requiredSources'] == requested
+    assert any(change['change'] == 'bound_selected_comparison_pair'
+               for change in current['state']['planRequirementNormalization']) is repaired
+
+
 def test_long_context_excerpt_cannot_recombine_two_typed_dimensions():
     from services.deep_research.evidence_requirements import normalize_generated_requirements
     question='比较压缩机制、训练代价，并说明可比性。'

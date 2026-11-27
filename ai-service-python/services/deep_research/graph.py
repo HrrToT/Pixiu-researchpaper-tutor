@@ -434,9 +434,25 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                 except ValueError as exc:
                     return invalid_plan(exc)
             else:
+                focused = record.get('focusPaperIds') or []
+                bind_pair = (record.get('comparisonSelectedPairBindingVersion') == 1
+                             and comparison_intent_enabled(record) and output_kind == 'paper_comparison'
+                             and record.get('sourcePolicy', {}).get('mode') == 'task_only'
+                             and len(focused) == len(allowed) == len(set(allowed)) == 2
+                             and set(focused) == set(allowed))
+                if bind_pair:
+                    from services.deep_research.comparison_intent import bind_selected_pair
                 for item in validated:
                     for obligation in item.get("obligations", []):
                         requested = obligation.get("requiredSources", [])
+                        if bind_pair:
+                            bound = bind_selected_pair(obligation, focused)
+                            if bound != requested:
+                                requested = bound
+                                requirement_changes.append({
+                                    'obligationId': obligation['obligationId'],
+                                    'change': 'bound_selected_comparison_pair',
+                                })
                         external_ids = []
                         if record.get("sourcePolicy", {}).get("mode") in {"academic_external", "external_only"}:
                             from services.deep_research_academic import checked_arxiv_id

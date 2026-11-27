@@ -341,7 +341,8 @@ class ResearchFacade:
                {'shortComparisonLayoutContractVersion': 4} if continuation_context and self._comparison_cells_version == 1 else {}),
             "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
-            **({'comparisonJointRequestCoverageVersion': 3, 'comparisonPerPaperResultRolesVersion': 2}
+            **({'comparisonJointRequestCoverageVersion': 3, 'comparisonPerPaperResultRolesVersion': 2,
+                'comparisonSelectedPairBindingVersion': 1}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             **({'comparisonConditionBoundResultReadinessVersion': 1}
