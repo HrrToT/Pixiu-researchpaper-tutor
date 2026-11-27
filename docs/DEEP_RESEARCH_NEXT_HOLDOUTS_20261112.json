@@ -52,6 +52,7 @@
         "offlineMethodReplay": "deep-research-evidence/silk-numbered-method-passages-replay-20261127.json",
         "developmentAndRepairReceipt": "deep-research-evidence/silk-image-pair-and-method-citation-20261127.json",
         "supplementalMethodRetentionReceipt": "deep-research-evidence/silk-supplemental-method-retention-20261127.json",
+        "jointProcessAnchorsReceipt": "deep-research-evidence/silk-joint-process-anchors-20261127.json",
         "scientificContentCredit": 0
       }
     },

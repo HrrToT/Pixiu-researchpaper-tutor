@@ -1,0 +1,121 @@
+{
+  "case": "H1-SILK",
+  "developmentOnly": true,
+  "sourceCommit": "57f343e55e7bf03f1fe00399378e73c7747c64f8",
+  "runId": "dr_run_ccbca16a38ea524cbc949ed4c49acafc",
+  "status": "completed",
+  "outcome": "partial",
+  "elapsedSeconds": 63.0,
+  "providerCalls": 6,
+  "providerTokens": 31773,
+  "providerTokensByModel": {
+    "gpt-6-luna": 8457,
+    "gpt-6.1-terra": 23316
+  },
+  "externalSearches": 0,
+  "isolatedPublicationId": "dr_pub_9d3d3123c9964add866c8627ca24e6fd",
+  "isolatedOutboxDelivered": false,
+  "jointAssessmentAudits": [
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [],
+      "invalidUnits": [
+        "G1",
+        "G2",
+        "G3"
+      ]
+    },
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [],
+      "invalidUnits": [
+        "G1",
+        "G2"
+      ]
+    }
+  ],
+  "verifiedClaims": 1,
+  "answerCoverageStatus": "checked",
+  "answerCoverageDecisions": {
+    "single-image-correspondences": "partial",
+    "bidirectional-matching-training": "partial",
+    "keypoint-positive-negative": "partial",
+    "answer_scope": "partial"
+  },
+  "remainingReaderGap": "Explain homography and pixel discretization, how row/column softmax makes probabilities and affects descriptor training, and how mutual nearest neighbors are determined, in beginner language under the frozen character limit.",
+  "artifactSha256": {
+    "intent.json": "5e1dc9e0278ee3493822bd86325b01ac5d4bdeec6911fb3d400275f0b1b5b616",
+    "run.json": "7c9612047e17ca85e9a4d75821f230ef461baa1f3fd7ddff17b86d1d1e21aeb7",
+    "calls.json": "28455c206e5253ecc490c1a00fcb7ac43732b7e3614459b8d3438de89fceb23c",
+    "result.json": "a5fe05ed079faabe06d178753b184c09b7c75ad5e80018f80d1316c65c066308",
+    "boundary.json": "6166a363bd5bc58f6a7fda69326103fab7b35553dd724cdf8fa338a70f0f2016",
+    "provider.jsonl": "52fa2466b353ee20e3d3cba1db643c2effc13b4504ceb23956a4ead78b2e62ae",
+    "replayed.json": "31cd960ba54903dfc45963b3a4c1a925c1121b275159a4be2e650ee28dc094bb"
+  },
+  "offlineAnchorReplay": {
+    "sourceRunId": "dr_run_30724e4787f155f1b53ce06adbc3357c",
+    "previousAudit": {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1",
+        "G3"
+      ],
+      "invalidUnits": [
+        "G2"
+      ]
+    },
+    "anchorReplayAudit": {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "invalidUnits": []
+    },
+    "requestBytes": {
+      "previous": 17913,
+      "anchored": 16920
+    },
+    "originalRunSha256": "8471e4a5b71358fedfca05048bc5f7659d5428051337cfcef68cf3dbbd836bcb",
+    "anchorSelection": "Evaluator mapped the returned roles to exact source sentence IDs in the same evidence packet for the offline replay.",
+    "providerCalls": 0,
+    "scientificContentCredit": 0
+  },
+  "offlineEmptyProcessReplay": {
+    "sourceCommit": "5e378dc94",
+    "targetedTestsPassed": 216,
+    "savedResponse": {
+      "sourceRunId": "dr_run_ccbca16a38ea524cbc949ed4c49acafc",
+      "originalPolicyAudit": {
+        "version": 1,
+        "status": "checked",
+        "validUnits": [],
+        "invalidUnits": [
+          "G1",
+          "G2",
+          "G3"
+        ]
+      },
+      "currentPolicyAudit": {
+        "version": 1,
+        "status": "checked",
+        "validUnits": [
+          "G1",
+          "G3"
+        ],
+        "invalidUnits": [
+          "G2"
+        ]
+      },
+      "modelResponseReusedVerbatim": true,
+      "providerCalls": 0,
+      "semanticCoverageCredit": 0
+    }
+  },
+  "scientificContentCredit": 0
+}
