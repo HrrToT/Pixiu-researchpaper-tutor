@@ -1,0 +1,66 @@
+{
+  "source": "dr_d3_evaluation_preparation_scientific_review_20261127",
+  "sourceSha256": "cdcd99064299c9bbbcecd7c7b4a156a6ec45f453863e367e23e0e75f159f7c60",
+  "checkCount": 25,
+  "batches": [
+    19361,
+    31934,
+    31998,
+    31705
+  ],
+  "priorCitedEvidenceAliases": 13,
+  "budgetAtStart": 67874,
+  "oldPreflightStop": {
+    "batchIndex": 1,
+    "limit": 100000,
+    "spent": 67874,
+    "reservation": 37054
+  },
+  "newMockedDispatches": [
+    {
+      "batch": 0,
+      "type": "mock_review",
+      "reservedTokens": 24481,
+      "settledRecordedTokens": 5229
+    },
+    {
+      "batch": 1,
+      "type": "mock_count",
+      "inputTokensFromRecordedUsage": 8545,
+      "wireDigest": "2c828133e755fdd488c283f7f7ad9cdf9253f0a01b256066145ea0d51b5e6b85"
+    },
+    {
+      "batch": 1,
+      "type": "mock_review",
+      "reservedTokens": 13665,
+      "settledRecordedTokens": 9726
+    },
+    {
+      "batch": 2,
+      "type": "mock_count",
+      "inputTokensFromRecordedUsage": 8629,
+      "wireDigest": "4a872dfabba87a277a344f70e1b3a04b9d0e71ba84a8a0fc9ae7df5513ed222a"
+    },
+    {
+      "batch": 2,
+      "type": "mock_review",
+      "reservedTokens": 13749,
+      "settledRecordedTokens": 9811
+    },
+    {
+      "batch": 3,
+      "type": "mock_count",
+      "inputTokensFromRecordedUsage": 8514,
+      "wireDigest": "46293f31af7e6ce11afdcc5aff455b32478d263e4ab4e70268120ce1ce16fc20"
+    }
+  ],
+  "newStop": {
+    "kind": "tokens",
+    "limit": 100000,
+    "used": 106274
+  },
+  "finalBudgetTokens": 92640,
+  "finalStatus": "invocation_failed",
+  "scientificApproval": false,
+  "networkCalls": 0
+}
