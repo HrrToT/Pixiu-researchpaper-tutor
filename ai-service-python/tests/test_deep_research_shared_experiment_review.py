@@ -351,6 +351,40 @@ def test_output_bounded_review_partitions_even_when_input_fits():
                                    scoped=True, fit_check_count=True) == []
 
 
+def test_packing_combines_a_user_check_without_duplicating_the_full_design():
+    from services.deep_research.shared_experiment_review_input import partition_bounded_review
+
+    aliases = {'E1': 'citation', 'E2': 'frozen_premise', 'E3': 'background'}
+    record = {'state': {'sharedExperimentMaterialAllocation': {
+        'requiredEvidenceIds': ['frozen_premise'], 'suppliedEvidenceIds': list(aliases.values()),
+        'allFrozenPremiseBundlesRetained': True}}}
+    proposal = {'sourceFacts': [{'id': 'F1', 'evidenceRefs': ['E1']}], 'steps': [{'id': 'fit'}]}
+    criteria = [{'criterionId': name, 'requirement': f'Check {name}.'} for name in ('split', 'budget')]
+    data = {'proposal': proposal, 'requirements': [{'obligationId': 'o', 'completionCriteria': criteria}],
+            'evidence': [{'evidenceId': alias, 'tableDataRef': alias} for alias in aliases],
+            'tables': {alias: {'source': alias} for alias in aliases},
+            'factChecks': [['fact', 'F1']], 'sectionChecks': [['section', 'criterion', ['/steps']]],
+            'humanChecks': [['human_split', 'o', 'split'], ['human_budget', 'o', 'budget']]}
+
+    def measure(view):
+        return view, len(view['evidence']) * 10 + len(view['humanChecks']) * 6
+
+    without_packing = partition_bounded_review(record, data, aliases, proposal, measure, 30, 3,
+                                               scoped=True, fit_check_count=True)
+    packed = partition_bounded_review(record, data, aliases, proposal, measure, 30, 3,
+                                      scoped=True, fit_check_count=True, pack_design_checks=True)
+    assert len(without_packing) == 4
+    assert [part['checkIds'] for part in packed] == [['fact'], ['section', 'human_split'], ['human_budget']]
+    assert packed[0] == without_packing[0]
+    for part, criterion in zip(packed[1:], criteria, strict=True):
+        assert part['request']['proposal'] == proposal
+        assert part['request']['requirements'] == [{'obligationId': 'o', 'completionCriteria': [criterion]}]
+        assert part['suppliedEvidenceAliases'] == ['E1', 'E2']
+        assert part['request']['evidence'] == data['evidence'][:2]
+        assert part['request']['tables'] == {key: data['tables'][key] for key in ('E1', 'E2')}
+        assert part['inputBytes'] <= 30
+
+
 def test_revised_design_packets_can_omit_optional_evidence_without_losing_scope():
     from services.deep_research.shared_experiment_review_input import partition_bounded_review
 

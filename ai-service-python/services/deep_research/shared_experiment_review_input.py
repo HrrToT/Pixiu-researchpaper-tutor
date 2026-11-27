@@ -73,8 +73,22 @@ def partition_review(record, data, aliases, proposal, build_request, limit):
     ]
 
 
+def _requirements_for_checks(requirements, checks):
+    wanted = {(oid, cid) for _, oid, cid in checks}
+    selected = []
+    for row in requirements:
+        oid = row['obligationId']
+        if (oid, 'whole') in wanted:
+            selected.append(row)
+            continue
+        criteria = [c for c in row.get('completionCriteria', []) if (oid, c['criterionId']) in wanted]
+        if criteria:
+            selected.append({**row, 'completionCriteria': criteria})
+    return selected
+
+
 def partition_bounded_review(record, data, aliases, proposal, build_request, limit, max_checks, *, scoped=False,
-                             required_design_evidence_only=False, fit_check_count=False):
+                             required_design_evidence_only=False, fit_check_count=False, pack_design_checks=False):
     """Keep the full design in design reviews; facts may use their own source packet."""
     fact_sources = {fact['id']: set(fact['evidenceRefs']) for fact in proposal['sourceFacts']}
     batches = []
@@ -100,18 +114,7 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
                 if scoped and key == 'sectionChecks':
                     packet['requirements'] = []
                 elif scoped:
-                    wanted = {(oid, cid) for _, oid, cid in selected}
-                    requirements = []
-                    for row in packet['requirements']:
-                        oid = row['obligationId']
-                        if (oid, 'whole') in wanted:
-                            requirements.append(row)
-                            continue
-                        criteria = [c for c in row.get('completionCriteria', [])
-                                    if (oid, c['criterionId']) in wanted]
-                        if criteria:
-                            requirements.append({**row, 'completionCriteria': criteria})
-                    packet['requirements'] = requirements
+                    packet['requirements'] = _requirements_for_checks(packet['requirements'], selected)
                 # Preserve sources cited by the proposal as well as required
                 # premises for the section and human-criteria reviews.
                 request, size, supplied = fit_accounted_evidence(
@@ -135,4 +138,42 @@ def partition_bounded_review(record, data, aliases, proposal, build_request, lim
             if end == start:
                 return []
             start = end
+    if pack_design_checks and scoped:
+        packed = _pack_design_checks(record, data, aliases, proposal, build_request, limit, max_checks, batches)
+        if packed:
+            return packed
     return batches
+
+
+def _pack_design_checks(record, data, aliases, proposal, build_request, limit, max_checks, batches):
+    """Share the full design between one section group and one user requirement."""
+    sections = data['sectionChecks']
+    humans = data['humanChecks']
+    if not (0 < len(sections) < max_checks and 1 < len(humans) <= max_checks):
+        return None
+    fact_ids = {entry[0] for entry in data['factChecks']}
+    facts = [part for part in batches if set(part['checkIds']) <= fact_ids]
+    if len(batches) <= len(facts) + 2:
+        return None
+
+    def packet(section_checks, human_checks):
+        view = {**data, 'factChecks': [], 'sectionChecks': section_checks,
+                'humanChecks': human_checks,
+                'requirements': _requirements_for_checks(data['requirements'], human_checks)}
+        request, size, supplied = fit_accounted_evidence(
+            record, view, aliases, proposal, build_request, limit, required_only=True)
+        return {'request': request, 'inputBytes': size,
+                'checkIds': [entry[0] for entry in [*section_checks, *human_checks]],
+                'suppliedEvidenceAliases': supplied}
+
+    choices = []
+    for index, human in enumerate(humans):
+        shared = packet(sections, [human])
+        if shared['inputBytes'] > limit:
+            continue
+        remainder = packet([], humans[:index] + humans[index + 1:])
+        if remainder['inputBytes'] <= limit:
+            choices.append([shared, remainder])
+    if not choices:
+        return None
+    return [*facts, *min(choices, key=lambda pair: sum(part['inputBytes'] for part in pair))]

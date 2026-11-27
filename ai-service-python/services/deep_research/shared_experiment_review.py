@@ -67,6 +67,7 @@ REFERENCE_MARKER = 'sharedExperimentReviewReferenceVersion'
 FACT_CONTEXT_MARKER = 'sharedExperimentFactContextVersion'
 SCOPED_PACKET_MARKER = 'sharedExperimentScopedReviewPacketVersion'
 SCOPED_PACKET_VERSIONS = (1, 2, 3, 4, 5, 6, 7)
+PACKING_MARKER = 'sharedExperimentReviewPackingVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -151,7 +152,8 @@ def _scoped_packet_policy(record, view):
     if record.get(SCOPED_PACKET_MARKER) == 1:
         return SCOPED_PACKET_INSTRUCTIONS
     key = next(key for key in SCOPED_PACKET_CHECKS if view[key])
-    if record.get(SCOPED_PACKET_MARKER) in (6, 7):
+    mixed_checks = bool(view.get('sectionChecks') and view.get('humanChecks'))
+    if record.get(SCOPED_PACKET_MARKER) in (6, 7) or mixed_checks:
         bounds = (
             'Audit assigned IDs once. Reasons ≤420 characters; at most 16 exact plan pointers per check. '
             'Use zero-based scalar paths or /steps/INDEX/{reads,creates,updates} and /analysis/contrasts/INDEX/weights. '
@@ -159,7 +161,10 @@ def _scoped_packet_policy(record, view):
         )
         if key == 'factChecks':
             bounds += 'This packet intentionally omits the design. Check coherence among sourceFacts only. '
-        return bounds + SCOPED_PACKET_CHECKS[key] + '\nInput:\n'
+        mixed = (' humanChecks map [checkId,obligationId,criterionId] to requirements '
+                 '(whole is the question). Bind substantive fields covering each criterion.'
+                 if mixed_checks else '')
+        return bounds + SCOPED_PACKET_CHECKS[key] + mixed + '\nInput:\n'
     state_rule = (' Reasons: ≤420 characters. Exact /steps/INDEX/{reads,creates,updates} arrays '
                   'may bind state flow; a pass still needs a substantive scalar.'
                   if record.get(REFERENCE_MARKER) == 4 else '')
@@ -515,19 +520,26 @@ def build(record, input_data, aliases, *, required_domains=()):
             batches = partition_bounded_review(
                 record, data, aliases, bound['proposal'], measure, MAX_INPUT, MAX_CHECKS_PER_REVIEW)
             packet_version = record.get(SCOPED_PACKET_MARKER)
+            pack_design_checks = (packet_version in (5, 6, 7) and type(record.get(PACKING_MARKER)) is int
+                                  and record[PACKING_MARKER] == 1)
             if not batches and packet_version in SCOPED_PACKET_VERSIONS:
                 batches = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
-                    MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=packet_version in (5, 6, 7))
+                    MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=packet_version in (5, 6, 7),
+                    pack_design_checks=pack_design_checks)
             if (packet_version in (4, 5, 6, 7) and
                     (not batches and record.get(REFERENCE_MARKER) == 4
                      or _reviewed_fact_batch(record, batches, bound, input_data, aliases))):
                 limited = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
                     MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, required_design_evidence_only=True,
-                    fit_check_count=packet_version in (5, 6, 7))
+                    fit_check_count=packet_version in (5, 6, 7), pack_design_checks=pack_design_checks)
+                def cost(parts):
+                    maximum = max(p['inputBytes'] for p in parts)
+                    return (len(parts), maximum) if pack_design_checks else (maximum,)
+
                 if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
-                        and (not batches or max(p['inputBytes'] for p in limited) < max(p['inputBytes'] for p in batches))):
+                        and (not batches or cost(limited) < cost(batches))):
                     batches = limited
         elif size > MAX_INPUT and compact_version == 1:
             from services.deep_research.shared_experiment_review_input import partition_review
