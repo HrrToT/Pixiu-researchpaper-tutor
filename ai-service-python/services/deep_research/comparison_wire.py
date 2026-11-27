@@ -633,6 +633,19 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
                        'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                        'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
+            if record.get('comparisonMechanismReadContractVersion') == 2:
+                from services.deep_research.mechanism_sources import compression_mapping_requested
+                from services.deep_research.processing_cost_sources import requested as processing_cost_requested
+
+                dimensions = [target['question'] for paper in data['papers'] for target in paper['targets']]
+                if any(processing_cost_requested(dimension) for dimension in dimensions):
+                    policy += ('For processing cost, report the cited original fitting or rendering work when that is '
+                               'what the paper quantifies. Distinguish it from added processing and keep any unknown '
+                               'extra cost scoped to the cited evidence. Do not treat it as zero or leave documented work blank.\n')
+                if any(compression_mapping_requested(dimension) for dimension in dimensions):
+                    policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
+                               'Explain any source-reported feature-to-code mapping without claiming an index file '
+                               'or storage format unless the quoted method specifies it.\n')
             one_example = (joint_numeric_example(plan['roles'], question) if deliver_joint
                            else has_single_numeric_example(plan['roles']))
             if one_example:

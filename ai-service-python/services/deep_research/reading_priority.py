@@ -10,7 +10,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                         comparison_evaluation_protocol=False, comparison_deployment_memory=False,
                         comparison_memory_criteria=False, named_table_grouped_rows=False, local_pdf_methods=False,
                         threshold_benchmarks=None, named_benchmark_protocol=False, supervision=False,
-                        figure_counts=False):
+                        figure_counts=False, compression_operations=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -71,7 +71,8 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
             preferred.append(note)
     if mechanism_overviews and limit >= 3:
         from services.deep_research.mechanism_sources import comparison_overviews
-        preferred.extend(comparison_overviews(ordered, obligations, extracted)[:limit // 3])
+        preferred.extend(comparison_overviews(
+            ordered, obligations, extracted, compression_operations=compression_operations)[:limit // 3])
     if benchmark_human:
         from services.deep_research.named_benchmark_navigation import preferred_benchmark_reads
         preferred.extend(preferred_benchmark_reads(ordered, obligations, benchmark_human, limit, extracted))

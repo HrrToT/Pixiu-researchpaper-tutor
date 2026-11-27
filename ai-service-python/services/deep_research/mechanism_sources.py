@@ -77,7 +77,29 @@ def comparison_mechanism(obligation):
                         for criterion in obligation.get('completionCriteria', [])))
 
 
-def comparison_overviews(sources, obligations, extracted):
+def compression_mapping_requested(text):
+    return bool(re.search(r'压缩机制|压缩原理|压缩后.{0,12}表示|'
+                          r'\bcompression mechanisms?\b|\bcompressed (?:deployment )?representation\b',
+                          _positive(text), re.I))
+
+
+def compression_mapping_score(text, section):
+    """Find an authored mapping from source features to a compact codebook."""
+    if re.search(r'related work|bibliography|references|^table\b', section.strip(), re.I):
+        return 0
+    text = ' '.join(text.split())
+    if not (re.search(r'\b(?:we|our)\b', text, re.I)
+            and re.search(r'\b(?:codebooks?|code vectors?|codes)\b', text, re.I)):
+        return 0
+    if re.search(r'\b(?:assign\w*|associat\w*|map\w*|group\w*|segment\w*|quantiz\w*|cluster\w*)\b[^.!?]{0,165}'
+                 r'\b(?:to the (?:closest|nearest|K) codes?|closest code|codebook mapping)\b', text, re.I):
+        return 3
+    if re.search(r'\b(?:gaussian|feature|vector)[-\s]+to[-\s]+codebook mapping\b', text, re.I):
+        return 2
+    return 0
+
+
+def comparison_overviews(sources, obligations, extracted, *, compression_operations=False):
     from services.deep_research.obligation_binding import eligible_obligation_ids
 
     active = {oid: obligation for oid, obligation in obligations.items() if comparison_mechanism(obligation)}
@@ -89,7 +111,15 @@ def comparison_overviews(sources, obligations, extracted):
                 or (source['sourceId'], source.get('contentHash')) in extracted
                 or not set(source.get('obligationIds', [])).intersection(eligible_obligation_ids(source, active))):
             continue
-        score = overview_score(source.get('text', ''), source.get('location', {}).get('section', ''))
+        text = source.get('text', '')
+        section = source.get('location', {}).get('section', '')
+        score = overview_score(text, section)
+        if compression_operations and any(
+            compression_mapping_requested(c['requirement'])
+            for oid in eligible_obligation_ids(source, active)
+            for c in active[oid].get('completionCriteria', [])
+        ):
+            score += 100 * compression_mapping_score(text, section)
         if score > best.get(identity, (0, None))[0]:
             best[identity] = (score, source)
     return [source for _, source in best.values()]

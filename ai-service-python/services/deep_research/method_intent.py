@@ -11,7 +11,7 @@ def training_supervision_requested(text):
                           r'pseudo.labels|supervisory signals?)\b', text, re.I))
 
 
-def query_intents(query, *, supervision=False):
+def query_intents(query, *, supervision=False, compression_operations=False):
     """All explicit acquisition aspects, not a factual or completion verdict.
 
     A compound request can ask for inputs AND temporal representation AND
@@ -26,6 +26,10 @@ def query_intents(query, *, supervision=False):
     found=[intent for intent,pattern in patterns if re.search(pattern,query,re.I)]
     if supervision and training_supervision_requested(query):
         found.insert(0, 'training_supervision')
+    if compression_operations:
+        from services.deep_research.mechanism_sources import compression_mapping_requested
+        if compression_mapping_requested(query):
+            found.append('compression_mapping')
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
             found.append('measurement:'+metric.lower())
@@ -55,6 +59,9 @@ def query_intent(query, *, operational=False):
 
 
 def operation_score(body, section, intent, *, operational=False):
+    if operational and intent == 'compression_mapping':
+        from services.deep_research.mechanism_sources import compression_mapping_score
+        return compression_mapping_score(body, section)
     if operational and isinstance(intent,str) and intent.startswith('data_condition:'):
         from services.deep_research.data_conditions import condition_score
         return condition_score(body,section,intent.split(':',1)[1])
