@@ -182,7 +182,9 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 try:
                     papers = stage.get('paperSubjectsByTarget', {}).get(row['targetId'])
                     if papers:
-                        point = compile_paper_boundary(point, papers, snapshot['sources'], evidence_owners)
+                        point = compile_paper_boundary(
+                            point, papers, snapshot['sources'], evidence_owners,
+                            setting_statements=stage.get('paperSettingStatements') is True)
                     point = bind_stage_point(point, pairs,
                                              setting_references=setting_references and (stage['stageId'] == 'joint' or bool(papers)),
                                              protocol_settings_only=(record.get('comparisonJointReportsContractVersion') == 16

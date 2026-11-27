@@ -9,7 +9,7 @@ _TABLE_PROHIBITION = re.compile(r'(?:不要|不用|无需|取消|去掉)[^。！
 def short_prose_enabled(record, question, limit):
     """Use prose for new, explicitly length-limited comparisons without a table requirement."""
     version = record.get('shortComparisonLayoutContractVersion')
-    if type(version) is not int or version != 1 or type(limit) is not int or not 0 < limit <= 300:
+    if type(version) is not int or version not in (1, 2) or type(limit) is not int or not 0 < limit <= 300:
         return False
     layers = getattr(question, 'point_instruction_layers', (str(question),))
     for layer in layers:

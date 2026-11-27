@@ -68,7 +68,7 @@ def scopes(record, plan, targets, *, question=None):
     return result
 
 
-def compile_point(point, papers, sources, evidence_owners):
+def compile_point(point, papers, sources, evidence_owners, *, setting_statements=False):
     """Resolve model-selected publication aliases without inferring evidence or settings."""
     refs = point.get('evidenceRefs')
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
@@ -97,6 +97,13 @@ def compile_point(point, papers, sources, evidence_owners):
         if (not isinstance(paper, str) or paper not in labels or not isinstance(anchors, list)
                 or any(not isinstance(ref, str) or ref not in refs or evidence_owners.get(ref) != paper for ref in anchors)):
             raise ValueError('stage_cross_paper_setting_owner')
+        if setting_statements and set(setting) == {'subject', 'setting', 'evidenceRefs'}:
+            statement = setting['setting']
+            if not isinstance(statement, str) or not statement.strip():
+                raise ValueError('stage_cross_paper_setting_statement')
+            # Retain the exact authored statement. Its factual support is still
+            # checked as an observed setting and as part of the complete answer.
+            setting = {'subject': paper, 'attribute': '评估设置', 'value': statement, 'evidenceRefs': anchors}
         value = setting.get('value')
         if (set(setting) == {'subject', 'attribute', 'value', 'evidenceRefs'}
                 and isinstance(setting['attribute'], str) and setting['attribute'].strip()

@@ -55,6 +55,63 @@ def test_short_comparison_guidance_is_shared_without_changing_evidence_permissio
         assert (current['prompt'] != previous['prompt']) == short
 
 
+@pytest.mark.parametrize(('version', 'format_request', 'foreign', 'supported'), [
+    (1, '不用表格。', False, False),
+    (2, '用表格。', False, False),
+    (2, '不用表格。', False, True),
+    (2, '不用表格。', True, True),
+])
+def test_short_followup_accepts_an_exact_source_local_setting_statement(version, format_request, foreign, supported):
+    from services.deep_research.scope_expression import materialize
+
+    r, plan, rows, aliases, bundles = fixture()
+    question = '为什么不能直接拿两篇的FPS排名？'
+    r.update(question=format_request + r['question'] + question, comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=16,
+             comparisonJointReportsContractVersion=16, comparisonCrossPaperBoundaryContractVersion=1,
+             shortComparisonLayoutContractVersion=version)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    goal.update(question=question, comparisonRole={**goal['comparisonRole'], 'requestExcerpt': question})
+    snapshot = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases,
+                       character_limit=200, merge_joint=False)
+    stage = next(stage for stage in snapshot['stages'] if stage['stageId'] == 'joint')
+    target = 'joint_' + goal['obligationId']
+    papers = stage['paperSubjectsByTarget'][target]
+    assert stage.get('paperSettingStatements', False) is supported
+    refs = [next(row['evidenceId'] for row in rows if row['source'] == paper
+                 and row['evidenceId'] in stage['allowedEvidenceByTarget'][target]) for paper in papers]
+    statement = '在 GPU X 上评估'
+    point = {'kind': 'inference', 'evidenceRefs': refs, 'cellRefs': [], 'detailLevel': 'fulltext',
+             'body': {'boundary': {'observedSettings': [
+                 {'subject': papers[0], 'setting': statement, 'evidenceRefs': [refs[int(foreign)]]},
+             ], 'notEstablished': [
+                 {'type': 'comparison_evidence', 'subjects': papers, 'quantity': 'FPS'},
+             ]}}}
+    answer = {'targetId': target, 'goalRefs': [], 'point': point}
+    def invoke(_, prompt, __):
+        response = [answer] if prompt == stage['prompt'] else []
+        return {'content': json.dumps({'answers': response}), 'finishReason': 'stop'}
+    checkpoints = []
+    result = generate(snapshot, current=lambda: r, checkpoint=checkpoints.append, invoke=invoke)
+    admitted, = json.loads(result['content'])['answers']
+    journal = checkpoints[-1]['stages']['joint']
+    assert json.loads(journal['response']['content'])['answers'] == [answer]
+    if foreign:
+        assert admitted['point'] is None
+        assert journal['isolatedTargets'] == [{'targetId': target, 'reason': 'stage_cross_paper_setting_owner'}]
+        return
+    compiled = admitted['point']
+    claim = {'claimId': 'c1', 'kind': 'inference', 'text': '', 'conditions': {},
+             'evidenceRefs': compiled['evidenceRefs'], 'scopeExpression': compiled['body']['boundary']}
+    if not supported:
+        with pytest.raises(ValueError, match='Invalid observed setting fields'):
+            materialize(claim, version=5)
+        return
+    rendered, audit = materialize(claim, version=5)
+    assert statement in rendered['text'] and rendered['evidenceRefs'] == refs
+    assert audit['verification'] == 'unchecked'
+
+
 def test_inherited_evidence_tags_do_not_enter_the_current_stage_request():
     r, plan, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
