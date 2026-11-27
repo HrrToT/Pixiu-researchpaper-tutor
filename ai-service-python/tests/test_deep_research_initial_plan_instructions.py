@@ -43,7 +43,7 @@ def test_actual_plan_has_one_native_compatible_shape_and_preserves_exact_inputs(
     assert saved['state']['plan'][0]['obligations'][0]['completionCriteria']==valid_plan()[0]['obligations'][0]['completionCriteria']
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,2,1.0,'1'])
+@pytest.mark.parametrize('value',[None,True,False,0,3,1.0,'1'])
 def test_old_or_non_exact_flag_keeps_legacy_prompt_byte_identical(value):
     r=record(value);assert not enabled(r)
     _,_,a=capture(r,{'content':json.dumps(valid_plan())})
@@ -51,6 +51,15 @@ def test_old_or_non_exact_flag_keeps_legacy_prompt_byte_identical(value):
     _,_,b=capture(old,{'content':json.dumps(valid_plan())})
     assert a.call_args==b.call_args
     assert 'NOT an object with items field' in a.call_args.args[2]
+
+
+def test_v2_distinguishes_reading_order_from_an_execution_prerequisite():
+    legacy, current = (prompt(record(version), 'Data rules.') for version in (1, 2))
+    from services.deep_research.initial_plan_instructions import DEPENDENCY_RULES
+
+    assert current.replace(DEPENDENCY_RULES, '') == legacy
+    assert 'retrieve definitions, illustrative' in current
+    assert 'Keep experiment or' in current
 
 
 @pytest.mark.parametrize('response',[{'content':'null','rawContent':'[{"purpose":"a","purpose":"a"}]'},
@@ -62,7 +71,7 @@ def test_unified_prompt_does_not_salvage_invalid_or_truncated_responses(response
     assert invoke.call_count==1 and saved['state']['planFormatValidation']['status']=='rejected'
 
 
-@pytest.mark.parametrize('value',[None,True,0,2])
+@pytest.mark.parametrize('value',[None,True,0,1])
 def test_server_owns_immutable_policy_and_legacy_records_cannot_acquire_it(tmp_path,value):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
@@ -70,7 +79,7 @@ def test_server_owns_immutable_policy_and_legacy_records_cannot_acquire_it(tmp_p
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'Explain','deferStart':True,
             'initialPlanInstructionsContractVersion':value},start_async=False)
-        assert enabled(r) and type(r['initialPlanInstructionsContractVersion']) is int
+        assert enabled(r) and r['initialPlanInstructionsContractVersion'] == 2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(r['runId'],lambda r:{**r,'initialPlanInstructionsContractVersion':value})
         old=deepcopy(r);old.pop('initialPlanInstructionsContractVersion');old.update(runId='legacy',idempotencyKey='old')

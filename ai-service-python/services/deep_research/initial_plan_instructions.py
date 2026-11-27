@@ -4,7 +4,7 @@ import json
 
 def enabled(record):
     return (type(record.get('initialPlanInstructionsContractVersion')) is int
-        and record['initialPlanInstructionsContractVersion']==1
+        and record['initialPlanInstructionsContractVersion'] in (1, 2)
         and type(record.get('planCompletionContractVersion')) is int
         and record['planCompletionContractVersion']==1
         and type(record.get('requestSemanticsContractVersion')) is int
@@ -44,6 +44,18 @@ Reuse relevant previously acquired exact source identities for lookup.
 Access-disclosure requests describe what THIS ASSISTANT obtained/cites, never the
 human's reading history. A mixed science/access request still requires science.
 The plan and its completion criteria grant no factual or completeness approval.
+'''
+
+
+DEPENDENCY_RULES = '''
+Use dependencies only when a later investigation needs an earlier finding to
+identify a source, object, or comparison scope before it can be investigated.
+The order of the user's questions or of the eventual explanation is not an
+execution dependency. In a fixed source, retrieve definitions, illustrative
+examples and directly documented operations independently when each has its
+own searchable target, even if the final explanation connects them. Sharing
+a term or source does not by itself require a dependency. Keep experiment or
+comparison prerequisites when the later investigation needs their result.
 '''
 
 
@@ -102,7 +114,8 @@ def prompt(record,data_guidance):
         shape['items'][0]['obligations'][0]['comparisonRole'] = {
             'kind':'per_paper','label':'<short axis label>','requestExcerpt':'<literal axis substring>'}
         comparison_rules = '\n' + comparison_guidance(record)
-    return (RULES+comparison_rules+response_rule+followup_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
+    dependency_rules = DEPENDENCY_RULES if record.get('initialPlanInstructionsContractVersion') == 2 else ''
+    return (RULES+dependency_rules+comparison_rules+response_rule+followup_rule+'\n'+data_guidance+'\n'+PLAN_GUIDANCE_V2
         +'\nInput data (goals, not paper facts):\n'+json.dumps(inputs,ensure_ascii=False,separators=(',',':'))
         +'\nOnly output shape (choose appropriate responseType and purpose values):\n'
         +json.dumps(shape,ensure_ascii=False,separators=(',',':')))

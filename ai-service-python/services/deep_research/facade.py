@@ -316,7 +316,7 @@ class ResearchFacade:
             "initialPlanResponseContractVersion": 4 if continuation_context else {4: 2, 5: 3, 6: 3}.get(shared_experiment_profile, 1),
             "initialPlanCorrectionContractVersion": 1,
             "initialPlanExcerptSpanVersion": 1,
-            "initialPlanInstructionsContractVersion": 1,
+            "initialPlanInstructionsContractVersion": 2,
             "initialPlanModelContractVersion": 1,
             "verbatimRepairContractVersion": 1,
             "repairInstructionsContractVersion": 5,
