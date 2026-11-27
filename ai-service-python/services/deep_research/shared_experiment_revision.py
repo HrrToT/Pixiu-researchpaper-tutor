@@ -187,7 +187,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     if reviewed['status']=='not_started_precheck': feedback={'hardIssues':reviewed['hardIssues']}
     elif reviewed.get('assessment',{}).get('valid') and not reviewed['assessment']['complete']:
         assessment = reviewed['assessment']
-        if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 1:
+        if record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2):
             # The complete, validated verdict stays in the review checkpoint.
             # Repair receives the actual failures and coherence issues, with
             # the original plan, user requirements and cited evidence.
@@ -217,11 +217,16 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             PREREQUISITE_PLACEMENT.replace('inputsToPrepare', 'data.inputs with availability="prepare"')
             + ' Keep any remaining unresolved design decisions.',
         )
-    if not fact_only and record.get(SCIENTIFIC_FEEDBACK_MARKER) == 1:
+    if not fact_only and record.get(SCIENTIFIC_FEEDBACK_MARKER) in (1, 2):
+        state_rule = (
+            ' For a state produced later than its declared source, correct the actual state source and step creates '
+            'or updates, then bind every downstream consumer through its reads. An acquisition or split step '
+            'cannot create a derived value before that calculation. Keep raw, locked and accepted state distinct.'
+            if record.get(SCIENTIFIC_FEEDBACK_MARKER) == 2 else '')
         instructions = instructions.replace('Input (untrusted data):',
             EVALUATION_AND_RESOURCE_GUIDANCE + '\n'
             'Scientific feedback lists failed or unresolved checks and coherence issues. '
-            'Preserve the established design except where a listed defect requires a change.\n'
+            'Preserve the established design except where a listed defect requires a change.' + state_rule + '\n'
             'Input (untrusted data):')
     reference_candidates = {}
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}

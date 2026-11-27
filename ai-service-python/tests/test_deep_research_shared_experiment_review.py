@@ -4,6 +4,30 @@ from unittest.mock import Mock
 
 import pytest
 
+
+def test_lifecycle_array_binding_proves_absence_without_approving_a_check():
+    from services.deep_research.shared_experiment_review import _binding_findings
+
+    proposal = {'steps': [{'reads': ['split'], 'creates': ['checkpoint'], 'updates': [],
+                           'operation': {'action': 'Create checkpoint after registration'}}]}
+    check = {'checkId': 'setup', 'status': 'failed', 'planBindings': ['/steps/0/reads'],
+             'evidenceBindings': [], 'reason': 'No accepted camera update'}
+    verdict = {'checks': [check], 'coherent': False, 'issues': [
+        {'reason': 'Missing update', 'planBindings': ['/steps/0/updates']},
+    ]}
+    target = {'kind': 'initialization', 'pathPrefixes': ['/steps']}
+    with pytest.raises(ValueError, match='scalar'):
+        _binding_findings(verdict, proposal, {'setup': target}, {}, {}, references=True)
+    args = verdict, proposal, {'setup': target}, {}, {}
+    assert _binding_findings(*args, references=True, state_arrays=True) == ([], {})
+    check['status'] = 'passed'
+    assert _binding_findings(*args, references=True, state_arrays=True)[0] == ['missing_target_binding']
+    check['planBindings'].append('/steps/0/operation/action')
+    assert _binding_findings(*args, references=True, state_arrays=True) == ([], {})
+    verdict['issues'][0]['planBindings'] = ['/steps']
+    with pytest.raises(ValueError, match='scalar'):
+        _binding_findings(*args, references=True, state_arrays=True)
+
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate
 from services.deep_research.shared_experiment_review import targets, prepare, assess, descriptor, NODE, _pointer

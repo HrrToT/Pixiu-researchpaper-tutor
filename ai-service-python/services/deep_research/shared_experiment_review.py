@@ -150,12 +150,15 @@ def _scoped_packet_policy(record, view):
     if record.get(SCOPED_PACKET_MARKER) == 1:
         return SCOPED_PACKET_INSTRUCTIONS
     key = next(key for key in SCOPED_PACKET_CHECKS if view[key])
-    return SCOPED_PACKET_RULES + SCOPED_PACKET_CHECKS[key] + '\nInput:\n'
+    state_rule = (' Reasons: ≤420 characters. Exact /steps/INDEX/{reads,creates,updates} arrays '
+                  'may bind state flow; a pass still needs a substantive scalar.'
+                  if record.get(REFERENCE_MARKER) == 4 else '')
+    return SCOPED_PACKET_RULES + SCOPED_PACKET_CHECKS[key] + state_rule + '\nInput:\n'
 
 
 def reference_review_enabled(record):
     version = record.get(REFERENCE_MARKER)
-    return type(version) is int and version in (1, 2, 3)
+    return type(version) is int and version in (1, 2, 3, 4)
 
 
 def _fact_context_enabled(record):
@@ -195,6 +198,10 @@ def targets(record):
             elif target['kind'] == 'measurement':
                 target['requirement'] += (' For fit memory captures, check allocator coverage, reset and synchronization, '
                                           'each arm’s completed or resource-failed runs, and maximum over fit windows.')
+    if record.get(REFERENCE_MARKER) == 4:
+        for target in result:
+            if target['kind'] == 'initialization':
+                target['requirement'] += ' Match each consumed artifact to the step that actually produces it.'
     from services.deep_research.design_drafting import synthesis_obligations
     for i, obligation in enumerate(synthesis_obligations(record['state'].get('plan', []))):
         criteria = obligation.get('completionCriteria') or [{'criterionId':'whole', 'requirement':obligation['question']}]
@@ -225,8 +232,8 @@ def descriptor(record, check_ids=None):
     binding = text if references else {'$ref':'#/$defs/binding'}
     evidence = _object({'evidenceId':text, 'field':{'enum':['quote', 'before', 'after']},
                         **({} if references else {'text':text})})
-    reason = {**literal_text, 'maxLength':300} if references else text
-    plan_binding_cap = 16 if record.get(REFERENCE_MARKER) == 3 else 8
+    reason = {**literal_text, 'maxLength':420 if record.get(REFERENCE_MARKER) == 4 else 300} if references else text
+    plan_binding_cap = 16 if record.get(REFERENCE_MARKER) in (3, 4) else 8
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
                      'planBindings':_array(binding, maximum=plan_binding_cap),
                      'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
@@ -379,7 +386,7 @@ def build(record, input_data, aliases, *, required_domains=()):
     reference_policy = {REFERENCE_MARKER: record[REFERENCE_MARKER]} if reference_review_enabled(record) else {}
     if reference_policy:
         instructions = REFERENCE_INSTRUCTIONS
-        if record[REFERENCE_MARKER] in (2, 3) and 'factChecks' in data:
+        if record[REFERENCE_MARKER] in (2, 3, 4) and 'factChecks' in data:
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
@@ -395,16 +402,24 @@ def build(record, input_data, aliases, *, required_domains=()):
                         'Verify those fields and include them on a pass that relies on their numbers or figure labels. '
                         'Include any other evidence needed to support the complete fact. Hints do not approve a fact.\nInput:\n',
                     )
-        if record[REFERENCE_MARKER] == 3:
+        if record[REFERENCE_MARKER] in (3, 4):
             instructions = instructions.replace(
                 'Input:\n', 'Bind the shortest sufficient set of scalar paths, up to 16 for a check; '
                 'each distinct condition still needs support. A full contrast weights array may be bound by its exact '
                 '/analysis/contrasts/INDEX/weights path. No other array bindings.\nInput:\n',
             )
+        if record[REFERENCE_MARKER] == 4:
+            instructions = instructions.replace('No other array bindings.', (
+                'State lifecycle may be bound by exact /steps/INDEX/reads, /creates or /updates paths. '
+                'A pass also needs a substantive scalar. Limit each reason to 420 characters.'
+            ))
     elif _fact_context_enabled(record):
         instructions = instructions.replace('Input:\n',
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view, policy=instructions):
+        if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
+            paths = ', '.join(step['id'] for step in steps)
+            policy = 'Step IDs in /steps index order (0-based): ' + paths + '.\n' + policy
         prompt = policy + input_text(view)
         options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
         if reference_policy:
@@ -428,11 +443,14 @@ def build(record, input_data, aliases, *, required_domains=()):
                 batches = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
                     MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True)
-            if record.get(SCOPED_PACKET_MARKER) == 4 and _reviewed_fact_batch(record, batches, bound, input_data, aliases):
+            if (record.get(SCOPED_PACKET_MARKER) == 4 and
+                    (not batches and record.get(REFERENCE_MARKER) == 4
+                     or _reviewed_fact_batch(record, batches, bound, input_data, aliases))):
                 limited = partition_bounded_review(record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
                     MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, required_design_evidence_only=True)
-                if limited and max(p['inputBytes'] for p in limited) < max(p['inputBytes'] for p in batches):
+                if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
+                        and (not batches or max(p['inputBytes'] for p in limited) < max(p['inputBytes'] for p in batches))):
                     batches = limited
         elif size > MAX_INPUT and compact_version == 1:
             from services.deep_research.shared_experiment_review_input import partition_review
@@ -610,7 +628,13 @@ def _decode_batch(answer, check_ids, validator):
     return part
 
 
-def _resolved_plan_bindings(paths, proposal, contrast_arrays):
+def _state_array_path(path):
+    import re
+
+    return re.fullmatch(r'/steps/(?:0|[1-9][0-9]*)/(?:reads|creates|updates)', path) is not None
+
+
+def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False):
     import re
 
     bindings = []
@@ -621,24 +645,37 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays):
                     or any(type(weight) not in (int, float) for weight in weights)):
                 raise ValueError('Review contrast pointer must name four numeric weights')
             bindings.extend(_resolved_plan_binding(f'{path}/{index}', proposal) for index in range(4))
+        elif state_arrays and _state_array_path(path):
+            value = _pointer(proposal, path)
+            if not isinstance(value, list) or any(not isinstance(state, str) or not state for state in value):
+                raise ValueError('Review state path must name a list of state IDs')
+            bindings.append({'path': path, 'text': json.dumps(value, ensure_ascii=False)})
         else:
             bindings.append(_resolved_plan_binding(path, proposal))
     return bindings
 
 
-def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references, contrast_arrays=False):
+def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references,
+                      contrast_arrays=False, state_arrays=False):
     problems = []
     checks = value['checks']
     passed = {}
+
+    def literal(binding):
+        if references and state_arrays and _state_array_path(binding['path']):
+            return binding['text'] == json.dumps(_pointer(proposal, binding['path']), ensure_ascii=False)
+        return _plan_binding(binding, proposal)
+
     for check in checks:
         target = expected[check['checkId']]
         bindings = check['planBindings']
         if references:
-            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays)
+            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays)
         for binding in bindings:
-            if not _plan_binding(binding,proposal): problems.append('invalid_plan_binding')
+            if not literal(binding): problems.append('invalid_plan_binding')
         if check['status'] == 'passed':
-            if not bindings or not any(_substantive(b) and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
+            if not bindings or not any(_substantive(b) and not (state_arrays and _state_array_path(b['path']))
+                                      and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
                                           for prefix in target['pathPrefixes']) for b in bindings):
                 problems.append('missing_target_binding')
             if target['kind'] in ('source_fact','attribution') and not check['evidenceBindings']:
@@ -659,9 +696,9 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
             elif fact_id is not None:
                 passed[fact_id].append({**binding, 'text': excerpt})
     for issue in value['issues']:
-        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays)
+        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays)
                     if references else issue['planBindings'])
-        if any(not _plan_binding(b,proposal) for b in bindings): problems.append('invalid_issue_binding')
+        if any(not literal(b) for b in bindings): problems.append('invalid_issue_binding')
     return problems, passed
 
 
@@ -702,7 +739,8 @@ def assess(record, input_data, aliases, response):
         rows = {e['evidenceId']:e for e in input_data['evidence']}
         problems, passed = _binding_findings(value, proposal, expected, rows, evidence_by_check,
                                              references=reference_review_enabled(record),
-                                             contrast_arrays=record.get(REFERENCE_MARKER) == 3)
+                                             contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
+                                             state_arrays=record.get(REFERENCE_MARKER) == 4)
         if not problems and _fact_context_enabled(record):
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
@@ -777,7 +815,7 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 or 'batchResponses' in saved and digest(responses) != saved.get('batchResponsesDigest')):
             raise DeepResearchError('invalid_shared_experiment_review_state','已保存的审核分组响应已改变。')
         validator = Draft202012Validator(descriptor(record)['schema']) if built.get(STOP_INVALID_BATCH_MARKER) == 1 else None
-        check_bindings_before_next = validator is not None and built.get(REFERENCE_MARKER) in (2, 3)
+        check_bindings_before_next = validator is not None and built.get(REFERENCE_MARKER) in (2, 3, 4)
         if check_bindings_before_next:
             proposal = _generation(record)['boundProposal']['proposal']
             expected = {target['checkId']: target for target in built['targets']}
@@ -794,7 +832,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
-                                                         contrast_arrays=built.get(REFERENCE_MARKER) == 3)
+                                                         contrast_arrays=built.get(REFERENCE_MARKER) in (3, 4),
+                                                         state_arrays=built.get(REFERENCE_MARKER) == 4)
                     if (not problems and _fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                         problems.append('missing_numeric_source_binding')
