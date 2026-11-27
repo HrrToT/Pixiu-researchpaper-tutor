@@ -1,0 +1,216 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "qualification": "offline_ranked_readiness_input_only",
+  "independentCredit": 0,
+  "providerCalls": 0,
+  "sourceTree": "e2783dd0d803db20360a2cf3f2f314d9132a527b",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "before": {
+    "G1": {
+      "reprojection": [],
+      "mutual": [],
+      "threshold": [],
+      "metric": []
+    },
+    "G2": {
+      "reprojection": [],
+      "mutual": [],
+      "threshold": [],
+      "metric": []
+    },
+    "G3": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "mutual": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "threshold": [],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ]
+    },
+    "G4": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "mutual": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "threshold": [],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ]
+    },
+    "G5": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "mutual": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "threshold": [],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ]
+    },
+    "G6": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "mutual": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ],
+      "threshold": [],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530",
+        "ev_25824c56b5625c17fb37a497262aa9b7315bd27df51fec28dfcd9d1607b29f40"
+      ]
+    }
+  },
+  "after": {
+    "G1": {
+      "reprojection": [],
+      "mutual": [],
+      "threshold": [],
+      "metric": []
+    },
+    "G2": {
+      "reprojection": [],
+      "mutual": [],
+      "threshold": [],
+      "metric": []
+    },
+    "G3": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "mutual": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228",
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "threshold": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228"
+      ],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ]
+    },
+    "G4": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "mutual": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228",
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "threshold": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228"
+      ],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ]
+    },
+    "G5": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "mutual": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228",
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "threshold": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228"
+      ],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ]
+    },
+    "G6": {
+      "reprojection": [
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "mutual": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228",
+        "ev_15cbfabcda1f30e01e9568c8295238d18f6e2c9f61f55d999151195e3bac46d0",
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ],
+      "threshold": [
+        "ev_2f60d06aff7152477c0e6f317c91e12e0323b7218711a54ef65cfdcd18e74228"
+      ],
+      "metric": [
+        "ev_f5f2bccce4b1151547e8d28a4273cd5d51c20a2b27f39062c21ed66b6910f530"
+      ]
+    }
+  },
+  "thresholdTableUnitIds": [
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+  ],
+  "readinessUnits": [
+    {
+      "unit": "G1",
+      "requirement": "怎样取得训练监督",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G2",
+      "requirement": "怎样产生关键点和描述子",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G3",
+      "requirement": "各提取一条可引用的原文定量结果，并保留其对应评测条件。",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G4",
+      "requirement": "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G5",
+      "requirement": "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+      "requiredSourceCount": 2
+    },
+    {
+      "unit": "G6",
+      "requirement": "并给出同条件复核建议",
+      "requiredSourceCount": 2
+    }
+  ],
+  "evidencePoolUnchanged": true,
+  "localRegressionPassed": 107,
+  "artifactHashes": {
+    "h2-threshold-table-protocol-probe-20261127.json": "ae7c0090da820e76a0eb57911be5eb4b48a5d6fefc645e4fc3d6eb1fbf1e534d",
+    "h2-condition-bound-result-offline-replay-20261127.json": "d60166152d03aafccd0c3d7ee655663dc1cf426f458732eec0c9303a6f92453b"
+  }
+}

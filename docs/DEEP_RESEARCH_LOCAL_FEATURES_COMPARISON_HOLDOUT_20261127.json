@@ -97,6 +97,8 @@
     "firstExecution": "deep-research-evidence/local-features-h2-default-profile-first-20261127.json",
     "correctedOfflinePreflight": "deep-research-evidence/local-features-h2-profile-preflight-20261127.json",
     "configuredDevelopmentRun": "deep-research-evidence/local-features-h2-configured-development-20261127.json",
-    "thresholdTableOfflineReplay": "deep-research-evidence/local-features-h2-threshold-table-replay-20261127.json"
+    "thresholdTableOfflineReplay": "deep-research-evidence/local-features-h2-threshold-table-replay-20261127.json",
+    "conditionBoundResultReadinessReplay": "deep-research-evidence/local-features-h2-condition-bound-readiness-20261127.json",
+    "conditionBoundResultLiveDevelopmentRun": "deep-research-evidence/local-features-h2-condition-bound-live-20261127.json"
   }
 }

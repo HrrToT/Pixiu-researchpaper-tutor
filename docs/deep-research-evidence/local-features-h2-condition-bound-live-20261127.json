@@ -1,0 +1,157 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "actualRunProfile": {
+    "comparisonCellsContractVersion": 1,
+    "comparisonReviewBatchContractVersion": 2,
+    "comparisonPlanningContractVersion": 6,
+    "comparisonAuthoringContractVersion": 16,
+    "comparisonAuditEnvelopeContractVersion": 17,
+    "comparisonCrossPaperBoundaryContractVersion": 6,
+    "comparisonPdfTableFallbackVersion": 2,
+    "comparisonThresholdTablePdfFallbackVersion": 1,
+    "comparisonJointRequestCoverageVersion": 1,
+    "comparisonConditionBoundResultReadinessVersion": 1
+  },
+  "developmentOnly": true,
+  "sourceTree": "e2783dd0d803db20360a2cf3f2f314d9132a527b",
+  "definitionHash": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "runId": "dr_run_abb15799c9325a13a6bf9242803ea334",
+  "caseQuestionSha256": "3ddc35a0f58bec370a2730a7665f03fdfbe6653afa7f9c122c6286008027e2b3",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "materialSha256": [
+    "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732",
+    "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1"
+  ],
+  "retrieval": "production_lexical_pdf_fallback",
+  "scopeBoundary": "isolated_local_material_endpoint",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "qualification": "post_repair_development_run_only",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "stopReason": "max_requery",
+  "providerRequests": 5,
+  "providerModels": {
+    "gpt-6-luna": 5
+  },
+  "providerUsage": {
+    "input_tokens": 16615,
+    "output_tokens": 1568,
+    "total_tokens": 18183,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 15944
+  },
+  "elapsedSeconds": 80.0,
+  "externalSearches": 0,
+  "materialBoundary": {
+    "scopeCheck": 247,
+    "pdf": 4
+  },
+  "readinessInputsByRound": [
+    [
+      {
+        "unit": "G1",
+        "criterion": "怎样取得训练监督",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G2",
+        "criterion": "怎样产生关键点和描述子",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G3",
+        "criterion": "为每篇论文提供一条原文定量结果及其对应评测条件。",
+        "superPointVerifiedTable": 1,
+        "d2NetReportedThresholdInQuote": 1,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G4",
+        "criterion": "引用原文以支持所选结果及条件。",
+        "superPointVerifiedTable": 1,
+        "d2NetReportedThresholdInQuote": 1,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G5",
+        "criterion": "说明能否把两篇论文的 HPatches 数字直接用于排序",
+        "superPointVerifiedTable": 1,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G6",
+        "criterion": "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+        "superPointVerifiedTable": 1,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      }
+    ],
+    [
+      {
+        "unit": "G1",
+        "criterion": "怎样取得训练监督",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G2",
+        "criterion": "怎样产生关键点和描述子",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 0,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G3",
+        "criterion": "为每篇论文提供一条原文定量结果及其对应评测条件。",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 2,
+        "superPointRansacInQuote": 0
+      }
+    ],
+    [
+      {
+        "unit": "G1",
+        "criterion": "为每篇论文提供一条原文定量结果及其对应评测条件。",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 2,
+        "superPointRansacInQuote": 0
+      },
+      {
+        "unit": "G2",
+        "criterion": "引用原文以支持所选结果及条件。",
+        "superPointVerifiedTable": 0,
+        "d2NetReportedThresholdInQuote": 2,
+        "superPointRansacInQuote": 0
+      }
+    ]
+  ],
+  "positiveReadinessVerdicts": 0,
+  "comparisonStageInputPresent": false,
+  "verifiedClaimCount": 0,
+  "scientificContentCredit": 0,
+  "diagnostics": {
+    "superPointEvaluationProtocolRansacInAcquiredSources": 0,
+    "d2NetFigure4FeatureAndMatchingCountsPresentInExtractedText": true,
+    "note": "The D2-Net pixel threshold is a condition on a reported qualitative comparison, not a measured MMA value. The model returned readiness flags without reasons."
+  },
+  "artifactDirectory": "openai-h2-local-features-bound-result-20261127-development",
+  "artifactSha256": {
+    "intent.json": "0de24b60a98105d74d3bd0b895fd572d51bf930111d5d5e1e67a3f774c3f84da",
+    "run.json": "807cdc57a9a4fb1451ffed3f1cbdc93ba925c8ec968227e2bd69ce057a5d39e2",
+    "calls.json": "c28cd5ef9b05c4747353d4c5e4ef9d15996bbf96bdbf37e15b52a45cef825454",
+    "result.json": "3ecc235190f7eb847f2714aaa7819fc768630b165550c65bbedab1954bddc3f7",
+    "boundary.json": "1c97927e1b1ef6b510a3e95af58d374acf543e74a7eb96184c8a8096601d88b4",
+    "provider.jsonl": "f79ed1a623b04233f99cb520d8d5dc9dc603be096c056f5c6fc2806f43474f8b"
+  }
+}
