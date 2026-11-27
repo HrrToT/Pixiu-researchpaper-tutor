@@ -105,7 +105,7 @@ def test_singleton_native_transport_accepts_new_schema_only_with_frozen_flag_and
     assert old['content']=='null'
 
 
-@pytest.mark.parametrize('version', [1, 2])
+@pytest.mark.parametrize('version', [1, 2, 3])
 def test_new_reviewer_wording_leaves_the_numeric_validation_gate_intact(version):
     sent = []
     raw = row()
@@ -118,9 +118,45 @@ def test_new_reviewer_wording_leaves_the_numeric_validation_gate_intact(version)
     check = checker(invoke, **{**opts(), 'review_reason_parts':version})
     rejected = check([target()], evidence())[0]
     assert rejected['reviewDiagnosticAudit']['errors'] == ['new_diagnostic_numbers_not_bound']
-    assert ('solely to summarize' in sent[-1]) is (version == 2)
+    assert ('solely to summarize' in sent[-1]) is (version in (2, 3))
     raw['reasonParts'][-1]['text'] = 'The conditions agree with the cited text.'
     assert check([target()], evidence())[0]['status'] == 'passed'
+
+
+@pytest.mark.parametrize('variant', ['supported', 'unsupported', 'missing_premises', 'foreign_premise', 'wrong_scope'])
+def test_compact_supported_review_requires_its_own_valid_scope(variant):
+    raw = row()
+    raw['reasonParts'] = []
+    scope = raw['scopeAudit']
+    if variant == 'unsupported':
+        scope['supported'] = False
+    elif variant == 'missing_premises':
+        scope['premises'] = []
+    elif variant == 'foreign_premise':
+        scope['premises'][0]['evidenceId'] = 'foreign'
+    elif variant == 'wrong_scope':
+        scope['claimStrength'] = 'universal'
+
+    packet = {'content':json.dumps(raw),'finishReason':'stop'}
+    from services.deep_research.structured_output import normalize
+    policy = dict(factual_singleton=True, factual_diagnostics=True, factual_reason_parts=True)
+    assert normalize('verify', packet, **policy)['content'] == 'null'
+    normalized = normalize('verify', packet, **policy, factual_compact_supported=True)
+    if variant in {'unsupported', 'missing_premises'}:
+        assert normalized['content'] == 'null'
+    else:
+        assert json.loads(normalized['content']) == raw
+
+    check = checker(lambda **_: {'content':json.dumps([raw])}, **{**opts(), 'review_reason_parts':3})
+    if variant in {'unsupported', 'missing_premises'}:
+        with pytest.raises(DeepResearchError, match='支持判定'):
+            check([target()], evidence())
+        return
+    result = check([target()], evidence())[0]
+    assert result['status'] == ('passed' if variant == 'supported' else 'failed')
+    if variant == 'supported':
+        assert result['diagnosticFacts'] == []
+        assert result['reviewDiagnosticAudit']['errors'] == []
 
 
 @pytest.mark.parametrize('replacement',[None,True,False,0,'1',1,3])

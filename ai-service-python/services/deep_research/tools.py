@@ -552,11 +552,14 @@ class TrackedLLMInvoker:
                     'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
                         and transport_record['reportingOwnershipContractVersion']==1,
                     **({'factual_reason_parts':True} if type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2) else {}),
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3) else {}),
+                    **({'factual_compact_supported':True}
+                       if type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] == 3 else {}),
                     **({'factual_source_fields':True} if type(transport_record.get('reviewSourceFieldReferenceContractVersion')) is int
                        and transport_record['reviewSourceFieldReferenceContractVersion']==1
                        and type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2) else {})}
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3) else {})}
                    if type(transport_record.get('factualEnvelopeContractVersion')) is int
                    and transport_record['factualEnvelopeContractVersion']==2
                    and type(transport_record.get('factualDecisionContractVersion')) is int
@@ -1115,7 +1118,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                 parts_policy=self._review_reason_parts
                 parts_policy = parts_policy() if callable(parts_policy) else parts_policy
                 reason_parts_version = (1 if parts_policy is True else parts_policy
-                                        if type(parts_policy) is int and parts_policy in (1, 2) else 0)
+                                        if type(parts_policy) is int and parts_policy in (1, 2, 3) else 0)
                 reason_parts = schema_policy and bool(reason_parts_version)
                 fields_policy=self._review_source_fields
                 source_field_references=reason_parts and (fields_policy() if callable(fields_policy) else fields_policy) is True
@@ -1535,9 +1538,12 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
-            if reason_parts and reason_parts_version == 2:
+            if reason_parts and reason_parts_version in (2, 3):
                 from services.deep_research.review_reason_parts import NO_NEW_EXPOSITORY_COUNTS
                 prompt += '\n' + NO_NEW_EXPOSITORY_COUNTS
+                if reason_parts_version == 3:
+                    from services.deep_research.review_reason_parts import SUPPORTED_WITHOUT_NARRATION
+                    prompt += '\n' + SUPPORTED_WITHOUT_NARRATION
             elif parameter_policy in (2, 3, 4, 5):
                 prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
                            'Describe the steps directly and retain any quantities required for the verdict.\n')
@@ -1714,7 +1720,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                     if source_field_references:
                         from services.deep_research.review_source_fields import resolve_response
                         rows=resolve_response(rows,targets,visible_evidence,reverse_aliases)
-                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
+                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'compact_supported':True} if reason_parts and reason_parts_version == 3 else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
                         if singleton_policy and len(targets)==1 else {}))
                 if complete_factual_batch and len(claims)>1:
                     from services.deep_research.comparison_review_batches import decode_targets

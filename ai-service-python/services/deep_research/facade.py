@@ -455,7 +455,7 @@ class ResearchFacade:
             "externalReadingContractVersion": 5,
             "externalExplanationInputVersion": 6,
             "externalDiagnosticsContractVersion": 1,
-            "reviewReasonPartsContractVersion": 2,
+            "reviewReasonPartsContractVersion": 3 if output_kind == 'paper_comparison' else 2,
             "reviewSourceFieldReferenceContractVersion": 1,
             "reviewParameterIdentityContractVersion": 5 if self._comparison_cells_version == 1 else 1,
             "reviewTargetStructureContractVersion": 2,

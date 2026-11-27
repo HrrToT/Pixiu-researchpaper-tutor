@@ -26,12 +26,26 @@ Keep quantities necessary to the verdict. Avoid adding a count of conditions,
 steps, facts or reasons solely to summarize them. State the actual prerequisites
 or operations without introducing a count.'''
 
+SUPPORTED_WITHOUT_NARRATION = '''For scopeAudit.supported=true, return reasonParts:[]
+with all required audit fields and bound premises. This is the exception to the
+nonempty segment requirement. The cited premises record the basis for the verdict.
+For scopeAudit.supported=false, return the concise, nonempty bound explanation.'''
 
-def expand(row, *, field_references=False):
+
+def expand(row, *, field_references=False, compact_supported=False):
     if type(field_references) is not bool:raise ValueError('Invalid reviewer source-field policy')
+    if type(compact_supported) is not bool:raise ValueError('Invalid compact review policy')
     if (not isinstance(row,dict) or 'reason' in row or 'diagnosticFacts' in row
-            or not isinstance(row.get('reasonParts'),list) or not 1<=len(row['reasonParts'])<=MAX_REASON_PARTS):
+            or not isinstance(row.get('reasonParts'),list) or len(row['reasonParts'])>MAX_REASON_PARTS
+            or not compact_supported and not row['reasonParts']):
         raise DeepResearchError('invalid_verification_response','审核说明片段缺失或存在冲突编码。',{'responseState':'received_invalid'})
+    if not row['reasonParts']:
+        scope = row.get('scopeAudit')
+        if (not isinstance(scope, dict) or scope.get('supported') is not True
+                or not isinstance(scope.get('premises'), list) or not scope['premises']):
+            raise DeepResearchError('invalid_verification_response','审核说明缺失，或支持判定缺少证据前提。',{'responseState':'received_invalid'})
+        return {**{k:deepcopy(v) for k,v in row.items() if k!='reasonParts'},
+                'reason':'审核返回了支持判定及证据前提。','diagnosticFacts':[]}
     texts=[];facts=[]
     for part in row['reasonParts']:
         from services.deep_research.review_source_fields import valid_reference
