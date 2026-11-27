@@ -1,0 +1,174 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "caseDefinitionDigest": "2c95b824547bbe02f1b7d4ab54de1d5a6bb55817796c21561f19ae88f7f92622",
+  "qualification": "one isolated development execution and offline revised-proposal admission replay",
+  "independentCredit": 0,
+  "regressionTestsPassed": 174,
+  "live": {
+    "runId": "dr_run_db632a41cce05174b2d3f134d7f1316b",
+    "sourceCommit": "ca9c04064f726d13f6ec9ececea3b56a2b2d7cdb",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "modelsByCalls": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 2
+    },
+    "callsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "plan_experiment_shared": 1,
+      "repair_experiment_shared": 1
+    },
+    "providerCalls": 7,
+    "providerTokens": 34343,
+    "elapsedSeconds": 137.0,
+    "externalSearches": 0,
+    "automaticRetry": false,
+    "productionWrites": 0,
+    "generationInputBytes": 31565,
+    "revisionInputBytes": 18261,
+    "arms": [
+      "00",
+      "10",
+      "01",
+      "11"
+    ],
+    "actualEvaluationPreparation": {
+      "id": "pose",
+      "dataUse": "evaluation_prepare",
+      "reads": [
+        "assets",
+        "reference",
+        "testset"
+      ],
+      "creates": [
+        "testcams"
+      ],
+      "updates": [],
+      "budgetId": "testprep"
+    },
+    "measurementReaders": [
+      "measure"
+    ],
+    "generationPrecheckFindings": [
+      {
+        "claimId": "shared_fact_2",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "2e0"
+        ],
+        "factId": "s3",
+        "evidenceRefs": [
+          "E2"
+        ]
+      },
+      {
+        "claimId": "shared_fact_7",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "factId": "s8",
+        "evidenceRefs": [
+          "E16"
+        ]
+      }
+    ],
+    "revisionPrecheckFindings": [
+      {
+        "claimId": "shared_fact_7",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "factId": "s8",
+        "evidenceRefs": [
+          "E4"
+        ]
+      }
+    ],
+    "revisionReviewInputBytesBeforeFix": 35264,
+    "scientificProviderCalls": 0,
+    "formalPublication": false,
+    "receiptSha256": {
+      "run.json": "32fd60f72a934658cbc39db13d4155052c8365979e67b72175981c1f464fce8d",
+      "calls.json": "79ffb93312dcf72fc0260f725084e9fbd71670577c7a73ed8a4ee30b83f90dda",
+      "provider.jsonl": "39b0e412dff4d8b41999fe3cdd772520805a716ddc47791a4a73cdcc2e7ae2f0",
+      "result.json": "1f87e271723b70042fd23048c6bd5bc4e47a486e5b9ec06ab88f78d47d08bf49"
+    }
+  },
+  "offlineReplay": {
+    "quantityPolicy": 22,
+    "reviewPacketPolicy": 5,
+    "preservedRealRevisionDigest": "9bd5ca6e6455865a7d7af641f9c1137d4f8ef58e9331d752b8ee047693039d83",
+    "hardIssues": [],
+    "allChecks": 25,
+    "batches": [
+      {
+        "inputBytes": 19361,
+        "checkIds": [
+          "fact_0",
+          "fact_1",
+          "fact_2",
+          "fact_3",
+          "fact_4",
+          "fact_5",
+          "fact_6",
+          "fact_7",
+          "fact_8"
+        ]
+      },
+      {
+        "inputBytes": 31934,
+        "checkIds": [
+          "section_0",
+          "section_1",
+          "section_2",
+          "section_3",
+          "section_4",
+          "section_5",
+          "section_6",
+          "section_7"
+        ]
+      },
+      {
+        "inputBytes": 31998,
+        "checkIds": [
+          "requirement_0_0",
+          "requirement_0_1",
+          "requirement_0_2",
+          "requirement_0_3",
+          "requirement_1_0",
+          "requirement_2_0",
+          "requirement_3_0"
+        ]
+      },
+      {
+        "inputBytes": 31705,
+        "checkIds": [
+          "requirement_4_0"
+        ]
+      }
+    ],
+    "firstDispatchIntercept": {
+      "node": "review_experiment_shared",
+      "inputBytes": 19361,
+      "checks": [
+        "fact_0",
+        "fact_1",
+        "fact_2",
+        "fact_3",
+        "fact_4",
+        "fact_5",
+        "fact_6",
+        "fact_7",
+        "fact_8"
+      ]
+    },
+    "initialBudgetAdmissionPassed": true,
+    "providerCalls": 0,
+    "scientificApproval": false,
+    "sourceBinding": "E4.before contains the exact English cardinality, interval, and total SH bands; no quote or cited location changed."
+  }
+}
