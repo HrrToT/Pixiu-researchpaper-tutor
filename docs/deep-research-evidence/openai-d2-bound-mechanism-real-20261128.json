@@ -1,0 +1,190 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_8107f02bd0dd54638aba6f1685e6ed43",
+  "sourceCommit": "1e51a79c327d65cc5ddca6d50ab9467eca800b21",
+  "frozenDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "attempts": 1,
+  "automaticRetry": false,
+  "productionWrites": false,
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 15,
+    "maxModelCalls": 18,
+    "tokens": 78714,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 154.0,
+    "cost": null
+  },
+  "providerUsage": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16823,
+      "output_tokens": 1330,
+      "total_tokens": 18153
+    },
+    "gpt-6.1-terra": {
+      "calls": 10,
+      "input_tokens": 56413,
+      "output_tokens": 4148,
+      "total_tokens": 60561
+    }
+  },
+  "modelBilledAmountKnown": false,
+  "result": {
+    "status": "completed",
+    "outcome": "partial",
+    "scientificAcceptance": false
+  },
+  "plannerRegroupedItems": [
+    {
+      "fromItemId": "item1",
+      "toItemId": "item1_split_2",
+      "obligationIds": [
+        "obl3"
+      ]
+    }
+  ],
+  "plannerCorrectionDispatched": false,
+  "draftPopulatedCells": 8,
+  "publishedCells": [
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P1",
+      "publishedClaims": []
+    },
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P2",
+      "publishedClaims": []
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P1",
+      "publishedClaims": [
+        "cmp_2_0"
+      ]
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P2",
+      "publishedClaims": []
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P1",
+      "publishedClaims": [
+        "cmp_4_0"
+      ]
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P2",
+      "publishedClaims": [
+        "cmp_5_0"
+      ]
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P1",
+      "publishedClaims": [
+        "cmp_6_0"
+      ]
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P2",
+      "publishedClaims": []
+    }
+  ],
+  "publishedClaimIds": [
+    "cmp_2_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_6_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "physicalPageEvidenceChecks": {
+    "literal_page": 16,
+    "table_row_check_required": 1
+  },
+  "tableExample": {
+    "sourceRevision": "2311.17245v6",
+    "page": 6,
+    "tableNumber": 1,
+    "verifiedBoundCells": 10,
+    "dataset": "Mip-NeRF 360 Datasets",
+    "methodRows": [
+      "3D-GS∗[16]",
+      "Ours"
+    ]
+  },
+  "jointReadinessPositiveCount": 1,
+  "jointReadinessPositiveCriteria": [
+    "说明能比较什么、为什么不能直接拿两篇的FPS排名"
+  ],
+  "initialRejections": {
+    "cmp_3_0": {
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    "cmp_0_0": {
+      "reason": "semantic_unresolved",
+      "detail": "证据支持高斯属性优化及训练中增删高斯，但未说明球谐系数描述视角相关外观。\n点云压缩的适配被列为值得探索的方向。"
+    },
+    "cmp_1_0": {
+      "reason": "semantic_unresolved",
+      "detail": "所引材料支持多视角拟合及剪除、恢复、降阶蒸馏和量化的总体流程。\n材料说明量化针对球谐系数，且选择部分系数进行量化。\n但所引材料未明确说明以码本向量替代部分系数的具体操作。"
+    },
+    "cmp_7_0": {
+      "reason": "semantic_unresolved",
+      "detail": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。"
+    },
+    "cmp_conclusion_0": {
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：论文题名与所引来源一致；数据集描述有歧义，不能把 Mip-NeRF 360 表述为九个场景之外的组成部分。\n来源称 Mip-NeRF 360 数据集本身包含九个真实大规模场景，此外还使用了 Tanks and Temples 数据集。"
+    }
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "finalAuditStatus": "checked",
+  "finalAnswerCoherent": true,
+  "review": {
+    "accepted": [
+      "Original fitting cost qualified by the cited passages.",
+      "One matched benchmark with the exact ten cells.",
+      "Advice to measure peak GPU memory under matching hardware, scene and settings."
+    ],
+    "missing": [
+      "Verified mechanisms for both papers.",
+      "LightGaussian additional processing-cost cell.",
+      "LightGaussian standalone speed cell and verified cross-paper speed comparison boundary.",
+      "Source-grounded conditional rationale for choosing between the methods beyond testing peak memory."
+    ]
+  },
+  "postRunOfflineReplay": {
+    "frozenMechanismVersionsCompared": [2, 3],
+    "triggerInActualPlan": "压缩或优化操作",
+    "oldRetrievalPages": [1, 7, 6],
+    "newRetrievalPages": [1, 6, 5],
+    "exactMappingRequiredInP2": true,
+    "keptMatchedBenchmarkPairs": 16,
+    "stageInputBytes": {"P1": 23983, "P2": 23998, "joint": 24000},
+    "providerCalls": 0
+  },
+  "rawFilesSha256": {
+    "intent.json": "36eaffc9170e89e26b1ef1791fee8966c60da9fdc31333fb8068926dab38c9ac",
+    "run.json": "db2b8521f6ad02d0c0167cc6c461744cb1a9f0901bfaf1bd2b325fb3ba3ba904",
+    "result.json": "17f357faee3531c8f307ca950978bbcc7691c2acf59280846939b6ef4d1579df",
+    "provider.jsonl": "cb2764f8ba75d8cd1227002fb72383107d9d9e70e069e6246b35d384c3dd83d0",
+    "calls.json": "a514f5be8a468d1be11b7f480b2cbbe84f70d67312bb869a72dc9df60792e543",
+    "report.md": "e0ed0f9c7c2ba95ccd27dbbf461efa69e7b6bb6db2d8ecdd44882828336fefe9",
+    "citation-physical-check.json": "4bbfc11865e3c22624f5b7bc98b67c3292607005428e1c11a036dd89e8cda62d"
+  }
+}
