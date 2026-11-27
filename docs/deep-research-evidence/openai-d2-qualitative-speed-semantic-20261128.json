@@ -1,0 +1,165 @@
+{
+  "actualCase": "dr_d2_qualitative_speed_verify_20261128",
+  "actualCommit": "7502971559bff4d3fac99a876b285c090a4cc706",
+  "actualModel": "gpt-6.1-terra",
+  "actualUsage": {
+    "total_tokens": 3094,
+    "input_tokens": 2949,
+    "output_tokens": 145,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 2946
+  },
+  "actualReportedSupport": true,
+  "actualVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "cmp_6_0",
+        "reason": "semantic_unresolved",
+        "detail": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+        "reviewDiagnosticAudit": {
+          "version": 1,
+          "reportedStatus": "passed",
+          "reasonSha256": "a52da721896e7225fc3e4883ab3ef1c359f46228971f4d98b654e3b5134e46e0",
+          "bindingCount": 2,
+          "newNumberCount": 2,
+          "unboundNewNumberCount": 2,
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ],
+          "sourceParameterIdentityContractVersion": 5,
+          "reviewTargetStructureContractVersion": 2,
+          "targetStructureReferences": []
+        },
+        "executionState": "received_invalid"
+      }
+    ]
+  },
+  "actualRecordSha256": {
+    "calls.json": "88be37c5acc028197f161af3d85944e841ece311ec23d09613699a6b4e1bc246",
+    "intent.json": "c61ec14cc4f512f2ff710819bffdfe040cb19266013378ce186926ed3745f8f4",
+    "run.json": "84c9b58e9b06362b8d11aebb286078e95d2135d0eb36bb80113fcdd1f6f7c10c",
+    "verification.json": "27f04cbd83e814843dcd5c97b8a614da88fe6724772203de137027a990304772"
+  },
+  "offlineReplay": {
+    "raw_v2": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "cmp_6_0",
+          "reason": "semantic_unresolved",
+          "detail": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+          "reviewDiagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "a52da721896e7225fc3e4883ab3ef1c359f46228971f4d98b654e3b5134e46e0",
+            "bindingCount": 2,
+            "newNumberCount": 2,
+            "unboundNewNumberCount": 2,
+            "errors": [
+              "new_diagnostic_numbers_not_bound"
+            ],
+            "sourceParameterIdentityContractVersion": 5,
+            "reviewTargetStructureContractVersion": 2,
+            "targetStructureReferences": []
+          },
+          "executionState": "received_invalid"
+        }
+      ],
+      "receivedShape": "items"
+    },
+    "raw_v3": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "cmp_6_0",
+          "reason": "semantic_unresolved",
+          "detail": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+          "reviewDiagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "a52da721896e7225fc3e4883ab3ef1c359f46228971f4d98b654e3b5134e46e0",
+            "bindingCount": 2,
+            "newNumberCount": 2,
+            "unboundNewNumberCount": 2,
+            "errors": [
+              "new_diagnostic_numbers_not_bound"
+            ],
+            "sourceParameterIdentityContractVersion": 5,
+            "reviewTargetStructureContractVersion": 2,
+            "targetStructureReferences": []
+          },
+          "executionState": "received_invalid"
+        }
+      ],
+      "receivedShape": "items"
+    },
+    "compact": {
+      "accepted": [
+        "cmp_6_0"
+      ],
+      "rejected": [],
+      "receivedShape": "items"
+    },
+    "combinedAuditPreflight": {
+      "claims": 11,
+      "carriedTokens": 79730,
+      "maxTokens": 100000,
+      "auditStatus": "budget_exhausted",
+      "limit": {
+        "kind": "coveragePromptBytes",
+        "limit": 18046,
+        "used": 30371
+      },
+      "wouldDispatch": []
+    },
+    "invalid_source": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "cmp_6_0",
+          "reason": "semantic_unresolved",
+          "detail": "结论范围或必要条件尚未核实：scope_premises_not_bound"
+        }
+      ],
+      "receivedShape": "items"
+    },
+    "empty_premises": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "cmp_6_0",
+          "reason": "semantic_unresolved",
+          "detail": "审核回复已收到但格式无效，本条尚未核验；不能据此判断论文事实或证据不足。",
+          "reviewResponseAudit": {
+            "version": 1,
+            "responseState": "received_invalid",
+            "finishReason": "stop",
+            "contentSha256": "13f9d87bfd7581e07003b512ac94b9373ebf486dcc3ff1df026a6d4c47de153a"
+          },
+          "executionState": "received_invalid"
+        }
+      ],
+      "receivedShape": "items"
+    },
+    "unsupported": {
+      "accepted": [],
+      "rejected": [
+        {
+          "claimId": "cmp_6_0",
+          "reason": "semantic_unresolved",
+          "detail": "审核回复已收到但格式无效，本条尚未核验；不能据此判断论文事实或证据不足。",
+          "reviewResponseAudit": {
+            "version": 1,
+            "responseState": "received_invalid",
+            "finishReason": "stop",
+            "contentSha256": "7990d867217f94945c268b5241ed0527567cae0825796f6d716db099da142886"
+          },
+          "executionState": "received_invalid"
+        }
+      ],
+      "receivedShape": "items"
+    }
+  },
+  "newProviderCalls": 0
+}
