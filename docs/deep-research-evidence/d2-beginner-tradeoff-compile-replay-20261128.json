@@ -1,0 +1,23 @@
+{
+  "baselineRunId": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "stageResponsesReused": [
+    "P1",
+    "P2",
+    "joint"
+  ],
+  "providerCalls": 0,
+  "verifiedUnchangedStagePrompts": true,
+  "claims": 11,
+  "rewrittenClaimId": "cmp_conclusion_2",
+  "unchangedTableBindings": 10,
+  "unchangedEvidenceRefs": [
+    "ev_72f9cd749c796551f2f5515ab61ba506dacc13bbb7f6486bd60e0bc4cab95166",
+    "ev_e5ba454a3d812bf4f0cc82c55a2011d3085e0aa1bec36f1a1245953ef37ef52c"
+  ],
+  "unchangedOtherClaims": 10,
+  "beforeIntro": "在这组同口径测试中，相比重新训练的基线，对照方法的帧率（FPS）更高，体积指标（Size）更小。画质指标中，PSNR更低、SSIM更低、LPIPS更高。按原表箭头，PSNR（峰值信噪比）越高越好，SSIM（结构相似度）越高越好，LPIPS（感知差异）越低越好。以下是原表同一数据组中的对照结果。表注说明带标记的基线在同一平台上重新训练。这些结果限于下列数据组和原表测量条件，其他数据组或设置不在这组对照范围内。",
+  "afterIntro": "在这组同口径测试中，相比重新训练的基线，对照方法的模型体积更小，每秒能渲染更多帧，但可比较的画质指标都较差。按原表箭头，PSNR（峰值信噪比）越高越好，SSIM（结构相似度）越高越好，LPIPS（感知差异）越低越好。以下是原表同一数据组中的对照结果。表注说明带标记的基线在同一平台上重新训练。这些结果限于下列数据组和原表测量条件，其他数据组或设置不在这组对照范围内。",
+  "passedHardPrechecks": true,
+  "liveSemanticChecked": false,
+  "finalAnswerAudited": false
+}
