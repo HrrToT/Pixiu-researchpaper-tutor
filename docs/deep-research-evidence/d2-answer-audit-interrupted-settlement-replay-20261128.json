@@ -1,0 +1,43 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceEvidence": "openai-d2-verified-metric-probe-20261127.json",
+  "sourceRunId": "dr_verified_metric_probe_20261127",
+  "sourceRunSha256": "7700e1cc291c7086db36c72ac0c6766c68db532764bf1a77b669b1c659c07ee8",
+  "sourceCallsSha256": "dd7ebb44ebb1f0008043673449f8d2c95599bb4417b6b16aab5c41e5a51fc9ca",
+  "method": "Run the production verification graph, tracked invoker and isolated SQLite ledger using the saved audit response in a simulated provider. Interrupt after settlement before the graph writes the verified report.",
+  "preAuditScenario": {
+    "tokensAlreadySettled": 65000,
+    "ordinaryCallsAlreadySettled": 13,
+    "reservedCallsAlreadySettled": 4,
+    "maximumCalls": 18,
+    "maximumTokens": 100000,
+    "historicalResponseTokensUsedInReplay": 9139
+  },
+  "request": {
+    "promptAndOptionsDigest": "75d9d36c192ef47e3fe1f81207360f7ac8c0ef7e441d8bb741a2e0b885418257",
+    "promptBytes": 29407,
+    "maximumOutputTokens": 3500
+  },
+  "legacy": {
+    "policy": 17,
+    "reachedLedgerOnResume": false,
+    "auditStatusAfterResume": "budget_exhausted",
+    "gaps": 5,
+    "settledLedgerRows": 1,
+    "simulatedModelSends": 1
+  },
+  "current": {
+    "policy": 18,
+    "reachedLedgerOnResume": true,
+    "samePromptAndOptionsDigest": true,
+    "auditStatusAfterResume": "checked",
+    "coherent": true,
+    "gaps": 0,
+    "sameVerifiedClaims": 11,
+    "settledLedgerRows": 1,
+    "simulatedModelSends": 1
+  },
+  "realProviderCalls": 0,
+  "productionWrites": 0,
+  "newScientificAcceptance": false
+}
