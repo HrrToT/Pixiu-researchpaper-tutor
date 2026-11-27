@@ -4,12 +4,15 @@ import re
 
 _TABLE_MENTION = re.compile(r'表格|\btable\b', re.I)
 _TABLE_PROHIBITION = re.compile(r'(?:不要|不用|无需|取消|去掉)[^。！？\n]{0,8}表格|\b(?:no|without)\s+(?:a\s+)?table\b', re.I)
+_SPEED_COMPARISON_REASON = re.compile(
+    r'(?:为什么|为何|说明原因)[^。！？\n]{0,70}(?:相除|比值|排名)'
+    r'|\b(?:why|explain why)\b[^.!?\n]{0,100}\b(?:divide|ratio|quotient|rank)\w*\b', re.I)
 
 
 def short_prose_enabled(record, question, limit):
     """Use prose for new, explicitly length-limited comparisons without a table requirement."""
     version = record.get('shortComparisonLayoutContractVersion')
-    if type(version) is not int or version not in (1, 2) or type(limit) is not int or not 0 < limit <= 300:
+    if type(version) is not int or version not in (1, 2, 3) or type(limit) is not int or not 0 < limit <= 300:
         return False
     layers = getattr(question, 'point_instruction_layers', (str(question),))
     for layer in layers:
@@ -24,6 +27,17 @@ def short_prose_guidance(record, question, limit, target_count):
     if not short_prose_enabled(record, question, limit):
         return ''
     share = max(1, (limit - min(30, limit // 5)) // max(1, target_count))
+    if record.get('shortComparisonLayoutContractVersion') == 3:
+        from services.deep_research.comparison_joint_reports import _SPEED
+        layers = getattr(question, 'point_instruction_layers', (str(question),))
+        if any(_SPEED.search(layer) and _SPEED_COMPARISON_REASON.search(layer) for layer in layers):
+            return (f'Render short cited paragraphs within {limit} characters total, roughly {share} per point. '
+                    'For a requested speed ratio or ranking explanation, give the conclusion and why: '
+                    'an unaligned test condition can affect FPS independently of the method, so the quotient '
+                    'cannot isolate the method effect. Cite both studies. Keep any confirmed common setup, '
+                    'and distinguish a claimed rendering capability from a condition of a reported timing test. '
+                    'A list of unknown conditions alone leaves why unanswered. For a joint target without '
+                    'a dedicated deliverable, use concise cited inference prose to include the reason.\n')
     return (f'The app renders all stages as short cited paragraphs, within {limit} characters in total. '
             f'Aim for about {share} Chinese characters per point including conditions. This is a target, '
             'not permission to omit what the user asks. Give one concise source-local result per paper point; '

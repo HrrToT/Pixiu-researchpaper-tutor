@@ -60,6 +60,7 @@ def test_short_comparison_guidance_is_shared_without_changing_evidence_permissio
     (2, '用表格。', False, False),
     (2, '不用表格。', False, True),
     (2, '不用表格。', True, True),
+    (3, '不用表格。', False, True),
 ])
 def test_short_followup_accepts_an_exact_source_local_setting_statement(version, format_request, foreign, supported):
     from services.deep_research.scope_expression import materialize
@@ -110,6 +111,19 @@ def test_short_followup_accepts_an_exact_source_local_setting_statement(version,
     rendered, audit = materialize(claim, version=5)
     assert statement in rendered['text'] and rendered['evidenceRefs'] == refs
     assert audit['verification'] == 'unchecked'
+
+
+def test_short_speed_followup_asks_for_a_reason_beyond_missing_conditions():
+    from services.deep_research.comparison_layout import short_prose_guidance
+
+    question = '只追加解释为什么不同论文中的FPS不能直接相除。200字以内。'
+    old = short_prose_guidance({'shortComparisonLayoutContractVersion': 2}, question, 200, 1)
+    current = short_prose_guidance({'shortComparisonLayoutContractVersion': 3}, question, 200, 1)
+    assert 'cannot isolate the method effect' in current and 'cannot isolate the method effect' not in old
+    assert 'distinguish a claimed rendering capability' in current
+    assert 'Cite both studies' in current
+    assert short_prose_guidance({'shortComparisonLayoutContractVersion': 3}, '比较存储成本。', 200, 1) == (
+        short_prose_guidance({'shortComparisonLayoutContractVersion': 2}, '比较存储成本。', 200, 1))
 
 
 def test_inherited_evidence_tags_do_not_enter_the_current_stage_request():

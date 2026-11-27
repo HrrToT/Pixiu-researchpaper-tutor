@@ -223,7 +223,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         pairs = (example_pairs(projected, permissions[example_owner])
                  if version in (15, 16) and scope == 'joint' and example_owner in permissions else {})
         stage_papers = {key: paper_subjects[key] for key in target_ids if key in paper_subjects}
-        setting_statements = (stage_papers and not pairs and record.get('shortComparisonLayoutContractVersion') == 2
+        setting_statements = (stage_papers and not pairs and record.get('shortComparisonLayoutContractVersion') in (2, 3)
                               and short_prose_enabled(record, question, character_limit))
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
