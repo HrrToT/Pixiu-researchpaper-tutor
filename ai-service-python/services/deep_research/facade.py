@@ -342,7 +342,8 @@ class ResearchFacade:
             **({'shortComparisonLayoutContractVersion': 5} if self._comparison_cells_version == 1
                and output_kind == 'paper_comparison' else
                {'shortComparisonLayoutContractVersion': 4} if continuation_context and self._comparison_cells_version == 1 else {}),
-            "comparisonReviewBatchContractVersion": 2 if self._comparison_review_batch_version == 1 else 0,
+            "comparisonReviewBatchContractVersion": (
+                3 if output_kind == 'paper_comparison' else 2) if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             **({'comparisonJointRequestCoverageVersion': 3, 'comparisonPerPaperResultRolesVersion': 2,
                 'comparisonSelectedPairBindingVersion': 1}
@@ -1443,7 +1444,7 @@ class ResearchFacade:
         from services.deep_research.benchmark_recheck import target_ids as benchmark_recheck_targets
         from services.deep_research.mechanism_grounding import review_policy as mechanism_review_policy
         from services.deep_research.workflow_representation_review import context as representation_review_context
-        from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile
+        from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile,initial_target_limit
         from services.deep_research.comparison_measurement_display import (
             compact_factual_review, direct_scope_review, isolated as isolated_comparison, local_contributions)
         checker = BudgetedSemanticChecker(invoker, run_id,
@@ -1452,6 +1453,7 @@ class ResearchFacade:
             direct_comparison_scope_review=lambda: direct_scope_review(self._repo.require_run(run_id)),
             preserve_initial_review_budget=lambda: isolated_comparison(self._repo.require_run(run_id)),
             comparison_review_batches=lambda: comparison_batch_enabled(self._repo.require_run(run_id)),
+            comparison_initial_review_targets=lambda: initial_target_limit(self._repo.require_run(run_id)),
             comparison_repair_review_output=lambda: current_profile(self._repo.require_run(run_id)),
             workflow_representation_context=lambda claims, context: representation_review_context(
                 self._repo.require_run(run_id), claims, context),
@@ -1606,11 +1608,11 @@ class ResearchFacade:
                 **({'bound_duration_spelling':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (4,5,6)
                    and type(record.get('comparisonReviewBatchContractVersion')) is int
-                   and record['comparisonReviewBatchContractVersion']==2 else {}),
+                   and record['comparisonReviewBatchContractVersion'] in (2, 3) else {}),
                 **({'comparison_embedded_measurements':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (5,6)
                    and type(record.get('comparisonReviewBatchContractVersion')) is int
-                   and record['comparisonReviewBatchContractVersion']==2
+                   and record['comparisonReviewBatchContractVersion'] in (2, 3)
                    and self._repo.require_run(run_id).get('state',{}).get('outputKind')=='paper_comparison' else {}))
         return verify
     

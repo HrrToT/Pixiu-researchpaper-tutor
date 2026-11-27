@@ -88,6 +88,31 @@ def test_maximum_three_and_old_singleton_grouping_are_preserved():
     assert active.call_count==2 and legacy.call_count==4
 
 
+def test_four_initial_targets_keep_direct_review_and_validate_each_targets_own_sources():
+    from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
+
+    claims, evidence = inputs(4)
+    rows = [response(c['claimId'], i) for i, c in enumerate(claims)]
+    rows[-1]['scopeAudit']['premises'][0]['evidenceId'] = 'E1'
+    invoke = Mock(return_value={'content': json.dumps(rows)})
+    semantic = checker(invoke)
+    semantic._comparison_initial_review_targets = 4
+    semantic._direct_comparison_review = True
+    verdicts = semantic(claims, evidence)
+    assert [v['status'] for v in verdicts] == ['passed', 'passed', 'passed', 'failed']
+    invoke.assert_called_once()
+    assert invoke.call_args.kwargs['extra_body'][DIRECT_REVIEW_OPTION] is True
+    assert invoke.call_args.kwargs['extra_body']['max_tokens'] == 4000
+    assert all(row['quote'] in invoke.call_args.kwargs['prompt'] for row in evidence)
+
+
+def test_four_target_limit_still_splits_complete_input_over_the_capacity():
+    claims, _ = inputs(4)
+    def preview(batch):
+        return {'inputBytes': 7000 * len(batch), 'maxInputBytes': 26000}
+
+    assert groups(claims, preview, max_targets=4) == [claims[:3], claims[3:]]
+
 def test_complete_oversized_quote_is_not_trimmed_or_sent():
     claims,evidence=inputs(1);evidence[0]['quote']='x'*40000
     evidence[0]['sourceContext']=evidence[0]['quote']
@@ -212,16 +237,14 @@ def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_
         assert REPAIR_OUTPUT_OPTION not in request.extra_body
 
 
-@pytest.mark.parametrize('value',[None,True,'1',0,2,3])
+@pytest.mark.parametrize('value',[None,True,'1',0,2,3,4])
 def test_batch_policy_requires_exact_server_marker_and_isolated_comparison_profile(value):
     from test_deep_research_shared_experiment_generation import context
     r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
     r[MARKER]=1
     assert enabled(r)
     r[MARKER]=value
-    # Version2 was introduced after this baseline: accept only its exact int
-    # form while retaining the original invalid-isolation check below.
-    assert enabled(r) is (type(value) is int and value==2)
+    assert enabled(r) is (type(value) is int and value in (2, 3))
     r[MARKER]=1;r['claimIsolationContractVersion']=value
     assert not enabled(r)
 

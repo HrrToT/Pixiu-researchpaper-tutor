@@ -9,16 +9,20 @@ MAX_TARGETS = 3
 def enabled(record):
     from services.deep_research.comparison_intent import operations_enabled
     return (operations_enabled(record) and type(record.get(MARKER)) is int
-            and record[MARKER] in (1,2) and type(record.get('claimIsolationContractVersion')) is int
+            and record[MARKER] in (1,2,3) and type(record.get('claimIsolationContractVersion')) is int
             and record['claimIsolationContractVersion'] == 1)
 
 
 def current_profile(record):
     """New wire/output policy; v1 stored requests must retain their identity."""
-    return enabled(record) and record[MARKER] == 2
+    return enabled(record) and record[MARKER] in (2,3)
 
 
-def groups(claims, preview):
+def initial_target_limit(record):
+    return 4 if current_profile(record) and record[MARKER] == 3 else MAX_TARGETS
+
+
+def groups(claims, preview, *, max_targets=MAX_TARGETS):
     """Stable greedy packing with complete input previews, never time-dependent.
 
     Oversized singletons stay present: ordinary capacity guards report them
@@ -27,7 +31,7 @@ def groups(claims, preview):
     result=[]; current=[]
     for claim in claims:
         candidate=[*current,claim]
-        if len(candidate)>MAX_TARGETS:
+        if len(candidate)>max_targets:
             result.append(current);current=[claim];continue
         measured=preview(candidate)
         if (not isinstance(measured,dict) or any(type(measured.get(k)) is not int

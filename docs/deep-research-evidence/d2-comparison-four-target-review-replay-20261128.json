@@ -1,0 +1,84 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "recordedRun": "dr_run_8107f02bd0dd54638aba6f1685e6ed43",
+  "baselineEvidence": "openai-d2-bound-mechanism-real-20261128.json",
+  "version2": {
+    "batches": [
+      {
+        "ids": [
+          "cmp_0_0",
+          "cmp_1_0",
+          "cmp_2_0"
+        ],
+        "bytes": 22061,
+        "reserved": 27085,
+        "digest": "e2c03f9b9055f09fd8fcedb816dcd3771078b591a14a6cd9bc6c3e09b4651ac4"
+      },
+      {
+        "ids": [
+          "cmp_4_0",
+          "cmp_5_0",
+          "cmp_6_0"
+        ],
+        "bytes": 23321,
+        "reserved": 28345,
+        "digest": "4038a62ffb7c33695c228c9bb5cdd3cac281229aabb5b006d2a852e309b4956f"
+      },
+      {
+        "ids": [
+          "cmp_7_0",
+          "cmp_conclusion_2"
+        ],
+        "bytes": 22035,
+        "reserved": 27059,
+        "digest": "1ae72c8ca46d27f3a8e57710b78c9ddb239b7d36f22fd7e1b6060c4dda14b877"
+      }
+    ],
+    "totalPromptBytes": 67417,
+    "sumInitialReservationTokens": 82489
+  },
+  "version3": {
+    "batches": [
+      {
+        "ids": [
+          "cmp_0_0",
+          "cmp_1_0",
+          "cmp_2_0",
+          "cmp_4_0"
+        ],
+        "bytes": 25076,
+        "reserved": 30100,
+        "digest": "c30f39330a3253b545addf52a04f1564dff45e25a3d52a5780bc65724b6614ff"
+      },
+      {
+        "ids": [
+          "cmp_5_0",
+          "cmp_6_0",
+          "cmp_7_0",
+          "cmp_conclusion_2"
+        ],
+        "bytes": 26511,
+        "reserved": 31535,
+        "digest": "926c0e2c126f84d6de1cb2e768cdf0464abc1f117b120700d33352297862430b"
+      }
+    ],
+    "totalPromptBytes": 51587,
+    "sumInitialReservationTokens": 61635
+  },
+  "sameEightTargetsAndOwnEvidenceFields": true,
+  "historicalBaselineRequestDigestsMatched": 6,
+  "unchangedAdviceAndScopeRequestDigests": [
+    "e7af14d24f247324880bc2dedf64923b88cc5356d2ce04fa7f77b7539ebfb856",
+    "06b5e2cb2fc3beffb8f58b0903cb2e79b2c91f6bbf70f60feb0b859110172166",
+    "9a3b51d6e4883025eb47e5ed179c5065975c886d7f24bcda2b865aa07a5d4e11"
+  ],
+  "historicalVerdictReplay": {
+    "updatedOnlyRequestLocalEvidenceAliases": true,
+    "remappedReturnedTargets": 8,
+    "acceptedClaimsIdentical": true,
+    "rejectedClaimsAndDiagnosticsIdentical": true
+  },
+  "providerCalls": 0,
+  "newBatchVerdictsProven": false,
+  "scientificAcceptance": false
+}

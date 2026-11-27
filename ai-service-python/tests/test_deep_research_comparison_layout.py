@@ -201,8 +201,9 @@ def test_server_selects_new_planning_wire_only_for_opt_in_and_never_upgrades_sav
                           comparison_review_batch_version=1)
     try:
         run,_=facade.create({'workspaceTaskId':'t','operationKey':'o','question':QUESTION,
-                            'deferStart':True,'comparisonPlanningContractVersion':2},start_async=False)
-        assert run['comparisonPlanningContractVersion']==6 and run['comparisonReviewBatchContractVersion']==2
+                            'outputKind':'paper_comparison','deferStart':True,
+                            'comparisonPlanningContractVersion':2},start_async=False)
+        assert run['comparisonPlanningContractVersion']==6 and run['comparisonReviewBatchContractVersion']==3
         old={**run,'runId':'old','taskId':'old','idempotencyKey':'old','comparisonPlanningContractVersion':2}
         repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):

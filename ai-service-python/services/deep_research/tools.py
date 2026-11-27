@@ -784,6 +784,7 @@ class BudgetedSemanticChecker:
         focused_boundary_review=False,
         workflow_representation_context=None,
         comparison_review_batches=False,
+        comparison_initial_review_targets=3,
         comparison_repair_review_output=False,
         preserve_initial_review_budget=False,
         direct_comparison_review=False,
@@ -838,6 +839,7 @@ class BudgetedSemanticChecker:
         self._prospective_envelope = prospective_envelope
         self._review_batch_planning = review_batch_planning
         self._comparison_review_batches = comparison_review_batches
+        self._comparison_initial_review_targets = comparison_initial_review_targets
         self._comparison_repair_review_output = comparison_repair_review_output
         self._preserve_initial_review_budget = preserve_initial_review_budget
         self._direct_comparison_review = direct_comparison_review
@@ -920,7 +922,8 @@ class BudgetedSemanticChecker:
         if batch_policy and isolated and facts:
             from services.deep_research.comparison_review_batches import groups
             fact_batches=groups(facts,lambda batch:self._check_batch(batch,evidence,[],node=node,_preview=True,
-                                                                   scope_observations=scope_observations))
+                                                                   scope_observations=scope_observations),
+                                max_targets=self._comparison_target_limit(node))
         batches = proposal_batches + [(batch, node) for batch in fact_batches]
         verdicts = [*quantity_failures,*premise_failures]
         envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
@@ -971,6 +974,14 @@ class BudgetedSemanticChecker:
                 raise InitialReviewBudgetStop(exc, verdicts) from exc
         by_id = {v['claimId']: v for v in verdicts}
         return [by_id[c['claimId']] for c in claims]
+
+    def _comparison_target_limit(self, node):
+        from services.deep_research.comparison_review_batches import MAX_TARGETS
+
+        if node != 'verify':
+            return MAX_TARGETS
+        policy = self._comparison_initial_review_targets
+        return policy() if callable(policy) else policy
 
     def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False, scope_observations=False) -> list[dict]:
         from services.deep_research.general_advice import NODES as ADVICE_NODES
@@ -1670,7 +1681,8 @@ The dataAvailability object is an internal audit, not new experimental results.
                 review_options = {NAMED_TABLE_OPTION: True}
             direct_review = self._direct_comparison_review
             direct_review = (direct_review() if callable(direct_review) else direct_review) is True
-            if direct_review and complete_factual_batch and node == 'verify' and review_eligible(claims):
+            if (direct_review and complete_factual_batch and node == 'verify'
+                    and review_eligible(claims, max_targets=self._comparison_target_limit(node))):
                 from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
                 review_options = {DIRECT_REVIEW_OPTION: True}
             repair_output=self._comparison_repair_review_output

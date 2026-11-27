@@ -81,8 +81,8 @@ def enabled(record):
         'claim_verification','paper_comparison','direction_survey'}
 
 
-def eligible(claims):
-    return bool(claims) and len(claims)<=3 and all(c.get('kind') in {'reported','inference'}
+def eligible(claims, *, max_targets=3):
+    return bool(claims) and len(claims)<=max_targets and all(c.get('kind') in {'reported','inference'}
         and not c.get('designRole') and not c.get('executionSpec')
         and len(c.get('text',''))<=1200 for c in claims)
 
