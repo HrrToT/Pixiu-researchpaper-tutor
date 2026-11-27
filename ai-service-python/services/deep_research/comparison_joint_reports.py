@@ -516,7 +516,7 @@ def bind_benchmark_example(record, draft, plan):
     if strict_benchmark_speed_scope(record):
         version = record['comparisonBenchmarkSpeedScopeContractVersion']
         draft['benchmarkSpeedScopeVersion'] = 3 if version in (6, 7) else 2 if version in (3, 4, 5) else 1
-    if scoped_example_presentation(record) in (3, 4, 5) and len(matches) == 1:
+    if scoped_example_presentation(record) in (3, 4, 5, 6) and len(matches) == 1:
         from services.deep_research.benchmark_tradeoff_summary import INTRO_PREFIX
         example = next(claim for claim in draft['report']['claims'] if claim['claimId'] == matches[0])
         if example.get('body', {}).get('prose', {}).get('text', '').startswith(INTRO_PREFIX):
@@ -536,6 +536,8 @@ def scoped_example_presentation(record):
             return 2
         lead_version = record.get('comparisonBeginnerLeadContractVersion')
         if version == 7 and type(lead_version) is int and lead_version == 1:
+            if record.get('comparisonBeginnerDeploymentGuidanceVersion') == 1:
+                return 6
             return 5
         return 4 if version == 7 else 3
     return 2 if version in (2, 3) else True
