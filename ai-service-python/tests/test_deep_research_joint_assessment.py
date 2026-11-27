@@ -112,6 +112,63 @@ def test_missing_required_version_remains_open_and_requeries_instead_of_acceptin
     assert any(g['sourceWorkId']=='b-v2' for g in result['gaps'])
 
 
+@pytest.mark.parametrize('have_both_protocols', [True, False])
+def test_speed_comparison_uses_owned_protocols_and_keeps_unsupported_gaps(have_both_protocols):
+    from services.deep_research.nested_tables import unpack as restore_tables
+    from services.deep_research.shared_strings import unpack as restore_strings
+
+    record = fixture()
+    record['jointEvidenceContractVersion'] = 7
+    question = '为什么不能直接拿两篇的FPS排名'
+    record['question'] = question
+    obligations = record['state']['plan'][0]['obligations']
+    obligations.append({'obligationId': 'speed', 'question': question, 'requestExcerpt': question,
+                        'requiredSources': ['a-v1', 'b-v1'], 'comparisonRole': {'kind': 'joint'},
+                        'completionCriteria': [{'criterionId': 'boundary', 'requirement': question,
+                                                'responseType': 'explanation'}]})
+    common = 'The methods use a distinct representation for dynamic scenes. ' * 8
+    record['state']['evidence'].clear()
+    for work in ('a', 'b'):
+        source = {'workId': work, 'versionId': work + '-v1', 'contentHash': work + '-hash',
+                  'accessLevel': 'fulltext'}
+        protocol = f'All results are reported running on a {work.upper()} GPU at a fixed resolution.'
+        distractor = f'{work.upper()} implementation background. ' + common
+        for quote in (distractor, protocol) if work == 'a' or have_both_protocols else (distractor,):
+            record['state']['evidence'].append(make_evidence(
+                source, quote, quote, location={'page': 1}, obligation_ids=['unrelated-label']))
+    memory = Memory(record)
+    sent = []
+
+    def invoke(run, node, prompt, options):
+        sent.append(prompt)
+        if 'and exact available evidence:\n' in prompt:
+            wire, _ = json.JSONDecoder().raw_decode(prompt.split('and exact available evidence:\n', 1)[1])
+            inputs = restore_tables(restore_strings(wire)) if 'strings' in wire else wire
+            targets, evidence = inputs['units'], inputs['evidence']
+        else:
+            targets = units(prompt)
+            evidence, _ = json.JSONDecoder().raw_decode(prompt.split('Sources and exact available evidence:\n', 1)[1])
+            evidence = evidence['evidence']
+        first = targets[0]
+        assert first['criterion']['requirement'] == question
+        quotes = [evidence[eid]['quote'] for eid in first['evidenceIds']]
+        assert any('A GPU' in quote for quote in quotes)
+        if have_both_protocols:
+            assert len(quotes) == 2 and any('B GPU' in quote for quote in quotes)
+            assert not any('background' in quote for quote in quotes)
+        else:
+            assert any('B implementation background' in quote for quote in quotes)
+        return {'content': json.dumps([{'unitId': unit['unitId'], 'ready': False, 'evidenceIds': []}
+                                       for unit in targets])}
+
+    result = execute(memory, invoke)
+    assert result['gaps'] and all(row['state'] == 'unchecked' for row in memory.record['state']['coverage'])
+    query = result['requery_queries'][0]
+    assert query['obligationId'] == 'speed' and 'hardware resolution baseline timing' in query['query']
+    execute(memory, lambda *_: pytest.fail('Settled request must not repeat'))
+    assert len(sent) == 1
+
+
 def test_full_quote_capacity_failure_does_not_clip_a_required_premise_or_send():
     record=fixture();ev=record['state']['evidence'][0];ev['quote']='x'*26000;ev['sourceContext']=ev['quote']
     memory=Memory(record);result=execute(memory,lambda *_:pytest.fail('No oversized send'))
@@ -204,7 +261,7 @@ def test_settled_result_reuses_exact_request_after_checkpoint_failure(tmp_path):
     assert not result['gaps'] and len(sent)==1 and repo.list_calls('r')[0]['status']=='succeeded'
 
 
-@pytest.mark.parametrize('value',[None,True,False,0,'1',7])
+@pytest.mark.parametrize('value',[None,True,False,0,'1',8])
 def test_joint_contract_is_strict(value):
     assert not enabled({'jointEvidenceContractVersion':value})
     assert enabled({'jointEvidenceContractVersion':1})
@@ -218,13 +275,15 @@ def test_joint_contract_is_immutable(tmp_path,value):
         repo.update_run('r',lambda r:{**r,'jointEvidenceContractVersion':value})
 
 
-def test_client_cannot_disable_joint_contract(tmp_path):
+@pytest.mark.parametrize(('output_kind', 'expected'), [(None, 6), ('paper_comparison', 7)])
+def test_client_cannot_disable_joint_contract(tmp_path, output_kind, expected):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.facade import ResearchFacade
     repo=DeepResearchRepository(str(tmp_path/'runs.sqlite3'));repo.initialize()
-    facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
+    facade=ResearchFacade(repo,lambda **_:None,llm_client=object(),comparison_cells_version=1)
     try:
         p,_=facade.create({'workspaceTaskId':'t','operationKey':'k','question':'比较条件','materials':[],
+                          **({'outputKind':output_kind} if output_kind else {}),
                           'jointEvidenceContractVersion':0},start_async=False)
-        assert repo.require_run(p['runId'])['jointEvidenceContractVersion']==6
+        assert repo.require_run(p['runId'])['jointEvidenceContractVersion']==expected
     finally: facade.shutdown()

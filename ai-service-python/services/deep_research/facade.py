@@ -498,7 +498,7 @@ class ResearchFacade:
             "sourceGlyphContractVersion": 2,
             "factualReasoningContractVersion": 10,
             "continuationFormatContractVersion": 1,
-            "jointEvidenceContractVersion": 6,
+            "jointEvidenceContractVersion": 7 if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else 6,
             "repairEvidencePriorityVersion": 1,
             "comparisonReasoningContractVersion": 5,
             "namedRowIdentityContractVersion": 1,

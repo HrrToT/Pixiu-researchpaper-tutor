@@ -132,6 +132,16 @@ def _evaluation_protocol_score(text):
     return int(bool(_PROTOCOL.search(prose)))
 
 
+def speed_comparison_protocol_rank(row):
+    """Prefer reported evaluation settings and marked retraining notes."""
+    from services.deep_research.table_note_index import has_protocol_note
+
+    if row.get('accessLevel') != 'fulltext' or row.get('tableData'):
+        return 0
+    quote = row.get('quote', '')
+    return 3 if has_protocol_note(quote) else _evaluation_protocol_score(quote)
+
+
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
     if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7) or not content_hash

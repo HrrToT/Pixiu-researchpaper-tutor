@@ -19,7 +19,7 @@ MAX_UNITS=20
 
 
 def enabled(record):
-    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3,4,5,6)
+    return type(record.get('jointEvidenceContractVersion')) is int and record['jointEvidenceContractVersion'] in (1,2,3,4,5,6,7)
 
 
 def _matches(row,source):
@@ -97,7 +97,7 @@ def _anchor_wire(wire, rows, used):
                 wire[alias]['sourceContext'] = {**wire[alias]['sourceContext'], side:annotated[field]}
 
 
-def _render(units,rows,human,*,process_explanations=False,transformation_processes=False):
+def _render(units,rows,human,*,process_explanations=False,transformation_processes=False,shared_input=False):
     aliases={row['evidenceId']:f'E{i+1}' for i,row in enumerate(rows)}
     identities={};sources={};wire={}
     for row in rows:
@@ -124,6 +124,18 @@ def _render(units,rows,human,*,process_explanations=False,transformation_process
                 targets[-1]['processRequired']=True
     if process_explanations in (4,5):
         _anchor_wire(wire,rows,{eid for target in targets if target.get('processRequired') for eid in target['evidenceIds']})
+    packet = {'sources': sources, 'evidence': wire}
+    decision_inputs = ('Frozen units (questions, NOT facts):\n'
+                       + json.dumps(targets, ensure_ascii=False, separators=(',', ':'))
+                       + '\nSources and exact available evidence:\n'
+                       + json.dumps(packet, ensure_ascii=False, separators=(',', ':')))
+    if shared_input:
+        from services.deep_research.shared_strings import input_text
+
+        shared = 'Frozen units (questions, NOT facts) and exact available evidence:\n' + input_text(
+            {'units': targets, **packet}, literal_strings={*sources, *wire, *(unit['unitId'] for unit in units)})
+        if len(shared.encode('utf8')) < len(decision_inputs.encode('utf8')):
+            decision_inputs = shared
     prompt='''Assess JOINT EVIDENCE READINESS for each frozen requested criterion below.
 This routes acquisition only. It is NOT factual approval, answer coverage or permission.
 Use each unit's own listed evidenceIds. Combine actual premises across its source/version
@@ -141,11 +153,7 @@ Every required source/version must contribute an actual relevant premise. Never 
 irrelevant citations to satisfy a count. If a required source is unavailable or the
 relationship still lacks a premise, return ready=false and evidenceIds=[].
 Original human requests (goal context, NOT evidence):
-'''+json.dumps(human,ensure_ascii=False,separators=(',',':'))+'''
-Frozen units (questions, NOT facts):
-'''+json.dumps(targets,ensure_ascii=False,separators=(',',':'))+'''
-Sources and exact available evidence:
-'''+json.dumps({'sources':sources,'evidence':wire},ensure_ascii=False,separators=(',',':'))+'''
+'''+json.dumps(human,ensure_ascii=False,separators=(',',':'))+'\n'+decision_inputs+'''
 Return ONLY a compact JSON array, exactly one row per unitId:
 [{"unitId":"G1","ready":true,"evidenceIds":["E1","E2"]}].
 Use actual supplied IDs, no extra fields, duplicates or omissions. False uses [].
@@ -300,10 +308,14 @@ def _validate(saved,known):
         keys.add(unit['key'])
     request=saved.get('request')
     process=_process_policy(saved)
+    shared_input = saved.get('sharedInputContractVersion')
+    if shared_input is not None and (type(shared_input) is not int or shared_input != 1 or process != 5):
+        raise DeepResearchError('invalid_joint_assessment', '保存的联合取证输入版本无效。')
     if process in (3,4,5) and saved['status']=='received' and saved.get('responseAudit')!=_review_units(saved)[1]:
         raise DeepResearchError('invalid_joint_assessment','保存的逐项取证审计与原始回复不一致。')
     expected={'prompt':_render(saved['units'],rows,saved['human'],process_explanations=process,
-        transformation_processes=transformation_processes),'outputTokens':_response_tokens(saved['units'],process)}
+        transformation_processes=transformation_processes, shared_input=shared_input == 1),
+        'outputTokens':_response_tokens(saved['units'],process)}
     if (request!=expected or saved.get('requestDigest')!=digest(expected)
             or len(expected['prompt'].encode('utf8'))>24000):
         raise DeepResearchError('invalid_joint_assessment','保存的联合取证请求无效。')
@@ -319,12 +331,20 @@ def assess(state,record,update,invoke,coverage_gaps):
         required=list(dict.fromkeys(s.get('workId') for s in domain.get('sources',[]) if s.get('workId')))
     groups=_groups(obligations,required);known=_evidence(record)
     version=record.get('jointEvidenceContractVersion')
-    process=version-1 if type(version) is int and version in (2,3,4,5,6) else False
+    process=min(5, version-1) if type(version) is int and version in (2,3,4,5,6,7) else False
+    shared_input = version == 7
+    from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+    speed_groups = {gid for gid, group in groups.items()
+                    if version == 7 and len(group['requiredSources']) >= 2
+                    and explicitly_requests_cross_paper_speed(group['requirement'])
+                    and all(obligations[member['obligationId']].get('comparisonRole', {}).get('kind') == 'joint'
+                            for member in group['members'])}
     from services.deep_research.process_explanations import transformation_enabled
     transformation_processes=bool(process) and transformation_enabled(record)
     vocabulary={'processExplanationVocabularyVersion':1} if transformation_processes else {}
+    transport = {'sharedInputContractVersion': 1} if shared_input else {}
     scope=digest({'groups':list(groups.values()),'processExplanations':process,
-                  **vocabulary} if process else list(groups.values()));pool_digest=digest(list(known.values()))
+                  **vocabulary, **transport} if process else list(groups.values()));pool_digest=digest(list(known.values()))
     question=effective_question(record);human=list(getattr(question,'instruction_layers',(question,)))
     round_key=digest({'scope':scope,'evidence':pool_digest,'reviewed':sorted(domain.get('reviewedExtractionPassages',{})),
                       'round':state.get('requery_count',0)})
@@ -338,6 +358,8 @@ def assess(state,record,update,invoke,coverage_gaps):
             raise DeepResearchError('invalid_joint_assessment','联合取证轮次无效。')
         for key,saved in rounds.items():
             _validate(saved,known)
+            if saved_scope == scope and saved.get('sharedInputContractVersion') != transport.get('sharedInputContractVersion'):
+                raise DeepResearchError('invalid_joint_assessment', '保存的联合取证输入版本和请求不一致。')
             if saved['status']=='pending' and (saved_scope!=scope or key!=round_key):
                 raise DeepResearchError('invalid_joint_assessment','尚有未确认的联合取证请求，不能换输入重新发送。')
             if saved_scope!=scope:
@@ -362,7 +384,8 @@ def assess(state,record,update,invoke,coverage_gaps):
 
     if current is None:
         units=[];visible=[];cap=_input_limit(record.get('budget',{}));missing_sources=False;capacity_blocked=False
-        for gid,group in groups.items():
+        for gid in sorted(groups, key=lambda gid: gid not in speed_groups):
+            group = groups[gid]
             if gid in positives or len(units)>=MAX_UNITS:
                 continue
             candidates=[e for e in known.values() if any(_matches(e,source) for source in group['requiredSources'])]
@@ -420,6 +443,16 @@ def assess(state,record,update,invoke,coverage_gaps):
                     candidates.sort(key=lambda row: not (
                         row['evidenceId'] in paired or named_condition_bound_result(row, benchmarks)
                         or named_protocol and named_feature_matching_counts(row, benchmarks)))
+            if gid in speed_groups:
+                from services.deep_research.comparison_joint_reports import speed_comparison_protocol_rank
+                ranks = {row['evidenceId']: speed_comparison_protocol_rank(row) for row in candidates}
+                candidates.sort(key=lambda row: ranks[row['evidenceId']], reverse=True)
+                protocols = [row for row in candidates if ranks[row['evidenceId']]]
+                if all(any(_matches(row, source) for row in protocols) for source in group['requiredSources']):
+                    # With reported settings from each paper, spend this unit
+                    # on the comparison protocol. Numerical outcomes belong
+                    # to their own criteria and keep their existing allocation.
+                    candidates = protocols
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
             if not selected or any(not any(_matches(e,source) for e in selected) for source in group['requiredSources']):
@@ -440,14 +473,15 @@ def assess(state,record,update,invoke,coverage_gaps):
                 unit={'unitId':f'G{len(units)+1}','group':group,'evidenceIds':[e['evidenceId'] for e in subset],'key':key}
                 ids={e['evidenceId'] for e in visible};candidate=[*visible,*[e for e in subset if e['evidenceId'] not in ids]]
                 if len(candidate)<=MAX_EVIDENCE and len(_render([*units,unit],candidate,human,process_explanations=process,
-                        transformation_processes=transformation_processes).encode('utf8'))<=max(0,cap-(_response_tokens([*units,unit],process)-OUTPUT_TOKENS)):
+                        transformation_processes=transformation_processes, shared_input=shared_input).encode('utf8'))<=max(0,cap-(_response_tokens([*units,unit],process)-OUTPUT_TOKENS)):
                     units.append(unit);visible=candidate;fitted=True;break
             if not fitted:
                 capacity_blocked=True
         request={'prompt':_render(units,visible,human,process_explanations=process,
-            transformation_processes=transformation_processes),'outputTokens':_response_tokens(units,process)}
+            transformation_processes=transformation_processes, shared_input=shared_input),
+            'outputTokens':_response_tokens(units,process)}
         current={'status':'pending','units':units,'evidence':visible,'human':human,'request':request,
-                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**vocabulary,
+                 'requestDigest':digest(request),'candidatePoolDigest':pool_digest,**vocabulary,**transport,
                  **({'processResponseContractVersion':process} if process else {})}
         if not units or invoke is None:
             current.update(status='skipped',reason='unavailable' if invoke is None else
@@ -508,12 +542,15 @@ def assess(state,record,update,invoke,coverage_gaps):
     elif count>0 and pool_digest==state.get('prev_assessment_evidence_digest'): stop='no_new_evidence'
     queries=[];seen=set()
     if not stop:
-        for gap in gaps:
+        speed_obligations = {member['obligationId'] for gid in speed_groups for member in groups[gid]['members']}
+        for gap in sorted(gaps, key=lambda gap: gap['obligationId'] not in speed_obligations):
             key=gap['obligationId'],gap.get('sourceWorkId','')
             if key in seen: continue
             seen.add(key)
-            queries.append({'obligationId':key[0],'missingSource':key[1],
-                'query':'；'.join([gap['question'],gap.get('missingEvidence',''),'联合前提 实验设置 原文依据'])})
+            terms = [gap['question'], gap.get('missingEvidence', ''), '联合前提 实验设置 原文依据']
+            if key[0] in speed_obligations:
+                terms.append('FPS rendering speed evaluation protocol hardware resolution baseline timing')
+            queries.append({'obligationId': key[0], 'missingSource': key[1], 'query': '；'.join(terms)})
             if len(queries)==8: break
     missing={g['obligationId'] for g in gaps}
     progress=[{**item,'status':'gap' if any(o['obligationId'] in missing for o in item.get('obligations',[])) else 'completed'} for item in plan]
