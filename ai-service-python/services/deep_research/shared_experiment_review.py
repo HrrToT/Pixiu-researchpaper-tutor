@@ -949,6 +949,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'not_started_precheck': return saved
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')
+    if saved['status'] == 'not_started_count':
+        raise DeepResearchError('shared_experiment_review_count_unavailable','科学审核输入计数暂不可用，生成请求尚未发送。')
     if saved['status'] == 'pending':
         if built['inputBytes'] > MAX_INPUT and not can_count_input:
             raise DeepResearchError('shared_experiment_review_count_unavailable', '扩展科学审核批次须先完成实测输入计数。')
@@ -1004,6 +1006,11 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                     raise DeepResearchError('invalid_shared_experiment_review_state', '审核批次与请求范围不一致。')
             try:
                 responses.append(invoke(NODE,req['prompt'],dispatch_options(record,NODE,req['extra'])))
+            except DeepResearchError as error:
+                saved['status'] = ('not_started_count' if error.code == 'shared_experiment_review_count_unavailable'
+                                   else 'invocation_failed')
+                checkpoint(deepcopy(saved))
+                raise
             except Exception:
                 saved['status']='invocation_failed'; checkpoint(deepcopy(saved)); raise
             if 'batches' in built:

@@ -243,12 +243,13 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
     (79000, 8900, 7, False, ["/responses/input_tokens", "/responses"]),
     (79000, 8900, 13, False, []),
     (20000, 9300, None, True, ["/responses/input_tokens", "/responses"]),
+    (20000, None, None, True, ["/responses/input_tokens"]),
     (92000, 9300, None, True, ["/responses/input_tokens"]),
     (98000, 9300, None, True, []),
 ])
 def test_scientific_review_counts_when_required_for_admission(
         tmp_path, monkeypatch, tokens, count, ordinary_calls, wide, expected_sends):
-    from services.deep_research.contracts import BudgetExhaustedError
+    from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
     from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE
     from services.deep_research.tools import TrackedLLMInvoker
     from test_deep_research_shared_experiment_review import ready
@@ -296,7 +297,12 @@ def test_scientific_review_counts_when_required_for_admission(
             options[CHECK_IDS_OPTION] = ["section_0"]
         return invoker(record["runId"], NODE, "Review the JSON proposal. " + "x" * (32000 if wide else 22000),
                        options, use_reserve=True)
-    if not expected_sends or expected_sends[-1].endswith("/input_tokens"):
+    if count is None:
+        with pytest.raises(DeepResearchError) as failure:
+            send()
+        assert failure.value.code == "shared_experiment_review_count_unavailable"
+        assert not repo.list_calls(record["runId"])
+    elif not expected_sends or expected_sends[-1].endswith("/input_tokens"):
         with pytest.raises(BudgetExhaustedError):
             send()
         assert not repo.list_calls(record["runId"])

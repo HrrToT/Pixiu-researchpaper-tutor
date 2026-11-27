@@ -535,6 +535,9 @@ class TrackedLLMInvoker:
                         raise BudgetExhaustedError("tokens", budget["maxTokens"], minimum)
                 counted_input = client.count_audit_input(request)
                 if type(counted_input) is not int or counted_input <= 0:
+                    if counted_science_window:
+                        raise DeepResearchError('shared_experiment_review_count_unavailable',
+                                                '科学审核输入计数暂不可用，生成请求尚未发送。')
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
                 estimated_input = measured_allowance(counted_input)
         

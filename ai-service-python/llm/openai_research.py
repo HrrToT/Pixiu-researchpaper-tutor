@@ -1,12 +1,16 @@
 """OpenAI transport for the research graph's bounded model requests."""
 
 from dataclasses import replace
+import logging
 
 import requests
 
 from llm.client import CompletionHTTPClient
 from llm.provider import DEFAULT_RESEARCH_OUTPUT_TOKENS
 from llm.responses_transport import API_KEY
+
+
+logger = logging.getLogger(__name__)
 
 
 class OpenAIResearchLLM(CompletionHTTPClient):
@@ -49,7 +53,7 @@ class OpenAIResearchLLM(CompletionHTTPClient):
         check_cancelled()
         if not self.configured_key():
             return None
-        timeout = min(5, self.timeout_seconds, request.timeout_seconds or self.timeout_seconds)
+        timeout = min(10, self.timeout_seconds, request.timeout_seconds or self.timeout_seconds)
         payload = self.adapt_payload(self.build_responses_payload(request.messages, request.extra_body),
                                      responses_mode=True)
         context = {key: value for key, value in payload.items() if key not in {"store", "max_output_tokens"}}
@@ -62,14 +66,17 @@ class OpenAIResearchLLM(CompletionHTTPClient):
                 **self.request_flags,
             ), timeout)
             if response.status_code != 200:
+                logger.info("OpenAI audit input count returned HTTP %s", response.status_code)
                 return None
             body = response.json()
-        except (requests.RequestException, TimeoutError, ValueError):
+        except (requests.RequestException, TimeoutError, ValueError) as error:
+            logger.info("OpenAI audit input count failed: %s", type(error).__name__)
             return None
         if isinstance(body, dict) and body.get("object") == "response.input_tokens":
             count = body.get("input_tokens")
             if type(count) is int and count > 0:
                 return count
+        logger.info("OpenAI audit input count returned no positive count")
         return None
 
     def invoke_counted_audit(self, request):
