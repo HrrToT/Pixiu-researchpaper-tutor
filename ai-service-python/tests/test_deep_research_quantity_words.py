@@ -100,6 +100,58 @@ def test_readable_rejection_details_do_not_round_convert_or_expand_large_values(
     assert number_display('literal:bad') == 'literal:bad'
 
 
+@pytest.mark.parametrize('quote,claim_text,supported', [
+    ('We evaluate at a480×640 resolution.', '图像分辨率为480×640。', True),
+    ('We use inputs sized 480× 640.', '图像尺寸为480x640。', True),
+    ('The frame size is 480x640px.', '图像尺寸为480×640像素。', True),
+    ('The crop size is 256 x 256.', '裁剪为256×256。', True),
+    ('The image was resized to 480x640.', '图像尺寸为480×640。', True),
+    ('We evaluate at a480×640 resolution.', '图像分辨率为640×480。', False),
+    ('We evaluate at a480×640 resolution.', '图像分辨率为480×641。', False),
+    ('The sizes are 480 × 320 and 800 × 640.', '图像分辨率为480×640。', False),
+    ('The values are 480, 640.', '图像分辨率为480×640。', False),
+    ('The product identifier is A480×640.', '图像分辨率为480×640。', False),
+    ('The product identifier is A-480 × 640.', '图像分辨率为480×640。', False),
+    ('The tensor is 2.5 × 480 × 640.', '图像分辨率为480×640。', False),
+    ('The tensor is 3×480×640.', '图像分辨率为480×640。', False),
+    ('We evaluate at a480×640 resolution.', '系统提升480倍。', False),
+])
+def test_reported_dimensions_keep_order_and_direct_evidence(quote, claim_text, supported):
+    c, ev = setup(claim_text, quote)
+    original = deepcopy(ev)
+    check = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    result = verify_claims([c], [ev], check, quantity_spelling_version=20)
+    assert bool(result['accepted']) is supported
+    assert ev == original
+    if supported:
+        check.assert_called_once()
+    else:
+        check.assert_not_called()
+        assert result['rejected'][0]['reason'] == 'numeric_mismatch'
+        if '480×640' in claim_text:
+            assert '480×640' in result['rejected'][0]['detail']
+
+
+def test_attached_pdf_resolution_equivalence_is_versioned():
+    c, ev = setup('图像分辨率为480×640。', 'We evaluate at a480×640 resolution.')
+    assert verify_claims([c], [ev], quantity_spelling_version=19)['rejected'][0]['reason'] == 'numeric_mismatch'
+    assert verify_claims([c], [ev], quantity_spelling_version=20)['rejected'][0]['reason'] == 'semantic_unresolved'
+
+
+@pytest.mark.parametrize('description,supported', [
+    ('A single forward pass produces the point locations.', True),
+    ('In one forward pass the network produces the point locations.', True),
+    ('A forward pass produces the point locations.', False),
+    ('Multiple forward passes produce the point locations.', False),
+    ('A single image supplies the point locations.', False),
+])
+def test_only_explicit_single_forward_pass_supports_cardinality(description, supported):
+    c, ev = setup('一次前向传播生成关键点位置。', description)
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    result = verify_claims([c], [ev], checker, quantity_spelling_version=20)
+    assert bool(result['accepted']) is supported
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
@@ -107,7 +159,7 @@ def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, rep
     try:
         run, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'o', 'question': '解释三个分量',
             'deferStart': True, 'quantitySpellingContractVersion': replacement}, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 19
+        assert run['quantitySpellingContractVersion'] == 20
         changed = 15 if replacement == 16 else replacement
         with pytest.raises(ValueError, match='Immutable'):
             repo.update_run(run['runId'], lambda r: {**r, 'quantitySpellingContractVersion': changed})

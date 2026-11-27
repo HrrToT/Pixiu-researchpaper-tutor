@@ -20,6 +20,7 @@ _ENGLISH_UPSAMPLE_SCHEDULE = re.compile(
 _DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
     r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
+_SINGLE_FORWARD_PASS = re.compile(r'\b(?:single|one)(?=[\s-]+forward[\s-]+pass\b)', re.I)
 _GAUSSIAN_REPLACEMENT_COUNT = re.compile(
     r'(?P<prefix>\breplac(?:e|es|ed|ing)\s+(?:such\s+|these\s+|the\s+)?(?:large\s+)?Gaussians\s+(?:by|with)\s+)'
     r'(?P<count>' + '|'.join(_WORDS) + r')(?=\s+new\s+(?:Gaussians|ones)\b)', re.I)
@@ -30,6 +31,13 @@ _RANGE_SCALE = re.compile(
     r'(?P<scale>(?>thousand\b|million\b|billion\b|万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千|百|十))'
     r'(?!分之|[万亿千百十]|\s*[%％×倍]|[-‐‑]fold\b)', re.I | re.ASCII)
 _ENGLISH_SCALES = {'thousand': 3, 'million': 6, 'billion': 9}
+_DIMENSION_SEPARATOR = r'\s*[×xX]\s*'
+_DIMENSION_VALUES = r'[0-9]+(?:' + _DIMENSION_SEPARATOR + r'[0-9]+)+'
+_DIMENSION_SERIES = re.compile(r'(?<![A-Za-z0-9_.,+\-−×])' + _DIMENSION_VALUES
+                               + r'(?:(?=px\b|pixels?\b)|(?![A-Za-z0-9_×]|[.,][0-9]|'
+                               + _DIMENSION_SEPARATOR + r'))', re.I)
+_ATTACHED_RESOLUTION_ARTICLE = re.compile(
+    r'\b(?P<prefix>(?:at|to|with)\s+)a(?=' + _DIMENSION_VALUES + r'\s+resolution\b)', re.I)
 _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
     r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
     r'[\s\-‐‑–]+(?:dimensions?|dimensional|components?|channels?|outputs?|views?|frames?|images?|'
@@ -235,6 +243,8 @@ def _count_words(text, *, relative_references=False, artifact_references=False, 
 
 def number_display(identity):
     """Readable exact check detail; do not expand hostile/large exponents."""
+    if identity.startswith('dimensions:'):
+        return identity.removeprefix('dimensions:').replace('x', '×')
     match = re.fullmatch(r'(-?\d+)e(-?\d+)([%x]?)', identity)
     if not match: return identity
     coefficient, exponent, unit = match.groups()
@@ -244,13 +254,15 @@ def number_display(identity):
 
 
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
-                                        image_pair_articles=False):
+                                        image_pair_articles=False, explicit_forward_pass=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
     if gaussian_replacement_counts:
         text = _GAUSSIAN_REPLACEMENT_COUNT.sub(
             lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)
+    if explicit_forward_pass:
+        text = _SINGLE_FORWARD_PASS.sub('1', text)
     if image_pair_articles:
         # In a transformation description, “a source image and another
         # image” introduces the pair members. Exact or per-input counts and
@@ -279,6 +291,21 @@ def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gauss
         return f"{match['low']}e{exponent} 到 {match['high']}e{exponent}"
 
     return _RANGE_SCALE.sub(expand_range_scale, text)
+
+
+def split_dimension_series(text):
+    """Keep the exact ordered dimensions together, including in PDF-extracted text."""
+    text = _ATTACHED_RESOLUTION_ARTICLE.sub(r'\g<prefix>a ', text)
+    dimensions = set()
+
+    def collect(match):
+        if re.search(r'[0-9]\s*[×xX]\s*$', text[:match.start()]):
+            return match[0]
+        values = re.split(_DIMENSION_SEPARATOR, match[0])
+        dimensions.add('dimensions:' + 'x'.join(value.lstrip('0') or '0' for value in values))
+        return ' '
+
+    return _DIMENSION_SERIES.sub(collect, text), dimensions
 
 
 def measurement_numbers(text: str, *, word_counts=False, relative_references=False,

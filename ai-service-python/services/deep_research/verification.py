@@ -51,12 +51,16 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
         from services.deep_research.enumeration_labels import without_enumeration_labels
         text=without_enumeration_labels(text,balanced_parentheses=type(enumeration_labels) is int and enumeration_labels in (8,9),numbered_items=type(enumeration_labels) is int and enumeration_labels==9)
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
-    from services.deep_research.measurement_numbers import measurement_numbers, normalize_explicit_quantity_phrases
+    from services.deep_research.measurement_numbers import measurement_numbers, normalize_explicit_quantity_phrases, split_dimension_series
+    dimensions = set()
     if explicit_quantity_phrases:
         text = normalize_explicit_quantity_phrases(text, shared_range_scale=explicit_quantity_phrases >= 17,
                                                    gaussian_replacement_counts=explicit_quantity_phrases == 18,
-                                                   image_pair_articles=explicit_quantity_phrases == 19)
-    return measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
+                                                   image_pair_articles=explicit_quantity_phrases >= 19,
+                                                   explicit_forward_pass=explicit_quantity_phrases >= 20)
+        if explicit_quantity_phrases >= 20:
+            text, dimensions = split_dimension_series(text)
+    return dimensions | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
                                collection_articles=collection_articles,
@@ -119,7 +123,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 19 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 20 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3
