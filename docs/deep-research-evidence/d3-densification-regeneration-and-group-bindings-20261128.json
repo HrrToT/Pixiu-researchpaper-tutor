@@ -1,0 +1,150 @@
+{
+  "candidate": "2e84025ba01992b342a1cdbfee909fc5b9169b71",
+  "runId": "dr_d3_densification_regeneration_20261128",
+  "actualUsage": 49119,
+  "carriedRoutineTokens": 17377,
+  "realModelCalls": 4,
+  "newProviderCallsDuringReplay": 0,
+  "sourceFactsLinkedToOperativePage": [
+    {
+      "id": "s2",
+      "refs": [
+        "E5"
+      ]
+    },
+    {
+      "id": "s3",
+      "refs": [
+        "E5"
+      ]
+    }
+  ],
+  "hardIssuesBeforeFactRepair": [
+    {
+      "claimId": "shared_fact_5",
+      "reason": "absence_not_established",
+      "factId": "s6",
+      "evidenceRefs": [
+        "E12",
+        "E13"
+      ]
+    }
+  ],
+  "hardIssuesAfterFactRepair": [],
+  "legacyInvalidBindings": [
+    {
+      "checkId": "section_3",
+      "path": "/groups/0/levels"
+    },
+    {
+      "checkId": "section_3",
+      "path": "/groups/1/levels"
+    },
+    {
+      "checkId": "section_3",
+      "path": "/groups/2/levels"
+    },
+    {
+      "checkId": "section_3",
+      "path": "/groups/3/levels"
+    }
+  ],
+  "resolvedUnmodifiedReplyChecks": [
+    {
+      "checkId": "fact_0",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_1",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_2",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_3",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_4",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_5",
+      "status": "passed"
+    },
+    {
+      "checkId": "fact_6",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_0",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_1",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_2",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_3",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_4",
+      "status": "passed"
+    },
+    {
+      "checkId": "section_5",
+      "status": "passed"
+    }
+  ],
+  "allPlannedCheckCount": 24,
+  "uncheckedCount": 11,
+  "reviewComplete": false,
+  "published": false,
+  "callUsages": [
+    {
+      "node": "plan_experiment_shared",
+      "tokens": 12372
+    },
+    {
+      "node": "repair_experiment_shared",
+      "tokens": 4808
+    },
+    {
+      "node": "review_experiment_shared",
+      "tokens": 4762
+    },
+    {
+      "node": "review_experiment_shared",
+      "tokens": 9800
+    }
+  ],
+  "rawFilesSha256": {
+    "intent.json": "f8f1089e4df1dff3861539b47c93685efe09537c5077aac5aed637b65f5be421",
+    "run.json": "250249d0e76d475d4a9520a20893a22a38be406f73ccf2256191d27879bc8627",
+    "calls.json": "d52008bff4864e1b387e8138aad9fb03c976d193b1542382873a609d1ea5f2c4",
+    "verify-result.json": "e10d179b0ab8a09545fb9b3220b6269dd6347f0f6506ead030d2a01d4d6c412d"
+  },
+  "reviewBatchBytesBefore": [
+    17619,
+    31876,
+    32000,
+    31675,
+    31859
+  ],
+  "reviewBatchBytesAfter": [
+    17619,
+    31897,
+    31713,
+    31696,
+    31880
+  ],
+  "factPacketUnchanged": true,
+  "newModelTokens": 31742
+}
