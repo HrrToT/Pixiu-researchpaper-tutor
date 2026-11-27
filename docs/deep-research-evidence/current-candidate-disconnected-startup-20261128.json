@@ -1,0 +1,45 @@
+{
+  "candidateCommit": "1c5e6988f0b2e13d57bfdc1eea6386507df933a9",
+  "runtimeImage": "pixiu-research-pdf-proof:20261120",
+  "runtimeImageId": "sha256:db9a6032bed0ba758353d9e29d2a83a091d2080b701f899329a6a7f207ba945a",
+  "network": "none",
+  "productionWrites": 0,
+  "modelCalls": 0,
+  "liveDeploymentChanged": false,
+  "asgiLifespanStarted": true,
+  "probeDisabledBackgroundIntegrations": ["startup warmup", "periodic monitoring", "publication dispatcher"],
+  "newDeferredRequests": {
+    "openAIModels": ["gpt-6.1-terra", "gpt-6-luna"],
+    "comparisonAuditEnvelopeVersion": 18,
+    "comparisonPdfTableFallbackVersion": 2,
+    "externalExplanationInputVersion": 6,
+    "scopedFactorialReviewVersion": 7,
+    "pinnedPdfFallbackEnabled": true,
+    "callRows": 0
+  },
+  "historicalCopies": {
+    "runsChecked": 3,
+    "callRowsChecked": 106,
+    "payloadsAndLedgerRowsUnchanged": true,
+    "historicalProviderRoutesUnchanged": true,
+    "d2": {"status": "completed", "outcome": "partial", "allowedActions": ["open_report", "view_sources", "continue"]},
+    "d3": {"status": "paused", "errorCode": "unresolved_unknown", "allowedActions": ["cancel"]},
+    "h3": {"status": "completed", "outcome": "partial", "allowedActions": ["open_report", "view_sources", "continue"]}
+  },
+  "parserSmoke": {
+    "pypdfVersion": "6.21.4",
+    "publicDevelopmentPdfPages": 13,
+    "unreadableGlyphPagesFlagged": [4, 9],
+    "lightGaussianTable1OnPage6": true
+  },
+  "sourceVerification": "Git archive of the candidate commit. Five backend entry and policy files compared to git blobs after newline normalization.",
+  "rawProbeCountCorrection": "The stdout summary inherited a hard-coded count of two from the older probe. The probe iterated three case records, reopening and comparing all three and counting 106 call rows.",
+  "localArtifactDirectory": "tmp/dr-cold-20261128-v2",
+  "sha256": {
+    "proof.json": "a0ca45ab1d14c12d439712569ff161a4961540635e8a1aa90b39d60a532d7bd8",
+    "backend.tar": "1309584aafa9ebc78c8af9b99da84c3c4b9b85e550bd0aceb0da962adc9e2957",
+    "stdout-recheck.log": "75f79c7dcee2d63a7ccfd2f2f48710346133ade5506568494e73d7d8015f07c5",
+    "fixtures/probe.py": "7839fb6c36e494268cf874ac8c9fe5736f2c19d34695daacd84c65222ffa29a5"
+  },
+  "scientificAcceptanceCredit": 0
+}

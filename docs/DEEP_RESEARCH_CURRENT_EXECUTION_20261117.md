@@ -770,6 +770,9 @@ PyramidKV 原写稿请求已经含有第 6 页逐注意力头选取的正文，�
 
 ### 当前候选与复测顺序
 
+- 候选 `1c5e6988f` 在断网容器中通过 ASGI 冷启动检查。D2 与 PyramidKV 的部分报告可重开，D3 旧未知调用仍只允许取消。三份运行载荷和 106 条调用记录逐项一致。新建待启动的比较与 2×2 实验核对了当前审核配置，未发出模型请求。PDF 冒烟检查确认 LightGaussian 表 1 仍定位在第 6 页。此项验证候选装载和历史读取，在线服务未切换。 [断网冷启动记录](deep-research-evidence/current-candidate-disconnected-startup-20261128.json)
+- 同一候选覆盖 513 个模块的宿主离线回归，10,467 项中 10,466 项通过。唯一失败的测试仍把已启用的范围审核 v6 断言为非法。按引入 v6 的提交核对后更新测试，同时保留对旧版及未知值的检查，115 项相关复测全部通过。未修改生产代码或重跑整套，保留原全量结果和独立复测记录。 [完整回归与版本复测](deep-research-evidence/current-candidate-offline-regression-and-contract-recheck-20261128.json)
+
 - 后端候选 `535a23900` 的 Python 离线回归通过 10,104 项，上一版 10,097 项全部保留。`01d093964` 的 Java 全量离线回归通过 171 项。此前候选 `f344b148b` 通过禁网冷启动，核对两次历史运行、86 条调用记录与 Luna／Terra 新运行配置。 [Python 回归](deep-research-evidence/openai-d2-audit-and-table-native-full-20261127.json) · [Java 回归及发布检查](deep-research-evidence/current-publication-and-rollback-20261126.json) · [候选冷启动](deep-research-evidence/openai-pdf-table-candidate-cold-start-20261126.json)
 - 候选经配置的系统代理按标题向 arXiv 查询，下载公开开发样本的固定版本 `2403.17888v3`，提取 13 条可定位全文片段。二次读取复用账本，未再次联网。现用研究服务尚未切换到包含 `pypdf` 的镜像。独立 H3 仍须从空任务完成发现、全文取证、生成和人工核对。 [真实取证](deep-research-evidence/academic-title-search-candidate-live-20261126.json) · [现用解析依赖核对](deep-research-evidence/academic-parser-runtime-dependency-20261126.json)
 - OpenAI 的项目密钥已通过真实调用确认可用。候选版新建研究使用 GPT-6 Luna 处理常规步骤，GPT-6.1 Terra 负责综合与核验。首个 D2 在隔离环境单次提交，15 次调用共 76,539 Token，生成部分报告。正文中 12 条引文均核对到对应原页，完整比较仍未通过。 [D2 首次 OpenAI 验收](deep-research-evidence/openai-luna-terra-d2-first-20261126.json) · [候选冷启动](deep-research-evidence/openai-pdf-table-candidate-cold-start-20261126.json)
