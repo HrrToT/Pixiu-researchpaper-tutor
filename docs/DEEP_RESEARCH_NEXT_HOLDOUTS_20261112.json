@@ -46,11 +46,12 @@
         "scientificContentCredit": 0
       },
       "flexPrefillExecution": {
-        "state": "executed_acquisition_passed_content_not_accepted",
+        "state": "first_execution_partial_retired_for_development",
         "case": "H3-FLEXPREFILL",
         "manifest": "DEEP_RESEARCH_FLEXPREFILL_EXTERNAL_HOLDOUT_20261126.json",
         "preflight": "deep-research-evidence/flexprefill-external-holdout-preflight-20261126.json",
         "result": "deep-research-evidence/flexprefill-h3-first-frozen-20261127.json",
+        "developmentRegression": "deep-research-evidence/flexprefill-parameter-anchor-regression-20261127.json",
         "scientificContentCredit": 0
       }
     },
