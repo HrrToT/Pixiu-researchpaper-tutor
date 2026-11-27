@@ -395,6 +395,7 @@ class DeepResearchRepository:
                                      'sharedExperimentReviewGroupBindingsVersion',
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
+                                     'sharedExperimentDensificationExecutionVersion',
                                      'comparisonBeginnerLeadContractVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',
