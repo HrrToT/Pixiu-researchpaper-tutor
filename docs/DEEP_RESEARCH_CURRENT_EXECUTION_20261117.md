@@ -838,7 +838,7 @@ D3-v20 保存的第二批审核只分配了 8 项检查，原始截断回复却�
 | D2 两论文比较 | 首次 Luna／Terra 实测保存部分报告。修复版草稿取得同表数值与显存建议，11 条逐项审核通过。整答审核在发送前因预算拒绝，未发布结论。 [首次实测](deep-research-evidence/openai-luna-terra-d2-first-20261126.json) · [修复版实测](deep-research-evidence/openai-luna-terra-d2-second-20261127.json) | 用保存回执核对整答审核准入和表格页码，随后复验整答一致性及 FPS 可比性的真实结论。 |
 | D3 四组实验 | v20 已生成结构有效的四组方案，共用高斯初值与优化器状态。事实预检通过，科学审核第二批因输出截断失效。当前候选重放核对 PDF 第 5–7 页相关证据和修订前的方案检查，夹具修订后可进入科学审核。 [v20 实测](deep-research-evidence/derived-pairing-and-table-coordinate-v2-real-20261126.json) · [候选回放](deep-research-evidence/d3-protocol-combined-replay-20261126.json) | 复验真实草稿的共同起点、等预算、指标、主效应、交互效应及适用范围，并通过科学审核。历史未知请求保持冻结。 |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
-| D5 计划调整与追问 | v18 沿用 v49 父报告，发布了独立的续问子报告。用前端生产构建分别打开两份既有成果，父子版本各自可找回，往返不覆盖原报告。真实生成中的跨论文设置仍未通过科学核验。 [v18 实测](deep-research-evidence/comparison-and-factorial-real-batch-20261126.json) · [浏览器只读回看](deep-research-evidence/research-real-report-workspace-reopen-20261125.json) | 仍需验证新增解释的可比性判断、证据身份与用户指定范围。 |
+| D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
@@ -932,6 +932,10 @@ D5-v17 在同组比较配置下单次复测本轮范围修复，仍沿用 v49 �
 对于只要求解释速度比值或排名的单个短续问，新版综合请求要求一段引用双方论文的推断正文，写清为何无法直接计算及有效比较应对齐的条件。结构化边界分支在该任务中按目标隔离。离线回放用同一历史取证达到首个模型请求，保留两篇正文测量设置，请求为 23,814 字节。此修复尚未运行真实模型。
 
 按该配置单次真实复测，模型生成 134 字的引用段落，解释条件未对齐为何使比值无法隔离方法差异，并给出应统一的对照条件。审阅模型报告支持，但服务端把理由里的「统一条件」误计作「一条」，事实核验未放行。Terra 调用两次，14,391 Token、31 秒，无重新检索。修复仅在新的审核数字扫描中识别该固定词组；真实组数或约束条数仍需绑定。用同一原始核验回复离线回放，新版接受一条结论并组装出 17,676 字节的整答审核请求，尚未发送。144 项相关离线测试通过。 [解释段落复测与回放](deep-research-evidence/d5-speed-explanation-prose-real-20261127.json)
+
+只发送上述整答审核请求一次。Terra 新增 5,625 Token、13 秒，继承生成与逐项核验的两笔真实调用后合计 3 次、20,016 Token。整答三项检查均通过，一致性通过，原 134 字正文及引文保持不变，并生成 `complete` 发布记录。核对 LightGaussian v6 第 7 页与原始 3DGS v1 第 8 页，确有同为 A6000 的设置和原始 3DGS 使用查看器计帧的说明，回答保留计时、场景和分辨率未对齐的条件边界。未重新生成、检索或写入现用工作区。固定开发案例的内容通过，未计入留出验收。 [整答审核实测](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json)
+
+将真实父报告和子报告原样通过隔离 Java/Python HTTP 链路交付。已验收父子独立成果、父报告保持原样、重复投递去重及 Java 重启后读取同一工作区。子报告的实际引用按证据 ID 跨片段合并后，保留 LightGaussian v6 第 7 页及原始 3DGS v1 第 8 页。交付复验使用材料就绪夹具，模型调用与生产写入均为零。 [交付复验](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json)
 
 ## D3 四组实验的输入与状态归属
 
