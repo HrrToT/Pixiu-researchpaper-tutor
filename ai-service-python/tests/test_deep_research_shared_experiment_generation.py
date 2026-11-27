@@ -361,6 +361,9 @@ def test_factorial_compiler_derives_arms_from_each_explicit_factor_level(fault, 
     ('missing_measurement_read', 'plan.fit_memory_capture_read'),
     ('missing_fit_interval', 'plan.fit_memory_capture'),
     ('storage_without_persisted_states', 'plan.incomplete_resource_accounting'),
+    ('shared_fit_peak', None),
+    ('missing_shared_peak_read', 'plan.fit_memory_capture_read'),
+    ('missing_shared_fit_interval', 'plan.fit_memory_capture'),
 ])
 def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fault, code):
     from services.deep_research.shared_experiment_references import compile_plan
@@ -388,6 +391,22 @@ def test_shared_preparation_cap_and_arm_peak_memory_have_distinct_accounting(fau
               'procedure':'Reset the allocator peak immediately before fit, synchronize and read peak before teardown.',
               'fitMemoryCaptures':[{'stepId':fit['id'],'recordStateId':'peak'}]}
     canonical['metrics'].append(memory)
+    if fault in ('shared_fit_peak', 'missing_shared_peak_read', 'missing_shared_fit_interval'):
+        warmup = {**preflight, 'id':'warmup', 'kind':'fit', 'dataUse':'training',
+                  'reads':[], 'creates':['shared_peak'], 'budgetId':'warmup_cap'}
+        canonical['steps'].insert(2, warmup)
+        canonical['budgets'].append({**common, 'id':'warmup_cap', 'allocation':'single'})
+        first_arm_state = next(i for i, state in enumerate(canonical['states']) if state['scope'] == 'arm')
+        canonical['states'].insert(first_arm_state, {'id':'shared_peak', 'meaning':'Shared training peak',
+            'representation':'Peak allocator bytes over the shared fit', 'fixed':True, 'persisted':False,
+            'scope':'shared', 'groups':[], 'source':{'kind':'step','id':'warmup'}})
+        memory['stateIds'].append('shared_peak')
+        memory['fitMemoryCaptures'].append({'stepId':'warmup','recordStateId':'shared_peak'})
+        if fault != 'missing_shared_peak_read':
+            measure['reads'].append('shared_peak')
+        if fault == 'missing_shared_fit_interval':
+            canonical['steps'].insert(3, {**warmup, 'id':'warmup_extra', 'creates':[], 'budgetId':'warmup_extra_cap'})
+            canonical['budgets'].append({**common, 'id':'warmup_extra_cap', 'allocation':'single'})
     if fault == 'per_step_reuse':
         common['allocation'] = 'single'
     elif fault == 'disjoint_preparation':

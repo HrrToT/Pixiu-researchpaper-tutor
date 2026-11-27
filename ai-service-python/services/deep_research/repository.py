@@ -352,6 +352,7 @@ class DeepResearchRepository:
                                      'sharedExperimentCompactReviewVersion',
                                      'sharedExperimentFactContextVersion', 'reviewRevisionRowCountVersion',
                                      'sharedExperimentFitObservationOutputVersion', 'sharedExperimentDerivedPairingVersion',
+                                     'sharedExperimentSharedMemoryCaptureVersion',
                                      'sharedExperimentDerivedAnalysisVersion',
                                      'sharedExperimentEvaluationPreparationVersion',
                                      'sharedExperimentFinalAuditPacketVersion',

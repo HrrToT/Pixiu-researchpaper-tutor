@@ -313,17 +313,23 @@ def validate(value, evidence_ids, *, required_domains=()):
         if captures:
             captured_steps = {capture['stepId'] for capture in captures}
             fits = [step for step in value['steps'] if step['kind'] == 'fit' and step['scope'] == 'arm']
+            shared_fits = {step['id'] for step in value['steps']
+                           if step['kind'] == 'fit' and step['scope'] == 'shared'}
+            required_fits = {step['id'] for step in fits}
+            if captured_steps & shared_fits:
+                required_fits |= shared_fits
             records = {capture['recordStateId'] for capture in captures}
             if (metric['domain'] != 'memory' or metric['direction'] != 'lower_better'
                     or len(captured_steps) != len(captures) or len(records) != len(captures)
-                    or captured_steps != {step['id'] for step in fits}
+                    or captured_steps != required_fits
                     or {group for step in fits for group in step['groups']} != set(GROUPS)
                     or not records <= set(metric['stateIds'])
                     or any(capture['recordStateId'] not in steps.get(capture['stepId'], {}).get('creates', [])
                            for capture in captures)):
                 issue('plan.fit_memory_capture', f'/metrics/{i}/fitMemoryCaptures')
             elif any(not {capture['recordStateId'] for capture in captures
-                           if set(steps[capture['stepId']]['groups']) & set(step['groups'])} <= set(step['reads'])
+                           if (capture['stepId'] in shared_fits
+                               or set(steps[capture['stepId']]['groups']) & set(step['groups']))} <= set(step['reads'])
                        for step in value['steps'] if metric['id'] in step['metricIds']):
                 issue('plan.fit_memory_capture_read', f'/metrics/{i}/fitMemoryCaptures')
         elif metric['domain'] in ('storage', 'memory') and not persisted <= set(metric['stateIds']):

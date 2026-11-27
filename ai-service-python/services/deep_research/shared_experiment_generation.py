@@ -186,6 +186,16 @@ def instructions(record):
                 'record at measurement. Put record IDs in stateIds. Capture actual peak per full fit window, specify device, '
                 'allocator, reset, synchronization and aggregation. Use fitMemoryCaptures=[] for other metrics.',
             )
+            if record.get('sharedExperimentSharedMemoryCaptureVersion') == 1:
+                prompt = prompt.replace(
+                    'For training peak device memory, each arm fit creates a peak record. '
+                    'List every {"stepId":"fit_id","recordStateId":"record_id"} in fitMemoryCaptures and read each applicable '
+                    'record at measurement. Put record IDs in stateIds. Capture actual peak per full fit window, specify device, '
+                    'allocator, reset, synchronization and aggregation. Use fitMemoryCaptures=[] for other metrics.',
+                    'For peak memory, record every arm fit and include shared fits for whole-training scope. '
+                    'Bind each {stepId,recordStateId} in fitMemoryCaptures and stateIds; read shared records in every arm. '
+                    'Specify device, allocator, full windows, reset, sync and aggregation. Use [] for other metrics.',
+                )
         if version == 8 and record.get('sharedExperimentDerivedPairingVersion') == 1:
             prompt = prompt.replace(
                 '  Read all pairing.sharedStateIds, clone mutable parameter, optimizer and treatment-control state with\n'
