@@ -77,6 +77,70 @@ def comparison_mechanism(obligation):
                         for criterion in obligation.get('completionCriteria', [])))
 
 
+def representation_requested(text):
+    return bool(re.search(r'表示|\brepresentation\b', text, re.I))
+
+
+def representation_sentences(text):
+    """Locate complete parameter definitions, retaining original offsets."""
+    from services.deep_research.quote_context import _sentence_cuts
+
+    start = 0
+    for end in _sentence_cuts(text):
+        sentence = ' '.join(text[start:end].split())
+        if 30 <= len(sentence) <= 650 and re.search(
+                r'\b(?:coefficients?|parameters?|embeddings?)\b[^.!?]{0,60}\b(?:represent(?:s|ing)?|encode[sd]?|encoding)\b'
+                r'|\b(?:defined|parameterized|represented|encoded) (?:by|with|through)\b[^.!?]{0,60}'
+                r'\b(?:coefficients?|parameters?|embeddings?)\b', sentence, re.I):
+            yield int(bool(re.search(r'view[- ]dependent|color|appearance|geometry|radiance', sentence, re.I))), start, end
+        start = end
+
+
+def representation_read_requested(record, query, pdf_id):
+    from services.deep_research.criterion_sources import acquisition_questions
+
+    version = record.get('comparisonPaperWordingContractVersion')
+    return (type(version) is int and version == 2
+            and any(representation_requested(question)
+                    for question in acquisition_questions(record, query, pdf_id)))
+
+
+def include_pdf_representation(rows, pages, material, limit):
+    """Use one existing retrieval slot for a complete owned PDF sentence."""
+    from services.deep_research.contracts import digest
+
+    replace = next((i for i in range(len(rows) - 1, 0, -1) if not rows[i].get('tableData')
+                    and rows[i].get('retrievalMode') in (None, 'pdf_lexical_fallback', 'indexed_hybrid')), None)
+    if len(rows) >= limit and replace is None:
+        return rows
+    best = None
+    for page in pages:
+        for score, start, end in representation_sentences(page.get('text', '')):
+            priority = (score, -(end - start))
+            if best is None or priority > best[0]:
+                best = (priority, page, start, end)
+    if best is None:
+        return rows
+    _, page, start, end = best
+    quote = page['text'][start:end]
+    owner = material['materialId']
+    content_hash = material['contentHash']
+    location = {'page': page['page'], 'pageIndex': page['page'] - 1, 'pageResolution': 'exact',
+                'offset': start, 'matchedRepresentationDefinition': True}
+    candidate = {'sourceId': 'src_' + digest([owner, content_hash, location, quote]), 'pdfId': owner,
+                 'contentHash': content_hash, 'versionId': material.get('versionId') or content_hash,
+                 'title': material.get('title', owner), 'text': quote, 'location': location,
+                 'accessLevel': 'fulltext', 'retrievalMode': 'pdf_representation_definition'}
+    if any(row['sourceId'] == candidate['sourceId'] for row in rows):
+        return rows
+    result = list(rows)
+    if len(result) < limit:
+        result.append(candidate)
+    else:
+        result[replace] = candidate
+    return result
+
+
 def compression_mapping_requested(text, *, include_operations=False):
     positive = _positive(text)
     return bool(re.search(r'压缩机制|压缩原理|压缩后.{0,12}表示|'

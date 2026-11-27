@@ -47,6 +47,29 @@ def test_changed_bytes_never_reach_parser(monkeypatch):
     parse.assert_not_called()
 
 
+def test_comparison_retrieves_complete_representation_definition_for_matching_goal(monkeypatch):
+    local, _, parse, _ = fixture(monkeypatch)
+    query = 'Gaussian model representation and compression'
+    record = local.repo.require_run.return_value
+    record.update(comparisonPaperWordingContractVersion=2, state={'plan': [{'obligations': [{
+        'requiredSources': ['p'], 'question': query, 'searchQuery': query,
+        'completionCriteria': [{'requirement': 'Describe the scene representation.'}],
+    }]}]})
+    definition = 'We optimize coefficients representing color that varies with the viewing direction.'
+    text = 'Gaussian model representation. ' + 'Background. ' * 165 + definition
+    parse.return_value = [{'page': 4, 'text': text}]
+
+    matches = local(query, 'p', limit=3)
+    row, = [item for item in matches if item['location'].get('matchedRepresentationDefinition')]
+
+    assert row['text'].strip() == definition
+    offset = row['location']['offset']
+    assert text[offset:offset + len(row['text'])] == row['text']
+    assert row['location']['page'] == 4 and len(matches) <= 3
+    assert not any(item['location'].get('matchedRepresentationDefinition')
+                   for item in local('Gaussian model', 'p', limit=3))
+
+
 def test_shared_experiment_reads_explicit_protocol_sources_within_existing_slots(monkeypatch):
     from services.deep_research.experiment_protocol_sources import (
         MARKER, premise_bundles, preferred_reads,

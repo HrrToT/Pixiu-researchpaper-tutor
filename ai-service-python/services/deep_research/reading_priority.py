@@ -36,6 +36,15 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     else:
         ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
     preferred = []
+    if mechanism_overviews and limit >= 3:
+        from services.deep_research.selection import balanced_sample
+        definitions = [source for source in ordered
+                       if source.get('location', {}).get('matchedRepresentationDefinition') is True
+                       and source.get('accessLevel') == 'fulltext'
+                       and source.get('ownerMaterialId') == source.get('workId')
+                       and (source['sourceId'], source.get('contentHash')) not in extracted]
+        preferred.extend(balanced_sample(definitions,
+            lambda source: (source['workId'], source.get('versionId')), limit // 3))
     if local_pdf_methods:
         from services.deep_research.selection import balanced_sample
         methods = [source for source in ordered if source.get('location', {}).get('matchedPdfMethodPassage') is True

@@ -452,7 +452,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
         assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 7
         assert r['comparisonRepairFlowContractVersion'] == 2
         assert r['comparisonStageAbstentionContractVersion'] == 1
-        assert r['comparisonPaperWordingContractVersion'] == 1
+        assert r['comparisonPaperWordingContractVersion'] == 2
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})
         assert planning_options(r,QUESTION)['joint_reports'] is True
         with pytest.raises(ValueError, match='Immutable'):

@@ -1,0 +1,67 @@
+{
+  "sourceRun": "dr_run_b80f380b6d985fb893f7a50312ae56d8",
+  "frozenPdfVersions": [
+    "arxiv:2308.04079v1",
+    "arxiv:2311.17245v6"
+  ],
+  "exactDefinitionPages": {
+    "arxiv:2308.04079v1": 4,
+    "arxiv:2311.17245v6": 4
+  },
+  "definitions": [
+    {
+      "evidenceId": "ev_9a5e7e0bf8accf6c66202cb3f20764b357f4cdaf6d1b0359746a433987f3bbd9",
+      "ownedSource": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "quote": " In addition to positions 𝑝,𝛼, and covariance\nΣ, we also optimize SH coefficients representing color 𝑐of each\nGaussian to correctly capture the view-dependent appearance of\nthe scene."
+    },
+    {
+      "evidenceId": "ev_814af903499401c05fbb0bf97fa02358f738072f8d47e0f198f07596c37230fc",
+      "ownedSource": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "quote": " In summary, each Gaussian\npoint is characterized by attributes including: position X∈R3, color defined by spherical harmonics\ncoefficients SH∈R(k+1)2×3(where krepresents the degrees of freedom), opacity α∈R, rotation\nfactor R∈R4, and scaling factor S∈R3."
+    }
+  ],
+  "oldStageSnapshotMatchesExactly": true,
+  "jointUnchanged": true,
+  "pagesVerified": true,
+  "providerCalls": 0,
+  "synthesized": false,
+  "scientificAcceptance": false,
+  "stages": [
+    {
+      "stage": "P1",
+      "oldBytes": 23852,
+      "newBytes": 23916,
+      "added": [
+        "ev_814af903499401c05fbb0bf97fa02358f738072f8d47e0f198f07596c37230fc"
+      ],
+      "removed": [
+        "ev_1b0e416e5e1b9c23bdbb2994bfa721576e643448febce38c61abe79398a3ecfd"
+      ],
+      "definitionIds": [
+        "ev_814af903499401c05fbb0bf97fa02358f738072f8d47e0f198f07596c37230fc"
+      ]
+    },
+    {
+      "stage": "P2",
+      "oldBytes": 23992,
+      "newBytes": 23994,
+      "added": [
+        "ev_9a5e7e0bf8accf6c66202cb3f20764b357f4cdaf6d1b0359746a433987f3bbd9"
+      ],
+      "removed": [
+        "ev_9e242d0688f15e57bc62a0b3ef3de88584a00b3855726409d38cabc5be245c37"
+      ],
+      "definitionIds": [
+        "ev_9a5e7e0bf8accf6c66202cb3f20764b357f4cdaf6d1b0359746a433987f3bbd9"
+      ]
+    },
+    {
+      "stage": "joint",
+      "oldBytes": 23876,
+      "newBytes": 23876,
+      "added": [],
+      "removed": [],
+      "definitionIds": []
+    }
+  ]
+}

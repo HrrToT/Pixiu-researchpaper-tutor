@@ -767,6 +767,21 @@ def test_paper_wording_preserves_properties_and_protocol_exceptions_without_chan
         assert new['allowedEvidenceByTarget'] == old['allowedEvidenceByTarget']
 
 
+def test_representation_priority_uses_only_complete_literal_definitions_for_the_assigned_goal():
+    from services.deep_research.comparison_stage_inputs import representation_definition
+
+    quote = 'We optimize coefficients representing color from each viewing direction.'
+    rows = [{'evidenceId': 'partial', 'quote': quote.removesuffix(' direction.')},
+            {'evidenceId': 'other_goal', 'quote': quote}, {'evidenceId': 'complete', 'quote': quote}]
+    literal = {row['evidenceId']: {**row, 'accessLevel': 'fulltext', 'verification': {'literal': 'passed'},
+                                  'obligationIds': ['mechanism']} for row in rows}
+    literal['other_goal']['obligationIds'] = ['results']
+    target = {'question': 'Describe the representation.', 'allowedObligationIds': ['mechanism']}
+
+    assert representation_definition(rows, [target], literal) == 'complete'
+    assert representation_definition(rows[:-1], [target], literal) is None
+
+
 def test_joint_stage_prioritizes_typed_table_when_literal_anchor_only_names_advice():
     r, p, rows, aliases, bundles = fixture()
     r.update(question=QUESTION + '。数字只选一组来源和口径明确的基线对照作例子',

@@ -66,6 +66,29 @@ def exploration_completion_calls(record):
     return minimum_completion_calls(len(paper_stages) + joint_stage, len(planned)) if planned else 0
 
 
+def representation_definition(rows, targets, literal_evidence):
+    """Prefer an exact source passage that says what a parameter represents."""
+    from services.deep_research.mechanism_sources import representation_requested, representation_sentences
+
+    goals = {goal for target in targets
+             if representation_requested(target['question'])
+             for goal in target['allowedObligationIds']}
+    if not goals:
+        return None
+    best = None
+    for row in rows:
+        original = literal_evidence.get(row['evidenceId'], {})
+        if (original.get('accessLevel') != 'fulltext' or original.get('verification', {}).get('literal') != 'passed'
+                or not goals.intersection(original.get('obligationIds', ()))
+                or original.get('quote') != row.get('quote') or original.get('tableData')):
+            continue
+        for score, start, end in representation_sentences(row['quote']):
+            priority = (score, -(end - start))
+            if best is None or priority > best[0]:
+                best = (priority, row['evidenceId'])
+    return best[1] if best is not None else None
+
+
 def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             max_input_bytes=32000, character_limit=None, merge_joint=True):
     """Retain all candidates until separate <=20-row stage allocations finish.
@@ -170,6 +193,10 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         assigned[scope].append(bundle)
     contexts = {eid: context for b in wire_bundles
                 for eid, context in b.get('requiredContextByEvidenceId', {}).items()}
+    wording_version = record.get('comparisonPaperWordingContractVersion')
+    original_evidence = ({reverse[row['evidenceId']]: row for row in record.get('state', {}).get('evidence', [])
+                          if row['evidenceId'] in reverse}
+                         if type(wording_version) is int and wording_version == 2 else {})
     def build_stage(scope, members):
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]
@@ -206,6 +233,11 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             speed_result = preferred_speed_result(own, all_targets, scope)
             if speed_result:
                 optional_pairs.append(speed_result)
+        if not include_joint and original_evidence:
+            definition = representation_definition(own,
+                [target for target in all_targets if target['targetId'] in target_ids], original_evidence)
+            if definition:
+                optional_pairs.append((definition,))
         if not include_joint and record.get('comparisonFigureCountSynthesisVersion') in (1, 2):
             from services.deep_research.comparison_joint_reports import paper_figure_count_evidence
             counts = paper_figure_count_evidence(record, question, all_targets, requirements, own)

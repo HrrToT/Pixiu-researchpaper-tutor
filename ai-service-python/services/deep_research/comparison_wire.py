@@ -628,7 +628,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'other works, including what they report or whether their text is available.\n'
                 'If you cannot support the assigned point from its own evidence, return point=null.\n'
                 'Put the supported result first and keep measured conditions with it.')
-            if type(wording_version) is int and wording_version == 1:
+            if type(wording_version) is int and wording_version in (1, 2):
                 assignment_policy = (
                     'Answer only the assigned dimension of the named paper. Put the result first. '
                     'If unsupported, return point=null. Keep the exact technical property; for easily reversed terms '
