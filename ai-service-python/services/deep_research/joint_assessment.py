@@ -402,6 +402,14 @@ def assess(state,record,update,invoke,coverage_gaps):
                 local_ids = {e['evidenceId'] for e in domain.get('evidence', [])
                              if e.get('sourceId') in local_sources}
                 candidates.sort(key=lambda e: e['evidenceId'] not in local_ids)
+            if record.get('comparisonConditionBoundResultReadinessVersion') == 1:
+                from services.deep_research.comparison_joint_reports import named_condition_bound_result
+                from services.deep_research.measurement_table_navigation import requested_threshold_benchmarks
+
+                benchmarks = set().union(*(requested_threshold_benchmarks('\n'.join(human),
+                    obligations[member['obligationId']].get('searchQuery', '')) for member in group['members']))
+                if benchmarks:
+                    candidates.sort(key=lambda row: not named_condition_bound_result(row, benchmarks))
             selected=balanced_sample(candidates,lambda e:(e['sourceWorkId'],e['sourceVersionId']),
                                      min(MAX_EVIDENCE,max(6,len(group['requiredSources']))))
             if not selected or any(not any(_matches(e,source) for e in selected) for source in group['requiredSources']):

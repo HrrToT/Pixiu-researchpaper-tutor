@@ -535,3 +535,15 @@ def test_new_joint_input_removes_conflicting_kind_rule_and_preserves_other_cells
     assert 'Answer EACH joint target' in new and 'does not replace qualitative entries' in new
     marker='Cell routing and citation permissions (metadata, not evidence):\n'
     assert json.JSONDecoder().raw_decode(old.split(marker,1)[1])[0]==json.JSONDecoder().raw_decode(new.split(marker,1)[1])[0]
+def test_named_condition_bound_result_requires_condition_in_the_quoted_result():
+    from services.deep_research.comparison_joint_reports import named_condition_bound_result
+
+    quote = 'Our method achieves the best result at matching thresh-\nolds of 6.5 pixels or more.'
+    evidence = {'accessLevel': 'fulltext', 'quote': quote,
+                'sourceContext': {'before': 'BenchMark-X uses pairwise matching.'}}
+    assert named_condition_bound_result(evidence, {'benchmark-x'})
+    assert not named_condition_bound_result(evidence, {'benchmark-y'})
+    assert not named_condition_bound_result({**evidence, 'accessLevel': 'abstract'}, {'benchmark-x'})
+
+    separate_sentences = 'Our method improves accuracy. We set the matching threshold to 6.5 pixels.'
+    assert not named_condition_bound_result({**evidence, 'quote': separate_sentences}, {'benchmark-x'})

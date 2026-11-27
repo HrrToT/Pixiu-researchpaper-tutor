@@ -37,6 +37,24 @@ _REPORTED_PLATFORM = re.compile(
     r'(?:reported|conducted|run|measured|evaluated)\b[^.!?。]{0,120}'
     r'\b(?:on|using|with)\b[^.!?。]{0,80}\b(?:GPU|hardware|platform)\b', re.I)
 _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:hardware|protocols?|conditions?|settings?)\b', re.I)
+_BOUNDED_RESULT = re.compile(
+    r'\b(?:achiev\w*|outperform\w*|perform\w*|obtain\w*|improv\w*|reduc\w*)\b'
+    r'[^.!?。]{0,110}\b(?:thresholds?|at least|at most|above|below|under|over)\b'
+    r'[^.!?。]{0,42}\b\d+(?:\.\d+)?\s*(?:pixels?|px|ms|seconds?|fps)\b', re.I)
+
+
+def named_condition_bound_result(row, benchmarks):
+    """Prefer the benchmark's own result and measured condition, in one quote."""
+    if not benchmarks or row.get('accessLevel') != 'fulltext' or row.get('tableData'):
+        return False
+    prose = re.sub(r'(?<=[A-Za-z])-\s*\n\s*(?=[A-Za-z])', '', row['quote'])
+    prose = ' '.join(prose.split())
+    if not _BOUNDED_RESULT.search(prose):
+        return False
+    context = row.get('sourceContext') or {}
+    locator_text = ' '.join((prose, context.get('before', ''), context.get('after', '')))
+    tokens = {token.casefold() for token in re.findall(r'[A-Za-z][A-Za-z0-9-]+', locator_text)}
+    return bool(benchmarks & tokens)
 
 
 def evaluation_protocols_enabled(record):
