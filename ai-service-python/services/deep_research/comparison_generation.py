@@ -40,8 +40,8 @@ def planning_options(record, question):
                 **({'structured_table_example':True} if record.get('comparisonJointReportsContractVersion') in (12, 13, 14, 15, 16) else {}),
                 **({'separate_example_boundary':True} if record.get('comparisonJointReportsContractVersion') in (13, 14, 15, 16) else {}),
                 **({'group_example_criteria':True} if record.get('comparisonJointReportsContractVersion') in (14, 15, 16) else {}),
-                **({'split_speed_and_advice':True} if record.get('comparisonCrossPaperBoundaryContractVersion') in (2, 3, 4, 5, 6, 7) else {}),
-                **({'preserve_mixed_speed_criteria':True} if record.get('comparisonCrossPaperBoundaryContractVersion') in (6, 7) else {}),
+                **({'split_speed_and_advice':True} if record.get('comparisonCrossPaperBoundaryContractVersion') in (2, 3, 4, 5, 6, 7, 8) else {}),
+                **({'preserve_mixed_speed_criteria':True} if record.get('comparisonCrossPaperBoundaryContractVersion') in (6, 7, 8) else {}),
                 **({'scoped_example_text':scoped_example_presentation(record)}
                    if record.get('comparisonJointReportsContractVersion') == 16 else {}),
                 **({'classify_standalone_joint':True} if preserve_numeric_example(record) else {}),

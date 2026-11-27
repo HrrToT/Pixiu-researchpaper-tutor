@@ -365,7 +365,7 @@ class ResearchFacade:
             "comparisonAuditEnvelopeContractVersion": 20 if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 16 if self._comparison_cells_version == 1 else 0,
             "comparisonBenchmarkSpeedScopeContractVersion": 7 if self._comparison_cells_version == 1 else 0,
-            "comparisonCrossPaperBoundaryContractVersion": 7 if self._comparison_cells_version == 1 else 0,
+            "comparisonCrossPaperBoundaryContractVersion": 8 if self._comparison_cells_version == 1 else 0,
             "comparisonRepairFlowContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
             **({'comparisonPaperWordingContractVersion': 2}

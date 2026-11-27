@@ -1,0 +1,21 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "stage": "P1",
+  "promptBytes": 23995,
+  "promptSha256": "d1971f035c0720fb75ec955ffa5b0d231b670fe7b4f3d54b10c39f2505c6b440",
+  "legacyRestoredExactly": true,
+  "jointInputUnchanged": true,
+  "sourcePermissionsUnchanged": true,
+  "firstHardGate": {
+    "claimId": "cmp_6_0",
+    "reason": "numeric_mismatch",
+    "missingReportedNumbers": [
+      "2e0"
+    ],
+    "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+  },
+  "humanFixtureHardGate": "passed",
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

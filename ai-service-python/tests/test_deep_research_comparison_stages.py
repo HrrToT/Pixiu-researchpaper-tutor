@@ -863,6 +863,18 @@ def test_explicit_benchmark_example_restricts_table_output_without_hiding_eviden
                 assert train_refs.intersection(refs)
                 assert fps_refs.intersection(old_stage['allowedCellsByTarget'][target])
 
+    scoped = {**r, 'comparisonJointReportsContractVersion': 5, 'comparisonBenchmarkSpeedScopeContractVersion': 7}
+    previous, current = [prepare({**scoped, 'comparisonCrossPaperBoundaryContractVersion': version},
+                                 plan['requirements'], plan['sources'], rows, {}, bundles, aliases)
+                         for version in (7, 8)]
+    assert previous['stages'][-1] == current['stages'][-1]
+    for before, after in zip(previous['stages'][:-1], current['stages'][:-1], strict=True):
+        assert 'counts of illustrated runs or views' in after['prompt']
+        assert 'counts of illustrated runs or views' not in before['prompt']
+        assert before['inputBytes'] == after['inputBytes']
+        assert before['allowedCellsByTarget'] == after['allowedCellsByTarget']
+        assert before['allowedEvidenceByTarget'] == after['allowedEvidenceByTarget']
+
 
 def test_mixed_joint_goal_gets_two_wire_targets_under_original_obligation():
     r, p, rows, aliases, bundles = fixture()

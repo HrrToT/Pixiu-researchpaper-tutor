@@ -578,9 +578,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
         paper_subjects = cross_paper_scopes(record, plan, targets(plan), question=question)
         scoped_joint = [target for target in data['jointTargets'] if target['targetId'] in paper_subjects]
         boundary_version = record.get('comparisonCrossPaperBoundaryContractVersion')
-        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5, 6, 7)
-        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY, 6: TYPED_POLICY, 7: TYPED_POLICY}.get(boundary_version, POLICY)
-        if boundary_version == 7:
+        compact_paper_scope = bool(scoped_joint) and boundary_version in (4, 5, 6, 7, 8)
+        paper_boundary_policy = {4: COMPACT_POLICY, 5: TYPED_POLICY, 6: TYPED_POLICY, 7: TYPED_POLICY, 8: TYPED_POLICY}.get(boundary_version, POLICY)
+        if boundary_version in (7, 8):
             paper_boundary_policy += ('Scope each dataset observation to what its citation lists, and preserve '
                                       'the scope of reported settings and exceptions.\n')
         for target in scoped_joint:
@@ -642,7 +642,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'cross-paper contrast, comparability and recommendation. Complete your stage\'s contribution\n'
                 'to the fixed researchGoals and human request. Put conclusions before details in their target.',
                 assignment_policy)
-            if boundary_version == 7:
+            if boundary_version in (7, 8):
                 policy += ('Use only the assigned measurements; do not copy whole rows or repeat settings. '
                            'Keep ambiguous metrics literal and distinguish disk size from GPU memory. For speed, '
                            'report hardware separately unless a citation clearly ties shared hardware to the exact compared runs.\n')
@@ -687,7 +687,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 policy += BENCHMARK_OWNER_POLICY
             else:
                 from services.deep_research.comparison_joint_reports import strict_benchmark_speed_scope
-                if strict_benchmark_speed_scope(record):
+                strict_speed_scope = strict_benchmark_speed_scope(record)
+                if strict_speed_scope and boundary_version == 8 and not data['jointTargets']:
+                    policy += ('Keep every supported dimension. For qualitative speed cite the reported direction '
+                               'and actual scene or setup. Omit FPS values, ranges and counts of illustrated runs '
+                               'or views in text or fields. Keep exact method settings and necessary processing costs.\n')
+                elif strict_speed_scope:
                     policy += ('Keep every supported dimension. For speed, describe the reported qualitative '
                                'result with its actual scene or setup. No FPS values or ranges in prose or '
                                'conditions outside the joint example. Keep exact method settings and '

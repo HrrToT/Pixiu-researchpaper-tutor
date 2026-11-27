@@ -42,7 +42,7 @@ def explicitly_requests_cross_paper_speed(question):
 
 def scopes(record, plan, targets, *, question=None):
     version = record.get('comparisonCrossPaperBoundaryContractVersion')
-    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8):
         return {}
     explicit_request = version >= 2 and explicitly_requests_cross_paper_speed(question)
     requirements = {row['obligationId']: row for row in plan.get('requirements', [])}
@@ -60,7 +60,7 @@ def scopes(record, plan, targets, *, question=None):
         # Role excerpts can be shorter than the user's requirement. Use only
         # this target's frozen question and criteria to recover its meaning.
         frozen_speed = False
-        if version in (3, 4, 5, 6, 7) and explicit_request:
+        if version in (3, 4, 5, 6, 7, 8) and explicit_request:
             criteria = requirements.get(oid, {}).get('completionCriteria', [])
             question_parts = [target['question'], *(row['requirement'] for row in criteria)]
             frozen_speed = any(explicitly_requests_cross_paper_speed(part) for part in question_parts)
