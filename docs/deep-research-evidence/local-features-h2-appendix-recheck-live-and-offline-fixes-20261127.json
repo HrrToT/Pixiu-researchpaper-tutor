@@ -105,5 +105,37 @@
     "provider.jsonl": "c0794bd39245ced18f3918696430d4a4eebe01fa9f86446d42a9f9909700edc3",
     "result.json": "774dbbe1db1eb825b256619d0ebe033f0ca8ab1d56b063abcb54d97a2c74695b"
   },
-  "boundary": "Routing used the same recorded acquisition evidence with a fresh in-memory synthesis checkpoint and stopped before dispatch. The historical editor output exceeded 600 characters when the exact condition was restored. The fitting replay supplied a shorter handcrafted edit through the production compiler. It verified the retained coordinate and citations but did not establish paid-model editing quality or full-answer scientific acceptance."
+  "boundary": "Routing used the same recorded acquisition evidence with a fresh in-memory synthesis checkpoint and stopped before dispatch. The historical editor output exceeded 600 characters when the exact condition was restored. The fitting replay supplied a shorter handcrafted edit through the production compiler. It verified the retained coordinate and citations but did not establish paid-model editing quality or full-answer scientific acceptance.",
+  "numericPrecheckReplay": {
+    "sourceRun": "dr_run_4de2787731fd5a9da3252231e0c6f387",
+    "providerCalls": 0,
+    "comparedQuantitySpellingVersions": [
+      19,
+      20
+    ],
+    "claims": [
+      {
+        "claimId": "cmp_4_0",
+        "testedText": "SuperPoint v1在HPatches的单应估计结果为0.684；图像分辨率480×640，每幅最多取1000点，以最近邻匹配后用RANSAC估计单应矩阵。",
+        "oldReason": "numeric_mismatch",
+        "oldMissingIdentity": "48e1x",
+        "newStage": "eligible_for_semantic_review",
+        "exactMisreadsStillRejected": [
+          "480×641",
+          "640×480",
+          "480倍"
+        ]
+      },
+      {
+        "claimId": "cmp_2_0",
+        "testedText": "一次前向传播生成关键点和半稠密描述子图，在检测位置插值并L2归一化得到点描述子。",
+        "oldReason": "numeric_mismatch",
+        "oldMissingIdentity": "1e0",
+        "newStage": "eligible_for_semantic_review",
+        "unsupportedRepeatsStillRejected": "两次"
+      }
+    ],
+    "independentCredit": 0,
+    "boundary": "Recorded text and citations are unchanged. Numeric and table checks pass before semantic review. No new generation, semantic verdict or scientific acceptance was produced."
+  }
 }
