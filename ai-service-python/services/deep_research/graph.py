@@ -1335,9 +1335,12 @@ def make_synthesize_node(
                 **({'criterion_method_navigation':True} if type(record.get('externalReadingContractVersion')) is int and record['externalReadingContractVersion'] in (3,4,5) else {}),
                 **({'read_retention':True} if output_kind=='direction_survey' and record.get('externalReadingContractVersion') in (4,5) else {}),
                 **({'retention_location':True} if output_kind=='direction_survey' and record.get('externalReadingContractVersion')==5 else {}),
-                **({'reviewed_coverage':brief_state.get('coverage',())} if output_kind=='direction_survey'
-                   and record.get('externalReadingContractVersion') in (3,4,5)
-                   and record.get('sourcePolicy',{}).get('mode') in ('external_only','academic_external') else {}),
+                **({'reviewed_coverage':brief_state.get('coverage',())}
+                   if (output_kind=='direction_survey'
+                       and record.get('externalReadingContractVersion') in (3,4,5)
+                       and record.get('sourcePolicy',{}).get('mode') in ('external_only','academic_external'))
+                   or (output_kind=='claim_verification' and synthesis_input_enabled(record,output_kind)
+                       and record.get('sourcePolicy',{}).get('mode','task_only')=='task_only') else {}),
                 **({'membership_intents':True} if record['synthesisEvidenceContractVersion'] in (2,3,4,5,6) else {}),
                 **({'module_intents':True} if record['synthesisEvidenceContractVersion'] in (3,4,5,6) else {}),
                 **({'condition_intents':True} if record['synthesisEvidenceContractVersion'] in (4,5,6) else {}),

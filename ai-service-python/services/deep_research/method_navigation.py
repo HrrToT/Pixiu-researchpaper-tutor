@@ -12,6 +12,7 @@ _HOW=re.compile(r'如何|怎样|怎么|流程|步骤|\b(?:how|procedure)\b',re.I
 _LIMIT=re.compile(r'边界|局限|适用|\b(?:limitations?|scope|applicability)\b',re.I)
 _ROLE_QUERY = re.compile(r'起什么作用|有什么作用|作用是什么|做了什么|用来做什么|'
                          r'\b(?:what (?:role|purpose)|what (?:does|did) [^?.!\n]{1,45} do)\b', re.I)
+_CONCEPT_DISTINCTION = re.compile(r'分别(?:判断|衡量|表示|指|代表)什么|各自(?:判断|衡量|表示|指|代表)什么')
 _CONTENT_QUERY = re.compile(r'(?:保留|存储|包含|保存)(?:了)?(?:什么|哪些)|'
                             r'\bwhat\b[^?.!\n]{0,40}\b(?:retain\w*|stor\w*|keep\w*|contain\w*)\b', re.I)
 _ROLE_ACTION = re.compile(r'\b(?:apply|applie[sd]|operat\w+|comput\w+|aggregat\w+|cluster\w+|enabl\w+|used to)\b'
@@ -51,6 +52,7 @@ def requested(question):
     from services.deep_research.external_sections import method_requested,_BACKGROUND,_RESULTS
     return (isinstance(question,str) and not (_EXCLUDE.search(question) or _BACKGROUND.search(question) or _RESULTS.search(question))
         and bool(_CONCEPT.search(question) or _ROLE_QUERY.search(question) or _CONTENT_QUERY.search(question)
+                 or _CONCEPT_DISTINCTION.search(question)
                  or method_requested(question,outline=True)))
 
 
@@ -87,6 +89,8 @@ def priority(row,requirement,query='',response_type='',*,operations=False):
     terms-=title_terms
     words=re.findall(r'[a-z]+',text.casefold())
     hits=sum(any(w.startswith(t[:5] if len(t)>5 else t) for w in words) for t in terms)
+    if _CONCEPT_DISTINCTION.search(requirement):
+        return (int(hits>0), hits, int(method), relation, -len(text))
     return (int(relation>0),relation,int(method),hits,-len(text))
 
 

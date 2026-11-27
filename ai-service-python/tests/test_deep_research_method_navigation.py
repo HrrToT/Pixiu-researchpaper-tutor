@@ -164,6 +164,8 @@ def test_joint_readiness_prioritizes_own_criterion_premises_and_keeps_false_verd
      'We apply calibration and compute the residual on a fixed reference.'),
     ('What does the index store?', 'index representation coefficients',
      'The index retains selected coefficients and stores their offsets.'),
+    ('关键点可重复性和描述子可靠性分别判断什么', 'repeatability reliability definition',
+     'We distinguish repeatability (detecting the same location) from reliability (matching a discriminative descriptor).'),
 ])
 def test_method_role_and_retained_contents_reach_the_criterion_readiness_request(criterion, query, direct):
     from test_deep_research_joint_assessment import fixture, Memory, execute, units
