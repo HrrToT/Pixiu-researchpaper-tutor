@@ -12,7 +12,7 @@ _SPEED_COMPARISON_REASON = re.compile(
 def short_prose_enabled(record, question, limit):
     """Use prose for new, explicitly length-limited comparisons without a table requirement."""
     version = record.get('shortComparisonLayoutContractVersion')
-    if type(version) is not int or version not in (1, 2, 3) or type(limit) is not int or not 0 < limit <= 300:
+    if type(version) is not int or version not in (1, 2, 3, 4) or type(limit) is not int or not 0 < limit <= 300:
         return False
     layers = getattr(question, 'point_instruction_layers', (str(question),))
     for layer in layers:
@@ -23,14 +23,26 @@ def short_prose_enabled(record, question, limit):
     return True
 
 
+def short_speed_reason_requested(question):
+    from services.deep_research.comparison_joint_reports import _SPEED
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    return any(_SPEED.search(layer) and _SPEED_COMPARISON_REASON.search(layer) for layer in layers)
+
+
+def requires_speed_explanation_prose(record, question, limit, targets, paper_subjects):
+    if record.get('shortComparisonLayoutContractVersion') != 4 or len(targets) != 1:
+        return False
+    target, = targets
+    return (target['targetId'] in paper_subjects and not target.get('deliverable')
+            and short_prose_enabled(record, question, limit) and short_speed_reason_requested(question))
+
+
 def short_prose_guidance(record, question, limit, target_count):
     if not short_prose_enabled(record, question, limit):
         return ''
     share = max(1, (limit - min(30, limit // 5)) // max(1, target_count))
-    if record.get('shortComparisonLayoutContractVersion') == 3:
-        from services.deep_research.comparison_joint_reports import _SPEED
-        layers = getattr(question, 'point_instruction_layers', (str(question),))
-        if any(_SPEED.search(layer) and _SPEED_COMPARISON_REASON.search(layer) for layer in layers):
+    if record.get('shortComparisonLayoutContractVersion') in (3, 4):
+        if short_speed_reason_requested(question):
             return (f'Render short cited paragraphs within {limit} characters total, roughly {share} per point. '
                     'For a requested speed ratio or ranking explanation, give the conclusion and why: '
                     'an unaligned test condition can affect FPS independently of the method, so the quotient '

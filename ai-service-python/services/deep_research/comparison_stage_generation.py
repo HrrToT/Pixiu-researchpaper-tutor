@@ -181,6 +181,11 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
                     papers = stage.get('paperSubjectsByTarget', {}).get(row['targetId'])
+                    if stage.get('speedExplanationProse') is True:
+                        body = point.get('body')
+                        if (point.get('kind') != 'inference' or point.get('cellRefs') != []
+                                or not isinstance(body, dict) or set(body) != {'prose'}):
+                            raise ValueError('stage_speed_explanation_requires_prose')
                     if papers:
                         point = compile_paper_boundary(
                             point, papers, snapshot['sources'], evidence_owners,

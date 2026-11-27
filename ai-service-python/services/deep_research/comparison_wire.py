@@ -691,6 +691,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 body_guidance += ('Boundary observedSettings are protocol settings, e.g. hardware, dataset or '
                                   'resolution. Keep measured FPS, storage and quality values in the example only. '
                                   'Use notEstablished for comparisons the cited protocols cannot establish.\n')
+        from services.deep_research.comparison_layout import requires_speed_explanation_prose
+        stage_targets = [*data['jointTargets'], *(target for paper in data['papers'] for target in paper['targets'])]
+        if requires_speed_explanation_prose(record, question, limit, stage_targets, paper_subjects):
+            body_guidance = ('Use one cited inference paragraph with body.prose={text,conditions} and cellRefs:[]. '
+                             'Keep conditions={} and mention only necessary settings in the paragraph. '
+                             'Explain the quotient from both papers’ citations and state what a valid comparison '
+                             'would need aligned. If the citations cannot support an explanation, use point:null.\n')
+            paper_boundary_policy = ''
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + short_policy + body_guidance + (paper_boundary_policy if scoped_joint else '')
                 + f'\nUnverified draftingBasis schema: {json.dumps(DRAFTING_SCHEMA, ensure_ascii=False)}\n'

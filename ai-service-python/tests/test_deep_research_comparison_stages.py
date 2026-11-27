@@ -126,6 +126,48 @@ def test_short_speed_followup_asks_for_a_reason_beyond_missing_conditions():
         short_prose_guidance({'shortComparisonLayoutContractVersion': 2}, '比较存储成本。', 200, 1))
 
 
+@pytest.mark.parametrize('branch', ['prose', 'boundary'])
+def test_speed_followup_compiles_only_a_cited_inference_paragraph(branch):
+    r, plan, rows, aliases, bundles = fixture()
+    question = '为什么不同论文的FPS不能直接相除？'
+    r.update(question='不用表格。' + r['question'] + question, comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=16,
+             comparisonJointReportsContractVersion=16, comparisonCrossPaperBoundaryContractVersion=6,
+             shortComparisonLayoutContractVersion=4)
+    goal = next(row for row in plan['requirements'] if row['comparisonRole']['kind'] == 'joint')
+    goal.update(question=question, comparisonRole={**goal['comparisonRole'], 'requestExcerpt': question})
+    # Model the single joint target from an FPS-specific continuation.
+    plan['requirements'] = [goal]
+    bundles = [bundle for bundle in bundles if bundle['obligationId'] == goal['obligationId']]
+    snapshot = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases,
+                       character_limit=200, merge_joint=False)
+    stage, = snapshot['stages']
+    target, = stage['targetIds']
+    papers = stage['paperSubjectsByTarget'][target]
+    refs = [next(row['evidenceId'] for row in rows if row['source'] == paper
+                 and row['evidenceId'] in stage['allowedEvidenceByTarget'][target]) for paper in papers]
+    assert stage['speedExplanationProse'] is True and 'Use one cited inference paragraph' in stage['prompt']
+    assert 'Max 4 settings/2 propositions' not in stage['prompt']
+    prose = {'prose': {'text': '测试条件可能独立影响帧率。', 'conditions': {}}}
+    boundary = {'boundary': {'observedSettings': [], 'notEstablished': [
+        {'type': 'comparison_evidence', 'subjects': papers, 'quantity': 'FPS'},
+    ]}}
+    point = {'kind': 'inference', 'evidenceRefs': refs, 'cellRefs': [], 'detailLevel': 'fulltext',
+             'body': prose if branch == 'prose' else boundary}
+    answer = {'targetId': target, 'goalRefs': [], 'point': point}
+    reply = {'content': json.dumps({'answers': [answer]}), 'finishReason': 'stop'}
+    checkpoints = []
+    result = generate(snapshot, current=lambda: r, checkpoint=checkpoints.append, invoke=Mock(return_value=reply))
+    admitted, = json.loads(result['content'])['answers']
+    journal = checkpoints[-1]['stages']['joint']
+    assert journal['response'] == reply
+    if branch == 'boundary':
+        assert admitted['point'] is None
+        assert journal['isolatedTargets'] == [{'targetId': target, 'reason': 'stage_speed_explanation_requires_prose'}]
+    else:
+        assert admitted['point'] == point
+
+
 def test_inherited_evidence_tags_do_not_enter_the_current_stage_request():
     r, plan, rows, aliases, bundles = fixture()
     r.update(comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
