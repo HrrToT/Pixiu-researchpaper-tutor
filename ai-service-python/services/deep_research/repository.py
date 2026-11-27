@@ -406,6 +406,7 @@ class DeepResearchRepository:
                                      'sharedExperimentCompactScienceRevisionVersion',
                                      'sharedExperimentRevisionDigestSchemaVersion',
                                      'comparisonBeginnerLeadContractVersion',
+                                     'comparisonBeginnerReviewOutputVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',
                                      'comparisonLiteralAxisGoalVersion', 'comparisonPdfPassageBoundaryVersion',

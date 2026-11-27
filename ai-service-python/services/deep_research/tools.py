@@ -900,6 +900,7 @@ class BudgetedSemanticChecker:
         direct_comparison_review=False,
         direct_comparison_scope_review=False,
         compact_factual_review=False,
+        bounded_beginner_lead=None,
     ):
         self._invoke = llm_invoker
         self._run_id = run_id
@@ -955,6 +956,7 @@ class BudgetedSemanticChecker:
         self._direct_comparison_review = direct_comparison_review
         self._direct_comparison_scope_review = direct_comparison_scope_review
         self._compact_factual_review = compact_factual_review
+        self._bounded_beginner_lead = bounded_beginner_lead
     
     def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
         return self._check(claims,evidence,list(proposal_context),'verify')
@@ -1794,10 +1796,14 @@ The dataAvailability object is an internal audit, not new experimental results.
                 review_options = {NAMED_TABLE_OPTION: True}
             direct_review = self._direct_comparison_review
             direct_review = (direct_review() if callable(direct_review) else direct_review) is True
+            output_limit = 4000
             if (direct_review and complete_factual_batch and node == 'verify'
                     and review_eligible(claims, max_targets=self._comparison_target_limit(node))):
                 from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
                 review_options = {DIRECT_REVIEW_OPTION: True}
+                if (len(claims) == 1 and self._bounded_beginner_lead is not None
+                        and claims[0]['claimId'] == self._bounded_beginner_lead()):
+                    output_limit = 1024
             repair_output=self._comparison_repair_review_output
             repair_output=(repair_output() if callable(repair_output) else repair_output) is True
             if repair_output and complete_factual_batch and node=='verify_repair' and review_eligible(claims):
@@ -1807,7 +1813,7 @@ The dataAvailability object is an internal audit, not new experimental results.
                 run_id=self._run_id,
                 node=node,
                 prompt=prompt,
-                extra_body={"max_tokens": 4000, "temperature": 0.0,**review_options},
+                extra_body={"max_tokens": output_limit, "temperature": 0.0,**review_options},
                 use_reserve=True,  # Use reserve pool for verification
             )
             

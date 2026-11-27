@@ -376,6 +376,9 @@ class ResearchFacade:
             "comparisonBenchmarkSpeedScopeContractVersion": 7 if self._comparison_cells_version == 1 else 0,
             **({"comparisonBeginnerLeadContractVersion": 1}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
+            **({"comparisonBeginnerReviewOutputVersion": 1}
+               if self._openai_research_models and self._comparison_cells_version == 1
+               and output_kind == 'paper_comparison' else {}),
             "comparisonCrossPaperBoundaryContractVersion": 8 if self._comparison_cells_version == 1 else 0,
             "comparisonRepairFlowContractVersion": 2 if self._comparison_cells_version == 1 else 0,
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
@@ -1474,7 +1477,14 @@ class ResearchFacade:
         from services.deep_research.comparison_review_batches import enabled as comparison_batch_enabled,current_profile,initial_target_limit
         from services.deep_research.comparison_measurement_display import (
             compact_factual_review, direct_scope_review, isolated as isolated_comparison, local_contributions)
+        def bounded_beginner_lead():
+            record = self._repo.require_run(run_id)
+            if record.get('comparisonBeginnerReviewOutputVersion') == 1:
+                return (record.get('state', {}).get('comparisonCellDraft') or {}).get('beginnerLeadClaimId')
+            return None
+
         checker = BudgetedSemanticChecker(invoker, run_id,
+            bounded_beginner_lead=bounded_beginner_lead,
             compact_factual_review=lambda: compact_factual_review(self._repo.require_run(run_id)),
             direct_comparison_review=lambda: local_contributions(self._repo.require_run(run_id)),
             direct_comparison_scope_review=lambda: direct_scope_review(self._repo.require_run(run_id)),

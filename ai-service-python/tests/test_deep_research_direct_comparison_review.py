@@ -90,6 +90,25 @@ def test_direct_review_preserves_whole_claim_decoding_and_own_source_gates():
     assert OPTION not in new.call_args.kwargs['extra_body']
 
 
+def test_only_the_single_beginner_lead_uses_a_small_direct_review_cap():
+    import json
+    from services.deep_research.tools import BudgetedSemanticChecker
+    from test_deep_research_comparison_review_batches import inputs, response
+
+    claims, evidence = inputs()
+    lead = claims[0]['claimId']
+    for index, target in enumerate(claims):
+        invoke = Mock(return_value={'content': json.dumps([response(target['claimId'], index)])})
+        checker = BudgetedSemanticChecker(invoke, 'r', single_factual_decision=True,
+            factual_scope=True, complete_factual_scope=True, isolate_factual_claims=True,
+            audit_source_fields=True, audit_target_fields=True, scope_source_paths=True,
+            comparison_review_batches=True, direct_comparison_review=True,
+            bounded_beginner_lead=lambda: lead)
+        checker([target], evidence)
+        assert invoke.call_args.kwargs['extra_body'][DIRECT_REVIEW_OPTION] is True
+        assert invoke.call_args.kwargs['extra_body']['max_tokens'] == (1024 if index == 0 else 4000)
+
+
 def test_saved_v15_pressure_admits_bounded_next_request_without_larger_budget(tmp_path):
     from services.deep_research.repository import DeepResearchRepository
     repo = DeepResearchRepository(tmp_path / 'pressure.sqlite3')
