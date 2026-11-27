@@ -13,6 +13,46 @@ from services.deep_research.reporting import render_report
 from test_deep_research_comparison_intent import packets,obligation,QUESTION,record
 
 
+@pytest.mark.parametrize('variant', ['misplaced', 'already_joint', 'single_source', 'ambiguous'])
+def test_places_only_a_unique_two_paper_speed_criterion_in_joint_scope(variant):
+    from services.deep_research.comparison_joint_reports import place_cross_paper_speed_criterion
+    from services.deep_research.comparison_intent import validate_plan
+    from services.deep_research.coverage import validate_plan as validate_structure
+    anchor = '说明为什么不能直接拿两篇的FPS排名'
+    question = '用表格比较存储与画质、渲染速度。' + anchor + '。'
+    speed = {'criterionId': 'scope', 'requirement': '解释两篇论文的FPS为什么不能直接排名。',
+             'responseType': 'explanation'}
+    remaining = {'criterionId': 'reported', 'requirement': '说明两篇论文各自报告的画质与渲染速度。',
+                 'responseType': 'explanation'}
+    owner = {'obligationId': 'tradeoffs', 'question': '报告存储与画质、渲染速度。',
+             'requestExcerpt': '存储与画质、渲染速度', 'searchQuery': 'reported tradeoffs',
+             'purpose': 'answer_requirement', 'requiredSources': ['p1', 'p2'],
+             'comparisonRole': {'kind': 'per_paper', 'label': '报告指标', 'requestExcerpt': '存储与画质、渲染速度'},
+             'completionCriteria': [remaining, speed]}
+    plan = [{'itemId': 'compare', 'question': question, 'obligations': [owner], 'dependencies': []}]
+    if variant == 'already_joint':
+        plan[0]['obligations'].append({**owner, 'obligationId': 'existing', 'question': anchor,
+            'comparisonRole': {'kind': 'joint', 'label': '帧率可比性', 'requestExcerpt': anchor}})
+    if variant == 'single_source':
+        owner['requiredSources'] = ['p1']
+    if variant == 'ambiguous':
+        owner['completionCriteria'].append({**speed, 'criterionId': 'scope2'})
+    original = deepcopy(plan)
+    placed, changes = place_cross_paper_speed_criterion(plan, question)
+    assert plan == original
+    if variant != 'misplaced':
+        assert placed == plan and changes == []
+        return
+    original_owner, joint = placed[0]['obligations']
+    assert original_owner['completionCriteria'] == [remaining]
+    assert joint['completionCriteria'] == [speed]
+    assert joint['question'] == joint['requestExcerpt'] == anchor
+    assert joint['requiredSources'] == original_owner['requiredSources'] == ['p1', 'p2']
+    assert changes[0]['sourceObligationId'] == owner['obligationId']
+    validate_plan(validate_structure(placed), question)
+    assert place_cross_paper_speed_criterion(placed, question) == (placed, [])
+
+
 def fixture(marked=True):
     cp,_=packets()
     question=QUESTION+'数字只选一组同口径基线对照。'

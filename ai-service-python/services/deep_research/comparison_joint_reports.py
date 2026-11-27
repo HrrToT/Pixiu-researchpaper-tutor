@@ -41,12 +41,12 @@ _REQUESTED_PROTOCOL = re.compile(r'硬件|口径|适用条件|测量条件|\b(?:
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5))
 
 
 def _evaluation_protocol_score(text):
@@ -59,7 +59,7 @@ def _evaluation_protocol_score(text):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -257,6 +257,50 @@ def preserve_requested_memory_advice(plan, question):
                              'responseType': 'explanation'})
             return result, [{'obligationId': obligation['obligationId'], 'change': 'preserved_memory_advice'}]
     return plan, []
+
+
+def place_cross_paper_speed_criterion(plan, question):
+    """Move a misplaced comparison criterion to a joint obligation before retrieval."""
+    from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+    from services.deep_research.evidence_requirements import _request_parts
+
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    anchors = set(part for layer in layers for part in _request_parts(layer)
+                  if explicitly_requests_cross_paper_speed(part))
+    if len(anchors) != 1:
+        return plan, []
+    anchor, = anchors
+
+    def is_boundary(text):
+        return explicitly_requests_cross_paper_speed(text) and bool(
+            _COMPARABILITY.search(text)
+            or re.search(r'排名|排行|排序|相除|比值|不能直接比较|\b(?:rank\w*|ratio|divide)\b', text, re.I))
+
+    result = deepcopy(plan)
+    obligations = [o for step in result for o in step['obligations']]
+    if any(o['comparisonRole']['kind'] == 'joint' and any(is_boundary(part)
+            for part in (o['comparisonRole']['requestExcerpt'], o['question'],
+                         *(c['requirement'] for c in o.get('completionCriteria', [])))) for o in obligations):
+        return plan, []
+    matches = [(step, o, c) for step in result for o in step['obligations']
+               if o['comparisonRole']['kind'] == 'per_paper' and len(o.get('completionCriteria', [])) > 1
+               and len(set(o.get('requiredSources', []))) >= 2
+               for c in o['completionCriteria']
+               if is_boundary(c['requirement'])]
+    if len(matches) != 1:
+        return plan, []
+    step, original, criterion = matches[0]
+    oid = 'requested_speed_comparability'
+    identities = {o['obligationId'] for o in obligations}
+    while oid in identities:
+        oid += '_'
+    original['completionCriteria'].remove(criterion)
+    step['obligations'].append({**original, 'obligationId': oid, 'question': anchor, 'requestExcerpt': anchor,
+        'searchQuery': 'FPS rendering speed evaluation protocol hardware resolution scene timing',
+        'comparisonRole': {'kind': 'joint', 'label': '跨论文帧率可比性', 'requestExcerpt': anchor},
+        'completionCriteria': [criterion]})
+    return result, [{'obligationId': oid, 'sourceObligationId': original['obligationId'],
+                     'criterionId': criterion['criterionId'], 'change': 'placed_cross_paper_speed_criterion'}]
 
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,
