@@ -104,5 +104,58 @@
     "D2-Net used a threshold attached to a trend instead of a measured result.",
     "The recheck advice was general instead of specifying benchmark operations."
   ],
-  "boundary": "Fresh preflight stopped before dispatch. The shorter display used the unchanged recorded draft and editor output. Deterministic checks do not establish semantic review, whole-answer coverage, publication or scientific acceptance."
+  "boundary": "Fresh preflight stopped before dispatch. The shorter display used the unchanged recorded draft and editor output. Deterministic checks do not establish semantic review, whole-answer coverage, publication or scientific acceptance.",
+  "figureCountRetentionReplay": {
+    "providerCalls": 0,
+    "inputBoundBytes": 24000,
+    "stages": [
+      {
+        "id": "P1",
+        "inputBytes": 23991,
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1",
+          "cell_1_0"
+        ]
+      },
+      {
+        "id": "P2",
+        "inputBytes": 24000,
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "id": "joint",
+        "inputBytes": 23997,
+        "targets": [
+          "joint_o3",
+          "joint_o4"
+        ]
+      }
+    ],
+    "figureCounts": {
+      "evidenceId": "ev_997d1915dfb73691fbfb377ca5876acc9bc24de5540f480c5b1153e16c02b118",
+      "stage": "P2",
+      "target": "cell_1_1",
+      "printedVariant": "D2 MS Trained (ours)",
+      "printedCountColumns": [
+        "# Features",
+        "# Matches"
+      ],
+      "printedValues": [
+        "8.3K",
+        "2.8K"
+      ]
+    },
+    "actualRunId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "sourcePage": 6,
+    "sourceQuoteSha256": "d5230085d1776f76e5635d3d38f9a174d85a5331dcc11b2f1e17b16d005c1577",
+    "knownBeforeSynthesis": true,
+    "presentInHistoricalSynthesis": false,
+    "scientificApproval": false,
+    "boundary": "The unchanged literal quote was restored to the owning paper quantitative target before model dispatch. The replay did not generate, review or publish a figure claim."
+  }
 }
