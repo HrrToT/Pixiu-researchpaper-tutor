@@ -69,7 +69,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['elapsedAccountingContractVersion']==1
         assert first['initialPlanModelContractVersion']==1
         assert first['verbatimRepairContractVersion']==1
-        assert first['coverageInstructionsContractVersion']==2
+        assert first['coverageInstructionsContractVersion']==3
         assert first['reportingOwnershipContractVersion']==1
         assert first['externalReadingContractVersion']==5
         assert first['scopeExpressionContractVersion']==5

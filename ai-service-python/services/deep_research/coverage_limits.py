@@ -7,7 +7,7 @@ def enabled(record):
     return (type(record.get('coverageLimitContractVersion')) is int
         and record['coverageLimitContractVersion']==1
         and type(record.get('coverageInstructionsContractVersion')) is int
-        and record['coverageInstructionsContractVersion'] in (1, 2)
+        and record['coverageInstructionsContractVersion'] in (1, 2, 3)
         and type(record.get('requestCoverageContractVersion')) is int
         and record['requestCoverageContractVersion'] in (3,4,5))
 

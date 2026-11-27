@@ -50,7 +50,8 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
-    if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
+    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations == 2):
+        raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
@@ -623,6 +624,12 @@ If a supported revision is not possible, omit that target rather than bypass sco
     if process_explanations:
         from services.deep_research.process_explanations import DRAFT_GUIDANCE
         prompt+='\n'+DRAFT_GUIDANCE
+        if process_explanations == 2:
+            prompt += ('\nWhen repairing one operation in a process, preserve the supported distinction in the '
+                       'old answer between which steps can carry a signal and which steps are selection or '
+                       'setup. Keep that boundary alongside the corrected operation when it affects the '
+                       'requested path. Recheck it against the allowed excerpts. Do not expand the path '
+                       'beyond the destination the user asked about.\n')
     template = prompt
     focused=False
     text_edit_plan=None
@@ -1019,7 +1026,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
-    if type(process_explanations) is not bool:raise ValueError('Invalid process explanation policy')
+    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations == 2):
+        raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
         raise ValueError('Point-scoped repair requires compact factual redrafting')
@@ -1082,7 +1090,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
                        **({'objectiveFramingVersion':1} if objective_framing else {}),
-                       **({'processExplanationVersion':1} if process_explanations else {}),
+                       **({'processExplanationVersion':2 if process_explanations == 2 else 1} if process_explanations else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3,4,5,6) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),
@@ -1142,7 +1150,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
             max_prompt_bytes=state['maxPromptBytes'] if byte_limit is None else byte_limit,
             metric_domains=metric_domains, draft_context=siblings, prior_revisions=results,
             **({'objective_framing':True} if objective_framing else {}),
-            **({'process_explanations':True} if process_explanations else {}),
+            **({'process_explanations':process_explanations} if process_explanations else {}),
             **({'factual_prompt_version':factual_prompt_version} if factual_prompt_version else {}),
             **({'verified_target_ids':verified_target_ids} if factual_prompt_version in (2,3) else {}),
             compact_layout=compact_layout,fact_redraft=fact_redraft, requirement_context=requirement_context,source_aware_redraft=source_aware_redraft,

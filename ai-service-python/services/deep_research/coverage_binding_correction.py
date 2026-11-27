@@ -16,7 +16,7 @@ def enabled(record):
     from services.deep_research.request_coverage import enabled as request_enabled
     return (type(record.get(KEY)) is int and record[KEY] in (1,2) and request_enabled(record)
         and type(record.get('coverageInstructionsContractVersion')) is int
-        and record['coverageInstructionsContractVersion'] in (1, 2)
+        and record['coverageInstructionsContractVersion'] in (1, 2, 3)
         and all(type(record.get(k)) is int and record[k]==v for k,v in expected.items()))
 
 

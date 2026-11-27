@@ -2462,8 +2462,11 @@ def make_verify_node(
                     **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
                     **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
                     **({'reasoned_process_bindings':True} if correct_binding_enabled(record) and record['coverageBindingCorrectionContractVersion']==2 else {}),
-                    **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion'] in (1,2) and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
-                    **({'rendered_citation_links':True} if record.get('coverageInstructionsContractVersion')==2
+                    **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion'] in (1,2,3) and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'requested_endpoint':True} if record.get('coverageInstructionsContractVersion')==3
+                       and saved.get('outputKind')=='claim_verification' and request_coverage_enabled(record)
+                       and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'rendered_citation_links':True} if record.get('coverageInstructionsContractVersion') in (2,3)
                        and record.get('reportPresentationContractVersion')==4 and request_coverage_enabled(record) else {}),
                     **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                     **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
@@ -2729,7 +2732,9 @@ def make_verify_node(
                            and record['factualRepairPromptContractVersion'] in (2,3) and compact_repair
                            and record.get('factRedraftContractVersion')==3 else {}),
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
-                        **({'process_explanations':True} if process_framing_enabled(record) else {}),
+                        **({'process_explanations':2 if record.get('coverageInstructionsContractVersion') == 3
+                           and saved.get('outputKind') == 'claim_verification' else True}
+                           if process_framing_enabled(record) else {}),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: budget_for_repair(repo_update(run_id, lambda r: r, expected_revision=None)),
                         invoke_request=invoke_repair,

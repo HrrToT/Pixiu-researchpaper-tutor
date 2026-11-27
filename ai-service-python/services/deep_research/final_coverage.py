@@ -46,7 +46,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
-                       explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False):
+                       explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
+                       requested_endpoint=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -84,6 +85,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
         raise ValueError('Literal limits require consolidated coverage instructions')
     if type(consolidated_instructions) is not bool or consolidated_instructions and not (type(request_contract) is int and request_contract in (3,4,5)):
         raise ValueError('Consolidated instructions require fixed request coverage')
+    if type(requested_endpoint) is not bool or requested_endpoint and not consolidated_instructions:
+        raise ValueError('Requested process endpoints require consolidated coverage instructions')
     if type(shared_decision_inputs) is not bool or shared_decision_inputs and not (type(request_contract) is int and request_contract in (3,4,5)):
         raise ValueError('Shared decision inputs require fixed request coverage')
     if type(shared_evidence_context) is not bool or shared_evidence_context and not diagnostics:
@@ -189,7 +192,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                     scoped_catalog=scoped_catalog,coherence=coherence,request_semantics=request_semantics,
                     process_explanations=request_contract in (4,5),distinct_roles=request_contract==5,
                     **({'root_coherence':True} if root_coherence else {}),
-                    **({'literal_limits':True} if literal_limits else {}))
+                    **({'literal_limits':True} if literal_limits else {}),
+                    **({'requested_endpoint':True} if requested_endpoint else {}))
                 prompt=focus_answer(prompt,question,fixed_requirements,wire_claims,display_metadata,
                     **({'shared_inputs':True} if shared_decision_inputs else {}))
         else:
@@ -515,7 +519,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 gap_by_id[oid]['missingAspects'] = list(dict.fromkeys([
                     *gap_by_id[oid].get('missingAspects', []), *goal['missingDeliverables']]))
     from services.deep_research.completion_criteria import completion_contract_digest
-    audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':2 if rendered_citation_links else 1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
+    audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':3 if requested_endpoint else 2 if rendered_citation_links else 1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),

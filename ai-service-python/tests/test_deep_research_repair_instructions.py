@@ -23,6 +23,16 @@ def comparison_fixture():
     return report, verification, ev, opts
 
 
+def test_process_repair_preserves_supported_signal_boundaries_without_new_permissions():
+    report, verification, ev, opts = fixture()
+    old = _prepare_repair(report, verification, ev, 'Explain the operation.', **opts, process_explanations=True)
+    new = _prepare_repair(report, verification, ev, 'Explain the operation.', **opts, process_explanations=2)
+    assert new['originals'] == old['originals'] and new['allowed'] == old['allowed']
+    assert 'which steps can carry a signal' not in old['prompt']
+    assert 'which steps can carry a signal' in new['prompt']
+    assert 'beyond the destination the user asked about' in new['prompt']
+
+
 def test_comparison_repair_omits_deletion_declarations_but_keeps_originals_and_evidence():
     report, verification, ev, opts = comparison_fixture()
     old_opts = {**opts, 'comparison_authoring': False}

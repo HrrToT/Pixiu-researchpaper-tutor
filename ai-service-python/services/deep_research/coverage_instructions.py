@@ -2,6 +2,15 @@
 import json
 
 
+FEEDBACK = '''For feedback connect error/signal, updated parameter/state,
+and later predictions when that path is established; "gradients flow" alone is partial.'''
+REQUESTED_ENDPOINT = '''For a requested signal or gradient path, require the actual intermediate
+operations and the specified destination. Assess later parameter updates or future
+predictions only if a fixed check asks how the signal changes them. A bare statement
+that a gradient flows gives no path. Where an answer mixes discrete and differentiable
+steps, check that its stated path is confined to the stages that carry the signal.'''
+
+
 CORE = '''Factual support was checked separately. Audit ONLY completeness of the complete
 accepted answer against the original question and EVERY fixed check. Related source
 quotes, citations, obligationIds, field existence or keywords do not establish coverage.
@@ -106,7 +115,7 @@ prove coverage: judge the actual semantic connection and EVERY requested part.
 def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inputs=False,
            task_sources=False,binding_catalog=None,scoped_catalog=False,coherence=False,
            process_explanations=False,distinct_roles=False,request_semantics=0,literal_limits=False,
-           root_coherence=False):
+           root_coherence=False, requested_endpoint=False):
     if type(literal_limits) is not bool:raise ValueError("Invalid literal limit policy")
     from services.deep_research.request_coverage import decision_inputs
     if not distinct_roles and process_explanations:
@@ -118,10 +127,11 @@ def prompt(question,requirements,claims,metadata,evidence_marker, *, shared_inpu
     if root_coherence:
         output = output.replace('Return ONLY a JSON array, exactly one row per fixed obligationId, with every',
             'Return a JSON object with items, auditType, coherent, issues. In items, give one row per fixed obligationId, with every', 1)
+    core = CORE.replace(FEEDBACK, REQUESTED_ENDPOINT) if requested_endpoint else CORE
     result=('Audit the FINAL ACCEPTED ANSWER against the FIXED REQUEST CHECKLIST.\n'
         +decision_inputs(question,requirements,claims,metadata,shared_inputs=shared_inputs)
         +'Available evidence for detecting omissions, NOT inventing requirements: '+evidence_marker+'\n'
-        +CORE+(output.replace('These are the exact keys.',
+        +core+(output.replace('These are the exact keys.',
             'These are the ordinary keys; limitation checks additionally require limitSpans as specified below.')
             if literal_limits else output))
     if literal_limits:

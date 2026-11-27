@@ -21,7 +21,7 @@ def revision_coverage_enabled(record, node='verify_answer_coverage'):
     if (node != 'verify_answer_coverage' or type(marker) is not int or marker != 1
             or record.get('namedTableScopeVersion') != 2
             or record.get('state', {}).get('outputKind') != 'claim_verification'
-            or type(instructions) is not int or instructions not in (1, 2)
+            or type(instructions) is not int or instructions not in (1, 2, 3)
             or record.get('requestCoverageContractVersion') not in (3, 4, 5)
             or type(coherence) is not int or coherence not in (1, 2)):
         return False

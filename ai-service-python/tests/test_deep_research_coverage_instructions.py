@@ -105,14 +105,28 @@ def test_source_citation_guidance_lists_only_accepted_claims_own_original_text()
     assert citation_display_note(claims, evidence[1:]) == ''
 
 
-@pytest.mark.parametrize('client_value',[None,True,0,1,3])
+def test_requested_endpoint_preserves_process_checks_without_demanding_future_predictions():
+    from services.deep_research.coverage_instructions import prompt
+
+    requirement = {'obligationId':'gradient', 'checks':[{'checkId':'path', 'processRequired':True}]}
+    args = ('位置的梯度如何传回得分图？', [requirement], [], {}, 'EVIDENCE')
+    old = prompt(*args, process_explanations=True, distinct_roles=True)
+    new = prompt(*args, process_explanations=True, distinct_roles=True, requested_endpoint=True)
+    assert 'updated parameter/state,\nand later predictions when that path is established' in old
+    assert 'the specified destination' in new
+    assert 'only if a fixed check asks how the signal changes them' in new
+    assert 'stages that carry the signal' in new
+    assert 'covered needs at least one link' in new
+
+
+@pytest.mark.parametrize('client_value',[None,True,0,1,2,4])
 def test_server_owned_instruction_policy_is_immutable_and_absent_from_old_runs(tmp_path,client_value):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,'deferStart':True,'coverageInstructionsContractVersion':client_value},start_async=False)
-        assert record['coverageInstructionsContractVersion']==2
+        assert record['coverageInstructionsContractVersion']==3
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'coverageInstructionsContractVersion':client_value})
         old=deepcopy(record);old.update(runId='legacy',idempotencyKey='old');old.pop('coverageInstructionsContractVersion')
