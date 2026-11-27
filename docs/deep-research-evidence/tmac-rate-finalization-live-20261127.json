@@ -1,0 +1,58 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "known_case_targeted_finalization",
+  "runId": "dr_tmac_rate_finalization_20261127",
+  "sourceRunId": "dr_tmac_same_page_development_20261127",
+  "sourceCommit": "1fe9b5fce2dd65c3a0b3f75f3df9999d0fd048b5",
+  "outcome": "complete",
+  "narrowClosure": "Explicit prose rate retained with wording anchored to each revision.",
+  "visibleCharacters": 310,
+  "retainedClaims": [
+    "c1",
+    "c3"
+  ],
+  "newlyVerifiedClaims": [
+    "c2"
+  ],
+  "numericCells": 12,
+  "authorProsePercent": 0.3,
+  "tableDifferencePercentagePoints": 3.0,
+  "reportedPageByRevision": {
+    "v1": 11,
+    "v2": 12
+  },
+  "remainingHumanAuditGap": "The common Llama-2-7B-4bit, M2-Ultra single-thread configuration appears in the underlying source caption, but not the main answer.",
+  "coveredObligations": [
+    "extract-v1-v2-values",
+    "compare-fa-text-and-tradeoff",
+    "answer_scope"
+  ],
+  "controlledEdit": "Clarify that same page is relative to each PDF edition",
+  "liveSamePageRateVersionEnabled": false,
+  "modelCalls": 2,
+  "modelTokens": 12397,
+  "usage": [
+    {
+      "node": "verify",
+      "inputTokens": 5194,
+      "outputTokens": 397,
+      "totalTokens": 5591
+    },
+    {
+      "node": "verify_answer_coverage",
+      "inputTokens": 6422,
+      "outputTokens": 384,
+      "totalTokens": 6806
+    }
+  ],
+  "elapsedSecondsForTwoCalls": 14.0,
+  "automaticRetries": 0,
+  "independentHoldoutCredit": 0,
+  "sha256": {
+    "intent.json": "49700d08ea29980053224db9b0886c2d3d04eee31132d0e26d256c9acff9b2f8",
+    "run.json": "868d293f4033c5f05198bfa16f6e52cbf52e052d5f877e8ee35ee6fdb25f7fec",
+    "calls.json": "b6901d868b934a23608f0ec5e93a6dda87f08bbbdf468e14a24be7aac8cbd88c",
+    "verify-return.json": "ac451523804453b041300bd765a92fda518856bb159b8be2ac1d2469c9c00cdf",
+    "publish-return.json": "79edcd9e620233ce8813f033d4ae55a95ac89cc6a88c7dd602f078177df350bc"
+  }
+}
