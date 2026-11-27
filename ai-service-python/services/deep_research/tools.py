@@ -364,6 +364,10 @@ class TrackedLLMInvoker:
         from services.deep_research.shared_experiment_generation import enabled
         return enabled(record) and self._supports_audit_counting(record, "countedExperimentReviewContractVersion")
 
+    def supports_counted_experiment_answer(self, record):
+        from services.deep_research.shared_experiment_answer_packet import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedExperimentAnswerContractVersion")
+
     def __call__(
         self,
         run_id: str,
@@ -421,7 +425,8 @@ class TrackedLLMInvoker:
         structured = native_json(transport_record)
         if type(counted_audit) is not bool or counted_audit and (
                 node != "verify_answer_coverage" or not use_reserve or not structured
-                or not self.supports_counted_comparison_audit(transport_record)):
+                or not (self.supports_counted_comparison_audit(transport_record)
+                        or self.supports_counted_experiment_answer(transport_record))):
             raise DeepResearchError('invalid_model_options', '整答审核计数配置无效，尚未发送。')
         wire_messages = messages_for_record(transport_record,node,prompt) if structured else None
         if structured:
@@ -438,7 +443,9 @@ class TrackedLLMInvoker:
         if initial_plan_response:
             request_identity['initialPlanResponseContractVersion'] = transport_record['initialPlanResponseContractVersion']
         if counted_audit:
-            request_identity['countedComparisonAuditContractVersion'] = 1
+            policy = ("countedComparisonAuditContractVersion" if self.supports_counted_comparison_audit(transport_record)
+                      else "countedExperimentAnswerContractVersion")
+            request_identity[policy] = 1
         args_digest = digest(request_identity)
         from services.deep_research.factual_review import cell_review_enabled
         guarded_review = bounded_review or named_table_review or direct_review or (self._run_record and node == 'verify'
@@ -459,6 +466,9 @@ class TrackedLLMInvoker:
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.
         max_byte_length = self.prompt_byte_limit(run_id, node)
+        if counted_audit and self.supports_counted_experiment_answer(transport_record):
+            from services.deep_research.shared_experiment_answer_packet import COUNTED_MAX_INPUT_BYTES
+            max_byte_length = COUNTED_MAX_INPUT_BYTES
         from services.deep_research.workflow_transport import enabled as workflow_schema
         from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
         shared_schema = node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(transport_record)
@@ -483,6 +493,14 @@ class TrackedLLMInvoker:
                                  budget_delta={"modelCalls": 1, "tokens": input_allowance + max_output},
                                  use_reserve=use_reserve)
 
+        def measured_allowance(count):
+            allowance = count + INPUT_RESERVATION_MARGIN
+            current = self._run_record(run_id)["budget"]
+            projected = current["tokens"] + allowance + max_output
+            if projected > current["maxTokens"]:
+                raise BudgetExhaustedError("tokens", current["maxTokens"], projected)
+            return allowance
+
         counted_input = None
         if counted_audit:
             from services.deep_research.contracts import UnresolvedUnknownError
@@ -501,7 +519,7 @@ class TrackedLLMInvoker:
                 counted_input = client.count_audit_input(request)
                 if type(counted_input) is not int or counted_input <= 0:
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
-                estimated_input = counted_input + INPUT_RESERVATION_MARGIN
+                estimated_input = measured_allowance(counted_input)
         
         # A rejected reservation leaves no call or usage behind. The same
         # scientific Responses packet may then fit using a measured count.
@@ -528,11 +546,7 @@ class TrackedLLMInvoker:
             counted_input = routed_client().count_audit_input(request)
             if type(counted_input) is not int or counted_input <= 0:
                 raise
-            estimated_input = counted_input + INPUT_RESERVATION_MARGIN
-            current = self._run_record(run_id)["budget"]
-            projected = current["tokens"] + estimated_input + max_output
-            if projected > current["maxTokens"]:
-                raise BudgetExhaustedError("tokens", current["maxTokens"], projected)
+            estimated_input = measured_allowance(counted_input)
             call_record, reused = reserve(estimated_input)
         
         if reused:

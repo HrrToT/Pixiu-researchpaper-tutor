@@ -85,6 +85,71 @@ def test_final_audit_budget_stop_retains_candidate_without_sending_or_repair():
     sent.assert_not_called()
 
 
+@pytest.mark.parametrize('count,complete', [(350, True), (650, False)])
+def test_final_experiment_audit_counts_the_compiled_packet_before_budget_admission(tmp_path, monkeypatch, count, complete):
+    from core.config import settings
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.runtime import ScopedModelClient
+    from services.deep_research.tools import TrackedLLMInvoker
+
+    r, data, aliases = ready()
+    check(r, data, aliases)
+    r.update(sharedExperimentFinalAuditPacketVersion=1, countedExperimentAnswerContractVersion=1,
+             openaiResearchModels=['main', 'routine'])
+    r['budget'].update(maxTokens=100000, tokens=96000, normalTokens=0, reservedModelCalls=0)
+    repo = DeepResearchRepository(tmp_path / 'research.sqlite3')
+    repo.initialize()
+    assert repo.create_run(r)[1]
+    repo.begin_execution(r['runId'])
+    monkeypatch.setattr(settings, 'openai_api_key', 'fixture-key')
+    invoker = TrackedLLMInvoker(ScopedModelClient(repo, lambda *_: True, Mock()).for_run(r['runId']),
+                              repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
+                              call_history_fn=repo.list_calls, verification_max_input_bytes=32000)
+    http_calls = []
+
+    def post(url, **kwargs):
+        body = kwargs['json']
+        http_calls.append((url, body))
+        result = Mock(status_code=200, headers={})
+        if url.endswith('/input_tokens'):
+            assert not repo.list_calls(r['runId'])
+            result.json.return_value = {'object': 'response.input_tokens', 'input_tokens': count}
+            return result
+        assert url.endswith('/responses')
+        reserved, = repo.list_calls(r['runId'])
+        assert reserved['reservedTokens'] == count + 2500 + 1024
+        assert http_calls[0][1] == {key: value for key, value in body.items() if key not in {'store', 'max_output_tokens'}}
+        rows = coverage(body['input'][-1]['content'])['content']
+        result.json.return_value = {'status': 'completed', 'output': [{'type': 'message', 'content': [
+            {'type': 'output_text', 'text': json.dumps({'items': json.loads(rows)})},
+        ]}], 'usage': {'input_tokens': count, 'output_tokens': 180, 'total_tokens': count + 180}}
+        return result
+
+    monkeypatch.setattr('llm.client.requests.post', post)
+    # Only the counted experiment path may exceed the ordinary window.
+    with pytest.raises(ValueError, match='exceeds max 32000 bytes'):
+        invoker(r['runId'], 'verify_answer_coverage', 'JSON ' + 'x' * 35000,
+                {'max_tokens': 2500}, use_reserve=True)
+    with pytest.raises(ValueError, match='exceeds max 40000 bytes'):
+        invoker(r['runId'], 'verify_answer_coverage', 'JSON ' + 'x' * 40000,
+                {'max_tokens': 2500}, use_reserve=True, counted_audit=True)
+    assert not http_calls
+
+    def save(value):
+        repo.update_run(r['runId'], lambda row: {**row, 'state': {**row['state'], answer_slot(row): value}})
+
+    result = answer(repo.require_run(r['runId']), data, aliases, invoke=invoker, checkpoint=save)
+    assert result['complete'] is complete
+    saved = repo.require_run(r['runId'])
+    assert answer(saved, data, aliases, invoke=invoker, checkpoint=save) == result
+    assert len(http_calls) == (2 if complete else 1)
+    if not complete:
+        assert result['audit']['status'] == 'budget_exhausted'
+        assert result['audit']['budgetLimit'] == {'kind': 'tokens', 'limit': 100000, 'used': 100174}
+        assert not result['repairEligible'] and not saved['state'][answer_slot(saved)]['calls']
+        assert not repo.list_calls(r['runId'])
+
+
 def diagnosed():
     r,data,aliases=ready();v=verdict(r,data)
     v['checks'][6].update(status='failed',reason='需要修正实验预算。')

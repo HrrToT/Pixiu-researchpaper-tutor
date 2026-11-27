@@ -2,7 +2,7 @@
 from copy import deepcopy
 import json
 
-from services.deep_research.contracts import DeepResearchError,digest
+from services.deep_research.contracts import BudgetExhaustedError,DeepResearchError,digest
 from services.deep_research.shared_experiment_result import compile_candidate
 
 
@@ -65,7 +65,10 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint):
         return validated_saved(view,input_data,aliases)
     if saved['status']!='pending':raise DeepResearchError('invalid_shared_answer_audit','最终审核状态无效。')
     def tracked(rid,node,prompt,opts,**kwargs):
-        req=request_identity(record,node,prompt,opts); key=digest(req)
+        req=request_identity(record,node,prompt,opts)
+        if kwargs.get('counted_audit') is True:
+            req={**req,'countedExperimentAnswerContractVersion':1}
+        key=digest(req)
         call=saved['calls'].get(key)
         if call is None:
             call={'request':req,'status':'pending'};saved['calls'][key]=call;checkpoint(deepcopy(saved))
@@ -75,6 +78,12 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint):
             return deepcopy(call['response'])
         if call['status']!='pending':raise DeepResearchError('shared_answer_audit_stopped','未确认的审核调用不能自动重发。')
         try: response=invoke(rid,node,prompt,opts,**kwargs)
+        except BudgetExhaustedError:
+            # Reservation failed before generation. Keep the explicit budget
+            # result without recording an unknown provider response.
+            del saved['calls'][key]
+            checkpoint(deepcopy(saved))
+            raise
         except Exception:
             call['status']='invocation_failed';checkpoint(deepcopy(saved));raise
         call.update(status='received',response=deepcopy(response),responseDigest=digest(response));checkpoint(deepcopy(saved))
@@ -84,8 +93,11 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint):
     packet_options = {}
     if packet.enabled(record):
         from services.deep_research.shared_experiment_review import _generation
+        from services.deep_research.tools import TrackedLLMInvoker
         proposal = _generation(record)['boundProposal']['proposal']
         packet_options['shared_experiment_phrases'] = packet.repeated_fields(proposal)
+        if isinstance(invoke, TrackedLLMInvoker) and invoke.supports_counted_experiment_answer(record):
+            packet_options['counted_experiment_audit'] = True
     audit=audit_final_answer(record['runId'],effective_question(record),record['state'].get('plan',[]),
         [claim_for(candidate)],record['state'].get('evidence',[]),tracked,json.loads,
         budget=saved['budgetAtPreparation'],request_contract=5,diagnostics=True,coherence=True,

@@ -318,6 +318,8 @@ class ResearchFacade:
                and self._comparison_cells_version == 1 else {}),
             **({"countedExperimentReviewContractVersion": 1}
                if self._openai_research_models else {}),
+            **({"countedExperimentAnswerContractVersion": 1}
+               if self._openai_research_models and shared_experiment_profile == 8 else {}),
             "initialPlanResponseContractVersion": 4 if continuation_context else {4: 2, 5: 3, 6: 3}.get(
                 shared_experiment_profile,
                 5 if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else 1),

@@ -48,7 +48,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
                        requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False,
-                       counted_comparison_audit=False):
+                       counted_comparison_audit=False, counted_experiment_audit=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -75,6 +75,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     if type(counted_comparison_audit) is not bool or counted_comparison_audit and not (
             extend_comparison_audit_window and rendered_comparison_packet and diagnostics):
         raise ValueError('Counted audit requires the complete rendered comparison packet')
+    if type(counted_experiment_audit) is not bool or counted_experiment_audit and not shared_experiment_packet:
+        raise ValueError('Counted experiment audit requires the complete rendered proposal packet')
     if type(compact_comparison_checks) is not bool or compact_comparison_checks and not comparison_audit_envelope:
         raise ValueError('Compact comparison checks require the comparison audit envelope')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -381,13 +383,15 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     limit -= extra
                 break
             else:
-                if not counted_comparison_audit or previous_limit <= 0:
+                if not (counted_comparison_audit or counted_experiment_audit) or previous_limit <= 0:
                     raise admission_error
                 # The first attempt used a worst-case byte bound. Count the
                 # same complete audit with all cited context and skip optional
                 # uncited excerpts. Hard transport and ledger limits still apply.
-                prompt, rows = fit(max(windows), cited_only=True)
-                output_tokens = MIN_COVERAGE_OUTPUT_TOKENS
+                counted_window = (experiment_packet.COUNTED_MAX_INPUT_BYTES
+                                  if counted_experiment_audit else max(windows))
+                prompt, rows = fit(counted_window, cited_only=True)
+                output_tokens = min(attempts) if counted_experiment_audit else MIN_COVERAGE_OUTPUT_TOKENS
                 counted = True
             result = invoke(run_id, 'verify_answer_coverage', prompt,
                             {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True,

@@ -390,6 +390,7 @@ class DeepResearchRepository:
                                      'openaiResearchModels', 'comparisonPdfTableFallbackVersion',
                                      'countedComparisonAuditContractVersion',
                                      'countedExperimentReviewContractVersion',
+                                     'countedExperimentAnswerContractVersion',
                                      'sharedExperimentReviewPackingVersion',
                                      'comparisonBeginnerLeadContractVersion',
                                      'namedTablePdfFallbackVersion',

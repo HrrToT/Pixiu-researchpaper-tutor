@@ -7,6 +7,9 @@ from services.deep_research.shared_strings import input_text
 
 MARKER = 'sharedExperimentFinalAuditPacketVersion'
 MAX_INPUT_BYTES = 32000
+# Only the provider-measured path may use this window. Both paths still
+# reserve against the same run token limit before generation.
+COUNTED_MAX_INPUT_BYTES = 40000
 SHORT_OUTPUT_TOKENS = 2500
 
 POLICY = '''Audit the complete unexecuted proposal as the final answer, against the full question and EVERY fixed check.
