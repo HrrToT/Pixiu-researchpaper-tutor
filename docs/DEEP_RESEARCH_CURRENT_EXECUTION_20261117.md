@@ -963,13 +963,15 @@ OpenAI 科学审核的原子预留优先按字节上界。仅当上界导致 Tok
 
 结构校验现支持完整训练口径下绑定共享与各臂显存记录，使用该口径时每个测量步骤必须读取所有共享阶段和对应各臂的记录。原修订回执逐字复播后编译成功，漏读共享记录的对照仍会被拒。新版生成明确完整训练计量要求。离线可构建原事实批和两个设计复审请求，事实批可复用，仍需独立科学复审。 [真实审核与显存修订回放](deep-research-evidence/d3-sh-and-shared-peak-real-20261128.json)
 
+候选 `8a27b8257` 复用七项事实审核，发出第一批设计复审，新增 10,890 Token，累计 75,965 Token。旧解码器拒绝回复中的 `sourceContext.after`，后一批未发送。新版只把两个明确的上下文字段写法映射到原字段，并允许将 `/data/seeds` 展开为冻结的无重复整数种子。使用两项规则对原回执离线重放，共享显存检查通过引用校验，训练内参来源、新高斯 ID 分配与克隆方向符号的科学问题仍保留。新版生成明确这三点，原取证输入保持一致，完整生成请求为 31,939 字节。未新增复审生成、正文终审或发布。 [共享显存首批复审及字段回放](deep-research-evidence/d3-shared-peak-review-field-real-20261128.json)
+
 按原设计记录固定题适用范围。历史人工通过只覆盖所列的开发题和源码版本。完整回归、浏览器交互和隔离启动各保留自身的证据范围。
 
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
 | D2 两论文比较 | 11 条主张经过真实核验，整答一致性通过，审核仍指出新手部署取舍说明不足。旧部分报告在隔离工作区重启后可找回。 [真实终审](deep-research-evidence/d2-counted-audit-final-gates-real-20261128.json) · [工作区交付](deep-research-evidence/d2-final-audit-workspace-delivery-20261128.json) | 新手开头已通过离线预检，待独立语义核验及整答审核。 [开头回放](deep-research-evidence/d2-beginner-tradeoff-compile-replay-20261128.json) |
-| D3 四组实验 | 真实修订的九项事实复审通过，包含克隆、分裂引文段落的归属说明。 [修订复审](deep-research-evidence/d3-located-attribution-scientific-review-real-20261128.json) | 第二批状态索引错误触发停止，SH 颜色参数化仍须复核。新版索引与生成说明已通过离线回放。完整科学复审、整答终审和发布均未完成。 |
+| D3 四组实验 | 加入 SH 颜色参数化后，完整科学审核 24 项通过 23 项，剩余共享预训练峰值已经真实修订并通过新版结构校验。 [真实生成与审核](deep-research-evidence/d3-sh-and-shared-peak-real-20261128.json) | 修订后第一批设计回复经字段回放确认显存计量已补齐，仍指出克隆方向符号、内参来源及新高斯 ID 的复现要求。余下复审、整答终审和发布未执行。 [修订后复审](deep-research-evidence/d3-shared-peak-review-field-real-20261128.json) |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
