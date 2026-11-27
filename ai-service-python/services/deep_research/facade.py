@@ -369,7 +369,7 @@ class ResearchFacade:
             "draftValidationContractVersion": 1,
             "factualRepairPromptContractVersion": 3,
             "coverageInputContractVersion": 1,
-            "coverageInstructionsContractVersion": 1,
+            "coverageInstructionsContractVersion": 2,
             "coverageLimitContractVersion": 1,
             "factualReviewContractVersion": 4 if self._comparison_cells_version == 1 else 3,
             "sourceVersionReviewContractVersion": 1,

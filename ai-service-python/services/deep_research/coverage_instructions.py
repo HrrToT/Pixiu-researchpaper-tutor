@@ -60,6 +60,24 @@ repeat; requested measurements, object counts and table/equation IDs remain cont
 Never invent access or put duplicate access declarations into scientific prose.
 '''
 
+
+def citation_display_note(wire_claims, selected):
+    """Describe only linked original excerpts the publication can actually render."""
+    original_quotes = {row['evidenceId'] for row in selected
+                       if row.get('accessLevel') in {'fulltext', 'abstract'}
+                       and isinstance(row.get('quote'), str) and row['quote'].strip()
+                       and row.get('verification', {}).get('literal') == 'passed'}
+    cited = {claim['claimId']: [ref for ref in claim.get('evidenceRefs', []) if ref in original_quotes]
+             for claim in wire_claims}
+    visible = {claim: refs for claim, refs in cited.items() if refs}
+    if not visible:
+        return ''
+    return ('\nRendered citation links by claim: ' + json.dumps(visible, ensure_ascii=False, separators=(',', ':'))
+            + '''. Each listed link opens its verified verbatim original excerpt under 原文依据.
+A request to cite the original source (e.g. 引用原文) can be met through these links.
+Require verbatim prose in the main answer only if the user specifically asks for it there.
+Citations still cannot fill a missing scientific explanation or validate an unrelated claim.\n''')
+
 CATALOG = '''The binding catalog lists ONLY existing available claim fields, not evidence
 of completeness. Choose the minimum sufficient actual fields. For a scoped catalog,
 each obligationId/checkId selects catalogs[catalogIndex] (zero-based); restore its exact

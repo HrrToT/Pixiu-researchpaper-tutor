@@ -87,14 +87,32 @@ def test_process_roles_still_require_actual_operations_and_disjoint_request_span
     assert (result['status']=='checked' and not result['gaps']) is (not overlap)
 
 
-@pytest.mark.parametrize('client_value',[None,True,0,2])
+def test_source_citation_guidance_lists_only_accepted_claims_own_original_text():
+    from services.deep_research.coverage_instructions import citation_display_note
+
+    claims = [{'claimId':'c', 'evidenceRefs':['E1','E2','E3','E5']}]
+    evidence = [
+        {'evidenceId':'E1','quote':'A literal source excerpt.','accessLevel':'fulltext','verification':{'literal':'passed'}},
+        {'evidenceId':'E2','quote':'An unchecked excerpt.','accessLevel':'fulltext','verification':{'literal':'unchecked'}},
+        {'evidenceId':'E3','quote':'A user note.','accessLevel':'user_note','verification':{'literal':'passed'}},
+        {'evidenceId':'E4','quote':'An unrelated excerpt.','accessLevel':'fulltext','verification':{'literal':'passed'}},
+        {'evidenceId':'E5','quote':'','accessLevel':'fulltext','verification':{'literal':'passed'}},
+    ]
+    note = citation_display_note(claims, evidence)
+    assert 'Rendered citation links by claim: {"c":["E1"]}' in note
+    assert 'Require verbatim prose in the main answer only if the user specifically asks for it there' in note
+    assert 'cannot fill a missing scientific explanation' in note
+    assert citation_display_note(claims, evidence[1:]) == ''
+
+
+@pytest.mark.parametrize('client_value',[None,True,0,1,3])
 def test_server_owned_instruction_policy_is_immutable_and_absent_from_old_runs(tmp_path,client_value):
     from services.deep_research.facade import ResearchFacade
     from services.deep_research.repository import DeepResearchRepository
     repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();facade=ResearchFacade(repo,lambda **_:None,llm_client=object())
     try:
         record,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':QUESTION,'deferStart':True,'coverageInstructionsContractVersion':client_value},start_async=False)
-        assert record['coverageInstructionsContractVersion']==1
+        assert record['coverageInstructionsContractVersion']==2
         with pytest.raises(ValueError,match='Immutable'):
             repo.update_run(record['runId'],lambda r:{**r,'coverageInstructionsContractVersion':client_value})
         old=deepcopy(record);old.update(runId='legacy',idempotencyKey='old');old.pop('coverageInstructionsContractVersion')

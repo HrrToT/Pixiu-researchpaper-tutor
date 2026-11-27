@@ -2455,7 +2455,9 @@ def make_verify_node(
                     **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
                     **({'correct_process_bindings':True} if correct_binding_enabled(record) else {}),
                     **({'reasoned_process_bindings':True} if correct_binding_enabled(record) and record['coverageBindingCorrectionContractVersion']==2 else {}),
-                    **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'consolidated_instructions':True} if type(record.get('coverageInstructionsContractVersion')) is int and record['coverageInstructionsContractVersion'] in (1,2) and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
+                    **({'rendered_citation_links':True} if record.get('coverageInstructionsContractVersion')==2
+                       and record.get('reportPresentationContractVersion')==4 and request_coverage_enabled(record) else {}),
                     **({'shared_decision_inputs':True} if type(record.get('coverageInputContractVersion')) is int and record['coverageInputContractVersion']==1 and request_coverage_enabled(record) and record.get('requestCoverageContractVersion') in (3,4,5) else {}),
                     **({'binding_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion'] in (2,3,4) else {}),
                       **({'scoped_catalog':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and (record['coverageDiagnosticsContractVersion']==3 or record['coverageDiagnosticsContractVersion']==4 and request_coverage_enabled(record)) else {}),

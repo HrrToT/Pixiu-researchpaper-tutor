@@ -46,7 +46,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        transformation_processes=False,require_covered_bindings=False,root_coherence=False,
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
-                       explain_comparison_gap=False, shared_experiment_phrases=None):
+                       explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -305,6 +305,11 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     request_code = check_labels[identity][1].get('request')
                     if request_code:
                         render = lambda rows: original_render(rows) + guidance(request_code, explain=explain_comparison_gap)
+            if rendered_citation_links:
+                from services.deep_research.coverage_instructions import citation_display_note
+                note = citation_display_note(wire_claims, selected)
+                prior_render = render
+                render = lambda rows: prior_render(rows) + note
             fixed_bytes = len(render([]).encode('utf-8'))
             def fit(byte_limit, *, cited_only=False):
                 if byte_limit <= 0 or fixed_bytes > byte_limit:
@@ -510,7 +515,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 gap_by_id[oid]['missingAspects'] = list(dict.fromkeys([
                     *gap_by_id[oid].get('missingAspects', []), *goal['missingDeliverables']]))
     from services.deep_research.completion_criteria import completion_contract_digest
-    audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
+    audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':2 if rendered_citation_links else 1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
             'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),

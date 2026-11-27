@@ -11,10 +11,12 @@ BINDING_ERRORS=frozenset({'missing_process_links','invalid_process_link','invali
 
 
 def enabled(record):
-    expected={'requestCoverageContractVersion':5,'coverageInstructionsContractVersion':1,
+    expected={'requestCoverageContractVersion':5,
               'coverageDiagnosticsContractVersion':4,'coverageRepairRoutingContractVersion':1,'coverageLimitContractVersion':1}
     from services.deep_research.request_coverage import enabled as request_enabled
     return (type(record.get(KEY)) is int and record[KEY] in (1,2) and request_enabled(record)
+        and type(record.get('coverageInstructionsContractVersion')) is int
+        and record['coverageInstructionsContractVersion'] in (1, 2)
         and all(type(record.get(k)) is int and record[k]==v for k,v in expected.items()))
 
 
