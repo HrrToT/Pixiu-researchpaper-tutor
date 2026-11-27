@@ -193,6 +193,71 @@ def test_named_condition_repair_keeps_the_previously_checked_comparison():
     _assert_previously_checked_comparison_survives(11)
 
 
+@pytest.mark.parametrize('phase', ['initial', 'deferred', 'repaired'])
+@pytest.mark.parametrize('mutate_evidence', [False, True])
+def test_comparison_audit_recovery_keeps_original_admission_budget(monkeypatch, phase, mutate_evidence):
+    from unittest.mock import Mock
+    from services.deep_research.contracts import DeepResearchError
+    from services.deep_research.graph import make_verify_node
+
+    record = populated_factual_record()
+    record.update(comparisonPlanningContractVersion=6, comparisonAuthoringContractVersion=16,
+                  comparisonAuditEnvelopeContractVersion=18, answerCoherenceContractVersion=2,
+                  comparisonRepairFlowContractVersion=1)
+    record['budget'].update(maxTokens=100000, tokens=72000)
+    from services.deep_research.authored_body import decode
+    original = decode(record['state']['reportBody']['claims'][0])
+    revised = {**original, 'text': 'Revised with a verified condition.'}
+    budgets = []
+
+    def update(_, change, **kwargs):
+        nonlocal record
+        record = change(deepcopy(record))
+        return deepcopy(record)
+
+    def verify(claims, evidence, semantic):
+        if phase == 'repaired':
+            if claims == [revised]:
+                return {'accepted': claims, 'rejected': []}
+            return {'accepted': claims[1:], 'rejected': [
+                {'claimId': original['claimId'], 'reason': 'semantic_unresolved'}]}
+        if phase == 'deferred':
+            return {'accepted': claims[1:], 'rejected': [
+                {'claimId': claims[0]['claimId'], 'reason': 'numeric_mismatch'}]}
+        return {'accepted': claims, 'rejected': []}
+
+    def audit(*args, budget, **kwargs):
+        if kwargs.get('measure_reservation'):
+            return 8000
+        if phase == 'repaired' and revised not in args[3]:
+            return {'status': 'checked', 'gaps': [], 'verdicts': []}
+        budgets.append(budget['tokens'])
+        if len(budgets) == 1:
+            record['budget']['tokens'] += 6000
+            raise RuntimeError('interrupted after settlement')
+        return {'status': 'checked', 'gaps': [], 'verdicts': []}
+
+    monkeypatch.setattr('services.deep_research.final_coverage.audit_final_answer', audit)
+    replacements = [revised] if phase == 'repaired' else []
+    monkeypatch.setattr('services.deep_research.repair.repair_rejected', Mock(return_value=replacements))
+    node = make_verify_node(verify, None, update, llm_invoke=Mock())
+    with pytest.raises(RuntimeError, match='after settlement'):
+        node({'run_id': 'r'})
+    assert record['state']['comparisonAnswerAuditInputs'][phase]['budget']['tokens'] == 72000
+    assert record['budget']['tokens'] == 78000
+
+    if mutate_evidence:
+        record['state']['evidence'][0]['quote'] += ' Changed after settlement.'
+        with pytest.raises(DeepResearchError) as caught:
+            node({'run_id': 'r'})
+        assert caught.value.code == 'comparison_answer_audit_inputs_changed'
+        assert budgets == [72000]
+    else:
+        node({'run_id': 'r'})
+        assert budgets == [72000, 72000]
+        assert record['state']['verifiedReport']['answerCoverage']['status'] == 'checked'
+
+
 def _assert_previously_checked_comparison_survives(authoring_version):
     from unittest.mock import Mock, patch
     from services.deep_research.answer_coherence import identity

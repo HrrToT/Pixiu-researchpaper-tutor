@@ -2482,26 +2482,49 @@ def make_verify_node(
                     comparison_audit_args['share_comparison_evidence_sentences'] = True
                 if fit_compact_audit_budget(record):
                     comparison_audit_args['fit_compact_comparison_budget'] = True
-                    if audit_version in (15, 16, 17):
+                    if audit_version >= 15:
                         comparison_audit_args['extend_comparison_audit_window'] = True
-                    if audit_version in (16, 17):
+                    if audit_version >= 16:
                         comparison_audit_args['localize_comparison_gap'] = True
-                    if audit_version == 17:
+                    if audit_version >= 17:
                         comparison_audit_args['explain_comparison_gap'] = True
                 if joint_comparison_delivery(record):
                     comparison_audit_args['require_joint_conclusions'] = True
         from services.deep_research.comparison_review_batches import current_profile
         if current_profile(record) and literal_limits_enabled(record) and request_coverage_enabled(record):
             comparison_audit_args['empty_missing_limits']=True
-        def audit_accepted(accepted, snapshot, **options):
+        def audit_accepted(accepted, snapshot, *, phase=None, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17)):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17, 18)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
-            return audit_final_answer(run_id, effective_question(record),
-                    saved.get('plan', []), accepted,
-                    evidence, llm_invoke, _safe_parse_json, budget=snapshot.get('budget'),
+            question, plan = effective_question(record), saved.get('plan', [])
+            budget = snapshot.get('budget')
+            if (phase is not None and comparison_audit_args.get('comparison_audit_envelope')
+                    and record['comparisonAuditEnvelopeContractVersion'] == 18):
+                from services.deep_research.contracts import DeepResearchError, digest
+
+                identity = digest([question, plan, accepted, evidence, comparison_audit_args, scopes, options])
+
+                def freeze(run):
+                    state = run.get('state', {})
+                    audits = state.get('comparisonAnswerAuditInputs', {})
+                    if phase in audits:
+                        if audits[phase]['inputDigest'] != identity:
+                            raise DeepResearchError('comparison_answer_audit_inputs_changed',
+                                                    '已保存的整答审核输入发生变化。')
+                        return run
+                    return {**run, 'state': {**state, 'comparisonAnswerAuditInputs': {
+                        **audits, phase: {'inputDigest': identity, 'budget': deepcopy(run.get('budget'))},
+                    }}}
+
+                checkpoint = repo_update(run_id, freeze, expected_revision=None)
+                # A settled call changes the live budget. Keep the original prompt
+                # and output allowance so the ledger can return that exact receipt.
+                budget = checkpoint['state']['comparisonAnswerAuditInputs'][phase]['budget']
+            return audit_final_answer(run_id, question, plan, accepted,
+                    evidence, llm_invoke, _safe_parse_json, budget=budget,
                     **comparison_audit_args, **scopes, **options,
                     **({'root_coherence':True} if revision_coverage_enabled(record) else {}),
                     **({'request_contract':record['requestCoverageContractVersion']} if request_coverage_enabled(record) else {}),
@@ -2552,7 +2575,7 @@ def make_verify_node(
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
                 if (comparison_audit_args.get('comparison_audit_envelope')
-                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17)
+                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17, 18)
                         and llm_invoke is not None and verification_result.get('accepted')):
                     # Stopping individual reviews does not by itself exhaust the
                     # final-answer allowance. Check the retained subset with the
@@ -2578,7 +2601,7 @@ def make_verify_node(
                 answer_coverage = {'status':'deferred_factual_repair','gaps':[],'verdicts':[],
                                    'scientificApproval':False}
             else:
-                answer_coverage = audit_accepted(verification_result.get('accepted', []), current)
+                answer_coverage = audit_accepted(verification_result.get('accepted', []), current, phase='initial')
             if saved.get('outputKind') == 'experiment_design':
                 from services.deep_research.design_completion import prepare_design_completion
                 repair_report, verification_result = prepare_design_completion(
@@ -2943,7 +2966,7 @@ def make_verify_node(
                         verification_result = merged
                     elif merged.get('accepted') != verification_result.get('accepted'):
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
-                        merged_audit = audit_accepted(merged.get('accepted', []), current)
+                        merged_audit = audit_accepted(merged.get('accepted', []), current, phase='repaired')
                         from services.deep_research.comparison_measurement_display import repair_profile
                         from services.deep_research.comparison_repair import can_retain_audited_answer
                         if repair_profile(record) in (3, 4) and can_retain_audited_answer(
@@ -2979,7 +3002,7 @@ def make_verify_node(
         # invalid or budget-limited repair must still audit the retained answer.
         if answer_coverage.get('status') == 'deferred_factual_repair':
             current = repo_update(run_id, lambda r: r, expected_revision=None)
-            answer_coverage = audit_accepted(verification_result.get('accepted', []), current)
+            answer_coverage = audit_accepted(verification_result.get('accepted', []), current, phase='deferred')
 
         accepted = verification_result.get("accepted", [])
         rejected = verification_result.get("rejected", [])

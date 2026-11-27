@@ -300,7 +300,7 @@ class TrackedLLMInvoker:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
         from services.deep_research.comparison_audit_envelope import enabled as comparison_audit_enabled, EXTENDED_INPUT_BYTES
-        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17)
+        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17, 18)
                 and comparison_audit_enabled(record, node)):
             return min(self._verification_max_input, EXTENDED_INPUT_BYTES)
         if node == 'verify_answer_coverage':
