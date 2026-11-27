@@ -16,6 +16,16 @@ leave that aspect for the final coverage check. Do not append an assertion that
 the paper or supplied excerpts omit an operation to a supported factual claim.
 """
 
+READER_OPERATION_GUIDANCE = """
+Use the character budget for the reader's requested operations. Give one short clause per
+step: say what goes in, what is done to it in everyday words, and what comes out.
+Define a necessary technical term when first used, in the same clause as its operation.
+For a rule or filter, say what gets compared and what passes. For a training loss, say
+which prediction it rewards or penalizes and what the model learns to improve.
+Keep the paper's necessary distinctions and use each point's own source. Prefer named
+roles over redundant counts and keep notation only when needed to explain a step.
+"""
+
 
 def reader_first(record, report, output_kind):
     from services.deep_research.audience_rewrite import eligible
@@ -23,7 +33,7 @@ def reader_first(record, report, output_kind):
     from services.deep_research.request_context import effective_question
     limit=requested_character_limit(effective_question(record))
     return (type(record.get('audienceFirstContractVersion')) is int
-            and record['audienceFirstContractVersion'] in (1, 2, 3)
+            and record['audienceFirstContractVersion'] in (1, 2, 3, 4)
             and type(record.get('audienceRewriteContractVersion')) is int
             and record['audienceRewriteContractVersion']==9
             and type(limit) is int and 0<limit<=700
@@ -36,7 +46,7 @@ def direct_reader_candidate(record, output_kind):
     from services.deep_research.request_context import effective_question
 
     return (type(record.get('audienceFirstContractVersion')) is int
-            and record['audienceFirstContractVersion'] in (2, 3)
+            and record['audienceFirstContractVersion'] in (2, 3, 4)
             and output_kind == 'claim_verification'
             and record.get('sourcePolicy') == {'mode': 'task_only'}
             and len(record.get('materials') or []) == 1

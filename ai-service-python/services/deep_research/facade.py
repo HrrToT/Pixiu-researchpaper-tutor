@@ -525,7 +525,7 @@ class ResearchFacade:
             "audienceRewriteContractVersion": 9,
             "audienceMappedSourceContractVersion": 5,
             "audienceRequestContractVersion": 1,
-            "audienceFirstContractVersion": 3,
+            "audienceFirstContractVersion": 4,
             "audienceBudgetContractVersion": 1,
             "plainCompactionContractVersion": 1,
             "coverageRepairRoutingContractVersion": 1,

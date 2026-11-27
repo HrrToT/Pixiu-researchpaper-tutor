@@ -31,8 +31,9 @@ def run(monkeypatch,flag=1,outcome='applied',*,local=False,text=None,literal=Tru
     def invoke(rid,node,prompt,options,**kw):
         events.append(node)
         if node=='synthesize':
-            assert ('keep the distinction in' in prompt) == (local and type(flag) is int and flag in (2, 3))
-            assert ('leave that aspect for the final coverage check' in prompt) == (local and flag == 3)
+            assert ('keep the distinction in' in prompt) == (local and type(flag) is int and flag in (2, 3, 4))
+            assert ('leave that aspect for the final coverage check' in prompt) == (local and flag in (3, 4))
+            assert ('in the same clause as its operation' in prompt) == (local and flag == 4)
             return {'content':json.dumps({'sections':[],'claims':[{'claimId':'c','kind':'reported',
                 'text':text or '很长的机制说明。'*35,'evidenceRefs':['E1'],'obligationIds':['o'],
                 'detailLevel':'fulltext','conditions':{}}]})}
@@ -63,13 +64,13 @@ def test_unknown_reader_transport_propagates_without_compaction_fallback(monkeyp
     assert events==['synthesize','reader']
 
 
-@pytest.mark.parametrize('flag',[None,True,False,0,4,1.0,'1'])
+@pytest.mark.parametrize('flag',[None,True,False,0,5,1.0,'1'])
 def test_legacy_or_invalid_flag_keeps_original_order(monkeypatch,flag):
     events,_,_=run(monkeypatch,flag=flag)
     assert events==['synthesize','synthesize_compact','reader']
 
 
-@pytest.mark.parametrize('version', [2, 3])
+@pytest.mark.parametrize('version', [2, 3, 4])
 def test_short_single_paper_draft_keeps_operations_without_a_second_writer(monkeypatch, version):
     text='先测量各像素的深度，再把来自不同视角的深度融合为表面。'
     events,record,edits=run(monkeypatch,flag=version,local=True,text=text)
@@ -100,7 +101,7 @@ def test_server_owns_immutable_schedule_and_old_runs_cannot_acquire_it(tmp_path)
     try:
         r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':'给新手解释方法，限100字。','deferStart':True,
             'audienceFirstContractVersion':False},start_async=False)
-        assert type(r['audienceFirstContractVersion']) is int and r['audienceFirstContractVersion']==3
+        assert type(r['audienceFirstContractVersion']) is int and r['audienceFirstContractVersion']==4
         with pytest.raises(ValueError,match='Immutable'):repo.update_run(r['runId'],lambda r:{**r,'audienceFirstContractVersion':False})
         old=deepcopy(r);old.pop('audienceFirstContractVersion');old.update(runId='legacy',idempotencyKey='old');repo.create_run(old)
         with pytest.raises(ValueError,match='Immutable'):repo.update_run('legacy',lambda r:{**r,'audienceFirstContractVersion':1})

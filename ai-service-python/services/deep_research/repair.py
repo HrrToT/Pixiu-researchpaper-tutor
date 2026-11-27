@@ -50,7 +50,7 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
-    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations == 2):
+    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations in (2,3)):
         raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
@@ -624,7 +624,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     if process_explanations:
         from services.deep_research.process_explanations import DRAFT_GUIDANCE
         prompt+='\n'+DRAFT_GUIDANCE
-        if process_explanations == 2:
+        if process_explanations in (2,3):
             prompt += ('\nWhen repairing one operation in a process, preserve the supported distinction in the '
                        'old answer between which steps can carry a signal and which steps are selection or '
                        'setup. Keep that boundary alongside the corrected operation when it affects the '
@@ -650,6 +650,9 @@ If a supported revision is not possible, omit that target rather than bypass sco
             if citation_presentation_version == 6:
                 template += ('\nThe interface links each target to its frozen citations. Keep P and E identifiers '
                              'and duplicate parenthesized citation labels out of the replacement text.\n')
+    if process_explanations == 3:
+        from services.deep_research.audience_schedule import READER_OPERATION_GUIDANCE
+        template += READER_OPERATION_GUIDANCE
     from services.deep_research.experiment_edits import columnar
     if comparison_authoring in (2, 3, 4):
         from services.deep_research.comparison_repair import table_catalog
@@ -1026,7 +1029,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     from services.deep_research.repair_goals import policy_version
     goal_version=policy_version(target_goals)
     if type(objective_framing) is not bool:raise ValueError('Invalid objective framing policy')
-    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations == 2):
+    if type(process_explanations) is not bool and not (type(process_explanations) is int and process_explanations in (2,3)):
         raise ValueError('Invalid process explanation policy')
     if goal_version in (2,3,4,5) and not (fact_redraft and source_aware_redraft and concise_factual
             and compact_source_repair and (factual_redraft_eligible(report) or ordinary_advice and goal_version==5 and consolidated_instructions and advice_report_eligible(report))):
@@ -1090,7 +1093,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
                        **({'experimentRepairPriorityContractVersion':scheduling_version} if scheduling_version in (1,2) else {}),
                        **({'experimentRepairInputContractVersion':repair_evidence_packet_version} if repair_evidence_packet_version in (1,2,3,4,5) else {}),
                        **({'objectiveFramingVersion':1} if objective_framing else {}),
-                       **({'processExplanationVersion':2 if process_explanations == 2 else 1} if process_explanations else {}),
+                       **({'processExplanationVersion':int(process_explanations)} if process_explanations else {}),
                        'evidence': evidence, 'question': question, 'metricDomains': metric_domains,
                        **({'citationPresentationContractVersion':citation_presentation_version} if citation_presentation_version in (2,3,4,5,6) else {}),
                        **({'configurationConsistencyContractVersion':2} if configuration_consistency_version==2 else {}),

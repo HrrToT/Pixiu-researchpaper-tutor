@@ -33,6 +33,18 @@ def test_process_repair_preserves_supported_signal_boundaries_without_new_permis
     assert 'beyond the destination the user asked about' in new['prompt']
 
 
+def test_reader_repair_keeps_a_plain_operation_and_learning_target_in_the_existing_call():
+    report, verification, ev, opts = fixture()
+    question = '向初学者解释如何用这个损失训练，限200字。'
+    old = _prepare_repair(report, verification, ev, question, **opts, process_explanations=2)
+    new = _prepare_repair(report, verification, ev, question, **opts, process_explanations=3)
+    for field in ('originals','allowed','aliases'):
+        assert new[field] == old[field]
+    assert 'which prediction it rewards or penalizes' in new['prompt']
+    assert 'which prediction it rewards or penalizes' not in old['prompt']
+    assert 'beyond the destination the user asked about' in new['prompt']
+
+
 def test_comparison_repair_omits_deletion_declarations_but_keeps_originals_and_evidence():
     report, verification, ev, opts = comparison_fixture()
     old_opts = {**opts, 'comparison_authoring': False}

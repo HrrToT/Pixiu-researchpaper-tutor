@@ -1745,13 +1745,15 @@ space with unsupported global absence or incidental iteration/performance values
                 evidence_marker=evidence_marker, table_marker=table_marker, claim_fields=claim_fields,
                 scope_enabled=scope_expression_enabled(record), compact_evidence_wire=compact_evidence_wire)
         from services.deep_research.audience_schedule import (
-            DIRECT_READER_GUIDANCE, READER_EVIDENCE_GAP_GUIDANCE, direct_reader_candidate,
+            DIRECT_READER_GUIDANCE, READER_EVIDENCE_GAP_GUIDANCE, READER_OPERATION_GUIDANCE, direct_reader_candidate,
         )
         direct_reader = direct_reader_candidate(record, output_kind)
         if direct_reader:
             prompt += DIRECT_READER_GUIDANCE
-            if record['audienceFirstContractVersion'] == 3:
+            if record['audienceFirstContractVersion'] in (3, 4):
                 prompt += READER_EVIDENCE_GAP_GUIDANCE
+            if record['audienceFirstContractVersion'] == 4:
+                prompt += READER_OPERATION_GUIDANCE
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}
@@ -2677,6 +2679,7 @@ def make_verify_node(
                     from services.deep_research.experiment_evidence import build_context as experiment_evidence_context
                     candidate_context=experiment_evidence_context(record)
                     from services.deep_research.process_explanations import drafting_enabled as process_framing_enabled
+                    from services.deep_research.audience_schedule import direct_reader_candidate
                     from services.deep_research.mechanism_grounding import strengthened as objective_framing_enabled
                     from services.deep_research.verbatim_repair import enabled as verbatim_repair_enabled
                     from services.deep_research.repair_instructions import enabled as repair_instructions_enabled
@@ -2732,8 +2735,10 @@ def make_verify_node(
                            and record['factualRepairPromptContractVersion'] in (2,3) and compact_repair
                            and record.get('factRedraftContractVersion')==3 else {}),
                         **({'objective_framing':True} if objective_framing_enabled(record) else {}),
-                        **({'process_explanations':2 if record.get('coverageInstructionsContractVersion') == 3
-                           and saved.get('outputKind') == 'claim_verification' else True}
+                        **({'process_explanations':3} if record.get('audienceFirstContractVersion') == 4
+                           and direct_reader_candidate(record,saved.get('outputKind')) else
+                           {'process_explanations':2 if record.get('coverageInstructionsContractVersion') == 3
+                            and saved.get('outputKind') == 'claim_verification' else True}
                            if process_framing_enabled(record) else {}),
                         batch_state=saved.get('repairBatchState'), checkpoint=checkpoint_repair_batches,
                         current_budget=lambda: budget_for_repair(repo_update(run_id, lambda r: r, expected_revision=None)),
