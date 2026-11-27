@@ -189,11 +189,14 @@ def test_pdf_fallback_keeps_hash_ownership_and_the_original_top_hit():
     assert found==rows and len(found)==4
 
 
-def test_compression_mapping_retains_literal_operation_in_owned_read_and_draft():
+@pytest.mark.parametrize('requirement', [
+    'Describe the compression mechanisms and the compressed deployment representation.',
+    '说明两项工作各自使用的场景表示及其压缩或优化操作，并交代操作如何作用于表示。',
+])
+def test_compression_mapping_retains_literal_operation_in_owned_read_and_draft(requirement):
     from services.deep_research.mechanism_sources import compression_mapping_score
     from services.deep_research.synthesis_evidence import order_premises
 
-    requirement = 'Describe the compression mechanisms and the compressed deployment representation.'
     operation = 'We apply quantization to the appearance features and map them to the closest codes in the codebook.'
     settings = 'We set the codebook size to a fixed value for the whole training run.'
     owner = {'pdfId': 'p', 'workId': 'p', 'ownerMaterialId': 'p', 'versionId': 'v1',
@@ -206,7 +209,7 @@ def test_compression_mapping_retains_literal_operation_in_owned_read_and_draft()
     stale = {**method, 'sourceId': 'stale', 'contentHash': 'other'}
     rows = [top, incidental, foreign, stale, method]
     args = ([top, incidental], rows, [requirement], 'p', 'h', 2)
-    assert include_pdf_criteria(*args, compression_operations=True) == [
+    assert include_pdf_criteria(*args, compression_operations=3) == [
         top, {**method, 'retrievalMode': 'pdf_compression_operation'}]
     assert not compression_mapping_score(operation, 'Related Work')
     assert not compression_mapping_score(settings, 'Implementation')
@@ -218,7 +221,7 @@ def test_compression_mapping_retains_literal_operation_in_owned_read_and_draft()
     literal_rows = [{**r, 'evidenceId': r['sourceId'], 'sourceWorkId': r['workId'],
                      'sourceVersionId': r['versionId'], 'quote': r['text'],
                      'verification': {'literal': 'passed'}} for r in (top, incidental, foreign, method)]
-    _, bundles = order_premises(literal_rows, [{'obligations': [goal]}], compression_operations=True)
+    _, bundles = order_premises(literal_rows, [{'obligations': [goal]}], compression_operations=3)
     assert any(b['criterionId'] == 'compression' and b['evidenceIds'] == ['mapping'] for b in bundles)
     assert all('foreign' not in b['evidenceIds'] for b in bundles)
 

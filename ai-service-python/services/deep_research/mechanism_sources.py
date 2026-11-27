@@ -77,10 +77,12 @@ def comparison_mechanism(obligation):
                         for criterion in obligation.get('completionCriteria', [])))
 
 
-def compression_mapping_requested(text):
+def compression_mapping_requested(text, *, include_operations=False):
+    positive = _positive(text)
     return bool(re.search(r'压缩机制|压缩原理|压缩后.{0,12}表示|'
                           r'\bcompression mechanisms?\b|\bcompressed (?:deployment )?representation\b',
-                          _positive(text), re.I))
+                          positive, re.I)
+                or include_operations and re.search(r'压缩(?:或优化)?操作', positive))
 
 
 def compression_mapping_score(text, section):
@@ -115,7 +117,7 @@ def comparison_overviews(sources, obligations, extracted, *, compression_operati
         section = source.get('location', {}).get('section', '')
         score = overview_score(text, section)
         if compression_operations and any(
-            compression_mapping_requested(c['requirement'])
+            compression_mapping_requested(c['requirement'], include_operations=compression_operations == 3)
             for oid in eligible_obligation_ids(source, active)
             for c in active[oid].get('completionCriteria', [])
         ):

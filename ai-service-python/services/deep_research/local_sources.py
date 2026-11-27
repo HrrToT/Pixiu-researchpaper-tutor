@@ -76,7 +76,8 @@ class LocalTaskRetriever:
                             questions=acquisition_questions(precision_record,query,owned)
                             indexed=include_indexed_criteria(indexed,self.index_context[pdf_id],questions,owned,limit,
                                 supervision=precision_record.get('comparisonSupervisionPremisesVersion') == 1,
-                                compression_operations=precision_record.get('comparisonMechanismReadContractVersion') == 2,
+                                compression_operations=(precision_record.get('comparisonMechanismReadContractVersion', 0)
+                                    if precision_record.get('comparisonMechanismReadContractVersion') in (2, 3) else False),
                                 **({'modules':acquisition_modules(precision_record,query,owned)}
                                    if precision_record['sourcePrecisionContractVersion'] in (7,8) else {}),
                                 **({'conditions':acquisition_conditions(precision_record,query,owned)}
@@ -153,7 +154,8 @@ class LocalTaskRetriever:
             questions=acquisition_questions(self.repo.require_run(self.run_id),query,pdf_id)
             found=include_pdf_criteria(found,passages,questions,pdf_id,material['contentHash'],min(limit,5),
                 supervision=record.get('comparisonSupervisionPremisesVersion') == 1,
-                compression_operations=record.get('comparisonMechanismReadContractVersion') == 2,
+                compression_operations=(record.get('comparisonMechanismReadContractVersion', 0)
+                    if record.get('comparisonMechanismReadContractVersion') in (2, 3) else False),
                 **({'modules':acquisition_modules(self.repo.require_run(self.run_id),query,pdf_id)} if precision in (7,8) else {}),
                 **({'conditions':acquisition_conditions(self.repo.require_run(self.run_id),query,pdf_id)} if precision==8 else {}))
         found = self._scope_evidence(found, passages, query, pdf_id, limit)

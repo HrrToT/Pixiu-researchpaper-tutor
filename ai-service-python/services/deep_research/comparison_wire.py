@@ -633,7 +633,8 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
             policy += ('Select only measurements required for this assigned dimension. Never copy a whole row or '
                        'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                        'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
-            if record.get('comparisonMechanismReadContractVersion') == 2:
+            mechanism_version = record.get('comparisonMechanismReadContractVersion')
+            if mechanism_version in (2, 3):
                 from services.deep_research.mechanism_sources import compression_mapping_requested
                 from services.deep_research.processing_cost_sources import requested as processing_cost_requested
 
@@ -641,8 +642,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 if any(processing_cost_requested(dimension) for dimension in dimensions):
                     policy += ('For processing cost, report the cited original fitting or rendering work when that is '
                                'what the paper quantifies. Distinguish it from added processing and keep any unknown '
-                               'extra cost scoped to the cited evidence. Do not treat it as zero or leave documented work blank.\n')
-                if any(compression_mapping_requested(dimension) for dimension in dimensions):
+                               'extra cost scoped to the cited evidence. ')
+                    policy += ('Say those quotations cannot quantify the cost, and keep the documented work. '
+                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version == 3
+                               else 'Do not treat it as zero or leave documented work blank.\n')
+                if any(compression_mapping_requested(dimension, include_operations=mechanism_version == 3)
+                       for dimension in dimensions):
                     policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
                                'Explain any source-reported feature-to-code mapping without claiming an index file '
                                'or storage format unless the quoted method specifies it.\n')

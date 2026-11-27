@@ -28,7 +28,7 @@ def query_intents(query, *, supervision=False, compression_operations=False):
         found.insert(0, 'training_supervision')
     if compression_operations:
         from services.deep_research.mechanism_sources import compression_mapping_requested
-        if compression_mapping_requested(query):
+        if compression_mapping_requested(query, include_operations=compression_operations == 3):
             found.append('compression_mapping')
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
