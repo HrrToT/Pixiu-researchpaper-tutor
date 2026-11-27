@@ -263,7 +263,7 @@ class ScopedModelClient:
             def for_node(self, node):
                 return BoundClient(node)
 
-            def invoke(self, request):
+            def _prepare(self, request):
                 record = parent.repo.require_run(run_id)
                 if isinstance(parent.validate, AuthoritativeScopeValidator):
                     if not parent.validate.validate_materials(run_id, [m['materialId'] for m in record.get('materials', [])]):
@@ -315,7 +315,19 @@ class ScopedModelClient:
                         api_key=settings.openai_api_key, timeout_seconds=settings.deep_research_request_timeout_seconds)
                 else:
                     client = factory()
-                return client.invoke(replace(request, messages=messages, timeout_seconds=timeout, extra_body=extra))
+                return client, replace(request, messages=messages, timeout_seconds=timeout, extra_body=extra)
+
+            def invoke(self, request):
+                client, prepared = self._prepare(request)
+                return client.invoke(prepared)
+
+            def count_audit_input(self, request):
+                client, prepared = self._prepare(request)
+                return client.count_audit_input(prepared)
+
+            def invoke_counted_audit(self, request):
+                client, prepared = self._prepare(request)
+                return client.invoke_counted_audit(prepared)
 
         return BoundClient()
 

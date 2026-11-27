@@ -1,3 +1,4 @@
+import json
 from unittest.mock import Mock
 
 import pytest
@@ -154,3 +155,82 @@ def test_openai_run_does_not_dispatch_deepseek_search(tmp_path):
     assert acquire("r", [{"obligationId": "topic", "query": "public topic"}]) == []
     academic.discover.assert_called_once()
     deepseek_search.assert_not_called()
+
+
+@pytest.mark.parametrize("count, expected_failure", [
+    (8923, None), (23000, "budget_exhausted"), (True, "budget_exhausted"), (None, "budget_exhausted"),
+    (8923, "scope_revoked"),
+])
+def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_generation(
+        tmp_path, monkeypatch, count, expected_failure):
+    from services.deep_research.contracts import DeepResearchError
+    from services.deep_research.tools import TrackedLLMInvoker
+    from test_deep_research_comparison_audit_envelope import value
+
+    monkeypatch.setattr(settings, "openai_api_key", "test-key")
+    repo = DeepResearchRepository(tmp_path / "research.sqlite3")
+    repo.initialize()
+    facade = ResearchFacade(repo, Mock(), llm_client=Mock(), openai_research_models=("main", "routine"),
+                            comparison_cells_version=1)
+    try:
+        created, _ = facade.create({"workspaceTaskId": "task", "operationKey": "op", "question": "Compare",
+                                    "outputKind": "paper_comparison"}, start_async=False)
+        run_id = created["runId"]
+        assert created["countedComparisonAuditContractVersion"] == 1
+        with pytest.raises(ValueError, match="Immutable run field changed: countedComparisonAuditContractVersion"):
+            repo.update_run(run_id, lambda row: {**row, "countedComparisonAuditContractVersion": 0})
+        repo.begin_execution(run_id)
+        repo.update_run(run_id, lambda row: {
+            **row, "budget": {**row["budget"], "tokens": 79730, "normalTokens": 49000},
+            "state": {**row["state"], "outputKind": "paper_comparison"},
+        })
+        scope = Mock()
+        scope.validate_run.return_value = expected_failure != "scope_revoked"
+        bound = ScopedModelClient(repo, scope, Mock()).for_run(run_id)
+        invoke = TrackedLLMInvoker(bound, repo.reserve_call, repo.complete_call,
+                                  run_record_fn=repo.require_run, call_history_fn=repo.list_calls,
+                                  verification_max_input_bytes=32000)
+        calls = []
+        def post(url, **kwargs):
+            calls.append((url, kwargs["json"]))
+            assert kwargs["allow_redirects"] is False
+            if url.endswith("/input_tokens"):
+                assert not repo.list_calls(run_id)
+                response = Mock(status_code=503 if count is None else 200)
+                response.json.return_value = {"object": "response.input_tokens", "input_tokens": count}
+                return response
+            assert url == "https://api.openai.com/v1/responses"
+            (reserved,) = repo.list_calls(run_id)
+            assert reserved["status"] == "pending"
+            assert reserved["reservedTokens"] == count + 1024 + 3500
+            response = Mock(status_code=200, headers={})
+            response.json.return_value = {
+                "status": "completed", "output": [{"type": "message", "content": [
+                    {"type": "output_text", "text": json.dumps(value())},
+                ]}], "usage": {"input_tokens": count, "output_tokens": 80, "total_tokens": count + 80},
+            }
+            return response
+        monkeypatch.setattr("llm.client.requests.post", post)
+        prompt = "Review the frozen JSON audit inputs. " + "x" * 30000
+        options = {"max_tokens": 3500, "temperature": 0.0}
+        def send():
+            return invoke(run_id, "verify_answer_coverage", prompt, options, use_reserve=True, counted_audit=True)
+
+        if expected_failure:
+            with pytest.raises(DeepResearchError) as error:
+                send()
+            assert error.value.code == expected_failure
+            assert len(calls) == (0 if expected_failure == "scope_revoked" else 1)
+            assert not repo.list_calls(run_id)
+            return
+
+        result = send()
+        assert result["auditInputTokens"] == count and result["usage"]["total_tokens"] == count + 80
+        assert result["structuredOutput"]["receivedShape"] == "comparison_audit_v1"
+        assert repo.require_run(run_id)["budget"]["tokens"] == 79730 + count + 80
+        assert send() == result and len(calls) == 2
+        (_, measured), (_, generated) = calls
+        assert measured == {key: val for key, val in generated.items() if key not in {"store", "max_output_tokens"}}
+        assert generated["input"][-1]["content"] == prompt
+    finally:
+        facade.shutdown()

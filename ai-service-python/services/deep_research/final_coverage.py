@@ -47,7 +47,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        share_comparison_evidence_sentences=False, checked_comparison_scope_expressions=None,
                        extend_comparison_audit_window=False, localize_comparison_gap=False,
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
-                       requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False):
+                       requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False,
+                       counted_comparison_audit=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -71,6 +72,9 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
         raise ValueError('Adaptive audit capacity requires compact comparison checks')
     if type(extend_comparison_audit_window) is not bool or extend_comparison_audit_window and not fit_compact_comparison_budget:
         raise ValueError('Extended comparison audit requires adaptive capacity')
+    if type(counted_comparison_audit) is not bool or counted_comparison_audit and not (
+            extend_comparison_audit_window and rendered_comparison_packet and diagnostics):
+        raise ValueError('Counted audit requires the complete rendered comparison packet')
     if type(compact_comparison_checks) is not bool or compact_comparison_checks and not comparison_audit_envelope:
         raise ValueError('Compact comparison checks require the comparison audit envelope')
     if type(empty_missing_limits) is not bool or empty_missing_limits and not literal_limits:
@@ -349,6 +353,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.repair_budget import FRAMING_TOKENS
                 return len(render(required_rows).encode('utf-8')) + min(attempts) + FRAMING_TOKENS
             previous_limit = -1
+            counted = False
             windows = [DEFAULT_COVERAGE_INPUT_BYTES]
             if extend_comparison_audit_window:
                 from services.deep_research.comparison_audit_envelope import EXTENDED_INPUT_BYTES
@@ -376,9 +381,17 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     limit -= extra
                 break
             else:
-                raise admission_error
+                if not counted_comparison_audit or previous_limit <= 0:
+                    raise admission_error
+                # The first attempt used a worst-case byte bound. Count the
+                # same complete audit with all cited context and skip optional
+                # uncited excerpts. Hard transport and ledger limits still apply.
+                prompt, rows = fit(max(windows), cited_only=True)
+                output_tokens = MIN_COVERAGE_OUTPUT_TOKENS
+                counted = True
             result = invoke(run_id, 'verify_answer_coverage', prompt,
-                            {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True)
+                            {'max_tokens': output_tokens, 'temperature': 0.0}, use_reserve=True,
+                            **({'counted_audit': True} if counted else {}))
             content = result.get('content', '') if isinstance(result, dict) else getattr(result, 'content', '')
             finish = result.get('finishReason', result.get('finish_reason')) if isinstance(result, dict) else getattr(result, 'finish_reason', None)
             try:

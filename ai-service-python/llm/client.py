@@ -140,6 +140,10 @@ class CompletionHTTPClient:
     def adapt_payload(self, payload, *, responses_mode):
         return payload
 
+    def build_responses_payload(self, messages, options):
+        from llm.responses_transport import payload
+        return payload(messages, options, model=self.model, temperature=self.temperature)
+
     def http_error_code(self, response):
         return response.status_code
 
@@ -197,7 +201,7 @@ class CompletionHTTPClient:
             payload.update(request.extra_body)
         # Local transport control must never become a provider JSON parameter.
         payload.pop("timeout_seconds", None)
-        from llm.responses_transport import API_KEY, payload as responses_payload
+        from llm.responses_transport import API_KEY
         responses_mode=API_KEY in (request.extra_body or {})
         from llm.response_observation import OPTION as OBSERVATION_OPTION, Observation
         observation_option=(request.extra_body or {}).get(OBSERVATION_OPTION)
@@ -211,7 +215,7 @@ class CompletionHTTPClient:
             transport_options=dict(request.extra_body)
             if self.thinking_type:transport_options.setdefault('thinking',{'type':self.thinking_type})
             if self.reasoning_effort:transport_options.setdefault('reasoning_effort',self.reasoning_effort)
-            payload=responses_payload(resolved_messages,transport_options,model=self.model,temperature=self.temperature)
+            payload=self.build_responses_payload(resolved_messages, transport_options)
             endpoint='/responses'
             schema_overhead=len(json.dumps({API_KEY:'responses','response_format':transport_options['response_format']},
                 ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))

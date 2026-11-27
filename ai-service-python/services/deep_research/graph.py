@@ -2498,6 +2498,10 @@ def make_verify_node(
                     comparison_audit_args['fit_compact_comparison_budget'] = True
                     if audit_version >= 15:
                         comparison_audit_args['extend_comparison_audit_window'] = True
+                        from services.deep_research.tools import TrackedLLMInvoker
+                        if (audit_version >= 20 and isinstance(llm_invoke, TrackedLLMInvoker)
+                                and llm_invoke.supports_counted_comparison_audit(record)):
+                            comparison_audit_args['counted_comparison_audit'] = True
                     if audit_version >= 16:
                         comparison_audit_args['localize_comparison_gap'] = True
                     if audit_version >= 17:

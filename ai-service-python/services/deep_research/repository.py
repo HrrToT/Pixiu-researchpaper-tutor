@@ -388,6 +388,7 @@ class DeepResearchRepository:
                                      'boundCompositeTableCellsVersion',
                                      'shortComparisonLayoutContractVersion', 'searchCandidateResolutionContractVersion',
                                      'openaiResearchModels', 'comparisonPdfTableFallbackVersion',
+                                     'countedComparisonAuditContractVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',
                                      'comparisonLiteralAxisGoalVersion', 'comparisonPdfPassageBoundaryVersion',

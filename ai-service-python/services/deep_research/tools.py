@@ -1,8 +1,7 @@
 """Injectable domain tools for Deep Research v2.
 
-All retrieval and model calls are tracked via repository call ledger.
-Scope validation happens BEFORE every retrieval/model send.
-No hidden retries or untracked helper calls.
+Retrieval and model generation are tracked via the repository call ledger.
+Scope validation precedes each provider send, including audit input counting.
 """
 from __future__ import annotations
 
@@ -17,6 +16,7 @@ from services.deep_research.contracts import (
     CALL_STATUS_SUCCEEDED,
     DeepResearchError,
     IllegalStatusTransitionError,
+    STATUS_RUNNING,
     digest,
 )
 
@@ -348,6 +348,16 @@ class TrackedLLMInvoker:
         from services.deep_research.comparison_stage_generation import recorded_response
         return recorded_response(self._run_record(run_id),prompt,options,self._call_history(run_id))
     
+    def supports_counted_comparison_audit(self, record):
+        from services.deep_research.comparison_audit_envelope import enabled
+
+        version = record.get("countedComparisonAuditContractVersion")
+        return (type(version) is int and version == 1 and enabled(record)
+                and bool(record.get("openaiResearchModels"))
+                and self._call_history is not None and self._run_record is not None
+                and callable(getattr(type(self._client), "count_audit_input", None))
+                and callable(getattr(type(self._client), "invoke_counted_audit", None)))
+
     def __call__(
         self,
         run_id: str,
@@ -355,6 +365,8 @@ class TrackedLLMInvoker:
         prompt: str,
         extra_body: dict[str, Any] | None = None,
         use_reserve: bool = False,
+        *,
+        counted_audit: bool = False,
     ) -> dict[str, Any]:
         from llm.provider import DEFAULT_RESEARCH_OUTPUT_TOKENS, LLMRequest, LLMProviderError
         from services.deep_research.factual_review import (
@@ -401,6 +413,10 @@ class TrackedLLMInvoker:
         from services.deep_research.structured_output import enabled as native_json, messages_for_record
         transport_record = self._run_record(run_id) if self._run_record else None
         structured = native_json(transport_record)
+        if type(counted_audit) is not bool or counted_audit and (
+                node != "verify_answer_coverage" or not use_reserve or not structured
+                or not self.supports_counted_comparison_audit(transport_record)):
+            raise DeepResearchError('invalid_model_options', '整答审核计数配置无效，尚未发送。')
         wire_messages = messages_for_record(transport_record,node,prompt) if structured else None
         if structured:
             if 'messages' in (extra_body or {}):
@@ -415,6 +431,8 @@ class TrackedLLMInvoker:
         initial_plan_response=structured and initial_plan_response_enabled(transport_record,node)
         if initial_plan_response:
             request_identity['initialPlanResponseContractVersion'] = transport_record['initialPlanResponseContractVersion']
+        if counted_audit:
+            request_identity['countedComparisonAuditContractVersion'] = 1
         args_digest = digest(request_identity)
         from services.deep_research.factual_review import cell_review_enabled
         guarded_review = bounded_review or named_table_review or direct_review or (self._run_record and node == 'verify'
@@ -444,6 +462,32 @@ class TrackedLLMInvoker:
                 f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "
                 f"exceeds max {max_byte_length} bytes"
             )
+
+        request = LLMRequest(
+            prompt=prompt,
+            messages=wire_messages,
+            extra_body=extra_body or {},
+            timeout_seconds=(extra_body or {}).get("timeout_seconds"),
+        )
+        counted_input = None
+        if counted_audit:
+            from services.deep_research.contracts import BudgetExhaustedError, UnresolvedUnknownError
+            from services.deep_research.final_coverage import coverage_prompt_byte_limit
+            client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+            calls = self._call_history(run_id)
+            same_call = any(call.get("node") == node and call.get("tool") == "llm_invoke"
+                            and call.get("argsDigest") == args_digest for call in calls)
+            if not same_call:
+                unknown = [call["callId"] for call in calls if call.get("status") == "unknown"]
+                if unknown:
+                    raise UnresolvedUnknownError(run_id, unknown)
+                limit = coverage_prompt_byte_limit(transport_record["budget"], max_output, max_input_bytes=max_byte_length)
+                if limit <= 0 or transport_record.get("status") != STATUS_RUNNING:
+                    raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
+                counted_input = client.count_audit_input(request)
+                if type(counted_input) is not int or counted_input <= 0:
+                    raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
+                estimated_input = counted_input + INPUT_RESERVATION_MARGIN
         
         # Reserve BEFORE network
         call_record, reused = self._reserve(
@@ -464,17 +508,12 @@ class TrackedLLMInvoker:
                 verify_saved(call_record.get('result'))
             return call_record.get("result", {"content": "", "usage": {}})
         
-        # Execute LLM call - send-only try
-        request = LLMRequest(
-            prompt=prompt,
-            messages=wire_messages,
-            extra_body=extra_body or {},
-            timeout_seconds=(extra_body or {}).get("timeout_seconds"),
-        )
-        
         try:
-            client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
-            result = client.invoke(request)
+            if counted_audit:
+                result = client.invoke_counted_audit(request)
+            else:
+                client = self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+                result = client.invoke(request)
         except LLMProviderError as exc:
             # LLMProviderError with no status_code means unknown (timeout/connection)
             # Rejected HTTP status means failed
@@ -524,6 +563,8 @@ class TrackedLLMInvoker:
                 "output_tokens": result.usage.output_tokens if hasattr(result.usage, "output_tokens") else 0,
             },
         }
+        if counted_input is not None:
+            response["auditInputTokens"] = counted_input
         for field in ("cached_input_tokens", "cache_write_input_tokens"):
             value = getattr(result.usage, field, None)
             if type(value) is int and not result.usage.estimated:
