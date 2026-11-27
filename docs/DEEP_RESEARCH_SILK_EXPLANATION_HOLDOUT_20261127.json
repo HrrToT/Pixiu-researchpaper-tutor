@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_pending_first_execution",
+  "independentCredit": 0,
+  "materials": {
+    "silk_v1": {
+      "filename": "2304.06194v1.pdf",
+      "sha256": "cbb119e43c235221f44a224af08adbd1f2f9e3d968a95bf59dc4ac7b1aadd2bc",
+      "bytes": 1630051,
+      "pageCount": 17,
+      "arxiv": "2304.06194v1",
+      "reference": "https://arxiv.org/abs/2304.06194v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-SILK",
+      "split": "holdout",
+      "materials": [
+        "silk_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前 SiLK v1 论文，向初学者解释训练时怎样从一张图得到像素对应、双向匹配概率怎样形成并用来训练描述子，以及关键点分类如何判断正负样本。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "对原图施加随机单应变换，并用变换及其逆映射像素中心；将坐标离散化，丢弃越界和非一一对应。",
+        "描述子余弦相似度按行和列分别做带温度的 softmax，两个方向概率相乘得到往返概率。在真实对应上最小化负对数似然。",
+        "用当前描述子对真实对应检查是否互为最近邻，成功是正样本，其余为负样本。关键点分类用二元交叉熵预测匹配是否成功。",
+        "引证实际计算、训练和样本生成对应的原文片段。"
+      ],
+      "forbidden": [
+        "把任意往返匹配当作训练真值。",
+        "把两方向概率相加或仅做单向归一化。",
+        "把几何对应直接当成检测正样本，省略当前描述子的互为最近邻检查。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 4,
+        "section": "§3.3 and §3.4.1",
+        "checks": "Row and column softmax, round-trip product, both homographic mappings and validity filter."
+      },
+      {
+        "page": 4,
+        "section": "§3.4.3–4",
+        "checks": "Ground-truth positive descriptor paths, matching-success criterion and detector binary cross entropy."
+      },
+      {
+        "page": 3,
+        "section": "Figure 2",
+        "checks": "Pseudocode shows distinct label and supervision paths."
+      }
+    ],
+    "preSubmission": "Verify no substantive prior use in research runs, tasks, the index and source cache. Hash the exact PDF before isolation.",
+    "goldInputBoundary": "Only the frozen question, material identity and budget reach the application. The rubric and page anchors are for review only."
+  },
+  "caseDefinitionHashes": {
+    "H1-SILK": "0655c2e2141b8c1e0a3a3665bf91efe12a64f189ee4056458c505957a16dd5fb"
+  }
+}

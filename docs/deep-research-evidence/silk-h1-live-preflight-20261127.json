@@ -1,0 +1,15 @@
+{
+  "case": "H1-SILK",
+  "caseDefinitionDigest": "0655c2e2141b8c1e0a3a3665bf91efe12a64f189ee4056458c505957a16dd5fb",
+  "currentDefinitionMatches": true,
+  "runs": 500,
+  "runHits": 0,
+  "indexFields": 19825,
+  "indexHits": 0,
+  "bibliographyMentions": 0,
+  "cacheHits": 0,
+  "tasksChecked": 195,
+  "taskHits": 0,
+  "productionWrites": 0,
+  "providerCalls": 0
+}
