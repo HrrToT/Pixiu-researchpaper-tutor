@@ -19,6 +19,7 @@ from copy import deepcopy
 from typing import Any, Callable
 
 from services.deep_research.request_context import effective_question
+from services.deep_research.comparison_audit_envelope import CURRENT_VERSION as COMPARISON_AUDIT_VERSION
 from services.deep_research.source_version_review import enabled as source_version_review_enabled
 from services.deep_research.review_diagnostics import enabled as review_diagnostics_enabled
 from services.deep_research.review_response_failure import enabled as per_claim_review_failure_enabled
@@ -371,7 +372,7 @@ class ResearchFacade:
             **({'comparisonSupervisionPremisesVersion': 1}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
             "comparisonAuthoringContractVersion": 16 if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1 else 0,
-            "comparisonAuditEnvelopeContractVersion": 20 if self._comparison_cells_version == 1 else 0,
+            "comparisonAuditEnvelopeContractVersion": COMPARISON_AUDIT_VERSION if self._comparison_cells_version == 1 else 0,
             "comparisonJointReportsContractVersion": 16 if self._comparison_cells_version == 1 else 0,
             "comparisonBenchmarkSpeedScopeContractVersion": 7 if self._comparison_cells_version == 1 else 0,
             **({"comparisonBeginnerLeadContractVersion": 1}

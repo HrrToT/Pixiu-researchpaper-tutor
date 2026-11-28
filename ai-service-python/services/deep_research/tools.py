@@ -301,7 +301,7 @@ class TrackedLLMInvoker:
         from services.deep_research.verification_capacity import verification_input_limit
         record = self._run_record(run_id) if self._run_record else None
         from services.deep_research.comparison_audit_envelope import enabled as comparison_audit_enabled, EXTENDED_INPUT_BYTES
-        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17, 18, 19, 20)
+        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17, 18, 19, 20, 21)
                 and comparison_audit_enabled(record, node)):
             return min(self._verification_max_input, EXTENDED_INPUT_BYTES)
         if node == 'verify_answer_coverage':
@@ -466,6 +466,10 @@ class TrackedLLMInvoker:
         # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
         # Reject instead of silently clipping evidence or under-reserving it.
         max_byte_length = self.prompt_byte_limit(run_id, node)
+        if counted_audit and self.supports_counted_comparison_audit(transport_record):
+            from services.deep_research.comparison_audit_envelope import COUNTED_INPUT_BYTES, larger_counted_window
+            if larger_counted_window(transport_record):
+                max_byte_length = COUNTED_INPUT_BYTES
         if counted_audit and self.supports_counted_experiment_answer(transport_record):
             from services.deep_research.shared_experiment_answer_packet import COUNTED_MAX_INPUT_BYTES
             max_byte_length = COUNTED_MAX_INPUT_BYTES

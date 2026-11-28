@@ -2504,6 +2504,9 @@ def make_verify_node(
                         if (audit_version >= 20 and isinstance(llm_invoke, TrackedLLMInvoker)
                                 and llm_invoke.supports_counted_comparison_audit(record)):
                             comparison_audit_args['counted_comparison_audit'] = True
+                            from services.deep_research.comparison_audit_envelope import larger_counted_window
+                            if larger_counted_window(record):
+                                comparison_audit_args['larger_counted_comparison_window'] = True
                     if audit_version >= 16:
                         comparison_audit_args['localize_comparison_gap'] = True
                     if audit_version >= 17:
@@ -2516,13 +2519,13 @@ def make_verify_node(
         def audit_accepted(accepted, snapshot, *, phase=None, **options):
             scopes = {}
             if (comparison_audit_args.get('require_joint_conclusions')
-                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17, 18, 19, 20)):
+                    and record.get('comparisonAuditEnvelopeContractVersion') in (13, 14, 15, 16, 17, 18, 19, 20, 21)):
                 from services.deep_research.scope_expression_review import context_for_record
                 scopes['checked_comparison_scope_expressions'] = context_for_record(snapshot, accepted, typed=True)
             question, plan = effective_question(record), saved.get('plan', [])
             budget = snapshot.get('budget')
             if (phase is not None and comparison_audit_args.get('comparison_audit_envelope')
-                    and record['comparisonAuditEnvelopeContractVersion'] in (18, 19, 20)):
+                    and record['comparisonAuditEnvelopeContractVersion'] in (18, 19, 20, 21)):
                 from services.deep_research.contracts import DeepResearchError, digest
 
                 identity = digest([question, plan, accepted, evidence, comparison_audit_args, scopes, options])
@@ -2595,7 +2598,7 @@ def make_verify_node(
                 answer_coverage = {'status': 'not_checked', 'gaps': [], 'verdicts': [],
                     'reason': 'initial_review_budget_stop', 'scientificApproval': False}
                 if (comparison_audit_args.get('comparison_audit_envelope')
-                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17, 18, 19, 20)
+                        and record.get('comparisonAuditEnvelopeContractVersion') in (14, 15, 16, 17, 18, 19, 20, 21)
                         and llm_invoke is not None and verification_result.get('accepted')):
                     # Stopping individual reviews does not by itself exhaust the
                     # final-answer allowance. Check the retained subset with the

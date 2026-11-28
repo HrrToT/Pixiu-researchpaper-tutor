@@ -213,8 +213,16 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
             }
             return response
         monkeypatch.setattr("llm.client.requests.post", post)
-        prompt = "Review the frozen JSON audit inputs. " + "x" * 30000
         options = {"max_tokens": 3500, "temperature": 0.0}
+        prompt = "Review the frozen JSON audit inputs. " + "x" * 33000
+        assert created["comparisonAuditEnvelopeContractVersion"] == 21
+        with pytest.raises(ValueError, match="exceeds max 32000 bytes"):
+            invoke(run_id, "verify_answer_coverage", prompt, options, use_reserve=True)
+        with pytest.raises(ValueError, match="exceeds max 36000 bytes"):
+            invoke(run_id, "verify_answer_coverage", prompt + "x" * 3000, options,
+                   use_reserve=True, counted_audit=True)
+        assert not calls and not repo.list_calls(run_id)
+
         def send():
             return invoke(run_id, "verify_answer_coverage", prompt, options, use_reserve=True, counted_audit=True)
 

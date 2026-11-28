@@ -3,15 +3,21 @@ from copy import deepcopy
 
 
 EXTENDED_INPUT_BYTES = 32000
+COUNTED_INPUT_BYTES = 36000
+CURRENT_VERSION = 21
 
 
 def enabled(record, node='verify_answer_coverage'):
     from services.deep_research.comparison_intent import operations_enabled
     return (node == 'verify_answer_coverage' and operations_enabled(record)
         and type(record.get('comparisonAuditEnvelopeContractVersion')) is int
-        and 1 <= record['comparisonAuditEnvelopeContractVersion'] <= 20
+        and 1 <= record['comparisonAuditEnvelopeContractVersion'] <= CURRENT_VERSION
         and type(record.get('answerCoherenceContractVersion')) is int
         and record['answerCoherenceContractVersion'] in (1, 2))
+
+
+def larger_counted_window(record):
+    return enabled(record) and record['comparisonAuditEnvelopeContractVersion'] >= 21
 
 
 def revision_coverage_enabled(record, node='verify_answer_coverage'):
