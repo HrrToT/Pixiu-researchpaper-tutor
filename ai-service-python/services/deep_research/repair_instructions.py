@@ -119,6 +119,17 @@ def render(*, question, length_contract, requirements, source_context, targets,
                        'conditions is always a JSON object with named key/value pairs, or {}. Put explanatory '
                        'sentences in text, never as unnamed entries inside conditions. For source-local '
                        'targets, omit statements about what other papers show or whether their text is available.\n')
+            from services.deep_research.processing_cost_sources import requested as asks_processing_cost
+            cost_targets = [
+                target['claimId'] for target in targets
+                if asks_processing_cost((comparison_scopes or {}).get(target['claimId'], {}).get('dimension'))
+            ]
+            if cost_targets:
+                data['processingCostTargets'] = cost_targets
+                routing += ('For processingCostTargets, state the extra work, cited workload or measured cost, '
+                            'and what cannot be quantified from the quotes. A training schedule is workload '
+                            'context, not elapsed time or isolated overhead. Keep a disputed figure only '
+                            'with a permitted quote supporting that quantity in the stated setting.\n')
     elif comparison_authoring:
         from services.deep_research.comparison_repair import CORE as core
     else:

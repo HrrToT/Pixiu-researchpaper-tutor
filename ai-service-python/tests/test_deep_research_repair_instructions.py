@@ -74,6 +74,39 @@ def test_comparison_repair_carries_the_frozen_benchmark_owner_and_preserves_sour
         assert new[field] == old[field]
 
 
+def test_comparison_repair_distinguishes_reported_workload_from_isolated_processing_cost():
+    report, verification, ev, opts = comparison_fixture()
+    original, = report['claims']
+    ev[0]['quote'] = 'We train for 7K or 30K iterations under two evaluation settings.'
+    pair = {'workId': ev[0]['sourceWorkId'], 'versionId': ev[0]['sourceVersionId']}
+    report['claims'].append({**original, 'claimId': 'speed'})
+    report['comparisonCells']['sources'] = {'P1': pair}
+    report['comparisonCells']['layout'] = [
+        {'source': 'P1', 'axisTitle': '额外处理成本', 'claimIds': ['c']},
+        {'source': 'P1', 'axisTitle': '渲染速度', 'claimIds': ['speed']},
+    ]
+    verification['rejected'] = [
+        {'claimId': claim_id, 'reason': 'numeric_mismatch', 'missingReportedNumbers': ['7e3']}
+        for claim_id in ('c', 'speed')
+    ]
+    question = '比较额外处理成本和渲染速度。'
+    opts.update(comparison_authoring=4, benchmark_example={'claimId': 'joint_example'})
+    cost = _prepare_repair(report, verification, ev, question, **opts)
+    report['comparisonCells']['layout'][0]['axisTitle'] = '表示与机制'
+    mechanism = _prepare_repair(report, verification, ev, question, **opts)
+
+    inputs = cost['prompt'].split('Exact repair inputs (goals and metadata, not paper facts):\n')[1]
+    inputs = json.loads(inputs.split('\nAllowed evidence IDs by target')[0])
+    assert inputs['processingCostTargets'] == ['c']
+    assert 'A training schedule is workload context' in cost['prompt']
+    assert 'what cannot be quantified from the quotes' in cost['prompt']
+    assert 'with a permitted quote supporting that quantity in the stated setting' in cost['prompt']
+    assert 'Only benchmarkExample.claimId may include numerical benchmark results' in cost['prompt']
+    assert 'processingCostTargets' not in mechanism['prompt']
+    for field in ('allowed', 'originals', 'aliases', 'comparisonDisplayEvidence'):
+        assert cost[field] == mechanism[field]
+
+
 def test_repair_resolves_visible_cells_and_leaves_prose_without_coordinates():
     from services.deep_research.repair import _parse_repair_response
     report, verification, ev, opts = comparison_fixture()
