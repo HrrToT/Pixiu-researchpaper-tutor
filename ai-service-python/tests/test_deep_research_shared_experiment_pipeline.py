@@ -250,8 +250,18 @@ def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_fact
         {**row, 'sourceContext': {'after': 'Second condition.', 'truncated': True}},
     ]
     assert row['sourceContext']['before'] == 'First condition.'
+    prefix = {'passedSourceFacts': ['fact_0'], 'checks': [verdict['checks'][1]], 'issues': [],
+              'uncheckedIds': ['section_1']}
+    pending = {'status': 'invalid_response'}
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix) == (
+        _design_only_context(data, reviewed, {'sourceFacts': [{}]})
+    )
+    assert _design_only_context(data, pending, {'sourceFacts': [{}, {}]}, verified_prefix=prefix) is None
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix,
+                                for_final_answer=True) is None
     verdict['checks'][1]['planBindings'].append('/sourceFacts/0/evidenceRefs')
     assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix) is None
     verdict['checks'][1]['planBindings'].pop()
     verdict['checks'][0]['status'] = 'failed'
     assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None

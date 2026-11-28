@@ -407,7 +407,7 @@ def _reviewed_fact_batch(record, batches, bound, input_data, aliases):
     return {'reusedFactBatch': normalized, 'reusedFactSourceDigest': digest(responses[0])}
 
 
-def reviewed_prefix_findings(record, input_data, aliases, saved):
+def reviewed_prefix_findings(record, input_data, aliases, saved, *, include_source_fact_status=False):
     """Permit actionable feedback without a complete verdict or any release credit."""
     from jsonschema import Draft202012Validator
 
@@ -425,6 +425,7 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
     failed = []
     issues = []
     checked = set()
+    passed_source_facts = set()
     for packet, response in prefix:
         try:
             ids = packet['checkIds']
@@ -449,14 +450,21 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                 return {}
             checked.update(ids)
+            if include_source_fact_status:
+                passed_source_facts.update(row['checkId'] for row in part['checks']
+                                           if row['status'] == 'passed'
+                                           and targets_by_id[row['checkId']].get('factId') in passed)
             failed.extend(row for row in part['checks'] if row['status'] != 'passed' and row['planBindings'])
             issues.extend(row for row in part['issues'] if row['planBindings'])
         except (ValueError, TypeError, KeyError, IndexError, OverflowError, RecursionError):
             return {}
     if not failed and not issues:
         return {}
-    return {'checks': failed, 'issues': issues,
-            'uncheckedIds': [cid for cid in targets_by_id if cid not in checked]}
+    result = {'checks': failed, 'issues': issues,
+              'uncheckedIds': [cid for cid in targets_by_id if cid not in checked]}
+    if include_source_fact_status:
+        result['passedSourceFacts'] = sorted(passed_source_facts)
+    return result
 
 
 def build(record, input_data, aliases, *, required_domains=()):

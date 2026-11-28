@@ -228,19 +228,26 @@ def _apply_scoped(base, saved):
     return bound
 
 
-def _design_only_context(data, reviewed, proposal, *, for_final_answer=False):
+def _design_only_context(data, reviewed, proposal, *, for_final_answer=False, verified_prefix=None):
     """Keep all quotations and the side excerpts used by unresolved checks."""
     assessment = reviewed.get('assessment', {})
-    if (reviewed.get('status') != 'checked' or not assessment.get('valid')
-            or bool(assessment.get('complete')) != for_final_answer):
-        return None
-    verdict = assessment['verdict']
     expected = {f'fact_{index}' for index in range(len(proposal['sourceFacts']))}
-    facts = {row['checkId']: row['status'] for row in verdict['checks'] if row['checkId'].startswith('fact_')}
-    if not expected or facts != dict.fromkeys(expected, 'passed'):
+    if not expected:
         return None
+    if verified_prefix:
+        if for_final_answer or set(verified_prefix['passedSourceFacts']) != expected:
+            return None
+        verdict = verified_prefix
+    else:
+        if (reviewed.get('status') != 'checked' or not assessment.get('valid')
+                or bool(assessment.get('complete')) != for_final_answer):
+            return None
+        verdict = assessment['verdict']
+        facts = {row['checkId']: row['status'] for row in verdict['checks'] if row['checkId'].startswith('fact_')}
+        if facts != dict.fromkeys(expected, 'passed'):
+            return None
     findings = [row for row in verdict['checks'] if row['status'] != 'passed'] + verdict['issues']
-    if any(path == '/sourceFacts' or path.startswith('/sourceFacts/')
+    if any((verified_prefix and path == '/') or path == '/sourceFacts' or path.startswith('/sourceFacts/')
            for row in findings for path in row['planBindings']):
         return None
     contextual_checks = verdict['checks'] if for_final_answer else findings
@@ -389,7 +396,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                                                      feedback_refs=feedback_refs)
         compact_version = record.get(COMPACT_SCIENCE_MARKER)
         preserve_facts = False
-        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4):
+        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4, 5):
             compact_data = {**input_data, 'evidence': [
                 {key: value for key, value in row.items() if key not in {
                     'resultRoleHintOnly', 'sourceContextRequired', 'contextOmitted', 'obligations',
@@ -399,6 +406,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             policy = {
                 1: COMPACT_SCIENCE_INSTRUCTIONS, 2: SCOPED_SCIENCE_INSTRUCTIONS,
                 3: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 4: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
+                5: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
             }[compact_version]
             compact_req, compact_size, compact_supplied = fit_accounted_evidence(
                 record, compact_data, aliases, proposal,
@@ -407,14 +415,31 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             )
             if compact_size < size:
                 req, size, supplied = compact_req, compact_size, compact_supplied
-            if size > 32000 and compact_version == 4:
-                design_data = _design_only_context(compact_data, reviewed, proposal)
+            if size > 32000 and compact_version in (4, 5):
+                verified_prefix = None
+                if compact_version == 5 and reviewed.get('verifiedPrefixFindings'):
+                    from services.deep_research.shared_experiment_review import reviewed_prefix_findings
+                    verified_prefix = reviewed_prefix_findings(
+                        prior, input_data, aliases, reviewed, include_source_fact_status=True)
+                design_data = _design_only_context(compact_data, reviewed, proposal, verified_prefix=verified_prefix)
                 if design_data is not None:
                     design_policy = ('Paper facts are checked and read-only. Keep sourceFacts exactly.\n'
                                      + ATTRIBUTION_SCIENCE_INSTRUCTIONS)
-                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10):
+                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11):
                         design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
                                           'Use unresolved only for open design decisions.\n')
+                    if compact_version == 5:
+                        # Each redundant excerpt is a literal prefix of the same
+                        # requirement; the question and all criteria stay intact.
+                        design_data['requirements'] = [
+                            {k: v for k, v in row.items() if k != 'requestExcerpt'}
+                            if isinstance(row.get('requestExcerpt'), str)
+                            and row['question'].startswith(row['requestExcerpt']) else row
+                            for row in design_data['requirements']
+                        ]
+                        if verified_prefix:
+                            design_policy = ('Unchecked IDs have no verdict; retain their requirements.\n'
+                                             + design_policy)
                     fitted = fit_accounted_evidence(record, design_data, aliases, proposal,
                         lambda data: measure(data, policy=design_policy, output_tokens=4096),
                         32000, feedback_refs=feedback_refs, required_only=True)
