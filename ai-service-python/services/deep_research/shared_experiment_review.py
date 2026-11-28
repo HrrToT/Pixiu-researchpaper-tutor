@@ -81,6 +81,7 @@ DELIVERABLE_SCOPE_GUIDANCE = (
 )
 CITED_PASSAGE_SCOPE_MARKER = 'sharedExperimentReviewCitedPassageScopeVersion'
 INDEXED_STATES_MARKER = 'sharedExperimentReviewIndexedStatesVersion'
+HUMAN_EVIDENCE_LIMIT_MARKER = 'sharedExperimentReviewHumanEvidenceLimitVersion'
 CONTEXT_FIELD_MARKER = 'sharedExperimentReviewContextFieldVersion'
 SEED_BINDINGS_MARKER = 'sharedExperimentReviewSeedBindingsVersion'
 FIT_CAPTURE_BINDINGS_MARKER = 'sharedExperimentReviewFitCaptureBindingsVersion'
@@ -318,9 +319,12 @@ def descriptor(record, check_ids=None):
                         **({} if references else {'text':text})})
     reason = {**literal_text, 'maxLength':420 if record.get(REFERENCE_MARKER) == 4 else 300} if references else text
     plan_binding_cap = 16 if record.get(REFERENCE_MARKER) in (3, 4) else 8
+    human_only = (check_ids is not None and references
+                  and all(checks_by_id[cid]['kind'] == 'human_requirement' for cid in ids))
+    evidence_cap = 12 if human_only and record.get(HUMAN_EVIDENCE_LIMIT_MARKER) == 1 else 8
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
                      'planBindings':_array(binding, maximum=plan_binding_cap),
-                     'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
+                     'evidenceBindings':_array(evidence, maximum=evidence_cap), 'reason':reason})
     scoped_facts = (check_ids is not None and record.get(FACT_CONTEXT_MARKER) in (4, 5)
                     and any(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids))
     if scoped_facts:

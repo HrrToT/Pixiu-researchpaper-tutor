@@ -411,6 +411,7 @@ class DeepResearchRepository:
                                      'sharedExperimentReviewPlannedPrerequisitesVersion',
                                      'sharedExperimentReviewCitedPassageScopeVersion',
                                      'sharedExperimentReviewIndexedStatesVersion',
+                                     'sharedExperimentReviewHumanEvidenceLimitVersion',
                                      'sharedExperimentReviewContextFieldVersion',
                                      'sharedExperimentReviewSeedBindingsVersion',
                                      'sharedExperimentReviewFitCaptureBindingsVersion',

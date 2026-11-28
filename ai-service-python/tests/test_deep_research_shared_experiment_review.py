@@ -147,6 +147,24 @@ def test_action_only_operation_reference_preserves_typed_parameter_boundary():
     assert json.loads(response['content']) == payload
 
 
+def test_human_only_packet_accepts_more_evidence_without_widening_fact_packets():
+    from services.deep_research import shared_experiment_review as review
+
+    record, _, _ = ready()
+    record[review.REFERENCE_MARKER] = 4
+    human_ids = [row['checkId'] for row in targets(record) if row['kind'] == 'human_requirement']
+    fact_ids = [row['checkId'] for row in targets(record) if row['kind'] == 'source_fact']
+
+    def maximum(ids):
+        schema = descriptor(record, ids)['schema']
+        return schema['properties']['checks']['items']['properties']['evidenceBindings']['maxItems']
+
+    assert human_ids and fact_ids and maximum(human_ids) == 8
+    record[review.HUMAN_EVIDENCE_LIMIT_MARKER] = 1
+    assert maximum(human_ids) == 12
+    assert maximum(fact_ids) == maximum(human_ids + fact_ids) == 8
+
+
 def test_versioned_metric_ids_preserve_the_original_review_response():
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _decode_batch
