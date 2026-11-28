@@ -56,6 +56,10 @@ _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|pos
 _EVALUATION_COUNTS = re.compile(
     r'(?<![A-Za-z0-9_‐‑–-])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
     r'(?P<count>' + '|'.join(_WORDS) + r'|both)\s+(?=datasets?\b|configurations?\b)', re.I)
+_THOUSANDS_OF_ITERATIONS = re.compile(
+    r'(?<![A-Za-z0-9_.,$€£+\-])(?P<count>[1-9][0-9]{0,5}(?:\.[0-9]{1,3})?)k'
+    r'(?=(?:\s*(?:,\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+)'
+    r'[1-9][0-9]{0,5}(?:\.[0-9]{1,3})?k)*\s+iterations?\b)', re.I)
 _CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
     r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十]{1,3})\s*'
     r'(?P<count_unit>个|维|次|帧|层|组|张|条|篇|种|项)')
@@ -270,10 +274,12 @@ def number_display(identity):
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,
                                         image_pair_articles=False, explicit_forward_pass=False,
                                         explicit_sh_band_schedule=False, evaluation_counts=False,
-                                        gaussian_figure_split=False):
+                                        gaussian_figure_split=False, thousands_of_iterations=False):
     """Normalize number checks only. Preserve original quotes for semantic review."""
     text = _ENGLISH_FACTOR_SUFFIX.sub('×', text)
     text = _ENGLISH_UPSAMPLE_SCHEDULE.sub(r'\g<1>2 times', text)
+    if thousands_of_iterations:
+        text = _THOUSANDS_OF_ITERATIONS.sub(r'\g<count>e3', text)
     if gaussian_replacement_counts:
         text = _GAUSSIAN_REPLACEMENT_COUNT.sub(
             lambda match: match['prefix'] + str(_WORDS[match['count'].lower()]), text)

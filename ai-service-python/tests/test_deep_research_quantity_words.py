@@ -202,6 +202,26 @@ def test_gaussian_figure_rule_does_not_reinterpret_other_numbered_objects():
     assert normalize_explicit_quantity_phrases(text, gaussian_figure_split=True) == text
 
 
+@pytest.mark.parametrize('quote,missing', [
+    ('We report two configurations, 7K and 30K iterations for ours.', []),
+    ('We use 7K iterations, 30K samples.', ['3e4']),
+    ('We use 7K and 31K iterations.', ['3e4']),
+    ('We use 7K and 30K tokens.', ['3e4', '7e3']),
+    ('We use 7K, 13K, and 30K iterations.', []),
+])
+def test_compact_iteration_counts_keep_the_reported_magnitude(quote, missing):
+    claim, evidence = setup('训练预算有 7,000 次和 30,000 次迭代的配置。', quote)
+    assert verify_claims([claim], [evidence], quantity_spelling_version=23)['rejected']
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    result = verify_claims([claim], [evidence], checker, quantity_spelling_version=25)
+    if missing:
+        assert result['rejected'][0]['missingReportedNumbers'] == missing
+        checker.assert_not_called()
+    else:
+        assert result['accepted']
+        checker.assert_called_once()
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
