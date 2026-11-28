@@ -1,0 +1,63 @@
+{
+  "case": "H1-ALIKE development rerun",
+  "previousIndependentAttempt": "alike-h1-first-frozen-20261127.json",
+  "codeCommit": "3c92c13f4f2f0ef98b6624819caf0bba2663ae49",
+  "runId": "dr_run_715c5485d4fe5243a4abc3dbfba15359",
+  "outcome": "partial",
+  "isolatedPublicationId": "dr_pub_060bc36eea7f4a44b68a5582da21fa54",
+  "historicalModelInputsReplayed": [
+    "resolve_brief",
+    "plan"
+  ],
+  "scientificContentCredit": 0,
+  "runtimeBoundary": {
+    "productionWrites": 0,
+    "externalSearches": 0,
+    "scopeCheck": 103,
+    "pdf": 2
+  },
+  "visibleAnswer": {
+    "textBeforeDetails": "本回答引用：全文片段。\n\n- 据 ALIKE（arXiv:2112.02906v1，§III-B、C）：DKD先在局部窗口保留最大分数，再用阈值筛出像素级点。以各点为中心，窗口分数减去最大值、除以温度后做softmax（归一化成权重）；坐标加权求和得到局部偏移，加到像素级点上，得到亚像素位置。位置梯度沿加权求和和softmax传回窗口分数。重投影损失促使变换后的点靠近对应检测点；峰值离散损失按距软坐标的距离加权分数，促使分数集中在关键点附近。 [1] [2] [3] [4] [5] [6]",
+    "visibleCharactersIncludingCitationLabels": 247,
+    "references": 6,
+    "physicalPages": [
+      3,
+      4,
+      5
+    ]
+  },
+  "assessment": {
+    "readiness": {
+      "dkd-procedure": "supported",
+      "remaining-request": "supported",
+      "loss-constraints": "supported"
+    },
+    "finalCoverage": {
+      "dkd-procedure": "covered",
+      "remaining-request": "partial",
+      "loss-constraints": "covered",
+      "answer_scope": "partial"
+    },
+    "coverageModelReason": "The model verified the softmax path but requested effects on later predictions, beyond the literal question.",
+    "manualBoundary": "The displayed answer explains the local differentiable path but omits the clear boundary that the preceding discrete NMS and threshold selection itself does not propagate location gradients. That boundary is required by the frozen rubric.",
+    "scope": "This rerun establishes progress from empty output to an isolated partial report; first independent result remains inconclusive."
+  },
+  "usage": {
+    "actualProviderCalls": 7,
+    "tokens": 36522,
+    "tokensByModel": {
+      "gpt-6-luna": 7026,
+      "gpt-6.1-terra": 29496
+    },
+    "elapsedSeconds": 74.0
+  },
+  "sha256": {
+    "intent.json": "48779b55e42d6fc1c42f28669a99114e548331258d528e88d8e1c3fb91def46c",
+    "run.json": "661276b954759f073117334ceecf0e4b8be46a2a752c2a3d93ab584a5ded9edb",
+    "calls.json": "54ed43cd1f802e67a0a550e5d41ba2a45aff6d84e5058ac25d3cc0d347aecc4b",
+    "result.json": "5a0c71f2d8962a68a16c20b91bef85bd16cd6a84559b6476202ab01de374e873",
+    "boundary.json": "f66de4aa2af557fdef8166eecf479ee2728da87f70fa8208130edf594540a532",
+    "provider.jsonl": "cc844c3be20963bd56010e8c290443e70a57d82309b33272cc0878a721f9f891",
+    "replayed.json": "1401282c0a28697cca34c60b824202febf310135a53da2e041b45e83b61d9335"
+  }
+}

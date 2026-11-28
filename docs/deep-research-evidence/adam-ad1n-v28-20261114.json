@@ -1,0 +1,70 @@
+{
+  "case": "AD1N-v28",
+  "runId": "dr_run_db76d2c34dc055449812bab4a82398a3",
+  "sourceCommit": "336eaae0e6c761b68b1eb380aa067306ae48282a",
+  "promptVersion": "dr-v2.20261114.443",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "actualModelCalls": 9,
+  "allCallsSettled": true,
+  "tokens": 41606,
+  "elapsedSeconds": 137.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "automaticAcceptedClaims": 0,
+  "automaticRejectedClaims": 2,
+  "reviewFailureReasons": [
+    [
+      "diagnostic_source_not_bound"
+    ],
+    [
+      "new_diagnostic_numbers_not_bound"
+    ]
+  ],
+  "focusedRepairActuallyReached": false,
+  "textAndConditionsCharacters": 237,
+  "visibleCharacters": 258,
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 19,
+    "ledgerRows": 9474,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "findings": [
+    "Exact copied source excerpt failed for c1; source glyphs and source-field identities must stay exact, not be heuristically rebound.",
+    "c2 added a formula in an unbound plain reason segment, leaving a new numeric fact unbound. Visible parameter identity policy did not waive it.",
+    "Shared-budget verified text repair remained unexercised because factual provenance was invalid. This is a failed development validation, not independent acceptance."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v28.json": "94f64e8d7f766130e6dcb83ea41088256107e44fedc32de42a7a11ff516dbc21",
+    "tmp\\dr-acceptance-receipts\\AD1N-v28.payload.json": "471c79ede67e444ee1ee5b2b609024217f321303bf85c5fc27d807dcce09f437",
+    "tmp\\dr-acceptance-receipts\\AD1N-v28.calls.json": "a6d0018fe4ed4503cb84adf777b05266f7ba793f7033857744657f17f1b1a7c2",
+    "tmp\\dr-acceptance-receipts\\AD1N-v28.preservation.json": "71ed8691f231c6890d29664f35f0821651852ea48404c13cd2e228f196ed3887"
+  }
+}

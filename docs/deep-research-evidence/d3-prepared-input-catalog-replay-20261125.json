@@ -1,0 +1,23 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v6",
+  "originalReceiptSha256": "84882857a5bd31c1ecb1a91070feb04eb15b607744b87107e6b8892d136103bb",
+  "historicalRejection": {
+    "plan.state_input_unavailable": 3
+  },
+  "unavailableInitialStatesExcludedForDiagnostic": 3,
+  "cloneStateCreatorCountsForRepeatedIds": [
+    4,
+    4,
+    4
+  ],
+  "unrepairedProjectionRejection": {
+    "plan.duplicate_identity": 1
+  },
+  "sameContextAndEvidence": true,
+  "evidenceCount": 20,
+  "previousInputBytes": 28477,
+  "assetCatalogInputBytes": 28983,
+  "inputLimitBytes": 32000,
+  "providerCalls": 0,
+  "scientificAcceptanceEstablished": false
+}

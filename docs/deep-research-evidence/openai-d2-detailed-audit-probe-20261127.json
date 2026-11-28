@@ -1,0 +1,32 @@
+{
+  "sourceBase": "567d653c8",
+  "candidate": "comparison_audit_envelope_v17",
+  "case": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_whole_answer_diagnostic",
+  "outcome": "partial",
+  "providerCalls": 1,
+  "providerModel": "gpt-6.1-terra",
+  "usage": {
+    "total_tokens": 8548,
+    "input_tokens": 8036,
+    "output_tokens": 512,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 8033
+  },
+  "reusedVerifiedClaims": 11,
+  "wholeAnswerCoverage": "checked",
+  "coherent": true,
+  "reviewerDiagnostic": {
+    "requestExcerpt": "向初学者比较原始表示与压缩后部署的取舍",
+    "missingAnswerElement": "画质指标及其数值方向未向初学者解释。"
+  },
+  "diagnosticIsScientificApproval": false,
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-detailed-audit-20261127",
+  "sha256": {
+    "intent.json": "6e3ae61c93dc3d8a8fc3ae24ada07cd925c42b6d6628eaafcf797840c04fc739",
+    "calls.json": "a2c4962cd62c263da3e3e822c5f8f10d4dd18effecdae8dd3cb1cc91b4a5ad0b",
+    "run.json": "8a3c4a04a1628c06b4bf989a2ae646a5308beb9ba0573d6f1067227a9b2161d7",
+    "publish-return.json": "bb5132a7e5fdd3f1c50e458bb385cb54ebcc574b08ac020d1a743bd069ac66e2"
+  }
+}

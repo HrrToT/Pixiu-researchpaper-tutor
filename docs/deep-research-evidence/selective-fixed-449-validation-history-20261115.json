@@ -1,0 +1,46 @@
+{
+  "attempts": [
+    {
+      "runId": "selective-fixed-449-host-20261115",
+      "sourceCommit": "328a4fb8a5a58950dc34d4af3c0f4c4349d040a1",
+      "exitCode": 4294967295,
+      "verified": false,
+      "tests": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "modules": 432,
+      "sourceUnchanged": true
+    },
+    {
+      "runId": "selective-fixed-449-host-unrestricted-20261115",
+      "sourceCommit": "462d1c8ac94c091415bb44d1d2dbe7c57120adf7",
+      "exitCode": 1,
+      "verified": false,
+      "tests": 7795,
+      "failures": 7,
+      "errors": 0,
+      "skipped": 0,
+      "modules": 432,
+      "sourceUnchanged": true
+    },
+    {
+      "runId": "selective-fixed-449-final-20261115",
+      "sourceCommit": "76d2ce55d09dff1a5a2291688962f4cfdaf9e7f4",
+      "exitCode": 0,
+      "verified": true,
+      "tests": 7798,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "modules": 432,
+      "sourceUnchanged": true
+    }
+  ],
+  "firstAttemptBoundary": "Sandbox socketpair independently timed out at6seconds while unrestricted control succeeded. Only matched owned worker was stopped; original evidence/log retained, not counted as test pass.",
+  "secondAttemptBoundary": "7 failures: new fixed editor flag was dispatched outside explicit fixed-scope eligibility. Actual500-character reproduction confirmed. Corrected in76d2ce55, followed by84 related checks and final complete regression.",
+  "relatedPassed": 84,
+  "relatedBoundary": "9 end-to-end tests plus75 related tests in exclusive workspace basetemp directories. A prior default-temp setup-error attempt is not credited.",
+  "finalResult": "7798passed,432modules,no failures/errors/skips,source unchanged.",
+  "scientificAcceptance": false
+}

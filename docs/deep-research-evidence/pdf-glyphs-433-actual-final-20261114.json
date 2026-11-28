@@ -1,0 +1,47 @@
+{
+  "pdfSha256": "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7",
+  "pages": 9,
+  "legacyControlCounts": [
+    2,
+    90,
+    62,
+    50,
+    58,
+    0,
+    3,
+    12,
+    0
+  ],
+  "currentControlCounts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "fallbackPages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    8
+  ],
+  "elapsedSeconds": 5.0,
+  "page2FormulaChecks": {
+    "β1": true,
+    "β2": true,
+    "θ": true,
+    "∇": true,
+    "−": true,
+    "α": true
+  },
+  "modelCalls": 0,
+  "oldCaseOutcomesChanged": false,
+  "boundary": "Actual PDF parser check and rendered page2 review; extraction correctness is not scientific or novice content acceptance."
+}

@@ -1,0 +1,65 @@
+{
+  "promptVersion": "dr-v2.20261115.472",
+  "sourceCommit": "f34dde1f144c7e64318542f961d0a760a4e451b1",
+  "isolatedExplicitFitRepairOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 14035,
+    "input_tokens": 12317,
+    "output_tokens": 1718
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "unit.metadata_edit.fit_outputs"
+  ],
+  "modelAuthoredGroups": [
+    [
+      "00"
+    ],
+    [
+      "01"
+    ],
+    [
+      "10"
+    ],
+    [
+      "11"
+    ]
+  ],
+  "modelAuthoredBudgets": [
+    {
+      "unit": "optimizer_steps",
+      "perExecution": 30000
+    },
+    {
+      "unit": "optimizer_steps",
+      "perExecution": 30000
+    },
+    {
+      "unit": "optimizer_steps",
+      "perExecution": 30000
+    },
+    {
+      "unit": "optimizer_steps",
+      "perExecution": 30000
+    }
+  ],
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9838,
+    "runs": 390,
+    "callsSha256": "122784a23d94d70db2f7456630f3ad6460fe58f39b239167957a463b6686bf26",
+    "runsSha256": "ca2a1de33da3124de0fd6d0e6c11300214cb94455c8d735efa57bed600e5b33e"
+  },
+  "rawResult": "tmp\\fit-edits-472-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "e41881c9651ea0787c49947140e667210b9b14b27b32a6dafb5da6f9b5fa94c4",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Align new local output label checks with existing decoder semantics for disjoint unconsumed outputs, preserving v1 failed record."
+}

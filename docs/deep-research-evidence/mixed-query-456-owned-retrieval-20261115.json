@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "e6d25dff",
+  "sourceCase": "D2-VQ-v1-v2",
+  "modelCalls": 0,
+  "appRowsUnchanged": true,
+  "seconds": 34.573,
+  "rawSha256": "e9b01188cf54a6a529d7235a6b653a0e52d344c7de44ac86518e4f4db330c8bb",
+  "rows": [
+    {
+      "version": 3,
+      "obligationId": "ob-trade-a",
+      "globalQualitative": true,
+      "forQueryQualitative": true,
+      "selectedRows": 5,
+      "verifiedTableRows": 0
+    },
+    {
+      "version": 3,
+      "obligationId": "ob-trade-b",
+      "globalQualitative": true,
+      "forQueryQualitative": true,
+      "selectedRows": 3,
+      "verifiedTableRows": 0
+    },
+    {
+      "version": 4,
+      "obligationId": "ob-trade-a",
+      "globalQualitative": false,
+      "forQueryQualitative": false,
+      "selectedRows": 5,
+      "verifiedTableRows": 0
+    },
+    {
+      "version": 4,
+      "obligationId": "ob-trade-b",
+      "globalQualitative": false,
+      "forQueryQualitative": false,
+      "selectedRows": 2,
+      "verifiedTableRows": 0
+    }
+  ],
+  "finding": "Query routing changes as intended, but old index has no verified table packet for either query. This is not a retrieval-quality pass. Separate PDF-header/caption repair prepared in .457; normal application reparse and retrieval must be tested."
+}

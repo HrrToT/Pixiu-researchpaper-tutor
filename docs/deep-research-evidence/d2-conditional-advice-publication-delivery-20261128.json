@@ -1,0 +1,89 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_audited_report_publication_and_delivery_replay",
+  "sourceCommit": "843df8fb1e72e378d7ec965e5290599ba6e00bae",
+  "priorRealReview": "docs/deep-research-evidence/d2-bound-repair-verification-real-20261128.json",
+  "freshRunCredit": 0,
+  "independentHoldoutCredit": 0,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "publicationReplay": {
+    "2": {
+      "outcome": "partial",
+      "gaps": [
+        "o4"
+      ],
+      "claims": 11,
+      "publicationId": "dr_pub_4058bdea5ddf4f1ba4ebe81cce8414ec",
+      "delivered": false
+    },
+    "3": {
+      "outcome": "complete",
+      "gaps": [],
+      "claims": 11,
+      "publicationId": "dr_pub_f12acaf8926e484d9d4b1b57b832b974",
+      "delivered": false
+    }
+  },
+  "delivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Exact saved audited D2 complete report, replayed with graph and model dispatch disabled",
+    "originalRunId": "dr_d2_conditional_advice_publication_replay_v3_20261128",
+    "replayRunId": "dr_run_122cda46d0c55ffd93e90700b31741ab",
+    "sourceArtifactSha256": "c3f3567af84d8506e214b0136d55e194a5fb9bea14dac009041743a536010ecb",
+    "reportOutcome": "complete",
+    "reportClaims": 11,
+    "sourcePages": {
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+        1,
+        4,
+        8,
+        11
+      ],
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+        2,
+        4,
+        6,
+        7,
+        8
+      ]
+    },
+    "duplicateDeliverySuppressed": true,
+    "documentsMatchHash": true,
+    "crossTaskFileDenied": true,
+    "restartedAndReadAgain": true,
+    "materialReadinessFixture": true,
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true
+  },
+  "artifacts": [
+    {
+      "path": "tmp/d2-conditional-advice-publication-replay-20261128/summary.json",
+      "sha256": "d70419a45a0735f7a338795205f55cc51ffdd84942b6c24718f65d464eb0f002"
+    },
+    {
+      "path": "tmp/d2-conditional-advice-publication-replay-20261128/v2-run.json",
+      "sha256": "d916d849d4f38c02ffa66e56863059cc42b1442e9160b20f9d20fa7bbf08b6da"
+    },
+    {
+      "path": "tmp/d2-conditional-advice-publication-replay-20261128/v3-run.json",
+      "sha256": "c3f3567af84d8506e214b0136d55e194a5fb9bea14dac009041743a536010ecb"
+    },
+    {
+      "path": "tmp/publication-integration-d2-conditional-advice-complete-20261128/receipt.json",
+      "sha256": "9abeeca01c1ceb85281b915a2a884a20554c6aea3dc9f8e7d4f9e16fb76b766e"
+    },
+    {
+      "path": "tmp/publication-integration-d2-conditional-advice-complete-20261128/task-first-read.json",
+      "sha256": "dd914d65ebfdd820f1a171bbe85c174b610feaaa9f021955a55d1ad81bf6c24e"
+    },
+    {
+      "path": "tmp/publication-integration-d2-conditional-advice-complete-20261128/report-first-read.json",
+      "sha256": "771b62acc9e02234e7baf07e43fdea891a01536b41c064800d9bbef13584ed38"
+    }
+  ]
+}

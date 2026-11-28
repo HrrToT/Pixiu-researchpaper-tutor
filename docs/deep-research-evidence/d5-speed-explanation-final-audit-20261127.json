@@ -1,0 +1,73 @@
+{
+  "case": "D5-speed-explanation-final-audit",
+  "sourceCommit": "38dd270f2cedb8da4f51c3cf9f86581282f450c7",
+  "runId": "dr_d5_speed_explanation_final_audit_20261127",
+  "sourceRunId": "dr_run_71dc723d110b55c991fbaacdedd0cd8d",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "isolatedPublicationRecord": "dr_pub_abe5c000400c442a9e22fa96fa788a48",
+  "productionWorkspaceWrites": 0,
+  "newRetrieval": false,
+  "newSynthesis": false,
+  "factualReplyReplayed": true,
+  "automaticRetry": false,
+  "outcome": "complete",
+  "visibleCharacters": 134,
+  "userCharacterLimit": 200,
+  "verifiedClaims": 1,
+  "coverageVerdicts": {
+    "o1": "covered",
+    "answer_scope": "covered"
+  },
+  "newCalls": 1,
+  "newTokens": 5625,
+  "supplementalWallSeconds": 13.0,
+  "totalRealCallsIncludingPreviousDraftAndFactualAudit": 3,
+  "totalActualTokensIncludingRetainedRun": 20016,
+  "sourcePages": {
+    "arxiv:2308.04079v1": 8,
+    "arxiv:2311.17245v6": 7
+  },
+  "historicalRunUnchanged": true,
+  "draftTextAndEvidenceUnchanged": true,
+  "manualContentChecks": {
+    "confirmedSharedHardware": "supported",
+    "original3DGSViewer": "supported",
+    "crossStudyTimingAlignment": "not established by the cited data",
+    "conditionalRationaleAndRequiredControls": "stated without reporting a measured speed ratio"
+  },
+  "developmentCaseContentAccepted": true,
+  "independentHoldoutCredit": false,
+  "sha256": {
+    "intent.json": "5f148e433bc0147f5d4f32c595f12062706271b0f1a45a542ea9103058b257f3",
+    "run.json": "2d1f2b30dee1dcf71ad26c50d6a2fe55d4f3e52fdbe2bf453f655b53747b810d",
+    "calls.json": "d5b90b1f445d9d1c53523e06bafa3239385db70f3a82ce8d28d0263b19343780",
+    "verify-return.json": "b1b33d37e6a325039ced7a7a3812e291b766cc69adbbc8b16aa820e8a625d175",
+    "publish-return.json": "540ea591aa7b6654b2c45f23015a0a891ac498dd46a5c3025307a80350b6b8a2"
+  },
+  "isolatedWorkspaceReplay": {
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "materialReadinessFixture": true,
+    "parentReplayRunId": "dr_run_fb635cd62af25be79e2791fed7b7bce9",
+    "childReplayRunId": "dr_run_2cae9640ab435fd68454815324113692",
+    "exactParentPreserved": true,
+    "childArtifactsSaved": true,
+    "duplicateDeliverySuppressed": true,
+    "restartedAndReadAgain": true,
+    "sourcePages": {
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+        7
+      ],
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+        8
+      ]
+    },
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true,
+    "receiptSha256": "1621b71652dde0b133c0166ac62127eab5cc28eced3dd1e8d114a62ae8716507"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "sourceCommit": "6264a4ea1d57800bba24fc7a0a3cdce5995fb7de",
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "runId": "dr_d2_one_final_coverage_20261128",
+  "case": "D2-BASELINE-COMPRESSION",
+  "validationScope": "One real whole-answer review on the archived D2 candidate",
+  "paidCalls": 1,
+  "automaticRetry": false,
+  "originalSettledTokens": 69876,
+  "reservedTokens": 30124,
+  "usage": {
+    "total_tokens": 8840,
+    "input_tokens": 8234,
+    "output_tokens": 606,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 8231
+  },
+  "maxOutputTokens": 1222,
+  "promptBytes": 27878,
+  "finishReason": "stop",
+  "totalCaseTokensAfterReview": 78716,
+  "totalCaseCalls": 15,
+  "budgetLimit": 100000,
+  "auditStatus": "checked",
+  "coherence": "checked",
+  "coherent": true,
+  "issues": [],
+  "checks": {
+    "obl1": "covered",
+    "obl2": "covered",
+    "obl3": "partial",
+    "obl4": "covered",
+    "requested_numeric_example": "covered",
+    "answer_scope": "partial"
+  },
+  "releasedClaims": 10,
+  "publishedCells": 7,
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "unresolved": [
+    "Original 3DGS reported rendering-speed cell",
+    "Full coverage of the frozen D2 request"
+  ],
+  "publicationId": "dr_pub_278d7b3dea884e6a8802d32370bc05f2",
+  "isolatedOutboxPending": true,
+  "downstreamAcknowledgedInThisRun": false,
+  "productionWrites": false,
+  "literalCitationChecks": {
+    "literal_page": 29,
+    "table": 3
+  },
+  "table": {
+    "physicalPage": 6,
+    "tableNumber": 1,
+    "dataset": "Mip-NeRF 360 Datasets",
+    "metrics": [
+      "FPS↑",
+      "Size↓",
+      "PSNR↑",
+      "SSIM↑",
+      "LPIPS↓"
+    ],
+    "rows": {
+      "9": [
+        "144",
+        "782MB",
+        "27.40",
+        "0.813",
+        "0.217"
+      ],
+      "10": [
+        "237",
+        "45MB",
+        "27.13",
+        "0.806",
+        "0.237"
+      ]
+    },
+    "verifiedCells": 10
+  },
+  "rawFilesSha256": {
+    "intent.json": "52be4eb91ab4a4ed2397751e724a3b00aba13190dccc820f65ffe122dde27e5d",
+    "run.json": "4ed05e2fcd64f41cca6dea2b13a39a971042dad9342daa2a9270d6b9e864847c",
+    "calls.json": "55fa020f0ea4087060effe9897b577393efe91645f485dadbe488d00b7226c3e",
+    "response.json": "f940db6f346a27f5ec4ad61ffb0b4ebd9528dec5c4225502bff89f23d1b3e083"
+  }
+}

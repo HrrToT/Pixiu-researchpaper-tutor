@@ -1,0 +1,77 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v38",
+  "sourceCommit": "8294999e859cc94d5032109e902a1e44b84ae1b4",
+  "runId": "dr_run_378c9775d83859608548ea61085c4db0",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 14,
+  "modelTokens": 80686,
+  "elapsedSeconds": 151.0,
+  "externalSearches": 0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 20116,
+      "requiredBundles": 11,
+      "status": "compiled_unverified",
+      "isolatedTargets": 0
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23967,
+      "requiredBundles": 11,
+      "status": "compiled_unverified",
+      "isolatedTargets": 0
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23995,
+      "requiredBundles": 10,
+      "status": "compiled_unverified",
+      "isolatedTargets": 0
+    }
+  ],
+  "compiledDraftClaims": 11,
+  "wireAndDraftShapeErrors": 0,
+  "initialAcceptedClaims": 4,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 2,
+    "missing_table_bindings": 3,
+    "semantic_unresolved": 2
+  },
+  "repairAcceptedNewClaims": 0,
+  "compiledBenchmark": {
+    "rows": [
+      9,
+      10
+    ],
+    "groups": [
+      0
+    ],
+    "bindings": 10
+  },
+  "boundaryCompiled": true,
+  "coherenceIssueKinds": [
+    "contradiction",
+    "scope_ambiguity"
+  ],
+  "heldClaims": 4,
+  "benchmarkPrecheckReplay": {
+    "originalRejectedNumber": "2e0",
+    "onlyServerTextChanged": true,
+    "counterfactualAcceptedByHardChecks": true,
+    "changedBindingStillRejected": true,
+    "actualModelCalls": 0
+  },
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "2a81d6b23c143753d074066f3a07957821951913f49e3aade2b390d167cfaf4b",
+    ".calls.json": "912a983c296c0e1275fef66f83abbace4efc43fc0e0d944a896216c651bd986e",
+    ".result.json": "b47c421350a2e077228c3d251c07e1f57c0d6659210c7c2545a8ceabb4f0552d",
+    ".execution.json": "2a591ea456489f41624268fef6736656f0769ce63ab3ce794542eec69bebf527"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "case": "H1-UNSUPERPOINT",
+  "purpose": "development repair and final answer verification",
+  "sourceCommit": "3815d77a5e275239fd32f5b00bb7a74ebfbc8fe4",
+  "archivedRunId": "dr_run_6ac235840b285eaeb890bdb7e6c8d5c3",
+  "runId": "dr_unsuperpoint_scoped_repair_development_20261128",
+  "unchangedInitialJudgement": "independent_content_not_accepted",
+  "independentCredit": 0,
+  "newProviderCalls": {
+    "repair_claims": 1,
+    "verify_repair": 1,
+    "verify_answer_coverage": 1
+  },
+  "newTokens": 13594,
+  "carriedTokens": 27378,
+  "totalAccountedTokens": 40972,
+  "graphElapsedSeconds": 69.704,
+  "externalSearches": 0,
+  "productionWrites": 0,
+  "report": {
+    "outcome": "complete",
+    "acceptedClaims": 2,
+    "claimTextCharacters": 217,
+    "fullAnswerAudit": "covered",
+    "isolatedFinalReportRows": 1,
+    "isolatedOutboxRows": 1,
+    "deliveredToJava": false
+  },
+  "review": {
+    "numericEvidenceBound": true,
+    "referenceSequenceExplained": true,
+    "jointDistributionBoundaryUnchanged": true,
+    "remainingGap": "The verified observation that the plotted x-coordinate boundary peaks decreased is absent from the repaired prose."
+  },
+  "citations": [
+    {
+      "id": "ev_3e68fb507191c083c036fbf2bc1a3789373e469081cee3b88f466545ae096309",
+      "page": 6,
+      "exactPhysicalQuote": true,
+      "materialHashMatch": true
+    },
+    {
+      "id": "ev_a0d6d1b24742e05cb1b9c88fa22a865f716d9924eadca523a533a8e60f9ebf86",
+      "page": 6,
+      "exactPhysicalQuote": true,
+      "materialHashMatch": true
+    },
+    {
+      "id": "ev_34425f3ee44a4c3c832aced53c9f15a554a0793ec958560efc9c24a24bdd0016",
+      "page": 7,
+      "exactPhysicalQuote": true,
+      "materialHashMatch": true
+    },
+    {
+      "id": "ev_5b3fca2a75cba7375a7c1a37c20c5e79312c7dec73c386c7fe28e577e569534c",
+      "page": 7,
+      "exactPhysicalQuote": true,
+      "materialHashMatch": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/intent.json",
+      "sha256": "cbf5e994ee1d7321c808a163acb304d03a87b8ca9a61cbcaa1c6dc13844fb3da"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/run.json",
+      "sha256": "d69edf3c1f01b8820605ab69936fb41237dea5b24adbd5bf89c11a000ef96695"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/calls.json",
+      "sha256": "3870d30408b02e7ffa891d49158adf97969ded2b07d4e75c4fce76d607711a4f"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/provider.json",
+      "sha256": "1a787f72c34f99874605adec73724ac5497e7419aef09da3948ceafa37a90dd5"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/verify-outcome.json",
+      "sha256": "21ff6d32c901e6a1ac6acbf5dbd599da7668513b9f5dd5547539a345eb291dba"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/publish-outcome.json",
+      "sha256": "7be1f326f62b8f0cfbcdb2f5f5e8bc66650152451980e79dd524c521f98c0eaf"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-scoped-repair-development-20261128/report.md",
+      "sha256": "2b0971ad6dd9b521b7b0b9edcb58efdaa7ee9feed10995020c4a624085f14996"
+    }
+  ]
+}

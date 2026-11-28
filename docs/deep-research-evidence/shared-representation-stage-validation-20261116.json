@@ -1,0 +1,36 @@
+{
+  "asOf": "2026-11-16",
+  "sourceCommit": "1f1def192b15b54f149a2b3911cab4e448229648",
+  "scope": "Opt-in durable shared declaration and first/sole-correction initialization binding",
+  "serverDefault": 0,
+  "productionEnabled": false,
+  "relatedChecks": 187,
+  "relatedJUnit": "tmp/shared-representation-stage-final-20261116.xml",
+  "relatedJUnitSha256": "7d4bad6f0a5afba6a5dcd475c851366e02117ae56fa6f32afd6da213936e56da",
+  "newStageTests": 35,
+  "sharedTypeTests": 50,
+  "capacityPreflight": {
+    "status": "not_started_budget",
+    "inputBytes": 31969,
+    "limit": 32000,
+    "evidenceRows": 17,
+    "metadataPhases": 29,
+    "dataDigest": "543b5ba1eee940b13253309d77554e945db3bf26b9b4cea85b7e1be5d3525724",
+    "modelCalls": 0,
+    "runtimeWrites": 0,
+    "fullEvidenceRetained": true,
+    "fullMetadataRetainedForValidation": true
+  },
+  "initialFullMetadataInputBytes": 36258,
+  "fullRegressionProof": "deep-research-evidence/shared-representation-stage-20261116.json",
+  "preservationProof": "deep-research-evidence/shared-representation-stage-preservation-20261116.json",
+  "newRealModelCalls": 0,
+  "runtimeRestarted": false,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "remaining": [
+    "Target-specific evidence dependency closure and complete-run budget feasibility",
+    "Explicit final scientific review of shared representation conventions",
+    "Fresh complete fixed experiment and independent held-out acceptance"
+  ]
+}

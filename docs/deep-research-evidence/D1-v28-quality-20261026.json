@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-26",
+  "caseId": "D1",
+  "attempt": 28,
+  "runId": "dr_run_eb63472fc1ed52aab6c4d6cb48ba8260",
+  "sourceCommit": "ed3d127ae01ed7403f9020dc65e59ef4116b5462",
+  "promptVersion": "dr-v2.20261026.301",
+  "presentationVersion": 2,
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 9,
+  "settledTokens": 41183,
+  "elapsedSeconds": 176,
+  "providerCost": null,
+  "newUnknowns": 0,
+  "priorLedgerRows": 7195,
+  "ledgerRowsAfter": 7217,
+  "oldLedgerPrefixPreserved": true,
+  "allPriorRunPayloadsPreserved": true,
+  "protectedTasksPreserved": 4,
+  "quotes": [
+    {
+      "claimId": "c1",
+      "evidenceId": "ev_09162a2cdace564e9becb7fcf6e393baea8606ddd7c16ca73c1538ae875b4c1d",
+      "quoteInStoredSourceContext": true,
+      "physicalPageResolved": false
+    },
+    {
+      "claimId": "c2",
+      "evidenceId": "ev_5206acd6286b135c633804115de93e5ece6fe724f7b762b2cc41f581e49a55f9",
+      "quoteInStoredSourceContext": true,
+      "physicalPageResolved": false
+    }
+  ],
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "contentFindings": [
+    "Requested two points and character limit satisfied; final answer omits meaningful applicability and unverified scope.",
+    "Initial claims rejected for internal evidence aliases in published conditions; factual redraft replaces the boundary with storage/FPS facts.",
+    "Two identical judgment headings and four repeated gap rows need presentation repair."
+  ],
+  "presentationReplay": {
+    "directCharacters": 155,
+    "allAcceptedClaimTextPreserved": true,
+    "sectionsAfter": 1,
+    "visibleUnfinishedItemsAfter": 2,
+    "productionReportsRewritten": 0
+  },
+  "boundary": "One new bounded development run. Literal stored-context checks and numeric contextual reading are not independent/full-paper acceptance. Physical source pages remain unresolved. Original failed response and model wire retained under tmp/dr-acceptance-receipts/D1-v28.*."
+}

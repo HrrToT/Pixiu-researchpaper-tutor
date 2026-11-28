@@ -1,0 +1,12 @@
+{
+  "scope": "Read-only readiness; no runtime load, task write or model send",
+  "runs": 396,
+  "calls": 10061,
+  "paused": 16,
+  "active": 0,
+  "unknownV8Preserved": true,
+  "materialOwnerCounts": {
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": 22,
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": 50
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "6f6a7b92",
+  "promptVersion": "dr-v2.20261018.162",
+  "fullSuite": [
+    {
+      "log": "tmp/pytest-dr160-full-final.log",
+      "summary": "2557 passed, 1 warning in 152.99s (0:02:32)"
+    },
+    {
+      "log": "tmp/pytest-dr162-full.log",
+      "summary": "5 failed, 2613 passed, 1 warning in 162.99s (0:02:42)"
+    },
+    {
+      "log": "tmp/pytest-dr162-full-fixed.log",
+      "summary": "2618 passed, 1 warning in 166.52s (0:02:46)"
+    }
+  ],
+  "focused": {
+    "literalImperative": {
+      "passed": 73,
+      "seconds": 16.39,
+      "log": "tmp/pytest-dr161-focused-final.log"
+    },
+    "conciseFactual": {
+      "passed": 115,
+      "seconds": 5.35,
+      "log": "tmp/pytest-dr162-focused-final.log"
+    },
+    "realGraphAfterFixtureUpdate": {
+      "passed": 106,
+      "seconds": 19.95,
+      "log": "tmp/pytest-dr162-integration-fixed.log"
+    }
+  },
+  "initialFiveFullFailures": "Fixture model did not recognize the new factual prompt; updated its dispatch and pause prefix, retaining all original bad-fact/publication/call-count/known-result-reuse assertions.",
+  "providerCalls": 0,
+  "scope": "Research, reading, PDF tables and config; fixture providers; focused counts overlap full suite.",
+  "boundary": "Offline gates only. Real D5-v7 still failed content; later real cases require independent inspection. Original independent first-five0/5 unchanged."
+}

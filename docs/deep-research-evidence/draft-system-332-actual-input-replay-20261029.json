@@ -1,0 +1,30 @@
+{
+  "providerCalls": 0,
+  "oldUserPromptByteIdentical": true,
+  "providerOptionsUnchanged": true,
+  "oldSystemClause": "Use each target own original citations; preserve relationships and exact IDs/kinds. ",
+  "newSystemClause": "Use OWN allowed original sources; preserve IDs/relations and follow per-target kind permissions. ",
+  "systemUtf8Bytes": 879,
+  "framingUpperBound": 1024,
+  "verifierPolicyUnchanged": true,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "actualInput": {
+    "providerCalls": 0,
+    "oldVerificationPromptsByteIdentical": 3,
+    "permittedReportedInferenceIds": [
+      "c1"
+    ],
+    "repairPromptBytes": 23752,
+    "mandatoryTableRowsPresent": [
+      8,
+      10
+    ],
+    "tableCellValuesChanged": false,
+    "mockRepairResponse": "[]",
+    "contentAcceptance": false,
+    "independentCredit": 0
+  },
+  "productionExactlyPreserved": true,
+  "mockAdapterInvocations": 4
+}

@@ -1,0 +1,50 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "attempt": 1,
+  "definitionHash": "d94688ece96677f0fcfef4936571dd04fccac6e48ef1d1a2ae03a461851342c0",
+  "codeCommit": "224864f70",
+  "runId": "dr_run_94fe79977ac352298225106c6b02ff67",
+  "sourceRevision": "arxiv:2306.13643v1",
+  "outcome": "partial",
+  "independentAcceptanceCredit": false,
+  "visibleAnswerCharacters": 210,
+  "modelUsage": {
+    "providerCalls": 9,
+    "tokens": 31782,
+    "tokensByModel": {"gpt-6-luna": 8453, "gpt-6.1-terra": 23329},
+    "elapsedSeconds": 69
+  },
+  "runtimeBoundary": {
+    "researchGraph": "production_python_graph_in_isolation",
+    "retrieval": "production_lexical_pdf_fallback",
+    "liveApplicationWrites": 0,
+    "externalSearches": 0,
+    "lockedPaperPdfReads": 2,
+    "secondAudienceWritingCalls": 0,
+    "automaticRetry": false
+  },
+  "contentReview": {
+    "publishedClaims": ["c1", "c2"],
+    "verifiedUniquePdfQuotations": 3,
+    "verifiedQuotationPages": [8, 13],
+    "correct": [
+      "Early stopping saves later layers, and the quoted supplement gives the 95 percent confidence ratio used in inference.",
+      "When processing continues, the conjunction of high confidence and low matchability selects points to exclude from later layers."
+    ],
+    "missing": [
+      "Confidence can apply to either a match or a confident no-match judgment.",
+      "The global stopping ratio pools points from both images. The local pruning explanation does not substitute for this part of the answer."
+    ],
+    "systemCoverage": "Both scoped obligations covered, whole answer incomplete",
+    "repairRejected": {"c1": "internal_reference_in_prose", "c2": "internal_reference_in_prose"},
+    "repairLocatorExamples": ["（P1，第13页）", "（P1，第8、13页）"]
+  },
+  "sha256": {
+    "intent.json": "a14c0548ec0a6ca015239f50dd4c13ddd576f45393875150d0a1e3658b80e657",
+    "run.json": "2ec3bb34eae3a68bd2db5fad626c2f88119e5d89ad8fa3bc25ff75e5f2195434",
+    "calls.json": "675a44d849860941825639b312028b83fdd4c9ca817e29cbbbfe79aeb28c901e",
+    "result.json": "24644c28fd79c9d4b7f2599d97850fe0b02476a43b137699d8829fbc53dfb995",
+    "boundary.json": "cb7420751a6b6f5949205e14fb3b97caaeee1414e0eb29c638ffa2a093b21616",
+    "provider.jsonl": "ea8f6bc4302809459ef5aa5a0970a93e9cad029aca2d5f5d5135f6fefea86065"
+  }
+}

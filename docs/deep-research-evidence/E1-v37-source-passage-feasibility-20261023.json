@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v37",
+  "candidateOnly": true,
+  "implemented": false,
+  "readSourceChunks": 12,
+  "totalReadBodyBytes": 10803,
+  "oldEvidenceRows": 18,
+  "coverage": [
+    {
+      "evidenceId": "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_43750add3fc24d2bdccf84533bbbdd5049528a078613e3561ea8ebfc17c5186a",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_4c2c9b7a56816963f4fac18e5aa9451bcc45f07033637391bc3cb175000133a2",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_e8b0bc9002d7c99c697f2c5acfec247c4d3e33628408cb3087f478f9ce5bc25b",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_d56d2839a6e15634f59781a63eed4a51443f2d9d9307bea1e80da75a11be2a22",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_f9ae8788d0caeec846e3e3519035a9d0d539e42b044269ce89b1cd872a925c0f",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_a283d83a5c59038a2f00fb444e3a7157f921279d5c25b76c0e5c6b579ffb3660",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_9dbe5a8c5b420da2d339dd8936ed83308182ac85db84b59d2f521476ce2df61f",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_cdfd48dfbddf41cd8040b67674c7a83e4046f6400cb3ba7cec77d287399252dd",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    },
+    {
+      "evidenceId": "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "sameSourceVersionHash": true,
+      "quoteInReadBody": true
+    }
+  ],
+  "existingExtractionCalls": 4,
+  "existingExtractionReportedTokens": 15455,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Offline feasibility only: direct original passage evidence could avoid repeated model transcription, but relevance,source scope,table permissions,allocation,resume identities and downstream capacity must be implemented/tested. No quality/cost guarantee and no old result changed."
+}

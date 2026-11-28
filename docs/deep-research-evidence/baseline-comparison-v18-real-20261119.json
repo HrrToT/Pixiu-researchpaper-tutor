@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "5e80ea38670472c4a92d7066cc8f029ecbbb4462",
+  "case": "D2-BASELINE-COMPRESSION-v18",
+  "split": "development",
+  "runId": "dr_run_915469e6a22d5e56a851414d0b81755a",
+  "comparisonAuthoringContractVersion": 4,
+  "status": "completed",
+  "outcome": "partial",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "modelCalls": 15,
+  "ledgerTokens": 85645,
+  "elapsedSeconds": 224,
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify": 3,
+    "verify_advice": 1,
+    "repair_claims": 2,
+    "verify_answer_coverage": 1
+  },
+  "typedEvidenceCount": 4,
+  "typedEvidencePapers": 2,
+  "reportClaimCount": 6,
+  "workspaceArtifactOrigins": ["machine", "latest"],
+  "finalAuditStatus": "checked",
+  "finalAuditCoherent": true,
+  "finalAuditGapCount": 4,
+  "releaseStatus": "released",
+  "repairBatchStop": {
+    "batch": 2,
+    "kind": "repairPromptBytes",
+    "limit": 9235,
+    "used": 13604
+  },
+  "repairChecks": [
+    {"claimId": "cmp_1_0", "reason": "table_binding_outside_citation"},
+    {"claimId": "cmp_2_0", "reason": "semantic_unresolved", "executionState": "not_started", "inputBytes": 33029, "maxInputBytes": 24000}
+  ],
+  "contentGaps": ["cross-paper FPS comparability", "conditional low-VRAM recommendation", "both mechanisms and their difference"],
+  "scientificAcceptance": false,
+  "restore": {"originalRestored": true, "allCurrentTasksRunsCallsExact": true, "newModelCalls": 0},
+  "receiptSha256": {
+    "payload": "4c761d80e3aab08eda31cc30190a8e424babba6cd4bba7f139682242a0d3398b",
+    "calls": "d919f9730ae8bb3cd4e2ac96f01c81055483995fa1d9929a907a36d2619096d1",
+    "result": "cdc8906ae6b1e8bfd6db51c3fb7896f122507165512d21fcca960ed00ad33f9d"
+  }
+}

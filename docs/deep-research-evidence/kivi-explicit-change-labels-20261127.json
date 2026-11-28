@@ -1,0 +1,29 @@
+{
+  "renderedSharedRows": 2,
+  "renderedNewRows": 2,
+  "numericBindingsPreserved": 18,
+  "visibleCharacters": 358,
+  "focusedTestsPassed": 78,
+  "providerCalls": 0,
+  "liveCoverageAccepted": false,
+  "parserCommit": "d4378ee89",
+  "previousCaseOutcome": "partial",
+  "namedTable": 3,
+  "modelGroup": "Llama-2-13B",
+  "earlierEditionGroupRows": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+  ],
+  "earlierEditionBoundingRows": [
+    7,
+    14
+  ],
+  "isolatedLocalRetrievalPreflight": true,
+  "preflightRunSha256": "d3318ec826102ae931c26d9eae54015e9a813f3125e83e9f9a8b40f46e88da53",
+  "verificationClass": "known_case_offline_replay",
+  "unseenHoldoutCredit": 0
+}

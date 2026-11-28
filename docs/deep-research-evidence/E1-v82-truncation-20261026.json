@@ -1,0 +1,27 @@
+{
+  "case": "E1-v82",
+  "runId": "dr_run_e5fc370ec454587e8dee1adf66cd5282",
+  "promptVersion": "dr-v2.20261026.293",
+  "status": "failed",
+  "elapsedSeconds": 79,
+  "settledModelCalls": 7,
+  "settledTokens": 31040,
+  "unsettledCalls": 0,
+  "unitErrors": [
+    "unit.output_truncated"
+  ],
+  "finishReason": "length",
+  "usage": {
+    "total_tokens": 10954,
+    "input_tokens": 7882,
+    "output_tokens": 3072
+  },
+  "rawBytes": 11504,
+  "rawLines": 507,
+  "rawSha256": "2237cff1b9ff75c8e28bf8ff53fdb26bc902f5e21969c467c632c0ff94b3d476",
+  "repairStarted": false,
+  "initializationStarted": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Truncated metadata is not parsed as a complete proposal, repaired, or resent. This case cannot evaluate observation feedback effectiveness."
+}

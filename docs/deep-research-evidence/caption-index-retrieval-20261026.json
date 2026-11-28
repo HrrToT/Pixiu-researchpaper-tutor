@@ -1,0 +1,1214 @@
+{
+  "embeddingModel": "intfloat/multilingual-e5-small",
+  "indexScope": "isolated ephemeral collections",
+  "modelCalls": 0,
+  "queryRewrite": false,
+  "queries": [
+    "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+    "LightGaussian limitations conditions unverified scope compression quality",
+    "LightGaussian 剪枝和SH降阶的质量损失，论文验证了哪些设置，哪些范围还没有验证？",
+    "LightGaussian 66% SH 2 degrees SSIM 0.927 0.926 ablation",
+    "What happens to rendering quality as pruning and VQ compression increase?",
+    "LightGaussian 高斯剪枝和球谐蒸馏如何影响画质？"
+  ],
+  "variants": {
+    "before": {
+      "chunks": 55,
+      "results": [
+        {
+          "query": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+          "searchQuery": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 46,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 47,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 35,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 38,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "2cef6c46ab5f7a0f8ad94823bfccf52bb591e1b6140c6a115281c4ed783e813f"
+            },
+            {
+              "chunkIndex": 37,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "7486caa5910de35ee5d99957b4ab2404772f9d7d43c3679d8e00c0cede1aa5ab"
+            },
+            {
+              "chunkIndex": 42,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9f2267a6b8326575a2649e5fec1099754e66a69c1c694ef81b7797f41f3b4f47"
+            },
+            {
+              "chunkIndex": 20,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "03154bd6b9da0cf338e50d9150b0b7c05f0365e5bae4ea74ed859224c9b85e03"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-46",
+              "chunkIndex": 46,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-47",
+              "chunkIndex": 47,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-31",
+              "chunkIndex": 31,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 4
+        },
+        {
+          "query": "LightGaussian limitations conditions unverified scope compression quality",
+          "searchQuery": "LightGaussian limitations conditions unverified scope compression quality",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 46,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 47,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 26,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "78645b3e8a773646440853a25cdace52a91a2743b972354473a465377349318f"
+            },
+            {
+              "chunkIndex": 35,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 0,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "df9ae6dac66466aa6e52355172c2753bbce2bfcaa11e0d60bbc8c28805d4638b"
+            },
+            {
+              "chunkIndex": 19,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "83d838623a1f98f5cff17f90b1c215bd24bb8f58690ec4695eb5c2b5eb2f9b79"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-46",
+              "chunkIndex": 46,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-26",
+              "chunkIndex": 26,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-40",
+              "chunkIndex": 40,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 2
+        },
+        {
+          "query": "LightGaussian 剪枝和SH降阶的质量损失，论文验证了哪些设置，哪些范围还没有验证？",
+          "searchQuery": "LightGaussian 剪枝和SH降阶的质量损失，论文验证了哪些设置，哪些范围还没有验证？",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 35,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 24,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "b8000fc5144fd78a4e66332683d994ddd04690a902369c6c37adf49d208fd327"
+            },
+            {
+              "chunkIndex": 46,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 23,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "e384a0b9bf7be75467c7d4f6d91fa212ed90231fa3f1888a07d77b69fcbfd81f"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 47,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "bm25",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 7,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "04b99becd082c810355891c55f5ff92317b44d5dcc9e1f090a89bb962b51abb0"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-24",
+              "chunkIndex": 24,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-46",
+              "chunkIndex": 46,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-23",
+              "chunkIndex": 23,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            }
+          ],
+          "captionFactRank": 5
+        },
+        {
+          "query": "LightGaussian 66% SH 2 degrees SSIM 0.927 0.926 ablation",
+          "searchQuery": "LightGaussian 66% SH 2 degrees SSIM 0.927 0.926 ablation",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 46,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 47,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 40,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "203643ec805cd2b1f02eb26f86e22c8327b18d715fe2352d8b6e87af94d9fce5"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 38,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "2cef6c46ab5f7a0f8ad94823bfccf52bb591e1b6140c6a115281c4ed783e813f"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-46",
+              "chunkIndex": 46,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-40",
+              "chunkIndex": 40,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-28",
+              "chunkIndex": 28,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 1
+        },
+        {
+          "query": "What happens to rendering quality as pruning and VQ compression increase?",
+          "searchQuery": "What happens to rendering quality as pruning and VQ compression increase?",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 47,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 4,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "62955075b79a51f9b131fdff5078a965d2ec82973bffbdd4a200fdadf082e932"
+            },
+            {
+              "chunkIndex": 5,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "412c38975d9b7f3289a1e3a275e1fe5efed2c5ba95da3aff1092c1d53f0c0134"
+            },
+            {
+              "chunkIndex": 46,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": true,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 8,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "1f867e04ddb1d0fcab4fbaacc8529618a43eec400b4a3735539760f7dc8f89d9"
+            },
+            {
+              "chunkIndex": 9,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "278df2c237e6ce2f6428fd98edb56374a3176d16ef1662e0ae1a29c977bf1a4e"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-47",
+              "chunkIndex": 47,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-4",
+              "chunkIndex": 4,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-5",
+              "chunkIndex": 5,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 2
+        },
+        {
+          "query": "LightGaussian 高斯剪枝和球谐蒸馏如何影响画质？",
+          "searchQuery": "LightGaussian 高斯剪枝和球谐蒸馏如何影响画质？",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 40,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "203643ec805cd2b1f02eb26f86e22c8327b18d715fe2352d8b6e87af94d9fce5"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 29,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "232745fdece9698494bf50cef1a2ca8c2c777f8bc1ad5746c8441a100d3fb5f2"
+            },
+            {
+              "chunkIndex": 41,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "442adaa1f0c724a9d823ea656bf815dcab04030e9717a5ee333cdb657daa11c9"
+            },
+            {
+              "chunkIndex": 35,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 26,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "78645b3e8a773646440853a25cdace52a91a2743b972354473a465377349318f"
+            },
+            {
+              "chunkIndex": 44,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "7e2e1b6fa727f32a6cbe4f192755a76c249c167f8523425c8d9c770d205a8317"
+            },
+            {
+              "chunkIndex": 30,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9d48909bd30040b60ec37222ac716c575259fe74e58f314adc6f84ab5d068237"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "e598931c27aa258e",
+              "captionFactInBody": true,
+              "captionFactInHeading": true,
+              "retriever": "bm25",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-40",
+              "chunkIndex": 40,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-29",
+              "chunkIndex": 29,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-ve598931c27aa258e-chunk-34",
+              "chunkIndex": 34,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 9
+        }
+      ]
+    },
+    "after": {
+      "chunks": 55,
+      "results": [
+        {
+          "query": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+          "searchQuery": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 35,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 31,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "fba44fa7ede14b7ca5e37a807583f21957241abe2f748904dbe2e578854b0260"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 23,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "e384a0b9bf7be75467c7d4f6d91fa212ed90231fa3f1888a07d77b69fcbfd81f"
+            },
+            {
+              "chunkIndex": 38,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "2cef6c46ab5f7a0f8ad94823bfccf52bb591e1b6140c6a115281c4ed783e813f"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": true,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 37,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "7486caa5910de35ee5d99957b4ab2404772f9d7d43c3679d8e00c0cede1aa5ab"
+            },
+            {
+              "chunkIndex": 20,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "03154bd6b9da0cf338e50d9150b0b7c05f0365e5bae4ea74ed859224c9b85e03"
+            },
+            {
+              "chunkIndex": 42,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9f2267a6b8326575a2649e5fec1099754e66a69c1c694ef81b7797f41f3b4f47"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-31",
+              "chunkIndex": 31,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-23",
+              "chunkIndex": 23,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-38",
+              "chunkIndex": 38,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 6
+        },
+        {
+          "query": "LightGaussian limitations conditions unverified scope compression quality",
+          "searchQuery": "LightGaussian limitations conditions unverified scope compression quality",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 26,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "78645b3e8a773646440853a25cdace52a91a2743b972354473a465377349318f"
+            },
+            {
+              "chunkIndex": 35,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": true,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 46,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 20,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "03154bd6b9da0cf338e50d9150b0b7c05f0365e5bae4ea74ed859224c9b85e03"
+            },
+            {
+              "chunkIndex": 0,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "df9ae6dac66466aa6e52355172c2753bbce2bfcaa11e0d60bbc8c28805d4638b"
+            },
+            {
+              "chunkIndex": 19,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "83d838623a1f98f5cff17f90b1c215bd24bb8f58690ec4695eb5c2b5eb2f9b79"
+            },
+            {
+              "chunkIndex": 18,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "313ccd7c7e7b9b4a595d65eaa861f6287ad68165997c4e17499e4bc67ca61ccf"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-26",
+              "chunkIndex": 26,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-46",
+              "chunkIndex": 46,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-20",
+              "chunkIndex": 20,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 3
+        },
+        {
+          "query": "LightGaussian 剪枝和SH降阶的质量损失，论文验证了哪些设置，哪些范围还没有验证？",
+          "searchQuery": "LightGaussian 剪枝和SH降阶的质量损失，论文验证了哪些设置，哪些范围还没有验证？",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 35,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 24,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "b8000fc5144fd78a4e66332683d994ddd04690a902369c6c37adf49d208fd327"
+            },
+            {
+              "chunkIndex": 23,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "e384a0b9bf7be75467c7d4f6d91fa212ed90231fa3f1888a07d77b69fcbfd81f"
+            },
+            {
+              "chunkIndex": 36,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "a55809a7c5d948eb9752b733ec562ede6c10733566f0a4819772d1b2e1ad9dea"
+            },
+            {
+              "chunkIndex": 29,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "232745fdece9698494bf50cef1a2ca8c2c777f8bc1ad5746c8441a100d3fb5f2"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": true,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 7,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "04b99becd082c810355891c55f5ff92317b44d5dcc9e1f090a89bb962b51abb0"
+            },
+            {
+              "chunkIndex": 42,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9f2267a6b8326575a2649e5fec1099754e66a69c1c694ef81b7797f41f3b4f47"
+            },
+            {
+              "chunkIndex": 26,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "78645b3e8a773646440853a25cdace52a91a2743b972354473a465377349318f"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-24",
+              "chunkIndex": 24,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-23",
+              "chunkIndex": 23,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-36",
+              "chunkIndex": 36,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-29",
+              "chunkIndex": 29,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 6
+        },
+        {
+          "query": "LightGaussian 66% SH 2 degrees SSIM 0.927 0.926 ablation",
+          "searchQuery": "LightGaussian 66% SH 2 degrees SSIM 0.927 0.926 ablation",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 45,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": true,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 28,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "ac6bb5dd2d370db26afaf1fafb4e25942bb8c98dd3377f24a7ac02ac9852766c"
+            },
+            {
+              "chunkIndex": 29,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "232745fdece9698494bf50cef1a2ca8c2c777f8bc1ad5746c8441a100d3fb5f2"
+            },
+            {
+              "chunkIndex": 40,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "203643ec805cd2b1f02eb26f86e22c8327b18d715fe2352d8b6e87af94d9fce5"
+            },
+            {
+              "chunkIndex": 46,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9070bb0a5c041518cbfd64bf21d7866e9b5a0cbd4067587665da687ecb52dfcb"
+            },
+            {
+              "chunkIndex": 38,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "2cef6c46ab5f7a0f8ad94823bfccf52bb591e1b6140c6a115281c4ed783e813f"
+            },
+            {
+              "chunkIndex": 42,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9f2267a6b8326575a2649e5fec1099754e66a69c1c694ef81b7797f41f3b4f47"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-28",
+              "chunkIndex": 28,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-29",
+              "chunkIndex": 29,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-40",
+              "chunkIndex": 40,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 1
+        },
+        {
+          "query": "What happens to rendering quality as pruning and VQ compression increase?",
+          "searchQuery": "What happens to rendering quality as pruning and VQ compression increase?",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 4,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "62955075b79a51f9b131fdff5078a965d2ec82973bffbdd4a200fdadf082e932"
+            },
+            {
+              "chunkIndex": 5,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "412c38975d9b7f3289a1e3a275e1fe5efed2c5ba95da3aff1092c1d53f0c0134"
+            },
+            {
+              "chunkIndex": 47,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "a61faeefc25fd41f6976f3c76c2489fc2c106cd0d817a01b5cbf463eb69ee050"
+            },
+            {
+              "chunkIndex": 45,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": true,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "f9eb89f4f402856d049fd3be2a43796c7c6244c9e3dcfb3008a5bcc1644f0242"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 8,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "1f867e04ddb1d0fcab4fbaacc8529618a43eec400b4a3735539760f7dc8f89d9"
+            },
+            {
+              "chunkIndex": 0,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "df9ae6dac66466aa6e52355172c2753bbce2bfcaa11e0d60bbc8c28805d4638b"
+            },
+            {
+              "chunkIndex": 9,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "278df2c237e6ce2f6428fd98edb56374a3176d16ef1662e0ae1a29c977bf1a4e"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-4",
+              "chunkIndex": 4,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-5",
+              "chunkIndex": 5,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-47",
+              "chunkIndex": 47,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-45",
+              "chunkIndex": 45,
+              "captionFactInBody": true
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": 4
+        },
+        {
+          "query": "LightGaussian 高斯剪枝和球谐蒸馏如何影响画质？",
+          "searchQuery": "LightGaussian 高斯剪枝和球谐蒸馏如何影响画质？",
+          "queryRewritten": false,
+          "hits": [
+            {
+              "chunkIndex": 40,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "203643ec805cd2b1f02eb26f86e22c8327b18d715fe2352d8b6e87af94d9fce5"
+            },
+            {
+              "chunkIndex": 39,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "6c17e773618d63c9d04a3ab349fde64fdd9381846e1207652ec1ee8cdf4b49ee"
+            },
+            {
+              "chunkIndex": 29,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "232745fdece9698494bf50cef1a2ca8c2c777f8bc1ad5746c8441a100d3fb5f2"
+            },
+            {
+              "chunkIndex": 35,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "40d83d5e451090cc7854854d290862b86d986969e65732cee85a140443f3cae0"
+            },
+            {
+              "chunkIndex": 34,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "vector",
+              "bodySha256": "d91c56b693977e585a23e8b1b74ad16a5c9e37b4ca9aeafe15d841694549c95f"
+            },
+            {
+              "chunkIndex": 26,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "78645b3e8a773646440853a25cdace52a91a2743b972354473a465377349318f"
+            },
+            {
+              "chunkIndex": 44,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "7e2e1b6fa727f32a6cbe4f192755a76c249c167f8523425c8d9c770d205a8317"
+            },
+            {
+              "chunkIndex": 30,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "9d48909bd30040b60ec37222ac716c575259fe74e58f314adc6f84ab5d068237"
+            },
+            {
+              "chunkIndex": 7,
+              "indexVersion": "f2e5d9047a65e195",
+              "captionFactInBody": false,
+              "captionFactInHeading": false,
+              "retriever": "bm25",
+              "bodySha256": "04b99becd082c810355891c55f5ff92317b44d5dcc9e1f090a89bb962b51abb0"
+            }
+          ],
+          "productionItems": [
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-40",
+              "chunkIndex": 40,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-39",
+              "chunkIndex": 39,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-29",
+              "chunkIndex": 29,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-35",
+              "chunkIndex": 35,
+              "captionFactInBody": false
+            },
+            {
+              "sourceId": "caption-audit-vf2e5d9047a65e195-chunk-34",
+              "chunkIndex": 34,
+              "captionFactInBody": false
+            }
+          ],
+          "captionFactRank": null
+        }
+      ]
+    }
+  }
+}

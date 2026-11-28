@@ -1,0 +1,192 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "kind": "fresh_d3_preparation_memory_and_shared_prefit_window_replay",
+  "sourceCommit": "3d4248d92a797be9a7ad00a42786ee5743976685",
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "materialHashes": [
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+  ],
+  "fromEmptyRun": true,
+  "initialGenerationInputReplay": {
+    "sourceRunId": "dr_d3_sh_initialization_20261128",
+    "sourceRunSha256": "dd04bc410c2a281c7326377610875bb8937871e635eeb473f113ac144e557ce8",
+    "oldInputBytes": 31962,
+    "newInputBytes": 31959,
+    "newPromptBytes": 23133,
+    "incomingEvidenceIds": [
+      "E1",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "requiredDomains": [],
+    "contextDigest": "58ae8c266b1052c92fdb40a5787b0bd2978bd516e7482a7eb4da3ac5b3af508b",
+    "oldInputDigest": "78b6e906ee1af261bacc4063cee09be0827ad11c1a6df22b1ea9aa247b2cb0a3",
+    "newInputDigest": "288420e4e4a5baadbe8db84417ffa501e503ab8f667259e1c58e521d47191d18",
+    "providerCalls": 0
+  },
+  "fresh": {
+    "runId": "dr_run_500f4b9f32b65472ba37781ebf506d38",
+    "status": "failed",
+    "outcome": "none",
+    "error": "invalid_shared_experiment_response",
+    "modelGenerations": 6,
+    "byModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 1
+    },
+    "totalTokens": 29689,
+    "graphElapsedSeconds": 96.0,
+    "budgetLimits": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    },
+    "automaticRetry": false,
+    "freshProviderReviewStarted": false,
+    "writtenOperations": [
+      "Train-side SfM descriptors linked to triangulated points; held-out pose registration is evaluation-only.",
+      "Cumulative preparation elapsed-time cap includes prefit with an independent optimizer-step limit.",
+      "Sequential arm device copy/load through final synchronization; release before loading the next arm; sampled peak only."
+    ]
+  },
+  "sharedPrefitWindowReplay": {
+    "sourceRunId": "dr_run_500f4b9f32b65472ba37781ebf506d38",
+    "originalGenerationError": [
+      {
+        "code": "plan.shared_preparation_budget",
+        "path": "/budgets/0"
+      }
+    ],
+    "rawResponseDigest": "423bd57729c3af8088ce87b1f241f1cf059c44ac079e5221a6f3bb8fa1273d5d",
+    "oldInputBytes": 31824,
+    "newInputBytes": 31811,
+    "evidenceIds": [
+      "E1",
+      "E10",
+      "E11",
+      "E12",
+      "E2",
+      "E20",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "requiredDomains": [
+      "memory",
+      "quality"
+    ],
+    "boundPlanVersion": 3,
+    "bindingDigest": "e318c7d09f0bb13af1b88a9f8d18424d4474b83ff0662aaa2b43edbabe23e00a",
+    "sharedCapSeconds": 21600,
+    "capInterval": [
+      [
+        "acq",
+        "prepare",
+        "prep"
+      ],
+      [
+        "sfm",
+        "prepare",
+        "prep"
+      ],
+      [
+        "pre",
+        "fit",
+        "prefit"
+      ],
+      [
+        "lock",
+        "prepare",
+        "prep"
+      ]
+    ],
+    "sharedOptimizerBudget": {
+      "id": "prefit",
+      "unit": "optimizer_steps",
+      "cap": 1000,
+      "scope": "shared",
+      "groups": [],
+      "matching": "native",
+      "stopRule": "Exactly 1000 successful shared optimizer steps per seed, also subject to the cumulative preparation wall-clock deadline; abort on OOM, nonfinite values or failed checks.",
+      "allocation": "single"
+    },
+    "reviewHardIssues": [],
+    "reviewBatches": [
+      [
+        [
+          "fact_0",
+          "fact_1",
+          "fact_2",
+          "fact_3",
+          "fact_4",
+          "fact_5",
+          "fact_6",
+          "fact_7",
+          "fact_8",
+          "fact_9"
+        ],
+        19197
+      ],
+      [
+        [
+          "section_0",
+          "section_1",
+          "section_2",
+          "section_3",
+          "section_4",
+          "section_5",
+          "section_6",
+          "section_7"
+        ],
+        35777
+      ],
+      [
+        [
+          "requirement_0_0",
+          "requirement_0_1",
+          "requirement_0_2",
+          "requirement_0_3"
+        ],
+        35033
+      ]
+    ],
+    "providerCallsDuringReplay": 0,
+    "scientificApproval": false
+  },
+  "tests": {
+    "generationPatch": 314,
+    "prefitWindowPatch": 319
+  },
+  "publicationPerformed": false,
+  "independentHoldoutCredit": 0,
+  "productionWrites": 0,
+  "artifacts": {
+    "tmp/d3-assets-budget-memory-input-replay-20261129.json": "9719ce2d57e9ab96c97b47cff658196e3144bedde489cc46e98309df0989586c",
+    "tmp/openai-d3-prep-memory-fresh-preflight-20261129/intent.json": "147cd6eedf8c066a2391507b8b7a29365797949eade624fc498a72b2ebe57e5f",
+    "tmp/openai-d3-prep-memory-fresh-20261129/intent.json": "147cd6eedf8c066a2391507b8b7a29365797949eade624fc498a72b2ebe57e5f",
+    "tmp/openai-d3-prep-memory-fresh-20261129/run.json": "9239109d9cf97d6b07be7002e8bb560c4b3e3a99da29d00e294bdc3d6de6564c",
+    "tmp/openai-d3-prep-memory-fresh-20261129/calls.json": "670755d080685747f3cadbb13fb96b07f8aef330060cce398ecc9d1746236239",
+    "tmp/openai-d3-prep-memory-fresh-20261129/result.json": "79859f51abe1c32203084aea77da4d202721242561186fb502f9f8b81ab5a1ff",
+    "tmp/openai-d3-prep-memory-fresh-20261129/provider.jsonl": "b211df61264ff912bb6366fee700dbe778893b8df73d4ad72d690fe10499cc08",
+    "tmp/openai-d3-prep-memory-fresh-20261129/prep-window-policy-replay/summary.json": "996c488fef4398e8a77f747f19e5c6db803c6d776022a2d20af17eb33698c4ae",
+    "tmp/openai-d3-prep-memory-fresh-20261129/prep-window-policy-replay/bound-plan.json": "7fee8ffe6ddca2a3ffe2a36dc6bf039b1bec3c7646603523d33a407985eac824",
+    "tmp/openai-d3-prep-memory-fresh-20261129/prep-window-policy-replay/review-input.json": "169a6b207faa17efd579e10bce58529ac581ca5e508828172dfffe199e5d33ef"
+  }
+}

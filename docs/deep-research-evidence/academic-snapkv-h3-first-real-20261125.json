@@ -1,0 +1,77 @@
+{
+  "case": "H3-SNAPKV-v1",
+  "runId": "dr_run_8c3d06669cbc574e8f05b3e2e75a037c",
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "reportVersionId": "report_dr_run_8c3d06669cbc574e8f05b3e2e75a037c_v1",
+  "workspaceReportOrigins": [
+    "latest",
+    "machine"
+  ],
+  "modelCalls": 11,
+  "modelTokens": 39566,
+  "elapsedSeconds": 81.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "acquisitionLedger": [
+    {
+      "tool": "external_discover",
+      "status": "succeeded",
+      "versions": [
+        "arxiv:2404.14469v1"
+      ]
+    },
+    {
+      "tool": "external_fulltext",
+      "status": "succeeded",
+      "versionId": "arxiv:2404.14469v1",
+      "accessLevel": "fulltext",
+      "contentHash": "cc426479949721dfe31a2319341129beba60498e95305e88b74000ab3cf7a234",
+      "networkRequests": 1,
+      "cacheHit": false,
+      "pages": 18
+    }
+  ],
+  "exactMetadataDiscovery": true,
+  "freshExactPdfVerified": true,
+  "evidenceVersions": [
+    "arxiv:2404.14469v1"
+  ],
+  "locatedEvidenceCount": 75,
+  "verifiedClaims": 1,
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "receiptSha256": {
+    ".payload.json": "13c496946d0a94b779fef9c0b637b904325c3774619582876a2ba8a100277523",
+    ".calls.json": "e33f5b5ec9c5fd0a3a790792d3e855b0f210cadc9fc5d8378f483938f797c540",
+    ".result.json": "806540ce91bde4bd89a8410459a9706a7eea41efb6f7b28e69c9ec945ad4b97c",
+    ".execution.json": "2aa26eb2f60e5e8f08784e56f935e6888db1602277e7a25f4f1e965629863769",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "sourceCommit": "a1c34d512b9d7e5173d5c24325cecad26be2fc36",
+  "publishedCitation": {
+    "page": 7,
+    "version": "arxiv:2404.14469v1",
+    "literalQuoteInFetchedPage": true,
+    "support": "The cited code supports scoring the prefix from observation-window query attention weights and summing over queries."
+  },
+  "coverageVerdicts": {
+    "O1": "covered",
+    "O2": "missing",
+    "O3": "partial",
+    "O4": "partial",
+    "answer_scope": "partial"
+  },
+  "missingMethodAnchorPages": {
+    "poolingBeforeSelection": [
+      7
+    ],
+    "appendWindowToSelectedPrefix": [
+      7
+    ]
+  },
+  "rejectedDraftCacheStatementContradictsMethod": true
+}

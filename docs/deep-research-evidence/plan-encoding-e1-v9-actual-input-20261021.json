@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v9",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "actualSourceCommit": "b85ccc0c",
+  "actualEncodingVersion": 1,
+  "actualPlanningAudit": {
+    "rawBytes": 1782,
+    "wireBytes": 1673,
+    "slotLimit": 2500,
+    "scientificApproval": false
+  },
+  "exactFullInitialReportReproduced": true,
+  "actualRequestFingerprintsMatched": 6,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "actualFingerprintMatched": true,
+      "inputBytes": 13881
+    },
+    {
+      "node": "synthesize",
+      "actualFingerprintMatched": true,
+      "inputBytes": 23139
+    },
+    {
+      "node": "verify_design_config",
+      "actualFingerprintMatched": true,
+      "inputBytes": 25977,
+      "derived": [
+        {
+          "claimId": "c4",
+          "role": "data",
+          "fromPath": [
+            "executionSpec",
+            "split"
+          ],
+          "splitMeaning": "按camera_id_ascending排列，样本从0开始编号，编号除以5的余数为0时划入评估集，其余为训练集"
+        }
+      ]
+    },
+    {
+      "node": "verify_design_science",
+      "actualFingerprintMatched": true,
+      "inputBytes": 31749,
+      "derived": [
+        {
+          "claimId": "c4",
+          "role": "data",
+          "fromPath": [
+            "executionSpec",
+            "split"
+          ],
+          "splitMeaning": "按camera_id_ascending排列，样本从0开始编号，编号除以5的余数为0时划入评估集，其余为训练集"
+        }
+      ]
+    },
+    {
+      "node": "verify_repair_design_config",
+      "actualFingerprintMatched": true,
+      "inputBytes": 21242,
+      "derived": [
+        {
+          "claimId": "c5",
+          "role": "budget",
+          "fromPaths": [
+            [
+              "executionSpec",
+              "baseline"
+            ],
+            [
+              "executionSpec",
+              "recovery"
+            ]
+          ],
+          "baselineMode": "train",
+          "recoveryUnit": "optimizer_steps",
+          "baselineUnit": "optimizer_steps",
+          "perGroupUpperCaps": {
+            "0": {
+              "sum": [
+                1000,
+                0
+              ],
+              "upperCap": 1000
+            },
+            "1": {
+              "sum": [
+                1000,
+                200
+              ],
+              "upperCap": 1200
+            }
+          }
+        }
+      ]
+    },
+    {
+      "node": "verify_repair_design_science",
+      "actualFingerprintMatched": true,
+      "inputBytes": 30251,
+      "derived": [
+        {
+          "claimId": "c5",
+          "role": "budget",
+          "fromPaths": [
+            [
+              "executionSpec",
+              "baseline"
+            ],
+            [
+              "executionSpec",
+              "recovery"
+            ]
+          ],
+          "baselineMode": "train",
+          "recoveryUnit": "optimizer_steps",
+          "baselineUnit": "optimizer_steps",
+          "perGroupUpperCaps": {
+            "0": {
+              "sum": [
+                1000,
+                0
+              ],
+              "upperCap": 1000
+            },
+            "1": {
+              "sum": [
+                1000,
+                200
+              ],
+              "upperCap": 1200
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Actual plan/draft and four independent reviews reconstructed against saved physical request fingerprints. Encoding/legend and derived split/budget packets truly reached this run. Its raw plan1782bytes was already below2500: production encoding compatibility is proven, not a paid over-limit-response recovery. Original0/9 and true defects/reviewer contradictions remain; no new calls or history promotion.",
+  "sourceCommit": "b85ccc0c",
+  "verifiedAsOf": "2026-10-21"
+}

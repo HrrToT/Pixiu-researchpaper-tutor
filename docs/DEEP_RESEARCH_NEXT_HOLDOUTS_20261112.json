@@ -1,0 +1,231 @@
+{
+  "version": 1,
+  "asOf": "2026-11-27",
+  "scope": "Original H1-H6 replacements: content definitions and separately assessed operational fault case",
+  "independentAccepted": 0,
+  "slots": [
+    {
+      "id": "H1",
+      "state": "executed_content_not_accepted",
+      "case": "H1-GSC",
+      "manifest": "DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/gsc-explanation-h1-first-real-20261124.json",
+      "loftrExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-LOFTR",
+        "manifest": "DEEP_RESEARCH_LOFTR_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/loftr-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/loftr-h1-first-frozen-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "lightGlueExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-LIGHTGLUE",
+        "manifest": "DEEP_RESEARCH_LIGHTGLUE_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/lightglue-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/lightglue-h1-first-frozen-20261127.json",
+        "developmentPublication": "deep-research-evidence/lightglue-citation-display-real-coverage-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "r2d2Execution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-R2D2",
+        "manifest": "DEEP_RESEARCH_R2D2_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/r2d2-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/r2d2-h1-first-frozen-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "alikeExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-ALIKE",
+        "manifest": "DEEP_RESEARCH_ALIKE_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/alike-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/alike-h1-first-frozen-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "silkExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H1-SILK",
+        "manifest": "DEEP_RESEARCH_SILK_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/silk-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/silk-h1-first-frozen-20261127.json",
+        "offlineMethodReplay": "deep-research-evidence/silk-numbered-method-passages-replay-20261127.json",
+        "developmentAndRepairReceipt": "deep-research-evidence/silk-image-pair-and-method-citation-20261127.json",
+        "supplementalMethodRetentionReceipt": "deep-research-evidence/silk-supplemental-method-retention-20261127.json",
+        "jointProcessAnchorsReceipt": "deep-research-evidence/silk-joint-process-anchors-20261127.json",
+        "readerOperationsDevelopmentReceipt": "deep-research-evidence/silk-reader-operations-real-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "diskExecution": {
+        "state": "executed_content_not_accepted_retired_after_development_use",
+        "case": "H1-DISK",
+        "manifest": "DEEP_RESEARCH_DISK_EXPLANATION_HOLDOUT_20261127.json",
+        "preflight": "deep-research-evidence/disk-h1-live-preflight-20261127.json",
+        "result": "deep-research-evidence/disk-h1-first-frozen-20261127.json",
+        "developmentReplay": "deep-research-evidence/disk-font-and-method-routing-replay-20261127.json",
+        "scientificContentCredit": 0
+      }
+    },
+    {
+      "id": "H2",
+      "state": "executed_content_not_accepted",
+      "case": "H2-ADAPT",
+      "manifest": "DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json",
+      "localFeaturesExecution": {
+        "state": "invalid_profile_first_execution_retired_for_independent_acceptance",
+        "case": "H2-LOCAL-FEATURES",
+        "manifest": "DEEP_RESEARCH_LOCAL_FEATURES_COMPARISON_HOLDOUT_20261127.json",
+        "result": "deep-research-evidence/local-features-h2-default-profile-first-20261127.json",
+        "correctedOfflinePreflight": "deep-research-evidence/local-features-h2-profile-preflight-20261127.json",
+        "scientificContentCredit": 0,
+        "configuredDevelopmentRun": "deep-research-evidence/local-features-h2-configured-development-20261127.json",
+        "thresholdTableOfflineReplay": "deep-research-evidence/local-features-h2-threshold-table-replay-20261127.json",
+        "conditionBoundResultReadinessReplay": "deep-research-evidence/local-features-h2-condition-bound-readiness-20261127.json",
+        "conditionBoundResultLiveDevelopmentRun": "deep-research-evidence/local-features-h2-condition-bound-live-20261127.json",
+        "benchmarkProtocolAndFigureCountsOfflineReplay": "deep-research-evidence/local-features-h2-benchmark-protocol-and-counts-20261127.json",
+        "namedProtocolLiveAndOfflineAdmissionReplay": "deep-research-evidence/local-features-h2-named-protocol-live-and-admission-20261127.json",
+        "synthesisLiveAndClauseReplay": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
+        "appendixMetricSynthesisBundleReplay": "deep-research-evidence/local-features-h2-appendix-metric-bundle-20261127.json",
+        "likeForLikeRecheckValidation": "deep-research-evidence/local-features-h2-like-for-like-recheck-20261127.json",
+        "appendixRecheckLiveAndOfflineFixes": "deep-research-evidence/local-features-h2-appendix-recheck-live-and-offline-fixes-20261127.json",
+        "lengthBoundedComparisonReplay": "deep-research-evidence/local-features-h2-600-character-layout-live-and-replay-20261127.json",
+        "compoundResultRoutingAndKernelReviewReplay": "deep-research-evidence/local-features-h2-compound-results-and-kernel-review-20261127.json",
+        "selectedPairBindingLiveAndReplay": "deep-research-evidence/local-features-h2-selected-pair-live-and-replay-20261127.json",
+        "bothResultsAndRecheckRouting": "deep-research-evidence/local-features-h2-both-results-and-recheck-routing-20261127.json"
+      }
+    },
+    {
+      "id": "H3",
+      "state": "executed_acquisition_passed_content_not_accepted",
+      "case": "H3-QUEST",
+      "manifest": "DEEP_RESEARCH_QUEST_EXTERNAL_HOLDOUT_20261125.json",
+      "result": "deep-research-evidence/academic-quest-h3-first-real-20261126.json",
+      "earlierCaseManifests": [
+        "DEEP_RESEARCH_STREAMING_EXTERNAL_HOLDOUT_20261112.json",
+        "DEEP_RESEARCH_SNAPKV_EXTERNAL_HOLDOUT_20261125.json",
+        "DEEP_RESEARCH_PAGEDATTENTION_EXTERNAL_HOLDOUT_20261125.json"
+      ],
+      "latestExecution": {
+        "state": "executed_acquisition_passed_content_not_accepted",
+        "case": "H3-INFLLM",
+        "manifest": "DEEP_RESEARCH_INFLLM_EXTERNAL_HOLDOUT_20261126.json",
+        "preflight": "deep-research-evidence/infllm-external-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
+        "scientificContentCredit": 0
+      },
+      "retrievalAttentionExecution": {
+        "state": "executed_acquisition_passed_content_not_accepted",
+        "case": "H3-RETRIEVALATTENTION",
+        "manifest": "DEEP_RESEARCH_RETRIEVALATTENTION_EXTERNAL_HOLDOUT_20261126.json",
+        "preflight": "deep-research-evidence/retrievalattention-external-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/research-finalization-real-batch-20261126.json",
+        "scientificContentCredit": 0
+      },
+      "flexPrefillExecution": {
+        "state": "first_execution_partial_retired_for_development",
+        "case": "H3-FLEXPREFILL",
+        "manifest": "DEEP_RESEARCH_FLEXPREFILL_EXTERNAL_HOLDOUT_20261126.json",
+        "preflight": "deep-research-evidence/flexprefill-external-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/flexprefill-h3-first-frozen-20261127.json",
+        "developmentRegression": "deep-research-evidence/flexprefill-parameter-anchor-regression-20261127.json",
+        "scientificContentCredit": 0
+      },
+      "minferenceExecution": {
+        "state": "first_execution_metadata_transport_failed_fallback_acquisition_passed_in_development",
+        "case": "H3-MINFERENCE",
+        "manifest": "DEEP_RESEARCH_MINFERENCE_EXTERNAL_HOLDOUT_20261128.json",
+        "preflight": "deep-research-evidence/minference-external-holdout-preflight-20261128.json",
+        "result": "deep-research-evidence/minference-h3-first-and-pinned-fallback-20261128.json",
+        "scientificContentCredit": 0
+      },
+      "pyramidKVExecution": {
+        "state": "first_execution_acquisition_passed_content_not_accepted",
+        "case": "H3-PYRAMIDKV",
+        "manifest": "DEEP_RESEARCH_PYRAMIDKV_EXTERNAL_HOLDOUT_20261128.json",
+        "preflight": "deep-research-evidence/pyramidkv-external-holdout-preflight-20261128.json",
+        "result": "deep-research-evidence/pyramidkv-h3-first-and-access-label-replay-20261128.json",
+        "developmentRegression": "deep-research-evidence/pyramidkv-selection-scope-synthesis-20261128.json",
+        "developmentReview": "deep-research-evidence/pyramidkv-reader-scope-and-verification-20261128.json",
+        "scientificContentCredit": 0
+      }
+    },
+    {
+      "id": "H4",
+      "state": "executed_content_not_accepted",
+      "case": "H4-QUAROT-VERSIONS",
+      "manifest": "DEEP_RESEARCH_QUAROT_VERSION_HOLDOUT_20261126.json",
+      "result": "deep-research-evidence/quarot-version-h4-first-real-20261126.json",
+      "earlierCaseManifests": [
+        "DEEP_RESEARCH_LORA_VERSION_HOLDOUT_20261112.json",
+        "DEEP_RESEARCH_KIVI_VERSION_HOLDOUT_20261125.json"
+      ],
+      "earlierKiviResult": "deep-research-evidence/kivi-version-h4-first-real-20261126.json",
+      "latestExecution": {
+        "state": "executed_content_not_accepted",
+        "case": "H4-AWQ-VERSIONS",
+        "manifest": "DEEP_RESEARCH_AWQ_VERSION_HOLDOUT_20261126.json",
+        "preflight": "deep-research-evidence/awq-version-holdout-preflight-20261126.json",
+        "result": "deep-research-evidence/comparison-and-factorial-real-batch-20261126.json",
+        "postFixRegression": "deep-research-evidence/research-finalization-real-batch-20261126.json",
+        "scientificContentCredit": 0
+      },
+      "tmacExecution": {
+        "state": "first_execution_partial_retired_for_development",
+        "case": "H4-TMAC-VERSIONS",
+        "manifest": "DEEP_RESEARCH_TMAC_VERSION_HOLDOUT_20261126.json",
+        "firstExecution": "deep-research-evidence/tmac-version-h4-first-frozen-20261127.json",
+        "targetedRateVerification": "deep-research-evidence/tmac-rate-finalization-live-20261127.json",
+        "commonSettingReplay": "deep-research-evidence/tmac-table-condition-replay-20261127.json",
+        "scientificContentCredit": 0
+      }
+    },
+    {
+      "id": "H5",
+      "state": "executed_content_not_accepted",
+      "case": "H5-DORA-FACTORIAL",
+      "manifest": "DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/dora-h5-first-real-20261125.json"
+    },
+    {
+      "id": "H6",
+      "state": "passed_offline_fault_injection",
+      "case": "H6-FAULT-CHAIN",
+      "manifest": "DEEP_RESEARCH_FAULT_CHAIN_HOLDOUT_20261112.json",
+      "result": "deep-research-evidence/h6-fault-chain-first-20261112.json",
+      "scientificContentCredit": 0,
+      "liveProviderCredit": 0
+    }
+  ],
+  "historicalBoundary": "The first receipt and frozen criteria for each attempted case remain on record. The original LoRA request retains its unresolved state. H6 passed operational fault injection. Scientific acceptance remains open for H1–H5. Shared-source dependencies remain; H2O is excluded.",
+  "sharedMaterialDependencies": [
+    {
+      "cases": [
+        "H2-ADAPT",
+        "H4-LORA-VERSIONS",
+        "H5-DORA-FACTORIAL"
+      ],
+      "materialSha256": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0",
+      "rule": "If shared material informs engine tuning, re-audit/retire dependent held-out cases; shared-source cases are not statistically independent."
+    },
+    {
+      "cases": [
+        "H2-ADAPT",
+        "H5-DORA-FACTORIAL"
+      ],
+      "materialSha256": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876",
+      "rule": "If shared material informs engine tuning, re-audit/retire dependent held-out cases; shared-source cases are not statistically independent."
+    }
+  ],
+  "excludedCandidates": [
+    {
+      "arxiv": "2306.14048v1",
+      "use": "development_parser_diagnostic",
+      "independentCredit": 0,
+      "reason": "Used to diagnose/validate PDF Form optimization; cannot regain H3 eligibility from repair success.",
+      "proof": "DEEP_RESEARCH_PDF_FORM_OPTIMIZATION_20261112.md"
+    }
+  ],
+  "independentAcceptedMeaning": "Scientific content acceptance only; H6 operational fixture pass is recorded separately.",
+  "operationalAccepted": 1
+}

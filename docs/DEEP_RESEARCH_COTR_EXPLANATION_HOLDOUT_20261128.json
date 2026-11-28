@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-28T11:38:44.806680+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
+  "independentCredit": 0,
+  "materials": {
+    "cotr_v2": {
+      "path": "tmp/h1-cotr-frozen-material-20261128/2103.14167v2.pdf",
+      "arxiv": "2103.14167v2",
+      "reference": "https://arxiv.org/abs/2103.14167v2",
+      "sha256": "d3f29fb51eab891e46cb4faaf199fe891ec2123e30b1b234c90fdd77228c7453",
+      "bytes": 8794051,
+      "pageCount": 13
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-COTR",
+      "split": "holdout",
+      "materials": [
+        "cotr_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据 COTR v2，向初学者解释为什么第一次匹配可能定位不准，以及推理时递归放大怎样一步步提高定位精度。注明论文最后采用的每步放大倍率、步数和取舍。正文不超过 300 字，引用原文，不用外部资料。",
+      "required": [
+        "解释注意力的计算成本促使方法使用重度下采样的特征图，粗结果的位置粒度较低。",
+        "从上一轮的估计出发，在两张图分别围绕查询点和估计对应点裁剪放大，把这对局部图交给同一网络重新估计，再迭代。",
+        "标明作者在验证中采用每步 2 倍、四次放大，作为定位精度和计算量的经验折中。",
+        "引用指定版本的推理方法，并在讲述实验观察时保留适用范围。"
+      ],
+      "forbidden": [
+        "只放大目标图或放大固定全图，不使用前一步估计。",
+        "把 2 倍、四次说成数学保证、对任何场景均最优或没有额外计算。",
+        "把训练与推理混淆，或把共同可见区域的阈值当作放大倍率。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "题目解释既有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "cotr_v2",
+        "page": 4,
+        "section": "§3.3 and Figure 3",
+        "checks": "下采样、两图递归裁剪、每步倍率、四步。"
+      },
+      {
+        "paper": "cotr_v2",
+        "page": 8,
+        "section": "§4.6 and Figure 10",
+        "checks": "HPatches 定位误差分布的观察和经验取舍。"
+      }
+    ],
+    "goldInputBoundary": "只向应用传入固定问题、论文、任务内材料策略与标准预算。评分标准、参考页码留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H1-COTR": "76e1ba35d67b5104cd297ce731bc51fa076d22aa09aab32c2b55844ee32438e8"
+  },
+  "firstExecutionReceipt": "deep-research-evidence/cotr-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/cotr-h1-bilingual-quantity-replay-20261128.json"
+}

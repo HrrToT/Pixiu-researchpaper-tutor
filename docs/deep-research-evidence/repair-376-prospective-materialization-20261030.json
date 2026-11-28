@@ -1,0 +1,24 @@
+{
+  "source": "isolated repair376 component",
+  "responseSha256": "dd813e1f9ee3ab2c7678ff1b04e7741e784a57ccbca78be8e3229635dbeef01f",
+  "candidateOnly": true,
+  "originalDraft": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中，从而让二维高斯圆盘贴近真实表面。",
+  "authoredRemovalDeclarations": [
+    "从而让二维高斯圆盘贴近真实表面"
+  ],
+  "edits": [
+    {
+      "start": 33,
+      "end": 48,
+      "removed": "从而让二维高斯圆盘贴近真实表面"
+    }
+  ],
+  "materializedDraft": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中。",
+  "punctuationOnlyCleanup": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldResultsRejudged": false,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Prospective deterministic edit simulation of private draft text, not source quotations. Previous validator outcome is unchanged. Independent evidence verification and full coverage still required."
+}

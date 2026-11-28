@@ -1,0 +1,134 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "candidateCommit": "9532bcf56424d777606c87b11becaa3a9e8d5073",
+  "scope": "Known-case delivery replay using already audited claims and the upgraded exact citation locations",
+  "browser": {
+    "sourceRunId": "dr_kivi_change_label_review_20261127",
+    "realChromium": true,
+    "actualPdfFiles": true,
+    "backendMode": "isolated fixture built by real report renderer and source projection",
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "reportUnchangedOnReload": true,
+    "checks": [
+      {
+        "width": 1366,
+        "height": 768,
+        "revision": "v1",
+        "page": 7,
+        "correctPdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1366,
+        "height": 768,
+        "revision": "v2",
+        "page": 8,
+        "correctPdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1024,
+        "height": 700,
+        "revision": "v1",
+        "page": 7,
+        "correctPdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1024,
+        "height": 700,
+        "revision": "v2",
+        "page": 8,
+        "correctPdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      }
+    ]
+  },
+  "java": {
+    "sourceRunId": "dr_kivi_change_label_review_20261127",
+    "replayRunId": "dr_run_12fe84e1fc1158d2a79dc503318c0b82",
+    "savedPages": {
+      "v1": 7,
+      "v2": 8
+    },
+    "actualJavaPersistence": true,
+    "duplicateDeliverySuppressed": true,
+    "fileHashAndTaskScopeVerified": true,
+    "restartedAndReadAgain": true,
+    "pdfReadinessStub": true,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3"
+  },
+  "browserFixtureUsesRealBackendProjection": true,
+  "browserDirectJavaConnection": true,
+  "unseenHoldoutCredit": 0,
+  "productionWrites": 0,
+  "modelCalls": 0,
+  "sha256": {
+    "tmp/kivi-citation-browser-20261127/proof.json": "58a0b0b5d4498834d1b957cc10b3233b097e19e9f03a28524a7ffd8d414c70df",
+    "tmp/kivi-citation-browser-20261127/v1-1024.png": "96406728fea7c2f532bcdecd0c4e547d3e39f1730ab4e641b7bd3ef8f67bd36d",
+    "tmp/kivi-citation-browser-20261127/v1-1366.png": "fa3a77f294fec7a6d2903085455df654037e662e8ec94e67c139d45f2559ec45",
+    "tmp/kivi-citation-browser-20261127/v2-1024.png": "91578ddb895c71e540207e8398d94a2d0bcc7449e393ed1f881eb9b12056791b",
+    "tmp/kivi-citation-browser-20261127/v2-1366.png": "4f46d6516113c23f96bdd1b629eec1f3798f0403e970cc3e0acd352c20832022",
+    "tmp/publication-integration-kivi-citations-jdk25-20261127/receipt.json": "115427bb4da47c9176d72244f719465b9fa682bd33dfc772418852903048daac",
+    "tmp/publication-integration-kivi-citations-jdk25-20261127/task-first-read.json": "4bdc4f7013a652ef469a0f665f35e6743e60bc90247592bee022d80b7f0a5643",
+    "tmp/kivi-citation-browser-java-current-20261127/proof.json": "b1decbd2e6bdab17278c0e7ecce19568522e3a705a3639a47d951381c7251aa3",
+    "tmp/kivi-citation-browser-java-current-20261127/v1-1024.png": "5f08de306bdee66405c336c7d07e4f65a06201a66f272261ed330c11ea6fbeb7",
+    "tmp/kivi-citation-browser-java-current-20261127/v1-1366.png": "50d30cc92e4192417d6d4f513bacbc32844484c3e4f58cdd4c526329bbc92150",
+    "tmp/kivi-citation-browser-java-current-20261127/v2-1024.png": "bb194db18de80c927cd8ac48b7db4a51d758bc078855ff49f315be0f8be997f2",
+    "tmp/kivi-citation-browser-java-current-20261127/v2-1366.png": "ecab6018267ba0ec1f62bfeaf913e9e60474bda5417e70f3c52cc4632001779e",
+    "tmp/publication-integration-kivi-browser-java-current-20261127/receipt.json": "bdb2a8e10c7c047d51c6996584ddb25f8f8f376a73b3467a2c60257f02f6522e"
+  },
+  "browserWithCurrentJava": {
+    "sourceRunId": "dr_kivi_change_label_review_20261127",
+    "realChromium": true,
+    "actualPdfFiles": true,
+    "backendMode": "actual isolated Java persistence and material routes",
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "reportUnchangedOnReload": true,
+    "checks": [
+      {
+        "width": 1366,
+        "height": 768,
+        "revision": "v1",
+        "page": 7,
+        "correctPdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1366,
+        "height": 768,
+        "revision": "v2",
+        "page": 8,
+        "correctPdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1024,
+        "height": 700,
+        "revision": "v1",
+        "page": 7,
+        "correctPdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      },
+      {
+        "width": 1024,
+        "height": 700,
+        "revision": "v2",
+        "page": 8,
+        "correctPdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+        "exactQuoteDialog": true,
+        "pdfCanvasPainted": true
+      }
+    ]
+  },
+  "browserJavaJarSha256": "6a992aa7721bbc88e0031c3b753a77f27f2118fcb80e3737949e1fa07ddc2cb7"
+}

@@ -1,0 +1,16 @@
+{
+  "promptVersion": "dr-v2.20261105.388",
+  "mode": "offline saved real read passages -> literal independent criteria -> original passage extraction -> actual synthesis fitting; provider captured only",
+  "promptBytes": 23950,
+  "evidenceCount": 45,
+  "methodLossAndImplementationVisible": true,
+  "originalPayloadPreserved": true,
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "error": null,
+  "sourceCase": "X5R-v4",
+  "originalPayloadSha256": "1939f542f5fd7d7d7ff44dd681b8d0d00bb9c994f641ff8bf4b7a7c4f139f141",
+  "newFixedQuestionParts": 3
+}

@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "e230bb473c67ae59fe45e5289dc69648eaacd179",
+  "scope": "Initial review budget stop only; complete comparison still unproven",
+  "tests": {
+    "tests": 211,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "modules": 8,
+  "junitSha256": "ae1864410cc7a88cb7385396a166ce71ac7a14e0ba783083393fc7b0ae0c1f7a",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/initial_review_stop.py": "1ed29c3267529a5cec7888e6c9b1c16c9fba2db8154bd59a97bf5d60438b0f5a",
+    "ai-service-python/services/deep_research/tools.py": "415fdb1b8adcd6468fcad15ce99341fe74cb2e1431599e3270217dedde881515",
+    "ai-service-python/services/deep_research/facade.py": "7a0c9153f1f24169da19ce0b286c5dd729ef661a860526ce1e3d8f095e58fb9b",
+    "ai-service-python/services/deep_research/graph.py": "e0445c2f69653088a7772d00a71b50a5c68e9f4d85ce3ca7d5eb78b0d2c12a58",
+    "ai-service-python/tests/test_deep_research_initial_review_stop.py": "583b5a0cdfcbdaa2ddb81f019e8c85d1f3a016b8f3370cb38dad386ca8f67812"
+  },
+  "covered": [
+    "zero or two settled batches survive production verify and SQLite reopen",
+    "reopen does not resend; changed input refuses cached decisions",
+    "production publication is partial or inconclusive and contains checked claims only",
+    "unknown requests and legacy/revision budget errors still propagate",
+    "partially checked expression children do not approve parent"
+  ],
+  "savedV15Replay": {
+    "exactKnownReviewCount": 2,
+    "nextArgsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+    "projectedTotalTokens": 100334,
+    "projectedReserveCalls": 6,
+    "reservationRolledBack": true,
+    "providerRequests": 0,
+    "liveLedgerMutations": 0
+  },
+  "limitations": [
+    "No final full regression for this candidate yet",
+    "Not loaded into runtime",
+    "No new real model case",
+    "No content quality or full-round budget acceptance"
+  ]
+}

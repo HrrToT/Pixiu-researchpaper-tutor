@@ -1,0 +1,78 @@
+{
+  "sourceCase": "D1-v40",
+  "component": "fixed-request-coverage-v1",
+  "promptVersion": "dr-v2.20261027.315",
+  "providerSubmissions": 1,
+  "status": "checked",
+  "gapCount": 4,
+  "diagnosticErrors": [],
+  "decisions": [
+    {
+      "obligationId": "ob_1",
+      "status": "partial",
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "答案报告了作者在Mip-NeRF 360数据集上的SSIM下降0.007，并指出该结果不足以证明所有数据集或场景下质量接近，但未明确区分作者报告的结果、成立条件和未验证范围。"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_2",
+      "status": "partial",
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "答案报告了作者在Mip-NeRF 360数据集上的SSIM下降0.007，并指出该结果不足以证明所有数据集或场景下质量接近，但未明确区分作者报告的结果、成立条件和未验证范围。"
+        }
+      ]
+    },
+    {
+      "obligationId": "ob_3",
+      "status": "partial",
+      "requestCheckReasons": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "reason": "答案报告了作者在Mip-NeRF 360数据集上的SSIM下降0.007，并指出该结果不足以证明所有数据集或场景下质量接近，但未明确区分作者报告的结果、成立条件和未验证范围。"
+        }
+      ]
+    },
+    {
+      "obligationId": "answer_scope",
+      "status": "partial",
+      "requestCheckReasons": [
+        {
+          "checkId": "request",
+          "reason": "答案报告了作者在Mip-NeRF 360数据集上的SSIM下降0.007，并指出该结果不足以证明所有数据集或场景下质量接近，但未明确区分作者报告的结果、成立条件和未验证范围。"
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "total_tokens": 6687,
+    "input_tokens": 6084,
+    "output_tokens": 603
+  },
+  "allCallsSettled": true,
+  "requestSha256": "a46ab76d200f1992f7cdfbeab1908f6b57f0e0178f2d12d3d07e1605bcdc5c35",
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 1,
+    "productionRunCreated": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "fullWorkflowReplay": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

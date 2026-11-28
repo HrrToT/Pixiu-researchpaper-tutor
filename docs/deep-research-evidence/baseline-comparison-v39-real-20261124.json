@@ -1,0 +1,68 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v39",
+  "sourceCommit": "893bc003361835dd3326e16e3937aee6cde45d6e",
+  "runId": "dr_run_49c688c5dac45b529c422e214d4e5512",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 16,
+  "modelTokens": 85028,
+  "elapsedSeconds": 168.0,
+  "externalSearches": 0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 23999,
+      "requiredBundles": 10,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23987,
+      "requiredBundles": 10,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23974,
+      "requiredBundles": 14,
+      "status": "compiled_unverified"
+    }
+  ],
+  "compiledDraftClaims": 11,
+  "benchmarkExampleClaimId": "cmp_conclusion_1",
+  "boundaryCompiled": true,
+  "initialAcceptedClaims": 4,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 3,
+    "uncited_device_condition": 1,
+    "semantic_unresolved": 3
+  },
+  "benchmarkVerificationResult": "semantic_unresolved",
+  "deferredReviewClaims": [
+    "cmp_7_0",
+    "cmp_conclusion_0"
+  ],
+  "repairBudgetStop": {
+    "batch": 2,
+    "kind": "normalTokens",
+    "limit": 50000,
+    "used": 66440
+  },
+  "wholeAnswerAuditSent": false,
+  "wholeAnswerAuditAdmission": {
+    "kind": "coveragePromptBytes",
+    "limit": 21320,
+    "used": 22955
+  },
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "dc8c445d320795e5da8d0e97b441db36a98fa34f7a10a2d2991f3556bb1af397",
+    ".calls.json": "f1641aa417d8a7d311f141912365c0ef2cb9e5b8af8c93bf6d01dc93ca5d903b",
+    ".result.json": "41f3f679f24f4468579610c8a670118ce725ced70bbce9601cce9643ac6ac65a",
+    ".execution.json": "c793e240fff0bc2f85fba9fd9e16930222453e71b121f4576d1f0a88be09f52d"
+  }
+}

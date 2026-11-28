@@ -1,0 +1,47 @@
+{
+  "case": "H4-AWQ-VERSIONS",
+  "verificationClass": "known_case_development",
+  "runId": "dr_awq_bound_review_20261127",
+  "sourceRunId": "dr_run_986ce15b5e735ed996c81de2d14d9963",
+  "codeCommit": "5890857ede160e7083f7140f1049fa9c1330de8a",
+  "outcome": "complete",
+  "status": "completed",
+  "localPublicationId": "dr_pub_0e593bf91d8745fe8d5755839fd427ec",
+  "downstreamDispatch": false,
+  "productionWrites": 0,
+  "providerCallsByNode": [
+    "verify",
+    "verify",
+    "verify_answer_coverage"
+  ],
+  "additionalTokens": 17665,
+  "cumulativeTokens": 58745,
+  "cumulativeModelCalls": 11,
+  "verificationSpanSeconds": 24.0,
+  "visibleAnswerCharacters": 355,
+  "verifiedCellCount": 12,
+  "conditionsChecked": [
+    "WikiText",
+    "INT3",
+    "group 128",
+    "activation-selected 1%"
+  ],
+  "sharedConclusionSupported": true,
+  "contentAuditPassed": true,
+  "unseenHoldoutCredit": 0,
+  "citationAudit": {
+    "releasedReportPhysicalPages": "unresolved",
+    "replayWithFixedLocation": {
+      "v2": 3,
+      "v1": 3
+    },
+    "newEvidenceIds": true,
+    "historicalResultRewritten": false,
+    "additionalProviderCalls": 0
+  },
+  "artifactSha256": {
+    "intent.json": "f4441182978cf8fe4cba1fa8e50c77106c5bf11a3fe72e5c3e920240109f9906",
+    "calls.json": "c2c71c980e4402c37026a43a1614822a457c3cbb803e78f9c5535164e850d866",
+    "run.json": "47470a3f0fe6b7976d93fd792311fc1f82cf86afe66cef7d62b39f09f34015bf"
+  }
+}

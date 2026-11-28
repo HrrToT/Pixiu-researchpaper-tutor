@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-15",
+  "frozenTimestamp": "2026-11-15T06:17:26.280939+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed",
+  "independentCredit": 0,
+  "materials": {
+    "compact_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-vq-review-20261112\\2311.18159v1.pdf",
+      "sha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+      "bytes": 22544872,
+      "pageCount": 16,
+      "arxiv": "2311.18159v1",
+      "reference": "https://arxiv.org/abs/2311.18159v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independentEligibility": false,
+    "independenceReason": "Existing comparison development material; inspected during development preparation. No independent credit.",
+    "scope": "Complete executable two-factor scientific experiment development; does not replace held-out H5 or release gates.",
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "goldInputBoundary": "Only question/materials/budget enter application intent. Reviewer criteria never enter model prompt."
+  },
+  "cases": [
+    {
+      "id": "D3-VQ-FACTORIAL",
+      "split": "development",
+      "materials": [
+        "compact_v1"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "只依据当前Compact3D的v1论文，设计一个可执行的2×2对照实验，区分SH系数量化与尺度/旋转参数量化各自对重建质量、存储和渲染性能的影响。四组分别开启或关闭这两类量化，DC颜色的处理保持一致。请给出假设、四组开关的精确定义、共享初始化和训练/测试数据、训练预算与随机重复、执行步骤、指标与资源计量口径、混杂控制、主效应及交互效应的判断标准。明确关闭量化时保留什么，哪些状态跨组固定，参数更新与码本/索引何时发生；论文未给的实验设置可提出具体建议，但必须标为建议，不得伪装成论文事实或已测结果。不用外部资料，不实际运行训练。",
+      "required": [
+        "两独立因素各开关形成四组；关闭时保留未量化参数，DC控制一致，不能以删SH或剪枝替代。",
+        "共享可取得的同一初始模型与相同Gaussian身份/数量，并定义位置/不透明度/其他属性的控制，区分冻结状态、共同初值和允许更新状态。",
+        "具体说明量化启用/绕过、码本/索引初始化与更新、优化参数来源、数据分割、随机重复和每组相同预算；未指定数值可给可执行的建议并标明。",
+        "数据与模型来源和所需前提明确；不得把不可取得的作者内部状态当作已拥有。检查点/数据接口若未获知须给出可实现的准备步骤或明确前提，不得无说明占位。",
+        "质量/存储/性能各具可复核的计量口径，包含码本、索引和未量化属性，区分磁盘编码与运行内存；性能条件统一而不保证量化带来加速。",
+        "给出配对四组主效应和交互效应计算或判断方法、重复波动的处理、关键混杂因素与可支持/不能支持的结论。完整步骤可由有基础的实现者据此执行；不要求实际训练结果。"
+      ],
+      "forbidden": [
+        "将尺度/旋转量化误写为原论文直接量化完整协方差矩阵，或把不透明度/位置默认为量化对象。",
+        "编造原论文具体超参数、数据规模、指标、速度、损失变化或实验已经执行。",
+        "四组初始化、Gaussian集合、数据、预算或处理精度混杂且未控制；只列标题或不可执行占位符。",
+        "绕过来源与科学审核；将字段齐全当作实验内容通过；超出18调用/10万Token/360秒。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "D3-VQ-FACTORIAL": "b776d5b293d6c58c08b3377d9b7b2ddc02842da77c7fc87548025ad82cddc0bf"
+  }
+}

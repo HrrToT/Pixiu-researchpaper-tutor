@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-13",
+  "runtimeBeforeFix": "72f7f60 / dr-v2.20261013.52",
+  "H3-v5": {
+    "runId": "dr_run_7f273cee8a785166a63d80381f92ea10",
+    "purpose": "Development regression, not independent holdout acceptance",
+    "submission": "One confirmed submission; no retry",
+    "status": "completed",
+    "outcome": "inconclusive",
+    "accepted": false,
+    "settledModelCalls": 4,
+    "settledTokens": 3383,
+    "elapsedSeconds": 40.006,
+    "externalSearches": 4,
+    "fulltextFetches": 0,
+    "sourceCount": 0,
+    "auditStatus": "not_checked",
+    "findings": [
+      "All discovery calls failed; no source was obtained, so field-reference quality was not evaluated",
+      "Different query wording for the same arXiv version produced redundant effective requests",
+      "The published evidence-insufficiency message obscured acquisition failure"
+    ]
+  },
+  "D3-v19": {
+    "runId": "dr_run_b9f116b00e525189952b9bf2c10db21b",
+    "submission": "One confirmed submission; no retry",
+    "status": "completed",
+    "outcome": "partial",
+    "accepted": false,
+    "settledModelCalls": 11,
+    "settledTokens": 58990,
+    "elapsedSecondsRounded": 118,
+    "sourceCount": 26,
+    "repairStatus": "response_received",
+    "initialAuditStatus": "checked",
+    "finalAuditStatus": "checked",
+    "acceptedClaimRoles": [
+      "hypothesis",
+      "groups",
+      "controls",
+      "metrics",
+      "analysis",
+      "analysis"
+    ],
+    "findings": [
+      "Repair and subsequent verification both ran within the existing budget",
+      "Field references resolved, but structural auditing does not prove semantic quality",
+      "Final answer lacks accepted data, budget, execution and risk requirements",
+      "Dataset membership/count remained unverified; another claim had invalid_design_role",
+      "Coverage model used a VQ source passage to assess pruning requirements; manual acceptance remains false"
+    ]
+  },
+  "fix": {
+    "promptVersion": "dr-v2.20261013.53",
+    "changes": [
+      "Use actual arXiv request parameters as durable discovery identity",
+      "Preserve version and limit distinctions and check policy before reservation",
+      "Classify all-discovery failure with no usable source as an execution failure before synthesis",
+      "Preserve local or inherited sources if an external supplement fails",
+      "Successful empty search remains distinct from provider failure"
+    ],
+    "targetedTests": {
+      "passed": 52,
+      "seconds": 8.55
+    },
+    "fullOfflineRegression": {
+      "passed": 984,
+      "warnings": 2,
+      "seconds": 110.71
+    },
+    "liveRetestPerformed": false,
+    "runtimeLoaded": true,
+    "runtimeRevision": "28d0ebf",
+    "loadVerification": {
+      "activeRunsBeforeRestart": 0,
+      "pausedRunsPreserved": 4,
+      "health": "ok",
+      "rag": "ok",
+      "grobid": "ok",
+      "uptimeSecondsAtHealth": 59.2
+    }
+  },
+  "overallAcceptance": "Incomplete; historical reports and verdicts are unchanged"
+}

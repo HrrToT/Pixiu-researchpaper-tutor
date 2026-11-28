@@ -1,0 +1,10 @@
+{
+  "case": "H3-PAGEDATTENTION-v1",
+  "readinessBundleCount": 2,
+  "distinctRequiredEvidenceCount": 4,
+  "historicalSynthesisSuppliedCount": 1,
+  "updatedProductionSelectorCandidateCount": 4,
+  "actualModelCalls": 0,
+  "changedSavedRun": false,
+  "newFullPacketOrScientificAcceptanceVerified": false
+}

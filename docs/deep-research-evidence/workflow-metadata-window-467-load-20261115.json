@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "0a526ecdecb8d236a5243ffabc20f7cf5f615be1",
+  "promptVersion": "dr-v2.20261115.467",
+  "fullRegression": "deep-research-evidence/workflow-metadata-window-467-final-20261115.json",
+  "baseline": "tmp/dr-acceptance-receipts/workflow-metadata-window-467.before.json",
+  "health": "ok",
+  "all105TasksExact": true,
+  "all389OldRunsExact": true,
+  "all9798CallRowsExact": true,
+  "allDeepResearchModuleHashesMatch": true,
+  "transportParserAndTableHashesMatch": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCalls": 0
+}

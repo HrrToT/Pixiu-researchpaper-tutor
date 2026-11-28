@@ -1,0 +1,99 @@
+{
+  "sourceRunId": "dr_d3_scientific_repair_20261127",
+  "sourceRunSha256": "3100ccdf961bc76a70a4d0c03b586ff063b3f9ecf330c2a1796f10246edbb60e",
+  "fixtureDigest": "9768286a925f8788d4c36d6c43c5ca5b581fbd552d5200ebcd85263c83bb9089",
+  "oldResponseContractRejectsEvaluationPrepare": true,
+  "scientificApproval": false,
+  "restoredOrder": [
+    "acquire",
+    "lock",
+    "sfm",
+    "register",
+    "start",
+    "clone",
+    "a0",
+    "a1",
+    "b0",
+    "b1",
+    "fit",
+    "measure"
+  ],
+  "registration": {
+    "reads": [
+      "raw",
+      "splits",
+      "train_reference"
+    ],
+    "creates": [
+      "test_poses"
+    ],
+    "updates": [],
+    "dataUse": "evaluation_prepare",
+    "budgetId": "prepwall"
+  },
+  "measurementReads": [
+    "apar",
+    "peak",
+    "splits",
+    "env",
+    "test_poses"
+  ],
+  "readMutationsRejected": {
+    "fit_can_read_poses": [
+      {
+        "code": "plan.evaluation_state_leakage",
+        "path": "/steps/10/reads"
+      }
+    ],
+    "clone_can_read_poses": [
+      {
+        "code": "plan.evaluation_state_leakage",
+        "path": "/steps/5/reads"
+      }
+    ],
+    "registration_can_update_training": [
+      {
+        "code": "plan.evaluation_preparation_scope",
+        "path": "/steps/3"
+      },
+      {
+        "code": "plan.fixed_state_update",
+        "path": "/steps/3/updates"
+      }
+    ],
+    "measurement_skips_declared_camera": [
+      {
+        "code": "plan.evaluation_state_leakage",
+        "path": "/steps/11/metricIds"
+      }
+    ]
+  },
+  "unchangedControls": [
+    "groups",
+    "factors",
+    "budgets",
+    "sourceFacts",
+    "pairing",
+    "analysis",
+    "hypothesis",
+    "estimand"
+  ],
+  "generationPreflight": {
+    "oldInputBytes": 31975,
+    "newInputBytes": 31966,
+    "inputLimitBytes": 32000,
+    "sourceIdsUnchanged": true
+  },
+  "modelCalls": 0,
+  "regressionTestsPassed": 256,
+  "productionWrites": 0,
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "qualification": "manual state-flow fixture applied to the saved revised proposal through the production revision validator",
+  "independentCredit": 0,
+  "publicationPerformed": false,
+  "remainingScientificChecks": [
+    "An independently generated draft must carry the same evaluation-only separation.",
+    "SfM and initialization choices still require implementation-level review.",
+    "The complete scientific and final publication checks have not been executed for this fixture."
+  ]
+}

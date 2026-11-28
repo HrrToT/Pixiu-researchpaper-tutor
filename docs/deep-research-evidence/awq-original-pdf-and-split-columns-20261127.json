@@ -1,0 +1,39 @@
+{
+  "case": "H4-AWQ-VERSIONS",
+  "validationClass": "known_case_development",
+  "sourceCommit": "801b7982c0cd70ee9a4a0f08c6154c6733cd5cf9",
+  "runId": "dr_run_986ce15b5e735ed996c81de2d14d9963",
+  "outcome": "partial",
+  "realCalls": 8,
+  "elapsedSeconds": 96.0,
+  "realTokens": 41080,
+  "tableEvidenceFromOriginalPDFs": 2,
+  "draftTableCellBindings": 12,
+  "commonFindingAccepted": true,
+  "failedNumericClaims": [
+    "c1",
+    "c2"
+  ],
+  "failure": "table_condition_not_displayed",
+  "automaticWholeRunRetries": 0,
+  "submissionUsedExternalSearch": false,
+  "offlineReplay": {
+    "originalTableHeadersRestoredFor": [
+      "c1",
+      "c2"
+    ],
+    "verifiedCellValuesChanged": false,
+    "numericPrecheckPassed": true,
+    "visibleCharacters": 355,
+    "providerCalls": 0
+  },
+  "scientificAcceptance": false,
+  "unseenHoldoutCredit": 0,
+  "sha256": {
+    "intent.json": "42d8d39b07ffcad4be4a0ddc201fc6ec8250c44948471d80ee384899dad073e9",
+    "run.json": "5d182ca63e1b49008b06afd314790c7599485aae9509deb2181ba0c2acf03e68",
+    "calls.json": "b515386decf6a044917e45af40a3b6b77b87c1231be4654c3a02ebd4962d5726",
+    "result.json": "c5d5625b55a05142ba127a3a52eb3e8ffe4fd37cab4f6daaf0fd30348954a3bc",
+    "provider.jsonl": "eecb766b365e4460c4af131c7a824644eeb0c23a3572d0eb4c97270b3def62a6"
+  }
+}

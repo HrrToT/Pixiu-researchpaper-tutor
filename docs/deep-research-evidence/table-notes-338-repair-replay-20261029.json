@@ -1,0 +1,14 @@
+{
+  "providerCalls": 0,
+  "oldVerificationAndCoverageResultsAreOfflineFixtures": true,
+  "legacyRepairBodyByteIdentical": true,
+  "originalClaimsPreserved": true,
+  "allRequiredFullQuotedRowsAndContextUnchanged": true,
+  "mainTableRow9HasOwnPermittedNoteCandidates": true,
+  "permissionExpansion": false,
+  "newPromptBytes": 23910,
+  "maxInputBytes": 24000,
+  "mockRepairReply": "[]",
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

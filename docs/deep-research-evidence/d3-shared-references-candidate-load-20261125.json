@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "d2bbf64d7ae58c1a75960e5f51f09fa46309250f",
+  "fullRegression": "shared-experiment-references-full-20261125.json",
+  "candidate": "academic-dr-d3-shared-references-candidate-20261125",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "sharedExperimentProfile": 3,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

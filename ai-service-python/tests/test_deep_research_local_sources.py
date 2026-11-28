@@ -1,0 +1,512 @@
+import hashlib
+from unittest.mock import Mock
+
+import pytest
+
+from services.deep_research.contracts import DeepResearchError
+from services.deep_research.local_sources import LocalTaskRetriever
+
+
+def fixture(monkeypatch, *, changed=False, valid=True):
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: None)
+    original = b'%PDF-existing-authorized-paper'
+    repo = Mock()
+    repo.require_run.return_value = {'taskId': 'task/中文', 'materials': [{
+        'materialId': 'p', 'title': 'Paper', 'contentHash': hashlib.sha256(original).hexdigest()}]}
+    response = Mock(status_code=200)
+    response.iter_content.return_value = [b'%PDF-changed' if changed else original]
+    response.__enter__ = Mock(return_value=response)
+    response.__exit__ = Mock(return_value=False)
+    get = Mock(return_value=response)
+    parse = Mock(return_value=[{'page': 1, 'text': 'Unrelated introduction.'},
+                              {'page': 4, 'text': 'Ablation fixes the dataset and camera split for Gaussian pruning.'}])
+    validate = Mock(return_value=valid)
+    return LocalTaskRetriever(repo, 'r', validate, origin='http://127.0.0.1:8081/api', get=get, parse=parse), get, parse, validate
+
+
+def test_fallback_reads_only_hashed_owned_pdf_and_preserves_exact_page(monkeypatch):
+    local, get, parse, validate = fixture(monkeypatch)
+    found = local('Gaussian pruning ablation', 'p')
+    assert len(found) == 1 and found[0]['location']['page'] == 4
+    assert found[0]['text'] == parse.return_value[1]['text']
+    assert found[0]['retrievalMode'] == 'pdf_lexical_fallback'
+    assert '/task%2F%E4%B8%AD%E6%96%87/materials/p/file' in get.call_args.args[0]
+    assert get.call_args.kwargs['allow_redirects'] is False
+    assert local('camera split', 'p')
+    assert get.call_count == parse.call_count == 1
+    validate.return_value = False
+    with pytest.raises(DeepResearchError, match='范围'):
+        local('again', 'p')
+    assert get.call_count == 1
+
+
+def test_changed_bytes_never_reach_parser(monkeypatch):
+    local, _, parse, _ = fixture(monkeypatch, changed=True)
+    with pytest.raises(DeepResearchError, match='快照'):
+        local('pruning', 'p')
+    parse.assert_not_called()
+
+
+def test_runtime_tradeoff_continuation_keeps_owned_pdf_coordinates_and_read_limit(monkeypatch):
+    local, get, parse, _ = fixture(monkeypatch)
+    record = local.repo.require_run.return_value
+    record.update(quantitySpellingContractVersion=27, state={'outputKind': 'claim_verification'})
+    query = 'accelerated version accuracy tradeoff'
+    opening = (query + '. ') * 65
+    tail = ('Larger bins yield faster inference at 105 Hz. The decrease in performance '
+            'was mainly due to the small-object classes.')
+    text = opening + 'Background. ' * 130 + tail
+    parse.return_value = [{'page': 2, 'text': opening}, {'page': 7, 'text': text}]
+    baseline = local(query, 'p', limit=2)
+    assert not any(tail in r['text'] for r in baseline)
+    record['quantitySpellingContractVersion'] = 28
+    selected = local(query, 'p', limit=2)
+    assert len(selected) == 2
+    lead = selected[0]
+    assert lead['location']['page'] == 7 and tail in lead['text']
+    assert text[lead['location']['offset']:].startswith(lead['text'])
+    assert lead['contentHash'] == record['materials'][0]['contentHash']
+    assert get.call_count == parse.call_count == 1
+
+
+def test_comparison_retrieves_complete_representation_definition_for_matching_goal(monkeypatch):
+    local, _, parse, _ = fixture(monkeypatch)
+    query = 'Gaussian model representation and compression'
+    record = local.repo.require_run.return_value
+    record.update(comparisonPaperWordingContractVersion=2, state={'plan': [{'obligations': [{
+        'requiredSources': ['p'], 'question': query, 'searchQuery': query,
+        'completionCriteria': [{'requirement': 'Describe the scene representation.'}],
+    }]}]})
+    definition = 'We optimize coefficients representing color that varies with the viewing direction.'
+    text = 'Gaussian model representation. ' + 'Background. ' * 165 + definition
+    parse.return_value = [{'page': 4, 'text': text}]
+
+    matches = local(query, 'p', limit=3)
+    row, = [item for item in matches if item['location'].get('matchedRepresentationDefinition')]
+
+    assert row['text'].strip() == definition
+    offset = row['location']['offset']
+    assert text[offset:offset + len(row['text'])] == row['text']
+    assert row['location']['page'] == 4 and len(matches) <= 3
+    assert not any(item['location'].get('matchedRepresentationDefinition')
+                   for item in local('Gaussian model', 'p', limit=3))
+
+
+def test_shared_experiment_reads_explicit_protocol_sources_within_existing_slots(monkeypatch):
+    from services.deep_research.experiment_protocol_sources import (
+        MARKER, premise_bundles, preferred_reads,
+    )
+
+    local, get, parse, _ = fixture(monkeypatch)
+    query = 'densification optimization opacity reset'
+    membership = 'dataset benchmark subset scene sample membership names available count'
+    obligations = {
+        'reset': {'obligationId': 'reset', 'searchQuery': query, 'requiredSources': ['p']},
+        'data': {'obligationId': 'data', 'searchQuery': membership, 'requiredSources': ['p'],
+                 'dataPrerequisiteContractVersion': 1},
+    }
+    run = local.repo.require_run.return_value
+    run['state'] = {'plan': [{'obligations': list(obligations.values())}]}
+    parse.return_value = [
+        {'page': 1, 'text': (query + ' ' + membership + ' ') * 10},
+        {'page': 2, 'text': (query + ' ' + membership + ' ') * 5},
+        {'page': 5, 'text': 'We set the alpha value close to zero every N = 3000 iterations to control growth.'},
+        {'page': 7, 'text': 'The scenes are, from top down: Kite, Grove and Hall from the Example dataset.'},
+    ]
+    assert {row['location']['page'] for row in local(query, 'p', limit=2)} == {1, 2}
+    run[MARKER] = 1
+    resets = local(query, 'p', limit=2)
+    members = local(membership, 'p', limit=2)
+    assert {row['location']['page'] for row in resets} == {1, 5}
+    assert {row['location']['page'] for row in members} == {1, 7}
+    assert get.call_count == parse.call_count == 1
+
+    reset = {**resets[-1], 'ownerMaterialId': 'p'}
+    member = {**members[-1], 'ownerMaterialId': 'p'}
+    foreign = {**member, 'sourceId': 'foreign', 'ownerMaterialId': 'q'}
+    assert preferred_reads([foreign, reset, member], obligations, 12, ()) == [reset, member]
+    evidence = [
+        {'evidenceId': 'reset', 'quote': reset['text'], 'accessLevel': 'fulltext',
+         'obligationIds': ['reset'], 'verification': {'literal': 'passed'}},
+        {'evidenceId': 'data', 'quote': member['text'], 'accessLevel': 'fulltext',
+         'obligationIds': ['data'], 'verification': {'literal': 'passed'}},
+    ]
+    assert premise_bundles(evidence, obligations) == [{'evidenceIds': ['reset']}, {'evidenceIds': ['data']}]
+    evidence[1]['verification']['literal'] = 'failed'
+    assert premise_bundles(evidence, obligations) == [{'evidenceIds': ['reset']}]
+
+
+def test_split_protocol_schedule_requires_adjacent_owned_version():
+    from services.deep_research.experiment_protocol_sources import (
+        OPACITY, continuation_range, continuation_spans, has_passage, include_passages,
+    )
+
+    anchor = {'sourceId': 'anchor', 'pdfId': 'p', 'versionId': 'v1',
+              'accessLevel': 'fulltext', 'location': {'page': 5},
+              'text': 'We set the alpha value close to zero every N = 3000'}
+    adjacent = {**anchor, 'sourceId': 'adjacent', 'location': {'page': 6},
+                'text': 'iterations. The optimization then increases the alpha when needed.'}
+    foreign = {**adjacent, 'sourceId': 'other', 'versionId': 'v2'}
+    assert not has_passage([anchor, foreign], OPACITY)
+    assert has_passage([anchor, adjacent], OPACITY)
+    assert include_passages([], [anchor, foreign, adjacent], (OPACITY,), 2) == [anchor, adjacent]
+    assert continuation_spans([anchor, foreign, adjacent]) == {'adjacent'}
+    text = 'Previous figure caption. ' + adjacent['text'].replace('. The', '.\nThe')
+    start, end = continuation_range(text)
+    assert text[start:end] == adjacent['text'].replace('. The', '.\nThe').rstrip('.')
+
+
+def test_experiment_densification_reads_the_original_operations_not_just_a_caption(monkeypatch):
+    from services.deep_research import experiment_protocol_sources as protocol
+
+    local, _, _, _ = fixture(monkeypatch)
+    run = local.repo.require_run.return_value
+    query = 'Gaussian cloning and splitting'
+    operations = {'obligationId': 'operations', 'searchQuery': query, 'requiredSources': ['p']}
+    run.update({protocol.MARKER: 1, protocol.DENSIFICATION_MARKER: 1})
+    run['state'] = {'plan': [{'obligations': [operations]}]}
+    methods = ('For small Gaussians we clone a copy of the same size, moving it in the direction of the positional gradient. '
+               'Then split large Gaussians. We replace them and reduce their scale, using the original 3D Gaussian as a PDF for sampling.')
+    caption = 'Gaussian cloning and splitting. A large splat is split into two.'
+    lead = {'sourceId': 'caption', 'text': caption, 'accessLevel': 'fulltext', 'ownerMaterialId': 'p'}
+    detail = {**lead, 'sourceId': 'methods', 'text': methods}
+    assert protocol.query_roles(run, query, 'q') == ()
+    assert protocol.query_roles(run, query, 'p') == (protocol.DENSIFICATION,)
+    assert not protocol.matches(caption, protocol.DENSIFICATION)
+    assert local._experiment_protocol_passages([lead], query, 'p', 2, passages=[detail]) == [lead, detail]
+    assert protocol.preferred_reads([lead, detail], {'operations': operations}, 12, (), densification=True) == [detail]
+
+    start, end = protocol.densification_range('Prior sentence. ' + methods + ' Next paragraph.')
+    assert ('Prior sentence. ' + methods + ' Next paragraph.')[start:end] == methods
+    evidence = {'evidenceId': 'methods', 'quote': methods, 'obligationIds': ['operations'],
+                'accessLevel': 'fulltext', 'verification': {'literal': 'passed'}}
+    assert not protocol.premise_bundles([evidence], {'operations': operations})
+    assert protocol.premise_bundles([evidence], {'operations': operations}, densification=True) == [
+        {'evidenceIds': ['methods']},
+    ]
+
+
+def test_indexed_retrieval_disables_untracked_query_rewrite_through_registry(monkeypatch):
+    from services.tools import retrieval_tools
+    from rag.store import DummyRAG
+    local, get, parse, _ = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    retrieve = Mock(return_value=[{'text': 'Gaussian pruning evidence from the indexed paper.',
+                                  'metadata': {'id': 'p', 'page': 4}, 'similarity': 0.9}])
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: DummyRAG())
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('高斯剪枝', 'p')
+    assert found and found[0]['pdfId'] == 'p'
+    assert found[0]['location']['page'] == 4
+    assert found[0]['retrievalMode'] == 'indexed_hybrid'
+    retrieve.assert_called_once_with('高斯剪枝', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
+def test_indexed_locations_preserve_page_zero_and_table_uncertainty():
+    from services.deep_research.local_sources import _indexed_source
+    item = _indexed_source({'pageIndex': 0, 'chunkIndex': 0, 'metadata': {
+        'section_title': 'Main results', 'table_id': 't1', 'table_column_mapping_unverified': True}})
+    assert item['location'] == {'page': 1, 'chunk': 0, 'section': 'Main results',
+                                'table': 't1', 'tableColumnMappingUnverified': True}
+    assert 'page' not in _indexed_source({'metadata': {}})['location']
+
+
+def test_indexed_predecessor_preserves_source_identity_and_rechecks_scope(monkeypatch):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def passage(index, text, owner='p', version='a' * 16):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': version, 'section_title': 'Method', 'page': 5}}
+    anchor = passage(16, 'where F maps images and camera matrices to Gaussian parameters.')
+    previous = passage(15, 'Inputs include images and calibrated camera projection matrices.')
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [previous,
+        passage(15, 'Foreign paper.', owner='foreign'),
+        passage(15, 'Other version.', version='b' * 16)]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=[anchor])
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('camera inputs', 'p', limit=2)
+    assert len(found) == 2
+    assert [row['chunkIndex'] for row in found] == [15, 16]
+    assert found[0]['text'] == previous['text']
+    assert found[1]['text'] == anchor['text']
+    assert found[0]['sourceId'] != found[1]['sourceId']
+    assert found[0]['contextForSourceId'] == found[1]['sourceId']
+    assert found[0]['location']['page'] == 5
+    retrieve.assert_called_with('camera inputs', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    assert local('camera inputs', 'p', limit=2) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id': 'p'}, limit=400)
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local('camera inputs', 'p', limit=2)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
+def test_indexed_named_row_is_retrieved_with_owner_version_and_cache_guards(monkeypatch):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index, text, owner='p', version='a'*16):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': version, 'section_title': 'Evaluation', 'page': 4}}
+    top = document(0, 'Relevant method and dataset overview.')
+    low = document(1, 'Generic benchmark overview.')
+    literal = 'Table caption: Synthetic dataset.\nTable row 2: Hotdog | 0.2 | 30'
+    named = document(2, literal)
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [named, document(3,literal,owner='foreign'),
+                                                 document(4,literal,version='b'*16)]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', Mock(return_value=[top,low]))
+    found = local('hotdog scene selection', 'p', limit=2)
+    assert [r['chunkIndex'] for r in found] == [0,2]
+    assert found[1]['text'] == literal and found[1]['retrievalMode'] == 'indexed_requested_row'
+    assert found[1]['tableData'] is None  # Literal name retrieval grants no numeric approval.
+    assert local('hotdog scene selection','p',limit=2) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
+def test_metric_retrieval_adds_owned_verified_tables_without_more_model_calls(monkeypatch):
+    import json
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    prose = [{'text': f'Experimental results and evaluation protocol {i}.',
+              'metadata': {'id': 'p', 'chunk_index': i, 'section_title': f'Section {i}'}} for i in range(5)]
+    def table(owner, chunk, method, value):
+        return {'text': f'Table row 1: {method} | {value} | 45MB', 'metadata': {
+            'id': owner, 'chunk_index': chunk, 'table_id': 't1', 'page': 8,
+            'table_verified_data': json.dumps({'groups': [['Scenes', ['FPS', 'Size']]],
+                'rows': [[1, method, [value, '45MB']]]})}}
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    invalid = table('p', 12, 'Broken', '500')
+    invalid['text'] = 'Truncated unrelated text.'
+    rag.get_documents_by_metadata.return_value = [table('p', 10, 'Baseline', '120'),
+        table('p', 11, 'Ours', '230'), table('foreign', 99, 'Ours', '999'), invalid]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=prose)
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    found = local('storage FPS experimental results', 'p', limit=5)
+    assert len(found) == 5
+    assert [row['chunkIndex'] for row in found] == [0, 11, 10, 1, 2]
+    assert len({row['sourceId'] for row in found}) == 5
+    assert all(row['pdfId'] == 'p' for row in found)
+    assert found[1]['tableData']['rows'][0][1] == 'Ours'
+    rag.get_documents_by_metadata.assert_called_once_with({'id': 'p'}, limit=400)
+    assert len(local('FPS', 'p', limit=2)) == 2
+    assert rag.get_documents_by_metadata.call_count == 1
+    retrieve.assert_called_with('FPS', top_k=8, filter_metadata={'id': 'p'}, allow_query_rewrite=False)
+    get.assert_not_called()
+    parse.assert_not_called()
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local('FPS', 'p')
+
+
+@pytest.mark.parametrize('version',[3,4])
+def test_mixed_mechanism_task_reaches_owned_metric_table_augmentation(monkeypatch,version):
+    import json
+    from services.tools import retrieval_tools
+    from test_deep_research_mechanism_sources import mixed_record
+    local,get,parse,validate=fixture(monkeypatch)
+    local.repo.require_run.return_value.update(mixed_record(version))
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec',lambda name:object())
+    prose=[{'text':f'General experimental protocol {i}.','metadata':{'id':'p','chunk_index':i}} for i in range(5)]
+    def table(owner,index):
+        return {'text':'Table row 1: Ours | 230 | 45MB','metadata':{'id':owner,'chunk_index':index,
+            'table_id':'t1','table_verified_data':json.dumps({'groups':[['Scenes',['FPS','Size']]],
+                'rows':[[1,'Ours',['230','45MB']]]})}}
+    rag=Mock();rag.normalize_id.side_effect=lambda value:value
+    rag.get_documents_by_metadata.return_value=[table('p',10),table('foreign',99)]
+    monkeypatch.setattr(retrieval_tools,'get_rag',lambda:rag)
+    retrieve=Mock(return_value=prose);monkeypatch.setattr(retrieval_tools,'retrieve_fused_evidence',retrieve)
+    found=local('storage quality rendering speed reported results','p',limit=5)
+    assert any(row.get('tableData') for row in found)==(version==4)
+    assert len(found)==5 and all(row['pdfId']=='p' for row in found)
+    get.assert_not_called();parse.assert_not_called();retrieve.assert_called_once()
+
+
+@pytest.mark.parametrize('marked', [True, False])
+def test_component_detail_selection_uses_the_existing_index_cache_and_live_scope(monkeypatch, marked):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    if marked:
+        local.repo.require_run.return_value['sourcePrecisionContractVersion'] = 1
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index, text, owner='p'):
+        return {'text': text, 'metadata': {'id': owner, 'chunk_index': index,
+            'index_version': 'a'*16, 'section_title': 'Method', 'page': 4}}
+    top = document(0, 'TMC method overview using a previous representation.')
+    low = document(1, 'Generic method overview.')
+    previous = document(11, 'TMC encodes previous positions.')
+    details = document(12, 'This maps TMC encoding to seven output dimensions: translation and rotation.')
+    rag = Mock()
+    rag.normalize_id.side_effect = lambda value: value
+    rag.get_documents_by_metadata.return_value = [previous, details,
+        document(12, 'Foreign TMC output dimensions and offsets.', owner='foreign')]
+    monkeypatch.setattr(retrieval_tools, 'get_rag', lambda: rag)
+    retrieve = Mock(return_value=[top,low])
+    monkeypatch.setattr(retrieval_tools, 'retrieve_fused_evidence', retrieve)
+    query = 'TMC prediction parameters'
+    found = local(query,'p',limit=3)
+    assert [r['chunkIndex'] for r in found] == ([0,11,12] if marked else [0,1])
+    assert local(query,'p',limit=3) == found
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    assert all(r['pdfId'] == 'p' for r in found)
+    if marked:
+        assert found[1]['text'] == previous['text'] and found[2]['text'] == details['text']
+        assert found[1]['contextForSourceId'] == found[2]['sourceId']
+    validate.return_value = False
+    with pytest.raises(DeepResearchError):
+        local(query,'p',limit=3)
+    assert retrieve.call_count == 2
+    get.assert_not_called()
+    parse.assert_not_called()
+
+
+@pytest.mark.parametrize('version', [1, 2])
+def test_requested_measurement_is_retrieved_from_owned_index_only_under_version_two(monkeypatch, version):
+    from services.tools import retrieval_tools
+    local, get, parse, validate = fixture(monkeypatch)
+    local.repo.require_run.return_value['sourcePrecisionContractVersion'] = version
+    monkeypatch.setattr('services.deep_research.local_sources.importlib.util.find_spec', lambda name: object())
+    def document(index,text,owner='p'):
+        return {'text':text,'metadata':{'id':owner,'chunk_index':index,'index_version':'a'*16,
+            'section_title':'Results','page':4}}
+    top=document(10,'Training about 15s per frame and rendering 140FPS.')
+    low=document(11,'General benchmark overview.')
+    exact=document(0,'Reconstruction takes 17 seconds and rendering reaches 140 FPS.')
+    rag=Mock(); rag.normalize_id.side_effect=lambda value:value
+    rag.get_documents_by_metadata.return_value=[exact,document(0,'17s and 140FPS',owner='foreign')]
+    monkeypatch.setattr(retrieval_tools,'get_rag',lambda:rag)
+    retrieve=Mock(return_value=[top,low])
+    monkeypatch.setattr(retrieval_tools,'retrieve_fused_evidence',retrieve)
+    found=local('17 seconds per frame 140 FPS','p',limit=2)
+    assert [r['chunkIndex'] for r in found] == ([10,0] if version==2 else [10,11])
+    assert local('17 seconds per frame 140 FPS','p',limit=2) == found
+    if version==2:
+        assert found[1]['text']==exact['text'] and found[1]['retrievalMode']=='indexed_requested_measurement'
+    rag.get_documents_by_metadata.assert_called_once_with({'id':'p'},limit=400)
+    validate.return_value=False
+    with pytest.raises(DeepResearchError):local('17 seconds per frame 140 FPS','p',limit=2)
+    get.assert_not_called(); parse.assert_not_called()
+
+
+def test_table_supplement_ignores_unrelated_metrics_and_deduplicates():
+    from services.deep_research.local_sources import _include_metric_tables, _requested_metrics
+    table = {'sourceId': 't', 'text': 'FPS results', 'tableData': {
+        'groups': [['Scenes', ['FPS']]], 'rows': [[1, 'Ours', ['30']]]}}
+    prose = {'sourceId': 'p', 'text': 'Evaluation protocol'}
+    assert not _requested_metrics('explain the architecture')
+    assert _include_metric_tables([prose], [table], 'SSIM', {'SSIM'}, 5) == [prose]
+    chosen = _include_metric_tables([prose, table], [table], 'FPS', {'FPS'}, 5)
+    assert chosen == [prose, table]
+
+
+def test_foreign_material_never_constructs_file_request(monkeypatch):
+    local, get, _, _ = fixture(monkeypatch, valid=False)
+    with pytest.raises(DeepResearchError):
+        local('pruning', 'foreign')
+    get.assert_not_called()
+
+
+def test_local_pdf_limit_stops_stream_before_parsing(monkeypatch):
+    local, _, parse, _ = fixture(monkeypatch)
+    monkeypatch.setattr('services.deep_research.local_sources.MAX_LOCAL_PDF_BYTES', 16)
+    with pytest.raises(DeepResearchError, match='大小上限'):
+        local('pruning', 'p')
+    parse.assert_not_called()
+
+
+def test_actual_parser_worker_accepts_the_parent_local_limit():
+    import io
+    from PyPDF2 import PdfWriter
+    from PyPDF2.generic import DecodedStreamObject, DictionaryObject, NameObject
+    from services.deep_research.local_sources import _parse_pdf
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=200)
+    page = writer.pages[0]
+    font = DictionaryObject({NameObject('/Type'): NameObject('/Font'), NameObject('/Subtype'): NameObject('/Type1'),
+                             NameObject('/BaseFont'): NameObject('/Helvetica')})
+    page[NameObject('/Resources')] = DictionaryObject({NameObject('/Font'): DictionaryObject({NameObject('/F1'): font})})
+    stream = DecodedStreamObject()
+    stream.set_data(b'BT /F1 12 Tf 10 100 Td (Real parser evidence.) Tj ET')
+    page[NameObject('/Contents')] = stream
+    output = io.BytesIO()
+    writer.write(output)
+    pages = _parse_pdf(output.getvalue())
+    assert pages[0]['page'] == 1 and 'Real parser evidence.' in pages[0]['text']
+def test_pdf_comparison_fallback_keeps_the_start_of_a_nearby_sentence():
+    from services.deep_research.local_sources import LocalTaskRetriever
+
+    prefix = 'a' * 1464 + '.\n'
+    statement = 'Method B outperforms the original Method A under the matched benchmark.'
+    page = prefix + statement + ' ' + 'b' * 1900
+    pages = [{'page': 8, 'text': page}]
+    material = {'contentHash': 'hash', 'versionId': 'v1'}
+    legacy = LocalTaskRetriever._pdf_passages('paper', material, pages)
+    revised = LocalTaskRetriever._pdf_passages(
+        'paper', material, pages, record={'comparisonPdfPassageBoundaryVersion': 1})
+    assert legacy[1]['location'] == {'page': 8, 'offset': 1500}
+    assert statement not in legacy[1]['text']
+    assert revised[1]['location'] == {'page': 8, 'offset': 1465}
+    assert revised[1]['text'].startswith('\n' + statement)
+    assert revised[1]['sourceId'] != legacy[1]['sourceId']
+    assert len(revised) == len(legacy)
+    for row in revised:
+        start = row['location']['offset']
+        assert row['text'] == page[start:start + 1800]
+def test_named_baseline_configuration_requires_owned_same_version_table_rows():
+    from services.deep_research.experiment_protocol_sources import baseline_configuration_bundles
+
+    question = '以DoRA论文的LLaMA-7B常识推理设置为依据设计实验。'
+    tables = {'dora': 'DoRA: Weight-Decomposed Low-Rank Adaptation', 'other': 'LoRA: Low-Rank Adaptation'}
+    caption = 'Table 8. Hyperparameter configurations of DoRA for LLaMA-7B/13B.'
+    values = 'Hyperparameters LLaMA-7B LLaMA-13B\nOptimizer AdamW\nEpochs 3'
+    whole = caption + '\n' + values
+    shared = {'ownerMaterialId': 'dora', 'accessLevel': 'fulltext', 'verification': {'literal': 'passed'},
+              'sourceVersionId': 'v1', 'location': {'page': 13}, 'sourceContext': whole}
+    heading = {**shared, 'evidenceId': 'heading', 'quote': caption}
+    body = {**shared, 'evidenceId': 'body', 'quote': values}
+    variants = [{**body, 'ownerMaterialId': 'other'}, {**body, 'sourceVersionId': 'v2'},
+                {**body, 'location': {'page': 14}}, {**body, 'quote': values.replace('LLaMA-7B', 'LLaVA-7B')}]
+    assert all(not baseline_configuration_bundles([heading, row], question, tables) for row in variants)
+    assert baseline_configuration_bundles([*variants, heading, body], question, tables) == [
+        {'evidenceIds': ['heading', 'body']},
+    ]
+    assert not baseline_configuration_bundles([heading, body], '比较两篇论文的配置。', tables)
+
+
+def test_named_baseline_links_the_literal_split_to_its_accuracy_header():
+    from services.deep_research import experiment_protocol_sources as protocol
+
+    material = {'materialId': 'paper', 'contentHash': 'hash', 'title': 'DoRA: Weight Decomposition'}
+    record = {'question': '以DoRA论文的LLaMA-7B常识推理设置为依据设计实验。', 'materials': [material],
+              'state': {'outputKind': 'experiment_design'}, protocol.BASELINE_CONFIG_MARKER: 2}
+    split = ('The commonsense reasoning tasks comprise 8 sub-tasks, each with a predefined training and testing set. '
+             'We follow the original setting, merge the training data and conduct evaluations on the individual testing dataset for each task.')
+    header = ('Table 1. Accuracy comparison of LLaMA 7B/13B on eight commonsense reasoning datasets.\n'
+              'Model PEFT Method BoolQ PIQA SIQA HellaSwag WinoGrande ARC-e ARC-c OBQA Avg.')
+    other_table = header.replace('Table 1.', 'Table 4.')
+    pages = [{'page': 5, 'text': split + ' Results are in Table 1.'},
+             {'page': 6, 'text': header + '\n7B example row'},{'page': 8, 'text': other_table}]
+    model = protocol.baseline_evaluation_requested(record, 'commonsense reasoning dataset splits', 'paper')
+    assert model == 'LLaMA-7B'
+    assert not protocol.baseline_evaluation_requested(record, 'commonsense reasoning dataset splits', 'other')
+    assert not protocol.baseline_evaluation_requested(record, 'training memory', 'paper')
+    rows = protocol.baseline_evaluation_passages(pages, material, model)
+    assert [row['text'] for row in rows] == [split, header]
+    assert [row['location']['page'] for row in rows] == [5, 6]
+    assert not protocol.baseline_evaluation_passages(pages, material, 'LLaMA-70B')
+    retained = protocol.retain_baseline_evaluation([{'sourceId':'lead'}, {'sourceId':'optional'}], rows, 3)
+    assert retained == [{'sourceId':'lead'}, *rows]

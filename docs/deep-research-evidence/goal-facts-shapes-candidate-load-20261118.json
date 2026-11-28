@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "cc3d7f004cc40d507bd45d498a0a594501aacd6c",
+  "fullRegression": "comparison-goal-facts-shapes-full-20261118.json",
+  "candidate": "academic-dr-goal-facts-shapes-candidate-20261118",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 5,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

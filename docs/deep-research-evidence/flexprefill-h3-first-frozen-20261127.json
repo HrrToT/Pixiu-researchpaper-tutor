@@ -1,0 +1,76 @@
+{
+  "case": "H3-FLEXPREFILL",
+  "definitionHash": "9ca5400acaaee3e9c4db4a809c4f39ed10c2fdf2933b050a58fbffa8266b6396",
+  "attempt": 1,
+  "codeCommit": "8c4e020c948140be679c1b3b50b39e95f44fb5e4",
+  "runId": "dr_run_8e6a7a496c6c517c9a791430bc7f59e0",
+  "initialMaterials": 0,
+  "initialSourceCacheEntries": 0,
+  "evaluationPdfImported": false,
+  "network": {
+    "systemProxy": true,
+    "searches": 1,
+    "fulltextFetches": 1,
+    "versionId": "arxiv:2502.20766v1",
+    "pages": 27,
+    "sha256": "d2240298d13ad238d6a0f8c9332dc65321cbcd269f9cca2ebb32d1858063ffe2"
+  },
+  "outcome": "partial",
+  "visibleAnswerCharacters": 122,
+  "contentReview": {
+    "goalResponse": 2,
+    "sourceSupport": 5,
+    "conditions": 3,
+    "synthesis": 2,
+    "actionability": null,
+    "readability": 4,
+    "claimResults": {
+      "C1": {
+        "published": true,
+        "support": "supported",
+        "physicalPages": [
+          1,
+          4
+        ]
+      },
+      "C2": {
+        "published": false,
+        "support": "partial",
+        "physicalPages": [
+          1,
+          5
+        ],
+        "unpublishedReason": "semantic_unresolved"
+      }
+    },
+    "knownMissing": [
+      "Cumulative normalized attention weights and their role in selecting a minimal set",
+      "The retained count can differ across inputs or attention heads"
+    ],
+    "stageFinding": "The first draft used the paper's gamma label. The audience rewrite replaced it with an ordinal. The per-claim reviewer could not ground that ordering from the claim's own cited pages; its diagnostic also failed numeric source binding."
+  },
+  "usage": {
+    "actualModelCalls": 8,
+    "actualTokens": 30408,
+    "callsByModel": {
+      "gpt-6-luna": 3,
+      "gpt-6.1-terra": 5
+    },
+    "tokensByModel": {
+      "gpt-6-luna": 4819,
+      "gpt-6.1-terra": 25589
+    },
+    "elapsedSeconds": 85.0
+  },
+  "independentCredit": 0,
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "sha256": {
+    "intent.json": "30209e1704fcf2f85ad79dee07403d10ff4dc6730b98fd3d607c8562e7cb1793",
+    "run.json": "af54a9cec91e7b3487b70f370bf1883b2ad39546f191ef1784101a8449a89bf9",
+    "calls.json": "5aad05ef807388c07bcf68f6f2c4334abe0f94fbc1ec43e2da668d69b6f99532",
+    "provider.jsonl": "f808f644a30f00bdd5153e1feaa9f6d3df7b0b39462653f72008b9bf9fe1ff2f",
+    "result.json": "8ce27b7c8c8e5f46367b493ba2487935d7ceb138849e4d5b201dc78c50d08730",
+    "rendered-first-report.md": "77881e3af81df55d292e272fc1ed02646f6cb250f3d970b42367ccf7ec169e70"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_d2_quality_scope_verification_and_iteration_numeric_replay",
+  "sourceCommit": "5610a35aec91766614c0e6a20f5c57b36066cb61",
+  "runId": "dr_run_2619eb0e348955aba5f024a5a81532ac",
+  "usage": {
+    "generationRequests": 14,
+    "tokens": 75447,
+    "seconds": 127.0
+  },
+  "outcome": "partial",
+  "verifiedPublished": [
+    "cmp_5_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1"
+  ],
+  "verificationSummary": {
+    "accepted": 9,
+    "rejected": 1
+  },
+  "remainingAnswerGaps": [
+    {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "originalRejections": [
+    {
+      "claimId": "cmp_2_0",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e1",
+        "7e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：30、7。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "pdfChecks": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 9,
+    "literalCitationOccurrences": {
+      "true": 32
+    },
+    "sourceTableCells": {
+      "true": 10
+    }
+  },
+  "iterationNumericReplay": {
+    "claimId": "cmp_2_0",
+    "unchangedClaimPassesNumericPrecheck": true,
+    "unsupported31KRejected": true,
+    "scientificAcceptance": false,
+    "providerCalls": 0,
+    "evidenceRefs": [
+      "ev_cd7fa8483a781dbe172496ac222078f8b1977041ef2fa42f77d938de7783da50",
+      "ev_33e0dc2b642da4fcbda38f206dd96a28f873aeeb009abd3074b6d7bb8cd80587",
+      "ev_5153584affe0f8b298c26ac5501ca1b08e721c8ba1a8d1ffa79e15b77e2defdc",
+      "ev_9e574f54dd34da609c7a4fb18b9680955de7b6c3e7b2d9dea1d41d8a989e3b91"
+    ]
+  },
+  "candidateScienceStillUnverified": true,
+  "workspaceDeliveryExercised": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-quality-scope-fresh-20261128/intent.json": "b12175db1ae33e638d564911ca9ea17ed66856375bee3f8872de09c8563808ac",
+    "tmp/openai-d2-quality-scope-fresh-20261128/run.json": "cec2e61ad871d77691d5e4b8cf76d6e477e8f713b5eb17d961fbd80c760db431",
+    "tmp/openai-d2-quality-scope-fresh-20261128/result.json": "e882a05be87b76a50a117c442b08a7f0335d9274b5a5aed5ff61bbcd42b91c12",
+    "tmp/openai-d2-quality-scope-fresh-20261128/calls.json": "e7b7fe6a22632aadf54212f59754b993da21d438bef8d6207869ceb4377955a9",
+    "tmp/openai-d2-quality-scope-fresh-20261128/provider.jsonl": "83014638919aa4cba9ab923cf93369aebfd62a342e97170e6898359fd1b83e42",
+    "tmp/openai-d2-quality-scope-fresh-20261128/independent-pdf-check.json": "8304b7fac5b05f0b5061a148998c4508aa3fd71c4caff7708b421c65b25105e6",
+    "tmp/openai-d2-quality-scope-fresh-20261128/compact-iterations-replay.json": "c24b33a4e75aa40a36242a9821745448b53ad83f64675885e893ff4815d1d585",
+    "tmp/openai-d2-compact-iteration-review-20261128/intent.json": "c1ab4399e66734412ea2b58c011c52b6279acd4b49f9cc7aabcfb3769270f544",
+    "tmp/openai-d2-compact-iteration-review-20261128/run.json": "87319cefb183f13ac7288811923432e8ce08a256b1a5024c97268d52d62a0ba8",
+    "tmp/openai-d2-compact-iteration-review-20261128/calls.json": "426585a2f7c9ae5ab2b7584e8ba33a7264f6108791ef63cb501ef9a1cc6aa7cd",
+    "tmp/openai-d2-compact-iteration-review-20261128/verify-return.json": "29776034015fe272b2a666c0ac5b4c316656d049d1dd8f2016a54f56a06f152c"
+  },
+  "scopedSemanticReview": {
+    "verifiedClaim": "cmp_2_0",
+    "candidateCommit": "60e5aad69464853081dc044a47b793633b633b52",
+    "reviewRequestDigest": "98a02e20956fc27f8a2148c99e4f480db698303b07dd55c7ade10fcfb60bb82b",
+    "newModelCalls": 1,
+    "newTokens": 3809,
+    "cumulativeBranchTokens": 79256,
+    "workspacePublished": false,
+    "wholeAnswerAudited": false
+  }
+}

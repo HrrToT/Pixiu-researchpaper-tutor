@@ -1,0 +1,37 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "sourceCommitBeforeIsolatedChange": "8bc153078",
+  "isolatedCheckout": "tmp/d3-final-audit-worktree-20261127",
+  "draftDerivedFrom": "dr_run_1096e34e38835562a8a4e4b97aff0e85",
+  "fullQuestionAndFinalMarkdownExact": true,
+  "unchangedChecks": 9,
+  "bindingCatalogExact": true,
+  "unchangedCitedRows": 9,
+  "standardMaxTokens": 100000,
+  "capacityReplay": [
+    {
+      "tokensAlreadySpent": 63000,
+      "requestBytes": 31125,
+      "outputTokens": 4802,
+      "status": "invalid_response",
+      "mockReply": "empty"
+    },
+    {
+      "tokensAlreadySpent": 65429,
+      "requestBytes": 30879,
+      "outputTokens": 2668,
+      "status": "invalid_response",
+      "mockReply": "truncated"
+    },
+    {
+      "tokensAlreadySpent": 66000,
+      "availableInputBytes": 30476,
+      "requiredInputBytes": 30879,
+      "status": "budget_exhausted",
+      "mockInvocations": 0
+    }
+  ],
+  "scientificReviewSubstitutedForSizingOnly": true,
+  "scienceAccepted": false,
+  "paidCalls": 0
+}

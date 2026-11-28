@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-21",
+  "case": "E1-v10",
+  "runId": "dr_run_3e648a5789585b099f82af7003aa840a",
+  "sourceCommit": "9cd5cea2",
+  "payloadSha256": "e6badaffc78ec4fb99e2152cf38cdcd96cafa10523a11e1ade1176804e732651",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "premiseAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_c073455c8c6bb6dc6c50ee74ccd0da213d8a87289fec8335679c8599525c22dc",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "ev_6558c554163d2cf4124a655864c29ba4e00a1996de9a7f509dc09e67eef09830",
+      "ev_ac5bd8f1fb263f029d00495b36c79d2e348d6b56203e5fe262b5eaf57d112e9c",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_227270cfa29c740848cfa00c69aaeb240e0556eb361e4f545efcf7e60cf7862a",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_925db5ee5027aed55d6fa83e9fcd88367454dbedc927a217536f139bd847f22d",
+      "ev_5a62ffa4ef91faeab47770ffeb7725d05e16220034d62947882c58e68891ba69",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23927,
+    "fixedInputBytes": 20149,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "actualPlanningAliases": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E9"
+  ],
+  "methodContext": [
+    {
+      "chunk": 28,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-28",
+      "actualRead": true,
+      "literalEvidenceIds": [
+        "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+        "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba"
+      ],
+      "suppliedEvidenceIds": []
+    },
+    {
+      "chunk": 29,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-29",
+      "actualRead": true,
+      "literalEvidenceIds": [
+        "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+        "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224"
+      ],
+      "suppliedEvidenceIds": []
+    },
+    {
+      "chunk": 37,
+      "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-37",
+      "actualRead": true,
+      "literalEvidenceIds": [
+        "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+        "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca"
+      ],
+      "suppliedEvidenceIds": [
+        "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+        "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca"
+      ]
+    }
+  ],
+  "repairTargetIds": [
+    "c5",
+    "c6",
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "actualRevisedIds": [
+    "c5",
+    "c6"
+  ],
+  "unchangedTargetIds": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "findings": [
+    "Chunks28/29 really acquired/read and each produced two literal evidence rows, but none survives the full-configuration evidence allocation. Source repair is not method-premise delivery.",
+    "Allocation reports no missing bundles despite omitting the acquired sampling/initialization premises; fix bundle construction/priority within the original input window.",
+    "One repair batch targeted9 claims; actual output revised only c5/c6. Other7 rejected originals remain unchanged, not silently passed.",
+    "Genuine content defects persist: generic intervention, incomplete/fabricated shared state, invalid zero-sized/array constants, whole-group/per-frame budget disagreement, incomplete metrics and mismatched independent units.",
+    "Review still asks for an unasserted author camera count despite proposed every_nth split and nonempty/disjoint STOP preflight. Review instruction3 alone did not resolve this contradiction."
+  ],
+  "nextWork": [
+    "Preserve necessary operational premise bundles through synthesis allocation, not only retrieval/read.",
+    "Make repair response coverage explicit for all assigned targets while preserving hard/scientific checks.",
+    "Repair method-grounded state, legal configuration and complete measurement; content and independent acceptance remain pending."
+  ],
+  "boundary": "Read-only diagnosis of the one settled development run. No new request, changed verdict or independent credit."
+}

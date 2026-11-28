@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-20",
+  "source": "D:/3DGS/paper/deformable 3dGS/2309.13101v2.pdf",
+  "sourceSha256": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+  "physicalPage": 12,
+  "table": "Table 4",
+  "render": "tmp/pdfs/deform193-members-page12.png",
+  "method": "Poppler144dpi render and primary-agent visual inspection of actual column layout; original PDF unchanged.",
+  "findings": [
+    "The first dataset block in Table4 is D-NeRF and its first Scene entry is Lego. The next blocks are NeRF-DS and HyperNeRF. The literal header/member span preserves the relevant row relationship, but source-column interpretation still requires review in the application.",
+    "The table caption identifies experiments on FPS with respect to number of3D Gaussians; it is a supplementary per-scene runtime/point-count table. Do not describe it as a controlled one-parameter sweep: different scenes/datasets vary as well. Earlier diagnostic shorthand calling it a sweep does not establish that stronger experimental design.",
+    "The page also contains the end of Table3, a different NeRF-DS quality comparison. The retrieved source placed both tables under a Table3 section label; this metadata cannot override the actual Table4 header or transfer dataset subjects between tables.",
+    "This manual source-layout check does not assign numeric table cells, approve a generated experiment, upgrade H2F-v8/v9 or H5F-v5 outcomes, or mark any program evidence semantically passed. Existing unverified column flags remain intact."
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentContentCredit": 0
+}

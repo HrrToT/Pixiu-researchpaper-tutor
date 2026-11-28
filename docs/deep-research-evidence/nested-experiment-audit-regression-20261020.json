@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "f78f6bee",
+  "promptVersion": "dr-v2.20261020.204",
+  "serverContracts": {
+    "experimentRepair": 4,
+    "experimentReview": 2
+  },
+  "fullDeepResearchOffline": {
+    "passed": 3322,
+    "files": 195,
+    "warnings": 1,
+    "seconds": 226.93,
+    "scope": "All tests/test_deep_research*.py; not an all-Python or reading/config integration pass.",
+    "log": "tmp/pytest-dr204-research-full.log",
+    "sha256": "594e1639fd7858c0252839b4ddd43d0f09ca6f597f0b8783b5042a27a0af12b9"
+  },
+  "focusedPassed": 126,
+  "focusedSeconds": 6.95,
+  "focusedOverlap": true,
+  "newTests": 41,
+  "oldActualFingerprintsMatched": 29,
+  "fingerprintComposition": {
+    "earlier": 24,
+    "E1-v4Edit": 1,
+    "E1-v4Review": 2,
+    "E1-v5Review": 2
+  },
+  "directFields": "Only exact {claimId,path,value} slot entries in new review2 become fields:[entry], then use unchanged exact path/value/role/version/nonempty/recovery-slot checks. Failed model verdicts, mixed/extra forms, invalid sources and old review0/1 remain unchanged.",
+  "losslessNestedConfigs": "Only byte-saving uniform object arrays inside executionSpec use columns/rows; literal reserved @/! keys are escaped. Original prose/specs/checks and required source quotations/context/tables restore exactly. Model edits still require real paths and ordinary config values.",
+  "actualOldPreflightFailure": {
+    "kind": "repairEvidenceBytes",
+    "limit": 23599,
+    "used": 24249
+  },
+  "controlledInitialBatchInputs": [
+    {
+      "targets": [
+        "c4",
+        "c5"
+      ],
+      "oldInputOrMandatoryBytes": 23565,
+      "newInputBytes": 23570,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    },
+    {
+      "targets": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "oldInputOrMandatoryBytes": 24249,
+      "newInputBytes": 23557,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    },
+    {
+      "targets": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "oldInputOrMandatoryBytes": 23508,
+      "newInputBytes": 23481,
+      "sameInputCap": 23599,
+      "allOriginalAndSiblingConfigsPreserved": true,
+      "allOriginalReasonsDetailsPreserved": true,
+      "allRequiredCitationsContextsTablesPreserved": true
+    }
+  ],
+  "controlledAudit": {
+    "oldAccepted": [
+      "c9"
+    ],
+    "newAccepted": [
+      "c1",
+      "c8",
+      "c9"
+    ],
+    "remainingRejectedIds": [
+      "c5",
+      "c6",
+      "c2",
+      "c3",
+      "c4",
+      "c7"
+    ],
+    "usesArchivedModelResponses": true,
+    "productionWrites": 0,
+    "wholeContentAccepted": false
+  },
+  "newModelCalls": 0,
+  "newUnknowns": 0,
+  "latestRealCase": "E1-v5 completed/partial, only limits accepted; unchanged",
+  "runtimeProof": "runtime-load-dr204-nested-audit-20261020.json",
+  "retentionProof": "runtime-dr204-full-retention-20261020.json",
+  "selectedDiagnosticTotalsUnchanged": {
+    "settledModelCalls": 494,
+    "measuredTokens": 2022190,
+    "notGlobalHistory": true,
+    "costUnknown": true
+  },
+  "remaining": [
+    "Preserve11old unknowns, all old identities and E1-v5 partial history; no task/attempt bypass or reservation-as-usage claim.",
+    "Acquire and actually read the matching scene-to-dataset premise with bounded same-work/version/index/section predecessor context; metadata/name candidates cannot substitute for quoted membership evidence.",
+    "Fix complete3DGS/NTC initialization and parameter-free copy representation, real stage2 creation/optimization and explicit rendering, storage/timing units/boundaries. Keep scientifically invalid states rejected even when their JSON schema is valid.",
+    "Validate new repair4 on fresh corrected content: all initial E1-v5 batch preflights now fit, but subsequent dispatch remains conditional on actual remaining budget and model output. Do not claim three paid repairs or whole-content acceptance from static preflight/mock responses.",
+    "Verify usable final research results and fresh independent replacements against the original full DR0-DR5 design; original independent0/5 unchanged. Present failed/partial results concisely rather than treating limits alone as a usable experiment."
+  ],
+  "boundary": "Implementation, full DeepResearch regression and exact archived-input replay verified. No fresh paid content validation or independent credit. DR0-DR5 incomplete, original independent0/5 unchanged, goal active, PR draft."
+}

@@ -1,0 +1,54 @@
+{
+  "sourceCommit": "7e8dde5a",
+  "coreTests": 32,
+  "coreFailures": 0,
+  "coreErrors": 0,
+  "coreSkipped": 0,
+  "coreJUnit": "tmp/mixed-table-457-core-final2-20261115.xml",
+  "coreRuntime": "Bundled Python with XML parser; existing project PDF adapter appended. No project dependency changed.",
+  "researchRelatedAtStaging": 118,
+  "manualOriginalPageReview": true,
+  "tableHeadersFromPDFGeometry": true,
+  "numericCellsFromPDFGeometry": true,
+  "exactUniqueWholeRowCorroboration": true,
+  "physicalCaptionRequiredForNewlyRecoveredTables": true,
+  "supports": [
+    "one-level repeated groups with standalone columns",
+    "unique flat columns",
+    "long clipped TEI parent labels corroborated by physical text",
+    "merged TEI cell boundaries recovered from physical columns",
+    "isolated label superscripts linked to unique following data row"
+  ],
+  "unsupportedRemainUnverified": [
+    "ambiguous physical captions",
+    "unsupported font widths",
+    "rotated pages",
+    "irregular multilevel hierarchy without corroboration",
+    "incomplete or nonmatching physical rows"
+  ],
+  "scientificContentAccepted": false,
+  "applicationIndexUpdated": false,
+  "modelCalls": 0,
+  "fixtures": {
+    "compact": {
+      "path": "ai-service-python\\tests\\fixtures\\dr_vq_compact_main_geometry.json",
+      "sha256": "a585e000f099d7fbbd7743e094357ac01d19c2ba3bc57380b8f95da2249f1873",
+      "originalPdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+      "page": 5,
+      "verifiedPhysicalTableLabel": "Table1"
+    },
+    "compressed": {
+      "path": "ai-service-python\\tests\\fixtures\\dr_vq_compressed_main_geometry.json",
+      "sha256": "10d56f8e2515590be894371e60561a5892c4a2d9cf87325014eed49c9cb9a893",
+      "originalPdfSha256": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821",
+      "page": 6,
+      "verifiedPhysicalTableLabel": "Table1"
+    }
+  },
+  "boundary": "Core geometry/source normalization and chunk propagation only. Actual application reparse/index retrieval and report-quality validation remain separate.",
+  "artifacts": {
+    "tmp/mixed-table-457-core-final2-20261115.xml": "3891cdf8cd7cd2c918c8942cc70981df17892a92a35e17898f4c808e0881bcdd",
+    "tmp/mixed-table-457-core-final2-20261115.log": "3071f00917a15fa104a48aac152e505ab3981b92b25e059de442cec2fb1bd0f2",
+    "tmp/mixed-table-457-research-related-20261115.log": "15c5286fefca771670d5630b17e5bc7aec334295338d53133b00a2e9c103b04e"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "backendCommit": "e2c9c1ac9b65f4cc31c7fabc45142a6092d6fdec",
+  "runtimeImage": "pixiu-research-pdf-proof:20261120",
+  "developmentSample": "arxiv:2403.17888v3",
+  "sourceDiscovery": "Live arXiv title query through the configured proxy",
+  "fulltextCacheDisabled": true,
+  "isolatedDatabase": true,
+  "productionWrites": 0,
+  "holdoutRequests": 0,
+  "independentCredit": 0,
+  "boundary": "Verifies live development-sample discovery, PDF version and page-located passages. It does not exercise model planning, synthesis or a held-out case.",
+  "result": {
+    "requests": [
+      {
+        "host": "export.arxiv.org",
+        "path": "/api/query?start=0&max_results=3&search_query=ti%3A%222D+Gaussian+Splatting+for+Geometrically+Accurate+Radiance+Fields%22",
+        "outcome": "succeeded",
+        "bytes": 3086,
+        "sha256": "d3e8132f9222b3fcda0f981f1306f2fc777535814dbbc5c8b77fbb3eee04c622"
+      },
+      {
+        "host": "arxiv.org",
+        "path": "/pdf/2403.17888v3",
+        "outcome": "succeeded",
+        "bytes": 24830200,
+        "sha256": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7"
+      }
+    ],
+    "isolatedLedger": [
+      [
+        "external_discover",
+        "succeeded"
+      ],
+      [
+        "external_fulltext",
+        "succeeded"
+      ]
+    ],
+    "modelCalls": 0,
+    "verified": true,
+    "passageCount": 13,
+    "pages": [
+      1,
+      5,
+      7
+    ],
+    "secondReadUsedLedger": true
+  }
+}

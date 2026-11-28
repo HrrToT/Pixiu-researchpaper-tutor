@@ -1,0 +1,261 @@
+{
+  "case": "G1N-v8",
+  "split": "development",
+  "runId": "dr_run_f2f0ef8ff22c507cb90f4a8d768c96cd",
+  "promptVersion": "dr-v2.20261106.400",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "actualModelCalls": 12,
+  "tokens": 61647,
+  "elapsedSeconds": 269.473,
+  "allModelCallsSettled": true,
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "text": "GOF 将场景表示为 3D 高斯原语，通过射线-高斯相交评估贡献，并在四面体网格上确定不透明度值后使用 Marching Tetrahedra 提取网格；PGSR 将 3D 高斯压缩为平面表示，生成平面距离和法线图，再转换为无偏深度图，并引入单视图几何、多视图光度及几何一致性损失。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+          "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+          "ev_fdb777ebeb1b30e94d23b2135f2ae7a2bb947c836c3d4a081ddf7005a406c061",
+          "ev_d89e66c6c239a4d7bbbfd9cbf11af70fb538e03d9458da253c02256c97b5a3d8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c2",
+        "text": "在 DTU 数据集上，PGSR 报告的平均 Chamfer Distance 为 0.49 mm（越低越好），训练耗时 1.0 小时（RTX 4090）；GOF 报告的平均 Chamfer Distance 为 0.74 mm，训练耗时 2 小时（A100）。两者均来自作者自报的同表对比，但硬件不同，不能直接推断速度排名。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+          "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+          "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c3",
+        "text": "在 Mip-NeRF360 数据集上，PGSR 报告的平均 PSNR 为 27.43 dB、SSIM 0.830、LPIPS 0.193；GOF 报告的平均 PSNR 为 27.78 dB、SSIM 0.835、LPIPS 0.196。两者渲染质量接近，且均优于 SuGaR。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      },
+      {
+        "claimId": "c5",
+        "text": "若优先考虑 DTU 几何精度且硬件为 RTX 4090，可选 PGSR；若需在 A100 上训练且对渲染质量要求略高，可选 GOF。但两者硬件不同，无法直接比较训练速度。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_04dc38515b4a0486e74171046ce4415901d761072e0bc3f256ae13b96c47aff3",
+          "ev_8d6bc6a2a0077656f9296e6ae5f86c338b89ddd58b09ae6a15e93d6233dc61c9",
+          "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+          "ev_4cf0ec87eb89b67680cd9e2dccf0aa2abf9f1ba128110eaa5b6e7841403c475a"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_5"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c4",
+        "reason": "invalid_scope_expression",
+        "detail": "Scope expression cannot overwrite authored factual prose"
+      }
+    ]
+  },
+  "rawIndependentReviews": [
+    {
+      "content": "[\n  {\n    \"claimId\": \"c1\",\n    \"reason\": \"All clauses are directly supported by the respective method sections: E2 and E4 confirm GOF's ray-Gaussian evaluation and Marching Tetrahedra after tetrahedral opacity; E3 (and E1) confirm PGSR's planar compression, depth conversion, and loss terms.\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"established\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": []\n    }\n  }\n]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 7258,
+        "input_tokens": 4575,
+        "output_tokens": 2683
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "[\n  {\n    \"claimId\": \"c1\",\n    \"reason\": \"All clauses are directly supported by the respective method sections: E2 and E4 confirm GOF's ray-Gaussian evaluation and Marching Tetrahedra after tetrahedral opacity; E3 (and E1) confirm PGSR's planar compression, depth conversion, and loss terms.\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"established\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": []\n    }\n  }\n]",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "content": "[\n  {\n    \"claimId\": \"c2\",\n    \"reason\": \"E3 提供了 DTU 上 PGSR (0.49 mm, 1.0h) 和 GOF (0.74 mm, 2h) 的数值；E1 和 E2 分别确认 PGSR 使用 RTX 4090、GOF 使用 A100，支持硬件不同且不能直接比较速度的结论。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"different\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": [\n        {\n          \"dimension\": \"hardware\",\n          \"left\": {\"evidenceId\": \"E1\", \"path\": [\"quote\"], \"value\": \"Nvidia RTX 4090 GPU\"},\n          \"right\": {\"evidenceId\": \"E2\", \"path\": [\"quote\"], \"value\": \"NVIDIA A100 GPU\"}\n        }\n      ]\n    }\n  }\n]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8181,
+        "input_tokens": 4795,
+        "output_tokens": 3386
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "[\n  {\n    \"claimId\": \"c2\",\n    \"reason\": \"E3 提供了 DTU 上 PGSR (0.49 mm, 1.0h) 和 GOF (0.74 mm, 2h) 的数值；E1 和 E2 分别确认 PGSR 使用 RTX 4090、GOF 使用 A100，支持硬件不同且不能直接比较速度的结论。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"different\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": [\n        {\n          \"dimension\": \"hardware\",\n          \"left\": {\"evidenceId\": \"E1\", \"path\": [\"quote\"], \"value\": \"Nvidia RTX 4090 GPU\"},\n          \"right\": {\"evidenceId\": \"E2\", \"path\": [\"quote\"], \"value\": \"NVIDIA A100 GPU\"}\n        }\n      ]\n    }\n  }\n]",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "content": "[\n  {\n    \"claimId\": \"c3\",\n    \"reason\": \"证据表格提供 PGSR/GOF 平均数与 SuGaR 行，数值相符且差距微小，支持接近及优于。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]}\n      ]\n    }\n  }\n]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 4060,
+        "input_tokens": 2747,
+        "output_tokens": 1313
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "[\n  {\n    \"claimId\": \"c3\",\n    \"reason\": \"证据表格提供 PGSR/GOF 平均数与 SuGaR 行，数值相符且差距微小，支持接近及优于。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]}\n      ]\n    }\n  }\n]",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "content": "[\n  {\n    \"claimId\": \"c5\",\n    \"reason\": \"条件建议与限制均有证据支持：PGSR硬件为RTX4090且DTU几何精度高于GOF（chamfer距离均值0.49 vs 0.74），GOF硬件为A100且Mip-NeRF360渲染质量略高（PSNR/SSIM略优），两者硬件不同导致训练速度无法直接比较。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"different\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": [\n        {\n          \"dimension\": \"hardware\",\n          \"left\": {\n            \"evidenceId\": \"E1\",\n            \"path\": [\"quote\"],\n            \"value\": \"Nvidia RTX 4090 GPU\"\n          },\n          \"right\": {\n            \"evidenceId\": \"E2\",\n            \"path\": [\"quote\"],\n            \"value\": \"NVIDIA A100 GPU\"\n          }\n        }\n      ]\n    }\n  }\n]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 9247,
+        "input_tokens": 5607,
+        "output_tokens": 3640
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "[\n  {\n    \"claimId\": \"c5\",\n    \"reason\": \"条件建议与限制均有证据支持：PGSR硬件为RTX4090且DTU几何精度高于GOF（chamfer距离均值0.49 vs 0.74），GOF硬件为A100且Mip-NeRF360渲染质量略高（PSNR/SSIM略优），两者硬件不同导致训练速度无法直接比较。\",\n    \"scopeAudit\": {\n      \"claimStrength\": \"bounded\",\n      \"evidenceStrength\": \"bounded\",\n      \"supported\": true,\n      \"statementPath\": [\"text\"],\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]}\n      ]\n    },\n    \"comparisonAudit\": {\n      \"scope\": \"cross_study\",\n      \"alignment\": \"different\",\n      \"supportsClaim\": true,\n      \"premises\": [\n        {\"evidenceId\": \"E1\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E2\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E3\", \"path\": [\"quote\"]},\n        {\"evidenceId\": \"E4\", \"path\": [\"quote\"]}\n      ],\n      \"conditionDifferences\": [\n        {\n          \"dimension\": \"hardware\",\n          \"left\": {\n            \"evidenceId\": \"E1\",\n            \"path\": [\"quote\"],\n            \"value\": \"Nvidia RTX 4090 GPU\"\n          },\n          \"right\": {\n            \"evidenceId\": \"E2\",\n            \"path\": [\"quote\"],\n            \"value\": \"NVIDIA A100 GPU\"\n          }\n        }\n      ]\n    }\n  }\n]",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    }
+  ],
+  "rawRepairResponses": [
+    {
+      "content": "[{\"draftingBasis\":{\"premiseStatus\":\"not_established\",\"observations\":[{\"evidenceId\":\"E9\",\"quote\":\"All experiments in this paper are conducted on Nvidia RTX 4090 GPU.\"},{\"evidenceId\":\"E10\",\"quote\":\"All experiments are conducted on an NVIDIA A100 GPU.\"}],\"scopeDecision\":\"bounded_inference\",\"unresolved\":\"两篇论文均未提供模型存储或显存使用的具体数值，因此无法比较。\"},\"claimId\":\"c4\",\"kind\":\"inference\",\"text\":\"两篇论文均未报告模型存储或显存使用的具体数值，因此无法比较。\",\"evidenceRefs\":[\"E9\",\"E10\"],\"conditions\":{},\"detailLevel\":\"fulltext\",\"discardedDraftSpans\":[],\"scopeExpression\":{\"observedSettings\":[{\"subject\":\"PGSR\",\"attribute\":\"硬件\",\"value\":\"Nvidia RTX 4090 GPU\"},{\"subject\":\"GOF\",\"attribute\":\"硬件\",\"value\":\"NVIDIA A100 GPU\"}],\"notEstablished\":[{\"type\":\"comparison_evidence\",\"subjects\":[\"PGSR\",\"GOF\"],\"quantity\":\"模型存储或显存使用\"}]}}]",
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 7344,
+        "input_tokens": 6979,
+        "output_tokens": 365
+      },
+      "reportedModel": "deepseek-v4-pro",
+      "rawContent": "{\n  \"items\": [\n    {\n      \"draftingBasis\": {\n        \"premiseStatus\": \"not_established\",\n        \"observations\": [\n          {\n            \"evidenceId\": \"E9\",\n            \"quote\": \"All experiments in this paper are conducted on Nvidia RTX 4090 GPU.\"\n          },\n          {\n            \"evidenceId\": \"E10\",\n            \"quote\": \"All experiments are conducted on an NVIDIA A100 GPU.\"\n          }\n        ],\n        \"scopeDecision\": \"bounded_inference\",\n        \"unresolved\": \"两篇论文均未提供模型存储或显存使用的具体数值，因此无法比较。\"\n      },\n      \"claimId\": \"c4\",\n      \"kind\": \"inference\",\n      \"text\": \"两篇论文均未报告模型存储或显存使用的具体数值，因此无法比较。\",\n      \"evidenceRefs\": [\n        \"E9\",\n        \"E10\"\n      ],\n      \"conditions\": {},\n      \"detailLevel\": \"fulltext\",\n      \"discardedDraftSpans\": [],\n      \"scopeExpression\": {\n        \"observedSettings\": [\n          {\n            \"subject\": \"PGSR\",\n            \"attribute\": \"硬件\",\n            \"value\": \"Nvidia RTX 4090 GPU\"\n          },\n          {\n            \"subject\": \"GOF\",\n            \"attribute\": \"硬件\",\n            \"value\": \"NVIDIA A100 GPU\"\n          }\n        ],\n        \"notEstablished\": [\n          {\n            \"type\": \"comparison_evidence\",\n            \"subjects\": [\n              \"PGSR\",\n              \"GOF\"\n            ],\n            \"quantity\": \"模型存储或显存使用\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    }
+  ],
+  "repairState": {
+    "version": 1,
+    "inputDigest": "bcae9052ea459985ebf183b544fd2ae8fe53e72e5f5f091cd56485cf90bff6f9",
+    "maxPromptBytes": 24000,
+    "batches": [
+      [
+        "c4"
+      ]
+    ],
+    "results": {
+      "0": []
+    },
+    "scopeExpressionAudit": {
+      "0": [
+        {
+          "claimId": "c4",
+          "error": "invalid_scope_expression"
+        }
+      ]
+    }
+  },
+  "coverageStatus": "budget_exhausted",
+  "coverageBudgetLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 25854
+  },
+  "publicReportText": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 6 项未完成</summary>\n\n- GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？实验条件（分辨率、硬件）如何？：回答完整性尚未核验\n- Mip-NeRF360 的渲染质量如何：回答完整性尚未核验\n- 两篇论文是否报告了模型存储或显存使用？若有，数值和条件是什么？：回答完整性尚未核验\n- 根据已核对的几何精度、训练耗时、渲染质量和存储证据，在什么条件下选择 GOF 或 PGSR？：回答完整性尚未核验\n- 高斯表示与网格提取路径有什么不同：回答完整性尚未核验\n- 请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。：回答前后的一致性尚未确认；缺少：核对并统一合并答案的表述范围\n\n</details>\n\n回答的一致性尚未确认，暂未发布结论。",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 37,
+    "ledgerRows": 8841,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksExact": true,
+    "indexExact": true,
+    "index": {
+      "collection": "literature_collection_v4_e5_small",
+      "count": 1215,
+      "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+    }
+  },
+  "review": [
+    "Actual new method acquisition delivered planar representation to c1 and its own independent review, but c1 still omits PGSR TSDF extraction; do not grant complete comparison credit.",
+    "Critical false-positive acceptance: c2 treats GOF 2h from PGSR TableII comparator as GOF author report and joins it to A100 from a different source. The semantic checker accepted that join. It is not an accepted scientific fact.",
+    "Critical false-positive acceptance: c3 cites only PGSR source work arxiv:2406.06521, including its GOF comparator average27.78/.835/.196, yet calls both methods author-reported. Existing comparison audit did not prevent it; explicit reporting-paper/method-role provenance needs hardening.",
+    "c5 recommendation inherits those attribution/condition problems and is not scientifically approved merely because its private verdict passed.",
+    "New comparison_evidence shape was authored in the repair, but the model also retained free prose claiming paper-wide absence. Existing conflicting-prose structural rejection remains correct. No independent repaired sufficiency verdict was obtained.",
+    "Coverage was not checked: actual prompt preflight25854/24000, not a measured total token/call/time exhaustion. Four accepted private claims have more content than prior advice-only case, exposing remaining full-input capacity issue.",
+    "Public report publishes no verified conclusion, all12 model calls settled, no new unknown. Original14task/index boundary and old ledger/payloads preserved. Full content not accepted, independent0.",
+    "Next: bind claimed author-self-report provenance to actual source-work/variant ownership, eliminate conflicting authored branches before generation rather than discard prose after it, and make full exact coverage input fit original24KB without dropping requirements/claims or scientific checks."
+  ]
+}

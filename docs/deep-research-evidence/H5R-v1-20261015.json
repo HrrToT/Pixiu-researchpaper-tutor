@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H5R",
+  "attempt": 1,
+  "runId": "dr_run_98572e8a5a5f575cb2dda227b673455a",
+  "promptVersion": "dr-v2.20261015.69",
+  "machineStatus": "completed",
+  "machineOutcome": "partial",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; saved final report and original PDF source review, not model self-scoring.",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 8,
+    "maxModelCalls": 18,
+    "tokens": 33970,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 79.0,
+    "cost": null
+  },
+  "costBoundary": "Settled provider tokens; monetary cost not supplied.",
+  "rawResultPath": "tmp/dr-acceptance-receipts/H5R-v1.result.json",
+  "rawSha256": "8f6f1831dc78c1afd18447ed006cfc13548ec383f0e6be6a3286116b8eff9cc6",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H5R-v1.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H5R-v1.calls.json",
+  "independence": "First execution reviewed against frozen criteria before diagnostic reuse. H2 result/source review occurred beforehand but no H2/Lapis diagnostic engine modification was made.",
+  "scores": {
+    "目标回应": 1,
+    "证据支持": 4,
+    "条件完整": 1,
+    "综合价值": 1,
+    "可执行性": 1,
+    "可读性": 2
+  },
+  "criteria": [
+    {
+      "requirement": "Source supports fixed old-layer parameters except opacity; hotdog source traceable",
+      "met": "partial"
+    },
+    {
+      "requirement": "Same baseline and enhancement initialization, only old opacity differs",
+      "met": "partial"
+    },
+    {
+      "requirement": "Finite budgets, split, resolution, seeds and optimization rules",
+      "met": false
+    },
+    {
+      "requirement": "Matched or disabled occupancy/compaction",
+      "met": false
+    },
+    {
+      "requirement": "Executable steps, metric direction and paired same-view aggregation",
+      "met": false
+    },
+    {
+      "requirement": "Unexecuted descriptive single-scene scope without universal/result claims",
+      "met": "partial"
+    }
+  ],
+  "findings": [
+    "Only the two-arm intervention skeleton survived into the saved report; this is not an executable experiment.",
+    "The cited statement on old-layer opacity matches original Lapis physical page 4, also showing hotdog in Figure 4.",
+    "Finite budgets, evaluation protocol, matched occupancy/compaction and concrete steps are absent from the published answer.",
+    "The result remains partial with gaps and explicitly unexecuted advice. No experimental outcome was fabricated.",
+    "The displayed gap count is 16 while the collapsed list shows only a subset; repeated parameter-not-set text adds noise."
+  ]
+}

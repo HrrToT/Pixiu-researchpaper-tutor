@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "H5F-v4",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "fixture": "Replace the third same-passage extraction with its already proven literal equation, keeping three slots. This is a hypothetical new extraction pool, NOT an actual new Provider run.",
+  "poolEvidenceCount": 9,
+  "originalPoolEvidenceCount": 9,
+  "literalOperationActuallySupplied": true,
+  "synthesisBytes": 23600,
+  "synthesisRows": 9,
+  "allocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_da4fe482d8beb1708acbc87f742933bac6190f54cad8838c61b77214957e0587",
+      "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+      "ev_92ac3b791e4b470fc58f7ffedaa83a13040396446acf6dcad31224f457997588",
+      "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2",
+      "ev_586ab31e392e3447f39bf1b47784ac558d3464934e8f3b9b90c5ac0f9e06d689",
+      "ev_f937f8286bfc17c29827db6016ac5cb5cdd8cf40232648fd3c99637ef9bd8922",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_a24eb03e0d567888f1ffb7f0e872f06030b1c64ee76528611051abc95180c8b8",
+      "ev_e5929c2b044ca8ff48c460f1dcad9e6b0aad533062b884927a56dc0c9a677b8b"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_da4fe482d8beb1708acbc87f742933bac6190f54cad8838c61b77214957e0587",
+      "ev_4b9093737002b0fff515c850bb3a6472329f3d357beeece4850d73e73cfe7ab7",
+      "ev_92ac3b791e4b470fc58f7ffedaa83a13040396446acf6dcad31224f457997588",
+      "ev_ac51d846787e219dc2dad5ea3887eed549a48f2289cd5f8250fdc3bd7adfdca2",
+      "ev_586ab31e392e3447f39bf1b47784ac558d3464934e8f3b9b90c5ac0f9e06d689",
+      "ev_f937f8286bfc17c29827db6016ac5cb5cdd8cf40232648fd3c99637ef9bd8922",
+      "ev_4d607838fc748b0d0fc4dd8223bdf453639bc7a024640afc50cd0a3553080b4c",
+      "ev_a24eb03e0d567888f1ffb7f0e872f06030b1c64ee76528611051abc95180c8b8",
+      "ev_e5929c2b044ca8ff48c460f1dcad9e6b0aad533062b884927a56dc0c9a677b8b"
+    ],
+    "missingPremiseBundles": [],
+    "inputBytes": 23600,
+    "fixedInputBytes": 18291,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  },
+  "boundary": "Controlled input-fitting fixture only. No actual new extraction/generation, semantic approval, executable experiment acceptance or independent credit. Original history unchanged."
+}

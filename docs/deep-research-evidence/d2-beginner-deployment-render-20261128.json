@@ -1,0 +1,15 @@
+{
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "exactFrozenStagePrompts": true,
+  "changes": [
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "adviceBefore": "先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。若两种方法都超过显存上限，应调整设置后再比较。",
+  "adviceAfter": "磁盘空间紧时，先看模型文件大小。帧率优先时，在同一场景比较帧率，并确认画质达到自己的要求。文件大小和运行显存要分别看。先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。若两种方法都超过显存上限，应调整设置后再比较。",
+  "adviceType": "proposal",
+  "sameAdviceCitations": true,
+  "checksDeviceMemoryBeforeRecommending": true,
+  "newModelCalls": 0,
+  "scientificApproval": false
+}

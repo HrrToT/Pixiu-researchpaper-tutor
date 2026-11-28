@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "5340b758028902cf7889a2092ba35c244fa43c63",
+  "sourceReceiptSha256": "e817d6681e889dc94b44b9ba4a64d7b5d083de9a96400e3d2f8ef8c94f538ad4",
+  "knownReviewCount": 2,
+  "exactKnownResponsesReused": [
+    {
+      "argsDigest": "8b48dbbbdd56336310e9d010a553139dc774cb644dec9dbbd11ec91e1f6d3ce1",
+      "node": "verify"
+    },
+    {
+      "argsDigest": "fd8d967d107c2422ba3e86f07399292ebb25fe56df2cb299e6a7c0ba26f6825c",
+      "node": "verify"
+    }
+  ],
+  "savedBudget": {
+    "maxModelCalls": 18,
+    "reserveModelCalls": 5,
+    "maxTokens": 100000,
+    "reserveTokens": 50000,
+    "modelCalls": 6,
+    "reservedModelCalls": 5,
+    "tokens": 68398,
+    "normalTokens": 20384
+  },
+  "nextRequest": {
+    "node": "verify",
+    "delta": {
+      "modelCalls": 1,
+      "tokens": 31936
+    },
+    "argsDigest": "4a4d43d89d2e2ef8fc8c501979af83aa67e27d93fd2f9afcbac1c6c4a5f644bb",
+    "requestedReserve": true,
+    "selectedReserve": true,
+    "releasedReserveTokens": 0,
+    "projectedTotalTokens": 100334,
+    "projectedTotalCalls": 12,
+    "projectedReserveCalls": 6
+  },
+  "actualRefusal": {
+    "kind": "modelCalls",
+    "limit": 18,
+    "used": 6
+  },
+  "isolatedReservationRolledBack": true,
+  "providerRequests": 0,
+  "liveLedgerMutations": 0,
+  "scientificApproval": false,
+  "boundary": "Exact request identities for known reviews; next reserve attempted only in isolated SQLite. Raw model verdicts are not independent scientific acceptance."
+}

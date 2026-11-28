@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v22",
+  "sourceCommit": "9f539cfe",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "actualRequestFingerprintsMatched": 3,
+  "requests": [
+    {
+      "callId": "304174a7ed8ae75873cd7a6eb5a1826c",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "inputBytes": 23571,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c6",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "callId": "c506949d6c049322d39d3f13ada60af6",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "inputBytes": 29851,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c6",
+        "c9",
+        "c4",
+        "c5",
+        "c7",
+        "c3",
+        "c8"
+      ]
+    },
+    {
+      "callId": "8c5551904b2c08f6c2394b07a3071dcc",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c3",
+        "c8"
+      ],
+      "inputBytes": 26250,
+      "actualFingerprintMatched": true,
+      "contextIds": [
+        "c6",
+        "c9",
+        "c4",
+        "c5",
+        "c7",
+        "c1",
+        "c2"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c5",
+        "c7"
+      ],
+      "fullInputBytes": 23571,
+      "fixedInputBytes": 21072,
+      "maxInputBytes": 32000,
+      "referencedRows": 2,
+      "selectedRows": 2,
+      "selectedInputBytes": 23571,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2"
+      ],
+      "fullInputBytes": 29851,
+      "fixedInputBytes": 22075,
+      "maxInputBytes": 32000,
+      "referencedRows": 7,
+      "selectedRows": 7,
+      "selectedInputBytes": 29851,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c3",
+        "c8"
+      ],
+      "fullInputBytes": 26250,
+      "fixedInputBytes": 23191,
+      "maxInputBytes": 32000,
+      "referencedRows": 2,
+      "selectedRows": 2,
+      "selectedInputBytes": 26250,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairLimit": null,
+  "boundary": "Exact archived review reconstruction only. Successful output shape does not validate scientific judgements."
+}

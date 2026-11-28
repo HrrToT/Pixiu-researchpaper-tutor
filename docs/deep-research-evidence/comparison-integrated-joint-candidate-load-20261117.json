@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "0a1636795ed3f876ad55bd74831cdf1ad96f192a",
+  "fullRegression": "comparison-integrated-joint-full-20261117.json",
+  "candidate": "academic-dr-integrated-joint-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "health": "ok",
+  "sourceHashesMatch": true,
+  "comparisonCellsContractVersion": 1,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

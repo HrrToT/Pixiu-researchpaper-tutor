@@ -1,0 +1,46 @@
+{
+  "case": "D5-v16",
+  "runId": "dr_run_673ae421f16659aab1cf930627b8d8af",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "receiptSha256": "7a3eaea139de40020773808adc0d4711906f495042c19e9cd6b04c2b971d9c46",
+  "oneSubmission": true,
+  "actualComparisonProfiles": {
+    "comparisonPlanningContractVersion": 6,
+    "comparisonJointReportsContractVersion": 16,
+    "comparisonCrossPaperBoundaryContractVersion": 2,
+    "factualReviewContractVersion": 4
+  },
+  "parentAndArtifactsUnchanged": true,
+  "sameMaterialScope": true,
+  "originalServiceRestored": true,
+  "retainedParentEvidence": 43,
+  "status": "failed",
+  "errorCode": "invalid_synthesis_response",
+  "childReportPublished": false,
+  "providerCalls": 9,
+  "nodeCounts": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "synthesize_compact": 1
+  },
+  "tokens": 44936,
+  "elapsedSeconds": 64.0,
+  "compiledUnverifiedStages": [
+    "P1",
+    "P2",
+    "joint"
+  ],
+  "actualPlannedObligationIds": [
+    "fps-measurement-conditions",
+    "fps-comparability-limits",
+    "requested_numeric_example"
+  ],
+  "replayedPlannedObligationIds": [
+    "fps-measurement-conditions",
+    "fps-comparability-limits"
+  ],
+  "newProviderCallsDuringReplay": 0,
+  "scientificAcceptance": false
+}

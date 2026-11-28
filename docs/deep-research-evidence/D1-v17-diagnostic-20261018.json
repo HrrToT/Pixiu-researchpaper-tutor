@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v17",
+  "runId": "dr_run_c58d9062ee155997ad5e6d27420b668e",
+  "sourceCommit": "5da25372",
+  "promptVersion": "dr-v2.20261018.142",
+  "evaluationUse": "original development case",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 10,
+  "settledTokens": 40604,
+  "elapsedSeconds": 53.564,
+  "cost": null,
+  "actualSemanticBatches": [
+    {
+      "node": "verify",
+      "claimIds": [
+        "c2"
+      ]
+    },
+    {
+      "node": "verify_repair",
+      "claimIds": [
+        "c2"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "该结论的指代对象在断言中未明确，证据E1和E2仅为Table 1中Mip-NeRF 360与Tank and Temple两个数据集的定量对比行，未包含作者关于其他数据集、场景或条件适用性的任何说明。因此不能从这两条表格证据中推出“作者未明确说明适用性”这一缺失性命题；仅能支持“现有证据覆盖两个数据集”，不足以证明其他条件下仍成立。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "inference",
+        "text": "现有证据仅覆盖Mip-NeRF 360和Tank and Temple两个数据集，不足以证明该结论在其他数据集、场景或条件下仍成立。",
+        "evidenceRefs": [
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "obligationIds": [
+          "ob_3"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "The repair now replaces a paper-wide absence assertion with a bound on the actually cited table. Its independent recheck passes.",
+    "The numerical comparison still lacks the exact parser-established Ours method label; table_condition_not_displayed correctly rejects it.",
+    "The opaque rejection provides no specific missing table identity. Repair keeps metric pairs and both groups but still misses Ours.",
+    "The surviving limitation refers to an unpublished comparison and does not answer the requested two points. No content pass."
+  ],
+  "report": "## 判断\n\n- 有依据的推断：现有证据仅覆盖Mip-NeRF 360和Tank and Temple两个数据集，不足以证明该结论在其他数据集、场景或条件下仍成立。 [1](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd) [2](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747)\n\n<details>\n<summary>还有 3 项未完成</summary>\n\n- 作者报告了哪些定量指标来比较压缩后图像质量与原始3DGS？：最终回答尚未完整回应这一问题\n- 作者在哪些数据集、场景或实验设置下报告了压缩后图像质量接近原始3DGS？：最终回答尚未完整回应这一问题\n- 作者是否明确指出了未验证的范围或局限性？：预算不足，尚未开始\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v17.json",
+      "sha256": "45bbbe3cd767ecbe79feda27a212a7fedafa0706c3aab48a59fa170077502952"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v17.payload.json",
+      "sha256": "d6b9bbe0b6f1793ca2cea4741f9d160752813e555659b2290fe6f464a9a9ff5d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v17.calls.json",
+      "sha256": "0eff49673bebe90882b7114e7c28657b8d1837d41ea2733061182ee0df158a89"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v17.result.json",
+      "sha256": "50faef26bd1458cf029b9efe15c81b257f4db2c9c9b4d85e2c8bcd99708ea75b"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

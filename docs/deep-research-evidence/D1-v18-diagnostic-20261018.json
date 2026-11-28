@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v18",
+  "runId": "dr_run_41da9df239bb5992bd07489949471741",
+  "sourceCommit": "959011ea",
+  "promptVersion": "dr-v2.20261018.144",
+  "evaluationUse": "original development case",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 8,
+  "settledTokens": 34168,
+  "elapsedSeconds": 33.781,
+  "cost": null,
+  "actualSemanticBatches": [
+    {
+      "node": "verify_repair",
+      "claimIds": [
+        "c2"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "3e-1",
+          "8e-2"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：0.3、0.08。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "inference",
+        "text": "当前证据仅覆盖 Mip-NeRF 360 和 Tank and Temple 两个数据集，不足以证明压缩后图像质量在其他数据集或场景下仍接近原始 3DGS。",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "obligationIds": [
+          "ob_2"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS [16]"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Tank and Temple Datasets",
+            "method": "3D-GS [16]"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Repair removes unreported calculated differences and replaces a paper-wide absence assertion with an evidence-bounded limitation.",
+    "Initial numeric_mismatch hides the concurrent table-identity omission; exact table-display feedback only appears after repair, too late for the single revision.",
+    "Ours label is still absent, so the numerical point is correctly rejected. The remaining limitation alone does not answer the original question.",
+    "Next correction must expose concurrent deterministic failures to the first revision, without relaxing table or number checks."
+  ],
+  "report": "## 判断\n\n- 有依据的推断：当前证据仅覆盖 Mip-NeRF 360 和 Tank and Temple 两个数据集，不足以证明压缩后图像质量在其他数据集或场景下仍接近原始 3DGS。 [1](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747) [2](#research-evidence-ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 作者报告了哪些定量指标来支持压缩后图像质量接近原始 3DGS？：最终回答尚未完整回应这一问题\n- 作者在哪些数据集、场景或实验设置下评估了压缩后图像质量？：预算不足，尚未开始\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 8: 3D-GS [16] | 134 | 734MB | 27.21 | 0.815 | 0.214 | 154 | 411MB | 23.14 | 0.841 | 0.183\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v18.json",
+      "sha256": "de07b7131463d16c2fca6cf3e8af5fe7031e7f05d0735b515d07a8c4b7e263a7"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v18.payload.json",
+      "sha256": "c08cbc7f4a493f6104208ec478206949e7541869e1df0c14d1a29e39d7d8ae38"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v18.calls.json",
+      "sha256": "600717a7dde92d71c7ba3d5a095f4e4057269d69c0377a37e693de8b3caa321f"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v18.result.json",
+      "sha256": "e19d55476f1a481545c9700f63a3cba039d4d150f8d5bcbd23c14529306b8c7e"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

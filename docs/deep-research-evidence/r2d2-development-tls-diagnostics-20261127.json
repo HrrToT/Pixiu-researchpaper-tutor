@@ -1,0 +1,69 @@
+{
+  "case": "R2D2 development regression",
+  "codeCommit": "2e72f1954",
+  "scientificContentCredit": 0,
+  "productionWrites": 0,
+  "retainedUnknownRuns": [
+    {
+      "runId": "dr_run_22f8e00cf21b5bdd973af8e9b0e0adfa",
+      "status": "paused",
+      "errorCode": "unresolved_unknown",
+      "unknownNode": "resolve_brief",
+      "failureKind": "tls_error",
+      "providerHTTPResponse": null,
+      "observedProviderUsage": null,
+      "providerDispatchAttempts": 1,
+      "ledgerReservedTokens": 4407,
+      "replayedKnownBrief": false,
+      "materialBoundary": {
+        "scopeCheck": 2
+      },
+      "sha256": {
+        "intent.json": "c25e3cb45fc84be5f9bc23f00ef79059af9f2f47185fc73fc8b263ff55a2db55",
+        "run.json": "3e3e83690430553c8a52c59d94b4d2ba94fc1b823667951c636661a397df683a",
+        "calls.json": "5f10daad1be924719ecac13b811d6b2d152e5feecf747cbf2ef2f70f9df7137c",
+        "provider.jsonl": "8e7333990ca277a2444b532a02527e2b5457a8a00d7552d02f683f6998475c1c",
+        "boundary.json": "603643e2b090f3380ac09038f6374a4ed1cb39b8dc5e31e40a81f68bb2b4dc71"
+      }
+    },
+    {
+      "runId": "dr_run_628cefb6c5cf5b12bf4dc5494c26ab4a",
+      "status": "paused",
+      "errorCode": "unresolved_unknown",
+      "unknownNode": "plan",
+      "failureKind": "tls_error",
+      "providerHTTPResponse": null,
+      "observedProviderUsage": null,
+      "providerDispatchAttempts": 1,
+      "ledgerReservedTokens": 11594,
+      "replayedKnownBrief": true,
+      "materialBoundary": {
+        "scopeCheck": 3
+      },
+      "sha256": {
+        "intent.json": "53547fbf58fe38ffd9465876959d3f70b5649dff39b4cb8b9b6298ed8d06344c",
+        "run.json": "b45cc29fceb17675324c8b690c38d0c20da3f62f8b4b6486a3ad0c25f7306a65",
+        "calls.json": "56006a3e5732e0204efeb63a515767b531eb28725662c55481864c6cb8c4f330",
+        "provider.jsonl": "8e7333990ca277a2444b532a02527e2b5457a8a00d7552d02f683f6998475c1c",
+        "boundary.json": "1d1764db579ce8a0b617e3273452c9965ad448646235d9007a5bad5bee7beff2",
+        "replayed-brief.json": "791685e21c54129c4f1a025109c96bcf45c38a01478841fa6bb369b34470bcd0"
+      }
+    }
+  ],
+  "connectivityProbes": {
+    "credentialed": false,
+    "paperContent": false,
+    "modelCalls": 0,
+    "configuredProxy": {
+      "requestsModelsHTTP": 401,
+      "windowsModelsHTTP": 401,
+      "chatPostHTTP": 401,
+      "chatPostDeadlineWorkerHTTP": 401,
+      "streamingResponsesPostDeadlineWorkerHTTP": 401
+    },
+    "directConnection": "connect_timeout"
+  },
+  "conclusion": "The configured proxy could reach the unauthenticated endpoint. Both actual attempts failed before a recorded HTTP response; the precise TLS failure and provider billing remain unknown. The second attempt replayed a known successful brief and never resubmitted the earlier unknown request.",
+  "followupImplementation": "Allow-listed SSL subtypes are persisted without raw exception text. Unknown status, reservations and replay blocking remain intact.",
+  "focusedOfflineTestsPassed": 50
+}

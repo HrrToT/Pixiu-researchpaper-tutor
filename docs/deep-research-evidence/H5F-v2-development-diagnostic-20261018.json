@@ -1,0 +1,185 @@
+{
+  "date": "2026-10-18",
+  "case": "H5F-v2",
+  "sourceCommit": "7186e037",
+  "promptVersion": "dr-v2.20261018.173",
+  "runId": "dr_run_7403fe27aa7457268654cecaa6de0fc0",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 10,
+  "settledTokens": 36246,
+  "elapsedSeconds": 80.096,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "cost": null,
+  "findings": [
+    "Experimental-design content fails: common initialization/available input/state definitions, concrete AST implementation, paired analysis and overall execution are incomplete.",
+    "Only groups, matched finite budget and a proposed metric survive. Temporal PSNR standard deviation alone is not a valid jitter measure: a constant poor-quality sequence can have zero score variation; score variability also confounds scene/view content. The reviewer accepted this misleading metric, so scientific review needs correction.",
+    "The actual hypothesis purpose is explore and actual analysis uncertainty/decision mode is descriptive. Nevertheless reviewer demands significance/confidence intervals, contrary to the explicit single-scene descriptive user request. Existing typed schema already supports explore/descriptive; do not invent a new API merely to add this already supported intent.",
+    "The bounded repair preflight stops before dispatch because fixed repair content is24697bytes above24000. Source/budget caps must remain; remove/factor demonstrably redundant fixed instructions/context without dropping required definitions.",
+    "Original source-aware absence and missing-initialization guards reject real omissions. The partial result is safely incomplete overall, but its misleading metric is still a scientific content failure."
+  ],
+  "report": "## 分组表\n\n- 实验建议：分组：同一场景下两组，对照组关闭退火平滑（因子A=0），处理组启用论文所述退火平滑（因子A=1）。两组共享同一基线初始化和固定条件，仅退火平滑干预不同。\n\n拟议分组（尚未执行）：\n- 因素：\"退火平滑\"\n  - 对照组操作：\"关闭退火平滑\"\n    - 参数：未设置\n  - 实验组操作：\"启用论文所述退火平滑\"\n    - 参数：\n      - \"退火起始温度\"（数值）：1.0\n      - \"退火终止温度\"（数值）：0.01\n      - \"退火衰减率\"（数值）：0.999\n  适用条件：单场景；两组配对比较；退火平滑为唯一干预差异。\n\n## 固定条件\n\n- 实验建议：预算：基线训练使用固定预算1000优化器步数；恢复阶段两组匹配预算各500优化器步数。所有预算为拟议选择，非论文设置。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多1000优化步\n- 停止规则：\"达到最大步数停止\"\n- 恢复预算：各组匹配\n  - 0组：500优化步\n  - 1组：500优化步\n  适用条件：有限预算；基线训练和恢复阶段分开；两组恢复预算相等。\n\n## 指标\n\n- 实验建议：指标：时间插值抖动度量采用时间PSNR标准差（lower-is-better），在评估视图上对每个时间插值序列计算PSNR，然后取该序列PSNR的标准差作为抖动度量。图像级聚合：先计算每帧PSNR，再对序列取标准差。\n  适用条件：指标为拟议选择；PSNR越高越好，标准差越低表示抖动越小。\n\n<details>\n<summary>还有 14 项未完成</summary>\n\n- 基于Deformable 3D Gaussians v2，设计一个最小实验检验退火平滑训练是否缓解固定相机位姿误差下的时间插值抖动。只提一个假设、同一场景两组：关闭退火平滑与启用论文所述退火平滑；给出共同初始化、固定条件、明确有限预算、指标、可执行步骤与配对判断。只作单场景描述性比较，方案尚未执行，不保证新颖或普遍有效。：最终回答尚未完整回应这一问题\n- 核对拟选数据集及准确子集的身份和实际成员依据；命名选择核对场景/样本名，按数量或全量选择核对该子集数量，不以整个父数据集替代子集。拟议划分、分辨率和训练预算由方案明确选择；仅在用户要求复现或核对原设置时追查作者的这些设置。：最终回答尚未完整回应这一问题\n- 论文中退火平滑训练的具体机制是什么？包括退火参数如何作用于训练过程、影响哪些模型组件或损失项，以及其激活/适用条件。：最终回答尚未完整回应这一问题\n- 论文中用于动态场景重建的评估指标和相机位姿误差设置是什么？特别是与时间插值抖动相关的度量或实验条件。：最终回答尚未完整回应这一问题\n- 补齐实验方案：假设：尚未形成经过检查的方案内容\n- 补齐实验方案：执行步骤：尚未形成经过检查的方案内容\n- 补齐实验方案：结果解释：尚未形成经过检查的方案内容\n- 补齐实验方案：风险：尚未形成经过检查的方案内容\n- 补齐实验方案：待验证假设：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：固定条件：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：数据划分与重复试验：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：执行步骤与记录：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：结果判断方法：这项方案要求尚未通过完整性和逻辑核验\n- 补齐实验方案：风险与适用边界：这项方案要求尚未通过完整性和逻辑核验\n\n</details>\n\n假设与实验建议尚未经过实验验证。",
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "text": "分组：同一场景下两组，对照组关闭退火平滑（因子A=0），处理组启用论文所述退火平滑（因子A=1）。两组共享同一基线初始化和固定条件，仅退火平滑干预不同。\n\n拟议分组（尚未执行）：\n- 因素：\"退火平滑\"\n  - 对照组操作：\"关闭退火平滑\"\n    - 参数：未设置\n  - 实验组操作：\"启用论文所述退火平滑\"\n    - 参数：\n      - \"退火起始温度\"（数值）：1.0\n      - \"退火终止温度\"（数值）：0.01\n      - \"退火衰减率\"（数值）：0.999",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "context": "单场景；两组配对比较；退火平滑为唯一干预差异。"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "detailed",
+        "tableBindings": [],
+        "designRole": "groups",
+        "executionSpec": {
+          "factors": [
+            {
+              "name": "退火平滑",
+              "control": {
+                "action": "关闭退火平滑",
+                "parameters": []
+              },
+              "treatment": {
+                "action": "启用论文所述退火平滑",
+                "parameters": [
+                  {
+                    "name": "退火起始温度",
+                    "type": "number",
+                    "value": 1.0
+                  },
+                  {
+                    "name": "退火终止温度",
+                    "type": "number",
+                    "value": 0.01
+                  },
+                  {
+                    "name": "退火衰减率",
+                    "type": "number",
+                    "value": 0.999
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "designContractVersion": 2,
+        "verification": "proposal"
+      },
+      {
+        "claimId": "c5",
+        "text": "预算：基线训练使用固定预算1000优化器步数；恢复阶段两组匹配预算各500优化器步数。所有预算为拟议选择，非论文设置。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多1000优化步\n- 停止规则：\"达到最大步数停止\"\n- 恢复预算：各组匹配\n  - 0组：500优化步\n  - 1组：500优化步",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "context": "有限预算；基线训练和恢复阶段分开；两组恢复预算相等。"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "detailed",
+        "tableBindings": [],
+        "designRole": "budget",
+        "executionSpec": {
+          "baseline": {
+            "mode": "train",
+            "unit": "optimizer_steps",
+            "maxBudget": 1000,
+            "stoppingRule": "达到最大步数停止"
+          },
+          "recovery": {
+            "mode": "matched",
+            "unit": "optimizer_steps",
+            "groups": {
+              "0": 500,
+              "1": 500
+            }
+          }
+        },
+        "designContractVersion": 2,
+        "budgetContractVersion": 1,
+        "verification": "proposal"
+      },
+      {
+        "claimId": "c7",
+        "text": "指标：时间插值抖动度量采用时间PSNR标准差（lower-is-better），在评估视图上对每个时间插值序列计算PSNR，然后取该序列PSNR的标准差作为抖动度量。图像级聚合：先计算每帧PSNR，再对序列取标准差。",
+        "kind": "proposal",
+        "evidenceRefs": [],
+        "conditions": {
+          "context": "指标为拟议选择；PSNR越高越好，标准差越低表示抖动越小。"
+        },
+        "obligationIds": [
+          "experiment_deliverable"
+        ],
+        "detailLevel": "detailed",
+        "tableBindings": [],
+        "designRole": "metrics",
+        "designContractVersion": 2,
+        "verification": "proposal"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c4",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      },
+      {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.creation.unavailable_input, workflow.states.required"
+      },
+      {
+        "claimId": "c1",
+        "reason": "semantic_unresolved",
+        "detail": "假设声称退火平滑会降低时间PSNR标准差，但分析c8仅提供描述性比较，无显著性检验或效应方向判定，且未明确退火平滑的具体实现细节，无法验证假设。"
+      },
+      {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "初始化引用c6，但c6未提供具体初始化状态（如高斯参数、变形场等）的数值或分布，仅提及预训练模型或Xavier初始化，不满足可执行性；渲染设置和优化器设置具体，但其他干预禁用未明确具体参数。"
+      },
+      {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "分析仅提供描述性比较，无显著性检验或置信区间，且未明确配对单位的具体聚合方式（如多视图或多序列时如何配对），无法支持假设c1的验证。"
+      },
+      {
+        "claimId": "c9",
+        "reason": "semantic_unresolved",
+        "detail": "限制声明未具体说明退火平滑实现细节、固定相机位姿误差的扰动模型和数据集子集可用性，仅泛泛提及风险，未提供可执行的失效条件或具体限制。"
+      }
+    ]
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 24000,
+    "used": 24697
+  },
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v2.json",
+      "sha256": "c9f7dcaf4542f0ba124a2239703e3158158a8166184879454a29394643686648"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v2.payload.json",
+      "sha256": "b6e9056ae4849420d67a566c2e55007d76380e8e51cb4cac15db47b4c2c9f45d"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v2.calls.json",
+      "sha256": "0fbca05502a601901c40d6a8301df43d7f23bc94f278bb7e876d3ba3ab5b8781"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H5F-v2.result.json",
+      "sha256": "d22ead7b01f5997b931de7457f1a7a44119b3783f25ced892a0dca01f170a133"
+    }
+  ],
+  "boundary": "Retired before this further development submission. Original frozen input, first review and first-five0/5 remain unchanged. One submission, all calls settled, no automatic retry. No independent credit."
+}

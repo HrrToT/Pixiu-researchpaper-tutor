@@ -1,0 +1,65 @@
+{
+  "sourceCommit": "3eb6fccbaace794e17449d6ab663c11dd7218aef",
+  "case": "D2-BASELINE-COMPRESSION-v23",
+  "split": "development",
+  "runId": "dr_run_109c8a57a990502ab990a8da1bd59b85",
+  "comparisonAuthoringContractVersion": 10,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "tokens": 65426,
+    "elapsedSeconds": 186.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "ordinaryModelCalls": 7,
+    "reservedModelCalls": 5,
+    "totalModelCalls": 12
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify": 2,
+    "repair_claims": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 44,
+  "draftCount": 8,
+  "preReleaseAcceptedBySystem": 0,
+  "reportClaimCount": 0,
+  "rejectedByReason": {
+    "absence_not_established": 4,
+    "semantic_unresolved": 4
+  },
+  "finalAuditStatus": "not_checked",
+  "finalAuditGapCount": 6,
+  "finalAuditLimit": null,
+  "auditTransport": [],
+  "repairStatus": "response_invalid",
+  "releaseStatus": null,
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "847bb0936225f1ca97a8de695e3f8fadc1c3f8d3f57f8a1f170be4c4ade56622",
+    "calls": "8e3b6a8bc89e8b5b5f08b710bd39dca5d86cd9cb6aac032b7640eb4b5b84bdaa",
+    "result": "5bcaca2284af5bf005dd7bc77c1cfa3f1e75910328db6950909de073bc4428b2",
+    "execution": "4aba93e39aa47506acdb0e764ccc33fce2e700a1b4cdf0fd3856e09fbeec3f23"
+  },
+  "repairTransport": {
+    "finishReason": "stop",
+    "receivedShape": "invalid_json"
+  }
+}

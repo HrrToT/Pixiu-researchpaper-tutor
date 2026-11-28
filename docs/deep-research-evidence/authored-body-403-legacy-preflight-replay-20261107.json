@@ -1,0 +1,180 @@
+{
+  "case": "G1N-v8",
+  "sourceRunId": "dr_run_f2f0ef8ff22c507cb90f4a8d768c96cd",
+  "sourcePayloadSha256": "6287e9ec04dc50519f2079d2063a953164cea1e17004ad77752c0f2f503df2f1",
+  "replayBoundary": "Restore recorded pre-first-repair budget by subtracting settled repair usage; discard only in-memory completed repair checkpoints and align clock to that recorded elapsed time. Never modify historical run.",
+  "removedSettledRepairTokens": 7344,
+  "restoredBudget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 6,
+    "tokens": 54303,
+    "normalTokens": 16846,
+    "elapsedSeconds": 263.0,
+    "externalSearches": 3,
+    "fulltextFetches": 2,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "policies": {
+    "0": {
+      "prepared": [
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": null,
+          "promptSha256": "6bf9e69a5aa1b1068b23510e3b299ac43222b20f5ffccd91e511cc11987d4bcb",
+          "hasExclusiveBodyGuidance": false,
+          "hasOldTopScopeInstruction": true,
+          "evidenceSha256": "6ac54e78b1912453900312f52c6e83fcf0d13fd312b56095b9dfbab5d84d0225",
+          "bytes": 23976,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": null,
+          "promptSha256": "6bf9e69a5aa1b1068b23510e3b299ac43222b20f5ffccd91e511cc11987d4bcb",
+          "hasExclusiveBodyGuidance": false,
+          "hasOldTopScopeInstruction": true,
+          "evidenceSha256": "6ac54e78b1912453900312f52c6e83fcf0d13fd312b56095b9dfbab5d84d0225",
+          "bytes": 23976,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": null,
+          "promptSha256": "6bf9e69a5aa1b1068b23510e3b299ac43222b20f5ffccd91e511cc11987d4bcb",
+          "hasExclusiveBodyGuidance": false,
+          "hasOldTopScopeInstruction": true,
+          "evidenceSha256": "6ac54e78b1912453900312f52c6e83fcf0d13fd312b56095b9dfbab5d84d0225",
+          "bytes": 23976,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": null,
+          "promptSha256": "6bf9e69a5aa1b1068b23510e3b299ac43222b20f5ffccd91e511cc11987d4bcb",
+          "hasExclusiveBodyGuidance": false,
+          "hasOldTopScopeInstruction": true,
+          "evidenceSha256": "6ac54e78b1912453900312f52c6e83fcf0d13fd312b56095b9dfbab5d84d0225",
+          "bytes": 23976,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        }
+      ],
+      "localStop": {
+        "kind": "ReplayStopNoModel",
+        "limit": 0,
+        "used": 1
+      }
+    },
+    "1": {
+      "prepared": [
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": 1,
+          "promptSha256": "3026e96d877c83f63c4504992edce10bcb159cad2d95fec371644c1bc517bb8e",
+          "hasExclusiveBodyGuidance": true,
+          "hasOldTopScopeInstruction": false,
+          "evidenceSha256": "5569f1aebb1a83b302e801038216ea14480e8bea3821742d23559ec6c5a63e79",
+          "bytes": 23944,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        },
+        {
+          "targetIds": [
+            "c4"
+          ],
+          "authoredBody": 1,
+          "promptSha256": "3026e96d877c83f63c4504992edce10bcb159cad2d95fec371644c1bc517bb8e",
+          "hasExclusiveBodyGuidance": true,
+          "hasOldTopScopeInstruction": false,
+          "evidenceSha256": "5569f1aebb1a83b302e801038216ea14480e8bea3821742d23559ec6c5a63e79",
+          "bytes": 23944,
+          "hasTypedSchema": false,
+          "visibleTypedEvidenceRows": 0,
+          "generationFieldsByTarget": {
+            "c4": [
+              "claimId",
+              "kind",
+              "obligationIds"
+            ]
+          },
+          "privateOriginalsUnchanged": true
+        }
+      ],
+      "localStop": {
+        "kind": "ReplayStopNoModel",
+        "limit": 0,
+        "used": 1
+      }
+    }
+  },
+  "legacyPreparedRequestAndPrivateStateExact": true,
+  "modelCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "scientificAcceptance": false
+}

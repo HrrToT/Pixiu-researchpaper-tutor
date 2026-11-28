@@ -1,0 +1,35 @@
+{
+  "D3": {
+    "sourceReceipt": "D3-DENSIFICATION-FACTORIAL-v14",
+    "savedPlanResponsesValidated": 2,
+    "additionalPlanningCalls": 0,
+    "literalExcerpt": "不透明度处理、执行顺序、指标与显存计量"
+  },
+  "AWQ": {
+    "sourceReceipt": "H4-AWQ-VERSIONS-v6",
+    "previousSuppliedVersions": {
+      "v1": 4
+    },
+    "suppliedVersions": {
+      "v1": 4,
+      "v2": 3
+    },
+    "suppliedNamedTableRows": {
+      "v1": [
+        2,
+        3
+      ],
+      "v2": [
+        2,
+        3
+      ]
+    },
+    "inputBytes": 23986,
+    "fixedInputBytes": 17309,
+    "limitBytes": 24000,
+    "unfittedPremiseBundles": 7,
+    "candidateEvidenceUnchanged": true
+  },
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v16",
+  "runId": "dr_run_02b20c3ab26e58e3acc5b46db657b4e2",
+  "sourceCommit": "20d1d06",
+  "promptVersion": "dr-v2.20261016.103",
+  "status": "completed",
+  "outcome": "partial",
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 46323,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 91.0,
+    "cost": null
+  },
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "callsSucceeded": 25,
+  "finalCoverageStatus": "checked",
+  "releasedReserveTokens": 19197,
+  "repair": {
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 24000,
+      "used": 24397
+    }
+  },
+  "raw": "tmp/dr-acceptance-receipts/H5R-v16.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v16.calls.json",
+  "review": {
+    "scores": {
+      "目标回应": 3,
+      "证据支持": 4,
+      "条件完整": 2,
+      "综合价值": 3,
+      "可执行性": 2,
+      "可读性": 3
+    },
+    "improved": [
+      "Final coverage actually ran within the original budget, using released protected tokens.",
+      "Published prose contains neither the prior ungrounded paper-wide omission nor E1/P aliases.",
+      "Draft returns typed creation inputs and readable workflow with group checkpoints."
+    ],
+    "findings": [
+      "Fresh Gaussian creation still defines only seed and opacity; positions/scale/orientation/appearance and count/layout are missing.",
+      "Controls still name PyTorch3D without a concrete compatible Gaussian rendering operation.",
+      "Data audit supplied an invalid escaped JSON quotation for sampling_unit; data was rejected and steps lost their accepted dependency.",
+      "Repair was skipped before any repair call: required input 24397 bytes exceeded 24000.",
+      "The published hypothesis/prose duplicates typed statement content; overall experiment is not executable."
+    ],
+    "status": "not_accepted",
+    "acceptedRoles": [
+      "hypothesis",
+      "groups",
+      "controls",
+      "budget",
+      "metrics",
+      "analysis",
+      "limits"
+    ],
+    "rejected": [
+      {
+        "claimId": "c4",
+        "reason": "semantic_unresolved",
+        "detail": "实验方案缺少可核对的具体配置：sampling_unit"
+      },
+      {
+        "claimId": "c6",
+        "reason": "inconsistent_experiment_workflow",
+        "detail": "workflow.unverified_reference.data"
+      }
+    ]
+  },
+  "boundary": "One submission per case, no automatic retries. Retired development cases; machine partial/valid audit does not establish content acceptance."
+}

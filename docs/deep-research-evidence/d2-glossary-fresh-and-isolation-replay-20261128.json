@@ -1,0 +1,172 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_development_glossary_graph_run",
+  "sourceCommit": "89cf46bde15e84db0493358e4b9ce894c5f3fdad",
+  "runId": "dr_run_9500a89d1a4254ac9f201962e456f705",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "independentHoldoutCredit": 0,
+  "reusedStageReceipts": 0,
+  "externalLiteratureSearches": 0,
+  "productionWrites": 0,
+  "usage": {
+    "generationCalls": 16,
+    "tokens": 83038,
+    "seconds": 165.0,
+    "byModel": {
+      "gpt-6-luna": {
+        "calls": 5,
+        "tokens": 18822
+      },
+      "gpt-6.1-terra": {
+        "calls": 11,
+        "tokens": 64216
+      }
+    }
+  },
+  "result": {
+    "outcome": "partial",
+    "verifiedClaims": 11,
+    "wholeAnswerAuditStatus": "checked",
+    "coherent": true,
+    "remainingAnswerGaps": [
+      "obligation-1",
+      "obligation-4",
+      "answer_scope"
+    ],
+    "wholeQuestionDiagnostic": {
+      "requestExcerpt": "给出显存受限时的有条件选择建议",
+      "missingAnswerElement": "建议未将两种方法的选择条件与论文支持的显存取舍充分对应。"
+    },
+    "publicationId": "dr_pub_9abab4b856164a15b779a641ade26ae3",
+    "deliveredToWorkspace": false
+  },
+  "glossDiagnostic": {
+    "originalStages": {
+      "P1": {
+        "targetId": "table_0_0",
+        "rawGlosses": [
+          {
+            "term": "三维高斯",
+            "gloss": "用于表示场景局部区域的空间元素"
+          },
+          {
+            "term": "不透明度",
+            "gloss": "控制该元素遮挡程度的属性"
+          },
+          {
+            "term": "各向异性协方差",
+            "gloss": "描述元素在不同方向上形状的参数"
+          },
+          {
+            "term": "球谐系数",
+            "gloss": "用于表示随观察方向变化颜色的参数"
+          },
+          {
+            "term": "控制密度",
+            "gloss": "调整场景中高斯元素的分布"
+          }
+        ],
+        "formatErrors": []
+      },
+      "P2": {
+        "targetId": "table_0_1",
+        "rawGlosses": [
+          {
+            "term": "球谐函数",
+            "gloss": "用于表示外观的函数"
+          },
+          {
+            "term": "蒸馏",
+            "gloss": "让较小模型学习教师模型的预测"
+          },
+          {
+            "term": "向量量化",
+            "gloss": "用共享的代表值近似多个系数"
+          },
+          {
+            "term": "码本",
+            "gloss": "存放量化代表值的集合"
+          },
+          {
+            "term": "float16",
+            "gloss": "16位浮点数格式"
+          }
+        ],
+        "formatErrors": [
+          {
+            "targetId": "table_0_1",
+            "reason": "invalid_beginner_gloss"
+          }
+        ]
+      }
+    },
+    "offlineRetainedTerms": [
+      "球谐函数",
+      "蒸馏",
+      "向量量化",
+      "码本"
+    ],
+    "offlineDiscardedTerms": [
+      "float16"
+    ],
+    "offlineModelCalls": 0
+  },
+  "sourceChecks": {
+    "literalOccurrences": 32,
+    "matchedTablePhysicalPage": 6,
+    "tableRows": {
+      "3D-GS": [
+        "144",
+        "782MB",
+        "27.40",
+        "0.813",
+        "0.217"
+      ],
+      "Ours": [
+        "237",
+        "45MB",
+        "27.13",
+        "0.806",
+        "0.237"
+      ]
+    }
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/intent.json",
+      "sha256": "c6132d5593c638e3d05da6a8f405cf4b52ecb7fb3cba544150e705bf62b18852"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/run.json",
+      "sha256": "6aec247eae894bee81b2afcddaa2928ceb34dbb9b819603a04e965164c71ff85"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/calls.json",
+      "sha256": "6b9407882eb53f937d50fec4ac227610e97dc3c31f7b5dd9ffd6c8342fcf34a4"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/result.json",
+      "sha256": "f05d56b7ab75ee293914ca28d14a83018843372aad6d678350e73dbd14ae63cb"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/provider.jsonl",
+      "sha256": "ab3a55de32f8c4e8b8bc08de54bb288beb7cbfab879753fc5ce3ca1d66ccf95e"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/provider-counts.jsonl",
+      "sha256": "f467988a08e122efcc633b709e93784d6d829c9e963a77d7d1676da1710e0140"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/report.md",
+      "sha256": "6a3258d763005e904e79138a49a359116114e627deda776dfc0c97e51dd44e16"
+    },
+    {
+      "path": "tmp/openai-d2-glossary-fresh-20261128/citation-physical-check.json",
+      "sha256": "2238f1ee9dfe5b8536b3a0d02eb3fa058a7a7dfc6ce517ad66d42d5b2d1ce2e1"
+    },
+    {
+      "path": "tmp/d2-glossary-per-entry-raw-replay-20261128.json",
+      "sha256": "5a2aaad22e32338b9c47c8e274b070bd0ca100ffb9be552a7c7264fcc3b12a6b"
+    }
+  ]
+}

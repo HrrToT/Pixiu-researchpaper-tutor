@@ -1,0 +1,58 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "exact_saved_generation_boundary_routing_replay",
+  "sourceCommit": "819393de6fba56dd5c935692c9b7d321e112f17a",
+  "sourceRunId": "dr_run_9dee0adbf0875a5bbd0b848c4dcba272",
+  "boundaryContract": {
+    "before": 8,
+    "after": 9
+  },
+  "replay": {
+    "sourceRunId": "dr_run_9dee0adbf0875a5bbd0b848c4dcba272",
+    "retainedOtherClaims": 10,
+    "removedSettings": [
+      {
+        "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+        "attribute": "原始表示与训练",
+        "value": "从相机标定得到的稀疏点出发，以各向异性三维高斯表示场景，交替优化高斯属性并进行密度控制；渲染按可见性排序并混合。"
+      },
+      {
+        "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+        "attribute": "额外压缩与处理成本",
+        "value": "在原始表示之外，将球谐系数从三阶降至二阶并蒸馏；对重要性最低的部分系数做向量量化，即用共享码本表示，再微调码本和模型。"
+      }
+    ],
+    "retainedSettings": [
+      {
+        "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+        "attribute": "测试平台",
+        "value": "除文中指定的 Mip-NeRF360 方法外，结果在 A6000 GPU 上报告。"
+      },
+      {
+        "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+        "attribute": "对照口径",
+        "value": "性能评估使用 A6000；带星号的 3D-GS 使用原始代码和配置在该平台重新训练。同表可比较模型文件大小、画质指标和渲染速度。"
+      }
+    ],
+    "retainedLimit": [
+      {
+        "type": "comparison_evidence",
+        "subjects": [
+          "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+          "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS"
+        ],
+        "quantity": "跨论文 FPS 排名所需的场景、渲染分辨率及计时口径是否对齐"
+      }
+    ],
+    "sourceRefsUnchanged": true,
+    "providerCalls": 0,
+    "scientificApproval": false
+  },
+  "regressionPassed": 232,
+  "freshRunCredit": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/run.json": "0c04993e37af46aefa8ea557ea460fbb5f5ddb0e30a6f3dbe451187da879481c",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/fps-boundary-compile-replay.json": "fd519db6690ce5706a8bd17127c42e83d6faa97fd2aabdee38c409859fd778ab"
+  }
+}

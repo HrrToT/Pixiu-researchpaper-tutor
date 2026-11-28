@@ -1,0 +1,59 @@
+{
+  "scope": "Offline production synthesis graph and physical PDF quote replay for the frozen D3 development case.",
+  "archive": "tmp/openai-d3-prep-memory-fresh-20261129/run.json",
+  "archiveSha256": "9239109d9cf97d6b07be7002e8bb560c4b3e3a99da29d00e294bdc3d6de6564c",
+  "paperSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "previousPolicy": 1,
+  "newPolicy": 2,
+  "inputBytes": {
+    "before": 31824,
+    "after": 31838,
+    "limit": 32000
+  },
+  "evidenceCounts": {
+    "previousRequired": 8,
+    "newRequired": 10,
+    "previousSupplied": 13,
+    "newSupplied": 12
+  },
+  "preservedRequiredEvidenceIds": [
+    "ev_246c1a1f89365e3dfde7be1f9b4ae80538100bd89940b9e5bee1fc45769ac28e",
+    "ev_26c3f671f94c4fb3a650edbc8aeb4230f6260f3ad48c7235a6045960b15c1408",
+    "ev_2970ad217d40e2584a8be23dc7a56fdc2a12708cdecd9f5e953c036d2142656e",
+    "ev_32ae530bcc3400330d0db4b6e9bf624d9cfb9a214d4bd2b6a82a457db4170b38",
+    "ev_6603c463a7d2be0a5541535baa6cb64aa40a1ecfb29bd4cbc91d6d9fbc4f2add",
+    "ev_78b9ebaca9d6740e757bc2dd54fdc77217a16d4f22e292d3c68b2c1bd2a0f8f2",
+    "ev_861bed5e13a12ca8fa53abe100665a290d465aa8f5704f411c254a98d04ca536",
+    "ev_8879711228dec07d5e1940cf2d1afa0dea009d8f6d12d5f57b6aa6dc318eb2b6"
+  ],
+  "addedEvidence": [
+    {
+      "evidenceId": "ev_bb2232deb20009399ca12bfe87d1407bba4cfc6b07a5c358d80c1dfd028f020f",
+      "physicalPage": 9,
+      "exactQuoteMatched": true,
+      "contextOmitted": true,
+      "purpose": "existing-method-procedure"
+    },
+    {
+      "evidenceId": "ev_afcfa602e20709413011f01cf06fda317a01b5511f6e21480ddf08ae4361490b",
+      "physicalPage": 10,
+      "exactQuoteMatched": true,
+      "contextOmitted": true,
+      "purpose": "figure-8-caption"
+    }
+  ],
+  "optionalEvidenceRetainedInLedgerAndExcludedFromPrompt": [
+    "ev_162c428e46e34ea227e5b84e2d08af860a1df768013a9d1f5dff5f74fb2ceb0e",
+    "ev_a82e186aa0c7d61fc1d27c62ad2ab51549cdf3f16e033b3719c2c91b1b65d088",
+    "ev_fd642a0ba22911516a5ee5a130b39de04e071af24a04daf5bfd373e281d31d70"
+  ],
+  "physicalPage9FoundThroughPdfPassageFallback": true,
+  "tests": {
+    "passed": 322,
+    "warnings": 1
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "publicationVerified": false
+}

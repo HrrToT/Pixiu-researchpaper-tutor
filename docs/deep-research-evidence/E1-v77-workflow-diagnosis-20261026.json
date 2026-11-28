@@ -1,0 +1,33 @@
+{
+  "case": "E1-v77",
+  "promptVersion": "dr-v2.20261026.287",
+  "metadataContract": 22,
+  "generationStatus": "invalid_response",
+  "generationErrors": [
+    "timeline.input.component_missing"
+  ],
+  "repairStatus": "invalid_response",
+  "repairErrors": [
+    "timeline.input.component_missing"
+  ],
+  "repairInputBytes": 31797,
+  "maxInputBytes": 32000,
+  "canonicalMetadataUnchangedByModelRepair": true,
+  "wrongReads": [
+    {
+      "path": "/steps/6/reads/0/state",
+      "code": "metadata.read.unknown_state",
+      "actual": "armA_rendering"
+    },
+    {
+      "path": "/steps/6/reads/1/state",
+      "code": "metadata.read.unknown_state",
+      "actual": "armB_rendering"
+    }
+  ],
+  "feedbackContainedExactPaths": true,
+  "initializationStarted": false,
+  "rawPayloadSha256": "3f1e9b5c2aad92d0273f3643ce88505382ca08de57b23b2e9483cc43fea58289",
+  "independentCredit": 0,
+  "boundary": "The real correction fit and was sent; unchanged invalid state reads remain rejected. No scientific approval."
+}

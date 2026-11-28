@@ -1,0 +1,24 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "pastRunId": "dr_run_0d8f9f8cd79959688389c47a167a79cd",
+  "pastRunSha256": "2693506fae17d08eea84521b66ea5efb42c0203b07925b8bf7aa8d86dfb38a73",
+  "latestGenerationInputBytes": 31693,
+  "sameOriginalEvidenceAndIdentities": true,
+  "fixtureOnlyRemovedDuplicatedExecutionPrerequisitesFromUnresolved": true,
+  "noOtherCanonicalPlanChanges": true,
+  "pendingAssetIds": [
+    "raw",
+    "code",
+    "sfm"
+  ],
+  "stopRuleRetained": true,
+  "mockScienceBatches": 3,
+  "couldAssembleFinalAudit": {
+    "node": "verify_answer_coverage",
+    "inputBytes": 31984,
+    "maxOutputTokens": 5042
+  },
+  "finalAuditStatus": "invalid_response",
+  "providerCalls": 0,
+  "approvalFromRealScience": false
+}

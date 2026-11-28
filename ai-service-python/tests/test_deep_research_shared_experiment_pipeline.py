@@ -1,0 +1,865 @@
+from copy import deepcopy
+import json
+from unittest.mock import Mock
+
+import pytest
+
+from services.deep_research.contracts import DeepResearchError,UnknownCallError
+from services.deep_research.shared_experiment_answer import prepare as answer,slot as answer_slot,validated_saved
+from services.deep_research.shared_experiment_revision import prepare as repair,apply,view,NODE as REPAIR
+from services.deep_research.shared_experiment_review import prepare as science,review_slot,NODE as SCIENCE
+from services.deep_research.shared_experiment_pipeline import verify
+from test_deep_research_shared_experiment_review import ready,check,verdict,reply
+
+
+def test_optimizer_disclosure_separates_scientific_facts_from_the_proposed_rule():
+    from services.deep_research.shared_experiment_result import optimizer_provenance
+
+    question = '设计实验并说明父子高斯的优化器状态'
+    factor = {'offOperation': {'action': '保留Adam状态'}, 'onOperation': {'action': '初始化子状态'}}
+    proposal = {'sourceFacts': [{'text': '小高斯克隆后沿位置梯度移动'}], 'factors': [factor]}
+    note = optimizer_provenance(question, proposal)
+    assert '仅凭所引论文片段' in note
+    assert '表中的优化器状态处置属于拟议实验设置' in note
+    assert optimizer_provenance('设计一个实验', proposal) == ''
+    assert optimizer_provenance(question, {**proposal, 'sourceFacts': []}) == ''
+    assert optimizer_provenance(question, {**proposal, 'factors': []}) == ''
+    sourced = {**proposal, 'sourceFacts': [{'text': '论文规定继承 Adam 状态'}]}
+    assert optimizer_provenance(question, sourced) == ''
+
+
+def coverage(prompt,missing=False):
+    from services.deep_research import shared_strings,nested_tables
+    marker='Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n'
+    wire=json.JSONDecoder().raw_decode(prompt.rsplit(marker,1)[1])[0]
+    data=nested_tables.unpack(shared_strings.unpack(wire)) if set(wire)=={'strings','value'} else wire
+    rows=[]
+    cid='shared_experiment_answer'
+    for goal in data['requirements']:
+        checks=[]
+        for required in goal['checks']:
+            row={'checkId':required['checkId'],'status':'missing' if missing else 'covered',
+                 'bindings':[] if missing else [{'claimId':cid,'field':'text'}],
+                 'reason':'离线接口夹具，不是科学内容验收。'}
+            if required.get('responseType')=='limitation':row['limitSpans']=[]
+            if required.get('processRequired'):row['processLinks']=[]
+            checks.append(row)
+        rows.append({'obligationId':goal['obligationId'],'checks':checks})
+    rows.append({'auditType':'answer_coherence','coherent':True,'issues':[]})
+    return {'content':json.dumps(rows,ensure_ascii=False)}
+
+
+def updater(record):
+    def update(rid,fn,**kwargs):
+        value=fn(deepcopy(record));record.clear();record.update(deepcopy(value));return deepcopy(record)
+    return update
+
+
+@pytest.mark.parametrize('shared_scope', [False, True])
+def test_grounded_brief_metrics_reach_the_shared_proposal_binding(monkeypatch, shared_scope):
+    from services.deep_research.graph import make_resolve_brief_node
+    from services.deep_research.metric_scope import SHARED_SCOPE_MARKER
+    from services.deep_research.shared_experiment_generation import MARKER, build
+    from services.deep_research.shared_experiment_pipeline import synthesize
+    from services.deep_research.shared_experiment_plan import validate
+    from test_deep_research_shared_experiment_generation import context
+    from test_deep_research_shared_experiment_plan import proposal
+
+    record, data, aliases = context()
+    record.update(question='设计实验比较图像质量和训练峰值显存。', status='running')
+    record[MARKER] = 8
+    if shared_scope:
+        record[SHARED_SCOPE_MARKER] = 1
+    update = updater(record)
+    scope = [{'domain': 'quality', 'requestExcerpt': '图像质量'},
+             {'domain': 'storage', 'requestExcerpt': '训练峰值显存'}]
+    invoke_brief = Mock(return_value={'content': json.dumps({'outputKind': 'experiment_design', 'measurementScope': scope})})
+    make_resolve_brief_node(invoke_brief, update)({'run_id': record['runId']})
+    captured = []
+
+    def generation_prepare(current, inputs, bindings, *, required_domains, **kwargs):
+        captured.append(build(current, inputs, bindings, required_domains=required_domains))
+        return None
+
+    monkeypatch.setattr('services.deep_research.shared_experiment_generation.prepare', generation_prepare)
+    synthesize(record, data['evidence'], aliases, data['sources'], data['tables'], [], update, Mock())
+    built, = captured
+    expected = ['memory', 'quality'] if shared_scope else []
+    assert record['state']['sharedExperimentInput']['requiredDomains'] == expected
+    assert built['requiredDomains'] == expected
+    assert ('Required metrics: memory, quality.' in built['request']['prompt']) is shared_scope
+    issues = validate(proposal(), ['E1'], required_domains=built['requiredDomains'])
+    assert any(issue['code'] == 'plan.missing_measurement_domain' for issue in issues) is shared_scope
+
+
+def test_existing_densification_ablation_reaches_generation_as_owned_literal_evidence(monkeypatch):
+    from services.deep_research import experiment_protocol_sources as protocol
+    from services.deep_research import shared_experiment_generation as generation
+    from services.deep_research.graph import make_synthesize_node
+    from test_deep_research_shared_experiment_generation import context
+
+    record, _, _ = context()
+    record.update({generation.MARKER: 8, protocol.MARKER: 1, protocol.DENSIFICATION_MARKER: 2})
+    record['question'] = '设计高斯克隆和分裂的2×2实验，区分原论文消融和拟议方案。'
+    record['materials'] = [{'materialId': 'owned', 'versionId': 'v1', 'contentHash': 'hash'}]
+    query = 'Gaussian densification clone split ablation'
+    obligation = record['state']['plan'][0]['obligations'][0]
+    obligation.update(question='区分原论文已有消融与拟议方案', searchQuery=query, requiredSources=['owned'])
+    fixture = record['state']['evidence'][0]
+    method = ('We next evaluate our two densification methods, more specifically the clone and split '
+              'strategy described in Sec. 5. We disable each method separately and optimize using the '
+              'rest of the method unchanged.')
+    caption = 'Fig. 8. Ablation of densification strategy for the two cases "clone" and "split".'
+    def evidence(eid, quote, page, **extra):
+        return {**fixture, 'evidenceId': eid, 'quote': quote, 'sourceContext': 'Prefix. ' + quote,
+                'ownerMaterialId': 'owned', 'location': {'page': page, 'pageResolution': 'exact'},
+                'verification': {'literal': 'passed'}, **extra}
+
+    method_row = evidence('method', method, 9)
+    caption_row = evidence('caption', caption, 10)
+    wrong_version = evidence('wrong', caption, 10, sourceVersionId='v2')
+    obligations = {obligation['obligationId']: obligation}
+    assert protocol.EXISTING_ABLATION in protocol.query_roles(record, query, 'owned')
+    assert protocol.EXISTING_ABLATION not in protocol.query_roles(record, query, 'other')
+    assert protocol.EXISTING_ABLATION not in protocol.query_roles(
+        {**record, protocol.DENSIFICATION_MARKER: 1}, query, 'owned')
+    assert protocol.ablation_bundles([method_row, wrong_version], obligations, record['materials']) == [
+        {'evidenceIds': ['method'], 'literalQuotesSufficient': True}]
+    assert not protocol.ablation_bundles([caption_row], obligations, record['materials'])
+    record['state']['evidence'] = [method_row, caption_row, fixture]
+
+    def intercept(current, inputs, aliases, *, required_domains, **kwargs):
+        built = generation.build(current, inputs, aliases, required_domains=required_domains)
+        assert 'cite the paper’s reported procedure' in built['request']['prompt']
+        compact = deepcopy(inputs)
+        for row in compact['evidence']:
+            if aliases[row['evidenceId']] in {'method', 'caption'}:
+                row.update(sourceContext={}, contextOmitted=True)
+                row.pop('sourceContextRequired', None)
+        generation.build(current, compact, aliases, required_domains=required_domains)
+        next(row for row in compact['evidence'] if aliases[row['evidenceId']] == fixture['evidenceId']).update(
+            sourceContext={}, contextOmitted=True)
+        with pytest.raises(ValueError, match='original content changed'):
+            generation.build(current, compact, aliases, required_domains=required_domains)
+        return None
+
+    monkeypatch.setattr(generation, 'prepare', intercept)
+    invoke = Mock(side_effect=AssertionError('No provider dispatch'))
+    make_synthesize_node(invoke, updater(record))({'run_id': record['runId']})
+    assert set(record['state']['sharedExperimentMaterialAllocation']['requiredEvidenceIds']) >= {'method', 'caption'}
+    invoke.assert_not_called()
+
+
+@pytest.mark.parametrize('compact', [False, True])
+def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated(compact):
+    from services.deep_research.shared_experiment_answer_packet import MARKER
+
+    r,data,aliases=ready();check(r,data,aliases)
+    if compact:
+        r[MARKER] = 1
+    sent=Mock(side_effect=lambda rid,node,prompt,opts,**kw:coverage(prompt))
+    def save(v):r['state'][answer_slot(r)]=deepcopy(v)
+    result=answer(r,data,aliases,invoke=sent,checkpoint=save)
+    assert result['complete'],result['audit']
+    assert ('Audit the complete unexecuted proposal' in sent.call_args.args[2]) is compact
+    assert answer(r,data,aliases,invoke=sent,checkpoint=save)==result and sent.call_count==1
+    r['state'][answer_slot(r)]['audit']['gaps']=[{'invented':'gap'}]
+    with pytest.raises(DeepResearchError):validated_saved(r,data,aliases)
+
+
+def test_compact_final_audit_shares_exact_answer_text():
+    from services.deep_research import nested_tables,shared_strings
+    from services.deep_research.shared_experiment_answer_packet import prompt
+
+    name = 'Original parameter state with a shared initialization checksum'
+    prose = '\n'.join(f'{index}. Read {name}, then verify the appropriate inputs.' for index in range(20))
+    claim = {'claimId': 'proposal', 'text': prose, 'evidenceRefs': ['E1']}
+    query = 'Design a paired comparison.'
+    rendered = prompt(query, [], [claim], {}, {}, 'EVIDENCE', [name])
+    marker = 'Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n'
+    wire = json.JSONDecoder().raw_decode(rendered.split(marker, 1)[1])[0]
+    decoded = nested_tables.unpack(shared_strings.unpack(wire))
+    assert isinstance(decoded['claims'][0]['text'], list)
+    decoded['claims'][0]['text'] = ''.join(decoded['claims'][0]['text'])
+    assert decoded == {'question': query, 'requirements': [], 'claims': [claim], 'metadata': {}}
+
+
+def test_final_audit_budget_stop_retains_candidate_without_sending_or_repair():
+    r,data,aliases=ready();check(r,data,aliases)
+    r['budget'].update(modelCalls=18,reservedModelCalls=0)
+    sent=Mock(side_effect=AssertionError('Exhausted budget must stop before model invocation'))
+    def save(value):r['state'][answer_slot(r)]=deepcopy(value)
+    result=answer(r,data,aliases,invoke=sent,checkpoint=save)
+    assert not result['complete'] and not result['repairEligible']
+    assert result['candidate']['markdown'] and r['state'][answer_slot(r)]['calls']=={}
+    assert validated_saved(r,data,aliases)==result
+    sent.assert_not_called()
+
+
+@pytest.mark.parametrize('count,complete', [(350, True), (650, False)])
+def test_final_experiment_audit_counts_the_compiled_packet_before_budget_admission(tmp_path, monkeypatch, count, complete):
+    from core.config import settings
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.runtime import ScopedModelClient
+    from services.deep_research.tools import TrackedLLMInvoker
+
+    r, data, aliases = ready()
+    check(r, data, aliases)
+    r.update(sharedExperimentFinalAuditPacketVersion=1, countedExperimentAnswerContractVersion=1,
+             openaiResearchModels=['main', 'routine'])
+    r['budget'].update(maxTokens=100000, tokens=96000, normalTokens=0, reservedModelCalls=0)
+    repo = DeepResearchRepository(tmp_path / 'research.sqlite3')
+    repo.initialize()
+    assert repo.create_run(r)[1]
+    repo.begin_execution(r['runId'])
+    monkeypatch.setattr(settings, 'openai_api_key', 'fixture-key')
+    invoker = TrackedLLMInvoker(ScopedModelClient(repo, lambda *_: True, Mock()).for_run(r['runId']),
+                              repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
+                              call_history_fn=repo.list_calls, verification_max_input_bytes=32000)
+    http_calls = []
+
+    def post(url, **kwargs):
+        body = kwargs['json']
+        http_calls.append((url, body))
+        result = Mock(status_code=200, headers={})
+        if url.endswith('/input_tokens'):
+            assert not repo.list_calls(r['runId'])
+            result.json.return_value = {'object': 'response.input_tokens', 'input_tokens': count}
+            return result
+        assert url.endswith('/responses')
+        reserved, = repo.list_calls(r['runId'])
+        assert reserved['reservedTokens'] == count + 2500 + 1024
+        assert http_calls[0][1] == {key: value for key, value in body.items() if key not in {'store', 'max_output_tokens'}}
+        rows = coverage(body['input'][-1]['content'])['content']
+        result.json.return_value = {'status': 'completed', 'output': [{'type': 'message', 'content': [
+            {'type': 'output_text', 'text': json.dumps({'items': json.loads(rows)})},
+        ]}], 'usage': {'input_tokens': count, 'output_tokens': 180, 'total_tokens': count + 180}}
+        return result
+
+    monkeypatch.setattr('llm.client.requests.post', post)
+    # Only the counted experiment path may exceed the ordinary window.
+    with pytest.raises(ValueError, match='exceeds max 32000 bytes'):
+        invoker(r['runId'], 'verify_answer_coverage', 'JSON ' + 'x' * 35000,
+                {'max_tokens': 2500}, use_reserve=True)
+    with pytest.raises(ValueError, match='exceeds max 40000 bytes'):
+        invoker(r['runId'], 'verify_answer_coverage', 'JSON ' + 'x' * 40000,
+                {'max_tokens': 2500}, use_reserve=True, counted_audit=True)
+    assert not http_calls
+
+    def save(value):
+        repo.update_run(r['runId'], lambda row: {**row, 'state': {**row['state'], answer_slot(row): value}})
+
+    result = answer(repo.require_run(r['runId']), data, aliases, invoke=invoker, checkpoint=save)
+    assert result['complete'] is complete
+    saved = repo.require_run(r['runId'])
+    assert answer(saved, data, aliases, invoke=invoker, checkpoint=save) == result
+    assert len(http_calls) == (2 if complete else 1)
+    if not complete:
+        assert result['audit']['status'] == 'budget_exhausted'
+        assert result['audit']['budgetLimit'] == {'kind': 'tokens', 'limit': 100000, 'used': 100174}
+        assert not result['repairEligible'] and not saved['state'][answer_slot(saved)]['calls']
+        assert not repo.list_calls(r['runId'])
+
+
+def diagnosed():
+    r,data,aliases=ready();v=verdict(r,data)
+    v['checks'][6].update(status='failed',reason='需要修正实验预算。')
+    check(r,data,aliases,v)
+    return r,data,aliases
+
+
+def edit_response(r):
+    return reply({'baseDigest':r['state']['sharedExperimentGeneration']['bindingDigest'],
+                  'edits':[{'path':'/budgets/1/cap','value':20}],'unresolved':[]})
+
+
+def test_one_explicit_repair_preserves_base_and_needs_new_science_review():
+    r,data,aliases=diagnosed();base=deepcopy(r['state']['sharedExperimentGeneration']);old=deepcopy(r['state']['sharedExperimentReview'])
+    sent=Mock(return_value=edit_response(r))
+    def save(v):r['state']['sharedExperimentRevision']=deepcopy(v)
+    result=repair(r,data,aliases,invoke=sent,checkpoint=save)
+    assert result['status']=='awaiting_scientific_review' and sent.call_count==1
+    assert r['state']['sharedExperimentGeneration']==base and r['state']['sharedExperimentReview']==old
+    assert view(r)['boundProposal']['proposal']['budgets'][1]['cap']==20
+    assert view(r)['origin']=='revision' and view(r)['sourceGenerationBindingDigest']==base['bindingDigest']
+    from services.deep_research.shared_experiment_result import compile_candidate
+    with pytest.raises(DeepResearchError):compile_candidate(r,data,aliases)
+    assert repair(r,data,aliases,invoke=sent,checkpoint=save)==result and sent.call_count==1
+    science(r,data,aliases,invoke=Mock(return_value=reply(verdict(r,data))),
+            checkpoint=lambda v:r['state'].__setitem__(review_slot(r),deepcopy(v)))
+    assert '20 优化步' in compile_candidate(r,data,aliases)['markdown']
+    assert '10 优化步' in base['boundProposal']['proposal']['budgets'][1]['stopRule'] or base['boundProposal']['proposal']['budgets'][1]['cap']==10
+
+
+@pytest.mark.parametrize('mutation',['base','overlap','unknown','version','invalid_value','no_change','duplicate'])
+def test_replacements_cannot_change_authority_or_silently_fill_science(mutation):
+    r,_,_=diagnosed();base=r['state']['sharedExperimentGeneration']; response=edit_response(r);v=json.loads(response['content'])
+    if mutation=='base':v['baseDigest']='0'*64
+    elif mutation=='overlap':v['edits'].append({'path':'/budgets','value':base['boundProposal']['proposal']['budgets']})
+    elif mutation=='unknown':v['edits'][0]['path']='/not_a_field'
+    elif mutation=='version':v['edits'][0]={'path':'/version','value':1}
+    elif mutation=='invalid_value':v['edits'][0]['value']=-1
+    elif mutation=='no_change':v['edits'][0]['value']=10
+    else:v['edits'].append(deepcopy(v['edits'][0]))
+    with pytest.raises((ValueError,KeyError)):apply(base,reply(v))
+
+
+def test_revision_accepts_one_identical_unresolved_echo_and_keeps_prerequisite():
+    from services.deep_research.shared_experiment_revision import BOUND_DIGEST_MARKER
+
+    record, data, aliases = diagnosed()
+    record[BOUND_DIGEST_MARKER] = 2
+    base = record['state']['sharedExperimentGeneration']
+    payload = json.loads(edit_response(record)['content'])
+    payload['unresolved'] = ['Image manifest still needs verification.']
+    payload['edits'].append({'path': '/unresolved', 'value': list(payload['unresolved'])})
+    response = reply(payload)
+    with pytest.raises(ValueError, match='Forbidden replacement'):
+        apply(base, response)
+    result = repair(record, data, aliases, invoke=Mock(return_value=response),
+                    checkpoint=lambda saved: record['state'].__setitem__('sharedExperimentRevision', saved))
+    assert result['status'] == 'awaiting_scientific_review'
+    assert result['response'] == response
+    assert view(record)['boundProposal']['proposal']['unresolved'] == payload['unresolved']
+    assert not result['scientificApproval']
+    for value in ([], ['A conflicting prerequisite.']):
+        changed = deepcopy(payload)
+        changed['edits'][-1]['value'] = value
+        with pytest.raises(ValueError, match='Forbidden replacement'):
+            apply(base, reply(changed), identical_unresolved_echo=True)
+
+
+def test_revision_accepts_only_empty_parameter_wrapper_for_action_text():
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    steps = base['boundProposal']['proposal']['steps']
+    index = next(i for i, step in enumerate(steps) if isinstance(step.get('operation'), dict))
+    path = f'/steps/{index}/operation/action'
+    payload = json.loads(edit_response(record)['content'])
+    payload['edits'] = [{'path': path, 'value': 'Load and verify the frozen training input.', 'parameters': []}]
+    response = reply(payload)
+    with pytest.raises(ValueError, match='Replacement schema'):
+        apply(base, response)
+    result = apply(base, response, empty_action_parameters=True)['proposal']
+    assert result['steps'][index]['operation'] == {
+        **steps[index]['operation'], 'action': payload['edits'][0]['value'],
+    }
+    assert json.loads(response['content']) == payload
+    for change in ({'parameters': ['unexpected']}, {'path': '/analysis/decisionRule'}):
+        invalid = deepcopy(payload)
+        invalid['edits'][0].update(change)
+        with pytest.raises(ValueError, match='Replacement schema'):
+            apply(base, reply(invalid), empty_action_parameters=True)
+
+
+def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_facts():
+    from services.deep_research.shared_experiment_revision import _apply_scoped, _design_only_context
+
+    row = {'evidenceId': 'E1', 'quote': 'Reported result.',
+           'sourceContext': {'before': 'First condition.', 'after': 'Second condition.', 'truncated': False}}
+    data = {'evidence': [row]}
+    verdict = {'checks': [
+        {'checkId': 'fact_0', 'status': 'passed', 'planBindings': ['/sourceFacts/0/text']},
+        {'checkId': 'section_0', 'status': 'failed', 'planBindings': ['/data'],
+         'evidenceBindings': [{'evidenceId': 'E1', 'field': 'after'}]},
+    ], 'issues': []}
+    reviewed = {'status': 'checked', 'assessment': {'valid': True, 'complete': False, 'verdict': verdict}}
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]})['evidence'] == [
+        {**row, 'sourceContext': {'after': 'Second condition.', 'truncated': True}},
+    ]
+    assert row['sourceContext']['before'] == 'First condition.'
+    prefix = {'passedSourceFacts': ['fact_0'], 'checks': [verdict['checks'][1]], 'issues': [],
+              'uncheckedIds': ['section_1']}
+    pending = {'status': 'invalid_response'}
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix) == (
+        _design_only_context(data, reviewed, {'sourceFacts': [{}]})
+    )
+    assert _design_only_context(data, pending, {'sourceFacts': [{}, {}]}, verified_prefix=prefix) is None
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix,
+                                for_final_answer=True) is None
+    verdict['checks'][1]['planBindings'].append('/sourceFacts/0/evidenceRefs')
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None
+    assert _design_only_context(data, pending, {'sourceFacts': [{}]}, verified_prefix=prefix) is None
+    verdict['checks'][1]['planBindings'].pop()
+    verdict['checks'][0]['status'] = 'failed'
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None
+
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    saved = {'preserveSourceFacts': True, 'response': edit_response(record)}
+    assert not _apply_scoped(base, saved)['scientificApproval']
+    changed = json.loads(saved['response']['content'])
+    changed['edits'].append({'path': '/sourceFacts/0/text', 'value': 'A different source statement.'})
+    with pytest.raises(ValueError, match='cannot change checked source facts'):
+        _apply_scoped(base, {**saved, 'response': reply(changed)})
+
+
+def test_design_repair_may_omit_quotes_only_for_unchanged_verified_facts():
+    from services.deep_research.shared_experiment_revision import _apply_scoped, _input_digest
+    from test_deep_research_shared_experiment_plan import bind_for_review, proposal
+
+    original = proposal()
+    original['version'] = 3
+    for step in original['steps']:
+        step['inputIds'] = []
+    original['data']['inputs'][0]['availability'] = 'provided'
+    for budget in original['budgets']:
+        budget['allocation'] = 'single'
+    for metric in original['metrics']:
+        metric['fitMemoryCaptures'] = []
+    original['sourceFacts'][0]['evidenceRefs'] = ['E2']
+    bound = bind_for_review(original, ['E1', 'E2'])
+    base = {'bindingDigest': bound['bindingDigest'], 'boundProposal': bound}
+    edit = {'baseDigest': bound['bindingDigest'], 'unresolved': original['unresolved'], 'edits': [
+        {'path': '/analysis/limitations', 'value': 'Report effects only for the declared scenes and levels.'}]}
+    saved = {'preserveSourceFacts': True, 'suppliedEvidenceAliases': ['E1'], 'response': reply(edit)}
+    with pytest.raises(ValueError, match='outside its input'):
+        _apply_scoped(base, saved)
+    scoped = {**saved, 'omitLockedFactEvidence': True}
+    output = _apply_scoped(base, scoped)
+    assert output['proposal']['sourceFacts'] == original['sourceFacts'] and not output['scientificApproval']
+    assert _input_digest(base, scoped) != _input_digest(base, saved)
+    with pytest.raises(ValueError, match='require locked'):
+        _apply_scoped(base, {**scoped, 'preserveSourceFacts': False})
+    edit['edits'].append({'path': '/sourceFacts/0/evidenceRefs', 'value': ['E1']})
+    with pytest.raises(ValueError, match='cannot change checked source facts'):
+        _apply_scoped(base, {**scoped, 'response': reply(edit)})
+
+
+def test_scoped_review_rejects_repair_that_only_adds_unresolved_prerequisites():
+    from services.deep_research.shared_experiment_revision import (
+        REQUIRE_DESIGN_EDIT, UnchangedDesign, _apply_scoped, _input_digest,
+    )
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    draft = base['boundProposal']['proposal']
+    response = {'baseDigest': base['bindingDigest'], 'edits': [],
+                'unresolved': [*draft['unresolved'], 'Specify a reproducible optimization schedule.']}
+    saved = {'preserveSourceFacts': True, 'response': reply(response)}
+    assert _apply_scoped(base, saved)['proposal']['unresolved'] == response['unresolved']
+    scoped = {**saved, REQUIRE_DESIGN_EDIT: True}
+    assert _input_digest(base, scoped) != _input_digest(base, saved)
+    with pytest.raises(UnchangedDesign, match='only restates'):
+        _apply_scoped(base, scoped)
+    response['edits'] = [{'path': '/steps/0/operation/action', 'value': 'Apply the proposed fixed schedule.'}]
+    repaired = _apply_scoped(base, {**scoped, 'response': reply(response)})
+    assert repaired['proposal']['steps'][0]['operation']['action'] == 'Apply the proposed fixed schedule.'
+    assert not repaired['scientificApproval']
+
+
+def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
+    r,data,aliases=ready()
+    def save(v):r['state']['sharedExperimentReview']=deepcopy(v)
+    science(r,data,aliases,invoke=Mock(return_value=reply({})),checkpoint=save)
+    sent=Mock()
+    with pytest.raises(DeepResearchError):repair(r,data,aliases,invoke=sent,checkpoint=lambda v:None)
+    sent.assert_not_called()
+
+
+@pytest.mark.parametrize('version, tampered, repair_allowed', [(7, False, True), (7, True, False), (6, False, False)])
+def test_only_verified_early_findings_allow_one_repair_after_invalid_packet(monkeypatch, version, tampered, repair_allowed):
+    from services.deep_research import shared_experiment_review as review
+    from services.deep_research.shared_experiment_result import compile_candidate
+
+    r, data, aliases = ready()
+    r.update({review.SCOPED_PACKET_MARKER: version, review.REFERENCE_MARKER: 2, review.COMPACT_REVIEW_MARKER: 2})
+    failed, unchecked = verdict(r, data)['checks'][6:8]
+    failed.update(status='failed', reason='需要修正实验预算。', evidenceBindings=[],
+                  planBindings=[binding['path'] for binding in failed['planBindings']])
+    ids = [[row['checkId']] for row in (failed, unchecked)]
+    batches = [{'checkIds': scope, 'suppliedEvidenceAliases': list(aliases), 'inputBytes': 100,
+                'request': {'prompt': 'fixture', 'extra': {review.CHECK_IDS_OPTION: scope, 'max_tokens': 1024}}}
+               for scope in ids]
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: {
+        'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': review.targets(r),
+        'generationBindingDigest': r['state']['sharedExperimentGeneration']['bindingDigest'],
+        review.STOP_INVALID_BATCH_MARKER: 1, review.REFERENCE_MARKER: 2})
+    invoke = Mock(side_effect=[reply({'checks': [failed], 'coherent': True, 'issues': []}), reply({})])
+    result = science(r, data, aliases, invoke=invoke,
+                     checkpoint=lambda value: r['state'].__setitem__('sharedExperimentReview', deepcopy(value)))
+    saved = r['state']['sharedExperimentReview']
+    assert invoke.call_count == 2
+    assert saved['status'] == 'invalid_response' and not saved['assessment']['valid']
+    assert 'verifiedPrefixFindings' not in saved
+    if version == 7:
+        assert result['verifiedPrefixFindings']['checks'] == [failed]
+        assert unchecked['checkId'] in result['verifiedPrefixFindings']['uncheckedIds']
+    if tampered:
+        saved['batchResponses'][0]['content'] += ' '
+    original = deepcopy(saved)
+    sent = Mock(return_value=edit_response(r))
+
+    def checkpoint(value):
+        r['state']['sharedExperimentRevision'] = deepcopy(value)
+
+    if repair_allowed:
+        result = repair(r, data, aliases, invoke=sent, checkpoint=checkpoint)
+        assert result['status'] == 'awaiting_scientific_review'
+        assert 'uncheckedIds' in sent.call_args.args[1]
+        assert repair(r, data, aliases, invoke=sent, checkpoint=checkpoint) == result
+        sent.assert_called_once()
+    else:
+        with pytest.raises(DeepResearchError, match='不能自动修订'):
+            repair(r, data, aliases, invoke=sent, checkpoint=checkpoint)
+        sent.assert_not_called()
+    assert r['state']['sharedExperimentReview'] == original
+    with pytest.raises(DeepResearchError):
+        compile_candidate(r, data, aliases)
+
+
+@pytest.mark.parametrize('design_failed', [False, True])
+def test_verified_design_failure_defers_only_the_original_human_batches(monkeypatch, design_failed):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record.update({review.SCOPED_PACKET_MARKER: 7, review.REFERENCE_MARKER: 2, review.EARLY_DESIGN_REPAIR_MARKER: 1})
+    target_rows = review.targets(record)
+    responses = {row['checkId']: row for row in verdict(record, data)['checks']}
+    groups = [[], [], []]
+    failed_id = next(row['checkId'] for row in target_rows if row['kind'] == 'budgets')
+    for target in target_rows:
+        row = responses[target['checkId']]
+        row['planBindings'] = [binding['path'] for binding in row['planBindings']]
+        row['evidenceBindings'] = [{k:v for k,v in binding.items() if k != 'text'}
+                                   for binding in row['evidenceBindings']]
+        if design_failed and row['checkId'] == failed_id:
+            row['status'] = 'failed'
+        group = 0 if target['kind'] == 'source_fact' else 2 if target['kind'] == 'human_requirement' else 1
+        groups[group].append(row)
+    batches = []
+    for group in groups:
+        ids = [row['checkId'] for row in group]
+        batches.append({'checkIds': ids, 'suppliedEvidenceAliases': list(aliases), 'inputBytes': 100,
+                        'request': {'prompt': 'fixture', 'extra': {review.CHECK_IDS_OPTION: ids, 'max_tokens': 1024}}})
+    build = {'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': target_rows,
+             'generationBindingDigest': record['state']['sharedExperimentGeneration']['bindingDigest'],
+             review.STOP_INVALID_BATCH_MARKER: 1, review.REFERENCE_MARKER: 2,
+             review.EARLY_DESIGN_REPAIR_MARKER: 1}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: build)
+    invoke = Mock(side_effect=[reply({'checks': group, 'coherent': True, 'issues': []}) for group in groups])
+    def checkpoint(value):
+        record['state']['sharedExperimentReview'] = deepcopy(value)
+
+    result = science(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert invoke.call_count == (2 if design_failed else 3)
+    if not design_failed:
+        assert result['status'] != 'stopped_design_failure'
+        assert len(result['batchResponses']) == 3
+        return
+    assert result['status'] == 'stopped_design_failure'
+    prefix = result['verifiedPrefixFindings']
+    assert [row['checkId'] for row in prefix['checks']] == [failed_id]
+    assert prefix['uncheckedIds'] == batches[2]['checkIds']
+    assert not result['assessment']['scientificApproval']
+    assert science(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+    assert invoke.call_count == 2
+    record['state']['sharedExperimentReview']['batchResponses'][1]['content'] += ' '
+    with pytest.raises(DeepResearchError, match='早停设计审核'):
+        science(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+
+
+def test_failed_fact_paths_address_decoded_proposal_fields():
+    from services.deep_research.shared_experiment_revision import fact_edit_paths
+    from services.deep_research.shared_experiment_review import _pointer
+    proposal = {'sourceFacts': [
+        {'id': 'F2', 'text': 'First fact.', 'evidenceRefs': ['E1']},
+        {'id': 'F8', 'text': 'Second fact.', 'evidenceRefs': ['E3']},
+    ]}
+    paths = fact_edit_paths(proposal, [{'factId': 'F8', 'reason': 'numeric_mismatch'}])
+    assert set(paths) == {'F8'}
+    assert _pointer(proposal, paths['F8']['text']) == proposal['sourceFacts'][1]['text']
+    assert _pointer(proposal, paths['F8']['evidenceRefs']) == ['E3']
+
+
+def test_fact_only_repair_preserves_other_fields_and_unresolved_items():
+    r,_,_ = diagnosed()
+    base = r['state']['sharedExperimentGeneration']
+    allowed = ['/sourceFacts/0/text', '/sourceFacts/0/evidenceRefs']
+    proposal = base['boundProposal']['proposal']
+    change = {'baseDigest': base['bindingDigest'], 'edits': [
+        {'path': allowed[0], 'value': 'A corrected paper fact.'},
+    ], 'unresolved': proposal['unresolved']}
+    revised = apply(base, reply(change), allowed_paths=allowed)['proposal']
+    assert revised['sourceFacts'][0]['text'] == 'A corrected paper fact.'
+    assert all(revised[key] == value for key, value in proposal.items() if key != 'sourceFacts')
+    with pytest.raises(ValueError, match='unrelated field'):
+        apply(base, edit_response(r), allowed_paths=allowed)
+    with pytest.raises(ValueError, match='unresolved prerequisite'):
+        apply(base, reply({**change, 'unresolved': ['New unrelated prerequisite']}), allowed_paths=allowed)
+
+
+def test_scoped_fact_repair_keeps_uncited_unchanged_facts_and_rejects_cross_fact_citations():
+    from unittest.mock import patch
+    from services.deep_research.shared_experiment_revision import _apply_scoped
+
+    original = {'version': 3, 'sourceFacts': [
+        {'id': 'f1', 'text': 'First original text.', 'evidenceRefs': ['E1']},
+        {'id': 'f2', 'text': 'Second original text.', 'evidenceRefs': ['E2']},
+        {'id': 'locked', 'text': 'Unchanged fact.', 'evidenceRefs': ['E3']},
+    ]}
+    base = {'boundProposal': {'proposal': original}}
+    saved = {'response': {}, 'allowedFactEditPaths': ['/sourceFacts/0/text', '/sourceFacts/1/text'],
+             'suppliedEvidenceAliases': ['E1', 'E2'], 'factRepairEvidenceAliases': {'f1': ['E1'], 'f2': ['E2']}}
+    repaired = deepcopy(base['boundProposal'])
+    repaired['proposal']['sourceFacts'][0]['text'] = 'Corrected text.'
+    with patch('services.deep_research.shared_experiment_revision.apply', return_value=repaired):
+        assert _apply_scoped(base, saved) == repaired
+        repaired['proposal']['sourceFacts'][0]['evidenceRefs'] = ['E2']
+        with pytest.raises(ValueError, match='outside the diagnosed fact input'):
+            _apply_scoped(base, saved)
+        repaired['proposal']['sourceFacts'][0]['evidenceRefs'] = ['E1']
+        repaired['proposal']['sourceFacts'][2]['text'] = 'Out of scope.'
+        with pytest.raises(ValueError, match='modified a source fact outside'):
+            _apply_scoped(base, saved)
+
+
+def test_recipe_repair_cannot_modify_other_training_hyperparameters():
+    from unittest.mock import patch
+    from services.deep_research.shared_experiment_revision import _apply_scoped
+
+    original = {'sourceFacts': [], 'steps': [
+        {'operation': {'parameters': [{'name': 'steps', 'type': 'number', 'value': 1000}]}}
+    ]}
+    base = {'boundProposal': {'proposal': original}}
+    result = deepcopy(base['boundProposal'])
+    result['proposal']['steps'][0]['operation']['parameters'].extend([
+        {'name': 'fit_recipe_state', 'type': 'choice', 'value': 'recipe'},
+        {'name': 'training_loss', 'type': 'choice', 'value': 'MSE'},
+    ])
+    saved = {'response': {}, 'allowedRecipePaths': ['/steps/0/operation/parameters'], 'preserveSourceFacts': True}
+    with patch('services.deep_research.shared_experiment_revision.apply', return_value=result), patch(
+            'services.deep_research.shared_experiment_protocol_checks.detect', return_value=[]):
+        assert _apply_scoped(base, saved) == result
+        result['proposal']['steps'][0]['operation']['parameters'][0]['value'] = 10
+        with pytest.raises(ValueError, match='modified unrelated training parameters'):
+            _apply_scoped(base, saved)
+
+
+def test_fact_reference_candidates_stay_within_the_original_source_version():
+    from services.deep_research.shared_experiment_revision import fact_reference_candidates
+
+    original = {'evidenceId':'original', 'sourceWorkId':'paper', 'sourceVersionId':'v1',
+                'ownerMaterialId':'material', 'accessLevel':'fulltext', 'verification':{'literal':'passed'},
+                'quote':'The paper reports two configurations.'}
+    supported = {**original, 'evidenceId':'supported', 'quote':'The paper reports 7000 iterations.'}
+    foreign = {**supported, 'evidenceId':'foreign', 'sourceVersionId':'v2'}
+    record = {'state':{'evidence':[original, supported, foreign]}}
+    aliases = {'E1':'original', 'E2':'supported', 'E3':'foreign'}
+    facts = [{'id':'f','text':'The paper reports 7000 iterations.', 'evidenceRefs':['E1']}]
+    assert fact_reference_candidates(record, aliases, facts, [{'factId':'f','reason':'numeric_mismatch'}]) == {'f':[['E2']]}
+    proposed = [{**facts[0], 'text': 'The paper compares two configurations. This proposed experiment uses 7000 iterations.'}]
+    issues = [{'factId':'f','reason':'numeric_mismatch'}]
+    assert fact_reference_candidates(record, aliases, proposed, issues) == {'f':[['E2']]}
+    assert not fact_reference_candidates({**record, 'sharedExperimentFactBoundaryVersion': 1}, aliases, proposed, issues)
+
+
+@pytest.mark.parametrize('fixed',[True,False])
+def test_graph_verifier_repairs_at_most_once_and_rechecks_both_stages(fixed):
+    r,data,aliases=ready();r['state']['sharedExperimentInput']={'data':data,'aliases':aliases,'requiredDomains':[]}
+    update=updater(r);calls=[];review_count=[0]
+    def invoke(rid,node,prompt,opts,**kw):
+        calls.append(node)
+        if node==SCIENCE:
+            review_count[0]+=1;v=verdict(r,data)
+            if review_count[0]==1 or not fixed:v['checks'][6].update(status='failed',reason='需要修正预算。')
+            return reply(v)
+        if node==REPAIR:return edit_response(r)
+        assert node=='verify_answer_coverage';return coverage(prompt)
+    result=verify(r,update,invoke)
+    assert calls.count(REPAIR)==1 and calls.count(SCIENCE)==2
+    assert r['state']['sharedExperimentRelease']['complete'] is fixed
+    before=list(calls);assert verify(r,update,invoke)==result and calls==before
+    assert 'sharedExperimentRevisionReview' in r['state']
+
+
+@pytest.mark.parametrize('tracked_http',[False,True])
+def test_actual_synthesis_verify_publish_nodes_and_scope_gate(tmp_path,monkeypatch,tracked_http):
+    _exercise_graph(tmp_path,monkeypatch,tracked_http)
+
+
+def test_reference_draft_reaches_review_and_publication_through_tracked_transport(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=3)
+
+
+def test_owned_states_reach_review_and_publication_with_explicit_assets(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=4)
+
+
+def test_profile_5_output_limit_reaches_provider_under_tracked_reservation(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=5)
+
+
+def test_profile_6_asset_wire_contract_reaches_provider_and_publishes(tmp_path, monkeypatch):
+    _exercise_graph(tmp_path, monkeypatch, True, shared_profile=6)
+
+
+@pytest.mark.parametrize('scenario',['final_gap_repair','settled_review_checkpoint_crash'])
+def test_tracked_graph_repair_and_checkpoint_recovery(tmp_path,monkeypatch,scenario):
+    _exercise_graph(tmp_path,monkeypatch,True,scenario)
+
+
+def _exercise_graph(tmp_path,monkeypatch,tracked_http,scenario=None,*,shared_profile=1):
+    from services.deep_research.graph import make_synthesize_node,make_verify_node,make_publish_node
+    from services.deep_research.shared_experiment_generation import CLONE_LAYOUT_MARKER, MARKER, NODE as GENERATE
+    from test_deep_research_shared_experiment_generation import (
+        asset_catalog_draft, context, owned_states_draft, reference_draft, response, typed_input_proposal,
+    )
+    from test_deep_research_shared_experiment_plan import proposal
+    from services.deep_research.repository import DeepResearchRepository
+    r,data,aliases=context()
+    r[MARKER]=shared_profile
+    generation_response=response()
+    if shared_profile == 3:
+        canonical = proposal()
+        canonical['data']['inputs'][0]['availability'] = 'provided'
+        generation_response = response(reference_draft(canonical))
+    elif shared_profile in (4, 5):
+        canonical = typed_input_proposal()
+        generation_response = response(owned_states_draft(canonical))
+    elif shared_profile == 6:
+        r[CLONE_LAYOUT_MARKER] = 1
+        canonical = typed_input_proposal()
+        generation_response = response(asset_catalog_draft(canonical))
+    if tracked_http:
+        r['budget'].update(reserveModelCalls=5,reserveTokens=50000,finalizationBudgetVersion=1,
+                           releasedReserveTokens=0,tokens=0,normalTokens=0,elapsedSeconds=0)
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize();repo.create_run(r);repo.begin_execution('r')
+    crash=[scenario=='settled_review_checkpoint_crash']
+    def update(rid,fn,**kw):
+        if crash[0]:
+            proposed=fn(deepcopy(repo.require_run(rid)))
+            if proposed['state'].get('sharedExperimentReview',{}).get('status')=='response_received':
+                crash[0]=False
+                raise RuntimeError('fixture: response settled before checkpoint')
+        return repo.update_run(rid,fn,**kw)
+    calls=[]
+    def fixture_invoke(rid,node,prompt,opts,**kw):
+        calls.append(node);current=repo.require_run(rid)
+        if node==GENERATE:return generation_response
+        if node==SCIENCE:return reply(verdict(current,data))
+        if node==REPAIR:return edit_response(current)
+        assert node=='verify_answer_coverage'
+        return coverage(prompt,missing=scenario=='final_gap_repair' and calls.count(node)==1)
+    invoke=fixture_invoke
+    if tracked_http:
+        from services.deep_research.tools import TrackedLLMInvoker
+        from services.deep_research.runtime import ScopedModelClient,research_model_options
+        from llm.client import DeepSeekLLM
+        from test_deep_research_schema_transport import response as http_response
+        active=[]
+        def post(*args,**kwargs):
+            rid,node,prompt,opts=active[-1]
+            content=fixture_invoke(rid,node,prompt,opts)['content']
+            if shared_profile in (5, 6) and node == GENERATE:
+                assert args[0].endswith('/responses')
+                assert kwargs['json']['max_output_tokens'] == 9216
+                if shared_profile == 6:
+                    assert kwargs['json']['text']['format']['name'] == 'shared_binary_factorial_assets_v6'
+                    assert 'data.inputsToPrepare' in prompt
+                    assert 'each arm reads/updates its own arm_optimizer under that same ID' in prompt
+            if args[0].endswith('/responses'):return http_response(content)
+            http=Mock(status_code=200)
+            http.json.return_value={'choices':[{'message':{'content':content},'finish_reason':'stop'}],
+                                    'usage':{'prompt_tokens':11,'completion_tokens':5,'total_tokens':16}}
+            return http
+        monkeypatch.setattr('llm.client.requests.post',post)
+        provider=DeepSeekLLM(api_key='fixture',base_url='https://fixture.invalid')
+        client=ScopedModelClient(repo,lambda *args:True,lambda:provider).for_run('r')
+        tracked=TrackedLLMInvoker(client,repo.reserve_call,repo.complete_call,
+            request_options=research_model_options,run_record_fn=repo.require_run,experiment_max_input_bytes=32000)
+        def invoke(rid,node,prompt,opts,**kwargs):
+            active.append((rid,node,prompt,opts))
+            return tracked(rid,node,prompt,opts,**kwargs)
+    state={'run_id':'r','execution_epoch':repo.require_run('r')['executionEpoch']}
+    state.update(make_synthesize_node(invoke,update)(state))
+    assert not state.get('error_code'),state
+    verifier=make_verify_node(Mock(),None,update,llm_invoke=invoke)
+    if scenario=='settled_review_checkpoint_crash':
+        with pytest.raises(RuntimeError,match='response settled'):verifier(state)
+        assert len(repo.list_calls('r'))==2 and all(c['settled']==1 for c in repo.list_calls('r'))
+        assert repo.require_run('r')['state']['sharedExperimentReview']['status']=='pending'
+    state.update(verifier(state))
+    expected=[GENERATE,SCIENCE,'verify_answer_coverage']
+    if scenario=='final_gap_repair':expected.extend([REPAIR,SCIENCE,'verify_answer_coverage'])
+    assert calls==expected
+    before=list(calls);assert verifier(state)['report_version_id']==state['report_version_id'] and calls==before
+    with pytest.raises(DeepResearchError) as error:make_publish_node(repo.publish_report,update,scope_validator=lambda *args:False)(state)
+    assert error.value.code=='scope_revoked' and not repo.require_run('r')['publication'].get('publicationId')
+    assert not repo.pending_publications()
+    result=make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
+    assert result['outcome']=='complete'
+    published=repo.require_run('r');assert published['status']=='completed' and published['state']['reportText']
+    if shared_profile in (3, 4, 5, 6):
+        assert published['state']['sharedExperimentGeneration']['boundProposal']['proposal'] == canonical
+    if shared_profile in (4, 5, 6):
+        assert '输入材料：Public training inputs' in published['state']['reportText']
+    assert '# 实验方案（尚未执行）' in published['state']['reportText']
+    assert '- 实验建议：#' not in published['state']['reportText']
+    assert '](#research-evidence-' in published['state']['reportText'] and '[^1]' not in published['state']['reportText']
+    assert published['state']['sharedExperimentRelease']['complete'] is True
+    before=list(calls);make_publish_node(repo.publish_report,update,scope_validator=lambda *args:True)(state)
+    assert calls==before
+    if tracked_http:
+        ledger=repo.list_calls('r')
+        assert len(ledger)==len(expected) and all(c['settled']==1 and c['status']=='succeeded' for c in ledger)
+        assert repo.require_run('r')['budget']['tokens']==16*len(expected)
+        if scenario=='final_gap_repair':
+            assert sum(c['usesReserve'] for c in ledger)==5
+            assert repo.require_run('r')['budget']['reservedModelCalls']==5
+            assert repo.require_run('r')['budget']['modelCalls']==1
+
+
+@pytest.mark.parametrize('question,expected',[('设计一个2×2实验',1),('Design a 2x2 experiment',1),('设计三组实验',0)])
+def test_server_rollout_only_selects_explicit_binary_factorial_requests(tmp_path,question,expected):
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.facade import ResearchFacade
+    repo=DeepResearchRepository(tmp_path/'r.sqlite3');repo.initialize()
+    facade=ResearchFacade(repo,lambda **kw:None,llm_client=object(),shared_experiment_plan_version=1)
+    try:
+        r,_=facade.create({'workspaceTaskId':'t','operationKey':'op','question':question},start_async=False)
+        assert r['experimentSharedPlanContractVersion']==expected
+    finally:facade.shutdown()
+
+
+def test_server_freezes_arm_clone_layout_only_for_the_asset_profile(tmp_path):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+    from services.deep_research.shared_experiment_generation import CLONE_LAYOUT_MARKER
+
+    repo = DeepResearchRepository(tmp_path / 'r.sqlite3')
+    repo.initialize()
+    facade = ResearchFacade(repo, lambda **kw: None, llm_client=object(), shared_experiment_plan_version=6)
+    try:
+        design, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'design',
+            'question': '设计一个2×2实验', CLONE_LAYOUT_MARKER: 0}, start_async=False)
+        explanation, _ = facade.create({'workspaceTaskId': 't', 'operationKey': 'explain',
+            'question': '解释训练的优化步骤', CLONE_LAYOUT_MARKER: 1}, start_async=False)
+        assert design[CLONE_LAYOUT_MARKER] == 1 and CLONE_LAYOUT_MARKER not in explanation
+        with pytest.raises(ValueError, match='Immutable.*experimentArmCloneLayoutVersion'):
+            repo.update_run(design['runId'], lambda row: {**row, CLONE_LAYOUT_MARKER: 0})
+    finally:
+        facade.shutdown()
+
+
+def test_valid_missing_final_coverage_allows_one_repair_but_invalid_response_does_not():
+    for invalid in (False,True):
+        r,data,aliases=ready();r['state']['sharedExperimentInput']={'data':data,'aliases':aliases,'requiredDomains':[]}
+        update=updater(r);calls=[];final_count=[0]
+        def invoke(rid,node,prompt,opts,**kw):
+            calls.append(node)
+            if node==SCIENCE:return reply(verdict(r,data))
+            if node==REPAIR:return edit_response(r)
+            assert node=='verify_answer_coverage';final_count[0]+=1
+            if invalid:return {'content':'null'}
+            return coverage(prompt,missing=final_count[0]==1)
+        verify(r,update,invoke)
+        assert calls.count(REPAIR)==(0 if invalid else 1)
+        assert r['state']['sharedExperimentRelease']['complete'] is (not invalid)
+
+
+def test_unknown_repair_is_not_sent_twice():
+    r,data,aliases=diagnosed();sent=Mock(side_effect=UnknownCallError('repair-original'))
+    def save(v):r['state']['sharedExperimentRevision']=deepcopy(v)
+    with pytest.raises(UnknownCallError):repair(r,data,aliases,invoke=sent,checkpoint=save)
+    with pytest.raises(DeepResearchError):repair(r,data,aliases,invoke=sent,checkpoint=save)
+    assert sent.call_count==1 and r['state']['sharedExperimentRevision']['status']=='invocation_failed'

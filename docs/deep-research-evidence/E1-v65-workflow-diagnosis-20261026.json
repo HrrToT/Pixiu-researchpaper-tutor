@@ -1,0 +1,106 @@
+{
+  "case": "E1-v65",
+  "promptVersion": "dr-v2.20261026.275",
+  "status": "failed",
+  "scientificCredit": 0,
+  "schemaName": "typed_workflow_steps_v1",
+  "declaredSingleGroupLimits": {
+    "observe": 1,
+    "record": 1
+  },
+  "units": {
+    "initial": {
+      "finishReason": "stop",
+      "localIssues": [
+        {
+          "code": "steps.observation_group",
+          "path": "/steps/3/groups",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "expected": "one explicitly chosen group; preserve other-arm observations"
+        }
+      ],
+      "declaredGroupCardinalityFailures": [
+        {
+          "path": "/steps/3/groups",
+          "kind": "observe",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        },
+        {
+          "path": "/steps/4/groups",
+          "kind": "record",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        },
+        {
+          "path": "/steps/5/groups",
+          "kind": "record",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        }
+      ],
+      "componentCount": 4,
+      "stepCount": 6
+    },
+    "repair": {
+      "finishReason": "stop",
+      "localIssues": [
+        {
+          "code": "steps.observation_group",
+          "path": "/steps/3/groups",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "expected": "one explicitly chosen group; preserve other-arm observations"
+        }
+      ],
+      "declaredGroupCardinalityFailures": [
+        {
+          "path": "/steps/3/groups",
+          "kind": "observe",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        },
+        {
+          "path": "/steps/4/groups",
+          "kind": "record",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        },
+        {
+          "path": "/steps/5/groups",
+          "kind": "record",
+          "actual": [
+            "0",
+            "1"
+          ],
+          "maxItems": 1
+        }
+      ],
+      "componentCount": 4,
+      "stepCount": 6
+    }
+  },
+  "initialAndRevisionWireIdentical": true,
+  "officialReference": "https://api-docs.deepseek.com/api/create-response/",
+  "boundary": "Exact declared maxItems versus actual arrays inspected; not a complete JSON Schema validation. Provider documentation advertises JSON schema; these arrays violate it. No inference that transport omitted schema. No records modified or scientifically approved."
+}

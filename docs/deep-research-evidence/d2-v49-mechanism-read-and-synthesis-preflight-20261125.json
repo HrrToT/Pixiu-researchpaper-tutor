@@ -1,0 +1,29 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v49",
+  "receiptSha256": "0824623893889cf948e5721d1fe5a3f6f8252ecbd8026021c9a7b92592d39286",
+  "activeItem": "item-1",
+  "activeObligations": [
+    "ob-1-1",
+    "ob-1-2"
+  ],
+  "availableAcquisitionSources": 20,
+  "historicalReadSequenceReproduced": true,
+  "previousReadSlots": 12,
+  "currentReadSlots": 12,
+  "previousTableSlotsPreserved": 4,
+  "mechanismPage": 2,
+  "mechanismSourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+  "originalTextSha256": "628f31429461c595d70da9752c93b12053f5c12cfc21d3032ae656d679883740",
+  "availableOriginalOperations": [
+    "pruning",
+    "distillation",
+    "quantization"
+  ],
+  "newExtractedLiteralEvidence": 3,
+  "requiredMechanismQuotesInActualSynthesisWire": 2,
+  "synthesisRebuiltWithArchivedEvidencePlusNewMechanismSource": true,
+  "paperPromptBytes": 23976,
+  "modelCalls": 0,
+  "savedRunUnchanged": true,
+  "scientificAcceptanceEstablished": false
+}

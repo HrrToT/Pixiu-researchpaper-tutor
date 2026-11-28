@@ -1,0 +1,97 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "targeted_provider_repair_from_frozen_review_state",
+  "sourceCommit": "a7a133c3f853f41e28c0026a8db5ac77e084792d",
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "materialHashes": [
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+  ],
+  "sourceRunId": "dr_run_dd0ab944b5675bc0b61ade6f1c26361f",
+  "targetClaims": [
+    "cmp_1_0",
+    "cmp_3_0"
+  ],
+  "initialAudit": "deferred_factual_repair",
+  "actualInputCounts": [
+    {
+      "promptBytes": 28460,
+      "measuredInputTokens": 8494
+    }
+  ],
+  "usage": {
+    "provider": "OpenAI",
+    "model": "gpt-6.1-terra",
+    "additionalGenerations": 2,
+    "additionalInputTokens": 6304,
+    "additionalOutputTokens": 451,
+    "additionalTotalTokens": 6755,
+    "totalIncludingArchivedPrefix": 76162,
+    "capIncludingArchivedPrefix": 100000,
+    "phases": {
+      "repair_claims": 3618,
+      "verify_repair": 3137
+    }
+  },
+  "verifiedRepair": {
+    "claimId": "cmp_3_0",
+    "kind": "reported",
+    "evidenceRefs": [
+      "ev_fdbde2fa9c3a15a634cda58cccc2898eff0c06d118012d32d4d60ac0bef3a3ba"
+    ],
+    "detailLevel": "fulltext",
+    "tableBindings": [],
+    "text": "对于视角覆盖有缺口的采集，优化先处理球谐的零阶颜色分量，再逐步加入更高阶分量，直到表示全部四个频带。这是训练中的处理工作；引文不足以量化该安排的单独耗时或额外开销，也不能据此断言其他条件下是否采用了相同操作。",
+    "conditions": {
+      "版本": "3DGS v1",
+      "处理安排": "每1000次迭代加入一个球谐频带"
+    },
+    "obligationIds": [
+      "obl1"
+    ],
+    "verification": "semantic_passed"
+  },
+  "rejectedRepair": {
+    "claimId": "cmp_1_0",
+    "reason": "semantic_unresolved",
+    "detail": "引文称优化α，但未在所给字段中定义α的含义。\n因此不能据此确认其为透明度；该参数表述未获充分支持。"
+  },
+  "physicalPdfChecks": {
+    "original3DGSPages": [
+      2,
+      8
+    ],
+    "acceptedCitationLocatedVerbatim": true,
+    "page8Cadence": "one band per 1000 iterations until all four bands",
+    "page2DefinesAlphaAsOpacity": true,
+    "explicitOpacityDefinitionPresentInActualRepairPrompt": false
+  },
+  "previousAcceptedClaimsPreserved": 8,
+  "verifiedClaimsInIsolatedLedger": 9,
+  "resume": {
+    "initialHarnessIssue": "Local invocation shim accepted positional options but the verifier passes extra_body by name.",
+    "verificationDispatchedBeforeShimFix": false,
+    "repairResubmitted": false
+  },
+  "wholeAnswerAuditPerformed": false,
+  "wholeAnswerAuditReason": "The representation revision still failed independent verification.",
+  "publicationPerformed": false,
+  "independentHoldoutCredit": 0,
+  "fullGraphResubmitted": false,
+  "productionWrites": 0,
+  "artifacts": {
+    "tmp/openai-d2-scoped-wording-fresh-20261129/run.json": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "tmp/d2-targeted-future-work-prompt-inspection-20261129/repair-prompt.txt": "dcd10899864191d0cde1f706b5bd0ac39f4235034bbc08b0f7079666227c1e91",
+    "tmp/d2-targeted-future-work-preflight-20261129/summary.json": "056f4eb8e7fa0ebfd17441f018097bc811a0827d6e6227930c640100c3bfe4c1",
+    "tmp/d2-targeted-future-work-live-20261129/intent.json": "4740ac041fcbbd6d9e7606cf2fe667a389fa811536657adc0cee0609491b0af3",
+    "tmp/d2-targeted-future-work-live-20261129/repair-request.json": "5cc69629dead60141b039b2599d45aff036c740ecb7e5a9299c8b7baad908e1f",
+    "tmp/d2-targeted-future-work-live-20261129/input-counts.json": "95fb733b5b28a8c490d68f489fa67e86991f935da5b7eaa9b28a1d2184f1f289",
+    "tmp/d2-targeted-future-work-live-20261129/first-leg-summary.json": "c17f392cfa63b68304dbe02b206ec6a575d5b87fc6cc0fac0c9664035a0fd149",
+    "tmp/d2-targeted-future-work-live-20261129/verification-resume-intent.json": "0fbe569cbd5463eb2268b42f6f28ec02d3dd04a5f9558511c3063f267f859326",
+    "tmp/d2-targeted-future-work-live-20261129/calls.json": "7c719aa67b2527c054bb78705e7f3ab1c90b7ac9ae0aaeeb079eda36f24ca4d0",
+    "tmp/d2-targeted-future-work-live-20261129/run.json": "6cb46b5f3627f0ed28b23e66dd4d94975ff6e4752d427b5ce68755f09b133ef9",
+    "tmp/d2-targeted-future-work-live-20261129/summary.json": "fe39e4376d6fd1434c8f3ea2dc21e8d1ba0727c72c222c2d91457909c810e5df"
+  }
+}

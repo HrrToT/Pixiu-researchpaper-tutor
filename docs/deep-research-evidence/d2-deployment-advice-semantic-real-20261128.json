@@ -1,0 +1,40 @@
+{
+  "runId": "dr_d2_deployment_advice_only_20261128",
+  "verifiedClaimsReused": [
+    "cmp_0_0",
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_6_0",
+    "cmp_7_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_2"
+  ],
+  "freshTarget": "cmp_conclusion_1",
+  "maxNewCalls": 1,
+  "candidate": "7458bba2dccf154e8440991cf0ab071029cead0b",
+  "startingTokens": 84964,
+  "oldAlternateAuditTokens": 9871,
+  "unchangedOriginalPrompt": true,
+  "authorityWrites": 0,
+  "newTokens": 2597,
+  "totalBranchTokens": 87561,
+  "callCount": 18,
+  "acceptedClaims": 11,
+  "rejectedClaims": 0,
+  "newAdvicePassedIndependentReview": true,
+  "adviceWithEvidence": "磁盘空间紧时，先看模型文件大小。帧率优先时，在同一场景比较帧率，并确认画质达到自己的要求。文件大小和运行显存要分别看。先在同一硬件、场景和渲染设置下，实测两种方法的峰值显存。根据实测结果选择峰值显存占用更低的方法，前提是画质满足要求。若两种方法都超过显存上限，应调整设置后再比较。",
+  "finalPacket": null,
+  "finalCoverageStatus": "budget_exhausted",
+  "noCountCallsAfterBudget": true,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "f843e487f1d25da004591feebb0469883877b86188b2c040c7052bd888e62f1b",
+    "calls.json": "bf4393d291df1c521f986cddd678104e5194c5b837648e13912d8486c848e9d4",
+    "run.json": "e6dbd34091094dd1bb8887fbddb4938bd779e155a6598e14550db222fbea6023",
+    "verify-return.json": "981f896fa7edd307f1a899ec4db4a7733d001d98590f95d88d84b6849fe63acf"
+  }
+}

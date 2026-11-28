@@ -1,0 +1,84 @@
+{
+  "gate": "D6: committed material revocation survives Java process termination",
+  "pythonSourceCommit": "08e813f183dfa2c40868824f163572e390884627",
+  "baseline": {
+    "h2WriteDelayMilliseconds": 500,
+    "removalHttp": 200,
+    "sourcesAfterRemoval": 0,
+    "persistedTaskRevisionAfterRestart": 1,
+    "persistedPapersAfterRestart": [
+      "scope-a",
+      "scope-b"
+    ],
+    "observation": "Read-only H2 inspection after the failing restart confirmed that the committed removal had rolled back to the former material list.",
+    "artifact": {
+      "path": "tmp/research-scope-drill-20261128-v2/scope-proof.json",
+      "sha256": "dc0538a6fecacf7845668392da473c8fa743b8fa837d43aa6c0c572e9d0d4a53"
+    }
+  },
+  "runtimeOverrideReplicatedFix": {
+    "path": "tmp/research-scope-drill-20261128-v3/scope-proof.json",
+    "sha256": "356ce9c733536facaee0af1271c3d22bf6f9cb64a945c1de71b87b7a38c9c1a8"
+  },
+  "packagedDefault": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "78f063999fca6c8ae285e27d0f4049243390346df57811b6bc7c6354cb26b316",
+    "workerBoundary": "Actual Java scope endpoint and Python runtime recovery; the initial graph submission was intercepted before running",
+    "contentBoundary": "Synthetic material bytes, evidence and interrupted ledger in disposable local databases",
+    "initialScope": "accepted_by_java",
+    "afterRecovery": {
+      "status": "paused",
+      "callState": "unknown",
+      "visibleSources": 2,
+      "epoch": 1,
+      "reservedTokens": 700
+    },
+    "afterRemoval": {
+      "javaScope": "materials_removed",
+      "visibleSources": 0
+    },
+    "millisecondsFromRemovalResponseToTermination": 78.0,
+    "afterJavaRestart": {
+      "javaScope": "materials_removed",
+      "visibleSources": 0
+    },
+    "afterRestoringSameMaterials": {
+      "visibleSources": 2,
+      "resumeHttp": 409,
+      "runEpochUnchanged": true,
+      "calls": 1,
+      "preservedEvidence": 2
+    },
+    "runId": "dr_run_cd6b2c82cd40557ab198b89c5b6f0e3a",
+    "datasourceConfiguration": "Packaged application.properties, no datasource override",
+    "exitCode": 0,
+    "pythonStopped": true,
+    "javaStopped": true
+  },
+  "javaRegression": {
+    "passed": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "coverage": {
+    "productionCutover": false,
+    "powerLoss": false,
+    "independentScientificCredit": false
+  },
+  "artifacts": [
+    {
+      "path": "tmp/research-scope-drill-20261128-default/scope-proof.json",
+      "sha256": "c2634c17e3d8ec5d6854d494aea9a1ad8c3a7daed0d1e0680eacd31ee1b0f19c"
+    },
+    {
+      "path": "tmp/verify-research-scope-default-h2-20261128.py",
+      "sha256": "5ecedfbcb2c1c8136b9861ebc626c060b358e4e22bd794c8e481ac8e78a5df55"
+    },
+    {
+      "path": "tmp/research-scope-h2-durable-package-20261128/build.log",
+      "sha256": "4c2f89027f9df58969fb71b4ec66f1309435d0f30a8d8879606aafe695c6bd0f"
+    }
+  ]
+}

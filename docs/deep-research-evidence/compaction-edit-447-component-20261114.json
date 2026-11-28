@@ -1,0 +1,56 @@
+{
+  "sourceCase": "AD1N-v30",
+  "sourceCommit": "c5aa4391a522c29dcf02be9bf903301f4c52ea76",
+  "componentOnly": true,
+  "modelCalls": 1,
+  "seconds": 4.705,
+  "tokens": 2313,
+  "finishReason": "stop",
+  "newBudget": {
+    "totalCharacters": 300,
+    "currentCompleteCharacters": 362,
+    "fixedDisplayAndAcceptedCharacters": 21,
+    "currentScopeReserveCharacters": 119,
+    "ordinaryProseSharedCharactersIfScopeUnchanged": 160,
+    "pointMeasurements": [
+      {
+        "claimId": "c1",
+        "kind": "prose",
+        "currentCharactersAboveFixed": 222
+      },
+      {
+        "claimId": "c2",
+        "kind": "scope",
+        "currentCharactersAboveFixed": 119
+      }
+    ]
+  },
+  "ordinaryProseCharacters": 198,
+  "trace": [
+    {
+      "finalLine": 204,
+      "hasCompiledCandidate": true,
+      "compiledVisibleCharacters": 338,
+      "limit": 300
+    }
+  ],
+  "parsedBodyAndScopeConstraints": true,
+  "within300Characters": false,
+  "finalParserOutcome": "invalid",
+  "productionWrites": 0,
+  "automaticRetry": false,
+  "isolatedRunStatus": "completed",
+  "scientificAcceptance": false,
+  "noviceAcceptance": false,
+  "rawResultSha256": "7cbb2fbac43c363e51836effc4c9522984b5efae07615bf6c10591b2611fb5c8",
+  "findings": [
+    "Removing the preserve-all-existing-facts conflict did not by itself produce a substantial rewrite in this one controlled component. No causal quality improvement is established.",
+    "The body and frozen scope parse correctly, but ordinary prose remains over its160-character allowance and final compiled length exceeds300. All original guards still reject the candidate.",
+    "Next inspect the existing fixed-scope prose-only edit route with exact capacity and readonly scope, before another paid verification."
+  ],
+  "all103TasksExact": true,
+  "all379ApplicationRunsExact": true,
+  "all9526ApplicationCallRowsExact": true,
+  "historicalPaused": 15,
+  "activeApplicationRuns": 0
+}

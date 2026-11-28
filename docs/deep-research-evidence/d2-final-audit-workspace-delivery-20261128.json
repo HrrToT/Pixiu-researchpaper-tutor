@@ -1,0 +1,187 @@
+{
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+  "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+  "contentBoundary": "Exact saved real D2 partial report, replayed with graph and model dispatch disabled",
+  "originalRunId": "dr_d2_one_final_coverage_20261128",
+  "replayRunId": "dr_run_122cda46d0c55ffd93e90700b31741ab",
+  "sourceArtifactSha256": "4ed05e2fcd64f41cca6dea2b13a39a971042dad9342daa2a9270d6b9e864847c",
+  "reportOutcome": "partial",
+  "reportClaims": 10,
+  "sourcePages": {
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+      1,
+      4,
+      5,
+      6,
+      7
+    ],
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+      4,
+      8,
+      9,
+      11
+    ]
+  },
+  "duplicateDeliverySuppressed": true,
+  "documentsMatchHash": true,
+  "crossTaskFileDenied": true,
+  "restartedAndReadAgain": true,
+  "materialReadinessFixture": true,
+  "exitCode": 0,
+  "javaStopped": true,
+  "pythonHttpStopped": true,
+  "httpRequests": [
+    {
+      "method": "GET",
+      "path": "/probe",
+      "port": 8193,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/materials/upload",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/materials/upload",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/materials/f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf/processing",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/materials/f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf/processing",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/materials/803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf/processing",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/start",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/publication-sync",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/sources",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/materials/f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf/file",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/materials/803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf/file",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-delivery-other/materials/f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf/file",
+      "port": 8189,
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab/scope-check",
+      "port": 8189,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-workspaces/d2-verified-comparison-delivery/research/dr_run_122cda46d0c55ffd93e90700b31741ab",
+      "port": 8189,
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "receiptSha256": "6147fc03d673c7123e4d7ada5b156124f602e2383b15dab07a068411f7e3b6b0",
+  "legacyLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 25880
+  },
+  "newRequiredBytes": 23938,
+  "newDispatchBytes": 23938,
+  "legacyInstructionsBytes": 4546,
+  "newInstructionsBytes": 2604,
+  "requiredCitedRows": 18,
+  "sameDecodedRequiredInputs": true,
+  "reachedOfflineDispatch": true,
+  "actualModelRequests": 0,
+  "scientificContentAccepted": false
+}

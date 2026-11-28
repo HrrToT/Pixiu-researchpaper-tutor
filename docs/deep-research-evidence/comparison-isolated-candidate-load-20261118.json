@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "ec9a2f68a5dee3dd6ebb0f4577bda7d8a1c88981",
+  "fullRegression": "comparison-isolated-grammar-full-20261118.json",
+  "candidate": "academic-dr-isolated-candidate-20261118",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

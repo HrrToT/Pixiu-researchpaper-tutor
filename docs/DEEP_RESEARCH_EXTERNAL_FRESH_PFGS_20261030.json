@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-30",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independence": "Fresh paper and question; retire as independent if used for implementation tuning.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2603.23324v2",
+        "referencePdfSha256": "abc53af939c9938ea19fe5877c3a04765c97e41b1bac51122975d91ee535de88",
+        "physicalPages": [
+          4,
+          5
+        ],
+        "section": "3.2",
+        "expected": "Cross-frame consistency alone can preserve over-smoothed erroneous depth. NCC patch similarity supplements geometric checks. Prune Gaussians replaced by depth inliers, reset opacity of remaining inconsistent outliers."
+      }
+    ],
+    "hardFailures": [
+      "本地材料或摘要冒充新外部全文",
+      "v2版本错误",
+      "所有不一致高斯全部删除",
+      "所有深度直接合并",
+      "虚构数值",
+      "超出18调用/100000Token/360秒"
+    ],
+    "transportChecks": [
+      "no_external_cache_before",
+      "fresh_fulltext_network_request",
+      "new_paper_not_in_library",
+      "source_hash_version_match",
+      "idempotent_add_and_first_indexing"
+    ]
+  },
+  "cases": [
+    {
+      "id": "X2H",
+      "split": "holdout",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网读取 PFGS360（arXiv:2603.23324v2）原文，面向了解3DGS概念的新手解释第3.2节：为什么跨帧几何一致的单目深度仍不一定可靠，NCC筛选补充了什么判断，以及被深度内点替换的高斯和其余不一致高斯分别怎样处理？限350字，依据实际取得的正文解释，不做性能排名或实验设计。",
+      "required": [
+        "原文v2正文真实联网获取",
+        "过平滑可能跨帧一致，几何一致不等于细节准确",
+        "NCC补充图像块相似性筛选",
+        "内点替换高斯删除，其余不一致高斯重置不透明度",
+        "350字内并有可回指全文来源"
+      ],
+      "forbidden": [
+        "全部不一致高斯删除",
+        "全部深度直接合并",
+        "虚构排名",
+        "本地材料冒充外部全文"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "X2H": "8b8ce45082e9ce7257b33e019b91be418d25d42a65c95121dafa5551ea727cac"
+  }
+}

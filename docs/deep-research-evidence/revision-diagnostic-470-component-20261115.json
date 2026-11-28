@@ -1,0 +1,125 @@
+{
+  "promptVersion": "dr-v2.20261115.470",
+  "sourceCommit": "31dcd9ec29cdc7166b7aafc4fd8ddb59318c87b2",
+  "isolatedCompleteMetadataRevisionOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 60000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 20011,
+    "input_tokens": 15656,
+    "output_tokens": 4355
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "unit.sourceRefs"
+  ],
+  "allDecodedFeedbackErrors": [
+    {
+      "code": "unit.sourceRefs",
+      "path": "/sourceRefs/2",
+      "actual": "5",
+      "expected": "one distinct evidence alias from allowedSourceRefs; not a paper ID"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/3",
+      "actualPresent": true,
+      "sourceGroups": [
+        "10",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "cov_codebook",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/4",
+      "actualPresent": true,
+      "sourceGroups": [
+        "10",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "cov_indices",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/1",
+      "actualPresent": true,
+      "sourceGroups": [
+        "01",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "sh_codebook",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/2",
+      "actualPresent": true,
+      "sourceGroups": [
+        "01",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "sh_indices",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    }
+  ],
+  "originalReadGroupErrors": 24,
+  "remainingReadGroupErrors": 0,
+  "remainingUpdateGroupErrors": 4,
+  "newSourceAliasError": "5 is not an allowed evidence alias; do not substitute E5 automatically",
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9838,
+    "runs": 390,
+    "callsSha256": "122784a23d94d70db2f7456630f3ad6460fe58f39b239167957a463b6686bf26",
+    "runsSha256": "ca2a1de33da3124de0fd6d0e6c11300214cb94455c8d735efa57bed600e5b33e"
+  },
+  "rawResult": "tmp\\revision-diagnostic-470-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "d470dd3e3696a1085b94c80b05c9e73893cbb341e3cb98384c56987a168b2a33",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Address explicit per-group fitting updates and exact source identity; do not run full D3-v6 until metadata is valid."
+}

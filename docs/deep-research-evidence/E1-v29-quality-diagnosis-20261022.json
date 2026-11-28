@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "44c04d71",
+  "case": "E1-v29",
+  "runId": "dr_run_03b9a8b880ce5238a3a10cb526218d07",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "accepted": 0,
+  "total": 9,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "planningReady": true,
+  "basisEncodingAudit": {
+    "rawBytes": 4351,
+    "wireBytes": 3847,
+    "canonicalBytes": 5086,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 8192,
+    "wireLimitBytes": 4000,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "recordedBodyInputBytes": 31777,
+  "suppliedEvidenceCount": 15,
+  "missingRequiredPremiseBundles": [],
+  "actualContentDefects": [
+    {
+      "claim": "c6",
+      "path": "executionSpec.baselineInitialization",
+      "actual": {
+        "initializationMode": "fresh",
+        "inputs": [],
+        "creation": {
+          "action": "train_frame0_model",
+          "parameters": [
+            {
+              "name": "optimizer_steps",
+              "type": "number",
+              "value": 1000
+            },
+            {
+              "name": "learning_rate",
+              "type": "number",
+              "value": 0.001
+            }
+          ]
+        },
+        "stateDefinitions": [
+          {
+            "name": "frame0_gaussians",
+            "dtype": "float32",
+            "shape": [
+              {
+                "inputIndex": 0,
+                "axis": 0
+              },
+              3
+            ],
+            "initializer": {
+              "mode": "uniform",
+              "low": -1.0,
+              "high": 1.0,
+              "rng": "torch",
+              "seed": {
+                "mode": "fixed",
+                "value": 0
+              }
+            }
+          }
+        ]
+      },
+      "issue": "No inputs, but shape references inputIndex0. A single N-by3 tensor does not define full Gaussian representation; initial model cannot be executed as specified."
+    },
+    {
+      "claim": "c6",
+      "path": "executionSpec.componentInitializations[1].inputs",
+      "actual": [
+        {
+          "state": "training_data",
+          "selector": "frame_images"
+        },
+        {
+          "state": "EARLIER_componentId",
+          "selector": "ntc"
+        }
+      ],
+      "issue": "Literal EARLIER_componentId placeholder is not a declared earlier component. Copying scales/colors from frame_images also does not supply those Gaussian states."
+    },
+    {
+      "claim": "c3",
+      "path": "conditions.context",
+      "actual": "论文报告了flame salmon场景的消融实验和整个视频（排除第0帧）的结果，且该场景包含新出现对象（E2, E3）。帧窗口选择基于训练观察，不依赖评估分数。相机划分在拟合前锁定。",
+      "issue": "Contains internal E aliases and no concrete training-only emerging-content eligibility rule for frames1..30."
+    }
+  ],
+  "reviewQuality": {
+    "boundClaimIds": [
+      "c1",
+      "c4",
+      "c9"
+    ],
+    "invalidBindingClaimIds": [
+      "c2",
+      "c5",
+      "c7",
+      "c8"
+    ],
+    "bindingIsScientificTruth": false,
+    "examples": [
+      {
+        "claim": "c4",
+        "actualText": "预算：第0帧模型训练1000优化器步；第1阶段NTC每帧训练100优化器步；第2阶段处理组每帧额外训练50优化器步，对照组0步。总墙钟时间上限2小时/组（RTX 3090）。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多1000优化步\n- 停止规则：\"stop after 1000 steps\"\n- 恢复预算：各组未按相同预算匹配\n  - 0组：0优化步\n  - 1组：50优化步\n- 判断边界：结果包含预算混淆因素，不能作为等预算的效应比较\n  - 说明：\"对照组跳过第2阶段，步数为0；处理组每帧额外50步。整体阶段成本比较允许不匹配预算。\"",
+        "issue": "Reviewer requires proposed1000-step budget to be reported by paper and says Stage1 scope absent despite it being stated in text/conditions. A bound rejection is not necessarily correct."
+      },
+      {
+        "claim": "c7",
+        "issue": "Reviewer binds to nonexistent executionSpec.quality/speed/storage fields; this role uses text/conditions."
+      },
+      {
+        "claim": "c8",
+        "actual": {
+          "effects": {
+            "psnr_diff": "psnr_treatment - psnr_control",
+            "ssim_diff": "ssim_treatment - ssim_control",
+            "storage_diff": "storage_treatment - storage_control",
+            "steps_diff": "steps_treatment - steps_control",
+            "time_diff": "time_treatment - time_control"
+          },
+          "uncertainty": {
+            "mode": "descriptive",
+            "boundary": "report mean, median, min, max of paired differences"
+          },
+          "decision": {
+            "mode": "descriptive",
+            "boundary": "no formal decision; describe observed differences"
+          }
+        },
+        "issue": "Reviewer calls effects.psnr_diff absent although it exists, and expects nonexistent uncertainty.aggregation instead of reading descriptive boundary. Existing invalid-binding guard correctly prevents using this as reliable feedback."
+      }
+    ]
+  },
+  "repair": {
+    "status": "skipped_budget",
+    "admission": {
+      "kind": "repairEvidenceBytes",
+      "limit": 15601,
+      "used": 16905
+    },
+    "physicalRepairCalls": 0
+  },
+  "boundary": "Full generated body received and reviewed, but no usable experiment accepted.15 allocated evidence quotes retained does not prove upstream method evidence completeness. Capacity success does not approve content; no historical or independent result upgraded."
+}

@@ -1,0 +1,57 @@
+{
+  "caseInput": "E1-v48",
+  "candidatePromptVersion": "dr-v2.20261023.259",
+  "contract": "experimentPlanningReasoningContractVersion",
+  "version": 1,
+  "originalRequestDigest": "b28020cdeb1732686e86105c27ed52e1be0859b545bf246b0122eb13493a8e13",
+  "legacyRebuildDigest": "b28020cdeb1732686e86105c27ed52e1be0859b545bf246b0122eb13493a8e13",
+  "candidateRequestDigest": "120bf5286cc2e98cd999586d0767b1b29c475ceb0ca66356556191c9411cc7a3",
+  "onlyChangedOptions": [
+    "thinking",
+    "reasoning_effort"
+  ],
+  "promptSha256": "be104121d617dbba23e4578337339ef979a6f1a93ad47278823140e190f12d03",
+  "schemaDigest": "12eb74ed95beb3ecca5710f15e5e29981b235782c25cf2671585110f6e06ca42",
+  "messagesUnchanged": true,
+  "promptUnchanged": true,
+  "evidenceAliasCount": 14,
+  "maxOutputTokens": 6144,
+  "wholeRunLimits": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "originalInvalidResponseStillRejected": true,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "Frozen actual input comparison only; low reasoning quality and JSON compliance remain unverified with the provider.",
+  "focusedRegression": {
+    "files": 4,
+    "passed": 57,
+    "seconds": 23.41
+  },
+  "integrationRegression": {
+    "files": 12,
+    "passed": 200,
+    "seconds": 43.01
+  },
+  "sourceHashes": {
+    "services/deep_research/planning_transport.py": "65cf6e49f534865872f5283de7ec7bc9821fd8e3b82d93fc2cb8fbf8206f4822",
+    "services/deep_research/facade.py": "7cfa62468699116155ecfcfe114f9eecc6563169f8770fba541714b38d4505b7",
+    "services/deep_research/repository.py": "4b87bcbab079b9f93d8060a02770e32a16c6be103956261c66572ede7e97ecf5",
+    "tests/test_deep_research_planning_reasoning.py": "21e4a92e511576da0233d47e8ed50b48a01ddcbda11c30e05069fb7e85bf40bd",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "23b69d389be3d925ccb4b590fe6ecca6acc4a1477cf9a1de552ee00df25553ad"
+  },
+  "officialParameterReference": {
+    "url": "https://api-docs.deepseek.com/api/create-response/",
+    "checkedOn": "2026-10-23",
+    "supportedEfforts": [
+      "none",
+      "low",
+      "high",
+      "max"
+    ],
+    "maxOutputIncludesReasoning": true,
+    "schemaFormatUnchanged": true
+  }
+}

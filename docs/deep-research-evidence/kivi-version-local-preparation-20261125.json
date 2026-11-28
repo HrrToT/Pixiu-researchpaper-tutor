@@ -1,0 +1,42 @@
+{
+  "caseId": "H4-KIVI-VERSIONS",
+  "taskId": "dr-acceptance-h4-kivi-versions-20261125",
+  "paperIds": [
+    "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4.pdf",
+    "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4.pdf"
+  ],
+  "processing": [
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 77,
+      "aiAnalysisStatus": "not_requested"
+    },
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 94,
+      "aiAnalysisStatus": "not_requested"
+    }
+  ],
+  "sourcePolicy": "task_only",
+  "budgetProfile": "standard",
+  "taskCreated": true,
+  "researchSubmitted": false,
+  "modelCalls": 0,
+  "scientificContentCredit": 0,
+  "taskScopedFiles": [
+    {
+      "revision": "v1",
+      "sha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+      "bytes": 2063189
+    },
+    {
+      "revision": "v2",
+      "sha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+      "bytes": 2194402
+    }
+  ],
+  "unrelatedTaskPdfAccessRejected": true,
+  "workspaceResearchRuns": 0
+}

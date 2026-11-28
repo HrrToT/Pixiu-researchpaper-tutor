@@ -1,0 +1,82 @@
+{
+  "sourceCommit": "a3181e10b97586866611da3d4979d3329d821144",
+  "case": "D2-BASELINE-COMPRESSION-v25",
+  "split": "development",
+  "runId": "dr_run_d8760729a201502aaaf9f378cb278f9c",
+  "comparisonAuthoringContractVersion": 15,
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "reservedModelCalls": 5,
+    "tokens": 85635,
+    "elapsedSeconds": 183.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "totalModelCalls": 16
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify": 2,
+    "repair_claims": 2,
+    "verify_repair": 2,
+    "verify_answer_coverage": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 50,
+  "draftCount": 8,
+  "preReleaseAcceptedBySystem": 5,
+  "reportClaimCount": 5,
+  "rejectedByReason": {
+    "semantic_unresolved": 3
+  },
+  "finalAuditStatus": "checked",
+  "finalAuditGapCount": 3,
+  "finalAuditLimit": null,
+  "auditTransport": [
+    {
+      "state": "succeeded",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 6713,
+        "input_tokens": 5098,
+        "output_tokens": 1615
+      },
+      "receivedShape": "comparison_audit_v1"
+    }
+  ],
+  "repairTransport": [
+    {
+      "finishReason": "stop",
+      "receivedShape": "items"
+    },
+    {
+      "finishReason": "stop",
+      "receivedShape": "items"
+    }
+  ],
+  "repairStatus": "response_received",
+  "releaseStatus": "released",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "899c53514f8735ed7a4df5e1ce0f260461f79490b6166b7ce8673271e003a500",
+    "calls": "ae775e451890ba1e90cd10a9eb22e42c8ec5811430ce461b992566de923b2b84",
+    "result": "fece40e6fb2fca76fc62d59c8a46590cbd747392bd79f53778bf08e1eae4120b",
+    "execution": "829f4eb5a4cf761ed1bc663a3c32189ea9fff183e5775d35c018245c166f1a15"
+  }
+}

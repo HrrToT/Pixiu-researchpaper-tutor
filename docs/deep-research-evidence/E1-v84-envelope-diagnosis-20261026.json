@@ -1,0 +1,90 @@
+{
+  "case": "E1-v84",
+  "runId": "dr_run_bf9b9d4112e55f19b3808987b17d93fd",
+  "promptVersion": "dr-v2.20261026.295",
+  "status": "failed",
+  "elapsedSeconds": 94,
+  "settledModelCalls": 8,
+  "settledTokens": 40349,
+  "unsettledCalls": 0,
+  "sourceRefs": [
+    "P1"
+  ],
+  "allowedSourceRefs": [
+    "E1",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E2",
+    "E3",
+    "E4",
+    "E5",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "generationErrors": [
+    "unit.sourceRefs"
+  ],
+  "repairErrors": [
+    "unit.sourceRefs"
+  ],
+  "feedback": {
+    "codes": [
+      "unit.sourceRefs"
+    ],
+    "issues": [
+      {
+        "code": "metadata.update.unknown",
+        "path": "/steps/2/updates/0",
+        "expected": "declared mutable state; new result values belong in outputs",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": "transformed_3dgs"
+      },
+      {
+        "code": "timeline.input.component_missing",
+        "path": "/steps/2/updates/0",
+        "actualPresent": true,
+        "expandedStage": "operation",
+        "actual": "transformed_3dgs"
+      }
+    ],
+    "declaredComponentIds": [
+      "frame0_3dgs",
+      "stage1_ntc",
+      "stage2_additions"
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 7,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_3dgs",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "stage2_additions",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      }
+    ]
+  },
+  "repairRawIdentical": true,
+  "payloadSha256": "b27e75c8524ae6905b42f041049a75f0098d277b685b5be3792343ecf3e6eb00",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Paper ID P1 is not an evidence alias. Code unit.sourceRefs lacked a field-level explanation and allowed aliases. Unknown mutable-state update also remains. Original generation and one revision fail unchanged before initialization; no quality approval."
+}

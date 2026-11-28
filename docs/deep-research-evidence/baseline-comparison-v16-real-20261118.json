@@ -1,0 +1,78 @@
+{
+  "sourceCommit": "2c5f3b1393fbabf8fef3a82fc979708f4928d763",
+  "case": "D2-BASELINE-COMPRESSION-v16",
+  "runId": "dr_run_4be57ee3903850f691280d6e5527328d",
+  "split": "development",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "authoringVersion": 3,
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 12,
+  "allModelCallsSucceeded": true,
+  "ledgerTokens": 61168,
+  "elapsedSeconds": 127,
+  "draftCount": 10,
+  "modelAcceptedClaimCount": 3,
+  "rejectedClaimCount": 7,
+  "initialReviewCalls": 3,
+  "initialReviewUsage": [
+    {
+      "total_tokens": 5564,
+      "input_tokens": 4493,
+      "output_tokens": 1071
+    },
+    {
+      "total_tokens": 4423,
+      "input_tokens": 3807,
+      "output_tokens": 616
+    },
+    {
+      "total_tokens": 4806,
+      "input_tokens": 4463,
+      "output_tokens": 343
+    }
+  ],
+  "wholeAnswerAuditStatus": "checked",
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "normalTokens",
+    "limit": 50000,
+    "used": 59722
+  },
+  "evidenceCount": 42,
+  "structuredTableEvidenceCount": 0,
+  "requiredBundles": 33,
+  "allFrozenPremiseBundlesRetained": true,
+  "stageInputBytes": [
+    23978,
+    23989,
+    23851
+  ],
+  "wireErrors": [
+    {
+      "targetId": "table_3_0",
+      "reason": "invalid_answer_source_permission"
+    }
+  ],
+  "scientificContentAccepted": false,
+  "independentAcceptance": false,
+  "contentConcerns": [
+    "No typed table evidence acquired; source ownership audit remains unresolved",
+    "Model accepted a disk-size-to-GPU-memory recommendation; no human scientific approval",
+    "Original training/rendering implementation described as additional processing cost; incomplete task response"
+  ],
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "5266b4506d1e4cb93f7b37722b1d3ad15654cdcfc67bee8a31508a221d8cb3cd",
+    "calls": "1c2a9e10ebd5af591f2413d2b468d714f5bf1e362008f390a688d0cba5dbd47d",
+    "execution": "a5a0af47e80fd2f1b11e51cf27a1e49c46cfc574f8d006dea02251baccf971a5",
+    "restore": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24",
+    "result": "075883c028d02c3b8948296f50aa1414109f8c4246c49bad67022c1d99b49fba"
+  },
+  "nextAction": "Offline locate structured-table acquisition gap, advice semantic approval and repair normal-pool capacity. No immediate same-question paid rerun."
+}

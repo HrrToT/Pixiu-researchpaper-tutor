@@ -1,0 +1,32 @@
+{
+  "baselineCommit": "1d1c50e7f8289262f16262dd8fc5cffdd975e9b6",
+  "legacy": [
+    {
+      "scopeVersion": 1,
+      "materializationExact": true,
+      "fullGuidanceSha256": "5efe9497c10c0bc87fa33c144fd4665873790d871f96c6f1332aacb18e825d5d",
+      "factualGuidanceSha256": "af535a1b4dee21c18639d20006f98cae5aecb34405fa4f8b28681557dbdcc2f3"
+    },
+    {
+      "scopeVersion": 2,
+      "materializationExact": true,
+      "fullGuidanceSha256": "72f26e0fc2e43b25556ecfec33f167165defa8d4a31d2f18c7cc6e40e9d19c8f",
+      "factualGuidanceSha256": "4eb668caa846b7379415d2952886b11fb38fd480f165b57a647aac8c4cc6164f"
+    },
+    {
+      "scopeVersion": 3,
+      "materializationExact": true,
+      "fullGuidanceSha256": "6d7d1f1168b23ad6123c5a4991499d116bf5d5761560a4a2c2542a190f914aa2",
+      "factualGuidanceSha256": "4eb668caa846b7379415d2952886b11fb38fd480f165b57a647aac8c4cc6164f"
+    },
+    {
+      "scopeVersion": 4,
+      "materializationExact": true,
+      "fullGuidanceSha256": "ed3cb62cccefd63888ca661145bbf07fb4ae08e373b1dd044c1cb9e790856c12",
+      "factualGuidanceSha256": "af5f51112ba709c2b44f2267082ea8186e6fce8253035c5220c4ebcd380a876f"
+    }
+  ],
+  "newGuidanceBytes": 1813,
+  "oldFactualGuidanceBytes": 1824,
+  "providerCalls": 0
+}

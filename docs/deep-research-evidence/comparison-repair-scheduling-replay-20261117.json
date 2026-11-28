@@ -1,0 +1,70 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v6",
+  "scope": "saved-request capacity and scheduling reconstruction",
+  "payloadSha256": "6ebeebdc75c3ba37150c3608a731e1a291eca9ba17a4d8c89b0310298ce83190",
+  "repairReviews": [
+    {
+      "profile": 1,
+      "requests": [
+        {
+          "inputBytes": 15887,
+          "outputCap": 8192,
+          "reservation": 25103,
+          "restoredEvidenceDigest": "cb27e8f5a2c1f7e3f39275180e3a4df6209f3c1f668783ee45f2f28cb25b9a72",
+          "promptSha256": "0eb997dba422f3d80e43dae360cb69a1146bfd1ed7adaced8eb050e0b572fab8"
+        },
+        {
+          "inputBytes": 25636,
+          "outputCap": 8192,
+          "reservation": 34852,
+          "restoredEvidenceDigest": "9f4fbbe2b3c1641b8edfb6f66dfaaa2674fa4b9cc3dfccee811eaf9bc34e38ab",
+          "promptSha256": "e33188476e5a538b1d721ed790f0ec24dc5b333cc7b80f8ba469fe0edf248960"
+        }
+      ]
+    },
+    {
+      "profile": 2,
+      "requests": [
+        {
+          "inputBytes": 15887,
+          "outputCap": 4000,
+          "reservation": 20911,
+          "restoredEvidenceDigest": "cb27e8f5a2c1f7e3f39275180e3a4df6209f3c1f668783ee45f2f28cb25b9a72",
+          "promptSha256": "0eb997dba422f3d80e43dae360cb69a1146bfd1ed7adaced8eb050e0b572fab8"
+        },
+        {
+          "inputBytes": 24529,
+          "outputCap": 4000,
+          "reservation": 29553,
+          "restoredEvidenceDigest": "9f4fbbe2b3c1641b8edfb6f66dfaaa2674fa4b9cc3dfccee811eaf9bc34e38ab",
+          "promptSha256": "167e5ec1597d891df5766fa54de16c8e2ef50145e7147c3495a3642dfd553bad"
+        }
+      ]
+    }
+  ],
+  "restoredEvidenceExactlyEqual": true,
+  "deferInitialAudit": true,
+  "obsoleteInitialAuditActualTokens": 8848,
+  "obsoleteInitialAuditSeconds": 9.0,
+  "remainingAfterRecordedRepairOldSchedule": 31361,
+  "remainingAfterRecordedRepairWithoutObsoleteAudit": 40209,
+  "hypotheticalFinalAudit": {
+    "claimCount": 7,
+    "requests": [
+      {
+        "node": "verify_answer_coverage",
+        "inputBytes": 23976,
+        "outputCap": 5522,
+        "reservation": 30522
+      }
+    ],
+    "status": "invalid_response",
+    "budgetLimit": null,
+    "claimsScientificallyAccepted": false
+  },
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "ledgerReservations": 0,
+  "scientificApproval": false,
+  "wholeSequenceTokensAndTimeFitEstablished": false
+}

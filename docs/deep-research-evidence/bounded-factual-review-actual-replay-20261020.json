@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "H2F-v9",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "unchangedActualVerificationFingerprints": [
+    {
+      "callId": "9780cadea74845ea39bc3cbb9dffb9ed",
+      "actualStatus": "succeeded",
+      "actualRequestFingerprint": "6bfac6ed4cdd6d02c62c62fb5f3285cbf3a257c3b651e0db0f1f745321bbec6c",
+      "matched": true
+    },
+    {
+      "callId": "d3f80aef4549b6145e7307fa2f9be2fb",
+      "actualStatus": "succeeded",
+      "actualRequestFingerprint": "5c05b248b3085f73a699d27701318386db27d59db8b3b2cd6b45393bacb49d80",
+      "matched": true
+    },
+    {
+      "callId": "3b40bcce0f134d9a5c10c01b1d27e811",
+      "actualStatus": "unknown",
+      "actualRequestFingerprint": "1db9856fd9a2ffcaf4eeceeba278653b176938b3924ea378dd269688203e2db8",
+      "matched": true
+    }
+  ],
+  "controlledNewAdmissionAtOldSendPoint": {
+    "allowed": false,
+    "remainingSeconds": 74.0,
+    "requiredSeconds": 113.75,
+    "observedSettledReviews": 2
+  },
+  "newShortFactualOptions": {
+    "temperature": 0.0,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "max_tokens": 8192
+  },
+  "oldOptions": {
+    "temperature": 0.0,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "max_tokens": 16384
+  },
+  "boundary": "Exact archived old verification request replay, including the unknown request identity, without any send. Advisory new-policy timing replay only; not provider latency/content acceptance, and not reconciliation of the old unknown."
+}

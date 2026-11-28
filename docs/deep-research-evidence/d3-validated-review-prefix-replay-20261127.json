@@ -1,0 +1,31 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "method": "Offline revalidation of saved responses from the scientific review after the one permitted revision",
+  "sourceEvidence": "d3-evaluation-preparation-full-science-review-20261127.json",
+  "reviewRunId": "dr_d3_evaluation_preparation_scientific_review_20261127",
+  "savedRunSha256": "cdcd99064299c9bbbcecd7c7b4a156a6ec45f453863e367e23e0e75f159f7c60",
+  "responseDigest": "8a8d640408670cb97f751afbfcb3e57094011508e203bbf179a9d451644e2c45",
+  "proposalBindingDigest": "9bd5ca6e6455865a7d7af641f9c1137d4f8ef58e9331d752b8ee047693039d83",
+  "verifiedPrefixBatches": 3,
+  "verifiedPrefixCheckCount": 24,
+  "firstInvalidBatch": 4,
+  "actionableCheckFindings": {
+    "section_2": "unresolved",
+    "section_5": "failed",
+    "section_6": "unresolved",
+    "requirement_0_1": "failed",
+    "requirement_0_2": "failed",
+    "requirement_3_0": "failed"
+  },
+  "anchoredCoherenceIssueCount": 3,
+  "uncheckedIds": ["requirement_4_0"],
+  "factEnvelopeCoherent": false,
+  "eligibleForFactApprovalReuse": false,
+  "alteredBatchCopyRejected": true,
+  "revisionAlreadyUsed": true,
+  "aggregateReviewStatus": "invalid_response",
+  "scientificApproval": false,
+  "published": false,
+  "providerCalls": 0,
+  "independentAcceptanceCredit": 0
+}

@@ -1,0 +1,216 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v6",
+  "scope": "saved input and owned indexed cache, production acquire/read/direct extraction nodes",
+  "payloadSha256": "6ebeebdc75c3ba37150c3608a731e1a291eca9ba17a4d8c89b0310298ce83190",
+  "cacheSha256": "db0a0d44372ddcd894f7df03447e81d5e4e3bb7fc392cc3ce6700ca7d3488e35",
+  "indexedChunks": 194,
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "runtimeLoaded": false,
+  "scientificApproval": false,
+  "receipts": [
+    {
+      "profile": 1,
+      "retrievals": [
+        {
+          "owner": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+          "queryDigest": "39850786fe84fe671117cf30ccce106f8f1d889e13bb33eb91ead8ef77c1fc66",
+          "baseline": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-8",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30"
+          ],
+          "selected": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-8",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30"
+          ],
+          "cost": []
+        },
+        {
+          "owner": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+          "queryDigest": "06bdea016f3a7d5b071e059e460f000ab2ee6b68b55d2019915936a8213f5c97",
+          "baseline": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-5",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-59"
+          ],
+          "selected": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-5",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-59"
+          ],
+          "cost": []
+        },
+        {
+          "owner": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+          "queryDigest": "f887d63a67de627728f6a5b253359cae546c2fca4eb41edfa75c7d69199b9bff",
+          "baseline": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-1",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-15",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86"
+          ],
+          "selected": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-1",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-15",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86"
+          ],
+          "cost": []
+        },
+        {
+          "owner": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+          "queryDigest": "f0dafb14f0f38e45c66090c2be52e4fa23ce4a56cd8ad9c2a2f5098df5f02db2",
+          "baseline": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93"
+          ],
+          "selected": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93"
+          ],
+          "cost": []
+        }
+      ],
+      "readSourceIds": [
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-5",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76"
+      ],
+      "readCount": 12,
+      "evidenceCount": 27,
+      "addedCostEvidenceCounts": {}
+    },
+    {
+      "profile": 2,
+      "retrievals": [
+        {
+          "owner": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+          "queryDigest": "39850786fe84fe671117cf30ccce106f8f1d889e13bb33eb91ead8ef77c1fc66",
+          "baseline": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-8",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30"
+          ],
+          "selected": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-8",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30"
+          ],
+          "cost": []
+        },
+        {
+          "owner": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+          "queryDigest": "f887d63a67de627728f6a5b253359cae546c2fca4eb41edfa75c7d69199b9bff",
+          "baseline": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-1",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-15",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86"
+          ],
+          "selected": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-14",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-1",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-15",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86"
+          ],
+          "cost": []
+        },
+        {
+          "owner": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+          "queryDigest": "06bdea016f3a7d5b071e059e460f000ab2ee6b68b55d2019915936a8213f5c97",
+          "baseline": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-5",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-59"
+          ],
+          "selected": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-4",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-59"
+          ],
+          "cost": [
+            "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55"
+          ]
+        },
+        {
+          "owner": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+          "queryDigest": "f0dafb14f0f38e45c66090c2be52e4fa23ce4a56cd8ad9c2a2f5098df5f02db2",
+          "baseline": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93"
+          ],
+          "selected": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100"
+          ],
+          "cost": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35"
+          ]
+        }
+      ],
+      "readSourceIds": [
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-5",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-28",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-30",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-33",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-75",
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-76"
+      ],
+      "readCount": 12,
+      "evidenceCount": 29,
+      "addedCostEvidenceCounts": {
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35": 4,
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55": 3
+      }
+    }
+  ]
+}

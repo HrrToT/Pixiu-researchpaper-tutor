@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v14",
+  "runId": "dr_run_4502a72b6f2e5a8389fd2de66700b0fb",
+  "sourceCommit": "94a2be1d",
+  "promptVersion": "dr-v2.20261018.125",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "modelCalls": 7,
+  "settledTokens": 27507,
+  "elapsedSeconds": 33.379,
+  "cost": null,
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 论文中报告了哪些定量指标（如PSNR、SSIM、LPIPS）来比较压缩后模型与原始3DGS的图像质量？：最终回答尚未完整回应这一问题\n- 论文是否说明了压缩后图像质量接近原始3DGS的适用条件（如特定数据集、压缩率、场景类型）？：最终回答尚未完整回应这一问题\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "ambiguous_table_series"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "modelOutputs": [
+    {
+      "node": "resolve_brief",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "object",
+        "receivedShape": "object"
+      }
+    },
+    {
+      "node": "plan",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "node": "extract",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "node": "assess_relevance",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "invalid_wrapper"
+      }
+    },
+    {
+      "node": "synthesize",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "object",
+        "receivedShape": "object"
+      }
+    },
+    {
+      "node": "synthesize_compact",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "object",
+        "receivedShape": "object"
+      }
+    },
+    {
+      "node": "repair_claims",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    }
+  ],
+  "findings": [
+    "The native transport options reached the provider, but the production scope wrapper overwrote the trusted JSON envelope instructions. This was not covered by the direct-provider test.",
+    "Relevance returned a pairs wrapper rather than items; normalization rejected it without guessing the schema. Dependency coverage did not advance.",
+    "The first draft and repair retained an anonymous slash-separated metric series; hard verification rejected ambiguous_table_series.",
+    "A paper-wide absence assertion lacked the necessary original evidence and was rejected. No factual point was published as verified.",
+    "All 13 tool ledger rows succeeded at transport level, no unknown requests; the result is inconclusive, not an acceptance pass."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v14.json",
+      "sha256": "4bb86c4320548495ab32a34d55981565b3bcfe18424e4f23960a7b228e6eb66b"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v14.payload.json",
+      "sha256": "2c58f2bde1c6e122f42c384fac6e772ee62ebf161c72f8548ec14e1b689fe224"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v14.calls.json",
+      "sha256": "6086571b052b27da2de484e86f9a0552ebad4ac5355b77cfa60d1646775f415f"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v14.result.json",
+      "sha256": "a2adadf2e001b174c33da016ce2bf046cb4a016d96b73a09937682551a055165"
+    }
+  ],
+  "boundary": "Transport syntax and confirmed settlement are separate from factual content acceptance. Original results are preserved."
+}

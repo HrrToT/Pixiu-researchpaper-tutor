@@ -1,0 +1,23 @@
+{
+  "case": "D5-v17",
+  "receiptSha256": "2864d9e9492a308f21696b83900bbd03558152c56e151647e23f87065454d952",
+  "localInvocations": [
+    "synthesize_compact"
+  ],
+  "newProviderCalls": 0,
+  "scientificAcceptance": false,
+  "returnLine": 209,
+  "returnCondition": "return (result,new_audits) if count(result) <= limit else (None,audits)",
+  "fixedLayoutCharacters": 133,
+  "finalVisibleCharacters": 634,
+  "finalClaimTextLengths": [
+    61,
+    92,
+    400
+  ],
+  "limit": 200,
+  "initialVisibleCharacters": 948,
+  "scopeFieldsChanged": [],
+  "rejected": true,
+  "priorClaimCount": 3
+}

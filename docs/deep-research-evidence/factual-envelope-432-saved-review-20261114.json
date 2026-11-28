@@ -1,0 +1,121 @@
+{
+  "sourceCase": "AD1N-v18 saved received responses",
+  "legacyRejected": 2,
+  "newTransportCandidates": 2,
+  "rawResponsesUnchanged": true,
+  "actualFacadePolicyUsed": true,
+  "modelCalls": 0,
+  "independentCredit": 0,
+  "notNewContentAcceptance": true,
+  "verdicts": [
+    {
+      "claimId": "c1",
+      "reason": "声称准确描述了Adam算法的一阶矩、二阶矩、初始化偏差、偏差校正和参数更新，与证据E1-E3一致。",
+      "scopeAudit": {
+        "claimStrength": "bounded",
+        "evidenceStrength": "bounded",
+        "supported": true,
+        "statementPath": [
+          "text"
+        ],
+        "premises": [
+          {
+            "evidenceId": "ev_945bc2448153279d13587dc3af02ac718423be7efcc9d2a58979ebcbf5ed8d0d",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_5dde4a402cce565ba32e2e9e38d14f0d9d824d359e560163070683b8fa4c0855",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_8acf9963643b668e746b7b5b301634ec779dc4cd92e9d7c1d30cedfb359fe63a",
+            "path": [
+              "quote"
+            ]
+          }
+        ]
+      },
+      "diagnosticFacts": [],
+      "status": "passed",
+      "factualResponseEnvelope": {
+        "version": 1,
+        "kind": "single_exact_target_object"
+      },
+      "reviewDiagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "512bab1ff992e6e6d287470813edb5b49a4dcde87fda7a5a8cb2ebf97a83f130",
+        "bindingCount": 0,
+        "newNumberCount": 0,
+        "unboundNewNumberCount": 0,
+        "errors": []
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+      "scopeAudit": {
+        "claimStrength": "bounded",
+        "evidenceStrength": "bounded",
+        "supported": true,
+        "statementPath": [
+          "text"
+        ],
+        "premises": [
+          {
+            "evidenceId": "ev_0b7a09fa53b1df8ba0f92e8c2fafcc67e18f839d114b5784934c1652b2053e00",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_ebf96c9ac7da5f93e7333f7e51bd786c84543f29ab113a51d52370fb0f56d650",
+            "path": [
+              "quote"
+            ]
+          }
+        ]
+      },
+      "diagnosticFacts": [
+        {
+          "statement": "caused by initializing the running average with zeros",
+          "evidenceId": "E1",
+          "path": [
+            "quote"
+          ],
+          "excerpt": "caused by initializing the running average with zeros"
+        },
+        {
+          "statement": "correct the initialization bias",
+          "evidenceId": "E2",
+          "path": [
+            "quote"
+          ],
+          "excerpt": "correct the initialization bias"
+        }
+      ],
+      "status": "failed",
+      "factualResponseEnvelope": {
+        "version": 1,
+        "kind": "single_exact_target_object"
+      },
+      "reviewDiagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "619fab363ba04cf0caa1fed30769f78780714b19be7175263ed5348ab77493f4",
+        "bindingCount": 2,
+        "newNumberCount": 2,
+        "unboundNewNumberCount": 2,
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ]
+      },
+      "executionState": "received_invalid"
+    }
+  ],
+  "boundary": "Offline replay exposes the received responses to unchanged exact-target/source/diagnostic checks. It does not rerun, rewrite or upgrade the original inconclusive run."
+}

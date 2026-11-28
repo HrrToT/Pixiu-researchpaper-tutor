@@ -1,0 +1,88 @@
+{
+  "sourceCommit": "c93a928d673f0fc8267582540b4b7c2e3c5a51e4",
+  "case": "D2-BASELINE-COMPRESSION-v24",
+  "split": "development",
+  "runId": "dr_run_df68e76d17f858a4964766d5a6edc317",
+  "comparisonAuthoringContractVersion": 11,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "reservedModelCalls": 5,
+    "tokens": 74425,
+    "elapsedSeconds": 140.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "totalModelCalls": 14
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify": 3,
+    "verify_answer_coverage": 1,
+    "repair_claims": 1,
+    "verify_repair": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 53,
+  "draftCount": 8,
+  "preReleaseAcceptedBySystem": 8,
+  "reportClaimCount": 0,
+  "rejectedByReason": {},
+  "finalAuditStatus": "budget_exhausted",
+  "finalAuditGapCount": 6,
+  "finalAuditLimit": {
+    "kind": "coveragePromptBytes",
+    "limit": 19149,
+    "used": 20808
+  },
+  "auditTransport": [
+    {
+      "state": "succeeded",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8324,
+        "input_tokens": 7461,
+        "output_tokens": 863
+      },
+      "receivedShape": "comparison_audit_v1"
+    }
+  ],
+  "repairTransport": [
+    {
+      "finishReason": "stop",
+      "receivedShape": "items"
+    }
+  ],
+  "repairStatus": "response_received",
+  "releaseStatus": "held",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "2081f43409ef2f4952993c51d4bdb8dd761f8f5df0fdbe1b0ec63aea73b21019",
+    "calls": "ca76468e844ed9c89548e985e6233d3f9030c264ae12913da20b93ea8f0bfbab",
+    "result": "cbe302fc2a3631167cff137d25d8ac7334063b781475f77d72131e0f7fe17338",
+    "execution": "0e9a28ef03a448467f29eeeee99ef03d257c346f1d83410da30e121659abb1f1"
+  },
+  "initialAuditStatus": "checked",
+  "initialFactualAccepted": 7,
+  "finalAuditDispatched": false,
+  "localRetentionReplay": {
+    "previousCheckedClaimsRetainable": 7,
+    "revisedClaimsRequireNewAudit": 8,
+    "newModelCalls": 0
+  }
+}

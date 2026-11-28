@@ -1,0 +1,29 @@
+{
+  "case": "AD1N-v14",
+  "mode": "offline synthesis request preparation only",
+  "baselineCommit": "80e93242",
+  "legacyRequestAndAllocationExact": true,
+  "legacyBytesMatchSaved": true,
+  "oldInputBytes": 23829,
+  "newInputBytes": 23727,
+  "oldSuppliedRows": 16,
+  "newSuppliedRows": 14,
+  "allCoreOwnReferencesRetained": [
+    "ev_945bc2448153279d13587dc3af02ac718423be7efcc9d2a58979ebcbf5ed8d0d",
+    "ev_5dde4a402cce565ba32e2e9e38d14f0d9d824d359e560163070683b8fa4c0855",
+    "ev_8acf9963643b668e746b7b5b301634ec779dc4cd92e9d7c1d30cedfb359fe63a",
+    "ev_0b7a09fa53b1df8ba0f92e8c2fafcc67e18f839d114b5784934c1652b2053e00",
+    "ev_ebf96c9ac7da5f93e7333f7e51bd786c84543f29ab113a51d52370fb0f56d650"
+  ],
+  "everyRetainedQuoteAndContextExact": true,
+  "modelOptionsExact": true,
+  "sourcePremiseGaps": [],
+  "newGuidanceCount": 1,
+  "rawPayloadUnchanged": true,
+  "rawPayloadSha256": "1f6cc34099d9a0b5f9c55fef5053b261714bd301f3ef960ab821bc7ce04c5f80",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Only proves fitting and preserved original premises, not correct classification or better actual generation."
+}

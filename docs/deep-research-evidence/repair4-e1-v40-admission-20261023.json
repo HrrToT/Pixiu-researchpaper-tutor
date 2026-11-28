@@ -1,0 +1,65 @@
+{
+  "case": "E1-v40",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "inputCap": 30442,
+  "results": [
+    {
+      "version": 2,
+      "admitted": false,
+      "error": "Budget exhausted for repairEvidenceBytes: used 25189/24000",
+      "fixtureRequests": []
+    },
+    {
+      "version": 3,
+      "admitted": false,
+      "error": "Budget exhausted for repairEvidenceBytes: used 29307/24000",
+      "fixtureRequests": []
+    },
+    {
+      "version": 4,
+      "admitted": true,
+      "fixtureRequests": [
+        {
+          "inputBytes": 30419,
+          "completeGrammar": true
+        },
+        {
+          "inputBytes": 30386,
+          "completeGrammar": true
+        },
+        {
+          "inputBytes": 30297,
+          "completeGrammar": true
+        }
+      ],
+      "batchIds": [
+        [
+          "c2",
+          "c3",
+          "c6"
+        ],
+        [
+          "c4",
+          "c5"
+        ],
+        [
+          "c1",
+          "c7",
+          "c8",
+          "c9"
+        ]
+      ]
+    }
+  ],
+  "boundary": "Archived input transport admission only; no content acceptance.",
+  "date": "2026-10-23",
+  "candidatePromptVersion": "dr-v2.20261023.250",
+  "wholeCaseLimitsUnchanged": {
+    "calls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "budgetFixture": "E1-v40 final budget held constant for EACH isolated admission check; does not prove sequential batches fit after actual model charges.",
+  "independentCredit": 0
+}

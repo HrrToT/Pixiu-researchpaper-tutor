@@ -1,0 +1,29 @@
+{
+  "pdfId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+  "oldIndexVersions": [
+    "2977684d0da4a8b6"
+  ],
+  "newIndexVersions": [
+    "ebe6b0693a86127a"
+  ],
+  "oldChunks": 55,
+  "newChunks": 55,
+  "allOtherDocumentsUnchanged": true,
+  "otherDocumentCount": 869,
+  "allOldRunsAndLedgerExactlyPreserved": true,
+  "ledgerRows": 7290,
+  "active": 0,
+  "pausedUnknowns": 12,
+  "hiddenQueryRewrite": false,
+  "parseEndpointOnly": true,
+  "captionFactsInBody": true,
+  "noCaptionNumbersInHeading": true,
+  "oldSnapshotReaderProof": {
+    "runId": "dr_run_28859bfb363d5902a00097dbe3219376",
+    "chunk": 46,
+    "oldIndexVersion": "2977684d0da4a8b6",
+    "returnsExactStoredText": true,
+    "sourceTextSha256": "a6dc579d1c886fd75b008fbfbe1109b9fcc1c7ddfdbd5a616a726dc5eb3c456e",
+    "usesCurrentIndex": false
+  }
+}

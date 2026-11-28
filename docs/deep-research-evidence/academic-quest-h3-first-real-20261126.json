@@ -1,0 +1,65 @@
+{
+  "case": "H3-QUEST-v1",
+  "runId": "dr_run_d6e777f56e61547a90ad15305d872751",
+  "sourceCommit": "f5ef1a99570d04644290670786f15aeb4f074678",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "automaticRetry": false,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 1,
+    "synthesize_audience": 1,
+    "verify": 2,
+    "verify_answer_coverage": 1,
+    "repair_claims": 1
+  },
+  "settledTokens": 47904,
+  "elapsedSeconds": 100.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "reportVersionId": "report_dr_run_d6e777f56e61547a90ad15305d872751_v1",
+  "acceptedClaimIds": [
+    "c1"
+  ],
+  "rejections": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved"
+    }
+  ],
+  "coverageStatus": "invalid_response",
+  "receiptSha256": {
+    ".payload.json": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+    ".calls.json": "71ac02352d93d7b818a6b270a70700184e4446dcb39331fb6a00b3f5665c291b",
+    ".execution.json": "342f39c7fb300a7472218a10100ea2b0f5112990a2df614419f94993359a2e49",
+    ".result.json": "76b2155d059f69fe2a400b41d3be83246ff9fa8da50ea721f52cde533129546c",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "originalServiceAndHistoryVerified": true,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "emptyTaskMaterials": true,
+  "acquisitionLedger": [
+    {
+      "tool": "external_discover",
+      "status": "succeeded",
+      "versions": [
+        "arxiv:2406.10774v1"
+      ]
+    },
+    {
+      "tool": "external_fulltext",
+      "status": "succeeded",
+      "versionId": "arxiv:2406.10774v1",
+      "accessLevel": "fulltext",
+      "contentHash": "8421ec66bd0dcb7d1dfc3524dbafbb15da354acdbdb477ee99c949f018abba6c",
+      "networkRequests": 1,
+      "cacheHit": false,
+      "pages": 11
+    }
+  ],
+  "exactMetadataDiscovery": true,
+  "freshExactPdfVerified": true
+}

@@ -1,0 +1,37 @@
+{
+  "promptVersion": "dr-v2.20261030.373",
+  "localSectionContextContractVersion": 2,
+  "factualRepairGoalContractVersion": 2,
+  "answerCoherenceContractVersion": 1,
+  "audienceRewriteContractVersion": 9,
+  "quantitySpellingContractVersion": 11,
+  "sourceCommit": "905ac84e8c3ee95a59732331fba23b22ab17057b",
+  "ledgerRows": 8210,
+  "oldLedgerAndPayloadsExact": true,
+  "protectedTasksExact": 12,
+  "active": 0,
+  "paused": 13,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "allSourceHashesExact": true,
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 32.3
+  },
+  "containerRestarts": 1,
+  "providerCalls": 0,
+  "contentAcceptance": false
+}

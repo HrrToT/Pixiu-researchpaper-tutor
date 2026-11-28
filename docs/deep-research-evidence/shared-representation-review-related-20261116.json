@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "4bab11b0727f62ba947ca4877173a018571b7be1",
+  "newTests": 26,
+  "relatedChecks": {
+    "tests": 106,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit": {
+    "path": "tmp/shared-representation-review-related-complete-20261116.xml",
+    "sha256": "a2e816a1caabccca721b25912ad43fe54f653d8873687be1bbea142e8a6085b2"
+  },
+  "scope": [
+    "Actual production checker factory resolves the current durable binding",
+    "Raw response, frozen declaration, metadata receipt, aliases and actual steps mismatch block dispatch",
+    "Typed source IDs map to the request-local evidence aliases; scientific text is unchanged",
+    "Own original quotes and surrounding context accompany shared conventions",
+    "Missing bound quote and complete-input overflow cannot be silently omitted",
+    "Existing semantic verdict schema, dependency checks and global budgets stay mandatory"
+  ],
+  "scientificContentAccepted": false,
+  "candidateEnabled": false,
+  "boundary": "Software audit-input and no-dispatch behavior tested; not proof of correct model reasoning or complete experiment feasibility."
+}

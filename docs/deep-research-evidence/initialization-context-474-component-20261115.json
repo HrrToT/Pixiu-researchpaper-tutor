@@ -1,0 +1,50 @@
+{
+  "promptVersion": "dr-v2.20261115.474",
+  "sourceCommit": "2a3b65b1b8375d8a3970e6f9ff850254f12243dd",
+  "isolatedBaselineInitializationOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 10148,
+    "input_tokens": 9748,
+    "output_tokens": 400
+  },
+  "finishReason": "stop",
+  "rawBytes": 1387,
+  "unitValid": false,
+  "unitErrors": [
+    "workflow.states.shape"
+  ],
+  "initializationMode": "fresh",
+  "inputCount": 0,
+  "stateNames": [
+    "gaussian_model"
+  ],
+  "dataDependentShapeWithoutInput": true,
+  "singleZeroModelPlaceholderNotAccepted": true,
+  "unresolved": [
+    "exact_train_truck_frame_counts",
+    "exact_training_iterations",
+    "exact_kmeans_frequency_and_iterations",
+    "exact_codebook_sizes",
+    "exact_heldout_split_rule",
+    "exact_seed_values",
+    "exact_memory_accounting",
+    "exact_rendering_conditions"
+  ],
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9872,
+    "runs": 391,
+    "callsSha256": "6c7fd0bf4480a70ed41f037ca6fbdffad1e734f5f637a64b222c5c00d5795d18",
+    "runsSha256": "83648d085850db39e8dc746b2dfa8bb8ed259d7b62b111598d6bb3b6ac542a07"
+  },
+  "rawResult": "tmp\\initialization-context-474-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "fa158a9fd28e5445a5c9428ca64687cf7cd69dd7e305593b706988bfb7f93387",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Clarify one-target complete numeric state and proposed choices versus unknown author facts; preserve old response and all evidence."
+}

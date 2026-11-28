@@ -1,0 +1,112 @@
+{
+  "scope": "Diagnostic observations only; no proved production optimization",
+  "newModelCalls": 0,
+  "applicationWrites": 0,
+  "factory": {
+    "elapsedSeconds": 8.74451840898837,
+    "entries": 61,
+    "cachedPDFs": 2,
+    "allLocationsAndEvidenceIdsExact": false,
+    "originalRunUnchanged": true
+  },
+  "factoryLocationDifferenceCount": 24,
+  "factoryTopFunctions": [
+    {
+      "file": "/app/services/deep_research/text_quality.py",
+      "line": 15,
+      "function": "create",
+      "calls": 61,
+      "selfSeconds": 0.044956795,
+      "cumulativeSeconds": 8.741769182
+    },
+    {
+      "file": "/app/services/deep_research/located_evidence.py",
+      "line": 27,
+      "function": "create",
+      "calls": 61,
+      "selfSeconds": 0.013754897,
+      "cumulativeSeconds": 8.61339527
+    },
+    {
+      "file": "/app/services/deep_research/local_sources.py",
+      "line": 248,
+      "function": "load_pages",
+      "calls": 2,
+      "selfSeconds": 0.007618374000000001,
+      "cumulativeSeconds": 6.814048945000001
+    },
+    {
+      "file": "/app/services/deep_research/local_sources.py",
+      "line": 363,
+      "function": "_parse_pdf",
+      "calls": 2,
+      "selfSeconds": 0.000276945,
+      "cumulativeSeconds": 3.36364973
+    },
+    {
+      "file": "/usr/local/lib/python3.11/subprocess.py",
+      "line": 506,
+      "function": "run",
+      "calls": 2,
+      "selfSeconds": 0.000123694,
+      "cumulativeSeconds": 3.297512734
+    },
+    {
+      "file": "/usr/local/lib/python3.11/subprocess.py",
+      "line": 1165,
+      "function": "communicate",
+      "calls": 2,
+      "selfSeconds": 6.1306e-05,
+      "cumulativeSeconds": 3.2954993630000002
+    },
+    {
+      "file": "/usr/local/lib/python3.11/subprocess.py",
+      "line": 2062,
+      "function": "_communicate",
+      "calls": 2,
+      "selfSeconds": 0.05424340800000001,
+      "cumulativeSeconds": 3.2954208850000004
+    },
+    {
+      "file": "/usr/local/lib/python3.11/selectors.py",
+      "line": 402,
+      "function": "select",
+      "calls": 11918,
+      "selfSeconds": 0.032696588,
+      "cumulativeSeconds": 3.082161064
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'poll' of 'select.poll' objects>",
+      "calls": 11918,
+      "selfSeconds": 3.042105132,
+      "cumulativeSeconds": 3.042105132
+    },
+    {
+      "file": "/usr/local/lib/python3.11/socket.py",
+      "line": 704,
+      "function": "readinto",
+      "calls": 13844,
+      "selfSeconds": 0.06275248700000001,
+      "cumulativeSeconds": 2.93942431
+    }
+  ],
+  "jointPreparation": {
+    "scope": "Saved53-evidence new joint-assessment preparation, fresh local journal and unchanged server limit; stops before sender",
+    "elapsedSeconds": 0.40599999998812564,
+    "requests": [
+      {
+        "node": "assess_relevance",
+        "bytes": 21437
+      }
+    ],
+    "originalUnchanged": true
+  },
+  "limits": [
+    "Factory replay used current local Java/PDF access after original runtime restoration; some locations differed, so not an equivalent speed comparison.",
+    "Joint preparation used saved evidence, an empty local journal and zero spent budget, stopping before sender; no real review or original complete cycle reproduced.",
+    "Neither observation establishes the cause of original read-to-assess gaps or justifies speculative cache changes."
+  ],
+  "next": "Record actual PDF access/parse failures and stage timing in a bounded offline runtime reproduction; distinguish failure retries from scope checks, serialization and cold-start contention before optimization."
+}

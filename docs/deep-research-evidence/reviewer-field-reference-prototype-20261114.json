@@ -1,0 +1,139 @@
+{
+  "sourceCommit": "336eaae0",
+  "case": "AD1N-v28",
+  "offlinePrototypeOnly": true,
+  "modelCalls": 0,
+  "productionSourceChanged": false,
+  "originalPayloadUnchanged": true,
+  "scientificContentAccepted": false,
+  "results": [
+    {
+      "claimId": "c1",
+      "originalErrors": [
+        "diagnostic_source_not_bound"
+      ],
+      "exactFieldPrototypeErrors": [],
+      "bindings": [
+        {
+          "evidenceId": "ev_b7039af4a97436ca969a4b8fe56965e3db9d24518bc31f46f8ca69a2d3758fbb",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "589ab711ecde14de0e5e87d9f5ad411a93a922e2e8857b445c7fdc626bd7f85f"
+        },
+        {
+          "evidenceId": "ev_b7039af4a97436ca969a4b8fe56965e3db9d24518bc31f46f8ca69a2d3758fbb",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "589ab711ecde14de0e5e87d9f5ad411a93a922e2e8857b445c7fdc626bd7f85f"
+        },
+        {
+          "evidenceId": "ev_8f61e19e488f0f7b047c3892fae9b4da85ab30e23acc3a350ba2a5e1f0f83242",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "eacc334d10beae31cc7d4a27191b4da990f5e08346419a101c23949ae7169704"
+        },
+        {
+          "evidenceId": "ev_8f61e19e488f0f7b047c3892fae9b4da85ab30e23acc3a350ba2a5e1f0f83242",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "eacc334d10beae31cc7d4a27191b4da990f5e08346419a101c23949ae7169704"
+        }
+      ],
+      "negativeControls": [
+        {
+          "mutation": "foreign",
+          "errors": [
+            "diagnostic_source_not_bound"
+          ]
+        },
+        {
+          "mutation": "metadata",
+          "errors": [
+            "diagnostic_source_not_bound"
+          ]
+        },
+        {
+          "mutation": "unsupported_number",
+          "errors": [
+            "diagnostic_statement_not_in_reason",
+            "new_diagnostic_numbers_not_bound"
+          ]
+        },
+        {
+          "mutation": "plain_formula",
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ]
+        }
+      ]
+    },
+    {
+      "claimId": "c2",
+      "originalErrors": [
+        "new_diagnostic_numbers_not_bound"
+      ],
+      "exactFieldPrototypeErrors": [
+        "new_diagnostic_numbers_not_bound"
+      ],
+      "bindings": [
+        {
+          "evidenceId": "ev_e91fc360bb341fd8fd0bd0900914c10a2e4812dc9a12d73072d16a8e826d04a3",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "3bef1dbbc43d1d8b25090f71b80dd8ddf18d1d0657122853addb674f6b4449eb"
+        },
+        {
+          "evidenceId": "ev_e91fc360bb341fd8fd0bd0900914c10a2e4812dc9a12d73072d16a8e826d04a3",
+          "path": [
+            "quote"
+          ],
+          "fieldSha256": "3bef1dbbc43d1d8b25090f71b80dd8ddf18d1d0657122853addb674f6b4449eb"
+        },
+        {
+          "evidenceId": "ev_e91fc360bb341fd8fd0bd0900914c10a2e4812dc9a12d73072d16a8e826d04a3",
+          "path": [
+            "sourceContext",
+            "before"
+          ],
+          "fieldSha256": "d3779f079ea6d6254155a99d30834968637c66028b875ea6ee1f7f58807516b4"
+        }
+      ],
+      "negativeControls": [
+        {
+          "mutation": "foreign",
+          "errors": [
+            "diagnostic_source_not_bound",
+            "new_diagnostic_numbers_not_bound"
+          ]
+        },
+        {
+          "mutation": "metadata",
+          "errors": [
+            "diagnostic_source_not_bound",
+            "new_diagnostic_numbers_not_bound"
+          ]
+        },
+        {
+          "mutation": "unsupported_number",
+          "errors": [
+            "diagnostic_statement_not_in_reason",
+            "new_diagnostic_numbers_not_bound"
+          ]
+        },
+        {
+          "mutation": "plain_formula",
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ]
+        }
+      ]
+    }
+  ],
+  "boundary": "Counterfactual representation check only: use unchanged fields at the exact reviewer-selected own source ID/path, not quote search or inference. Does not evaluate scientific implication, change archived results, or permit unbound plain reason facts. A production implementation still needs a versioned schema, ownership checks, compatibility tests and real validation.",
+  "scriptSha256": "08c2962f27bb2f79483a3e19ad3fe84bcdc83c1524f57443c9f81a7debf1013f"
+}

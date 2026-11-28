@@ -1,0 +1,29 @@
+{
+  "baselineReceipt": "research-reference-and-resource-real-20261126.json",
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false,
+  "AWQ": {
+    "attempt": 3,
+    "input": "saved original draft",
+    "editorOutput": "simulated focused edit",
+    "tableBindingsPreserved": 12,
+    "obligationsPreserved": true,
+    "oldVisibleCharacters": 613,
+    "visibleCharacters": 238,
+    "limit": 400,
+    "precheckPassed": true
+  },
+  "D3": {
+    "attempt": 11,
+    "input": "saved generation and review",
+    "editorOutput": "simulated citation replacement",
+    "path": "/sourceFacts/7/evidenceRefs",
+    "previousEvidenceAlias": "E3",
+    "correctedEvidenceAlias": "E12",
+    "inputBytes": 30338,
+    "limitBytes": 32000,
+    "hardIssuesAfterRevision": [],
+    "cachedReplayInvokedEditorAgain": false,
+    "status": "awaiting_scientific_review"
+  }
+}

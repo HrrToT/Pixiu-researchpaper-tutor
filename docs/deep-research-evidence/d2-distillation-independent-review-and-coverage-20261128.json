@@ -1,0 +1,53 @@
+{
+  "baseRun": "dr_run_6e65839c70c559ab8c58372a93e74f27",
+  "isolatedRun": "dr_d2_distillation_reviewed_final_20261128",
+  "publicationOutcome": "partial",
+  "acceptedClaimCount": 11,
+  "unchangedFactualReceipts": 9,
+  "boundaryReceiptCount": 2,
+  "boundaryReplayedWithExactRequestDigests": true,
+  "freshMechanismPassedIndependentReview": true,
+  "finalAuditCoherent": true,
+  "remainingDiagnostics": {
+    "requestExcerpt": "向初学者比较原始表示与压缩后部署的取舍",
+    "missingAnswerElement": "球谐系数、蒸馏和向量量化等核心术语缺少面向初学者的解释。"
+  },
+  "newModelCalls": 2,
+  "newProviderTokensByNode": {
+    "verify": 4014,
+    "verify_answer_coverage": 9776
+  },
+  "stitchedStandardBudgetReplay": {
+    "generationCalls": 17,
+    "settledTokens": 91196,
+    "peakReservedPlusSpent": 99396,
+    "providerCalls": 0,
+    "freshRun": false
+  },
+  "termRepairRoutingReplay": {
+    "before": [
+      "cmp_conclusion_2"
+    ],
+    "after": {
+      "cmp_0_0": [
+        "向初学者比较原始表示与压缩后部署的取舍",
+        "请在本比较单元中用简短通俗的话解释这些现有术语：球谐系数。保留原有操作、事实、数字和原文依据。"
+      ],
+      "cmp_1_0": [
+        "向初学者比较原始表示与压缩后部署的取舍",
+        "请在本比较单元中用简短通俗的话解释这些现有术语：球谐系数、蒸馏、向量量化。保留原有操作、事实、数字和原文依据。"
+      ]
+    },
+    "unaffectedClaimsRetained": 9,
+    "providerCalls": 0
+  },
+  "rawSha256": {
+    "intent.json": "20e68897143f79a8a3a129d9894c46f6635277b1ed560fc0d2ffe81e297f6960",
+    "mechanism-verification.json": "9186c67970a4377bae4a9c2c6a2d58870460a733a61a720ca791b9144e51aeab",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "d6404d1398ffd7c16ddd97b2aeff25e23b8bb7bb9328fbb3c26184e5f2618dd1",
+    "run.json": "5379b10e1d44ba77335876c304938ce9b7a4498533eb12f14eb6741d27ff6aae",
+    "calls.json": "6e72f9ef653105920e221a214e3fc9a025a69287deaa5279b468bf56ef1ecafe",
+    "report.md": "6899b30db3319c327e9270c0719a9df0749c562107337b49b8adbb70f4b1bc26"
+  }
+}

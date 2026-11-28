@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T10:53:12.130374+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "gsc_v1": {
+      "path": "D:\\3DGS\\paper\\Goal-Oriented Semantic Communications\\2411.16187v1.pdf",
+      "sha256": "b75558d849e927eb2dd5816a2bce04532ea824f6ae25dc37fd4ac8467cd412ee",
+      "bytes": 6765868,
+      "pageCount": 13,
+      "arxiv": "2411.16187v1",
+      "reference": "https://arxiv.org/abs/2411.16187v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "解释研究机制和已报告边界，不要求提出或执行新实验。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "independence": "Evaluator read versioned primary PDF/metadata only to freeze criteria. Checked current task/run/index identities, exact cache, archived project evidence and named receipt roots. No case/model request or application material import; no engine changes made from this paper. This is evidence-bounded independence, not a claim to know every untracked manual use. Retire if used for tuning or diagnosis after execution; never upgrade later retries to independent credit.",
+    "scope": "One fresh H1-style mechanism/limitations question; not a substitute for full H2/H5, H3 external freshness, H4 or H6. Keep all original score/hard gates.",
+    "hardFailures": [
+      "把该v1方法写成3DGS剪枝、SH降阶或直接传输全部点云的方案。",
+      "声称接收端只靠关键点、没有共享先验或初始化信息就能无条件恢复所有场景。",
+      "把生成/重建描述为任意噪声下逐像素或几何完全相同的无损保证。",
+      "把整套系统相对ImageCom的摘要百分比全部归因于OT，或为回答本题强行补出未要求的数值。",
+      "用v2或其他论文补写v1结论，引用未实际阅读来源，或把建议/未验证推断当已证实结果。",
+      "任何严重事实/条件/来源错误，超过18调用/100000Token/360秒，未知或未审核结果计通过。"
+    ],
+    "sourceAnchors": [
+      {
+        "paper": "gsc_v1",
+        "page": 5,
+        "section": "III.A-B, Fig.3-4, Eq.11",
+        "requiredRelation": "Initial shared knowledge versus ongoing dynamic keypoint semantics."
+      },
+      {
+        "paper": "gsc_v1",
+        "page": 6,
+        "section": "III.C, Fig.5, Eq.13-17",
+        "requiredRelation": "Conditional image generation using semantic/knowledge inputs followed by NeRF reconstruction."
+      },
+      {
+        "paper": "gsc_v1",
+        "page": 9,
+        "section": "V.B, Fig.7",
+        "requiredRelation": "Residual denoising deviations at low SNR under particular channels; no universal lossless guarantee."
+      }
+    ],
+    "sourceCautions": [
+      "Do not turn inconsistent channel-ranking sentences into a mandatory ranking question.",
+      "Do not require unasked metric percentages.",
+      "Source reported results and reader inference must remain separate."
+    ],
+    "freshnessProof": "deep-research-evidence/gsc-holdout-preparation-20261112.json",
+    "goldInputBoundary": "Only case question/material scope/budget enter the application. Review criteria and anchor answers stay evaluator-only."
+  },
+  "cases": [
+    {
+      "id": "H1-GSC",
+      "split": "holdout",
+      "materials": [
+        "gsc_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前论文，向初学者解释：它为什么不必在每个时隙发送完整场景图像，接收端又如何重建场景？请串起关键机制，并说明有噪声时为什么仍可能出错。不超过300字，不用外部资料。",
+      "required": [
+        "说明稳定背景/相机/初始物体知识在开始时共享，后续更新不必反复发送完整场景图像，而不是完全无需初始化信息。",
+        "说明发送的是物体位置/运动相关关键点等动态语义信息；若说明维度，应区分编码器热图提取的二维关键点与初始知识中的三维物体位置。",
+        "把收到的语义、共享知识及文本/边缘条件如何约束生成图像，再由NeRF构建三维场景串成因果过程，不能只列模块名。",
+        "说明信道衰落/噪声可扰动关键点；OT可改善但特定信道/低SNR仍有残余偏差，不作任意条件下完全还原保证。",
+        "引用来自指定v1的实际正文，保持材料身份；遵守300字并提供初学者能理解的关系。"
+      ],
+      "forbidden": [
+        "把该v1方法写成3DGS剪枝、SH降阶或直接传输全部点云的方案。",
+        "声称接收端只靠关键点、没有共享先验或初始化信息就能无条件恢复所有场景。",
+        "把生成/重建描述为任意噪声下逐像素或几何完全相同的无损保证。",
+        "把整套系统相对ImageCom的摘要百分比全部归因于OT，或为回答本题强行补出未要求的数值。",
+        "用v2或其他论文补写v1结论，引用未实际阅读来源，或把建议/未验证推断当已证实结果。",
+        "任何严重事实/条件/来源错误，超过18调用/100000Token/360秒，未知或未审核结果计通过。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H1-GSC": "7c85ba401895a4b94812a72897941b989ac7273e8e869bab6922f9577bc165db"
+  }
+}

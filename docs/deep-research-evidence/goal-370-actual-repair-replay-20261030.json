@@ -1,0 +1,62 @@
+{
+  "promptVersion": "dr-v2.20261030.370",
+  "case": "X4L-v4",
+  "payloadSha256": "d75ef32775ccfafb8568d195a192d413cdb089672a91c4c080ac2239868f92be",
+  "legacyPreparation": {
+    "kind": "repairEvidenceBytes",
+    "limit": 24000,
+    "used": 24319
+  },
+  "prepared": [
+    {
+      "targets": [
+        "c1"
+      ],
+      "bytes": 23982,
+      "units": 6
+    },
+    {
+      "targets": [
+        "c2"
+      ],
+      "bytes": 23937,
+      "units": 5
+    },
+    {
+      "targets": [
+        "c3"
+      ],
+      "bytes": 23924,
+      "units": 5
+    },
+    {
+      "targets": [
+        "c1"
+      ],
+      "bytes": 23982,
+      "units": 6
+    },
+    {
+      "targets": [
+        "c2"
+      ],
+      "bytes": 23937,
+      "units": 5
+    },
+    {
+      "targets": [
+        "c3"
+      ],
+      "bytes": 23924,
+      "units": 5
+    }
+  ],
+  "allQuotesExact": true,
+  "mandatoryCitationContextsExact": true,
+  "optionalOmissionsExplicit": true,
+  "allOriginalCitationsRetained": true,
+  "providerCalls": 0,
+  "oldRunChanged": false,
+  "contentAccepted": false,
+  "boundary": "Original targets and stored evidence; offline preparation only. Empty controlled response is not a model answer or quality pass."
+}

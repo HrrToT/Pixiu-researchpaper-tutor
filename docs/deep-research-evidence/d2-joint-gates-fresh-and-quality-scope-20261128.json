@@ -1,0 +1,90 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_d2_joint_gate_verification_and_quality_input_replay",
+  "sourceCommit": "90e05930634956e25ab20bfbb1fe5bb37488a414",
+  "runId": "dr_run_b7a14749ebf7538884d3a9d8fe5dd724",
+  "outcome": "partial",
+  "sourcePolicy": "task_only",
+  "independentHoldoutCredit": 0,
+  "workspaceDeliveryExercised": false,
+  "usage": {
+    "generationRequests": 15,
+    "tokens": 80505,
+    "seconds": 143.0,
+    "modelRoute": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 10
+    }
+  },
+  "passedJointCriteria": {
+    "coverageObligationId": "ob3",
+    "fpsBoundaryClaimId": "cmp_conclusion_0",
+    "deploymentAdviceClaimId": "cmp_conclusion_1",
+    "deploymentReview": {
+      "version": 1,
+      "evidenceIds": [
+        "ev_32d9efa1066089b95c4a322203ae523d553c689e83488ded4a5db98d7c9ae86c",
+        "ev_504fbfd0ce6ae9cabeb65878be4d7e2100f234732fefee51eaaf014e7de49069",
+        "ev_6cc12bbb30e5f474bc863a042d3823ebc163371fa8192ee5841a2cac88b7b893"
+      ],
+      "bindingDigest": "3a0f05fc98ceb70784cd80899e9516cd93f31c0320674ce9e0466a3fc1b85115"
+    }
+  },
+  "verificationSummary": {
+    "accepted": 10,
+    "rejected": 1
+  },
+  "sourceChecks": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 10,
+    "literalCitationOccurrences": {
+      "true": 32
+    },
+    "sourceTableCells": {
+      "true": 10
+    }
+  },
+  "factualRejections": [
+    {
+      "claimId": "cmp_5_0",
+      "reason": "semantic_unresolved",
+      "detail": "存储更小的比较成立，但画质指标并非在所有所述对照中均下降。\nTanks and Temples中，LightGaussian的PSNR高于未带星号的3D-GS。"
+    }
+  ],
+  "repairAdmission": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "qualityCounterexample": {
+    "source": "LightGaussian v6",
+    "page": 6,
+    "table": "Table 1",
+    "dataset": "Tank and Temple",
+    "baseline": "unstarred 3D-GS [16]",
+    "metric": "PSNR",
+    "baselineValue": "23.14",
+    "lightGaussianValue": "23.44"
+  },
+  "qualityInputReplay": {
+    "providerCalls": 0,
+    "retainedReconstructedBundles": 9,
+    "jointPromptUnchanged": true,
+    "stageBytes": {
+      "P1": 22147,
+      "P2": 23935,
+      "joint": 23914
+    }
+  },
+  "candidateScienceStillUnverified": true,
+  "artifacts": {
+    "tmp/openai-d2-joint-gates-fresh-20261128/intent.json": "f300b9b3e41e117e0156b186103f4f5c0e9bf4a28f8cd9d9ea0331cbedeffdb1",
+    "tmp/openai-d2-joint-gates-fresh-20261128/run.json": "18b135454713ca36c64918b4fc9520e82fc6de4d5cb7fdaee96bf785b547d2c6",
+    "tmp/openai-d2-joint-gates-fresh-20261128/result.json": "b37cebec411b34a159fc54783b79de0c2febf5dd66d1e6bb77a4180106531996",
+    "tmp/openai-d2-joint-gates-fresh-20261128/calls.json": "af63deb75854c89a3f644ae161ab5a7475a04e1a252e17faafa90fb11e33ba6d",
+    "tmp/openai-d2-joint-gates-fresh-20261128/provider.jsonl": "c6420d1e37553080dabfe5c5edc4859b3bee56d543e63a1725d7e778ad1830a0",
+    "tmp/openai-d2-joint-gates-fresh-20261128/independent-pdf-check.json": "2b07ae20fe18b8c3364f5080c474926a4e0af4689c9ad0dabe6eada6f37494d2",
+    "tmp/openai-d2-joint-gates-fresh-20261128/quality-scope-input-replay.json": "8a07ede902088187803fdd5c4d9f703b1b17ec162c00d7f7fa6273df2a540d1b"
+  }
+}

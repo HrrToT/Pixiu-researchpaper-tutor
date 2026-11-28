@@ -1,0 +1,141 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "exposed_development_run_and_offline_checkpoint_replays",
+  "independentCredit": 0,
+  "actualRun": {
+    "runId": "dr_run_4de2787731fd5a9da3252231e0c6f387",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 13,
+    "providerCallsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 8
+    },
+    "totalProviderTokens": 60000,
+    "elapsedSeconds": 144.0,
+    "externalSearches": 0,
+    "modelCallsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1,
+      "verify": 2,
+      "verify_answer_coverage": 1,
+      "repair_claims": 1
+    },
+    "verifiedPointCount": 2,
+    "rejectedPointCount": 4,
+    "jointTargetIds": [
+      "joint_obligation4"
+    ],
+    "benchmarkAdviceReviews": 0,
+    "superPointMeasurement": {
+      "group": "Homography Estimation",
+      "metric": "ϵ=3",
+      "value": "0.684",
+      "draftRetainedExactTableBinding": true,
+      "publishedAsVerified": false,
+      "firstRejection": "table_condition_not_displayed",
+      "revisionRejection": "numeric_mismatch"
+    }
+  },
+  "recheckRoutingReplay": {
+    "sourceRun": "dr_run_4de2787731fd5a9da3252231e0c6f387",
+    "changes": [
+      {
+        "obligationId": "benchmark_recheck",
+        "fromObligationId": "obligation4",
+        "criterionId": "criterion5",
+        "change": "separated_benchmark_recheck"
+      }
+    ],
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23994,
+        "targetIds": [
+          "cell_0_0",
+          "cell_1_0",
+          "cell_2_0"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23958,
+        "targetIds": [
+          "cell_0_1",
+          "cell_1_1",
+          "cell_2_1"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23999,
+        "targetIds": [
+          "joint_obligation4",
+          "joint_benchmark_recheck"
+        ]
+      }
+    ],
+    "benchmarkRecheckTargets": [
+      "advice"
+    ],
+    "maximumInputBytes": 24000,
+    "providerCalls": 0,
+    "independentCredit": 0
+  },
+  "tableDisplayReplay": {
+    "sourceRun": "dr_run_4de2787731fd5a9da3252231e0c6f387",
+    "providerCalls": 0,
+    "editedFixture": true,
+    "unchangedHistoricalEditRejectedAtCharacters": 627,
+    "editedFixtureCharacters": 583,
+    "characterLimit": 600,
+    "compactedMeasurementCondition": "Homography Estimation / SuperPoint：ϵ=3 0.684",
+    "tableValidatorReason": null,
+    "sameExactCitations": true,
+    "sameExactTableBindings": true,
+    "independentCredit": 0
+  },
+  "rawReceiptSha256": {
+    "run.json": "6515fc899320add888fc06fccf394b6b1a1d1b2c66c170c564c2b81224791be2",
+    "calls.json": "c160dec3217442e3c5cf0033c206c2347a3abd4f0a5684a0951a8e0db263b05e",
+    "provider.jsonl": "c0794bd39245ced18f3918696430d4a4eebe01fa9f86446d42a9f9909700edc3",
+    "result.json": "774dbbe1db1eb825b256619d0ebe033f0ca8ab1d56b063abcb54d97a2c74695b"
+  },
+  "boundary": "Routing used the same recorded acquisition evidence with a fresh in-memory synthesis checkpoint and stopped before dispatch. The historical editor output exceeded 600 characters when the exact condition was restored. The fitting replay supplied a shorter handcrafted edit through the production compiler. It verified the retained coordinate and citations but did not establish paid-model editing quality or full-answer scientific acceptance.",
+  "numericPrecheckReplay": {
+    "sourceRun": "dr_run_4de2787731fd5a9da3252231e0c6f387",
+    "providerCalls": 0,
+    "comparedQuantitySpellingVersions": [
+      19,
+      20
+    ],
+    "claims": [
+      {
+        "claimId": "cmp_4_0",
+        "testedText": "SuperPoint v1在HPatches的单应估计结果为0.684；图像分辨率480×640，每幅最多取1000点，以最近邻匹配后用RANSAC估计单应矩阵。",
+        "oldReason": "numeric_mismatch",
+        "oldMissingIdentity": "48e1x",
+        "newStage": "eligible_for_semantic_review",
+        "exactMisreadsStillRejected": [
+          "480×641",
+          "640×480",
+          "480倍"
+        ]
+      },
+      {
+        "claimId": "cmp_2_0",
+        "testedText": "一次前向传播生成关键点和半稠密描述子图，在检测位置插值并L2归一化得到点描述子。",
+        "oldReason": "numeric_mismatch",
+        "oldMissingIdentity": "1e0",
+        "newStage": "eligible_for_semantic_review",
+        "unsupportedRepeatsStillRejected": "两次"
+      }
+    ],
+    "independentCredit": 0,
+    "boundary": "Recorded text and citations are unchanged. Numeric and table checks pass before semantic review. No new generation, semantic verdict or scientific acceptance was produced."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-28T12:36:10.103676+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
+  "independentCredit": 0,
+  "materials": {
+    "pointpillars_cvpr2019": {
+      "path": "tmp/h1-pointpillars-material-20261128/pointpillars-cvpr2019.pdf",
+      "arxiv": "1812.05784",
+      "reference": "https://openaccess.thecvf.com/content_CVPR_2019/papers/Lang_PointPillars_Fast_Encoders_for_Object_Detection_From_Point_Clouds_CVPR_2019_paper.pdf",
+      "sha256": "b1c4b0cb1bba246637ac63ecc93919d3f298cc816e8eab129eb9c6d5c4606a2c",
+      "bytes": 1187678,
+      "pageCount": 9
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-POINTPILLARS",
+      "split": "holdout",
+      "materials": [
+        "pointpillars_cvpr2019"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据《PointPillars》CVPR 2019 会议版，向初学者解释如何把三维点云变成能用二维卷积处理的伪图像，以及这样做为什么省计算。分别说明论文报道的常规版和加速版速度、测速设备，以及加速版改变了什么、主要牺牲了什么精度。正文不超过 300 字，引用原文，不用外部资料。",
+      "required": [
+        "在水平面划网格得到竖直柱，每柱点经过编码汇聚成特征，并按原来的水平网格位置散布回伪图像。",
+        "说明二维卷积处理伪图像，避免三维卷积或按高度划分体素带来的开销，不能说高度信息完全丢失。",
+        "常规版约 62 Hz，加速版约 105 Hz；测速桌面设备有 Intel i7 CPU 和 NVIDIA 1080 Ti GPU。",
+        "较粗的柱格可提高速度，该设置的精度下降主要发生在行人和骑行者类别，汽车精度在一系列柱格大小下相对稳定。"
+      ],
+      "forbidden": [
+        "把 105 Hz 当作常规版速度或跨硬件保证。",
+        "把柱编码描述成丢弃一切高度信息，或说网络依赖昂贵的三维卷积。",
+        "把主要下降错误归给汽车或声称加速完全无精度代价。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "题目解释既有算法与测速条件。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "pointpillars_cvpr2019",
+        "page": 1,
+        "section": "Abstract",
+        "checks": "常规与加速版速度。"
+      },
+      {
+        "paper": "pointpillars_cvpr2019",
+        "page": 3,
+        "section": "§2 and Figure 2",
+        "checks": "柱编码、二维骨干网络与模型路线。"
+      },
+      {
+        "paper": "pointpillars_cvpr2019",
+        "page": 4,
+        "section": "§2.1",
+        "checks": "柱特征映射回网格位置，避免额外三维卷积。"
+      },
+      {
+        "paper": "pointpillars_cvpr2019",
+        "page": 7,
+        "section": "Runtime and Accuracy Trade-off",
+        "checks": "i7 与 1080 Ti，增大柱格后提速，主要精度代价。"
+      }
+    ],
+    "goldInputBoundary": "模型只接收固定问题、论文、任务内材料策略与标准预算；评分标准和参考页码留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H1-POINTPILLARS": "1007aaedc2c629ba802a8f14974cb7de65829d966c1c1115383eadb9823443c3"
+  },
+  "firstExecutionReceipt": "deep-research-evidence/pointpillars-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/pointpillars-h1-runtime-continuation-replay-20261128.json"
+}

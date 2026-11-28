@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-15",
+  "trigger": "H4R-v1 first-run content review failed after machine completion",
+  "fixes": {
+    "receiptGuard": {
+      "commit": "d46e114",
+      "behavior": "Case-wide exclusive lock and live prior-run checks prevent changed attempt/task IDs bypassing unconfirmed, active, paused, cancelled or unresolved requests. Preview and existing receipt reads remain GET-only."
+    },
+    "tableGeometry": {
+      "commit": "528deb2",
+      "behavior": "Recognize regular nested PDF header bands, corroborate every level against TEI, retain parent/subgroup identity. Track cumulative glyph advance between consecutive Tj/TJ operations, reset on text positioning, stop verification after unknown font widths."
+    },
+    "answerCompleteness": {
+      "commit": "b32f674",
+      "promptVersion": "dr-v2.20261015.68",
+      "behavior": "An identification criterion with numeric objects also in the request needs those objects in accepted answer bindings. Equivalent decimal/scientific notation allowed; source-only numbers cannot close it. Semantic mapping review remains separately required."
+    }
+  },
+  "offlineVerification": {
+    "focused": {
+      "passed": 87,
+      "seconds": 2.45
+    },
+    "integration": {
+      "passed": 1304,
+      "skipped": 2,
+      "warnings": 1,
+      "seconds": 43.14
+    }
+  },
+  "sourceReplay": {
+    "pdf": "D:/3DGS/paper/PFGS-360/2603.23324v2.pdf",
+    "sha256": "abc53af939c9938ea19fe5877c3a04765c97e41b1bac51122975d91ee535de88",
+    "physicalPage": 5,
+    "verifiedGroups": 6,
+    "verifiedRow": "Ours",
+    "verifiedCells": 18,
+    "rawDiagnostic": "tmp/dr70-table-diagnostic/tables-fixed.json",
+    "visualChecked": "tmp/pdfs/fresh-holdouts/pfgs-p5.png",
+    "originalCoverageReplay": "The missing identification remains an open criterion; no model called for replay."
+  },
+  "boundaries": [
+    "No claim that every irregular PDF table is verified. Ambiguous geometry and missing labels remain unverified.",
+    "No general semantic correctness proof from numeric presence. Cohort, metric and value relations still require independent checking.",
+    "H4R used in diagnosis is retired; future runs are development checks only."
+  ]
+}

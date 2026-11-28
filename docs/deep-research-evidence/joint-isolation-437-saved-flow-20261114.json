@@ -1,0 +1,22 @@
+{
+  "sourceCase": "AD1N-v23",
+  "archivedLegacyRequestsExact": true,
+  "legacyReceivedDecisionsExact": true,
+  "originalInvalidBatchResult": null,
+  "newUnitIsolationAudit": {
+    "version": 1,
+    "status": "checked",
+    "validUnits": [
+      "G1"
+    ],
+    "invalidUnits": [
+      "G2"
+    ]
+  },
+  "newValidUnits": 1,
+  "invalidProcessUnitStillUnapproved": true,
+  "liveModelCalls": 0,
+  "originalRunMutated": false,
+  "scientificAcceptance": false,
+  "boundary": "Archived response replay demonstrates unit-level isolation under the new opt-in contract. The historical batch remains invalid; no source, role, semantic verification or case outcome is upgraded."
+}

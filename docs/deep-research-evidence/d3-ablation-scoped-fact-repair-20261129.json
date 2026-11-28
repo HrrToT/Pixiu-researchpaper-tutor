@@ -1,0 +1,61 @@
+{
+  "scope": "One isolated fact-only edit of the frozen D3 developmental proposal.",
+  "candidate": "ecc92bc86ffab480a104d838bf680a7bd4d13e75",
+  "runId": "dr_d3_ablation_optimizer_20261129",
+  "previousContract": 3,
+  "scopedContract": 4,
+  "inputBytes": {
+    "before": 16620,
+    "after": 3956
+  },
+  "maxOutputTokens": {
+    "before": 6144,
+    "after": 2048
+  },
+  "previousEvidenceAliases": 12,
+  "scopedEvidenceAliases": {
+    "f5": [
+      "E6",
+      "E7"
+    ]
+  },
+  "changedFacts": [
+    "f5"
+  ],
+  "groupPlanUnchanged": true,
+  "sourceFactText": "论文已有消融分别关闭克隆或分裂，其余方法保持不变。",
+  "usage": {
+    "total_tokens": 1220,
+    "input_tokens": 1072,
+    "output_tokens": 148,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 1069
+  },
+  "newCalls": 1,
+  "cumulativeTokens": 44398,
+  "remainingHardIssues": [],
+  "nextScienceReviewBatchBytes": [
+    20216,
+    35840,
+    35096
+  ],
+  "artifacts": {
+    "run.json": {
+      "path": "tmp/openai-d3-ablation-fact-repair-20261129/run.json",
+      "sha256": "d69ba0fc049c77982704f57f8b572eb8dd2abd0da863b7884b68179bf4f12ba2"
+    },
+    "calls.json": {
+      "path": "tmp/openai-d3-ablation-fact-repair-20261129/calls.json",
+      "sha256": "d3dd60e376f5011cb867770e6296a7dd3904e868918eed2b2f8159397596a4e9"
+    },
+    "result.json": {
+      "path": "tmp/openai-d3-ablation-fact-repair-20261129/result.json",
+      "sha256": "ae8c41fee41907e379d13a881dfe15130a5fad4400a3239159c69a203840b5d9"
+    }
+  },
+  "targetedTestsPassed": 306,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "published": false
+}

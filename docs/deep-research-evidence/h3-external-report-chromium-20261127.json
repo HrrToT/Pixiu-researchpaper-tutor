@@ -1,0 +1,54 @@
+{
+  "runId": "dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+  "actualJavaResponses": true,
+  "modelCalls": 0,
+  "workspaceWrites": 0,
+  "viewportChecks": [
+    {
+      "width": 1366,
+      "height": 768,
+      "page": 14,
+      "pdfPages": 16,
+      "visibleCanvas": true,
+      "citationPagePainted": true,
+      "reopenedAfterReload": true,
+      "file": {
+        "status": 200,
+        "sha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+        "bytes": 837263
+      },
+      "screenshotSha256": "b497a6f7ef43e12e3a90236762a0dfa801b6e3b7c2aef894e0071872e6a0a689",
+      "screenshotLocalPath": "tmp/h3-real-delivery-browser-confirmed-20261127/appendix-1366.png"
+    },
+    {
+      "width": 1024,
+      "height": 700,
+      "page": 14,
+      "pdfPages": 16,
+      "visibleCanvas": true,
+      "citationPagePainted": true,
+      "reopenedAfterReload": true,
+      "file": {
+        "status": 200,
+        "sha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+        "bytes": 837263
+      },
+      "screenshotSha256": "c939ac7a6d1dbf98933e2c5f71e0278808ced95ad26fad0086061c7deeb73bcb",
+      "screenshotLocalPath": "tmp/h3-real-delivery-browser-confirmed-20261127/appendix-1024.png"
+    }
+  ],
+  "browserResetReadVerified": true,
+  "taskUnchanged": true,
+  "codeCommit": "21d7318a67c59d8e4a80dcf7fc4cf7f7916e42e4",
+  "localServiceReceipt": {
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true,
+    "modelCalls": 0,
+    "actualJavaJarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "originalRunId": "dr_run_274ef553b83054efa51f2bd223e7fdf7",
+    "replayRunId": "dr_run_5e1acf02ad0956c8bb22570f91abc82b"
+  },
+  "productionDeploymentVerified": false,
+  "buildIndexSha256": "03c37ef5bbb454efd09c2558d56000953f54053b0c8b1a2f44fa8aaf7022adbd"
+}

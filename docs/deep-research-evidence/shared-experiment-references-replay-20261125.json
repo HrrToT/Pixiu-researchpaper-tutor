@@ -1,0 +1,85 @@
+{
+  "candidateSharedPlanGenerationProfile": 3,
+  "inputByteLimit": 32000,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "cases": [
+    {
+      "case": "D3-DENSIFICATION-FACTORIAL-v1",
+      "recordSha256": "44a92470ee6623e057c7861665d79a3501ea74b98d3ae4ea703860de16c673d1",
+      "originalRequestIdentityRebuiltExactly": true,
+      "evidenceCount": 20,
+      "originalInputBytes": 29345,
+      "candidateInputBytes": 29607,
+      "originalCanonicalIssues": {
+        "plan.creation_identity": 1,
+        "plan.future_state": 13,
+        "plan.incomplete_resource_accounting": 1,
+        "plan.intervention_operation": 4,
+        "plan.measurement_state_unavailable": 4,
+        "plan.state_source": 2
+      },
+      "canonicalIssuesAfterChangingOnlyInterventionOperationReferences": {
+        "plan.creation_identity": 1,
+        "plan.future_state": 13,
+        "plan.incomplete_resource_accounting": 1,
+        "plan.measurement_state_unavailable": 4,
+        "plan.state_source": 2
+      },
+      "referenceCompilerRejectedDraft": true,
+      "referenceCompilerIssues": [
+        {
+          "code": "plan.state_input_also_created",
+          "path": "/states/0/source"
+        },
+        {
+          "code": "plan.state_creator_reference",
+          "path": "/states/7/source"
+        },
+        {
+          "code": "plan.state_creator_reference",
+          "path": "/states/8/source"
+        }
+      ]
+    },
+    {
+      "case": "H5-DORA-FACTORIAL-v1",
+      "recordSha256": "d35a35872c174c6c736f7d53bf2618ff70bc3dfa5a826c3f547fcb8d24e0570e",
+      "originalRequestIdentityRebuiltExactly": true,
+      "evidenceCount": 20,
+      "originalInputBytes": 31160,
+      "candidateInputBytes": 31772,
+      "originalCanonicalIssues": {
+        "plan.budget_reference": 5,
+        "plan.fixed_state_update": 2,
+        "plan.future_state": 1,
+        "plan.incomplete_resource_accounting": 1,
+        "plan.intervention_coverage": 1,
+        "plan.measurement_before_treatment": 2,
+        "plan.measurement_mutation": 2,
+        "plan.measurement_state_unavailable": 8,
+        "plan.pairing_clone": 1,
+        "plan.unpaired_groups": 1
+      },
+      "canonicalIssuesAfterChangingOnlyInterventionOperationReferences": {
+        "plan.budget_reference": 5,
+        "plan.fixed_state_update": 2,
+        "plan.future_state": 1,
+        "plan.incomplete_resource_accounting": 1,
+        "plan.intervention_coverage": 1,
+        "plan.measurement_before_treatment": 2,
+        "plan.measurement_mutation": 2,
+        "plan.measurement_state_unavailable": 8,
+        "plan.pairing_clone": 1,
+        "plan.unpaired_groups": 1
+      },
+      "referenceCompilerRejectedDraft": true,
+      "referenceCompilerIssues": [
+        {
+          "code": "plan.state_input_unavailable",
+          "path": "/states/0/source"
+        }
+      ]
+    }
+  ]
+}

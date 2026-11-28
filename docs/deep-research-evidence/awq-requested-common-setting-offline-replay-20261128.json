@@ -1,0 +1,69 @@
+{
+  "case": "H4-AWQ-VERSIONS-v7",
+  "sourceRunId": "dr_run_e0dcf81e7c3f5c3eb86acf389e5f1d9c",
+  "rawRunSha256": "063739b3b9c25a29c0707bd1085423ef415e0c97d2f7d7e98f33b4d9dda13273",
+  "physicalPage": 3,
+  "table": 1,
+  "metric": "WikiText perplexity",
+  "quantizationScope": "INT3 group 128 for quantized settings",
+  "cellsByVersionFP16RTNActivationSelectedOnePercent": {
+    "awq_v1": {
+      "OPT-1.3B": [
+        "16.41",
+        "206.5",
+        "18.51"
+      ],
+      "OPT-6.7B": [
+        "12.29",
+        "43.16",
+        "13.02"
+      ]
+    },
+    "awq_v2": {
+      "OPT-1.3B": [
+        "14.62",
+        "119.00",
+        "16.91"
+      ],
+      "OPT-6.7B": [
+        "10.86",
+        "23.54",
+        "11.39"
+      ]
+    }
+  },
+  "retainedCellCount": 12,
+  "legacyPassedToVerifier": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "currentPassedToVerifier": [
+    "c1",
+    "c2"
+  ],
+  "excluded": [
+    {
+      "claimId": "c3",
+      "reason": "table_revision_setting_outside_request",
+      "detail": "把共同结论限定在问题指定的设置。原表题注给出的参数范围不能替代指定列。"
+    }
+  ],
+  "orderedSettingClaim": "表 1（FP16、RTN (w3-g128)、FP16% (based on act.) · 1%）OPT-1.3B 为 v1 16.41、206.5、18.51，v2 14.62、119.00、16.91；OPT-6.7B 为 v1 12.29、43.16、13.02，v2 10.86、23.54、11.39。各版所列模型的数值均从低到高为 FP16、FP16% (based on act.) · 1%、RTN (w3-g128)。",
+  "crossRevisionCauseBoundary": "v1与v2表1中对应模型和设置的WikiText困惑度数值不同。\n修订前后数值存在差异，但仅凭表1数据无法确定差异原因。",
+  "characterCountWithMockAcceptedClaims": 275,
+  "semanticCallback": "mocked, used to observe admitted claim IDs",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "newIndependentAcceptanceCredit": 0,
+  "fixCommit": "fc2e3ec1853e5339cec5cdf5a3dca89cfa90d0e8",
+  "regression": {
+    "passed": 74,
+    "junit": "tmp/h4-requested-common-settings-20261128.xml",
+    "sha256": "03ebff8b22f6f697c832fb8b4b9ec1b029f1d9ffc8ca2225b6b373ea211c95e1"
+  },
+  "replayArtifact": {
+    "path": "tmp/h4-common-scope-awq-offline-replay-20261128.json",
+    "sha256": "fab2fbf0c858a8b9cc7e3bc7932ae992d1ffcaaab5134ebbbcbac5062bd25952"
+  }
+}

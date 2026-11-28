@@ -1,0 +1,27 @@
+{
+  "ledgerRows": 9226,
+  "active": 0,
+  "paused": 15,
+  "taskCount": 16,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1215,
+    "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 1322.9
+  },
+  "newModelCalls": 0,
+  "productionWrites": 0
+}

@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-16",
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "cases": [
+    {
+      "reason": "execution_capacity",
+      "savedActionReceiptStatus": "completed",
+      "deferred": {
+        "status": "waiting_user",
+        "runRevision": 7,
+        "executionEpoch": 1,
+        "clarification": null,
+        "resumeDeferred": {
+          "reason": "execution_capacity",
+          "requestedAt": "2026-10-16T10:48:31Z"
+        },
+        "allowedActions": [
+          "resume",
+          "cancel"
+        ]
+      },
+      "fixtureModelCallsAtDeferral": 1,
+      "afterExplicitResume": {
+        "status": "waiting_user",
+        "executionEpoch": 2,
+        "markerCleared": true,
+        "humanAnswerHistory": [
+          {
+            "question": "你希望先看质量还是速度？",
+            "answer": "只看画质，给初学者解释，200字以内。"
+          }
+        ],
+        "nextClarificationQuestion": "核查作者报告还是复现实验？",
+        "fixtureCalls": [
+          {
+            "node": "resolve_brief",
+            "status": "succeeded",
+            "settled": 1
+          },
+          {
+            "node": "resolve_brief",
+            "status": "succeeded",
+            "settled": 1
+          }
+        ]
+      },
+      "scope": {
+        "materials": [
+          {
+            "materialId": "p"
+          }
+        ],
+        "sourcePolicy": {
+          "mode": "task_only"
+        }
+      },
+      "budgetLimits": {
+        "maxModelCalls": 18,
+        "maxTokens": 100000,
+        "maxWallClockSeconds": 360
+      }
+    },
+    {
+      "reason": "execution_busy",
+      "savedActionReceiptStatus": "completed",
+      "deferred": {
+        "status": "waiting_user",
+        "runRevision": 7,
+        "executionEpoch": 1,
+        "clarification": null,
+        "resumeDeferred": {
+          "reason": "execution_busy",
+          "requestedAt": "2026-10-16T10:48:31Z"
+        },
+        "allowedActions": [
+          "resume",
+          "cancel"
+        ]
+      },
+      "fixtureModelCallsAtDeferral": 1,
+      "afterExplicitResume": {
+        "status": "waiting_user",
+        "executionEpoch": 2,
+        "markerCleared": true,
+        "humanAnswerHistory": [
+          {
+            "question": "你希望先看质量还是速度？",
+            "answer": "只看画质，给初学者解释，200字以内。"
+          }
+        ],
+        "nextClarificationQuestion": "核查作者报告还是复现实验？",
+        "fixtureCalls": [
+          {
+            "node": "resolve_brief",
+            "status": "succeeded",
+            "settled": 1
+          },
+          {
+            "node": "resolve_brief",
+            "status": "succeeded",
+            "settled": 1
+          }
+        ]
+      },
+      "scope": {
+        "materials": [
+          {
+            "materialId": "p"
+          }
+        ],
+        "sourcePolicy": {
+          "mode": "task_only"
+        }
+      },
+      "budgetLimits": {
+        "maxModelCalls": 18,
+        "maxTokens": 100000,
+        "maxWallClockSeconds": 360
+      }
+    }
+  ],
+  "validated": [
+    "Human answer accepted once with a completed action receipt",
+    "No dispatch while busy/full",
+    "New revision permits next explicit action without reusing a failed receipt",
+    "Replaying either completed action does not dispatch",
+    "Same checkpoint resumes with the saved answer",
+    "Execution epoch advances once only on actual resume",
+    "Marker removed on actual execution",
+    "Next genuine clarification exposes clarify again",
+    "Materials/source policy/total budget preserved"
+  ],
+  "boundary": "Synthetic goal and fixed fixture provider only. Real facade, graph, action receipts, ledger and SQLite checkpoints. Run stops at the next genuine clarification; no scientific report or content score. No production database access or new paid test.",
+  "sourceCommit": "4137ae1",
+  "backendCommit": "4966017",
+  "tests": {
+    "backend": {
+      "passed": 1902,
+      "warnings": 1,
+      "seconds": 108.64,
+      "sourceCommit": "4966017",
+      "log": "tmp/pytest-dr115-full-first.log",
+      "scope": "Research, reading, PDF tables and config."
+    },
+    "frontend": {
+      "passed": 487,
+      "files": 65,
+      "seconds": 41.01,
+      "sourceCommit": "4137ae1",
+      "log": "tmp/vitest-dr115-full-final.log",
+      "typecheck": "passed",
+      "build": "passed",
+      "buildSeconds": 21.0,
+      "buildLog": "tmp/frontend-dr115-build-final.log",
+      "buildWarnings": "Existing dependency directives/eval, chunk imports and bundle-size notices; build exit 0."
+    }
+  },
+  "frontendBoundary": "Component/hook DOM and action tests; no claim of a real participant or new live model case."
+}

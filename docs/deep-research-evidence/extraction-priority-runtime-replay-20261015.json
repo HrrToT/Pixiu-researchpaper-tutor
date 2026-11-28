@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "promptVersion": "dr-v2.20261015.95",
+  "case": "H3R-v10",
+  "runId": "dr_run_2ddb9d2231385b4bbbbb7e9f938cbcdf",
+  "inputSha256": "049a85464ad767ad935ecae706c5d9027a4a79f599d8b8ce416460447893b2de",
+  "passages": 12,
+  "batchSize": 3,
+  "beforeFirstBatch": [
+    {
+      "sourceId": "src_4d357e653a5f49a7c860f27aa33eafcdb1d4ca308140549eed81bd1a18f192dd",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 5,
+        "offset": 0
+      },
+      "textSha256": "97c6c5460a45d41c5d891f80755549ccfb34734b8ce157b15eadd3e2a889bef5",
+      "characters": 2050
+    },
+    {
+      "sourceId": "src_395869375726dac7ec1b4d93ead9f0fe5b46795c47d4fa76bd43e031b42f421c",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 2,
+        "offset": 0
+      },
+      "textSha256": "f11cbe8881bc1275981efcfe856c20bb3b89dad7a314507ada9c78a36d1b105e",
+      "characters": 2060
+    },
+    {
+      "sourceId": "src_1bbe30eb3ab0223dfb1cf6fa06882453e6142e894b004808ee6e343160a20038",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 8,
+        "offset": 0
+      },
+      "textSha256": "a542b9455c296e227d010842db324dbd8f8d2d7478f0accacc971cdafcbe6dd7",
+      "characters": 2007
+    }
+  ],
+  "afterFirstBatch": [
+    {
+      "sourceId": "src_2381cc97c8b160fe591520a364ffd0de6713348252add2587a6628d3fb86a2cb",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 5,
+        "offset": 2050
+      },
+      "textSha256": "dabcc098a4493c56ceba86b9c514c574acd00c09aff77a33c4e2922ff0d08dab",
+      "characters": 1838
+    },
+    {
+      "sourceId": "src_395869375726dac7ec1b4d93ead9f0fe5b46795c47d4fa76bd43e031b42f421c",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 2,
+        "offset": 0
+      },
+      "textSha256": "f11cbe8881bc1275981efcfe856c20bb3b89dad7a314507ada9c78a36d1b105e",
+      "characters": 2060
+    },
+    {
+      "sourceId": "src_f029c66e665cdb97fc705785aaefe3548d75f1b8a45977ef9a0cb60f58a4bf42",
+      "workId": "arxiv:2312.12337",
+      "versionId": "arxiv:2312.12337v4",
+      "location": {
+        "page": 1,
+        "offset": 2059
+      },
+      "textSha256": "ed63cc84a6ad911d8edfc05149cad7ef506f63418a6e0d23412988ec4d40ee63",
+      "characters": 1863
+    }
+  ],
+  "everyOriginalPassagePreserved": true,
+  "permissionsAndSourceIdentitiesPreserved": true,
+  "gradientDetailInFirstBatch": true,
+  "modelCalls": 0,
+  "networkRequests": 0,
+  "boundary": "Selection replay only, not generated-answer or scientific quality acceptance.",
+  "sourceCommit": "7382271",
+  "tests": {
+    "fullPassed": 1549,
+    "warnings": 1,
+    "seconds": 50.58,
+    "sourceCommit": "2cc529c",
+    "log": "tmp/pytest-dr97-full.log"
+  }
+}

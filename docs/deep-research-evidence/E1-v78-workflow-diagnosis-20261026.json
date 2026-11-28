@@ -1,0 +1,172 @@
+{
+  "case": "E1-v78",
+  "promptVersion": "dr-v2.20261026.288",
+  "metadataContract": 23,
+  "generationErrors": [
+    "timeline.cycle",
+    "timeline.input.before_creation",
+    "timeline.input.scope"
+  ],
+  "repairStatus": "not_started_capacity",
+  "repairInputBytes": 32265,
+  "maxInputBytes": 32000,
+  "initializationStarted": false,
+  "unknownStateErrorsAbsentInThisGeneration": true,
+  "issues": [
+    {
+      "code": "metadata.lifecycle.before_creation",
+      "path": "/steps/2/updates/0",
+      "componentId": "additional_3dgs"
+    },
+    {
+      "code": "timeline.input.before_creation",
+      "path": "/steps/2/updates/0",
+      "componentId": null
+    },
+    {
+      "code": "metadata.lifecycle.before_creation",
+      "path": "/steps/1/updates/1",
+      "componentId": "transformed_3dgs"
+    },
+    {
+      "code": "timeline.input.before_creation",
+      "path": "/steps/1/updates/1",
+      "componentId": null
+    },
+    {
+      "code": "timeline.input.scope",
+      "path": "/steps/7/reads/0",
+      "componentId": null
+    },
+    {
+      "code": "timeline.input.scope",
+      "path": "/steps/9/reads/0",
+      "componentId": null
+    },
+    {
+      "code": "timeline.input.scope",
+      "path": "/steps/8/reads/0",
+      "componentId": null
+    },
+    {
+      "code": "timeline.input.scope",
+      "path": "/steps/10/reads/0",
+      "componentId": null
+    },
+    {
+      "code": "timeline.cycle",
+      "path": "/steps",
+      "componentId": null
+    }
+  ],
+  "components": [
+    {
+      "componentId": "frame0_3dgs",
+      "appliesTo": [
+        "0",
+        "1"
+      ],
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createInScope": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "stage1_ntc_result",
+      "appliesTo": [
+        "0",
+        "1"
+      ],
+      "lifecycle": {
+        "scope": "per_repeat",
+        "createInScope": 0,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "transformed_3dgs",
+      "appliesTo": [
+        "0",
+        "1"
+      ],
+      "lifecycle": {
+        "scope": "per_frame",
+        "createInScope": 1,
+        "disposeAfter": "scope_end"
+      }
+    },
+    {
+      "componentId": "additional_3dgs",
+      "appliesTo": [
+        "1"
+      ],
+      "lifecycle": {
+        "scope": "per_frame",
+        "createInScope": 2,
+        "disposeAfter": "scope_end"
+      }
+    }
+  ],
+  "stepScopes": [
+    {
+      "stepIndex": 0,
+      "kind": "setup",
+      "scope": "per_repeat"
+    },
+    {
+      "stepIndex": 1,
+      "kind": "fit",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 2,
+      "kind": "fit",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 3,
+      "kind": "evaluate",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 4,
+      "kind": "evaluate",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 5,
+      "kind": "record",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 6,
+      "kind": "record",
+      "scope": "per_frame"
+    },
+    {
+      "stepIndex": 7,
+      "kind": "record",
+      "scope": "per_repeat"
+    },
+    {
+      "stepIndex": 8,
+      "kind": "record",
+      "scope": "per_repeat"
+    },
+    {
+      "stepIndex": 9,
+      "kind": "record",
+      "scope": "per_repeat"
+    },
+    {
+      "stepIndex": 10,
+      "kind": "record",
+      "scope": "per_repeat"
+    }
+  ],
+  "rawPayloadSha256": "2affaf508ae8208f52a107248eb53ae151d60bd6511f0be21f43dfb83f165f82",
+  "providerRepairSent": false,
+  "independentCredit": 0,
+  "boundary": "One development submission. Different generated metadata exposed lifecycle/scope errors; no causal claim that reference repair works."
+}

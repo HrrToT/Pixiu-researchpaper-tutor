@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v69",
+  "runId": "dr_run_389e4c49aab95a42ba36b82d357ee3a1",
+  "promptVersion": "dr-v2.20261026.279",
+  "status": "failed",
+  "workflowInitializationOutputContractVersion": 1,
+  "metadata": {
+    "status": "invalid_response",
+    "errors": [
+      "timeline.phase.evaluation_updates"
+    ],
+    "finishReason": "stop",
+    "rawBytes": 9950,
+    "frameIterations": 30,
+    "feedback": {
+      "codes": [
+        "timeline.phase.evaluation_updates"
+      ],
+      "issues": [
+        {
+          "code": "metadata.readonly.updates",
+          "path": "/steps/2/updates",
+          "expected": "[]; calculated metrics are phase outputs, not state updates",
+          "actualPresent": true,
+          "expandedStage": "operation",
+          "actual": [
+            "transformed_3dgs"
+          ]
+        },
+        {
+          "code": "metadata.readonly.updates",
+          "path": "/steps/3/updates",
+          "expected": "[]; calculated metrics are phase outputs, not state updates",
+          "actualPresent": true,
+          "expandedStage": "operation",
+          "actual": [
+            "transformed_3dgs"
+          ]
+        },
+        {
+          "code": "timeline.phase.evaluation_updates",
+          "path": "/steps/2/updates",
+          "actualPresent": true,
+          "expandedStage": "operation",
+          "actual": [
+            "transformed_3dgs"
+          ]
+        },
+        {
+          "code": "timeline.phase.evaluation_updates",
+          "path": "/steps/3/updates",
+          "actualPresent": true,
+          "expandedStage": "operation",
+          "actual": [
+            "transformed_3dgs"
+          ]
+        }
+      ],
+      "declaredComponentIds": [
+        "initial_3dgs",
+        "ntc",
+        "transformed_3dgs",
+        "additional_3dgs"
+      ],
+      "scientificApproval": false,
+      "authoredValuesPreserved": true,
+      "declaredStepCount": 10,
+      "explicitScopeEndReleases": [
+        {
+          "componentIndex": 0,
+          "componentId": "initial_3dgs",
+          "scope": "per_repeat",
+          "disposeAfter": null
+        },
+        {
+          "componentIndex": 1,
+          "componentId": "ntc",
+          "scope": "per_frame",
+          "disposeAfter": 9
+        },
+        {
+          "componentIndex": 2,
+          "componentId": "transformed_3dgs",
+          "scope": "per_frame",
+          "disposeAfter": 9
+        },
+        {
+          "componentIndex": 3,
+          "componentId": "additional_3dgs",
+          "scope": "per_frame",
+          "disposeAfter": 9
+        }
+      ]
+    },
+    "readOnlyViolations": [
+      {
+        "stepIndex": 2,
+        "kind": "record",
+        "updates": [
+          "transformed_3dgs"
+        ],
+        "action": {
+          "action": "transform_3dgs",
+          "parameters": []
+        }
+      },
+      {
+        "stepIndex": 3,
+        "kind": "record",
+        "updates": [
+          "transformed_3dgs"
+        ],
+        "action": {
+          "action": "transform_3dgs",
+          "parameters": []
+        }
+      }
+    ]
+  },
+  "revision": {
+    "status": "not_started_capacity",
+    "inputBytes": 34264,
+    "maxInputBytes": 32000
+  },
+  "initializationSubmitted": false,
+  "providerCalls": 7,
+  "scientificCredit": 0,
+  "boundary": "One fixed run, no retry. Initialization policy was not exercised: metadata read-only errors followed by revision input capacity rejection before send. Cannot claim truncated initialization fixed or disproved."
+}

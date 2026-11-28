@@ -1,0 +1,40 @@
+{
+  "candidate": "dr-v2.20261116.486",
+  "rootCause": "Mixed ordinary-advice report was excluded by factual-only conditions from unified repair instructions and point-goal policy.",
+  "oldPolicy": 1,
+  "newPolicy": 2,
+  "replayAdmissionOnlyOverrides": [
+    "startedAt",
+    "state.repairCompleted",
+    "repairInstructionsContractVersion"
+  ],
+  "actualAdmissibleBatches": [
+    {
+      "targets": [
+        "c1",
+        "c2"
+      ],
+      "promptBytes": 22536,
+      "inputCap": 22918,
+      "originalsAndAliasesExact": true,
+      "permissionsWithinOriginalScope": true
+    },
+    {
+      "targets": [
+        "c3",
+        "c4"
+      ],
+      "promptBytes": 22905,
+      "inputCap": 22918,
+      "originalsAndAliasesExact": true,
+      "permissionsWithinOriginalScope": true
+    }
+  ],
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "relatedTests": 69,
+  "correctsPriorPrototypeInterpretation": "Previous metadata-sharing hook was inactive: unified renderer was not called. Capacity rejection did not test effectiveness of that encoding.",
+  "rawOriginalSha256": "853c57f4cab64232c51b385b60a91e0d230ff23e2a4a181401990909010df8ec",
+  "boundary": "Saved-case request preparation only; no real repair, model quality or complete-run budget acceptance."
+}

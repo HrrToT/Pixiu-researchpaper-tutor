@@ -1,0 +1,130 @@
+{
+  "sourceCase": "AD1N-v26 archived verified facts",
+  "split": "development",
+  "independentCredit": 0,
+  "budgetPlan": {
+    "version": 1,
+    "budget": {
+      "totalCharacters": 300,
+      "reservedCharacters": 72,
+      "editableTextCharacters": 228,
+      "editableClaimIds": [
+        "c1"
+      ],
+      "fixedSiblingIds": [
+        "c2"
+      ],
+      "includesFixedConditionsAndPublicationLayout": true
+    },
+    "responsibilities": [
+      {
+        "claimId": "c1",
+        "primaryObligationIds": [
+          "ob_ab81342925fc2e571fa38a28",
+          "ob_71c983b2df35552000e28e00",
+          "ob_33995ad90eb136e77fd2adcf"
+        ],
+        "detailElsewhere": [
+          {
+            "obligationId": "ob_e9862b2c182c6a3aa43f5840",
+            "claimId": "c2"
+          }
+        ],
+        "suggestedTextAndConditionsCharacters": null
+      }
+    ],
+    "publicationContext": {
+      "outputKind": "claim_verification",
+      "presentationVersion": 4
+    }
+  },
+  "completeOriginalSourceRowsExact": true,
+  "completeSourceRegistryExact": true,
+  "frozenRequirementsExact": true,
+  "unambiguousGoalsReplaceOldProseHint": true,
+  "promptBytes": 14806,
+  "originalOutputTokenCap": 4096,
+  "components": [
+    {
+      "component": "integrated-text-v26-442-20261114",
+      "calls": 1,
+      "seconds": 2.56,
+      "tokens": 4331,
+      "finishReason": "stop",
+      "scientificAcceptance": false,
+      "noviceAcceptance": false,
+      "automaticRetry": false,
+      "productionWrites": 0,
+      "isolatedRunClosed": true,
+      "rawSha256": "892e90bc71f09f28214affe57093618242699223209031e0b051e6569806fa8d",
+      "candidateState": "unchanged_rejected",
+      "textChanged": false
+    },
+    {
+      "component": "integrated-source-text-v26-442-20261114",
+      "calls": 1,
+      "seconds": 4.887,
+      "tokens": 4404,
+      "finishReason": "stop",
+      "scientificAcceptance": false,
+      "noviceAcceptance": false,
+      "automaticRetry": false,
+      "productionWrites": 0,
+      "isolatedRunClosed": true,
+      "rawSha256": "262ffbe536f21300a087b174b6ac78b43dd1de9c28433b8d33dc5894db67933d",
+      "candidateState": "unverified",
+      "textChanged": true,
+      "sharedBudgetFits": true,
+      "textCharacters": 255,
+      "visibleCharacters": 276
+    },
+    {
+      "component": "reader-integrated-source-text-v26-442-20261114",
+      "calls": 1,
+      "seconds": 3.662,
+      "tokens": 4390,
+      "finishReason": "stop",
+      "scientificAcceptance": false,
+      "noviceAcceptance": false,
+      "automaticRetry": false,
+      "productionWrites": 0,
+      "isolatedRunClosed": true,
+      "rawSha256": "a0cc9822de805d1c125294c2474d3065adc8a1c57b79bbd36bc79748fb7e52d0",
+      "candidateState": "unverified",
+      "textChanged": true,
+      "sharedBudgetFits": true,
+      "textCharacters": 212,
+      "visibleCharacters": 233,
+      "adopted": false
+    },
+    {
+      "component": "reasoning-integrated-source-text-v26-442-20261114",
+      "calls": 1,
+      "seconds": 47.081,
+      "tokens": 8344,
+      "finishReason": "length",
+      "scientificAcceptance": false,
+      "noviceAcceptance": false,
+      "automaticRetry": false,
+      "productionWrites": 0,
+      "isolatedRunClosed": true,
+      "rawSha256": "abbe362cfb66238ff9f7bfc36dadbc14ce2dc3771d1a4e7ac06b49b7ea3ca49a",
+      "candidateState": "truncated",
+      "adopted": false
+    }
+  ],
+  "modelCallsTotal": 4,
+  "tokensTotal": 21469,
+  "discardedRoleAndReasoningPoliciesNotAdopted": {
+    "ai-service-python/services/deep_research/draft_system_policy.py": true,
+    "ai-service-python/services/deep_research/runtime.py": true
+  },
+  "contentAccepted": false,
+  "manualFindings": [
+    "Source-and-role rewriting produced a changed candidate within the complete publication budget, but it still used formulas, technical definitions and duplicated a sibling boundary.",
+    "The reader-system prototype remained formula-heavy and risked a source-convention mismatch, so the production system policy was restored.",
+    "The isolated low-reasoning variant exhausted its unchanged4096-token cap; it was not adopted.",
+    "The production change is budget accounting and source-role input, plus refusal of unchanged/overlength outputs. Component output is not scientific or end-to-end acceptance."
+  ],
+  "boundary": "Four distinct one-call component configurations, no automatic retries or application database writes. All outputs are unverified; no old case or full release gate is upgraded."
+}

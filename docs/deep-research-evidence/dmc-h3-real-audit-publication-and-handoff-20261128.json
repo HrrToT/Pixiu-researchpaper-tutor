@@ -1,0 +1,99 @@
+{
+  "caseId": "H3-DMC",
+  "sourceVersion": "arxiv:2403.09636v1",
+  "independentOutcomePreserved": "partial",
+  "independentCredit": 0,
+  "candidate": "9875473331a9a87cdb722db3ac7d09f5566345a4",
+  "realAudit": {
+    "candidate": "41d0606d320fe56b2387b77085100c5e6d04f415",
+    "runId": "dr_dmc_pinned_access_development_20261128",
+    "model": "gpt-6.1-terra",
+    "additionalModelCalls": 1,
+    "additionalExternalRequests": 0,
+    "usage": {
+      "total_tokens": 6244,
+      "input_tokens": 5602,
+      "output_tokens": 642,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 5599
+    },
+    "elapsedSecondsIncludingLocalPublish": 11.09,
+    "acceptedClaimsUnchanged": [
+      "C1",
+      "C2"
+    ],
+    "finalCoverageGaps": 0,
+    "binding": {
+      "criterionId": "access-and-citation",
+      "claimId": "C2",
+      "fields": [
+        "text",
+        "sourceAccessSummary"
+      ]
+    },
+    "outcomeBeforePublicationFix": "partial",
+    "remainingIssue": "Retrieval gap closure lost the authoritative plan criterion and the verified display binding."
+  },
+  "publicationReplay": {
+    "runId": "dr_dmc_publication_revalidated",
+    "reviewedRunSha256": "a9390252ad14439864cac8241dbd0b2c7f1dd6bcc10f5fd9dbd0e1e496595009",
+    "expectedVersion": {
+      "outcome": "complete",
+      "auditStatus": "checked",
+      "gaps": 0,
+      "newModelCalls": 0,
+      "visibleCharacters": 224
+    },
+    "wrongVersion": {
+      "outcome": "partial",
+      "auditStatus": "invalidated_display_metadata",
+      "gaps": 4,
+      "newModelCalls": 0,
+      "visibleCharacters": 224
+    }
+  },
+  "isolatedWorkspaceDelivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Replayed exact provider-generated and scientifically reviewed H3 report",
+    "originalRunId": "dr_dmc_publication_revalidated",
+    "sourceArtifactSha256": "04359645e4effba0e91614df58b198a0c48ea79697f878a7ac3ffe40c40d6d53",
+    "expectedPdfSha256": "bd70a5dd909287e9a25409c467884a206b9b39853bed4dd9312be6a7148eea9f",
+    "newReplayRunId": "dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+    "confirmedExternalPdf": true,
+    "artifactCount": 2,
+    "assistantMessageCount": 1,
+    "citedPages": [
+      3
+    ],
+    "crossTaskFileDenied": true,
+    "unknownSourceDenied": true,
+    "duplicateDispatchDidNotAddArtifact": true,
+    "javaRestartPersistenceVerified": true,
+    "reportBodySha256": "bfc29092e497c4eaf5df56955a030de5aa6e6b0e6517dca50511daab2d547915",
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true,
+    "blockedRequests": []
+  },
+  "regression": {
+    "tests": 182,
+    "failures": 0,
+    "errors": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-h3-dmc-pinned-access-review-20261128/intent.json": "6d82ad93a69cca7c2492e60ac41e2a0a76b1e7fb43f6a7e83eecf4cf1ebf1103",
+    "tmp/openai-h3-dmc-pinned-access-review-20261128/calls.json": "4b9888aae9c1bfec5280c6e9842edbc69d964a02e8e7c8d47839755cf09d9521",
+    "tmp/openai-h3-dmc-pinned-access-review-20261128/run.json": "a9390252ad14439864cac8241dbd0b2c7f1dd6bcc10f5fd9dbd0e1e496595009",
+    "tmp/openai-h3-dmc-pinned-access-review-20261128/publish-outcome.json": "d72b9a11da54b94eda10fd869254aed02ceac09f130c2f34b9de51f2347c0c2a",
+    "tmp/dmc-pinned-publication-revalidated-20261128-v3/receipt.json": "a4357793ae7d36d9ef8cbdb2c09205690c703af82b74593f561f1f73d4f47cf6",
+    "tmp/dmc-pinned-publication-revalidated-20261128-v3/run.json": "04359645e4effba0e91614df58b198a0c48ea79697f878a7ac3ffe40c40d6d53",
+    "tmp/dmc-pinned-publication-revalidated-20261128-v3/report.md": "8f06439696e4a4d0252251fd78c93ec827151f8bf8afc631f743285c4169877a",
+    "tmp/publication-integration-h3-dmc-pinned-access-20261128/receipt.json": "00bfc2418466f4a0f67aabb38a2d2b5b6cb3ef6d8a3322c9876d725c2a2f1fa6",
+    "tmp/publication-integration-h3-dmc-pinned-access-20261128/task-first-read.json": "b52568ed73c204a5ca7301c43237d34417d88b68e102dcd882b8e2b9ae1fa57b",
+    "tmp/publication-integration-h3-dmc-pinned-access-20261128/report-first-read.json": "42f4ba6b10be257582dd8356874d56e5082fae97d53e7f16fc1e7eba4ab5ad60",
+    "tmp/dmc-pinned-publication-regression-20261128.xml": "822a72b739ce82ebd13afddfe854453fb12a3ecf1cbd4c5b7bb4c8c2d1e20ad5"
+  }
+}

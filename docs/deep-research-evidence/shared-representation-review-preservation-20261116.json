@@ -1,0 +1,30 @@
+{
+  "verified": true,
+  "tasks": 105,
+  "runs": 391,
+  "calls": 9872,
+  "historicalPaused": 15,
+  "active": 0,
+  "allTaskPayloadHashesUnchanged": true,
+  "allRunAndCallPayloadsUnchanged": true,
+  "baseline": "tmp/dr-acceptance-receipts/vq-experiment-d3-v6.after.json",
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 52597.4
+  },
+  "serviceRestarted": false,
+  "candidateEnabled": false,
+  "newIsolatedUnknowns": 1,
+  "isolatedUnknownIsApplicationRun": false,
+  "unknownRequestReplayed": false
+}

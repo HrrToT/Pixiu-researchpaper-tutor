@@ -1,0 +1,23 @@
+{
+  "case": "H3-PAGEDATTENTION-v1",
+  "savedPayloadSha256": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+  "synthesisEvidenceCount": 14,
+  "obligations": [
+    {
+      "obligationId": "ob-1-1",
+      "readinessRefs": 3,
+      "readinessRefsSuppliedToSynthesis": 0,
+      "draftClaimRefs": 3,
+      "draftClaimRefsAlsoApprovedAtReadiness": 0
+    },
+    {
+      "obligationId": "ob-2-1",
+      "readinessRefs": 2,
+      "readinessRefsSuppliedToSynthesis": 1,
+      "draftClaimRefs": 2,
+      "draftClaimRefsAlsoApprovedAtReadiness": 0
+    }
+  ],
+  "publicationCoherenceStatus": "held",
+  "modelCalls": 0
+}

@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-21",
+  "sourceCommit": "15c71b39",
+  "promptVersion": "dr-v2.20261021.214",
+  "case": "E1-v12",
+  "split": "development",
+  "runId": "dr_run_d997d0fa192c5408b64192258d3305d7",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "elapsedSeconds": 132.505,
+  "settledModelCalls": 14,
+  "settledTokens": 62209,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "planEncodingAudit": {
+    "rawBytes": 2058,
+    "wireBytes": 1949,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 4000,
+    "fitsPreferredSlot": true,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {
+    "0": [
+      {
+        "claimId": "c3",
+        "designRole": "controls",
+        "path": "/executionSpec/rendering/parameters",
+        "kind": "operation_parameter_table",
+        "rows": 3
+      },
+      {
+        "claimId": "c3",
+        "designRole": "controls",
+        "path": "/executionSpec/optimizer/parameters",
+        "kind": "operation_parameter_table",
+        "rows": 3
+      }
+    ]
+  },
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "incomplete_budget_spec",
+      "detail": "recovery: matched 模式要求所有组的预算值相等",
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "预算配置不匹配：对照组总训练量为1000步，处理组为1200步，未匹配预算，无法隔离第2阶段增量效应；且未提供共享第1阶段NTC训练1000次迭代的论文证据。"
+      }
+    },
+    {
+      "claimId": "c6",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c9",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "初始化引用c6但c6未提供，无法验证共同初始化；渲染分辨率1280x720未在证据中确认且未说明来源；优化器仅优化新增高斯但未定义新增高斯的初始状态和参数；相机划分规则未给出具体相机总数和索引列表，无法预检非空且不相交。",
+      "revisionRejection": {
+        "claimId": "c3",
+        "reason": "semantic_unresolved",
+        "detail": "渲染设置缺少具体分辨率参数值；优化器设置缺少学习率数值；其他干预未明确禁用量化、占用和压缩等操作。"
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "质量协议未指定逐帧计算后窗口平均的具体窗口大小或聚合方式；速度协议未指定预热次数、同步方法、计时区域及重复次数；存储协议未指定参数量化精度或字节计算方式。",
+      "revisionRejection": {
+        "claimId": "c7",
+        "reason": "semantic_unresolved",
+        "detail": "指标定义不完整：PSNR/SSIM未指定参考图像来源（留出视图的真实图像），存储未明确参数精度（float32）及是否包含所有高斯参数，速度测量未指定同步方法（如CUDA同步）和预热细节。"
+      }
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "effects字段定义了差值公式但未指定配对观察的具体聚合方式（如逐帧平均还是窗口平均）；uncertainty和decision均为描述性模式但未给出具体边界或决策规则（如差值符号和相对变化百分比如何判定）；未明确配对单位（视图、帧或场景）。",
+      "revisionRejection": {
+        "claimId": "c8",
+        "reason": "semantic_unresolved",
+        "detail": "效果定义中存储差异和时间差异的聚合方式不一致；不确定性模式为描述性但未明确报告原始差异和相对变化的边界；决策规则未指定具体阈值或符号判断标准。"
+      }
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v12.json",
+      "sha256": "9ee876cade525bdecdb5b1f415b1b55b829be978e7e4e14cce84529ed0f1a467"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v12.payload.json",
+      "sha256": "089744b68df4320fd8311534b3e5fd106db63e6373d5e127bf78579cfe74bb04"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v12.calls.json",
+      "sha256": "11131a6ac77657b3a970a5fdc3cf369d72c80d32db09db8cf2d74ea443d940b0"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v12.result.json",
+      "sha256": "48771e74ec392c59cb866c56b6ad5b99e12f945910b5ab98fca760aeffc15a27"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

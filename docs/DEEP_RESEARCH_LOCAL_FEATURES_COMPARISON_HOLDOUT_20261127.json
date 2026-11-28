@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "frozenTimestamp": "2026-11-27T10:17:30.086140+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "invalid_profile_first_execution_retired_for_independent_acceptance",
+  "independentCredit": 0,
+  "materials": {
+    "superpoint_v1": {
+      "filename": "1712.07629v1.pdf",
+      "title": "SuperPoint: Self-Supervised Interest Point Detection and Description",
+      "sha256": "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732",
+      "bytes": 7066505,
+      "pageCount": 12,
+      "arxiv": "1712.07629v1",
+      "reference": "https://arxiv.org/abs/1712.07629v1"
+    },
+    "d2net_v1": {
+      "filename": "1905.03561v1.pdf",
+      "title": "D2-Net: A Trainable CNN for Joint Detection and Description of Local Features",
+      "sha256": "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1",
+      "bytes": 6920350,
+      "pageCount": 16,
+      "arxiv": "1905.03561v1",
+      "reference": "https://arxiv.org/abs/1905.03561v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H2-LOCAL-FEATURES",
+      "split": "holdout",
+      "materials": [
+        "superpoint_v1",
+        "d2net_v1"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "只依据当前 SuperPoint v1 和 D2-Net v1，为准备做 HPatches 评测的团队比较两种方法。先给结论，说明二者各自怎样取得训练监督、怎样产生关键点和描述子，并各引用一条带评测条件的原文定量结果。说明能否把两篇论文的 HPatches 数字直接用于排序，D2-Net 论文内部与 SuperPoint 的比较能支持什么，并给出同条件复核建议。600字以内，引用原文，不用外部资料。",
+      "required": [
+        "双方各自的监督与检测描述机制有原文支持。SuperPoint 使用合成点与单应性适应生成伪标签，以及共享编码器上的检测、描述分支。D2-Net 使用 SfM 重建给出的像素对应，从同一稠密特征图取描述子并用空间和通道响应找点。",
+        "双方各有一条本论文的有条件定量证据。SuperPoint 可使用表3单应估计成功率及像素阈值、图像分辨率或点数上限。D2-Net 可使用图4及第5.1节的特定训练与尺度变体、MMA阈值和共同设置，或正确注明指标的图4特征数/匹配数。",
+        "区分 SuperPoint 自报的单应矩阵估计成功率与 D2-Net 自报的匹配正确比例。明确二者同用 HPatches 并不代表同任务、同匹配策略或同样本条件。",
+        "把 D2-Net 图4与 SuperPoint 的同文证据明确归属 D2-Net 作者，结果受当地协议、阈值和变体限制，结论不延伸到无条件总排名。",
+        "为同条件复核提出可执行的对齐边界，包括相同图像对、分辨率/特征数、匹配与几何验证设置和相同目标指标。"
+      ],
+      "forbidden": [
+        "把同名数据集、像素阈值或不同指标直接视为可比较的同一性能量。",
+        "把 D2-Net 图4的 SuperPoint 比较器写成 SuperPoint 论文自己的报告。",
+        "混淆 D2-Net 单尺度、多尺度、训练版本；将特征数量和匹配数量解释成匹配正确率。",
+        "以某阈值之后的 MMA优势断言任意阈值、单应估计或其他任务全面优越。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "material": "superpoint_v1",
+        "pages": [
+          3,
+          4,
+          5,
+          7
+        ],
+        "sections": "Network / Homographic Adaptation / Table 3 and evaluation protocol"
+      },
+      {
+        "material": "d2net_v1",
+        "pages": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "sections": "Training / Dense Feature Extraction / Local Feature Detection / Figure 4 and section 5.1"
+      }
+    ],
+    "goldInputBoundary": "Only the human question, the two material identities and the frozen budget enter application intent. The source anchors and scoring rubric stay in evaluation."
+  },
+  "caseDefinitionHashes": {
+    "H2-LOCAL-FEATURES": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62"
+  },
+  "executionEvidence": {
+    "firstExecution": "deep-research-evidence/local-features-h2-default-profile-first-20261127.json",
+    "correctedOfflinePreflight": "deep-research-evidence/local-features-h2-profile-preflight-20261127.json",
+    "configuredDevelopmentRun": "deep-research-evidence/local-features-h2-configured-development-20261127.json",
+    "thresholdTableOfflineReplay": "deep-research-evidence/local-features-h2-threshold-table-replay-20261127.json",
+    "conditionBoundResultReadinessReplay": "deep-research-evidence/local-features-h2-condition-bound-readiness-20261127.json",
+    "conditionBoundResultLiveDevelopmentRun": "deep-research-evidence/local-features-h2-condition-bound-live-20261127.json",
+    "benchmarkProtocolAndFigureCountsOfflineReplay": "deep-research-evidence/local-features-h2-benchmark-protocol-and-counts-20261127.json",
+    "namedProtocolLiveAndOfflineAdmissionReplay": "deep-research-evidence/local-features-h2-named-protocol-live-and-admission-20261127.json",
+    "synthesisLiveAndClauseReplay": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
+    "appendixMetricSynthesisBundleReplay": "deep-research-evidence/local-features-h2-appendix-metric-bundle-20261127.json",
+    "likeForLikeRecheckValidation": "deep-research-evidence/local-features-h2-like-for-like-recheck-20261127.json",
+    "appendixRecheckLiveAndOfflineFixes": "deep-research-evidence/local-features-h2-appendix-recheck-live-and-offline-fixes-20261127.json",
+    "lengthBoundedComparisonReplay": "deep-research-evidence/local-features-h2-600-character-layout-live-and-replay-20261127.json",
+    "selectedPairBindingLiveAndReplay": "deep-research-evidence/local-features-h2-selected-pair-live-and-replay-20261127.json",
+    "bothResultsAndRecheckRouting": "deep-research-evidence/local-features-h2-both-results-and-recheck-routing-20261127.json"
+  }
+}

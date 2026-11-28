@@ -1,0 +1,11 @@
+{
+  "oldInputBytes": 31979,
+  "candidateInputBytes": 31742,
+  "inputLimitBytes": 32000,
+  "allInputDataBytesExact": true,
+  "schemaAndOutputAllowanceUnchanged": true,
+  "modelCalls": 0,
+  "productionImplemented": false,
+  "contentEffectVerified": false,
+  "change": "Restore explicit per-variable numeric tensor definition and forbid model/container placeholders; compact redundant wire instructions only"
+}

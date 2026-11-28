@@ -1,0 +1,14 @@
+{
+  "case": "H5-DORA-FACTORIAL-v1",
+  "capturedLegacyRequestExact": true,
+  "generationContractVersion": 2,
+  "oldRequestBytes": 31160,
+  "newRequestBytes": 31510,
+  "ceilingBytes": 32000,
+  "evidenceAliasCount": 20,
+  "sourceContextDigestPreserved": true,
+  "schemaAndTransportOptionsExact": true,
+  "modelCalls": 0,
+  "newProposalAccepted": false,
+  "targetedTestsPassed": 118
+}

@@ -1,0 +1,60 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceCommit": "581f0566e5846c40be866e2dc6eb6488f84f8472",
+  "providerModel": "gpt-6.1-terra",
+  "newCalls": {
+    "targetedSynthesis": {
+      "node": "synthesize",
+      "tokens": 4540
+    },
+    "targetedVerification": {
+      "node": "verify",
+      "tokens": 4440
+    },
+    "wholeAnswerAudit": {
+      "node": "verify_answer_coverage",
+      "tokens": 9562
+    }
+  },
+  "newTokens": 18542,
+  "scopedCumulativeTokens": 48559,
+  "reusedVerifiedClaims": 8,
+  "verifiedClaims": 11,
+  "wholeAnswerAudit": {
+    "coveredRequirements": [
+      "obl-mechanisms",
+      "obl-quality-speed",
+      "obl-choice",
+      "requested_numeric_example",
+      "requested_speed_comparability",
+      "answer_scope"
+    ],
+    "coherent": true
+  },
+  "isolatedPublication": {
+    "oldOutcome": "partial",
+    "oldDependencyGapCount": 3,
+    "outcome": "complete",
+    "gapCount": 0,
+    "claimAndCitationContentPreserved": true,
+    "retrievalHistoryPreserved": true,
+    "renderedMarkdownChecked": true
+  },
+  "targetedOfflineTestsPassed": 652,
+  "independentHoldout": false,
+  "fullFreshWorkflow": false,
+  "productionWrites": 0,
+  "sha256": {
+    "paper-followup/intent.json": "ff593ffda3b4f152c68fb4971f2b4660d55ef54ca3f7f1651d0ad34d795d8bde",
+    "paper-followup/targeted-response.json": "c257e196a76f1cda1b6935cf59cfcbbd554d0b6367997569931c1b7afc257a8f",
+    "paper-followup/full-state.json": "3cb5e856ddfd57192fba4fc4f025883ab14e19d569861a8fcb1fffbfae136b75",
+    "paper-followup/calls.json": "989808f53d4f166e709020f656db9d735fe5952c6c4a29c4af305031169cd88c",
+    "paper-review/calls.json": "c8f6c619bbd03e781797caf0ab6aa42cb63f14aedb8df06da48ad0f6b87fb4b7",
+    "paper-review/result.json": "053028617d64d6ea0e8ed9f7b912b8dcbb93054b20abd922d0f74f8019b93c77",
+    "whole-audit/calls.json": "44380944a671e126a40ebcfdda50573ee0181d2df264cc3ff7906ddb8609969f",
+    "whole-audit/run.json": "a5d462621854e642ed588014d6b910c3577851f46d7a38667ba07852d73f513b",
+    "whole-audit-publication-replay-v2/run-v1.json": "710c348993ee586e8e39fb85d19bb2c9e3e51235b8de21d3ab39fb71da9a012d",
+    "whole-audit-publication-replay-v2/run-v2.json": "2df3f3f0bc587601a92083582f83005bc7f55f73dfc2b6b365d4f0c466addf6f",
+    "whole-audit-publication-replay-v2/rendered-report.md": "746b6350304d87cbb7f8fe35fd842adb572136f3138d32f1519d5a561e501afc"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "fixtureKind": "Synthetic interface fixture; mocked scientific verdicts, not a real research result",
+  "report": "# 实验方案（尚未执行）\n\n**假设：** Estimate the two main effects and their interaction.\n\n**估计对象：** Paired effects at the declared levels, not all possible settings.\n\n## 四组对照\n\n| 组别 | SH coefficients | scale and rotation |\n| --- | --- | --- |\n| 00 | 关闭 | 关闭 |\n| 10 | 开启 | 关闭 |\n| 01 | 关闭 | 开启 |\n| 11 | 开启 | 开启 |\n\n| 因素 | 关闭：保留原参数 | 开启 |\n| --- | --- | --- |\n| SH coefficients | Retain original SH coefficients（setting=0） | Apply proposed SH coefficients（setting=4） |\n| scale and rotation | Retain original scale and rotation（setting=0） | Apply proposed scale and rotation（setting=4） |\n\n## 共同准备与配对\n\n- Public training inputs（待准备）：Enumerate inputs, create common state using fixed training-only seed; save its manifest.\n\n- 训练划分：Persist sorted training IDs before fitting.\n- 评估划分：Persist disjoint held-out IDs before fitting.\n- 划分预检：Stop for duplicate IDs, overlap or an empty side.\n- 选择与调参：仅使用训练数据。\n- 独立重复单位：Independent paired scene；配对种子：7, 13\n- 共同起点：Common preparation output\n- 复制步骤：2\n- 身份与初值核对：Verify matching source checksum, element identities, counts and initial values.\n\n## 状态与更新规则\n\n| 状态 | 表示 | 来源 | 固定 | 存储计量 | 适用组 |\n| --- | --- | --- | --- | --- | --- |\n| Common preparation output | Named complete source state | Public training inputs | 按步骤更新 | 不持久化 | 共同准备 |\n| SH coefficients | Original precision or proposed encoding, recorded in manifest | 步骤 2 | 按步骤更新 | 计入 | 00、10、01、11 |\n| scale and rotation | Original precision or proposed encoding, recorded in manifest | 步骤 2 | 按步骤更新 | 计入 | 00、10、01、11 |\n\n## 执行顺序\n\n1. 共同准备：fit（setting=4）。数据范围：训练数据。\n   读取：Common preparation output；创建：无；更新：Common preparation output。\n   预算：100 优化步；等预算对照；Stop at fixed common cap.\n2. 00、10、01、11：clone（setting=4）。数据范围：不读取新数据。\n   读取：Common preparation output；创建：SH coefficients、scale and rotation；更新：无。\n3. 00、01：关闭SH coefficients，按上表操作。数据范围：不读取新数据。\n   读取：SH coefficients；创建：无；更新：无。\n4. 10、11：开启SH coefficients，按上表操作。数据范围：不读取新数据。\n   读取：SH coefficients；创建：无；更新：SH coefficients。\n5. 00、10：关闭scale and rotation，按上表操作。数据范围：不读取新数据。\n   读取：scale and rotation；创建：无；更新：无。\n6. 01、11：开启scale and rotation，按上表操作。数据范围：不读取新数据。\n   读取：scale and rotation；创建：无；更新：scale and rotation。\n7. 00、10、01、11：fit（setting=4）。数据范围：训练数据。\n   读取：SH coefficients、scale and rotation；创建：无；更新：SH coefficients、scale and rotation。\n   预算：10 优化步；等预算对照；Use the same cap per arm.\n8. 00、10、01、11：measure（setting=4）。数据范围：评估数据。\n   读取：SH coefficients、scale and rotation；创建：无；更新：无。\n   测量：quality（dB）、storage（bytes）、speed（milliseconds）。\n\n## 测量口径\n\n- quality（dB，越大越好）：Measure under the saved common conditions; record actual values.\n  涉及状态：SH coefficients、scale and rotation；仅对状态实际存在的组计量。\n- storage（bytes，越小越好）：Measure under the saved common conditions; record actual values.\n  涉及状态：SH coefficients、scale and rotation；仅对状态实际存在的组计量。\n- speed（milliseconds，越小越好）：Measure under the saved common conditions; record actual values.\n  涉及状态：SH coefficients、scale and rotation；仅对状态实际存在的组计量。\n\n## 效应与判断\n\n各指标单独分析：越大越好的指标取负号作为损失，越小越好的指标保留原值，不混合不同单位。\n按 00、10、01、11 顺序，对损失使用以下对比权重：\n- 因素 A 平均主效应：[-0.5, 0.5, -0.5, 0.5]\n- 因素 B 平均主效应：[-0.5, -0.5, 0.5, 0.5]\n- 交互效应：[1, -1, -1, 1]\n\nPair per scene and seed; do not treat nearby views as independent.\n\nReport effects and uncertainty, not independence from a non-significant test.\n\n**解释边界：** These two levels and sampled scenes bound interpretation.\n\n## 论文依据\n\n- Fixture source statement, not a measured result. [1](#research-evidence-ev_ed303d8fe0aee7d9664270837a680ecd15a1db83b9d84c25ceca8cb82538e695)\n\n\n假设与实验建议尚未经过实验验证。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] owned** · 全文片段\n\n> An exact public source statement.\n\n</details>",
+  "sources": [
+    {
+      "pdfId": "owned",
+      "evidenceIds": [
+        "ev_ed303d8fe0aee7d9664270837a680ecd15a1db83b9d84c25ceca8cb82538e695"
+      ],
+      "title": "Fixture publication",
+      "accessLevel": "fulltext",
+      "evidenceQuotes": {
+        "ev_ed303d8fe0aee7d9664270837a680ecd15a1db83b9d84c25ceca8cb82538e695": {
+          "quote": "An exact public source statement.",
+          "location": {}
+        }
+      }
+    }
+  ],
+  "researchContext": {
+    "taskId": "t",
+    "runId": "r"
+  }
+}

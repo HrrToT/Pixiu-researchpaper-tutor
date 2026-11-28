@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "b43687f1",
+  "promptVersion": "dr-v2.20261018.118",
+  "before": {
+    "active": [],
+    "calls": 3210,
+    "ledgerSha256": "12a78781eae6de9be8804e58e7336f387985386ea8727c7f1fa9df7cf0799697",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "active": [],
+    "calls": 3210,
+    "ledgerSha256": "12a78781eae6de9be8804e58e7336f387985386ea8727c7f1fa9df7cf0799697",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 11.5
+  },
+  "facadeSha256": "ed3e70be7b87092faa34325e766a4dbb5c7be9f910effe0059ef814cd52d6a56",
+  "dockerRecovery": {
+    "restored": true,
+    "quarantineDirectories": [
+      "C:/Users/Lenovo/AppData/Local/Docker/run.quarantine-20261018-dr118",
+      "C:/Users/Lenovo/AppData/Local/docker-secrets-engine.quarantine-20261018-dr118"
+    ],
+    "lastSocketBackup": "C:/Users/Lenovo/AppData/Local/Docker/run/dockerInference.stage7-20261017T174725Z.bak",
+    "dataVolumesUnchanged": true
+  },
+  "boundary": "Existing Linux volume, full ledger and 9 unknown paused runs unchanged. No active run on startup. No model request; no old outcome rewritten."
+}

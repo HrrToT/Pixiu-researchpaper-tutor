@@ -1,0 +1,117 @@
+{
+  "candidate": "a0df7810b2e0f6350ca8e383bb0308d3e060a8b2",
+  "isolatedRunId": "dr_d2_counted_final_gates_real_20261128",
+  "relatedSourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "sourceMode": "task_only",
+  "publicSourceVersions": [
+    "arxiv:2308.04079v1",
+    "arxiv:2311.17245v6"
+  ],
+  "directionalChecksPassed": 614,
+  "offlineProductionReplay": {
+    "claims": 11,
+    "citedRows": 23,
+    "countedBodyDigest": "15795d64fbe173c53c3b3f413988e806b3c43572794c0aec1a0c0cf511794bfb",
+    "inputTokens": 8923,
+    "reservedTokens": 13447,
+    "outputLimit": 3500,
+    "replayedPriorPartialResponse": true,
+    "coverageStatus": "checked",
+    "remainingGaps": 2,
+    "finalBudgetTokens": 89259,
+    "providerCalls": 0
+  },
+  "fixtureGuardCorrection": {
+    "priorDispatchCount": 0,
+    "correction": "Match the exact JSON-escaped original quotation in the outbound prompt."
+  },
+  "countRequestDigest": "15795d64fbe173c53c3b3f413988e806b3c43572794c0aec1a0c0cf511794bfb",
+  "actualDispatches": [
+    "verify",
+    "count",
+    "coverage"
+  ],
+  "modelCalls": [
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "reservedTokens": 18252,
+      "usage": {
+        "total_tokens": 3085,
+        "input_tokens": 3008,
+        "output_tokens": 77,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 3005
+      },
+      "countedInputTokens": null
+    },
+    {
+      "node": "verify_answer_coverage",
+      "model": "gpt-6.1-terra",
+      "reservedTokens": 13447,
+      "usage": {
+        "total_tokens": 9773,
+        "input_tokens": 8923,
+        "output_tokens": 850,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 8920
+      },
+      "countedInputTokens": 8923
+    }
+  ],
+  "automaticRetry": false,
+  "priorTotalTokens": 79730,
+  "cumulativeTokens": 92588,
+  "tokenCeiling": 100000,
+  "priorModelCalls": 16,
+  "cumulativeModelCalls": 18,
+  "modelCallCeiling": 18,
+  "claimVerification": {
+    "accepted": 11,
+    "rejected": 0
+  },
+  "coherence": {
+    "contractVersion": 2,
+    "status": "checked",
+    "answerDigest": "9446f9288dd3adb0d7e07a81a31a68d5958f9b69a6038b5e9f0b53541bcf7afc",
+    "coherent": true,
+    "issues": []
+  },
+  "obligations": [
+    {
+      "obligationId": "obl1",
+      "status": "covered"
+    },
+    {
+      "obligationId": "obl2",
+      "status": "covered"
+    },
+    {
+      "obligationId": "obl3",
+      "status": "covered"
+    },
+    {
+      "obligationId": "obl4",
+      "status": "covered"
+    },
+    {
+      "obligationId": "requested_numeric_example",
+      "status": "covered"
+    },
+    {
+      "obligationId": "answer_scope",
+      "status": "partial"
+    }
+  ],
+  "remainingGapExcerpt": "向初学者比较原始表示与压缩后部署的取舍",
+  "technicalCoverageChecked": true,
+  "scientificAcceptanceComplete": false,
+  "publishedToWorkspace": false,
+  "rawFilesSha256": {
+    "intent.json": "3bfb8c249db158e1129628d1e59ece2722b49c2f03855fe4fa33c936cc5ee826",
+    "calls.json": "d39bf9ee0d90192edd645c2e1c827dcc5be116a0a53b380fd9e6affddf0cf534",
+    "dispatch.json": "132befa9445e10ccab851bca291b47267a6d7179b7e62cf489967f24cc1fe1b8",
+    "run.json": "bc20a67d015cdb54cff755191cb3a5cad787db6cde2dd99a700959da4238be4e",
+    "speed-verification.json": "49ccc8812dd2c5a09d245685e216b872400efa672cca22d953ebe7d4ff54b7b9"
+  }
+}

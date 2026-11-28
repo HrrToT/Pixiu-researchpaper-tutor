@@ -1,0 +1,123 @@
+{
+  "caseId": "S1G-v4",
+  "runId": "dr_run_5abf8f77ccca5dc4a1389c6891117e5b",
+  "promptVersion": "dr-v2.20261029.343",
+  "quantitySpellingContractVersion": 8,
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 10,
+  "tokens": 37170,
+  "elapsedSeconds": 56.894,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "claims": [
+    {
+      "claimId": "c1",
+      "text": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少冗余高斯数量；SH蒸馏将球谐系数降至更低阶数；向量量化降低各高斯属性的位宽。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": []
+    },
+    {
+      "claimId": "c2",
+      "text": "建议阅读顺序：先读摘要（E2-E5）了解整体流程，再读方法部分对应小节理解各环节细节，最后读实验与消融研究观察各环节影响。",
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_ddc954bffa5ceef4559e4278f2dc820d252b658d80c8e83fb65f3f300740ef49",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7",
+        "ev_47f0b8e82aae518c6362aecdd88296d7869c9059775422d74cf3582db5c99327",
+        "ev_42616b2c3de5e56cefee88bd6a500de8417a5fa9bfce7977f165c9d1c27394fb"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": []
+    }
+  ],
+  "verifiedClaims": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少冗余高斯数量；SH蒸馏将球谐系数降至更低阶数；向量量化降低各高斯属性的位宽。",
+      "evidenceRefs": [
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240",
+        "ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ],
+      "verification": "semantic_passed"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "repairRejected": [
+    {
+      "claimId": "c2",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "internal_reference_in_prose"
+      }
+    }
+  ],
+  "coverageGaps": 3,
+  "publishedBody": "- LightGaussian压缩流程三个主要环节分别改变：高斯剪枝与恢复减少冗余高斯数量；SH蒸馏将球谐系数降至更低阶数；向量量化降低各高斯属性的位宽。 [1](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240) [2](#research-evidence-ev_68801d18533cd7182b698cba746ecff15805968ba6fdfaeb99fde2f29d62afd7)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "partialTagPreserved": true,
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 23,
+    "ledgerRows": 7543,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "payloadSha256": "5e8a157c367deb6e6f1813a0d1913cf7fd3f1cc17593a5da2d3ac800b38ea909",
+  "remainingDefect": "Reading guidance leaks internal E2-E5 identifiers and is unchanged after one repair; abstract/source attribution and fulltext disclosure still need review, never auto-remove identifiers and declare pass.",
+  "adviceReviewerAndCorrectLabelsPreviouslyExercisedIn": "S1G-v3",
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "contentAcceptance": false
+}

@@ -1,0 +1,16 @@
+{
+  "providerCalls": 0,
+  "repairPromptBytes": 23952,
+  "oldRepairPromptBytes": 23949,
+  "oldScientificApprovalInherited": false,
+  "mockRepairResponse": true,
+  "claimCheckContractVersion": 4,
+  "onlyPolicyTextChanged": true,
+  "oldEvidenceAndPermissionsByteIdentical": true,
+  "replayedVerificationPromptsByteIdentical": 4,
+  "productionPreserved": true,
+  "independentCredit": 0,
+  "newPromptSha256": "e7ab4a7a0fd4621134616abf27f9f0fe438c06648e17c428e0d5bdab2a87d066",
+  "oldPromptSha256": "371047f6bb0aa19dfbcec48ed2bb74b24f58c89a0a84b495bc60f24ecf56de71",
+  "limitation": "Mock repaired response []; no quality or new-provider acceptance"
+}

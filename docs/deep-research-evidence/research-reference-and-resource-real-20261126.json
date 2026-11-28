@@ -1,0 +1,78 @@
+{
+  "sourceCommit": "95d5851caa47315c8c434fd1bd327cccc8d749db",
+  "candidate": "academic-dr-research-reference-and-resource-candidate-20261126",
+  "candidateLoadProof": "research-reference-and-resource-candidate-load-20261126.json",
+  "cases": {
+    "H4-AWQ-VERSIONS-v3": {
+      "runId": "dr_run_b22311d6c02551d693104bbde271853b",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_synthesis_response",
+      "modelCalls": 6,
+      "tokens": 24467,
+      "durationSeconds": 64.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "H4-AWQ-VERSIONS-v3.execution.json": "6021db28a6f6cfb118f7bef7bf24e438f15a16786e92134545fc293b29ac4ec6",
+        "H4-AWQ-VERSIONS-v3.payload.json": "20fda67d2fe267265c52ee422cc03e4e33760bf5718e3a0518e7459e4cf38bd8",
+        "H4-AWQ-VERSIONS-v3.result.json": "c722e8a43954d8203338af4a5380a4c57d9e294ea45288b83c24e3f5b85f18c6",
+        "H4-AWQ-VERSIONS-v3.calls.json": "4298410e31a871f5bfbe4dfdb1b5156450f3f24df86876d0cd0f1f02d697b69a",
+        "H4-AWQ-VERSIONS-v3.json": "e1c98f58b4b84214bbac655097ae0922e7d83216337b51d9126f0eda39aff929"
+      },
+      "independentHoldoutAccepted": false,
+      "boundTableCellCount": 12,
+      "compaction": {
+        "status": "rejected_length",
+        "visibleCharacters": 613,
+        "characterLimit": 400
+      }
+    },
+    "D3-DENSIFICATION-FACTORIAL-v11": {
+      "runId": "dr_run_fada14390938542794b9952a441fdf3a",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "errorCode": "",
+      "modelCalls": 7,
+      "tokens": 37370,
+      "durationSeconds": 88.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "D3-DENSIFICATION-FACTORIAL-v11.execution.json": "42e73789a437a1adcc606d81f90a7acb54e751b902790b91a8a45c7f137e90e3",
+        "D3-DENSIFICATION-FACTORIAL-v11.payload.json": "6971bc3237c8e5587fbbb07b142792ece17d24fc7cd98d10e518483eb1714e3a",
+        "D3-DENSIFICATION-FACTORIAL-v11.result.json": "40f86f611c136daedfdf309f7d31f4a506be2164378a28fe7fd215c318acc1ce",
+        "D3-DENSIFICATION-FACTORIAL-v11.calls.json": "54401691dedc40b379697a9c1635d108bf9beba415903c64d7b7e2c21b5e83cd",
+        "D3-DENSIFICATION-FACTORIAL-v11.json": "27b5f4d6af174834e31d4a5fc57b571096a0a99cac1f88e9b22d90313172d056"
+      },
+      "generation": "awaiting_scientific_review",
+      "review": "not_started_precheck",
+      "hardIssues": [
+        {
+          "claimId": "shared_fact_7",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "3e1",
+            "7e0"
+          ],
+          "factId": "F8",
+          "evidenceRefs": [
+            "E3"
+          ]
+        }
+      ],
+      "revision": "invalid_response"
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_b22311d6c02551d693104bbde271853b"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}

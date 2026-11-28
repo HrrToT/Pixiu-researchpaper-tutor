@@ -1,0 +1,20 @@
+{
+  "case": "D5-v17",
+  "receiptSha256": "2864d9e9492a308f21696b83900bbd03558152c56e151647e23f87065454d952",
+  "limitCharacters": 200,
+  "measuredVisibleCharacters": {
+    "originalCompactionResponse": 634,
+    "withoutComparisonTable": 523,
+    "withExactSourceTitleAliasesInBoundary": 400,
+    "withoutComparisonTableAndWithExactSourceTitleAliasesInBoundary": 289
+  },
+  "exactAliasesBoundToCitedSourceIdentities": 2,
+  "boundarySubjectLengths": [80, 60],
+  "boundaryObservationValueLengths": [41, 38],
+  "scopeFieldsChangedInOriginalCompaction": [],
+  "diagnosticOnly": true,
+  "providerCalls": 0,
+  "newReportPublished": false,
+  "scientificAcceptanceEstablished": false,
+  "conclusion": "Short source names and a prose layout still leave the original answer above its limit. A fresh concise draft must also reduce repetition across factual claims and their compiled evidence boundary."
+}

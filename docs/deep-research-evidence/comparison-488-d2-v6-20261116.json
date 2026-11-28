@@ -1,0 +1,116 @@
+{
+  "case": "D2-VQ-v1-v6",
+  "runId": "dr_run_1c4ba690e465563883a339ec0f50b867",
+  "promptVersion": "dr-v2.20261116.488",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "modelCalls": 11,
+  "tokens": 45385,
+  "seconds": 204.0,
+  "allModelCallsSucceededSettled": true,
+  "repairCalls": 3,
+  "repairBatchStop": null,
+  "repairCompactionStatus": "completed",
+  "compactedCandidateCount": 4,
+  "acceptedClaims": 0,
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c1",
+        "reason": "internal_reference_in_prose"
+      }
+    },
+    {
+      "claimId": "c2",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。",
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c3",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "internal_reference_in_prose",
+      "revisionRejection": {
+        "claimId": "c4",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "sharedTablePackets": 3,
+  "missingPremiseBundles": [
+    {
+      "obligationId": "ob-speed",
+      "criterionId": "c-sp-1",
+      "requirement": "Report per paper the rendering-speed figures it provides, including hardware and scene conditions if stated.",
+      "source": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf",
+      "evidenceIds": [
+        "E13"
+      ]
+    },
+    {
+      "obligationId": "ob-speed",
+      "criterionId": "c-sp-2",
+      "requirement": "Explain whether speed can be fairly ranked from the available evidence, and explicitly avoid deriving speed from compression ratio.",
+      "source": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821.pdf",
+      "evidenceIds": [
+        "E15"
+      ]
+    },
+    {
+      "obligationId": "ob-evidence-status",
+      "criterionId": "human_aspect_1",
+      "requirement": "哪些结果可作参考",
+      "source": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+      "evidenceIds": [
+        "E16"
+      ]
+    },
+    {
+      "obligationId": "ob-evidence-status",
+      "criterionId": "human_aspect_2",
+      "requirement": "哪些不能据现有证据公平排名",
+      "source": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+      "evidenceIds": [
+        "E16"
+      ]
+    },
+    {
+      "obligationId": "ob-conditional",
+      "criterionId": "human_aspect_1",
+      "requirement": "给出有条件的选择建议",
+      "source": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b.pdf",
+      "evidenceIds": [
+        "E16"
+      ]
+    }
+  ],
+  "inputBytes": 23993,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "rawSha256": {
+    "D2-VQ-v1-v6.payload.json": "ede02f88cc7732d32c79ddcddf0b0ae05e99a732b73fd44a2be2bc7ff6360860",
+    "D2-VQ-v1-v6.calls.json": "38c5c3c76f65e68aa104ff082fba648f168068acc13ce0a7e1523dac4b3053d5",
+    "D2-VQ-v1-v6.result.json": "ab16f324a2acd377563485cfb6e64bd5127e3db41740a66edb20aec2de96a4b4"
+  },
+  "next": "Stop repeated prompt-only trials. Implement source-by-dimension evidence allocation and separately verifiable comparison cells with canonical source labels; compose concise results from verified cells, preserving full original comparison and independent scientific gates."
+}

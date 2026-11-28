@@ -1,0 +1,109 @@
+{
+  "candidate": "64169b820f246acbcd1f46be640d4bb37b04b246",
+  "runId": "dr_d3_execution_rules_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "carriedRoutineTokens": 17377,
+  "carriedRoutineCalls": 5,
+  "generationRequestBytes": 31774,
+  "generationRequestDigest": "9bd3f741b9da5c7681795e6e4cfe9ac58e68833f375e52b60cb1d5c8e96ba597",
+  "maxNewCalls": 13,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "model": "gpt-6.1-terra",
+  "newModelTokens": 36955,
+  "newCalls": 4,
+  "completeScience": false,
+  "validScience": true,
+  "passed": 24,
+  "checks": 26,
+  "coherent": false,
+  "unresolved": [
+    {
+      "checkId": "section_2",
+      "status": "unresolved",
+      "planBindings": [
+        "/states/4/representation",
+        "/states/7/representation",
+        "/states/8/representation",
+        "/steps/1/operation/action",
+        "/steps/8/operation/action",
+        "/data/inputs/2/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        }
+      ],
+      "reason": "大部分状态和优化器参数已定义，但前向高斯投影、光栅化及可见性检验仅依赖待获取或实现的软件，论文摘录不足以唯一确定实现；确定性单元测试也未给出预期值，尚不能确认端到端可执行。"
+    },
+    {
+      "checkId": "section_3",
+      "status": "failed",
+      "planBindings": [
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action",
+        "/groups/0/levels",
+        "/groups/1/levels",
+        "/groups/2/levels",
+        "/groups/3/levels",
+        "/steps/8/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E2",
+          "field": "after"
+        }
+      ],
+      "reason": "四臂及父子和Adam状态均有定义，但克隆子项沿平均梯度负方向移动，而论文明确说沿位置梯度方向；方案未将此方向反转说明为偏离论文的拟议修改。另外省略论文所述的大尺度共同裁剪。"
+    }
+  ],
+  "issues": [
+    {
+      "reason": "克隆方向与论文所述方向相反，未标明这是偏离论文的拟议实现；共同裁剪也省略论文所述大尺度裁剪，影响与原始方法的对应。",
+      "planBindings": [
+        "/factors/0/onOperation/action",
+        "/steps/8/operation/action"
+      ]
+    },
+    {
+      "reason": "渲染、投影和可见性实现尚未取得或充分定义，当前不能确认完整实验可执行。",
+      "planBindings": [
+        "/data/inputs/2/preparation",
+        "/steps/8/operation/action"
+      ]
+    }
+  ],
+  "repairNotSent": "input_capacity",
+  "oldRevisionBytes": 34523,
+  "newRevisionBytes": 31965,
+  "newRevisionEvidenceAliases": [
+    "E5",
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E13"
+  ],
+  "preservedProposalEvidenceQuestionFeedback": true,
+  "latestReplayProviderCalls": 0,
+  "published": false,
+  "cumulativeTokens": 54332,
+  "rawSha256": {
+    "intent.json": "7d35da45e0ee2f0fb135a11f4283a456f53b0aaf402ca418d7e3eb4f4f15194e",
+    "run.json": "ced23a7acda4a1bf2d6c45a37d0b8fa00c50dae4ca23e9f21bd02d47c41682ff",
+    "calls.json": "11a90756f7e1c64f849a35953356bb90b546741845685f58eae48565bfbd9d05",
+    "result.json": "7ca99d711ed653c0fdf96951ea02a3e34d5bc1545f7b2dc41a3a89b2a5a4757d"
+  }
+}

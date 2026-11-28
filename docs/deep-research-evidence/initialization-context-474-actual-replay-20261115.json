@@ -1,0 +1,17 @@
+{
+  "promptVersion": "dr-v2.20261115.474",
+  "originalBaselineInputBytes": 45356,
+  "newBaselineInputBytes": 31930,
+  "maxInputBytes": 32000,
+  "realProductionPrepareAndAllocatorUsed": true,
+  "metadataRequestExact": true,
+  "all17RequiredEvidenceRowsRetained": true,
+  "requiredSourceAliasesExact": true,
+  "originalMetadataDigest": "53570c3e035742b5fcd003cbc6683160057a4d4773453662e38162c6b9677f22",
+  "schemaAndOutputOptionsExact": true,
+  "wholeRunBudgetUnchanged": true,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,18 @@
+{
+  "pdfTableColumnsHashMatches": true,
+  "pdfTableColumnsSha256": "fc6b1e5a17181f072dc31a67d2734ee5e9d060b7a29fd1e8daf0aac5037ea0f3",
+  "sourceCommit": "0e62119faa7876819114ed0a94fc822a88d1db20",
+  "baselineFile": "tmp/dr-acceptance-receipts/workflow-premises-459.before.json",
+  "fullRegression": "deep-research-evidence/workflow-premises-459-final-20261115.json",
+  "academicTransportHashMatches": true,
+  "pdfParserHashMatches": true,
+  "promptVersion": "dr-v2.20261115.459",
+  "allDeepResearchModuleHashesMatch": true,
+  "all105TasksExact": true,
+  "all387OldRunsExact": true,
+  "all9723CallRowsExact": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "health": "ok",
+  "modelCalls": 0
+}

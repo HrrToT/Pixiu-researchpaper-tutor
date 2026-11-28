@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-18",
+  "commits": {
+    "java": "47f94b28",
+    "python": "9894ad1d",
+    "frontend": "c3843700"
+  },
+  "promptVersion": "dr-v2.20261018.119",
+  "contracts": {
+    "continuationContextContractVersion": 1
+  },
+  "checks": {
+    "python": {
+      "passed": 1962,
+      "warnings": 1,
+      "seconds": 102.2,
+      "log": "tmp/pytest-dr119-full-final.log"
+    },
+    "java": {
+      "passed": 58,
+      "log": "tmp/dr119-java-final.log",
+      "isolatedDatabase": "in-memory H2"
+    },
+    "frontend": {
+      "passed": 488,
+      "files": 65,
+      "seconds": 87.07,
+      "workers": 4,
+      "log": "tmp/vitest-dr119-full-final.log"
+    },
+    "typecheck": "passed",
+    "build": {
+      "passed": true,
+      "seconds": 53.98,
+      "log": "tmp/frontend-dr119-build.log"
+    }
+  },
+  "verifiedBehavior": [
+    "Default follow-up freezes its task revision and original paper selection; repeated/uncertain actions reuse the same saved intent.",
+    "Java resolves the current editable parent artifact within the owning task, including user edits, and freezes its context/hash in the new snapshot.",
+    "Four explicitly selected background notes remain supported with one server-derived parent context. Implicit ancestor artifacts do not accumulate across follow-ups.",
+    "Stale parent versions are rejected before creation; repeated start returns the same bound child even after task revision changes.",
+    "A parent artifact edited again invalidates the saved child scope through the existing permission callback.",
+    "Python retains prior HUMAN requirements and current artifact context, while keeping them separate from paper evidence and model-written instructions.",
+    "Current follow-up/clarification/edited-plan length requirements take precedence; text inside an artifact cannot set the requested length.",
+    "Missing referenced content in the bounded excerpt must be clarified, never invented. New marker and context are immutable; old unmarked requests remain unchanged."
+  ],
+  "frontendInitialFailure": {
+    "log": "tmp/vitest-dr119-full.log",
+    "passed": 487,
+    "failed": 1,
+    "case": "PanoramicMathSource formula image remains loading before waitFor timeout",
+    "followup": "Same unchanged case passed with hook checks (34); full 488-case suite passed at 4 workers. Assertions/timeouts were not weakened.",
+    "boundary": "Resource contention is suspected; no stronger root-cause claim."
+  },
+  "runtime": {
+    "java": "continuation-java-runtime-20261018.json",
+    "python": "runtime-load-dr119-continuation-20261018.json"
+  },
+  "modelCallsDuringThisWork": 0,
+  "boundary": "Backend mock/provider fixtures and real persistent runtime checks, no paid provider request or scientific content score. D1-v9 submit was blocked before launch; authorization remains pending."
+}

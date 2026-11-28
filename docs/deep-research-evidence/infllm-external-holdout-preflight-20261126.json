@@ -1,0 +1,18 @@
+{
+  "case": "H3-INFLLM",
+  "definitionHash": "198d183b3ac78f0489999bb847a5531d8d46374db7be61d032adf98d6e2d4309",
+  "reviewedPage": 4,
+  "liveInventory": {
+    "runs": 472,
+    "runHits": 0,
+    "indexFields": 18164,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 178,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

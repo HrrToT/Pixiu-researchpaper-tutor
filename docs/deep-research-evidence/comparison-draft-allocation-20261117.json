@@ -1,0 +1,63 @@
+{
+  "scope": "Pre-generation call allocation and unverified overflow retention; no scientific pass",
+  "relatedTests": 151,
+  "junit": "tmp/comparison-draft-allocation-related-20261117.xml",
+  "replay": {
+    "scope": "Closed replay of saved attempt3 synthesis through actual node; post-generation ledger used conservatively, not a generation/cost/time simulation",
+    "savedPayloadSha256": "9c9a4698b80313b30c37d36c78899717f2b4a8f14b4681f8a6b4b7f0dbe06e70",
+    "outputs": [
+      {
+        "policyVersion": 1,
+        "prompt": [
+          {
+            "maxDraftPoints": 10,
+            "promptBytes": 31765
+          }
+        ],
+        "result": {
+          "error_code": "invalid_synthesis_response"
+        },
+        "admission": null,
+        "compiledPoints": 0,
+        "compilerErrors": [],
+        "verifiedReport": false
+      },
+      {
+        "policyVersion": 2,
+        "prompt": [
+          {
+            "maxDraftPoints": 11,
+            "promptBytes": 31765
+          }
+        ],
+        "result": {
+          "report_version_id": "report_dr_run_5227f32917f05854be3b4c9cc450e985_v1"
+        },
+        "admission": {
+          "version": 2,
+          "status": "compiled_unverified",
+          "maxDraftPoints": 11,
+          "remainingModelCalls": 14,
+          "generationAuditAndRepairCalls": 3,
+          "tokensAndTimeFitEstablished": false,
+          "scientificApproval": false,
+          "compiledPoints": 10
+        },
+        "compiledPoints": 10,
+        "compilerErrors": [
+          {
+            "conclusionIndex": 0,
+            "reason": "internal_reference_in_prose"
+          }
+        ],
+        "verifiedReport": false
+      }
+    ],
+    "originalUnchanged": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0
+  },
+  "runtimeLoaded": false,
+  "fullRegressionPending": true
+}

@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "3c14b867632b32383ad1e2a417c7fe06b79caf3b",
+  "fullRegression": "comparison-explicit-stage-host-full-20261119.json",
+  "candidate": "academic-dr-explicit-stage-candidate-20261119",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

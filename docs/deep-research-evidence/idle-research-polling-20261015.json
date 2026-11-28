@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-15",
+  "issue": "The workbench stopped GET polling only for terminal states. Confirmed paused and waiting_user records were repeatedly fetched every four seconds, including hidden historical tasks.",
+  "change": "Confirmed paused/waiting_user records become idle for background polling. Manual refresh, selecting their task or returning focus/visibility rechecks them. queued/running/stopping records remain polled, with the existing concurrency and stale-action guards.",
+  "uncertainActions": "An explicit action clears the idle guard. If its response is unconfirmed, only GET recovery restarts; the action is never automatically resubmitted.",
+  "validation": {
+    "focusedHookAndResultCard": {"passed": 46, "files": 2},
+    "allVitest": {"passed": 472, "files": 64, "seconds": 36.13},
+    "typecheck": "passed",
+    "modifiedFileLint": "passed",
+    "productionBuild": "passed with existing dependency/chunk warnings",
+    "isolatedBrowser": {"passed": 6, "seconds": 41.7, "network": "Closed local API fixture; external and unrecognized requests rejected",
+      "newAssertions": ["No repeated paused GET across two real four-second polling periods", "Focus triggers exactly one read and idle resumes", "No automatic mutation/action request"],
+      "retainedAssertions": ["Four laptop CSS viewports", "Source/citation details", "Composer/popovers", "Artifact edit/reload/version restore"]}
+  },
+  "liveObservation": {"fromUtc": "2026-10-15T02:03:28Z", "toUtc": "2026-10-15T02:06:58.121828+00:00",
+    "pausedRuns": 6, "getRequestsForThoseRuns": 0,
+    "boundary": "Uncontrolled-client observation only; not a measured speed improvement or independent performance benchmark."},
+  "newModelRequests": 0,
+  "qualityBoundary": "These checks verify interaction and request lifetime, not model answer quality or independent holdout acceptance."
+}

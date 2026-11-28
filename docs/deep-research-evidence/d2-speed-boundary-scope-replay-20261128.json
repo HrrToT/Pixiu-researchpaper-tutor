@@ -1,0 +1,91 @@
+{
+  "sourceRun": "dr_run_b80f380b6d985fb893f7a50312ae56d8",
+  "sourceCommit": "f79397b97267abc89303ca0080c8681d1e8a0805",
+  "exactOldPacketReproduced": true,
+  "retainedDefinitions": true,
+  "evidenceSelectionUnchanged": true,
+  "jointNumericPairsUnchanged": true,
+  "reshapedObservations": 2,
+  "rawResponseUnchanged": true,
+  "originalObservations": [
+    {
+      "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+      "attribute": "评测硬件",
+      "value": "A6000 GPU"
+    },
+    {
+      "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+      "attribute": "评测硬件",
+      "value": "A6000 GPU；Mip-NeRF 360方法除外"
+    },
+    {
+      "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+      "attribute": "数据集",
+      "value": "Mip-NeRF 360场景及Tanks and Temples选定场景"
+    },
+    {
+      "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+      "attribute": "数据集",
+      "value": "完整Mip-NeRF 360场景及两个Tanks and Temples场景"
+    }
+  ],
+  "currentObservations": [
+    {
+      "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+      "attribute": "评测硬件",
+      "value": "A6000 GPU"
+    },
+    {
+      "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+      "attribute": "评测硬件",
+      "value": "A6000 GPU；Mip-NeRF 360方法除外"
+    },
+    {
+      "subject": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+      "attribute": "所引段落列及的数据集",
+      "value": "Mip-NeRF 360场景及Tanks and Temples选定场景"
+    },
+    {
+      "subject": "3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+      "attribute": "所引段落列及的数据集",
+      "value": "完整Mip-NeRF 360场景及两个Tanks and Temples场景"
+    }
+  ],
+  "retainedComparisonBoundary": [
+    {
+      "type": "comparison_evidence",
+      "subjects": [
+        "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS",
+        "3D Gaussian Splatting for Real-Time Radiance Field Rendering"
+      ],
+      "quantity": "跨论文FPS排名所需的完整测量口径，包括分辨率和渲染设置"
+    }
+  ],
+  "beforeText": "已报告设置：LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS（评测硬件：A6000 GPU）；3D Gaussian Splatting for Real-Time Radiance Field Rendering（评测硬件：A6000 GPU；Mip-NeRF 360方法除外）；LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS（数据集：Mip-NeRF 360场景及Tanks and Temples选定场景）；3D Gaussian Splatting for Real-Time Radiance Field Rendering（数据集：完整Mip-NeRF 360场景及两个Tanks and Temples场景）。当前引用不足以比较LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS与3D Gaussian Splatting for Real-Time Radiance Field Rendering的跨论文FPS排名所需的完整测量口径，包括分辨率和渲染设置。",
+  "afterText": "已报告设置：LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS（评测硬件：A6000 GPU）；3D Gaussian Splatting for Real-Time Radiance Field Rendering（评测硬件：A6000 GPU；Mip-NeRF 360方法除外）；LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS（所引段落列及的数据集：Mip-NeRF 360场景及Tanks and Temples选定场景）；3D Gaussian Splatting for Real-Time Radiance Field Rendering（所引段落列及的数据集：完整Mip-NeRF 360场景及两个Tanks and Temples场景）。当前引用不足以比较LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS与3D Gaussian Splatting for Real-Time Radiance Field Rendering的跨论文FPS排名所需的完整测量口径，包括分辨率和渲染设置。",
+  "stages": [
+    {
+      "stage": "P1",
+      "old": 23916,
+      "new": 23916,
+      "removed": [],
+      "added": []
+    },
+    {
+      "stage": "P2",
+      "old": 23994,
+      "new": 23994,
+      "removed": [],
+      "added": []
+    },
+    {
+      "stage": "joint",
+      "old": 23876,
+      "new": 23995,
+      "removed": [],
+      "added": []
+    }
+  ],
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

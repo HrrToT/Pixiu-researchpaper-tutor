@@ -1,0 +1,70 @@
+{
+  "case": "AD1N-v4",
+  "payloadSha256": "02576dae876a7cae3f7964718ecb50cfc3e9ff60df4b5bbe600c815ed53bf09f",
+  "oldRawUnchanged": true,
+  "replayOverrides": {
+    "state.repairCompleted": false,
+    "startedAt": "current time for admission only",
+    "candidateOnly": "repairInstructionsContractVersion1"
+  },
+  "legacy": {
+    "measurements": [
+      {
+        "targetIds": [
+          "c1",
+          "c2"
+        ],
+        "fixedBytes": 19706,
+        "mandatoryBytes": 27329,
+        "mandatoryRows": 5
+      },
+      {
+        "targetIds": [
+          "c1"
+        ],
+        "fixedBytes": 18283,
+        "mandatoryBytes": 25105,
+        "mandatoryRows": 4
+      }
+    ],
+    "blockedDispatchAttempts": 0
+  },
+  "candidate": {
+    "measurements": [
+      {
+        "targetIds": [
+          "c1",
+          "c2"
+        ],
+        "fixedBytes": 12970,
+        "mandatoryBytes": 20593,
+        "mandatoryRows": 5
+      },
+      {
+        "targetIds": [
+          "c1",
+          "c2"
+        ],
+        "fixedBytes": 12970,
+        "mandatoryBytes": 20593,
+        "mandatoryRows": 5
+      }
+    ],
+    "blockedDispatchAttempts": 1
+  },
+  "candidatePromptBytes": 23919,
+  "originalsAliasesPremiseAuditScopeAndKindPermissionsExact": true,
+  "allFiveMandatoryRowsExact": true,
+  "allPreparationInputsExceptNewFlagExact": true,
+  "legacyCompletePreparationExactAgainstCommit": "135a5133",
+  "candidateTargets": [
+    "c1",
+    "c2"
+  ],
+  "inputCap": 24000,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Preparation and capacity only. A blocked invocation is not a successful model repair or accepted content. Legacy over-cap request rendered only in memory for invariant comparison."
+}

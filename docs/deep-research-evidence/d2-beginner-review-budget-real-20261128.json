@@ -1,0 +1,35 @@
+{
+  "runId": "dr_d2_current_beginner_20261128",
+  "baselineTokens": 79730,
+  "billedTokens": 9257,
+  "exactLeadClaimId": "cmp_conclusion_2",
+  "retainedVerifiedClaims": 10,
+  "leadSemantic": {
+    "claimId": "cmp_conclusion_2",
+    "reason": "semantic_unresolved",
+    "detail": "预算准入停止，尚未完成本条审核；不能据此判断论文事实或证据不足。",
+    "executionState": "not_started",
+    "reviewTimeAdmission": null
+  },
+  "previousReserveDenial": {
+    "kind": "modelCalls",
+    "limit": 18,
+    "used": 11
+  },
+  "unchangedReviewPromptBytes": 18108,
+  "promptSha256": "d2b3b8a342cd4b8846312736d1a5637ed74eb2433aff70e07002a3864e7a055c",
+  "oldOutputCap": 4000,
+  "newOutputCap": 1024,
+  "previousRequestedTokens": 23132,
+  "newRequestedTokens": 20156,
+  "availableTokensBeforeVerification": 20270,
+  "publicationOutcome": "partial",
+  "isolatedPublicationOnly": true,
+  "coverageCoherent": true,
+  "rawSha256": {
+    "intent.json": "1d722ddf84f6265012fa4b7083ce5601906f8be0aee5c54dbdb99f2e833c02f4",
+    "run.json": "6425ddf45c8b6bb58fae3c3d367df91496e2a003baa4af0629df2acd2c3dbccd",
+    "calls.json": "bd22436080b14f79b8fb0d0855feb5b129f7a453f867c78ad21a0a95da72bf80",
+    "publish-return.json": "af0d56b053d42de44314d1b54e102d05a978ee036f9005504b51f2d4d717f8e4"
+  }
+}

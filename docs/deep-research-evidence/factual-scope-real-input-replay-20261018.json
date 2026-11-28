@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-18",
+  "oldSemanticCase": "D1-v23",
+  "legacyVerificationFingerprintMatched": true,
+  "legacyArgsDigest": "3ba50b810d62d1ea2b56c40b8cf7b9725416da4421a4a986ae39e110658d0104",
+  "oldPassedVerdictUnchanged": true,
+  "newPolicyRejectsUnauditedOldVerdict": true,
+  "boundedEvidenceRejectsActualExclusiveClaim": true,
+  "oldGenerationCase": "D5-v9",
+  "legacySynthesisFingerprintMatched": true,
+  "legacySynthesisArgsDigest": "09a990e0228cf336fa4617380c08d6c19cea4242467c2ca719137aa1c79ee18f",
+  "newGenerationRequestsPrivatePreparation": true,
+  "oldPromptBytes": 23849,
+  "newPromptBytes": 23812,
+  "providerOptionsAndRunBudgetUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "boundary": "Exact legacy Provider requests replayed; copied old verdict rejected without its required new audit. The counterexample uses actual rejected-strength text/evidence but a synthetic audit classification, not a new semantic judgement. No retrospective production upgrade or independent credit."
+}

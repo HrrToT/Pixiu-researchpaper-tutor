@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-14",
+  "trigger": "D3-v23 Java report reads timed out while the authoritative Python run was already completed.",
+  "observations": [
+    "Thread capture showed task reads extracting H2 CLOB payloads and an upstream research read awaiting a response; no database deadlock is asserted.",
+    "Saved D3 workspace lists contained about 0.8 MB messages and 1.8 MB artifacts before JSON formatting.",
+    "The service discarded current projections returned by publication/revision transactions and re-read the entire task again."
+  ],
+  "change": [
+    "Reuse the latest locked projection returned by publication/revision updates in the response.",
+    "Remove the unused initial workspace load inside publishV2.",
+    "Use a single task snapshot for material membership and run lookup in scopeCheck.",
+    "Remove an extra ownership read in syncPublication because getV2 still performs the ownership check."
+  ],
+  "unchangedInvariants": [
+    "Upstream run/task/engine identity validation",
+    "Ownership before upstream access",
+    "Locked publication/revision checks",
+    "Stale revision guard",
+    "Paper-store unavailable remains fail-closed"
+  ],
+  "validation": {
+    "jdk": "Cached Maven 3.9.6 / Temurin 21.0.3 container, network disabled, source/dependency cache read-only, independent build output and in-memory test database",
+    "tests": [
+      {
+        "suite": "TaskResearchControllerTest",
+        "passed": 9
+      },
+      {
+        "suite": "TaskResearchV2ControllerTest",
+        "passed": 40
+      },
+      {
+        "suite": "TaskResearchReadProjectionTest",
+        "passed": 3
+      }
+    ],
+    "failures": 0,
+    "initialHostBuild": "JDK25 compile failed before tests with javac TypeTag UNKNOWN. No dependency upgrade or business database mutation was used to work around it."
+  },
+  "limitations": [
+    "One post-load terminal report GET succeeded in 11.688 seconds; earlier reads exceeded 25 seconds. This is not a controlled performance benchmark, and latency remains too high for a fluid interactive experience.",
+    "This change does not introduce pagination or normalize the existing task JSON storage."
+  ],
+  "implementationCommit": "5a54336",
+  "runtime": {
+    "javaPid": 32588,
+    "jdkRuntime": "25.0.1",
+    "buildTarget": "21",
+    "oldJarBackup": "tmp/dr60-backend-before-20261014.jar",
+    "databaseUnchanged": "backend-java/target/stage0-data/academic_db",
+    "sameTerminalCaseGet": {
+      "caseId": "D3-v23",
+      "httpStatus": 200,
+      "seconds": 11.688,
+      "status": "completed",
+      "outcome": "partial",
+      "generationRequests": 0
+    }
+  }
+}

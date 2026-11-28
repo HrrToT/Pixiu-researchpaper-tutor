@@ -1,0 +1,87 @@
+{
+  "sourceCommit": "ec9a2f68a5dee3dd6ebb0f4577bda7d8a1c88981",
+  "case": "D2-BASELINE-COMPRESSION-v15",
+  "runId": "dr_run_29ba8360909c59a3bf8ece0a0d1706fb",
+  "split": "development",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "planningVersion": 6,
+  "comparisonAuthoringVersion": 2,
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "budget_exhausted",
+  "modelCalls": 11,
+  "allModelCallsSucceeded": true,
+  "ledgerTokens": 68398,
+  "elapsedSeconds": 228.0,
+  "budget": {
+    "maxModelCalls": 18,
+    "reserveModelCalls": 5,
+    "maxTokens": 100000,
+    "reserveTokens": 50000,
+    "maxWallClockSeconds": 360,
+    "modelCalls": 6,
+    "reservedModelCalls": 5,
+    "normalTokens": 20384
+  },
+  "allFrozenPremiseBundlesRetained": true,
+  "suppliedPaperCount": 2,
+  "requiredBundleCount": 28,
+  "stages": [
+    {
+      "stageId": "P1",
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    {
+      "stageId": "P2",
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    {
+      "stageId": "joint",
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    }
+  ],
+  "stageInputs": [
+    {
+      "stageId": "P1",
+      "inputBytes": 23992
+    },
+    {
+      "stageId": "P2",
+      "inputBytes": 23967
+    },
+    {
+      "stageId": "joint",
+      "inputBytes": 23999
+    }
+  ],
+  "compiledContainerErrors": [
+    {
+      "conclusionIndex": 0,
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "canonicalDraftCount": 9,
+  "initialReviewResponsesSucceeded": 2,
+  "initialVerificationCheckpointPresent": false,
+  "verifiedReportPresent": false,
+  "publicationPresent": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "e817d6681e889dc94b44b9ba4a64d7b5d083de9a96400e3d2f8ef8c94f538ad4",
+    "calls": "c40d91f237cf46b4b5913657387af1603560eb5690277e46b2bb7c3174505547",
+    "result": "b8b93949666174ba0519279cd58a0a89e893d7c3a60862d6e6706c66c5da7593",
+    "execution": "ddab516873b59c68ec75b9b5e8e10ec40d84af2dbd5e310e60ad89e67d59f2d9",
+    "restore": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "scientificContentAccepted": false,
+  "independentAcceptance": false,
+  "nextAction": "Offline reconstruct next initial-review reservation and protect completed batches at budget stop; review per-paper versus shared goal wording and absence assertions. No immediate same-question paid rerun."
+}

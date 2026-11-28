@@ -1,0 +1,211 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_37b6356fc7405e5eaa42e0ecd4c0c504",
+  "sourceCommit": "21f309e4d9271dd11f7ea09874ca57cf9f1c7c31",
+  "frozenDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "attempts": 1,
+  "automaticRetry": false,
+  "productionWrites": false,
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "modelCalls": 15,
+    "ordinaryCalls": 10,
+    "finalizationCalls": 5,
+    "tokens": 78541,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 144.0,
+    "amountBilled": null
+  },
+  "providerUsage": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16900,
+      "output_tokens": 1367,
+      "total_tokens": 18267,
+      "cached_input_tokens": 1719,
+      "cache_write_input_tokens": 14577
+    },
+    "gpt-6.1-terra": {
+      "calls": 10,
+      "input_tokens": 56132,
+      "output_tokens": 4142,
+      "total_tokens": 60274,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 56102
+    }
+  },
+  "priorRealComparison": {
+    "modelCalls": 15,
+    "tokens": 78714,
+    "elapsedSeconds": 154,
+    "publishedCells": 4
+  },
+  "initialFactBatches": [
+    [
+      "cmp_0_0",
+      "cmp_1_0",
+      "cmp_2_0",
+      "cmp_3_0"
+    ],
+    [
+      "cmp_4_0",
+      "cmp_5_0",
+      "cmp_6_0",
+      "cmp_7_0"
+    ]
+  ],
+  "publishedCells": [
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "表示与压缩机制",
+      "paper": "P2",
+      "releaseClaimIds": [
+        "cmp_1_0"
+      ]
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P1",
+      "releaseClaimIds": [
+        "cmp_2_0"
+      ]
+    },
+    {
+      "axis": "额外处理成本",
+      "paper": "P2",
+      "releaseClaimIds": [
+        "cmp_3_0"
+      ]
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P1",
+      "releaseClaimIds": [
+        "cmp_4_0"
+      ]
+    },
+    {
+      "axis": "存储与画质",
+      "paper": "P2",
+      "releaseClaimIds": [
+        "cmp_5_0"
+      ]
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P1",
+      "releaseClaimIds": []
+    },
+    {
+      "axis": "渲染速度",
+      "paper": "P2",
+      "releaseClaimIds": [
+        "cmp_7_0"
+      ]
+    }
+  ],
+  "publishedClaimIds": [
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_7_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "initialRejections": {
+    "cmp_0_0": {
+      "reason": "semantic_unresolved",
+      "detail": "高斯体属性的优化与增删有据，但原文是优化不透明度，而非透明度。\n点云压缩被列为值得探索的方向。"
+    },
+    "cmp_6_0": {
+      "reason": "semantic_unresolved",
+      "detail": "原文报告实时渲染，测试视图渲染保留输入原始分辨率。\n结果使用A6000，但论文明确将Mip-NeRF360方法排除在这一硬件说明之外。\n目标中“结果使用A6000”未保留该例外，因此整句范围过宽。"
+    }
+  },
+  "citationChecks": {
+    "literal_page": 22,
+    "table_row_check_required": 3
+  },
+  "tableExample": {
+    "sourceRevision": "2311.17245v6",
+    "page": 6,
+    "tableNumber": 1,
+    "dataset": "Mip-NeRF 360 Datasets",
+    "metrics": [
+      "FPS↑",
+      "Size↓",
+      "PSNR↑",
+      "SSIM↑",
+      "LPIPS↓"
+    ],
+    "physicalRows": {
+      "3D-GS∗ [16]": [
+        "144",
+        "782MB",
+        "27.40",
+        "0.813",
+        "0.217"
+      ],
+      "Ours": [
+        "237",
+        "45MB",
+        "27.13",
+        "0.806",
+        "0.237"
+      ]
+    },
+    "checkedCells": 10,
+    "captionVerified": true
+  },
+  "result": {
+    "status": "completed",
+    "outcome": "partial",
+    "scientificAcceptance": false,
+    "wholeAnswerAuditStatus": "checked"
+  },
+  "repair": {
+    "status": "skipped_budget",
+    "limit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    },
+    "tokensAtRepairEntry": 78541,
+    "remainingTokens": 21459,
+    "offlineFullCandidateReauditReservation": 30036,
+    "reauditCandidateClaims": 11,
+    "dispatched": false,
+    "replayProviderCalls": 0
+  },
+  "outstanding": [
+    "Original 3DGS mechanism and opacity terminology",
+    "Original 3DGS rendering speed and qualified hardware scope",
+    "Source-grounded selection rationale beyond a generic peak-memory test"
+  ],
+  "relatedOfflineTests": {
+    "passed": 74,
+    "files": [
+      "test_deep_research_comparison_review_batches.py",
+      "test_deep_research_comparison_layout.py"
+    ]
+  },
+  "rawFilesSha256": {
+    "intent.json": "8a496f92f383c70c90c34728d028b192886970e8ea5c4879d0adaca6e6091fb9",
+    "run.json": "b0f57d98233449b7873054356854705162373d99d4c050cf5803a8948aed1a41",
+    "calls.json": "a76cffeab6844a5ff8b84bdbb0a58089561eb397b3ad3ea9dae1fe518bb1a7e3",
+    "result.json": "a2d2a05fa44e24485fcfc23bf114ff39ad26773a5608c41f8f3373ab92bfe549",
+    "provider.jsonl": "9bdeddf8d1631397c93af56e86f77edc327fd16c8683eb416977989102a1802b",
+    "report.md": "90010c82348b8a29ed9c39a05fd4e7f1611f6244b1bead7ce81d7bcd8dd75026",
+    "citation-physical-check.json": "98c3bbd321fab4c0f8b023b1411f337475a5c9898684706a4da12be46b8e67a6"
+  }
+}

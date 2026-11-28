@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "04b8c4f1",
+  "promptVersion": "dr-v2.20261018.179",
+  "offline": {"passed": 2886, "warnings": 1, "seconds": 178.71, "log": "tmp/pytest-dr179-final-full.log"},
+  "focused": {"passed": 27, "seconds": 2.74, "overlapWithFull": true},
+  "changes": [
+    "Server-owned immutable experiment intent1 distinguishes explicit descriptive exploration from inferential tests and reviews whether a temporal observable measures jitter, with an image-quality guard and no invented intermediate GT.",
+    "Compact drafting retains every schema/state and source/choice boundary while removing repeated prose and an unrelated factorial reference only for an explicit single-factor toggle. Full independent scientific/structural checks remain.",
+    "Actual old H5F-v2 synthesis fingerprint matches and reveals zero visible evidence rows. The new same-input request fits23818/24000bytes with six original evidence rows including AST; it is not a new model/content pass.",
+    "Three actual archived repair groups fit19617/22717/22991bytes under the unchanged24000cap, preserving all original targets, values, source quotes and consistency definitions. New requests stop before model dispatch if no acquired premise fits.",
+    "New repair input identity freezes the experiment intent policy; old pending/unknown requests cannot be retargeted. Nine actual archived Provider fingerprints match; no historical outcome upgraded."
+  ],
+  "replay": "docs/deep-research-evidence/experiment-intent-legacy-replay-20261018.json",
+  "repairPreflight": "docs/deep-research-evidence/experiment-intent-repair-capacity-replay-20261018.json",
+  "boundary": "Offline evidence/contract/intent/preflight checks do not establish real experimental validity, novice comprehension or independent acceptance."
+}

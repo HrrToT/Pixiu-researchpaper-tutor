@@ -1,0 +1,46 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "bounded_reverification_of_one_corrected_development_candidate",
+  "baseline": "lightglue-saved-revision-real-review-20261127.json",
+  "codeCommit": "d8aa9f128",
+  "sourceRevision": "arxiv:2306.13643v1",
+  "candidateEdit": {
+    "before": "比例达到退出条件（论文设为95%）时",
+    "after": "比例超过退出阈值（论文设为95%）时",
+    "remainingProseAndAllFourCitationsPreserved": true
+  },
+  "providerCalls": [
+    {"node": "verify", "tokens": 4432, "promptBytes": 18059},
+    {"node": "verify_answer_coverage", "tokens": 5765, "promptBytes": 21015}
+  ],
+  "totalProviderTokens": 10197,
+  "budgetAdjustment": {
+    "authorizedMaximumTokens": 30000,
+    "initialProjectedReservation": 32940,
+    "firstCoverageRequestSent": false,
+    "action": "Expose the original cap to the unchanged evidence fitter, then resume with the accepted claim and original deadline.",
+    "allCitedEvidenceRetained": true,
+    "semanticReviewRepeated": false
+  },
+  "contentReview": {
+    "verifiedClaims": 1,
+    "rejectedClaims": 0,
+    "coveredObligations": ["early-stopping", "point-pruning", "remaining-request"],
+    "wholeQuestion": "partial",
+    "wholeQuestionReviewReason": "The mechanisms and computational savings were explained, but the reviewer expected original wording inline.",
+    "coherenceChecked": true,
+    "renderedInlineCitationLinks": 4,
+    "verbatimQuotesInRenderedExpandableEvidenceSection": 4,
+    "visibleAnswerCharacters": 221
+  },
+  "isolatedPublicationId": "dr_pub_7dfc841f133b4b0e84031d471f08fe33",
+  "isolatedReportOutcome": "partial",
+  "liveApplicationWrites": 0,
+  "independentAcceptanceCredit": false,
+  "sha256": {
+    "intent.json": "ff1cdcab0dcc00929e8bb2e6d11a417c3ffdf1b4a8337ac1a547151b243a5fca",
+    "calls.json": "081d74808a869c91633e8665cec9079b04a836c2daf2880f6b03b26451654f56",
+    "run.json": "715d40d5a87e1ab0f5a6a9fd8ee8a791e94db2d0a1fa222eda85e14d8081db9f",
+    "before-coverage-calls.json": "dfc23e82c5f11065a7965b4fb69a63d6c43c53eb986780e4f5dadb0ba5603e0b"
+  }
+}

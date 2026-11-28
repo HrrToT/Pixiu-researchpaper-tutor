@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "2b3fafd2db1b02536ebe3a776b23c30796a0d581",
+  "promptVersion": "dr-v2.20261116.486",
+  "fullRegression": "deep-research-evidence/unified-advice-repair-486-20261116.json",
+  "baseline": "tmp/dr-acceptance-receipts/comparison-486.before.json",
+  "health": "ok",
+  "all105TasksExact": true,
+  "all392OldRunsExact": true,
+  "all9923CallRowsExact": true,
+  "allDeepResearchModuleHashesMatch": true,
+  "transportParserAndTableHashesMatch": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCalls": 0
+}

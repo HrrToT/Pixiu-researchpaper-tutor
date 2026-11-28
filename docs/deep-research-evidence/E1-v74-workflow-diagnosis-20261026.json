@@ -1,0 +1,640 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v74",
+  "runId": "dr_run_2baec4d88b31582199d03b82e7f193f5",
+  "promptVersion": "dr-v2.20261026.284",
+  "status": "failed",
+  "originalErrors": [
+    "timeline.input.group_leak"
+  ],
+  "revisionErrors": [
+    "timeline.input.group_leak"
+  ],
+  "original": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14"
+    ],
+    "baselineMode": "existing",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "frame0_model",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage1_ntc_result",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage2_additional_3dgs",
+        "appliesTo": [
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 1,
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "Exact frame indices in flame salmon where emerging objects first appear and the precise held-out camera view names are not quoted in the provided evidence.",
+      "Whether the N3DV flame salmon scene has a standard train/test camera split and its exact view count are not stated in the cited passages.",
+      "The exact number of additional 3DGs spawned per frame and the resulting per-frame storage size in bytes are not available from the provided evidence.",
+      "The specific learning rates and optimizer settings for Stage 2 additional 3DG optimization are not quoted in the cited implementation passages.",
+      "The exact Stage 2 wall-clock training time per frame on the cited RTX 3090 setup is not reported in the provided evidence.",
+      "The held-out PSNR values for Arm A and Arm B on the chosen frame window are not available because the experiment has not been executed."
+    ],
+    "frameIterations": 30,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "setup",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [],
+        "updates": [
+          "frame0_model"
+        ],
+        "outputs": [
+          "frame0_model"
+        ],
+        "action": {
+          "action": "load_frame0_model",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "choice",
+              "value": "N3DV_flame_salmon_iteration_15000"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "setup",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [
+          {
+            "state": "frame0_model",
+            "selector": "all"
+          }
+        ],
+        "updates": [
+          "stage1_ntc_result"
+        ],
+        "outputs": [
+          "stage1_ntc_result"
+        ],
+        "action": {
+          "action": "train_stage1_ntc",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 150
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "all"
+          }
+        ],
+        "updates": [
+          "stage2_additional_3dgs"
+        ],
+        "outputs": [
+          "stage2_additional_3dgs"
+        ],
+        "action": {
+          "action": "train_stage2_additional_3dgs",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 100
+            },
+            {
+              "name": "spawn_threshold",
+              "type": "number",
+              "value": 0.00015
+            },
+            {
+              "name": "opacity_threshold",
+              "type": "number",
+              "value": 0.01
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 100
+        }
+      },
+      {
+        "scope": "per_frame",
+        "kind": "evaluate",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "all"
+          },
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "all"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "action": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "count"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "additional_3dg_count"
+        ],
+        "action": {
+          "action": "count_additional_3dgs",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "storage_bytes"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "stage2_storage_bytes"
+        ],
+        "action": {
+          "action": "measure_stage2_storage",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "training_time_seconds"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "stage2_training_time_seconds"
+        ],
+        "action": {
+          "action": "measure_stage2_training_time",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      }
+    ]
+  },
+  "revised": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14"
+    ],
+    "baselineMode": "existing",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "frame0_model",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage1_ntc_result",
+        "appliesTo": [
+          "0",
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 0,
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "stage2_additional_3dgs",
+        "appliesTo": [
+          "1"
+        ],
+        "lifecycle": {
+          "scope": "per_frame",
+          "createInScope": 1,
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "Exact frame indices in flame salmon where emerging objects first appear and the precise held-out camera view names are not quoted in the provided evidence.",
+      "Whether the N3DV flame salmon scene has a standard train/test camera split and its exact view count are not stated in the cited passages.",
+      "The exact number of additional 3DGs spawned per frame and the resulting per-frame storage size in bytes are not available from the provided evidence.",
+      "The specific learning rates and optimizer settings for Stage 2 additional 3DG optimization are not quoted in the cited implementation passages.",
+      "The exact Stage 2 wall-clock training time per frame on the cited RTX 3090 setup is not reported in the provided evidence.",
+      "The held-out PSNR values for Arm A and Arm B on the chosen frame window are not available because the experiment has not been executed."
+    ],
+    "frameIterations": 30,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "setup",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [],
+        "updates": [
+          "frame0_model"
+        ],
+        "outputs": [
+          "frame0_model"
+        ],
+        "action": {
+          "action": "load_frame0_model",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "choice",
+              "value": "N3DV_flame_salmon_iteration_15000"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "setup",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "shared",
+        "reads": [
+          {
+            "state": "frame0_model",
+            "selector": "all"
+          }
+        ],
+        "updates": [
+          "stage1_ntc_result"
+        ],
+        "outputs": [
+          "stage1_ntc_result"
+        ],
+        "action": {
+          "action": "train_stage1_ntc",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 150
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "fit",
+        "groups": [
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "all"
+          }
+        ],
+        "updates": [
+          "stage2_additional_3dgs"
+        ],
+        "outputs": [
+          "stage2_additional_3dgs"
+        ],
+        "action": {
+          "action": "train_stage2_additional_3dgs",
+          "parameters": [
+            {
+              "name": "iterations",
+              "type": "number",
+              "value": 100
+            },
+            {
+              "name": "spawn_threshold",
+              "type": "number",
+              "value": 0.00015
+            },
+            {
+              "name": "opacity_threshold",
+              "type": "number",
+              "value": 0.01
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 100
+        }
+      },
+      {
+        "scope": "per_frame",
+        "kind": "evaluate",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage1_ntc_result",
+            "selector": "all"
+          },
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "all"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "heldout_psnr"
+        ],
+        "action": {
+          "action": "render_heldout_views",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "count"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "additional_3dg_count"
+        ],
+        "action": {
+          "action": "count_additional_3dgs",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "storage_bytes"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "stage2_storage_bytes"
+        ],
+        "action": {
+          "action": "measure_stage2_storage",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "record",
+        "sharing": "per_group",
+        "reads": [
+          {
+            "state": "stage2_additional_3dgs",
+            "selector": "training_time_seconds"
+          }
+        ],
+        "updates": [],
+        "outputs": [
+          "stage2_training_time_seconds"
+        ],
+        "action": {
+          "action": "measure_stage2_training_time",
+          "parameters": []
+        },
+        "budget": null,
+        "group": "1"
+      }
+    ]
+  },
+  "changes": [],
+  "fieldFeedback": {
+    "codes": [
+      "timeline.input.group_leak"
+    ],
+    "issues": [
+      {
+        "code": "timeline.input.group_leak",
+        "path": "/steps/3/reads/1",
+        "actualPresent": true,
+        "sourceGroups": [
+          "1"
+        ],
+        "consumerGroups": [
+          "0",
+          "1"
+        ],
+        "expected": "source availability must include every consumer group; retain all required arms",
+        "expandedStage": "operation",
+        "actual": {
+          "state": "stage2_additional_3dgs",
+          "selector": "all"
+        },
+        "consumerStepIndex": 3,
+        "consumerOutputStage": "operation"
+      }
+    ],
+    "declaredComponentIds": [
+      "frame0_model",
+      "stage1_ntc_result",
+      "stage2_additional_3dgs"
+    ],
+    "scientificApproval": false,
+    "authoredValuesPreserved": true,
+    "declaredStepCount": 7,
+    "explicitScopeEndReleases": [
+      {
+        "componentIndex": 0,
+        "componentId": "frame0_model",
+        "scope": "per_repeat",
+        "disposeAfter": null
+      },
+      {
+        "componentIndex": 1,
+        "componentId": "stage1_ntc_result",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      },
+      {
+        "componentIndex": 2,
+        "componentId": "stage2_additional_3dgs",
+        "scope": "per_frame",
+        "disposeAfter": 6
+      }
+    ]
+  },
+  "modelCalls": [
+    {
+      "node": "plan_workflow_meta",
+      "callId": "f4b94e997cdcaf909b5232a15b7b9b04",
+      "argsDigest": "1969e1deea958616b97852a6174fb383723ce23c89071899e4233fa20cbb4eaa",
+      "model": "deepseek-v4-pro",
+      "reportedModel": "deepseek-v4-pro",
+      "usage": {
+        "total_tokens": 9178,
+        "input_tokens": 7617,
+        "output_tokens": 1561
+      },
+      "rawSha256": "1231604e19a51e9f9bdd0457cd2c69494f98d26426001dc0d3e46fd0e9790690"
+    },
+    {
+      "node": "repair_workflow_meta",
+      "callId": "72898d034bf3c764af187ee63e25e990",
+      "argsDigest": "a3bf90c6c7eb9118b3d77fc089e4378cb454c909842fc420ef57f9a1d915a459",
+      "model": "deepseek-v4-pro",
+      "reportedModel": "deepseek-v4-pro",
+      "usage": {
+        "total_tokens": 10307,
+        "input_tokens": 8761,
+        "output_tokens": 1546
+      },
+      "rawSha256": "a538c81bf1c1e1614f50340fc9ea2c8ba64e4031ae6903542377d1ab1b1cfbba"
+    }
+  ],
+  "differentGenerationAndRepairPrompts": true,
+  "additionalManualFinding": "step1 is labelled setup with null budget despite action train_stage1_ntc and 150 iterations; not accepted as scientific validity",
+  "initializationRepairExercised": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

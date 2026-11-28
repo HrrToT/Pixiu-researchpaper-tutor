@@ -1,0 +1,41 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "scope": "Offline replay at comparison repair parser and independent verifier prompt.",
+  "comparisonRepairBatchEnvelopeVersions": [
+    4,
+    5
+  ],
+  "repairInputBytes": {
+    "before": 12396,
+    "after": 12453
+  },
+  "sameOutputCap": 4096,
+  "definition": {
+    "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+    "sourceVersionId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "page": 2,
+    "evidenceId": "ev_8eb53d60614740fe402f6a503364ea351e788417bc182491d0a42ff17d7f5b33",
+    "term": "opacity"
+  },
+  "cases": {
+    "archivedInversionBlocked": true,
+    "correctTermWithoutDefinitionBlocked": true,
+    "correctTermWithDefinitionReachedIndependentReview": true
+  },
+  "independentReviewPacket": {
+    "bytes": 13200,
+    "definitionAndCorrectTermVisible": true,
+    "dispatched": false
+  },
+  "originalLedgerCallCount": 16,
+  "originalCaseCallLimit": 18,
+  "archives": {
+    "tmp/d2-targeted-future-work-live-20261129/calls.json": "7c719aa67b2527c054bb78705e7f3ab1c90b7ac9ae0aaeeb079eda36f24ca4d0",
+    "tmp/d2-opacity-binding-verifier-replay-20261129/summary.json": "c2263fed96eb22cdf9b18c7492a0f9587b937eee80f5ce5b8d065e205f10a72d"
+  },
+  "providerCalls": 0,
+  "targetedTestsPassed": 809,
+  "productionWrites": 0,
+  "semanticApproval": false,
+  "published": false
+}

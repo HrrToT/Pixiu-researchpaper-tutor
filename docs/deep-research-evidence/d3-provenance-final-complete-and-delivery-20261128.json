@@ -1,0 +1,134 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "candidate": "963a478a41f22b31399be35fdf7b37abeab84e1f",
+  "runId": "dr_d3_provenance_final_audit_20261128",
+  "priorRunId": "dr_d3_design_stable_pointers_20261128",
+  "unchangedScientificReviewDigest": "c8b7f5139f412e5117759420cbb5991acfd11e339de99276146201bde1044a18",
+  "compiledReportChange": "**优化器状态的依据：** 仅凭所引论文片段，尚无法确认作者在这些操作前后如何处理优化器状态。表中的优化器状态处置属于拟议实验设置。",
+  "priorBudgetTokens": 77043,
+  "cumulativeTokens": 89038,
+  "cumulativeModelCalls": 12,
+  "newModelGenerations": 1,
+  "additionalInputCountRequests": 1,
+  "newUsage": {
+    "total_tokens": 11995,
+    "input_tokens": 10570,
+    "output_tokens": 1425,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 10567
+  },
+  "elapsedSeconds": 36.52,
+  "newExternalSearches": 0,
+  "newScientificReviewCalls": 0,
+  "wholeAnswerAudit": "checked",
+  "gaps": 0,
+  "publishedOutcome": "complete",
+  "independentCredit": 0,
+  "originalCountOnlyBoundary": "Provider counted input, local driver intercepted generation and its isolated reservation was discarded. Retest matched exact measured request.",
+  "physicalCitations": {
+    "pdfSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "citedVersion": "arxiv:2308.04079v1",
+    "pages": [
+      2,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "citations": [
+      {
+        "evidenceId": "ev_32ae530bcc3400330d0db4b6e9bf624d9cfb9a214d4bd2b6a82a457db4170b38",
+        "page": 5,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_aa0ec7b9bf1a67e04da9a0e67e4fce60733c3c128a8f948e60187ebeceea023c",
+        "page": 6,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_78b9ebaca9d6740e757bc2dd54fdc77217a16d4f22e292d3c68b2c1bd2a0f8f2",
+        "page": 6,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_8879711228dec07d5e1940cf2d1afa0dea009d8f6d12d5f57b6aa6dc318eb2b6",
+        "page": 7,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_bb2232deb20009399ca12bfe87d1407bba4cfc6b07a5c358d80c1dfd028f020f",
+        "page": 9,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_c56e6e7dae9b6d0ddc61b75dd6e65005be01cae3b89c2b58817cb6a06aaece59",
+        "page": 2,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_246c1a1f89365e3dfde7be1f9b4ae80538100bd89940b9e5bee1fc45769ac28e",
+        "page": 8,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_26c3f671f94c4fb3a650edbc8aeb4230f6260f3ad48c7235a6045960b15c1408",
+        "page": 5,
+        "normalizedExactMatch": true
+      },
+      {
+        "evidenceId": "ev_a4939048f742f0f106aa9f87eeb8a3648fda0f29bcc43527beac24a0a42d8598",
+        "page": 5,
+        "normalizedExactMatch": true
+      }
+    ]
+  },
+  "isolatedDelivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Exact saved D3 proposal with real scientific and final review, replayed with graph and model dispatch disabled",
+    "originalRunId": "dr_d3_provenance_final_audit_20261128",
+    "replayRunId": "dr_run_9a90aed3607a5adfaeddbed9fd1bfee7",
+    "sourceArtifactSha256": "646f90cf8ee017ea0951f3cfd0bc6d500ce7f2e8af6a503949e8aca50a0c7edf",
+    "reportOutcome": "complete",
+    "reportClaims": 1,
+    "sourcePages": {
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+        2,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    "duplicateDeliverySuppressed": true,
+    "documentsMatchHash": true,
+    "crossTaskFileDenied": true,
+    "restartedAndReadAgain": true,
+    "materialReadinessFixture": true,
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true
+  },
+  "regression": {
+    "passed": 388,
+    "failed": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-provenance-final-audit-20261128-v2/intent.json": "5a2400d9bd47f7100f773f3b9d791452d39946f68f4b36d59b1845e89cf17b1a",
+    "tmp/openai-d3-provenance-final-audit-20261128-v2/calls.json": "a18f151a894984134f9c80381e1c0caf250814ae1c9fcacfe7f99958d4b389c5",
+    "tmp/openai-d3-provenance-final-audit-20261128-v2/run.json": "646f90cf8ee017ea0951f3cfd0bc6d500ce7f2e8af6a503949e8aca50a0c7edf",
+    "tmp/openai-d3-provenance-final-audit-20261128-v2/result.json": "1dfd5b039ca8093ec99cffcb232e7315562298fa3bd35c3e1b42a08b55ec5d7a",
+    "tmp/openai-d3-provenance-final-audit-20261128-v2/physical-citation-audit.json": "1ba0b96ab94a6744b96160e45dbbaa3bfd9c27c7c2fce1578718a5c7dc2fa663",
+    "tmp/openai-d3-provenance-final-audit-20261128/result.json": "85d64d694ba85711ae791a08d5f25b0987e7ead2058790a36d519a7631cf4d73",
+    "tmp/openai-d3-provenance-final-audit-20261128/calls.json": "b9b0a3ee4df66211fc4aa64fa9f8e0a946b4d3a9756180305ff8f3c538694fa5",
+    "tmp/publication-integration-d3-provenance-final-delivery-20261128/receipt.json": "76fc0497dc6407b307bbc907d6beba49dd92e94c66b08cb2f2243908dd89430f",
+    "tmp/publication-integration-d3-provenance-final-delivery-20261128/task-first-read.json": "f8e589d58ab50f98e7a8234966ad3cb22c63eab7294e55754b895d52fc167ef8",
+    "tmp/publication-integration-d3-provenance-final-delivery-20261128/report-first-read.json": "ce72f273ddad7d1dd27c092419af995fd7a3dddf3b54a7c6f92b49150e96bb4e",
+    "tmp/d3-provenance-report-regression-20261128.xml": "1872111d9b35835d320cbab2646afe7685cc2fc120d9f51499f4654b6f4b12e7"
+  }
+}

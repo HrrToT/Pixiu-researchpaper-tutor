@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-27T16:25:05.192625+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "pyramidkv_v1": {
+      "path": "tmp/pdfs/h3-pyramidkv-evaluator-20261128/2406.02069v1.pdf",
+      "bytes": 1769504,
+      "sha256": "5dfea3a4a81f0b212ac586d2a436fe7b1fd5f9677a901b8f5be1072cf3ebdbaf",
+      "pageCount": 13,
+      "arxiv": "2406.02069v1",
+      "reference": "https://arxiv.org/abs/2406.02069v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-PYRAMIDKV",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2406.02069v1。给初学者解释 PyramidKV 为什么给不同层分配不同的缓存容量，每层拿到容量后又怎样决定保留哪些内容。注明取得的是摘要还是正文，引用指定版本的方法原文，正文不超过 300 字。找不到正文时请说明。",
+      "required": [
+        "从空材料任务发现并下载指定版本全文，文件哈希及页数与评审件一致，并保留原文定位。",
+        "解释较低层注意力分布较广因此多分缓存，较高层集中到少数位置因此少分。",
+        "说明保留输入末尾窗口，然后用该窗口对其他位置的注意力打分，在各头内按所在层的容量保留高分位置的键和值。",
+        "注明正文或摘要，引用固定版本方法正文，300 字以内。"
+      ],
+      "forbidden": [
+        "把缓存容量的分配和在固定容量内选择内容混为一谈，或颠倒层级大小。",
+        "把所有历史位置说成全部保留、缓存跟随层级逐步转移，或宣称压缩结果等同完整注意力。",
+        "用其他版本、已经存在的应用缓存或评审 PDF 代替联网获取。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "pyramidkv_v1",
+        "page": 5,
+        "section": "4.2.1–4.2.2",
+        "checks": "Physical page 5 describes layer budget and the input-tail window; page 6 describes scoring and retaining specific KV states."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-PYRAMIDKV": "f369558b1f311f0fa1906e43ec49b5f42ceed1a417fe650c0aa251cc7cab6e56"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v56",
+  "sourceAudit": "d2-device-memory-source-audit-20261126.json",
+  "mode": "offline replay from the two frozen PDFs through local PDF retrieval, reading, literal extraction and staged generation admission",
+  "scope": "The production PDF parser read the exact hashed task documents via a fixture transport. No manually injected evidence and no outbound model request.",
+  "before": {
+    "acquiredPassages": 31,
+    "readPassages": 12,
+    "physicalPage11AvailableInAcquisition": true,
+    "physicalPage11DeploymentContextInEvidence": false,
+    "physicalPage11DeploymentContextInJointPrompt": false,
+    "jointInputBytes": 23882
+  },
+  "after": {
+    "acquiredPassages": 31,
+    "readPassages": 12,
+    "physicalPage11AvailableInAcquisition": true,
+    "physicalPage11DeploymentContextInEvidence": true,
+    "physicalPage11DeploymentContextInJointPrompt": true,
+    "jointInputBytes": 23995,
+    "jointInputLimitBytes": 24000,
+    "decisionMode": "measure_both_before_recommending_either"
+  },
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificAcceptance": false
+}

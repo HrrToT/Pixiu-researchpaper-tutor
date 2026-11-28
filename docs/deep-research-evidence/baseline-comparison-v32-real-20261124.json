@@ -1,0 +1,51 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v32",
+  "runId": "dr_run_cf13e6689684579f9a6831aa292b2bb6",
+  "sourceCommit": "7728ed767516e85ba90edca10e02a51a4832352a",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "stageGenerationDispatched": false,
+  "actualModelCalls": 8,
+  "byModelStep": {
+    "assess_relevance": 6,
+    "plan": 1,
+    "resolve_brief": 1
+  },
+  "providerReportedTokens": 23579,
+  "elapsedSeconds": 112.0,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "automaticRetry": false,
+  "actualCounterReplay": {
+    "usedModelCalls": 8,
+    "outcome": "budget_exhausted",
+    "limit": {
+      "kind": "comparisonStageCalls",
+      "limit": 10,
+      "used": 11
+    }
+  },
+  "counterfactualWithoutOneCall": {
+    "usedModelCalls": 7,
+    "outcome": "mock_dispatch_boundary",
+    "admission": {
+      "remainingModelCalls": 11,
+      "callLowerBound": 11,
+      "additionalAdviceOrRecheckCallsMayBeRequired": true,
+      "providerTokensAndWallClockFitEstablished": false,
+      "generationInputBytesTotal": 71964
+    },
+    "stageBytes": {
+      "P1": 23993,
+      "P2": 23989,
+      "joint": 23982
+    }
+  },
+  "replayModelRequests": 0,
+  "scientificContentAccepted": false,
+  "receiptHashes": {
+    ".payload.json": "e1a391312b9b8c7ee93c49cb5fe27d5bc020c7f4a455d4d51ecfcbec1a3f9907",
+    ".calls.json": "49f1712fbeff10229a7b4dde2535e5fb0ec6f64321bc4f205163f5ccc00fcce6",
+    ".result.json": "25d146e0120f39184619978abd01d35da761afdcdbea8ed493bfa44a23eae172",
+    ".execution.json": "41971f9141db5f3d71ce650be8ea3aeced7f3048e799c7a31527369fe9e03d4c"
+  }
+}

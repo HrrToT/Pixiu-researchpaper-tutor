@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-25T18:38:54.829686+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "quarot_v1": {
+      "path": "tmp/pdfs/h4-quarot-evaluator-20261126/2404.00456v1.pdf",
+      "bytes": 580639,
+      "sha256": "6322ae57c4c241d9021f26f73eca541b4c951e627b37447c014da6aa4d0626fd",
+      "pageCount": 19,
+      "arxiv": "2404.00456v1",
+      "reference": "https://arxiv.org/abs/2404.00456v1"
+    },
+    "quarot_v2": {
+      "path": "tmp/pdfs/h4-quarot-evaluator-20261126/2404.00456v2.pdf",
+      "bytes": 624957,
+      "sha256": "f611888c63ef63a5c0232e2c8416619f0c9ace08d0e05692731da82791202e3e",
+      "pageCount": 21,
+      "arxiv": "2404.00456v2",
+      "reference": "https://arxiv.org/abs/2404.00456v2"
+    }
+  },
+  "cases": [
+    {
+      "id": "H4-QUAROT-VERSIONS",
+      "split": "holdout",
+      "materials": [
+        "quarot_v1",
+        "quarot_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只用任务里的 QuaRot v1 和 v2，核对两版表 2 的 Llama‑2 13B 和 70B。分别比较 FP16 和 QuaRot 在零样本平均准确率与 ARC-Challenge 上的数值。两版数值是否矛盾？表注对量化精度的表述有什么变化？说明这组表能支持什么判断，引用两版原文，400 字以内。",
+      "required": [
+        "把两版的表 2 归到 v1 第9页、v2 第8页。逐项对齐 13B 和 70B 的 Avg. 与 A-c。",
+        "13B 的 Avg. 为 72.59→69.79、A-c 为 49.23→46.59。70B 的 Avg. 为 77.07→75.98、A-c 为 57.34→56.23。两版同一配置各值一致。",
+        "区分 FP16 基线与 4 位 QuaRot。v2 的表注明确 A4W4KV4，表示激活、权重和 KV 缓存均为 4 位。v1 表注较简略，不宣称此为实验设置改变。",
+        "说明表 2 的相应数值并无版本冲突，比较只涵盖这些模型、Zero-Shot 任务和报告配置。正文不超过 400 字，引用可定位两版。"
+      ],
+      "forbidden": [
+        "把 A-e 当 A-c，混用 7B、13B 或 70B，或把困惑度、附录或其他表的数值归到表 2。",
+        "把表注变得更具体当作成绩变化，或者推断早版只量化权重。",
+        "引入外部证据、归因未验证的差异、误报任一数值或超出标准预算。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题验收版本核对，实验设计由 H5 验收。"
+    },
+    "maxAnswerCharacters": 400,
+    "sourceAnchors": [
+      {
+        "paper": "quarot_v1",
+        "page": 9,
+        "section": "Table 2",
+        "checks": "Comparable 13B and 70B FP16/QuaRot Avg. and Arc-Challenge cells, and the printed precision description."
+      },
+      {
+        "paper": "quarot_v2",
+        "page": 8,
+        "section": "Table 2",
+        "checks": "Comparable 13B and 70B FP16/QuaRot Avg. and Arc-Challenge cells, and the printed precision description."
+      }
+    ],
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "goldInputBoundary": "只传原问题、两份 PDF ID、任务材料范围和标准预算。评审数据留在应用外。"
+  },
+  "caseDefinitionHashes": {
+    "H4-QUAROT-VERSIONS": "d8dad3f6f30f10c282c7c9bb32578845f0d9b05bcd707868f5f3222d01c8e1c4"
+  }
+}

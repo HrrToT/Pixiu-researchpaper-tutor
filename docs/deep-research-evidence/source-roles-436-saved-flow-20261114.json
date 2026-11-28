@@ -1,0 +1,16 @@
+{
+  "sourceCase": "AD1N-v22 archived response",
+  "legacyReceivedResponseExact": true,
+  "legacyProviderCalls": 0,
+  "readerInputFormat": "source_roles_v1",
+  "completeSourcesAndContextExact": true,
+  "completeTargetsAndPermissionsExact": true,
+  "publicationBudgetExact": true,
+  "writingPlanExact": true,
+  "originalReportRetained": true,
+  "oldPromptBytes": 19355,
+  "newPromptBytes": 14051,
+  "liveModelCalls": 0,
+  "scientificAcceptance": false,
+  "boundary": "Archived output checks input preservation and legacy replay only. It does not establish new generation quality or approve the archived factual omission."
+}

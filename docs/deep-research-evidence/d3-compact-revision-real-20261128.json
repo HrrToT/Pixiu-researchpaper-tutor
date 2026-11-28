@@ -1,0 +1,97 @@
+{
+  "candidate": "b7016ed359c5a2915c46df2ac9ec6e3809db9eac",
+  "runId": "dr_d3_compact_science_revision_20261128",
+  "sourceRun": "dr_d3_execution_rules_20261128",
+  "carriedTokens": 54332,
+  "carriedModelCalls": 9,
+  "carriedElapsedSeconds": 108.89,
+  "revisionRequestBytes": 31965,
+  "revisionRequestDigest": "e65f87ed5322cc513ecf42e33488249ae331e536ec78f77b6029a2b2b7b3211e",
+  "maxNewCalls": 9,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "newModelCalls": 4,
+  "newModelTokens": 39233,
+  "newElapsedSeconds": 82.8,
+  "newCalls": [
+    {
+      "node": "repair_experiment_shared",
+      "tokens": 10729
+    },
+    {
+      "node": "review_experiment_shared",
+      "tokens": 9588
+    },
+    {
+      "node": "review_experiment_shared",
+      "tokens": 9323
+    },
+    {
+      "node": "review_experiment_shared",
+      "tokens": 9593
+    }
+  ],
+  "cumulativeTokens": 93565,
+  "countAttempts": 4,
+  "lastCountResult": null,
+  "budgetStop": {
+    "kind": "modelCalls",
+    "limit": 18,
+    "used": 8
+  },
+  "revisionStructurallyValid": true,
+  "reusedFactChecks": 9,
+  "checksWithValidatedReplies": 21,
+  "checksPassed": 20,
+  "unresolved": [
+    {
+      "checkId": "section_2",
+      "status": "unresolved",
+      "planBindings": [
+        "/states/4/representation",
+        "/states/7/representation",
+        "/states/8/representation",
+        "/states/9/representation",
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/8/operation/action",
+        "/data/inputs/2/preparation",
+        "/data/inputs/2/availability",
+        "/data/inputs/3/availability"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        }
+      ],
+      "reason": "模型、优化器、控制和初始化大体具体，但训练及渲染实现、数据和硬件尚未提供或通过验收；摘录亦不足以唯一确定完整渲染及可见性实现，端到端可执行性仍待验证。"
+    }
+  ],
+  "uncheckedIds": [
+    "requirement_1_0",
+    "requirement_2_0",
+    "requirement_3_0",
+    "requirement_4_0",
+    "requirement_5_0"
+  ],
+  "scientificApproval": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "ab22f110a4d7084a60ad7295daa82f9d8be4cf5393c6bc3508feb4d6ef99999d",
+    "calls.json": "f1d5c8046410e872db650f8744b6c1a946b11ae5557d0ff549a2496a4b2120c3",
+    "run.json": "2e95413bc436d2d59bfc102bbb9d48720e4bfda287b2b4f9e1cd94f5dceb2fdf",
+    "result.json": "079a5c4922020151377ec9f2512c1dad808c4c2fd3346c98f444ee6a2ff6a5ff",
+    "provider.jsonl": "23325d9b90e8b3def75d8a4e45f5bffd284a1dc6709b42427a27b494657e5977"
+  }
+}

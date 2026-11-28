@@ -1,0 +1,24 @@
+{
+  "promptVersion": "dr-v2.20261105.378",
+  "factualDecisionContractVersion": 2,
+  "source": "repair377 isolated component, unchanged received semantic response",
+  "responseSha256": "d91ca76223a3f60be6ec2c07022d0d2a05712e2951f48d978dfa9569f5431366",
+  "results": {
+    "1": {
+      "errorCode": "invalid_verification_response"
+    },
+    "2": {
+      "machineAcceptedIds": [
+        "c2"
+      ]
+    }
+  },
+  "promptAndEvidenceExact": true,
+  "allOriginalSchemaAndBindingChecksRetained": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldResultsRejudged": false,
+  "independentCredit": 0,
+  "fullWorkflowAccepted": false,
+  "boundary": "New-protocol isolated replay only; the original failed component result stays unchanged. Fresh full workflow and manual content review still required."
+}

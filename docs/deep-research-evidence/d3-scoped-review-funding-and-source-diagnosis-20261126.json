@@ -1,0 +1,36 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "candidateCommit": "7562219854089b99e88957c0500acb12e98e84c3",
+  "scopedProbe": {
+    "endpoint": "https://api.deepseek.com/responses",
+    "model": "deepseek-v4-pro",
+    "requestDigest": "bf6bdfd28f80de230c5c24c1607c7c3261e2630bb5bf4acaaff40b763df045c0",
+    "checks": ["section_0", "section_1", "section_2", "section_3", "section_4", "section_5", "section_6", "section_7"],
+    "inputBytes": 31769,
+    "maxOutputTokens": 4096,
+    "attempts": 1,
+    "httpStatus": 402,
+    "providerErrorType": "insufficient_balance_error",
+    "responseUsage": null,
+    "scientificAcceptance": false
+  },
+  "sourceDiagnosis": {
+    "paper": "arXiv:2308.04079v1",
+    "materialSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "matchedFrozenMaterialAndPublicationIdentity": true,
+    "physicalPages": [
+      {"page": 5, "finding": "The paper describes setting alpha close to zero every 3000 iterations. It gives an interval and general behavior, not an exact reset value or implementation."},
+      {"page": 7, "finding": "The figure caption identifies Bicycle as an evaluated Mip-NeRF360 scene. It does not establish the image manifest, number of captures or capture order."}
+    ],
+    "originalCandidateCount": 18,
+    "originalReadCount": 12,
+    "bothPassagesMissingFromCandidatesReadsAndGenerationInput": true,
+    "proposalIssues": [
+      "The proposal says the paper does not report the reset interval, although page 5 gives it.",
+      "The fit step uses an undefined paper_default opacity setting.",
+      "The split rule uses indices divisible by eight with floor(N/8), without declaring an index origin. A one-based origin makes this count consistent.",
+      "Four arms in one matched scene/checkpoint block cannot serve as independent replications for uncertainty."
+    ],
+    "boundary": "Fulltext inspection diagnoses an acquisition gap before model review. It does not adopt any verdict from the truncated historical response or reopen the historical run."
+  }
+}

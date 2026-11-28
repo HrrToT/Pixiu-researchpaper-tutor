@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v5",
+  "runId": "dr_run_3717607182cd52ae8f10f305ce8da9fa",
+  "actualProductionRepairRequestFingerprintMatched": true,
+  "argsDigest": "9121073b851a1472f9acff0e5715dc5271f50d0f5391e3d890de8c426135d7f6",
+  "promptBytes": 23884,
+  "sourceContext": {
+    "sources": {
+      "P1": {
+        "sourceWorkId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+        "sourceVersionId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+        "accessLevel": "fulltext",
+        "title": "LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS"
+      },
+      "P2": {
+        "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "sourceVersionId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+        "accessLevel": "fulltext",
+        "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering"
+      }
+    },
+    "requirements": [
+      {
+        "obligationId": "ob_1",
+        "requiredSources": {
+          "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+            "P1"
+          ],
+          "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+            "P2"
+          ]
+        }
+      }
+    ]
+  },
+  "modelCalls": 11,
+  "settledTokens": 38410,
+  "newProviderCalls": 0,
+  "boundary": "Reconstructs the exact sent production request from saved repair input. Verifies source-aware v2 was used, not that output is factually complete."
+}

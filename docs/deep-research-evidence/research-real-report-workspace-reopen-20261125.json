@@ -1,0 +1,100 @@
+{
+  "transport": "current local workspace GET only",
+  "cases": [
+    {
+      "case": "H1-GSC-v1",
+      "runId": "dr_run_6ead597a2d875ce88f9d8370c282ba29",
+      "reportVersionId": "report_dr_run_6ead597a2d875ce88f9d8370c282ba29_v1",
+      "workspaceRevision": 9,
+      "origins": [
+        "latest",
+        "machine"
+      ],
+      "bodySha256": "f1bd5f8bd8a3c5a4e5d90c773cbaca5a303bdacf81c80977ee65c1c04653a78d",
+      "savedSourceCount": 7,
+      "outcome": "complete",
+      "twoReadsIdentical": true,
+      "matchesReceipt": true
+    },
+    {
+      "case": "D2-BASELINE-COMPRESSION-v49",
+      "runId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+      "reportVersionId": "report_dr_run_1fe6e49739e55251bbff13de83fa86cb_v1",
+      "workspaceRevision": 41,
+      "origins": [
+        "latest",
+        "machine"
+      ],
+      "bodySha256": "68317a0db4850afe61320a38d9f09eb288e24d9217c8014cbd4ab413c1332189",
+      "savedSourceCount": 23,
+      "outcome": "inconclusive",
+      "twoReadsIdentical": true,
+      "matchesReceipt": true
+    },
+    {
+      "case": "H3-PAGEDATTENTION-v1",
+      "runId": "dr_run_413f79f0c621559a8b712f9eacc7a515",
+      "reportVersionId": "report_dr_run_413f79f0c621559a8b712f9eacc7a515_v1",
+      "workspaceRevision": 7,
+      "origins": [
+        "latest",
+        "machine"
+      ],
+      "bodySha256": "3c99fb0623112c0381aa8dd4745bd65de6fba4d80ca2de95d1a35b9ef0352ab4",
+      "savedSourceCount": 15,
+      "outcome": "inconclusive",
+      "twoReadsIdentical": true,
+      "matchesReceipt": true
+    }
+  ],
+  "workspaceReads": 8,
+  "modelCalls": 0,
+  "workspaceWrites": 0,
+  "scope": "real saved report reopen and original external PDF access via Java API; no browser interaction or scientific regrading",
+  "citationFile": {
+    "case": "H3-SNAPKV-v1",
+    "verifiedClaimId": "C1",
+    "evidenceId": "ev_36db6bacd8fcb03ab3ae61ca1b0c84d2e76f27e2470feea408be93b092df164a",
+    "page": 7,
+    "sourceVersionId": "arxiv:2404.14469v1",
+    "pdfSha256": "cc426479949721dfe31a2319341129beba60498e95305e88b74000ab3cf7a234",
+    "pdfPages": 18,
+    "matchesFrozenEvaluatorCopy": true,
+    "workspaceUnchanged": true
+  },
+  "citationFileReads": 1,
+  "followupBrowserRecheck": {
+    "frontendCommit": "01d093964f60a3e127cd05b0d7f640b689ab80f4",
+    "taskId": "dr-development-baseline-compression-20261124-v49",
+    "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+    "childRunId": "dr_run_19f22031260955349b93596e24c29750",
+    "browser": "Chromium",
+    "bothPublishedVersionsOpenedIndependently": true,
+    "originalParentRenderRestoredAfterOpeningChild": true,
+    "machineAndLatestArtifactsVerifiedForBoth": true,
+    "workspaceUnchanged": true,
+    "writesAttempted": 0,
+    "modelCalls": 0,
+    "scientificContentAccepted": false,
+    "childScreenshotSha256": "5bd8436c3e151d581c0dff4ecbd03ef50a61be06b23299856a6c961a84beed5b"
+  },
+  "browserReadOnlyRecheck": {
+    "frontendCommit": "01d093964f60a3e127cd05b0d7f640b689ab80f4",
+    "browser": "Chromium",
+    "viewportCssPixels": [1366, 768],
+    "case": "H3-SNAPKV-v1",
+    "publishedReportOpened": true,
+    "citationExactQuoteMatched": true,
+    "renderedPdfPageInViewport": 7,
+    "pdfPages": 18,
+    "pdfReads": 1,
+    "pdfSha256MatchesFrozenCopy": true,
+    "workspaceUnchanged": true,
+    "writesAttempted": 0,
+    "modelCalls": 0,
+    "screenshotsSha256": {
+      "saved-snapkv-citation.png": "dc5348d8d46b4a93a27350f609723fe929f9fd54779cb2b86e9f760789b38a26",
+      "saved-snapkv-page-7.png": "3913aac80dfa52dd1d3b4217f3b7ab93adb14b52588da616377b512fae2d6d50"
+    }
+  }
+}

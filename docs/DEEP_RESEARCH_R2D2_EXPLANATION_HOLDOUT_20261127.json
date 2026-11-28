@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted",
+  "independentCredit": 0,
+  "materials": {
+    "r2d2_v1": {
+      "filename": "1906.06195v1.pdf",
+      "sha256": "06d09a4d886298f65e70c49a0234e0b884bd6de1ffed9e3caed47808ddc74c40",
+      "bytes": 4168956,
+      "pageCount": 12,
+      "arxiv": "1906.06195v1",
+      "reference": "https://arxiv.org/abs/1906.06195v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-R2D2",
+      "split": "holdout",
+      "materials": [
+        "r2d2_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前的 R2D2 v1 论文，向初学者解释关键点的可重复性和描述子的可靠性分别判断什么、棋盘格为什么能有前者却缺后者。说清实际推理怎样用两种分数挑出最终关键点。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "可重复性描述一个位置在图像变化后可被再次稳定检测，可靠性描述该位置的描述子是否有区分力、能否有把握匹配。",
+        "棋盘格的相似方格可产生易于再次检测的结构，但描述子会因自相似而混淆位置。",
+        "在各尺度找可重复性分数图的局部极大值，提取对应描述子；将可重复性与可靠性分数相乘，跨尺度统一保留得分最高的候选。",
+        "用原文引证两种判断及最终筛选过程。"
+      ],
+      "forbidden": [
+        "把可重复性描述为同一张图中的纹理重复程度。",
+        "把局部极大值写成先在两种分数的乘积上寻找，或把乘积改写为两个独立的硬阈值。",
+        "加入用户未要求的训练参数、指标排名或对适用场景的保证。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 2,
+        "section": "Figure 1",
+        "checks": "Checkerboard example and meaning of the two scores."
+      },
+      {
+        "page": 3,
+        "section": "§3 Method",
+        "checks": "Separate repeatability and reliability outputs."
+      },
+      {
+        "page": 5,
+        "section": "§3.2 Reliability",
+        "checks": "Local maxima of S per scale and final score S times R across scales."
+      }
+    ],
+    "preSubmission": "Verify no substantive prior use in research runs, tasks, the index and source cache. Hash the exact PDF before isolation.",
+    "goldInputBoundary": "Only the frozen question, material identity and budget reach the application. The rubric and page anchors are for review only."
+  },
+  "caseDefinitionHashes": {
+    "H1-R2D2": "2b675560ed17060ec16f3e164d2d8970925f2921856bfa0a4d84d636b4e28a20"
+  },
+  "firstExecutionReceipt": "deep-research-evidence/r2d2-h1-first-frozen-20261127.json",
+  "liveInventoryReceipt": "deep-research-evidence/r2d2-h1-live-preflight-20261127.json"
+}

@@ -1,0 +1,34 @@
+{
+  "modelCalls": 0,
+  "legacyActualDiagnosticAuditExact": true,
+  "newNegativeVerdictUnchanged": true,
+  "completeOriginalReasonUnchanged": true,
+  "diagnosticSourceBindingsUnchanged": true,
+  "reasonSha256": "8818e7255334a7c29a57886d3fc6af6b5928084c58628a23d05b045a788a6e85",
+  "oldNewNumberCount": 2,
+  "oldUnboundCount": 1,
+  "newNewNumberCount": 0,
+  "newUnboundCount": 0,
+  "recognizedTargetNavigation": [
+    {
+      "text": "前三个分句",
+      "start": 0,
+      "end": 5,
+      "kind": "clauses",
+      "count": 3,
+      "availableUnits": 10
+    },
+    {
+      "text": "最后一个分句",
+      "start": 83,
+      "end": 89,
+      "kind": "clauses",
+      "count": 1,
+      "availableUnits": 10
+    }
+  ],
+  "newDiagnosticsErrors": [],
+  "oldCaseUnchanged": true,
+  "scientificContentAccepted": false,
+  "boundary": "Exact raw v32 review, own source fields and original reason retained. New versioned scanner identifies only bounded target-structure references in its numeric view. The source-backed failed decision now remains an actionable rejection, never an approval. No actual old run/result is reinterpreted or resent."
+}

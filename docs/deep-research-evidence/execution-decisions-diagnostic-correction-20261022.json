@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-22",
+  "corrects": "E1-v21-quality-diagnosis-20261022.json",
+  "originalHistoryRetained": true,
+  "correction": "Absence of metrics.executionSpec is not a defect under the actual generation grammar. Earlier diagnosis wrongly treated it as required. Audit completeness of concrete text/conditions instead.",
+  "sourceFile": "ai-service-python/services/deep_research/experiment_template.py",
+  "actualRule": "Metrics and limits use concrete claim text, not an invented executionSpec schema.",
+  "actualMetricsClaimText": "指标：重建质量使用PSNR（越高越好）和SSIM（越高越好），在每帧的留出相机视图上计算，然后跨帧平均；存储使用每帧新增3DG数量（组A为0）和序列化后字节数；训练开销使用每帧第2阶段墙钟时间（秒）和峰值GPU内存（MB），在同一设备上预热并重复3次。",
+  "actualMetricsConditions": {
+    "context": "所有指标均为本方案定义；PSNR和SSIM在图像级别计算后跨帧平均，不混合不同尺度；存储边界仅包括新增3DG参数，不包括NTC或变换后3DGs；速度测量需报告设备、分辨率、预热、同步和重复次数。"
+  },
+  "remainingValidQuestions": [
+    "Specify executable view-then-frame aggregation rather than calling all aggregation absent.",
+    "Choose concrete warmup, synchronization, timed region, resolution and storage byte representation; future reporting alone is incomplete.",
+    "Align byte-storage observable with the analysis, which currently defines storage_diff by Gaussian count."
+  ],
+  "independentCredit": 0,
+  "boundary": "Corrected implementation/acceptance interpretation only. Original case remains0/9; no claim promoted."
+}

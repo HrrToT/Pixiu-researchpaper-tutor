@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "067e4ec0a06b5d7c81518e4b7afdfd94fe6cfb78",
+  "headAtProof": "8bc1530784ca8299e221862923d1346163cfa91e",
+  "baselineCommit": "ff77a79a0dfdf4e4c8be7c1d1660d6c0b1b68b3c",
+  "verifiedSamePythonTree": true,
+  "modules": 510,
+  "passed": 10153,
+  "exactBaselineTestsRetained": 10147,
+  "expandedBaselineCases": {
+    "test_deferred_audit_reservation_restricts_optional_repair_budget": [
+      "test_audit_reservation_restricts_optional_repair_budget[deferred]",
+      "test_audit_reservation_restricts_optional_repair_budget[checked_with_gaps]"
+    ],
+    "test_reference_review_scope_reaches_the_provider_without_private_options": [
+      "test_reference_review_scope_reaches_the_provider_without_private_options[1]",
+      "test_reference_review_scope_reaches_the_provider_without_private_options[2]"
+    ]
+  },
+  "failures": 0,
+  "skipped": 0,
+  "durationSeconds": 1415.028,
+  "liveModelCalls": 0,
+  "localDirectory": "tmp/research-offline-derived-analysis-integrated-20261127",
+  "sha256": {
+    "inputs.json": "31ec0d1e9f2ad59371836030964817cd127cf4cb61f6294512c9cdefb1bc28d6",
+    "junit.xml": "5342de4af02541b8d2e32e85f97b08e7b4653394e9633079cc7456d79ab9e0e1",
+    "exit.json": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6"
+  }
+}

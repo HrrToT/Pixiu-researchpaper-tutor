@@ -1,0 +1,58 @@
+{
+  "baselineCommit": "6e996805853a6176b85d66658882e3a251067470",
+  "validRedRegression": {
+    "tests": 7,
+    "failures": 6,
+    "passed": 1
+  },
+  "discardedInitialRed": "tmp/pdf-forms-red-20261112.xml used an incorrectly mutated PdfWriter return page; fixture corrected before product code change, not treated as product failure evidence.",
+  "relatedRegression": {
+    "modules": 7,
+    "tests": 114,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 19.211,
+    "newFormChecks": 9,
+    "warnings": 1
+  },
+  "sourceSha256": {
+    "ai-service-python/services/deep_research_pdf_parser.py": "063d6cf55f01460ee1ec782ff23608fb4f0819ecf899288f7b4a38ce75962eb5",
+    "ai-service-python/tests/test_deep_research_pdf_forms.py": "18335b2c26a04254124518219216c1cf90507e116bf3c436ffb4e96cc8524e39"
+  },
+  "artifactSha256": {
+    "tmp/pdf-forms-red-v2-20261112.xml": "ad72d1b34f31854a53d583efbbcc2d13fbba6e11ca6a3bdfae0bbf20f19a5859",
+    "tmp/pdf-forms-related-20261112.xml": "1398d13fc1b691e5fcc7b5763a726e203396c2e848701b7235836cde9bc3ce07",
+    "tmp/reference-h2o-memo-only-20261112.py": "84c08103532495dec1f8570ffe8049802262c42edf39423633eb58d89b967c8b"
+  },
+  "actualPdfEvidence": [
+    "h2o-parser-preflight-20261112.json",
+    "h2o-parser-optimized-20261112.json",
+    "h2o-container-parser-20261112.json"
+  ],
+  "candidateDisposition": {
+    "arxiv": "2306.14048v1",
+    "use": "development_diagnostic",
+    "holdoutCredit": 0,
+    "reason": "Used to diagnose and validate parser optimization before any H3 definition frozen."
+  },
+  "unchanged": [
+    "32MiB PDF limit",
+    "100-page limit",
+    "20-second worker deadline",
+    "30000-character per-page limit",
+    "model prompts/contracts",
+    "unknown request replay rules"
+  ],
+  "cacheBounds": {
+    "entriesPerPage": 256,
+    "utf8TextBytesPerPage": 2097152,
+    "lifetime": "one page only",
+    "visitorCallbacks": "bypass optimization"
+  },
+  "newModelCalls": 0,
+  "newSourceFetchesInApplication": 0,
+  "productionRunWrites": 0,
+  "independentContentAccepted": 0,
+  "boundary": "Parser engineering regression and local/container PDF evidence. Full 7419 suite belongs to pre-change source, not rerun or upgraded here; H3 remains pending and no Provider/model quality acceptance."
+}

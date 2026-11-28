@@ -1,0 +1,81 @@
+{
+  "runId": "dr_run_25acc3e81ec0547a93155a8cc45c4378",
+  "sourceCommit": "b2642dcadc67cc6d024d111b276d07ec7d7813d5",
+  "startedFromEmptyTask": true,
+  "usedSystemProxy": true,
+  "productionWrites": 0,
+  "automaticWholeRunRetries": 0,
+  "article": {
+    "versionId": "arxiv:2409.10516v2",
+    "accessLevel": "fulltext",
+    "pages": 16,
+    "sha256": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+    "cacheHit": false,
+    "networkRequests": 1
+  },
+  "outcome": "partial",
+  "status": "completed",
+  "modelCalls": 12,
+  "totalTokens": 42200,
+  "elapsedSeconds": 78.0,
+  "providerUsage": {
+    "gpt-6-luna": 13245,
+    "gpt-6.1-terra": 28955
+  },
+  "contentAudit": {
+    "cpuIndexAndPlacement": true,
+    "initialAndLocalWindow": true,
+    "weightedCombinationExplained": false,
+    "reason": "Method citation points to Appendix B; the run did not read the page with its combination formula.",
+    "scientificAccepted": false,
+    "independentHoldoutCredit": 0
+  },
+  "appendixNavigationReplay": {
+    "obligations": {
+      "retrievalattention_dataflow": {
+        "originalPages": [
+          2,
+          6,
+          8
+        ],
+        "updatedPages": [
+          2,
+          6,
+          8
+        ]
+      },
+      "cpu_gpu_attention": {
+        "originalPages": [
+          6,
+          2,
+          13
+        ],
+        "updatedPages": [
+          6,
+          2,
+          14
+        ]
+      },
+      "access_and_evidence": {
+        "originalPages": [
+          2,
+          7,
+          8
+        ],
+        "updatedPages": [
+          2,
+          7,
+          8
+        ]
+      }
+    },
+    "verifiedLiteralRescalingPassage": true,
+    "providerCalls": 0
+  },
+  "artifactsSha256": {
+    "run.json": "8e50c6e2a896e41ff1575d78f088e725ec5071bd6364b2c1ff19a0b3b81ff9d9",
+    "calls.json": "5e94da0034fe4a101aa78797ebfe321b5ee980224a92cf33718b393de052b650",
+    "result.json": "754a36800ee62bd17258fd8bdf77dd2ac9579e772861457c73bbe5d0e1463215",
+    "provider.jsonl": "bb4385edd2709649c14ea817a59d9e8de74a72e0a4cc5eefcab5f7785e1c0801"
+  }
+}

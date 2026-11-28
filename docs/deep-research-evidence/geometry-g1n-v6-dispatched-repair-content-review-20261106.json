@@ -1,0 +1,265 @@
+{
+  "case": "G1N-v6",
+  "split": "development",
+  "runId": "dr_run_7b031e284ed55568aeb209fc39452d32",
+  "promptVersion": "dr-v2.20261106.396",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "actualModelCalls": 10,
+  "tokens": 46550,
+  "elapsedSeconds": 98.619,
+  "allModelCallsSettled": true,
+  "repairModelCalls": 3,
+  "repairStatus": "response_received",
+  "repairDraft": [
+    {
+      "claimId": "c1",
+      "kind": "reported",
+      "text": "GOF 用一组 3D 高斯原语表示场景，通过射线-高斯相交评估贡献，随后在四面体网格上确定不透明度并用 Marching Tetrahedra 提取 0.5 水平集的三角网格。PGSR 将 3D 高斯椭球沿最小尺度方向压扁为平面高斯，渲染深度和法线，再用 TSDF Fusion 生成 TSDF 场并提取网格。",
+      "evidenceRefs": [
+        "ev_d9714d53fb3219d25b98cbe348699fc00c9843d748c9b4f55b0d93ff06edb45a",
+        "ev_e09faf2570c596ce2ef39df199aa435cf1174ff209cec32816c89febd223ae04",
+        "ev_6e14d5193e69c79f3b2fa464ea06f08abcf606a71c37deb48c0a876dbdad9340",
+        "ev_85c7eb04158a10b01a9cde729e25358662b731f9c563d1690db1736f104d9948",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "obligationIds": [
+        "ob_1"
+      ]
+    },
+    {
+      "claimId": "c2",
+      "kind": "reported",
+      "text": "在 DTU 上，GOF 自报平均 Chamfer Distance 为 0.74 mm（越低越好），训练耗时 30 分钟，使用 NVIDIA A100 GPU。PGSR 自报平均 Chamfer Distance 为 0.49 mm，训练耗时 1.0 小时，使用 NVIDIA RTX 4090 GPU。两篇论文的硬件不同，不能直接比较训练速度。",
+      "evidenceRefs": [
+        "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+        "ev_2a12cfc33f3fa8ac58ecc53a60a08ab9af2444710b56ba64d00da12fcd2ffddb",
+        "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+        "ev_173b7c330817e4715607e13867a070b506633629b86c98e0663c472f273d9b55"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [
+        {
+          "evidenceId": "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+          "rowNumber": 1,
+          "groupIndex": 0,
+          "metric": "Chamfer Distance (mm) ↓",
+          "value": "0.74"
+        },
+        {
+          "evidenceId": "ev_5c7fd6bcd71aead88a73e0435ce9a61d5a1e5b76fb19bc43b4e68860062b1caa",
+          "rowNumber": 1,
+          "groupIndex": 1,
+          "metric": "Time",
+          "value": "30m"
+        },
+        {
+          "evidenceId": "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+          "rowNumber": 1,
+          "groupIndex": 0,
+          "metric": "Chamfer Distance (mm) ↓",
+          "value": "0.49"
+        },
+        {
+          "evidenceId": "ev_5eeb225bc9ec31711ba9d3440776342cb4e9499593e0b3a8c4a3cf94690120ea",
+          "rowNumber": 1,
+          "groupIndex": 1,
+          "metric": "Time",
+          "value": "1.0h"
+        }
+      ],
+      "obligationIds": [
+        "ob_2",
+        "ob_4",
+        "ob_5"
+      ]
+    },
+    {
+      "claimId": "c3",
+      "kind": "reported",
+      "text": "在 Mip-NeRF360 数据集上，PGSR 报告的平均渲染质量为 PSNR 27.43、SSIM 0.830、LPIPS 0.193；GOF 报告的平均渲染质量为 PSNR 27.78、SSIM 0.835、LPIPS 0.196。",
+      "evidenceRefs": [
+        "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+        "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "tableBindings": [
+        {
+          "evidenceId": "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+          "rowNumber": 1,
+          "groupIndex": 0,
+          "metric": "PSNR↑",
+          "value": "27.43"
+        },
+        {
+          "evidenceId": "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+          "rowNumber": 1,
+          "groupIndex": 1,
+          "metric": "SSIM↑",
+          "value": "0.830"
+        },
+        {
+          "evidenceId": "ev_aed79f8e276f90dbf65f658c61186255b2580e5009ef85be7a8fde1a93e2bf1c",
+          "rowNumber": 1,
+          "groupIndex": 2,
+          "metric": "LPIPS↓",
+          "value": "0.193"
+        },
+        {
+          "evidenceId": "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+          "rowNumber": 1,
+          "groupIndex": 0,
+          "metric": "PSNR↑",
+          "value": "27.78"
+        },
+        {
+          "evidenceId": "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+          "rowNumber": 1,
+          "groupIndex": 1,
+          "metric": "SSIM↑",
+          "value": "0.835"
+        },
+        {
+          "evidenceId": "ev_39bdce993dd69ac32f53edd216256c84b71818f6bd0dc78e518bf7113036bb11",
+          "rowNumber": 1,
+          "groupIndex": 2,
+          "metric": "LPIPS↓",
+          "value": "0.196"
+        }
+      ],
+      "obligationIds": [
+        "ob_3",
+        "ob_4",
+        "ob_5"
+      ]
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "5e-1"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：0.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "table_binding_outside_citation"
+    },
+    {
+      "claimId": "c3",
+      "reason": "table_binding_outside_citation"
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "目标声称“若优先几何精度且可用 RTX 4090，选 PGSR；若需更快训练且可用 A100，选 GOF”，但证据中未提供任何硬件条件（RTX 4090 或 A100）的信息，无法支持基于硬件的选择建议。此外，证据显示 PGSR 在 DTU 上的几何精度（Chamfer Distance 均值 0.49）优于 GOF（0.74），且训练时间 PGSR 为 1.0h，GOF 为 2h，因此“更快训练选 GOF”与证据矛盾。渲染质量方面，PGSR 与 GOF 在 Mip-NeRF360 上指标接近，但目标未明确说明该前提。因此，该建议缺乏充分证据支持，且部分内容与证据不符。"
+    },
+    {
+      "claimId": "c4",
+      "reason": "invalid_scope_expression",
+      "detail": "Scope expression cannot overwrite authored factual prose"
+    }
+  ],
+  "repairVerificationChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "5e-1"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：0.5。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "table_binding_outside_citation"
+      },
+      {
+        "claimId": "c3",
+        "reason": "table_binding_outside_citation"
+      }
+    ]
+  },
+  "acceptedClaims": [],
+  "coverageStatus": "not_checked",
+  "publicReportText": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 8 项未完成</summary>\n\n- GOF 和 PGSR 在 DTU 数据集上报告的几何精度指标和训练耗时分别是多少？：最终回答尚未完整回应这一问题\n- Mip-NeRF360 的渲染质量如何：最终回答尚未完整回应这一问题\n- 核对数据集、指标方向、分辨率和硬件条件：最终回答尚未完整回应这一问题\n- 区分作者自报与同表对比：最终回答尚未完整回应这一问题\n- GOF 和 PGSR 是否报告了模型存储或显存信息？如果报告，数值和条件是什么？：最终回答尚未完整回应这一问题\n- 基于已核对的证据，在什么条件下选择 GOF 或 PGSR 更合适？：最终回答尚未完整回应这一问题\n- 高斯表示与网格提取路径有什么不同：最终回答尚未完整回应这一问题\n- 请联网读取 GOF（arXiv:2404.10772v1）和 PGSR（arXiv:2406.06521v1）两篇原文，面向了解3DGS概念的读者比较它们：高斯表示与网格提取路径有什么不同；在 DTU 上各自报告的几何精度和训练耗时，以及 Mip-NeRF360 的渲染质量如何。核对数据集、指标方向、分辨率和硬件条件，区分作者自报与同表对比；时间数值或条件有差异时指出，不能直接推成普遍速度排名。模型存储或显存若证据不足就明确说无法比较。最后给出有条件的选择建议。限500字。：回答前后的一致性尚未确认；缺少：核对并统一合并答案的表述范围\n\n</details>",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 30,
+    "ledgerRows": 8768,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ],
+    "other13TasksExact": true,
+    "indexExact": true,
+    "index": {
+      "collection": "literature_collection_v4_e5_small",
+      "count": 1215,
+      "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+    }
+  },
+  "rawRepairResponses": [
+    {
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8189,
+        "input_tokens": 7153,
+        "output_tokens": 1036
+      },
+      "rawContent": "[\n  {\n    \"draftingBasis\": {\n      \"premiseStatus\": \"established\",\n      \"observations\": [\n        {\n          \"evidenceId\": \"E7\",\n          \"quote\": \"we represent the scene with a set of 3D Gaussian primitives\"\n        },\n        {\n          \"evidenceId\": \"E19\",\n          \"quote\": \"we proceed to extract triangle meshes using the Marching Tetrahedra method\"\n        },\n        {\n          \"evidenceId\": \"E20\",\n          \"quote\": \"the Gaussian ellipsoid can be flattened into planes aligned with those axes\"\n        },\n        {\n          \"evidenceId\": \"E12\",\n          \"quote\": \"utilizing the TSDF Fusion algorithm to generate the corresponding TSDF field\"\n        },\n        {\n          \"evidenceId\": \"E13\",\n          \"quote\": \"we extract the mesh from the TSDF field\"\n        }\n      ],\n      \"scopeDecision\": \"reported_case\",\n      \"unresolved\": \"\"\n    },\n    \"claimId\": \"c1\",\n    \"kind\": \"reported\",\n    \"text\": \"GOF 用一组 3D 高斯原语表示场景，通过射线-高斯相交评估贡献，随后在四面体网格上确定不透明度并用 Marching Tetrahedra 提取 0.5 水平集的三角网格。PGSR 将 3D 高斯椭球沿最小尺度方向压扁为平面高斯，渲染深度和法线，再用 TSDF Fusion 生成 TSDF 场并提取网格。\",\n    \"evidenceRefs\": [\"E7\", \"E19\", \"E20\", \"E12\", \"E13\"],\n    \"conditions\": {},\n    \"detailLevel\": \"fulltext\",\n    \"scopeExpression\": null,\n    \"tableBindings\": []\n  },\n  {\n    \"draftingBasis\": {\n      \"premiseStatus\": \"established\",\n      \"observations\": [\n        {\n          \"evidenceId\": \"E17\",\n          \"quote\": \"Ours 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 30m\"\n        },\n        {\n          \"evidenceId\": \"E16\",\n          \"quote\": \"GOF [69] 0.50 0.82 0.37 0.37 1.12 0.74 0.73 1.18 1.29 0.68 0.77 0.90 0.42 0.66 0.49 0.74 2h\"\n        },\n        {\n          \"evidenceId\": \"E18\",\n          \"quote\": \"All experiments are conducted on an NVIDIA A100 GPU.\"\n        },\n        {\n          \"evidenceId\": \"E13\",\n          \"quote\": \"All experiments in this paper are conducted on Nvidia RTX 4090 GPU.\"\n        }\n      ],\n      \"scopeDecision\": \"reported_case\",\n      \"unresolved\": \"\"\n    },\n    \"claimId\": \"c2\",\n    \"kind\": \"reported\",\n    \"text\": \"在 DTU 上，GOF 自报平均 Chamfer Distance 为 0.74 mm（越低越好），训练耗时 30 分钟，使用 NVIDIA A100 GPU。PGSR 自报平均 Chamfer Distance 为 0.49 mm，训练耗时 1.0 小时，使用 NVIDIA RTX 4090 GPU。两篇论文的硬件不同，不能直接比较训练速度。\",\n    \"evidenceRefs\": [\"E17\", \"E18\", \"E16\", \"E13\"],\n    \"conditions\": {},\n    \"detailLevel\": \"fulltext\",\n    \"scopeExpression\": null,\n    \"tableBindings\": [\n      {\n        \"evidenceId\": \"E17\",\n        \"rowNumber\": 1,\n        \"groupIndex\": 0,\n        \"metric\": \"Chamfer Distance (mm) ↓\",\n        \"value\": \"0.74\"\n      },\n      {\n        \"evidenceId\": \"E17\",\n        \"rowNumber\": 1,\n        \"groupIndex\": 1,\n        \"metric\": \"Time\",\n        \"value\": \"30m\"\n      },\n      {\n        \"evidenceId\": \"E16\",\n        \"rowNumber\": 1,\n        \"groupIndex\": 0,\n        \"metric\": \"Chamfer Distance (mm) ↓\",\n        \"value\": \"0.49\"\n      },\n      {\n        \"evidenceId\": \"E16\",\n        \"rowNumber\": 1,\n        \"groupIndex\": 1,\n        \"metric\": \"Time\",\n        \"value\": \"1.0h\"\n      }\n    ]\n  }\n]"
+    },
+    {
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 7457,
+        "input_tokens": 6871,
+        "output_tokens": 586
+      },
+      "rawContent": "{\n  \"items\": [\n    {\n      \"draftingBasis\": {\n        \"premiseStatus\": \"established\",\n        \"observations\": [\n          {\n            \"evidenceId\": \"E16\",\n            \"quote\": \"PGSR 30.41 0.930 0.161 24.45 0.730 0.224 27.43 0.830 0.193\"\n          },\n          {\n            \"evidenceId\": \"E18\",\n            \"quote\": \"Ours 24.82 0.750 0.202 30.79 0.924 0.184\"\n          }\n        ],\n        \"scopeDecision\": \"reported_case\",\n        \"unresolved\": \"\"\n      },\n      \"claimId\": \"c3\",\n      \"kind\": \"reported\",\n      \"text\": \"在 Mip-NeRF360 数据集上，PGSR 报告的平均渲染质量为 PSNR 27.43、SSIM 0.830、LPIPS 0.193；GOF 报告的平均渲染质量为 PSNR 27.78、SSIM 0.835、LPIPS 0.196。\",\n      \"evidenceRefs\": [\n        \"E16\",\n        \"E18\"\n      ],\n      \"conditions\": {},\n      \"detailLevel\": \"fulltext\",\n      \"scopeExpression\": null,\n      \"tableBindings\": [\n        {\n          \"evidenceId\": \"E16\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 0,\n          \"metric\": \"PSNR↑\",\n          \"value\": \"27.43\"\n        },\n        {\n          \"evidenceId\": \"E16\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 1,\n          \"metric\": \"SSIM↑\",\n          \"value\": \"0.830\"\n        },\n        {\n          \"evidenceId\": \"E16\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 2,\n          \"metric\": \"LPIPS↓\",\n          \"value\": \"0.193\"\n        },\n        {\n          \"evidenceId\": \"E18\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 0,\n          \"metric\": \"PSNR↑\",\n          \"value\": \"27.78\"\n        },\n        {\n          \"evidenceId\": \"E18\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 1,\n          \"metric\": \"SSIM↑\",\n          \"value\": \"0.835\"\n        },\n        {\n          \"evidenceId\": \"E18\",\n          \"rowNumber\": 1,\n          \"groupIndex\": 2,\n          \"metric\": \"LPIPS↓\",\n          \"value\": \"0.196\"\n        }\n      ]\n    }\n  ]\n}"
+    },
+    {
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 4175,
+        "input_tokens": 4168,
+        "output_tokens": 7
+      },
+      "rawContent": "{\n  \"items\": []\n}"
+    }
+  ],
+  "review": [
+    "All three preflighted repair batches actually dispatched and returned stop. Earlier byte-admission obstacle crossed in this case; no automatic repeat.",
+    "c1 repair still includes0.5 although none of its own cited quotes or supplied original source contexts include0.5. Not a context-only false rejection.",
+    "c2/c3 raw model outputs still invent typed row/group bindings for plain-text evidence without valid own tableData. Parser did not create those fields; rejection remains correct.",
+    "c3 still uses GOF comparator aggregate from PGSR as if GOF self-reported it despite own GOF split metrics appearing in its private observations.",
+    "c4 and c5 have no accepted replacements. All candidate revisions failed deterministic checks, so no further semantic verification model request or complete-answer coverage was spent.",
+    "Public result states no verified conclusion. This is content failure, not acceptance; original v1 retirement and prior failures unchanged."
+  ],
+  "nextAction": "Inspect contradictory plain-table versus typed-table generation instructions and old rejected table bindings remaining in comparison rewrite input; rebuild draft choices from actual supplied schema. Preserve number/source checks and original scope; no automatic new verification."
+}

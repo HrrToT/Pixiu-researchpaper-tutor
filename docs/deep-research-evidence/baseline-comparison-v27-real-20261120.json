@@ -1,0 +1,79 @@
+{
+  "sourceCommit": "09e9eccfc45561da20c2a35988c9ec2bc5200170",
+  "case": "D2-BASELINE-COMPRESSION-v27",
+  "split": "development",
+  "runId": "dr_run_e7f077f205f65179ac9240d60aa603d3",
+  "comparisonAuthoringContractVersion": 16,
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "budgetUsage": {
+    "reservedModelCalls": 5,
+    "tokens": 79248,
+    "elapsedSeconds": 180.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "totalModelCalls": 16
+  },
+  "budgetCeilings": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 4,
+    "verify_answer_coverage": 1,
+    "repair_claims": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 48,
+  "draftCount": 11,
+  "preReleaseAcceptedBySystem": 5,
+  "reportClaimCount": 5,
+  "rejectedByReason": {
+    "numeric_mismatch": 2,
+    "semantic_unresolved": 4
+  },
+  "finalAuditStatus": "checked",
+  "finalAuditGapCount": 3,
+  "finalAuditLimit": null,
+  "auditTransport": [
+    {
+      "state": "succeeded",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8420,
+        "input_tokens": 7503,
+        "output_tokens": 917
+      },
+      "receivedShape": "comparison_audit_v1"
+    }
+  ],
+  "repairTransport": [
+    {
+      "finishReason": "stop",
+      "receivedShape": "items"
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "releaseStatus": "released",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "ffa8a8b4cf22307382f17decf60a6fee0f7c89aadf0827c17e2b103dff032a62",
+    "calls": "84289995a28532d3604692050d59b30470491932f9a9620fd2d81af06adb66b9",
+    "result": "f8b0f6ffc8c2071d1423bc0fe1b92ef0692e0402cfeb2291f57dcd111339dfdc",
+    "execution": "7bc4e8d28b783769c06c8f49c1967c72c1155d49005084df8dcdeb58839e96da"
+  }
+}

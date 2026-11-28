@@ -1,0 +1,65 @@
+{
+  "pdfSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "physicalPages": 19,
+  "allNonWhitespacePdfTextExactlyPreservedInPageOrder": true,
+  "structuredTablesExactlyPreserved": 9,
+  "oldChunks": 55,
+  "newChunks": 112,
+  "oldIndexVersion": "ebe6b0693a86127a",
+  "newIndexVersion": "b6fb16ee9617e59c",
+  "recoveredAnchors": {
+    "in virtual reality": [
+      {
+        "chunk": 4,
+        "page": 2,
+        "section": "Introduction"
+      }
+    ],
+    "mapping 3D locations": [
+      {
+        "chunk": 4,
+        "page": 2,
+        "section": "Introduction"
+      }
+    ],
+    "In this paper, we address": [
+      {
+        "chunk": 5,
+        "page": 2,
+        "section": "Introduction"
+      }
+    ]
+  },
+  "semanticSectionTitles": [
+    "Ablation Studies",
+    "Abstract",
+    "Algorithm 1 The overall pipeline of LightGaussian",
+    "Appendix",
+    "Background: 3D Gaussian Splatting",
+    "Distilling into Compact SHs",
+    "Document opening",
+    "Experimental Results",
+    "Experimental Settings",
+    "Gaussian Attributes Vector Quantization",
+    "Gaussian Pruning & Recovery",
+    "Introduction",
+    "Methods",
+    "More Experiment Results",
+    "References",
+    "Related Works",
+    "Table 1 :",
+    "Table 2 :",
+    "Table 3 :",
+    "Table 4 :",
+    "Table 5 :",
+    "Table 6 :",
+    "Table 7",
+    "Table 7 :",
+    "Table 8 :"
+  ],
+  "formulaSupplementCount": 9,
+  "largestChunk": 1129,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0
+}

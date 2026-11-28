@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "b0b60778",
+  "promptVersion": "dr-v2.20261022.217",
+  "case": "E1-v14",
+  "split": "development",
+  "runId": "dr_run_70202ecc7aac52ce9dbdc60b889feb56",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "failed",
+  "outcome": "none",
+  "elapsedSeconds": 0,
+  "settledModelCalls": 7,
+  "settledTokens": 21320,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": null,
+  "planEncodingAudit": null,
+  "initialRepresentationAudit": [],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v14.json",
+      "sha256": "a694b2149f0458032045bc4ff9a7d4d264e969ff0c02a97fb7f0c479583d2be4"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v14.payload.json",
+      "sha256": "25a111b2e3496b3a977300ad75220d38d122bd40eebf5014ae5705af2285ca17"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v14.calls.json",
+      "sha256": "235ddc701dc92c1d7025bb11ce1b095e9e0c42f7fb8d4fec6bdc55a794b71640"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v14.result.json",
+      "sha256": "cd4ac219d1cebaabf8bff366b3f2c6bd72b6ba6b153870b9f56515b145504fe5"
+    }
+  ],
+  "boundary": "One fixed development submission, all7calls settled. Required scene quote was acquired but the pre-encoding fitter could not retain it with other mandatory premises. Stopped before planning/body/new encoder/review. No new content or independent acceptance; no retry.",
+  "errorCode": "synthesis_evidence_capacity",
+  "planningSubmitted": false,
+  "contentGenerationSubmitted": false,
+  "newOutlineEncodingActuallyExecuted": false,
+  "contentQualityValidated": false,
+  "synthesisPremiseAllocation": {
+    "version": 1,
+    "candidateEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+      "ev_25085c34ecb1e1cc14b31cfe80f080213556158c202772dce0f52810206e745c",
+      "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11",
+      "ev_e34196d11497b3956f133f4f4f9f4670ef36ac774d1a0a60f21f50a99cbc0cd3",
+      "ev_4bbeaea2b1a3fc2176d5010e025e0272c4f315f6a4481858bf4ef14db9594a4f",
+      "ev_bdb024b856972aab854c483acb7dfa600c4918cc401ccfcebcb14da2200b2d38",
+      "ev_c073455c8c6bb6dc6c50ee74ccd0da213d8a87289fec8335679c8599525c22dc",
+      "ev_de81539c12c6c729901acb0a3988a95c6d4e4e20dcd419f57bfc22008a46493f",
+      "ev_9428cc150698bc1ebd5f7d4d32f2e8efa1022c319d442c3801b44c2d74cf4bca",
+      "ev_939c67466e206bfa472828de022768b53d746d0c3d8cad4119803f209bdc3bba",
+      "ev_74bdde823cd60a4a094c7073a39236119dace8368d04374996bdd861d9005224",
+      "ev_7bc80f920225d80b13a00826e85aed3717788f2b49a3ff9a656c8309f097bc20",
+      "ev_111c8b85f4bdb617ec51de3b89943253b60530df4cd0756a2f990508c777d316",
+      "ev_e86c968ac675109f326529617ceb94c22db68ef578ff39ed7fa34d60c9a027cb",
+      "ev_addd7356fe5ce898b68a96e98301c57395890714788c4f86b675ad26181ac3f0",
+      "ev_83cbce6b5647dc7ef89686cfbb9c3e704741dfb959c1e90b18977fc806be20a7"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_15a8e02f885a744622caa594dd331b7481bf66e9039cec2e9de762eab6c72891",
+      "ev_b5fc43ccb470fb223883348ab5e595a488ba6332bb419e48ad7eac4ba452c8af",
+      "ev_25085c34ecb1e1cc14b31cfe80f080213556158c202772dce0f52810206e745c",
+      "ev_3006efb65ff33d4d129cae301b78f856b3944f4b066063a9ad5175bdf2f067a9",
+      "ev_516057b8a32881c40f1384de19b86128197089068316214ce7a984ebb4f252a4",
+      "ev_3bb0c9cc00e48e9c9c70869ecd33daf4221b424752681999cb07ad21d6c5ef11"
+    ],
+    "missingPremiseBundles": [
+      {
+        "obligationId": "data_availability",
+        "criterionId": "available_data",
+        "requirement": "核对拟议数据选择的现有场景或样本依据，以及已取得证据的范围。",
+        "source": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+        "evidenceIds": [
+          "E7"
+        ]
+      }
+    ],
+    "inputBytes": 23717,
+    "fixedInputBytes": 19390,
+    "tableDataOmittedEvidenceIds": [],
+    "sharedTablePackets": 0
+  }
+}

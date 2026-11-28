@@ -1,0 +1,9 @@
+{
+  "endpoint": "https://export.arxiv.org/api/query",
+  "query": "id:2403.17888",
+  "attempts": 1,
+  "seconds": 3.255,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "errorType": "ReadTimeout"
+}

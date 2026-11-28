@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-15",
+  "backendCommit": "070ab1a",
+  "frontendCommit": "12b642e",
+  "pageContinuityFix": "92c68a0",
+  "browser": [
+    "Citation opens cached v4 in the middle pane at physical page 5/16.",
+    "Before explicit add, task paperIds remains empty; opening and Esc-closing preview restores the existing report.",
+    "Explicit add creates one source receipt and one task material; no model overview is requested.",
+    "Open task paper retains page 5 after the follow-up fix and offers the ordinary reader controls."
+  ],
+  "taskAfterExplicitAdd": {
+    "id": "dr-acceptance-h3r-2026-10-14",
+    "revision": 22,
+    "paperIds": [
+      "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5.pdf"
+    ],
+    "focusedPaperId": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5.pdf",
+    "sourceReceipts": 1
+  },
+  "material": {
+    "title": "pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction",
+    "readingReady": true,
+    "questionReady": true,
+    "processingStatus": "ready",
+    "aiAnalysisStatus": "not_requested"
+  },
+  "pdfBytes": 11520262,
+  "pdfSha256": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+  "screenshots": [
+    "external-reader-page5-20261015.png",
+    "external-reader-task-page5-20261015.png"
+  ],
+  "tests": {
+    "javaIsolated": 43,
+    "frontendFullVitest": 479,
+    "frontendFiles": 65,
+    "pageFixFocused": 30,
+    "overlap": true,
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "javaTestEnvironment": "Installed JDK25; existing Lombok 1.18.42 and ByteBuddy experimental test flags passed only as CLI overrides; isolated H2 memory DB; project pom unchanged.",
+  "boundary": "UI/API integration and local parsing verified. No model-quality or independent novice-study credit."
+}

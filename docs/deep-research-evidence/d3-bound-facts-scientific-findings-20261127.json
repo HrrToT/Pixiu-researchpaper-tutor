@@ -1,0 +1,66 @@
+{
+  "sourceRun": "dr_run_b89846fc1c945ac5bca5a0cee9d5fd3b",
+  "replayRun": "dr_d3_bound_facts_audit_20261127",
+  "sourceCommit": "f389df73347446bf64e9abe175a0876ac92f5d88",
+  "proposalBindingDigest": "8c2adba266e73aed4a00a19ae3680bced0bdf32c32d781d3d2db218e28c32fd2",
+  "actualNewCalls": 3,
+  "actualNewTokens": 27313,
+  "providerFirstToLastSeconds": 41.0,
+  "batchesAllReturned": true,
+  "finalAuditCalls": 0,
+  "previousStrictReviewInvalid": true,
+  "invalidField": "checks[0].planBindings",
+  "invalidBatchIndex": 2,
+  "actualBindingCount": 11,
+  "priorBindingLimit": 8,
+  "candidateBindingLimit": 16,
+  "unalteredResponseNowValid": true,
+  "replayedCheckCounts": {
+    "passed": 17,
+    "failed": 5
+  },
+  "scientificFindings": [
+    {
+      "checkId": "section_1",
+      "status": "failed",
+      "reason": "Bicycle 的身份有依据，划分也锁定且不交叉；但训练专用 SfM 不能直接提供被排除测试图像的相机位姿，方案未规定不参与训练的测试相机如何配准到训练坐标系。"
+    },
+    {
+      "checkId": "section_2",
+      "status": "failed",
+      "reason": "检查点及多数初值有定义，但测试相机在训练坐标系中的取得和配准计算未定义；仅要求配准失败时停止不能补足生成过程。"
+    },
+    {
+      "checkId": "section_6",
+      "status": "failed",
+      "reason": "质量口径和成功拟合窗口的同步、重置及 PyTorch 分配峰值已定义，但 OOM 时只记录失败并停止，未规定同步或读取失败窗口的峰值；该指标也不覆盖分配器外的全部设备显存。"
+    },
+    {
+      "checkId": "requirement_0_1",
+      "status": "failed",
+      "reason": "要求测试相机处于仅训练图像 SfM 的坐标系，却未规定如何获得或配准测试相机；同时禁止测试图像参与 SfM，恢复和评价所需相机因此缺少可执行来源。"
+    },
+    {
+      "checkId": "requirement_3_0",
+      "status": "failed",
+      "reason": "配对、评价和资源不足规则较完整，但缺少将锁定测试相机置于训练专用 SfM 坐标系的可执行方法。"
+    }
+  ],
+  "scientificApproval": false,
+  "nextGenerationInputBytes": 31668,
+  "requiredPremiseCount": 6,
+  "allRequiredPremisesRetained": true,
+  "newGenerationDispatched": false,
+  "extraPaidCalls": 0,
+  "sha256": {
+    "intent.json": "ffb045a21ace62131bc84ed5b17a6d088a3521fcdf77133420aa3c969a6691b3",
+    "run.json": "cbfe20a4be68c9cff71d72efe85a90968e69bf23d04767c8f012141390aecbb6",
+    "calls.json": "5b598d417e3a08261684914dfce6020859278ac2a42c32b7be637af53a753231"
+  },
+  "revisionPreflight": {
+    "status": "intercepted",
+    "legacyInputBytes": 35490,
+    "inputBytes": 31930,
+    "providerCalls": 0
+  }
+}

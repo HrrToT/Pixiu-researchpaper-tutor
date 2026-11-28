@@ -1,0 +1,161 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v36",
+  "sourceCommit": "1c1a13976fa8d919ea29c0746e882482ff60dfd8",
+  "contractVersion": 13,
+  "runId": "dr_run_8c482ced482b591181c74b5824269a3c",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "comparison_stage_evidence_capacity",
+  "modelCalls": 7,
+  "modelTokens": 21691,
+  "elapsedSeconds": 159.0,
+  "externalSearches": 0,
+  "synthesisCalls": 0,
+  "published": false,
+  "scientificContentAccepted": false,
+  "automaticRetry": false,
+  "originalRestoredAndRecordsMatched": true,
+  "savedInputCapacityReplay": [
+    {
+      "stageIndex": 1,
+      "inputLimitBytes": 24000,
+      "fixedBytes": 9429,
+      "requiredBundles": 14,
+      "requiredDistinctRows": 8,
+      "mandatoryBytes": 17977,
+      "missingRefs": [],
+      "missingCriterionIds": [],
+      "admittedRows": 18,
+      "promptBytes": 23975
+    },
+    {
+      "stageIndex": 2,
+      "inputLimitBytes": 24000,
+      "fixedBytes": 9409,
+      "requiredBundles": 14,
+      "requiredDistinctRows": 12,
+      "mandatoryBytes": 21673,
+      "missingRefs": [],
+      "missingCriterionIds": [],
+      "admittedRows": 16,
+      "promptBytes": 23997
+    },
+    {
+      "stageIndex": 3,
+      "inputLimitBytes": 24000,
+      "fixedBytes": 11806,
+      "requiredBundles": 16,
+      "requiredDistinctRows": 15,
+      "mandatoryBytes": 25773,
+      "missingRefs": [
+        "E27",
+        "E28",
+        "E29"
+      ],
+      "missingCriterionIds": [
+        "human_aspect_2",
+        "C1"
+      ],
+      "admittedRows": 12,
+      "promptBytes": 23997
+    }
+  ],
+  "inMemoryProjectionPrototype": {
+    "projection": {
+      "goalsBefore": 7,
+      "goalsAfter": 3,
+      "packetBytesSaved": 2338
+    },
+    "sameActualSavedInputs": true,
+    "modelCalls": 0,
+    "stages": [
+      {
+        "stageId": "P1",
+        "targetIds": [
+          "table_0_0",
+          "table_1_0",
+          "table_2_0",
+          "table_3_0"
+        ],
+        "inputBytes": 23975,
+        "requiredBundleCount": 14,
+        "requiredEvidenceIds": [
+          "E1",
+          "E10",
+          "E12",
+          "E14",
+          "E19",
+          "E21",
+          "E6",
+          "E9"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "targetIds": [
+          "table_0_1",
+          "table_1_1",
+          "table_2_1",
+          "table_3_1"
+        ],
+        "inputBytes": 23997,
+        "requiredBundleCount": 14,
+        "requiredEvidenceIds": [
+          "E11",
+          "E13",
+          "E15",
+          "E18",
+          "E2",
+          "E20",
+          "E22",
+          "E3",
+          "E4",
+          "E5",
+          "E7",
+          "E8"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "targetIds": [
+          "joint_O4",
+          "joint_O6",
+          "joint_O7_conditional_advice"
+        ],
+        "inputBytes": 24000,
+        "requiredBundleCount": 16,
+        "requiredEvidenceIds": [
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18",
+          "E22",
+          "E23",
+          "E24",
+          "E25",
+          "E26",
+          "E27",
+          "E28",
+          "E29",
+          "E30",
+          "E9"
+        ]
+      }
+    ],
+    "admission": {
+      "remainingModelCalls": 11,
+      "callLowerBound": 11,
+      "additionalAdviceOrRecheckCallsMayBeRequired": true,
+      "providerTokensAndWallClockFitEstablished": false,
+      "generationInputBytesTotal": 71972
+    }
+  },
+  "numericExampleRoute": "The two criteria jointly ask for the same bounded example; the prototype still emits an untyped joint_O4 target.",
+  "receiptSha256": {
+    ".payload.json": "7147615a9fc04e950e75d5822dcbd43e03d41cfadb75e156d486431e6bb2353a",
+    ".calls.json": "46778027bbbeb5bc719e7b3770771148e0a3d8da0bd974c982ede608c8966793",
+    ".result.json": "e4855e456b0877e1ca6f3af414e542251345f71354f8481241da2d9810455b07",
+    ".execution.json": "5c90848d572af86ebf900084eff6565a79981ff88a4bb57bef07c44dc8317f31"
+  }
+}

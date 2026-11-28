@@ -1,0 +1,30 @@
+{
+  "case": "AD1N-v3",
+  "sourceCommit": "f54ab79e",
+  "page": 2,
+  "literalHeading": "2 A LGORITHM",
+  "originalOffset": 1625,
+  "normalizedNavigationTitle": "ALGORITHM",
+  "rawTitleMatchesMethod": false,
+  "normalizedTitleMatchesMethod": true,
+  "currentPageHasMethodSpan": false,
+  "currentParts": [
+    {
+      "start": 0,
+      "end": 3259,
+      "section": "",
+      "role": "unknown"
+    },
+    {
+      "start": 3259,
+      "end": 3653,
+      "section": "2.1 A DAM ’S UPDATE RULE",
+      "role": "unknown"
+    }
+  ],
+  "cause": "Integer-heading admission checks raw small-cap title before normalized_title is applied to admitted events. This loses the Algorithm main heading before role classification.",
+  "scope": "Generic outline metadata defect, no paper name/value special case. This diagnostic does not yet fix or prove synthesis candidate recall.",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAcceptance": false
+}

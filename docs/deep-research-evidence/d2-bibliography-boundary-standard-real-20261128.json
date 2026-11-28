@@ -1,0 +1,144 @@
+{
+  "fixture": "D2-BASELINE-COMPRESSION",
+  "candidate": "cea48cd04017fb2e528bc89685639a128cbe4e80",
+  "runId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "layout": "isolated real run from scratch, frozen task PDFs, in-process local-file adapter",
+  "providerGenerations": 16,
+  "providerUsageByModel": {
+    "gpt-6-luna": {
+      "generations": 6,
+      "tokens": 19247,
+      "cachedInputTokens": 1719
+    },
+    "gpt-6.1-terra": {
+      "generations": 10,
+      "tokens": 56685,
+      "cachedInputTokens": 0
+    }
+  },
+  "providerInputCountRequests": 0,
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 19660,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 11,
+    "tokens": 75932,
+    "normalTokens": 45592,
+    "elapsedSeconds": 135.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "harnessElapsedSeconds": 136.34,
+  "externalSources": 0,
+  "productionWrites": 0,
+  "reusedStageReceipts": 0,
+  "automaticRetry": false,
+  "independentHoldoutCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "publishedToWorkspace": false,
+  "wholeAnswerCoherence": "released",
+  "verificationSummary": {
+    "accepted": 9,
+    "rejected": 2
+  },
+  "reviewedCoverage": {
+    "o1": "partial",
+    "o2": "partial",
+    "o3": "covered",
+    "o4": "covered",
+    "requested_numeric_example": "covered",
+    "answer_scope": "partial"
+  },
+  "physicalSourceChecks": {
+    "literal_page": 29,
+    "table_row_check_required": 1
+  },
+  "checkedClaims": {
+    "cmp_conclusion_0": "Both identify A6000. The quoted results do not establish that scenes, resolution, and timing protocol align for a cross-paper FPS ranking. This conclusion passed semantic verification and the whole answer coverage check.",
+    "cmp_conclusion_1": "Use matched hardware, scene and render settings to measure peak GPU memory before choosing. Storage and GPU memory are distinct.",
+    "cmp_conclusion_2": {
+      "source": "LightGaussian v6 p6, Table 1, Mip-NeRF 360, retrained 3D-GS versus Ours",
+      "fps": [
+        144,
+        237
+      ],
+      "storageMB": [
+        782,
+        45
+      ],
+      "psnr": [
+        27.4,
+        27.13
+      ],
+      "ssim": [
+        0.813,
+        0.806
+      ],
+      "lpips": [
+        0.217,
+        0.237
+      ]
+    },
+    "cmp_3_0": "LightGaussian v6 pp6–7 documents 5,000 codebook-tuning iterations and 5,000 co-adaptation steps. The report does not infer total wall time."
+  },
+  "remainingCoverage": "The section needs original 3DGS processing costs and rendering speed. Two draft claims did not pass numeric precheck; the scoped post-run change only admits the iteration-budget claim to semantic checking.",
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "iterationRepairCommit": "bbf1009c8e3dde79ce8ff23474bfd4dd82b662ea",
+  "iterationRepairReplay": {
+    "rawRunSha256": "cba9536334c116f13d3a33537874bcff3ece3f6219ba17cf59c90fc6201edb52",
+    "oldRejected": {
+      "cmp_2_0": [
+        "3e4",
+        "7e3"
+      ],
+      "cmp_6_0": [
+        "2e0"
+      ]
+    },
+    "newNumericCandidates": [
+      "cmp_2_0"
+    ],
+    "stillRejected": {
+      "cmp_6_0": [
+        "2e0"
+      ]
+    },
+    "changedCountRejected": [
+      "31e3"
+    ],
+    "providerCalls": 0,
+    "semanticApproval": false
+  },
+  "iterationRepairRegression": {
+    "passed": 257,
+    "sha256": "197c07314c26083c51600e0a9211f51fbeb4fdd901d6a029d3a3e220ab5514fe"
+  },
+  "rawArtifacts": {
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/calls.json": "0556e4860514005d50ebe14a6082e687e4cb45f8b590a220b60d26e52ff63bd4",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/citation-physical-check.json": "512f29d95fb7ade2c8060d7848ff83d8c2399a1a7940b1ab3ff0c52752eecd71",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/intent.json": "de8a3c4215f1bff7d0cd8d4823597b04cd823329a2138537315ffa4781cc2441",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/iteration-count-offline-replay.json": "4a5643b16b7e62525e0ba27f2c7c64045636085209de005bc21847eda3e7b28f",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/provider.jsonl": "59dbe87a43f66079bf3b57b04c5f933b4dd3df66edbd370fa88a66217c7da666",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/report.md": "14ea169d85b00f202dd5117c7f7d4538b8edbbd272d374d86190efec97ff5e17",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/result.json": "b949d16138d56713bb88570b9d588e0323e8ccf056cac0260f4cb81977584500",
+    "tmp/openai-d2-bibliography-boundary-standard-20261128/run.json": "cba9536334c116f13d3a33537874bcff3ece3f6219ba17cf59c90fc6201edb52"
+  }
+}

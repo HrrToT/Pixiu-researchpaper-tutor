@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "frozenTimestamp": "2026-11-27T09:53:41.832051+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
+  "independentCredit": 0,
+  "firstExecutionReceipt": "deep-research-evidence/disk-h1-first-frozen-20261127.json",
+  "developmentReplay": "deep-research-evidence/disk-font-and-method-routing-replay-20261127.json",
+  "materials": {
+    "disk_v1": {
+      "filename": "2006.13566v1.pdf",
+      "sha256": "e4d38a452c3805ee2c7e683cd35c32d6ada2d8d2d396888ce7383668195267ec",
+      "bytes": 6416605,
+      "pageCount": 14,
+      "arxiv": "2006.13566v1",
+      "reference": "https://arxiv.org/abs/2006.13566v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-DISK",
+      "split": "holdout",
+      "materials": [
+        "disk_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前 DISK v1 论文，给初学者解释训练时怎样从热力图挑出关键点、两张图的点怎样形成匹配，以及匹配奖励怎样让模型学得更好。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "说明检测图先分格，格内分数经 softmax 形成抽样权重后提出一个候选，再按该点分数经 sigmoid 得到的概率决定是否接受，格子可不输出点。",
+        "说明描述子距离越小匹配概率越高，沿矩阵两个方向分别归一化，正反都选中同一对才成立，对应概率为两方向概率的乘积。",
+        "说明几何真值给正确匹配正奖励，错误匹配受罚，论文规定的合理但不确定匹配保持中性。用白话说明如何通过期望奖励训练检测与匹配；不要求推导公式。",
+        "首次使用必要术语时说明它在这一步做什么，引用对应 v1 正文原文并满足字数。"
+      ],
+      "forbidden": [
+        "把格内抽样或接受概率写成固定阈值或训练时总挑最高分。",
+        "把两个方向概率相加，或将测试时确定性互为最近邻规则当作训练抽样。",
+        "把缺少深度但符合几何约束的合理匹配一概写成负样本。",
+        "用摘要或结果表替代三项机制的正文依据。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 3,
+        "section": "3 Method, Feature distribution / Match distribution / Reward function",
+        "checks": "Grid sample and acceptance, bidirectional distribution, correct/plausible/incorrect matching rewards."
+      },
+      {
+        "page": 4,
+        "section": "3 Method, Gradient estimator",
+        "checks": "Expected reward differentiates detection and descriptor contributions."
+      }
+    ],
+    "preSubmission": "Check exact material identity against current run history, task materials, index and source cache.",
+    "goldInputBoundary": "Only question, material identity and budget enter application intent. Requirements and anchors remain evaluator-only."
+  },
+  "caseDefinitionHashes": {
+    "H1-DISK": "07d3988aaf0796797231931eee66ed0aef0402cd7ba9041ff243faa880723878"
+  }
+}

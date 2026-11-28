@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-21",
+  "case": "E1-v11",
+  "sourceCommit": "a507a3b6",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "structuralAndReferenceValidationUnderExisting4000SafetyLimit": true,
+  "completeRawPlanBytes": 2859,
+  "losslessWireBytes": 2750,
+  "currentCompactSlotBytes": 2500,
+  "allOriginalPlanValuesRoundtrip": true,
+  "actualResponseFinish": "stop",
+  "actualGenerationPreflightBytesWithReservedSlot": 23830,
+  "inputBytesIfOnlySlotWasExpanded": 24080,
+  "generationInputCap": 24000,
+  "actualPlanResponseSha256": "eee8ff732575481a4948f6f3a1faae2eb4108d95a3bb092b192a3a505253d900",
+  "protocolFieldBytes": {
+    "intervention": 413,
+    "data": 478,
+    "state": 429,
+    "poseError": 74,
+    "measurement": 381,
+    "pairingBudget": 419
+  },
+  "newEvidenceDeliveryProven": "Three necessary method contexts truly reached the actual15106-byte planning request; actual plan uses gradient0.00015, N(mu,2Sigma), inherited SH/scale, identity rotation, opacity0.1 and new-parameter-only optimization.",
+  "notProven": [
+    "No complete report generated.",
+    "No independent semantic review reached.",
+    "New repair coverage not exercised by the real model.",
+    "No content or independent acceptance."
+  ],
+  "nextWork": [
+    "Coordinate complete private planning with final generation capacity while preserving required method context, full raw response, original24KB and whole-run budgets.",
+    "Classify valid but oversized planning separately from malformed/source-invalid output.",
+    "After delivery works, independently check actual Stage1/Stage2 temporal ordering, shared full states, finite budgets and complete measurement."
+  ],
+  "boundary": "Read-only diagnosis, not a replacement plan, provider retry or old-state upgrade. Expanding the slot alone would exceed24KB; the complete plan is unverified and may contain scientific errors."
+}

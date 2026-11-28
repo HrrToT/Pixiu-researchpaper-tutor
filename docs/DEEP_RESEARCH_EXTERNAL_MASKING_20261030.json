@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-30",
+  "design": "DEEP_RESEARCH_DESIGN_20261012.md#19",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "independence": "Known development paper; fresh external-only question/provider path, no independent holdout credit. Does not reissue any prior unknown case.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2503.00357v2",
+        "referencePdfSha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+        "physicalPage": 7,
+        "section": "4.5 View Frequency-Aware Masking",
+        "expected": "Frequency weight times sigmoid of learned mask parameter compared with shared threshold; higher frequency makes removal harder. Assumes similar training/test view distributions, not a guarantee under distribution shift."
+      }
+    ],
+    "hardFailures": [
+      "使用任务论文/本地PDF冒充外部获取",
+      "摘要冒充正文",
+      "v2被自动替换为其他版本",
+      "将使用频率解释为直接提高不透明度",
+      "高频基元更容易删除或无条件保证测试质量",
+      "越过18调用/100000Token/360秒预算"
+    ],
+    "transportChecks": [
+      "metadata_provider_request_in_ledger",
+      "fresh_fulltext_network_request",
+      "no_target_external_cache_before_run",
+      "version_identity_and_original_evidence",
+      "no_unrequested_sources_or_private_text"
+    ]
+  },
+  "cases": [
+    {
+      "id": "X1G",
+      "split": "development",
+      "materials": [],
+      "kind": "claim_verification",
+      "policy": "external_only",
+      "question": "请联网查找并读取 CAT-3DGS v2（arXiv:2503.00357v2）的原文。解释第4.5节的视角频率感知掩码机制：训练视角中的使用频率怎样影响高斯基元的保留，以及这种设计依赖什么训练与测试视角分布前提？限300字，区分论文给出的规则与解释，标明实际取得的是全文片段还是摘要。不要比较性能排名或设计实验。",
+      "required": [
+        "通过真实外部元数据发现与全文网络获取v2",
+        "依据4.5节解释相对训练视角使用频率权重参与掩码判定",
+        "更高使用频率使删除更困难而非相反",
+        "明确训练与测试视角分布相似的前提，避免无条件泛化",
+        "只引用本次实际获取的版本和访问级别，300字以内"
+      ],
+      "forbidden": [
+        "频率权重等同不透明度",
+        "将高频解释成更易删除",
+        "摘要/本地材料冒充新外部全文",
+        "更改版本或进行跨条件性能排名"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "X1G": "2585a5950211c3343369c91b138928a23c4b4aea5808d9b4650118525d0f0342"
+  }
+}

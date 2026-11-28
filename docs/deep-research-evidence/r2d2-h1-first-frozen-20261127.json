@@ -1,0 +1,58 @@
+{
+  "case": "H1-R2D2",
+  "attempt": 1,
+  "definitionHash": "2b675560ed17060ec16f3e164d2d8970925f2921856bfa0a4d84d636b4e28a20",
+  "codeCommit": "14d23e9440a78ff5344e978afa354a9642223892",
+  "runId": "dr_run_730fca6bd5a0552694e0cb93312da87d",
+  "sourceRevision": "arxiv:1906.06195v1",
+  "materialSha256": "06d09a4d886298f65e70c49a0234e0b884bd6de1ffed9e3caed47808ddc74c40",
+  "runtimeBoundary": {
+    "researchGraph": "current_production_python_graph",
+    "retrieval": "production_lexical_pdf_fallback",
+    "scope": "isolated_loopback_material_service",
+    "liveIndexUsedForRetrieval": false,
+    "liveApplicationWrites": 0,
+    "lockedPaperPdfReads": 2,
+    "scopeChecks": 66,
+    "externalSearches": 0
+  },
+  "outcome": "inconclusive",
+  "acceptedClaims": 0,
+  "scientificContentCredit": 0,
+  "observations": [
+    "The first readiness response nominated an evidence alias outside the definition unit. That verdict was not admitted.",
+    "The second readiness response found no supporting evidence for the definition. The plan had made inference depend on completion of the concept item, so the inference criterion was never assessed.",
+    "The two owned checkerboard passages selected in readiness were absent from the final synthesis packet. Terra returned an empty claim and section list."
+  ],
+  "offlineReplayAfterFix": {
+    "definitionPassagesInInitialReadiness": {
+      "before": 0,
+      "after": 1
+    },
+    "approvedCheckerboardPassagesInSynthesis": {
+      "before": 0,
+      "after": 2
+    },
+    "missingSynthesisPremiseBundles": 0,
+    "providerCalls": 0,
+    "focusedRegressionsPassed": 98,
+    "scope": "Saved original evidence and captured node inputs. Does not establish full-answer quality or scientific acceptance."
+  },
+  "usage": {
+    "providerCalls": 5,
+    "tokens": 15887,
+    "tokensByModel": {
+      "gpt-6-luna": 10126,
+      "gpt-6.1-terra": 5761
+    },
+    "elapsedSeconds": 27
+  },
+  "sha256": {
+    "run.json": "0a146a7595308ec253cc898e96bcebc021667b0fab6cb3ce284124a984ac676a",
+    "calls.json": "83257c647889b28668746fb8c97c10161babcccb0189ef76146483434381a663",
+    "result.json": "28913e0f1495a1ab4eed504d277d4cfae40efe048e07bce1290fd95b32882954",
+    "intent.json": "3240273f5c35477b0298c2f1ec44e0233bbbfcfd0e8fcc19d6531a382747926b",
+    "boundary.json": "cb7420751a6b6f5949205e14fb3b97caaeee1414e0eb29c638ffa2a093b21616",
+    "provider.jsonl": "8997c5aab8b557dbfada21789151ad4b7fb0de365403e12493fe62eed9e6f3e1"
+  }
+}

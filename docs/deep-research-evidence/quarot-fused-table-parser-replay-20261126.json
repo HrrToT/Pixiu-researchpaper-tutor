@@ -1,0 +1,24 @@
+{
+  "case": "H4-QUAROT-VERSIONS",
+  "revision": "v2",
+  "physicalPage": 8,
+  "pdfSha256": "f611888c63ef63a5c0232e2c8416619f0c9ace08d0e05692731da82791202e3e",
+  "teiSha256": "2e3c5ec2fea723c165aa4cf1ae754b5dcdc56bafcde8231e24ce89f4de5a323b",
+  "originalCombinedSection": "Table 1 :",
+  "separatedTable": "pdf-page-8-table-2",
+  "verifiedRows": 6,
+  "tableColumns": [
+    "PQ",
+    "WG",
+    "HS",
+    "A-e",
+    "A-c",
+    "LA",
+    "Avg."
+  ],
+  "requestedCellsMatchedOriginal": 8,
+  "figureTailSeparated": true,
+  "structuredRowsAvailableToScopedEvidence": true,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -1,0 +1,84 @@
+{
+  "runId": "dr_run_6e65839c70c559ab8c58372a93e74f27",
+  "candidate": "43504cab771e5ac063058d16c750805da71ab9e1",
+  "isolated": true,
+  "case": "D2-BASELINE-COMPRESSION",
+  "outcome": "partial",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 19149,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 10,
+    "tokens": 79111,
+    "normalTokens": 48260,
+    "elapsedSeconds": 136.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "modelCallsTotal": 15,
+  "providerTokensByModel": {
+    "gpt-6-luna": 18639,
+    "gpt-6.1-terra": 60472
+  },
+  "synthesis": [
+    {
+      "reservedTokens": 28966,
+      "outputTokens": 543
+    },
+    {
+      "reservedTokens": 29005,
+      "outputTokens": 542
+    },
+    {
+      "reservedTokens": 29011,
+      "outputTokens": 342
+    }
+  ],
+  "acceptedClaims": 10,
+  "citationPhysicalChecks": {
+    "literal_page": 26,
+    "table_row_check_required": 3
+  },
+  "answerCoherent": true,
+  "finalGaps": [
+    "obl-2",
+    "obl-3",
+    "answer_scope"
+  ],
+  "wholeQuestionDiagnostic": {
+    "requestExcerpt": "为什么不能直接拿两篇的FPS排名",
+    "missingAnswerElement": "答案尚未解释两篇论文的FPS排名不能直接比较的原因。"
+  },
+  "boundaryReplay": {
+    "providerCalls": 0,
+    "scope": "Only the saved non-entailment decision",
+    "samePromptBeforeAndAfter": true,
+    "oldStatus": "failed",
+    "oldErrors": [
+      "new_diagnostic_numbers_not_bound"
+    ],
+    "newStatus": "passed",
+    "inventedViewCountRejected": true,
+    "runOutcomeChanged": false
+  },
+  "rawArtifactSha256": {
+    "intent.json": "7978470c8d510be7bae0530492049f130a229dc5ec3414804530b6abda9f751c",
+    "run.json": "cf0f983e8475fefafae866db833cc238888f6d266f44f8a5f80f4cabf45c4301",
+    "calls.json": "257b01bb04d12b0f7f1fc897ad2ec138422398fe1a13f368737405a4dd1cfa62",
+    "result.json": "b4ed888e9bde927059f5f7a264342fc09c5f92ea73619d0b1c43671f483055d8",
+    "provider.jsonl": "b04a63502479bb8ca25e1362e7d16ffb76c0da6c7cad110126cd83f621cd2598",
+    "report.md": "57ba77ef5621630ee05f908d6c5ddce0b5cce0fe61db9b5b903c051bfe57a270",
+    "citation-physical-check.json": "6118f481a32fad81d4d93ce5d2290d0b8291520d3beb16b77c9451052920dba3"
+  }
+}

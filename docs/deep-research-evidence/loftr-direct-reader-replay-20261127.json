@@ -1,0 +1,27 @@
+{
+  "case": "H1-LOFTR",
+  "classification": "development_replay",
+  "baseline": "loftr-h1-first-frozen-20261127.json",
+  "priorReplay": "loftr-source-locator-replay-20261127.json",
+  "audienceFirstContractVersion": 2,
+  "input": "Saved model responses replayed through the synthesis graph with the original source evidence",
+  "scheduledWritingSteps": {
+    "previous": ["synthesize", "synthesize_audience"],
+    "current": ["synthesize"]
+  },
+  "checks": {
+    "directReaderGuidanceAppearsInSynthesisRequest": true,
+    "sourceBoundSelfAndCrossImageAttentionNamesPreserved": true,
+    "lowTextureExplanationPreserved": true,
+    "evidenceRefsPreserved": true,
+    "bothClaimsEligibleForSemanticReview": true,
+    "visibleDraftCharacters": 227,
+    "requestedCharacterLimit": 300,
+    "targetedTestsPassed": 266
+  },
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "semanticReviewExecuted": false,
+  "independentAcceptanceCredit": false,
+  "localReplayReportSha256": "1d1e90d86ee51359f68f703b492ff37ee7a0b8bdcef0fc6ed52fdcea99b16215"
+}

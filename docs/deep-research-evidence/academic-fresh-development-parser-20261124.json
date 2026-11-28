@@ -1,0 +1,18 @@
+{
+  "publicDevelopmentArxivVersion": "2403.17888v3",
+  "bytes": 24830200,
+  "sha256": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7",
+  "elapsedSeconds": 13.235,
+  "runtime": "academic-dr-shared-experiment-candidate-20261117",
+  "parserImage": "pixiu-research-pdf-proof:20261120",
+  "forcedNetworkFetch": true,
+  "directSourceTransportCalls": 1,
+  "parserNetworkDisabled": true,
+  "parsedPages": 13,
+  "parsedCharacters": 62436,
+  "cacheWrites": 0,
+  "researchLedgerWrites": 0,
+  "modelCalls": 0,
+  "holdoutRequests": 0,
+  "independentCredit": 0
+}

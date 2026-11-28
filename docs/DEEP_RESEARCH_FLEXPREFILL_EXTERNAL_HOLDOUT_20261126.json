@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-26",
+  "frozenTimestamp": "2026-11-26T06:13:18.301876+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "flexprefill_v1": {
+      "path": "tmp/pdfs/h3-flexprefill-evaluator-20261126/2502.20766v1.pdf",
+      "bytes": 5057080,
+      "sha256": "d2240298d13ad238d6a0f8c9332dc65321cbcd269f9cca2ebb32d1858063ffe2",
+      "pageCount": 27,
+      "arxiv": "2502.20766v1",
+      "reference": "https://arxiv.org/abs/2502.20766v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-FLEXPREFILL",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2502.20766v1。给初学者解释 FlexPrefill 为什么在预填充时用两个不同阈值，第一个阈值怎样决定注意力头用哪种稀疏模式，第二个阈值又怎样决定保留多少注意力位置。注明摘要或正文，引用指定版本的原文，控制在 300 字以内。找不到正文时请说明。",
+      "required": [
+        "从空材料任务实际发现并读取固定版本 PDF 正文，保留来源版本和原文定位。",
+        "说清第一阈值比较块级近似和实际注意力分布的差异，近似可靠时用 Query-Aware，否则用 Vertical-Slash。",
+        "说清第二阈值针对累计归一化注意力权重，选择少量足够的计算位置；不同输入和头可选不同数量。",
+        "注明是预填充计算优化并明确访问级别，引用指定版本方法正文，不超过 300 字。"
+      ],
+      "forbidden": [
+        "交换两个阈值的功能，把累计权重写成固定数量或比例。",
+        "把预填充稀疏计算写成永久删除 KV，或说近似和完整注意力恒等。",
+        "用其他版本、应用旧缓存或评审件代替本次联网。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "flexprefill_v1",
+        "page": 4,
+        "section": "Adaptive Decision; Cumulative-Attention Based Index Selection",
+        "checks": "Page 4 anchors the pattern decision and page 5 anchors the cumulative-attention selection objective."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-FLEXPREFILL": "9ca5400acaaee3e9c4db4a809c4f39ed10c2fdf2933b050a58fbffa8266b6396"
+  }
+}

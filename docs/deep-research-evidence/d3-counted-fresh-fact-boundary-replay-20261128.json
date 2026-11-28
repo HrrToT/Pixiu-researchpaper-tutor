@@ -1,0 +1,94 @@
+{
+  "actualRunId": "dr_run_d93e6bed7d8f5a59a6ca53b9b4f36c92",
+  "actualCandidate": "3089a75491a0dae3e37f48e25c02ff32bec56285",
+  "actualOutcome": "inconclusive",
+  "actualTokenUsage": 34464,
+  "actualModelCalls": 7,
+  "actualInitialPrecheck": [
+    {
+      "claimId": "shared_fact_0",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "factId": "f1",
+      "evidenceRefs": [
+        "E2"
+      ]
+    },
+    {
+      "claimId": "shared_fact_3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "4e0"
+      ],
+      "factId": "f4",
+      "evidenceRefs": [
+        "E12"
+      ]
+    }
+  ],
+  "actualAfterRepairPrecheck": [
+    {
+      "claimId": "shared_fact_0",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "factId": "f1",
+      "evidenceRefs": [
+        "E2"
+      ]
+    },
+    {
+      "claimId": "shared_fact_3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "4e0"
+      ],
+      "factId": "f4",
+      "evidenceRefs": [
+        "E12"
+      ]
+    }
+  ],
+  "offlinePatchedPrecheck": [
+    {
+      "claimId": "shared_fact_3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "4e0"
+      ],
+      "factId": "f4",
+      "evidenceRefs": [
+        "E12"
+      ]
+    }
+  ],
+  "offlineEditedOnlyFactId": "f4",
+  "offlineEditedText": "论文分别禁用克隆和分裂进行消融，其余方法不变。",
+  "offlineCitationUnchanged": [
+    "E12"
+  ],
+  "offlineNewHardIssues": [],
+  "scientificChecks": 23,
+  "scienceBatchBytes": [
+    27803,
+    31961,
+    31773
+  ],
+  "offlineSizes": {
+    "generationBytes": 31670,
+    "repairBytes": 17763,
+    "firstReviewBytes": 27803
+  },
+  "offlineModelCalls": 0,
+  "scientificApproval": false,
+  "published": false,
+  "sourceFilesSha256": {
+    "run.json": "1148ebf6e99d419f85b0e59b04a67f0e58d5197ea4edd08a7a67437238b2a16a",
+    "calls.json": "4ad74bc85b0cb8f09884279a402e82b5a749da5d67c0a7deffc38801bcf8f948",
+    "intent.json": "1f23e50bbc5d7be27e83c20ea8149522980a321175196855650187b52719c808",
+    "result.json": "ad9cd5c6804d40516c65afeb117189b5db8f179994bddc87a2081140561dba51"
+  }
+}

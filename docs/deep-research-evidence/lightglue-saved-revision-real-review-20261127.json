@@ -1,0 +1,31 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "bounded_reverification_of_saved_development_candidate",
+  "baseline": "lightglue-method-section-real-check-20261127.json",
+  "wordingPreflight": "lightglue-review-wording-replay-20261127.json",
+  "codeCommit": "859a77891",
+  "sourceRevision": "arxiv:2306.13643v1",
+  "providerModel": "gpt-6.1-terra",
+  "runId": "dr_run_94fe79977ac352298225106c6b02ff67_method_diagnostic_final",
+  "providerCalls": [{"node": "verify", "tokens": 4635, "promptBytes": 18059}],
+  "savedCandidateChanged": false,
+  "newDraftsGenerated": 0,
+  "checks": {
+    "reviewResponseDecoded": true,
+    "reviewDiagnosticNumberBindingError": false,
+    "claimAccepted": false,
+    "reason": "The draft allowed the exit ratio to reach the threshold. Equation 10 uses a strict greater-than comparison.",
+    "strictComparisonEvidence": {"physicalPage": 4, "equation": 10, "operator": ">"},
+    "thresholdValueEvidence": {"physicalPage": 13, "percentage": 95},
+    "wordingForDevelopment": "当两张图中置信点所占比例严格超过退出阈值时，模型提前结束。论文将该退出阈值设为 95%。"
+  },
+  "wholeAnswerAudit": "not_dispatched_after_failed_claim",
+  "publicationAttempted": false,
+  "liveApplicationWrites": 0,
+  "independentAcceptanceCredit": false,
+  "sha256": {
+    "intent.json": "e28a9dfa6568a161417853cafa977df9d87a97b2dc6a3f6f2afea1ce00831354",
+    "calls.json": "3f4e7735bd84192970f4515bf33215dd24f8bd6b71e99ceccae54d9e5bee8c9c",
+    "run.json": "a90eb448c14a0263da4b7b324a6d67e7200dc31e466f337eee34bb3c456dc8c4"
+  }
+}

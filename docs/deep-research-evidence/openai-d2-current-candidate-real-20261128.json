@@ -1,0 +1,151 @@
+{
+  "testedSourceCommit": "349ae41ec5c81f0bab0880a14f9e65a2b6a33714",
+  "runId": "dr_run_32b17e84964d5d39a1aae0aebfc54239",
+  "case": "D2-BASELINE-COMPRESSION",
+  "frozenDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "sourceSha256": {
+    "original_3dgs_v1": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "lightgaussian_v6": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634"
+  },
+  "attempts": 1,
+  "automaticRetry": false,
+  "productionWrites": false,
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 15,
+    "maxModelCalls": 18,
+    "tokens": 75302,
+    "maxTokens": 100000,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "elapsedSeconds": 171.0
+  },
+  "billAmountKnown": false,
+  "providerUsage": {
+    "gpt-6-luna": {
+      "calls": 6,
+      "input_tokens": 17548,
+      "output_tokens": 2684,
+      "total_tokens": 20232
+    },
+    "gpt-6.1-terra": {
+      "calls": 9,
+      "input_tokens": 51632,
+      "output_tokens": 3438,
+      "total_tokens": 55070
+    }
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "initialDraftClaims": 10,
+  "publishedClaimIds": [
+    "cmp_0_0",
+    "cmp_3_0",
+    "cmp_7_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "initialWholeAnswerAudit": "checked",
+  "initialWholeAnswerCoherence": true,
+  "initialRejections": {
+    "cmp_4_0": "numeric_mismatch",
+    "cmp_5_0": "numeric_mismatch",
+    "cmp_6_0": "numeric_mismatch",
+    "cmp_1_0": "semantic_unresolved",
+    "cmp_conclusion_0": "semantic_unresolved"
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "missingCoverage": {
+    "o1": "No verified LightGaussian mechanism cell or original 3DGS processing-cost cell.",
+    "o2": "Quality and storage were only covered by the one matched example; the standalone cells did not publish.",
+    "o3": "Cross-paper FPS comparability conclusion did not publish.",
+    "o4": "Matching-hardware peak-VRAM measurement advice published, but paper-grounded conditional tradeoffs did not meet the request."
+  },
+  "physicalEvidence": {
+    "matchedTextReferences": 14,
+    "verifiedTableRowReferences": 2,
+    "table": {
+      "version": "2311.17245v6",
+      "page": 6,
+      "number": 1,
+      "dataset": "Mip-NeRF 360 Datasets",
+      "metrics": [
+        "FPS",
+        "Size",
+        "PSNR",
+        "SSIM",
+        "LPIPS"
+      ],
+      "rows": {
+        "3D-GS∗[16]": [
+          "144",
+          "782MB",
+          "27.40",
+          "0.813",
+          "0.217"
+        ],
+        "Ours": [
+          "237",
+          "45MB",
+          "27.13",
+          "0.806",
+          "0.237"
+        ]
+      },
+      "verifiedBoundCells": 10
+    }
+  },
+  "offlineNumericPrecheckReplay": {
+    "fromVersion": 22,
+    "toVersion": 23,
+    "claims": {
+      "cmp_4_0": {
+        "oldMissingReportedNumbers": [
+          "2e0"
+        ],
+        "newPrecheck": "candidate_for_independent_semantic_review"
+      },
+      "cmp_5_0": {
+        "oldMissingReportedNumbers": [
+          "36e1"
+        ],
+        "newPrecheck": "candidate_for_independent_semantic_review"
+      },
+      "cmp_6_0": {
+        "oldMissingReportedNumbers": [
+          "3e0"
+        ],
+        "newPrecheck": "candidate_for_independent_semantic_review"
+      }
+    },
+    "paidCalls": 0,
+    "publicationApproval": false
+  },
+  "offlineRepairAdmissionReplay": {
+    "settledTokens": 75302,
+    "remainingTotalTokens": 24698,
+    "forecastDraftClaims": 10,
+    "protectedReleaseAuditTokens": 31482,
+    "currentPolicyDispatches": 0,
+    "withoutReleaseAuditReservation": {
+      "firstRepairInputBytes": 19555,
+      "firstRepairOutputReservationTokens": 4096,
+      "stoppedBeforeProvider": true,
+      "subsequentReviewAndAuditCapacityProven": false
+    }
+  },
+  "localArtifactsSha256": {
+    "result.json": "46619945005f15633ce09a17dc2e953132681f22096e4ca48a3618e5f85154a8",
+    "run.json": "89d4d3523ade556d70766ce95d24284def27ef03c7d0d637fba3f455e4c259e1",
+    "provider.jsonl": "38b9bac1172337a60a27ecf104542cc3d9450b2a3765802bd234d4bef0a453f2",
+    "calls.json": "13d56a1af394a69bf7aed0b5f650c6650525c6e60e5b22b0d79d394647fd3ee3",
+    "report.md": "34bf1b3ec161cfafe114dd4112c279fd7ebbeb69062a5cdf198f02595870039e",
+    "citation-physical-check.json": "b87540c0d6d53c86cae0653b77371e8d5b036d670d2d3362456ef20fa55df222"
+  }
+}

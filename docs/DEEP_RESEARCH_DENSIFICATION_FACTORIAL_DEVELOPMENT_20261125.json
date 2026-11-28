@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-25",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_submitted",
+  "independentCredit": 0,
+  "materials": {
+    "original_3dgs_v1": {
+      "path": "D:/3DGS/paper/3DGS原始论文/2308.04079v1.pdf",
+      "sha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+      "bytes": 35829709,
+      "reference": "https://arxiv.org/abs/2308.04079v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "section": "5.2 and Figure 4",
+        "checks": "Clone eligible small Gaussians and split eligible large Gaussians; distinguish child attributes, parent replacement, gradient gates and common density controls."
+      },
+      {
+        "section": "7.3, Table 3 and Figure 8",
+        "checks": "Separate the paper's one-at-a-time ablations from the new four-arm interaction test."
+      }
+    ],
+    "scope": "Development verification of the shared factorial generation workflow. Separate mechanisms and source from historical Compact3D VQ experiments; those requests and reservations remain frozen. This is not independent H5 credit.",
+    "goldInputBoundary": "Only the frozen question, source material identity and execution budget enter the product. Review anchors and expected checks remain outside the product."
+  },
+  "cases": [
+    {
+      "id": "D3-DENSIFICATION-FACTORIAL",
+      "split": "development",
+      "materials": [
+        "original_3dgs_v1"
+      ],
+      "kind": "experiment_design",
+      "policy": "task_only",
+      "question": "只依据当前原始3DGS v1论文，设计一个可执行的2×2对照实验，研究训练阶段小高斯克隆与大高斯分裂各自以及交互如何影响新视角重建质量和训练峰值显存。四组分别开关这两项操作。请说明假设、操作前后父子高斯与优化器状态、从同一检查点和随机种子配对开始、训练与测试拆分、同优化步预算和不透明度处理、执行顺序、指标与显存计量、主效应和交互判断，以及某组资源不足时如何处理。区分论文已有消融与拟议方案，未执行，不用外部资料。",
+      "required": [
+        "定义四个互异组合并从每个场景和重复的同一预干预状态配对复制。基于同一梯度触发和大小口径区分克隆与分裂，明确父子高斯与新旧优化器状态处理。",
+        "说明关闭时保留原高斯和既定优化流程。保持不透明度回置、筛除、相机、数据、渲染参数等其他规则一致。明确论文已有单因素消融与新四组估计的问题。",
+        "给出共同预检及可重复执行步骤、训练与测试分离、统一优化步和配对数据顺序、预定重复次数、质量和训练峰值显存测量口径。实际墙钟和高斯数量可各组不同，记录为结果。",
+        "给出同向指标下两项主效应和差中差，交互符号可解释。按场景与配对重复估计不确定性。资源不足时保持四组对照有效性或承认不可得，不编造新实验数据。"
+      ],
+      "forbidden": [
+        "用论文单因素消融直接推导拟议的交互结果，把关闭操作等同于删除高斯或替换其他训练规则。",
+        "混淆已上传材料与已具备的模型检查点，混淆训练峰值显存与发布模型大小，或把等优化步说成同墙钟及等高斯数。",
+        "缺组仍宣称交互、资源不足时单独缩减一个组、测试集调参、虚构来源或把提议写成已完成训练。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "D3-DENSIFICATION-FACTORIAL": "2c95b824547bbe02f1b7d4ab54de1d5a6bb55817796c21561f19ae88f7f92622"
+  }
+}

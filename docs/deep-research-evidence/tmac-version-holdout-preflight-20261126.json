@@ -1,0 +1,22 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "definitionHash": "94c84332c4fdd93837318204c3a4a76e58e50b180b36b63e2eb52a6a2107cd94",
+  "reviewedPages": [
+    11,
+    12
+  ],
+  "liveInventory": {
+    "runs": 499,
+    "runHits": 0,
+    "indexFields": 19825,
+    "indexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 194,
+  "priorUseMatches": 0,
+  "previewVerified": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "independentCredit": 0
+}

@@ -1,0 +1,120 @@
+{
+  "promptVersion": "dr-v2.20261115.471",
+  "sourceCommit": "ef7874023f7dd27f945a87d44f19b661158706e2",
+  "isolatedCompleteMetadataRevisionOnly": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 60000,
+  "maximumSeconds": 180,
+  "usage": {
+    "total_tokens": 20977,
+    "input_tokens": 15923,
+    "output_tokens": 5054
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "timeline.input.group_leak"
+  ],
+  "allDecodedFeedbackErrors": [
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/3",
+      "actualPresent": true,
+      "sourceGroups": [
+        "10",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "cov_codebook",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/4",
+      "actualPresent": true,
+      "sourceGroups": [
+        "10",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "cov_indices",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/1",
+      "actualPresent": true,
+      "sourceGroups": [
+        "01",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "sh_codebook",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    },
+    {
+      "code": "timeline.input.group_leak",
+      "path": "/steps/1/updates/2",
+      "actualPresent": true,
+      "sourceGroups": [
+        "01",
+        "11"
+      ],
+      "consumerGroups": [
+        "00",
+        "01",
+        "10",
+        "11"
+      ],
+      "expected": "source availability must include every consumer group; retain all required arms",
+      "expandedStage": "operation",
+      "actual": "sh_indices",
+      "consumerStepIndex": 1,
+      "consumerOutputStage": "operation"
+    }
+  ],
+  "sourceIdentitiesExact": true,
+  "sourceIdentityOrderExact": true,
+  "sourceSubstitutionPerformed": false,
+  "remainingReadGroupErrors": 0,
+  "remainingUpdateGroupErrors": 4,
+  "reopenWithoutResend": true,
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9838,
+    "runs": 390,
+    "callsSha256": "122784a23d94d70db2f7456630f3ad6460fe58f39b239167957a463b6686bf26",
+    "runsSha256": "ca2a1de33da3124de0fd6d0e6c11300214cb94455c8d735efa57bed600e5b33e"
+  },
+  "rawResult": "tmp\\revision-sources-471-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "8f8d3fc3dedef437ee92b9f76cbcc1d8402d2dbe26f0c339c025fd9ed571d07f",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "next": "Focused model-authored fit-step revision with complete arm coverage and paired budgets; no full D3-v6 until valid metadata."
+}

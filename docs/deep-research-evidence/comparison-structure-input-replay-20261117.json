@@ -1,0 +1,91 @@
+{
+  "scope": "production synthesis node capture from saved task plus owned cached cost passages",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "scientificApproval": false,
+  "tokensAndTimeFitEstablished": false,
+  "readLimit": 12,
+  "retrievalQueriesAdded": 0,
+  "receipts": [
+    {
+      "profile": 1,
+      "cellCount": 4,
+      "axes": [
+        "表示与压缩机制",
+        "成本、存储画质与速度"
+      ],
+      "sameFrozenObligationIds": [
+        "ob-1-1",
+        "ob-1-2"
+      ],
+      "allocation": {
+        "version": 2,
+        "status": "compiled_unverified",
+        "maxDraftPoints": 9,
+        "remainingModelCalls": 12,
+        "generationAuditAndRepairCalls": 3,
+        "tokensAndTimeFitEstablished": false,
+        "scientificApproval": false,
+        "compiledPoints": 0
+      },
+      "costEvidencePresent": {
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55": [
+          "ev_0438b25a83742898258df594ee57a622edf1e9240caa7f6682f0114924c6b7b8"
+        ],
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35": [
+          "ev_508fe73d191535dddcf2006fc776292ff6e4dae48546ea26bee52c2d3ec93f25",
+          "ev_aca3cfb4e48ad7ec232699ab930f7d06b04cd4ad1fe9e529594aacc10b15ac15",
+          "ev_9df93669945967c750228acb26b794ec3c47febb3cae4006d7d59e347aba73c6",
+          "ev_c1ffc9c7e3cbaa2a0c4afe73d72cefbd530ec606f57ec419e4a2689f063e16c4"
+        ]
+      },
+      "inputBytes": 31913,
+      "inputSha256": "b728bac1edadc4648d2760333196e6d0119bb7e2792df18b2a4f635e6cc2ab24",
+      "resultCode": null,
+      "mockReturnedOnlyUnresolvedCells": true
+    },
+    {
+      "profile": 2,
+      "cellCount": 8,
+      "axes": [
+        "表示与压缩机制",
+        "额外处理成本",
+        "存储与画质",
+        "渲染速度"
+      ],
+      "sameFrozenObligationIds": [
+        "ob-1-1",
+        "ob-1-2"
+      ],
+      "allocation": {
+        "version": 2,
+        "status": "compiled_unverified",
+        "plannedStructurePoints": 12,
+        "batchedCallLowerBoundOnly": true,
+        "maxDraftPoints": 12,
+        "remainingModelCalls": 12,
+        "generationAuditAndRepairCalls": 3,
+        "tokensAndTimeFitEstablished": false,
+        "scientificApproval": false,
+        "compiledPoints": 0
+      },
+      "costEvidencePresent": {
+        "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf-v729ba31ab10aefcb-chunk-55": [
+          "ev_0438b25a83742898258df594ee57a622edf1e9240caa7f6682f0114924c6b7b8",
+          "ev_20d8c3bdd24611e46bea7c1dcba98d9090673b42e4e9eed5baf9e2391d70ddd8",
+          "ev_89971b9dd40d6e7a7752e3e716b6041d89805bbdc17b9ee53266a0805deb0425"
+        ],
+        "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-35": [
+          "ev_508fe73d191535dddcf2006fc776292ff6e4dae48546ea26bee52c2d3ec93f25",
+          "ev_aca3cfb4e48ad7ec232699ab930f7d06b04cd4ad1fe9e529594aacc10b15ac15",
+          "ev_9df93669945967c750228acb26b794ec3c47febb3cae4006d7d59e347aba73c6",
+          "ev_c1ffc9c7e3cbaa2a0c4afe73d72cefbd530ec606f57ec419e4a2689f063e16c4"
+        ]
+      },
+      "inputBytes": 31892,
+      "inputSha256": "757d88ce07a39c1c5d166cf0070df3643ea77e0e3bc9147fb61f3c0458fe0cf2",
+      "resultCode": null,
+      "mockReturnedOnlyUnresolvedCells": true
+    }
+  ]
+}

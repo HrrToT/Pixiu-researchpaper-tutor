@@ -1,0 +1,29 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v47",
+  "sourcePayloadSha256": "4d1ea9a12eeeb85168622038c0475bfe3f18f132f90cfe96d7f4ef35044f3325",
+  "checkOnly": false,
+  "actualModelCalls": 2,
+  "componentCallStatuses": [
+    "succeeded",
+    "succeeded"
+  ],
+  "componentTokens": [
+    2873,
+    3557
+  ],
+  "scopeObservation": {
+    "status": "passed",
+    "executionState": null,
+    "adviceMemoryMode": null
+  },
+  "deploymentAdvice": {
+    "status": "passed",
+    "executionState": null,
+    "adviceMemoryMode": "test_first"
+  },
+  "unknownSettingOmittedFromObservationOnly": true,
+  "crossPaperPropositionRetained": true,
+  "completeCrossPaperBoundaryReviewed": false,
+  "productionReportChanged": false,
+  "scientificAcceptanceEstablished": false
+}

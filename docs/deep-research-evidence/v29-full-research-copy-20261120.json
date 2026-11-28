@@ -1,0 +1,43 @@
+{
+  "allRecoveredRowsExact": true,
+  "startupPassed": true,
+  "readOnlyAuthority": true,
+  "network": "none",
+  "modelCalls": 0,
+  "history": {
+    "deep_research_runs_v2": {
+      "rows": 425,
+      "sha256": "142fdd7c472e56a6ec02e96fe01ef153e536a30202b07e9163b83f96e7fd8531"
+    },
+    "deep_research_calls_v2": {
+      "rows": 11173,
+      "sha256": "0455e6c735766839b2ce16fc3109e62d6545d0d719fc7bb5e427348607d88381"
+    },
+    "deep_research_actions_v2": {
+      "rows": 463,
+      "sha256": "0485e3e0925825ce8729ee2a5e1f14cfbd85295f9a3ec49e3b0d2539eb2b9be8"
+    },
+    "deep_research_publications_v2": {
+      "rows": 283,
+      "sha256": "f033bfe2ca5f91ce8ae3fd48cb8b2fdedc05b9be4fab40c5cfac80bc09bd8d07"
+    },
+    "deep_research_outbox_v2": {
+      "rows": 283,
+      "sha256": "0979a4507937c6273f5b56d35525e487079f9280a5ed15ecfcbad0006d03a29a"
+    },
+    "runStatuses": {
+      "completed": 283,
+      "failed": 125,
+      "paused": 17
+    }
+  },
+  "pdfVersions": {
+    "pypdf": "6.21.4",
+    "fonttools": "4.68.0"
+  },
+  "originalServiceRunning": true,
+  "originalServiceSwitched": false,
+  "frozenBackendCommit": "98c0bb1d3774e014374078772ef2612470dcd540",
+  "verifiedSourceFiles": 514,
+  "candidateImage": "pixiu-research-pdf-proof:20261120"
+}

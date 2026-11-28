@@ -1,0 +1,66 @@
+{
+  "asOf": "2026-11-16",
+  "cases": [
+    {
+      "case": "SHARED-REPRESENTATION-LABELLED-SLOTS-v1",
+      "proof": "docs/deep-research-evidence/shared-representation-labelled-slots-v1-20261116.json",
+      "usage": {
+        "total_tokens": 16157,
+        "input_tokens": 10013,
+        "output_tokens": 6144
+      },
+      "nativeSchemaStatus": "not_checked_output_status",
+      "accepted": false
+    },
+    {
+      "case": "SHARED-REPRESENTATION-NAMED-TARGETS-v1",
+      "proof": "docs/deep-research-evidence/shared-representation-named-targets-v1-20261116.json",
+      "usage": {
+        "total_tokens": 14790,
+        "input_tokens": 10186,
+        "output_tokens": 4604
+      },
+      "nativeSchemaStatus": "valid",
+      "accepted": false
+    },
+    {
+      "case": "SHARED-REPRESENTATION-WHOLE-TENSORS-v1",
+      "proof": "docs/deep-research-evidence/shared-representation-whole-tensors-v1-20261116.json",
+      "usage": {
+        "total_tokens": 13080,
+        "input_tokens": 10170,
+        "output_tokens": 2910
+      },
+      "nativeSchemaStatus": "invalid",
+      "accepted": false
+    }
+  ],
+  "providerCalls": 3,
+  "totalActualTokensAcrossSeparateDiagnostics": 44027,
+  "wholeCaseBudgetProven": false,
+  "automaticRetries": 0,
+  "newUnknownCalls": 0,
+  "numericDefaultsAdded": false,
+  "scientificContentCredit": 0,
+  "independentAcceptanceCredit": 0,
+  "productWireChanged": false,
+  "newReceiptSourceCommit": "f5e9502fe",
+  "columnProbe": {
+    "modelCalls": 0,
+    "proposedInputBytesLowerBoundWithoutColumnLegend": 32070,
+    "maximumBytes": 32000,
+    "fits": false,
+    "shipped": false
+  },
+  "officialReferences": [
+    {
+      "url": "https://api-docs.deepseek.com/api/create-response/",
+      "finding": "Documents text.format json_schema/name/schema, without a strict text-format parameter."
+    },
+    {
+      "url": "https://api-docs.deepseek.com/guides/tool_calls/",
+      "finding": "Documents strict Beta function tools at /beta; not assumed interchangeable with the current Responses schema path."
+    }
+  ],
+  "next": "Clarify and validate model-authored numeric representation, actual source fields and full tensor layout; then prove combined initialization/review feasibility. Do not bypass schema errors or substitute string dimensions with inferred values."
+}

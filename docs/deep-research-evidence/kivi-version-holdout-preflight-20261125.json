@@ -1,0 +1,21 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "definitionHash": "7bf0e9effb4c112f6ec2bcfce3e3831d92880f8ccad7e15acecc556583288205",
+  "reviewedPages": [
+    7,
+    8
+  ],
+  "liveInventory": {
+    "runs": 463,
+    "runHits": 0,
+    "indexFields": 14738,
+    "indexHits": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 169,
+  "receiptOrRepoMatches": 0,
+  "previewVerified": true,
+  "modelCalls": 0,
+  "materialImports": 0,
+  "independentCredit": 0
+}

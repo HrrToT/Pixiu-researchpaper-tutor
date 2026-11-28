@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-07",
+  "budgetProfile": "standard",
+  "materials": {},
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "Comparison and conditional selection, no executable experiment requested."
+    },
+    "independence": "New attention-computation topic, not a renamed GOF/PGSR or old D2 case. Before preparation, no focal work/question/version cache, owned-index identity or body title mention found. Evaluator read specified primary PDFs to freeze criteria; no gold facts are injected into app request. First execution only; retire if used for debugging.",
+    "coverageRelation": "Fresh H2-style multi-paper comparison with H3 external acquisition, same multidimensional mechanism/performance/resource/conditions/selection boundary and standard budget. Does not reconcile G1N-v10 or historical D2/D3/H2F/H5F unknowns and does not by itself prove experiment or release gates.",
+    "sourceAnchors": [
+      {
+        "paper": "arxiv:2205.14135v1",
+        "reference": "https://arxiv.org/pdf/2205.14135v1",
+        "sha256": "be21f20c749ba8443988b479bece93617dd37b214ea9099413f951f756d4104f",
+        "pages": [
+          4,
+          5,
+          7,
+          9,
+          10
+        ],
+        "expected": "Dense exact algorithm tiles Q/K/V into SRAM, combines online-softmax statistics and recomputes backward intermediates, reducing HBM traffic without making dense arithmetic linear. Theorem1: O(N^2 d) FLOPs, O(N) additional memory beyond inputs/output. Example Table1 BERT-large: 20.0±1.5 vs17.4±1.4 minutes, target72.0% masked-language accuracy,10runs,8A100; seq512 in abstract. Other faithfully owned examples are allowed; kernel benchmark on one40GB A100 with dropout/padding is distinct from end-to-end BERT/GPT."
+      },
+      {
+        "paper": "arxiv:2307.08691v1",
+        "reference": "https://arxiv.org/pdf/2307.08691v1",
+        "sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+        "pages": [
+          5,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "expected": "FA2 reduces non-matmul work, parallelizes sequence blocks and partitions forward warps by Q with shared K/V; backward still has synchronization. Dense exact semantics retained. Kernel tests A10080GB SXM4 vary512–16k length/head64or128/causal masks. Table1 GPT3-2.7B8k on8A100 reports80/175/225TFLOPs/s/GPU withoutFA/FA1/FA2;225/72% is end-to-end,230/73% is kernel. Other exact owned examples allowed. p11 contains self-comparison typo; p10/Table1 clarify FA1 baseline; do not blindly turn a typo into measured self-speedup."
+      }
+    ],
+    "hardFailures": [
+      "指定v1换成其他版本",
+      "把dense exact attention说成通过近似或block-sparse获得的线性计算",
+      "把额外attention工作空间当整个模型参数或训练全内存",
+      "关键数值/单位/任务/硬件/基线错绑",
+      "把FA2比较表中的FA1行当FA1原论文自报",
+      "把attention kernel速度当端到端训练提升",
+      "跨不同测量直接给普遍速度倍数或无条件冠军",
+      "仅摘要却宣称全文片段证据",
+      "超过18调用/100000Token/360秒",
+      "把未知请求或未审核结论计为通过"
+    ],
+    "transportChecks": [
+      "exact_versions",
+      "two_fulltext_sources",
+      "bounded_acquisition",
+      "per_claim_own_source_bindings"
+    ],
+    "freshnessProof": "deep-research-evidence/independent-attention-preparation-freshness-20261107.json",
+    "contentFreshnessProof": "deep-research-evidence/independent-attention-content-freshness-20261107.json",
+    "referencePreparationProof": "deep-research-evidence/independent-attention-reference-preparation-20261107.json"
+  },
+  "cases": [
+    {
+      "id": "FA1N",
+      "split": "holdout",
+      "materials": [],
+      "kind": "paper_comparison",
+      "policy": "external_only",
+      "question": "请联网读取 FlashAttention（arXiv:2205.14135v1）与 FlashAttention-2（arXiv:2307.08691v1）两篇原文，只用这两篇。面向知道Transformer概念但没读过论文的人，比较它们的加速机制、计算复杂度与额外显存开销。各从本篇原文取一个具体性能例子，注明硬件、任务或序列设置、指标和基线；区分注意力算子与端到端训练，以及作者自报与另一篇表中的对照。证据不足的条件明确保留，不能据跨论文数字直接给普遍速度排名。最后给出有条件的选择建议。限500字。",
+      "required": [
+        "两篇指定v1正文取得且关键引用可回查",
+        "解释FA1与FA2各自实际动作及加速原因，不只是名称/摘要",
+        "区分算术复杂度与额外attention空间的量级、范围",
+        "两篇各自一个支持充分的数值性能例子，保留硬件/工作负载/指标/基线",
+        "区分算子和端到端，以及原作者自报和另一篇论文比较表",
+        "可比性与未明确条件如实保留，不把未选中证据当全文缺席",
+        "500字内有证据依据的有条件建议"
+      ],
+      "forbidden": [
+        "指定v1换成其他版本",
+        "把dense exact attention说成通过近似或block-sparse获得的线性计算",
+        "把额外attention工作空间当整个模型参数或训练全内存",
+        "关键数值/单位/任务/硬件/基线错绑",
+        "把FA2比较表中的FA1行当FA1原论文自报",
+        "把attention kernel速度当端到端训练提升",
+        "跨不同测量直接给普遍速度倍数或无条件冠军",
+        "仅摘要却宣称全文片段证据",
+        "超过18调用/100000Token/360秒",
+        "把未知请求或未审核结论计为通过"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "FA1N": "608ba9ae111c92db1361d7b0b45b5544da600043034f6875a18a0a0a510e894c"
+  }
+}

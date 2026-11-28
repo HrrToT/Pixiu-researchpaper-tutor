@@ -1,0 +1,160 @@
+{
+  "sourceCommit": "6e19a212",
+  "modelCalls": 0,
+  "archivedPayloadsUnchanged": true,
+  "scientificContentAccepted": false,
+  "results": [
+    {
+      "case": "AD1N-v25",
+      "claimId": "c1",
+      "identicalRequests": true,
+      "results": [
+        {
+          "newPolicy": false,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "failed",
+            "reasonSha256": "13b0b85c45723a265fc69a57a33bb5c4669c516765ddf8cf4d8a61041ba8c1a0",
+            "bindingCount": 2,
+            "newNumberCount": 0,
+            "unboundNewNumberCount": 0,
+            "errors": [
+              "diagnostic_statement_not_in_reason"
+            ]
+          }
+        },
+        {
+          "newPolicy": true,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "failed",
+            "reasonSha256": "13b0b85c45723a265fc69a57a33bb5c4669c516765ddf8cf4d8a61041ba8c1a0",
+            "bindingCount": 2,
+            "newNumberCount": 0,
+            "unboundNewNumberCount": 0,
+            "errors": [
+              "diagnostic_statement_not_in_reason"
+            ],
+            "sourceParameterIdentityContractVersion": 1
+          }
+        }
+      ]
+    },
+    {
+      "case": "AD1N-v25",
+      "claimId": "c2",
+      "identicalRequests": true,
+      "results": [
+        {
+          "newPolicy": false,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "be844414e1a4b856b0059811311cde46872d46ee3da293681d4fd5eb1c9f590d",
+            "bindingCount": 2,
+            "newNumberCount": 1,
+            "unboundNewNumberCount": 1,
+            "errors": [
+              "new_diagnostic_numbers_not_bound"
+            ]
+          }
+        },
+        {
+          "newPolicy": true,
+          "status": "passed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "be844414e1a4b856b0059811311cde46872d46ee3da293681d4fd5eb1c9f590d",
+            "bindingCount": 2,
+            "newNumberCount": 0,
+            "unboundNewNumberCount": 0,
+            "errors": [],
+            "sourceParameterIdentityContractVersion": 1
+          }
+        }
+      ]
+    },
+    {
+      "case": "AD1N-v27",
+      "claimId": "c1",
+      "identicalRequests": true,
+      "results": [
+        {
+          "newPolicy": false,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "failed",
+            "reasonSha256": "c1a6061e468569de4d60f3bd3d9b378b90dbbc7f79bb86f4552cc713641d028d",
+            "bindingCount": 1,
+            "newNumberCount": 1,
+            "unboundNewNumberCount": 1,
+            "errors": [
+              "new_diagnostic_numbers_not_bound"
+            ]
+          }
+        },
+        {
+          "newPolicy": true,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "failed",
+            "reasonSha256": "c1a6061e468569de4d60f3bd3d9b378b90dbbc7f79bb86f4552cc713641d028d",
+            "bindingCount": 1,
+            "newNumberCount": 1,
+            "unboundNewNumberCount": 1,
+            "errors": [
+              "new_diagnostic_numbers_not_bound"
+            ],
+            "sourceParameterIdentityContractVersion": 1
+          }
+        }
+      ]
+    },
+    {
+      "case": "AD1N-v27",
+      "claimId": "c2",
+      "identicalRequests": true,
+      "results": [
+        {
+          "newPolicy": false,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "a627b3eba2f4fb7d5d0442b7a7535bfd86ced732c54e836ab1eba404ffcb2b27",
+            "bindingCount": 1,
+            "newNumberCount": 0,
+            "unboundNewNumberCount": 0,
+            "errors": [
+              "diagnostic_source_not_bound"
+            ]
+          }
+        },
+        {
+          "newPolicy": true,
+          "status": "failed",
+          "diagnosticAudit": {
+            "version": 1,
+            "reportedStatus": "passed",
+            "reasonSha256": "a627b3eba2f4fb7d5d0442b7a7535bfd86ced732c54e836ab1eba404ffcb2b27",
+            "bindingCount": 1,
+            "newNumberCount": 0,
+            "unboundNewNumberCount": 0,
+            "errors": [
+              "diagnostic_source_not_bound"
+            ],
+            "sourceParameterIdentityContractVersion": 1
+          }
+        }
+      ]
+    }
+  ],
+  "assertionsPassed": true,
+  "boundary": "Offline replay of saved reviewer responses with identical requests. Corrected a parameter-index false positive only; unchanged failures remain unresolved. No archived result or scientific acceptance was upgraded."
+}

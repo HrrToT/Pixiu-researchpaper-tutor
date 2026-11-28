@@ -1,0 +1,16 @@
+{
+  "httpStatus": 200,
+  "modelCalls": 0,
+  "automaticRetry": false,
+  "balance": {
+    "is_available": false,
+    "balance_infos": [
+      {
+        "currency": "CNY",
+        "total_balance": "-0.19",
+        "granted_balance": "0.00",
+        "topped_up_balance": "-0.19"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "sameConfiguredSystemProxy": true,
+  "results": [
+    {
+      "host": "export.arxiv.org",
+      "requests": 1,
+      "status": 200,
+      "contentType": "application/atom+xml; charset=utf-8",
+      "sampleBytes": 64,
+      "seconds": 1.64
+    },
+    {
+      "host": "arxiv.org",
+      "requests": 1,
+      "status": 200,
+      "contentType": "application/pdf",
+      "sampleBytes": 64,
+      "seconds": 1.082
+    }
+  ],
+  "modelCalls": 0,
+  "automaticRetry": false
+}

@@ -1,0 +1,138 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_d2_owned_speed_verification_and_matched_table_read_replay",
+  "sourceCommit": "dc3faf4a25d1ac5dfbc57b71930bfdfa6ffef544",
+  "runId": "dr_run_1d9d303b693f57779accbe885496c4a1",
+  "outcome": "partial",
+  "providerRequests": 17,
+  "modelRoute": {
+    "gpt-6-luna": 5,
+    "gpt-6.1-terra": 12
+  },
+  "tokens": 79321,
+  "seconds": 146.0,
+  "verifiedSpeedCell": "cmp_6_0",
+  "pdfChecks": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 9,
+    "literalCitationOccurrences": {
+      "true": 27
+    },
+    "sourceTableCells": {}
+  },
+  "remainingAnswerGaps": [
+    {
+      "obligationId": "o1",
+      "question": "Compare the representation, compression mechanism, and additional processing costs in the two specified versions.",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "Identify each version’s documented representation and compression operations, distinguishing the original method from the compressed deployment approach.",
+        "Report documented additional processing costs and the operations to which they apply; distinguish reported facts from any inference."
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "c1",
+          "c2"
+        ],
+        "aspectIds": [
+          "criterion:c1",
+          "criterion:c2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "requested_numeric_example",
+      "question": "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。",
+      "missingEvidence": "尚未形成通过核验的联合比较结论",
+      "stage": "answer",
+      "missingAspects": [
+        "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "matched_example"
+        ],
+        "aspectIds": [
+          "criterion:matched_example"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "missingJointConclusion": true
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "数字只选一组来源和口径明确的基线对照作例子"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "数字只选一组来源和口径明确的基线对照作例子",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "factualRejections": [
+    {
+      "claimId": "cmp_3_0",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "visibleStageTables": 0,
+  "pairedTableReplay": {
+    "oldSelection": [
+      "src_7ac70d6917fef60629b66a6cedfc93db56d2af018671c647d8fa8280dec90491",
+      "src_6ff3e97e2e9ef46035402f59ca57fafbf8f09d4e6912aacb89920f49bac7f1ec",
+      "src_50e4bd513583a59466b418619b4802c12bc4b1b51f4ea4f24e8e9513e39564fc",
+      "src_a03178602fcd7abf1553ffd4a435565352c2ffc63dd204d7f3edfecd8931c7cc",
+      "src_c4469d86e2535a0e6c97e09a48adce2d2f5054372a3a7b7e71f7b2edad9ba6ee",
+      "src_a2bf99298e76631faa666f9dba1340f12a8895043ee3abb6d26b0958a0a127e8"
+    ],
+    "newSelection": [
+      "src_59c7aa5afb7b4bad33bbc3b39abf28984263644453a394a881fbf390b915c752",
+      "src_a2bf99298e76631faa666f9dba1340f12a8895043ee3abb6d26b0958a0a127e8",
+      "src_7ac70d6917fef60629b66a6cedfc93db56d2af018671c647d8fa8280dec90491",
+      "src_6ff3e97e2e9ef46035402f59ca57fafbf8f09d4e6912aacb89920f49bac7f1ec",
+      "src_50e4bd513583a59466b418619b4802c12bc4b1b51f4ea4f24e8e9513e39564fc",
+      "src_a03178602fcd7abf1553ffd4a435565352c2ffc63dd204d7f3edfecd8931c7cc"
+    ],
+    "matchedTable": "src_59c7aa5afb7b4bad33bbc3b39abf28984263644453a394a881fbf390b915c752",
+    "matchedRetrainingNote": "src_a2bf99298e76631faa666f9dba1340f12a8895043ee3abb6d26b0958a0a127e8",
+    "preservedOriginalSpeedSource": "src_6ff3e97e2e9ef46035402f59ca57fafbf8f09d4e6912aacb89920f49bac7f1ec",
+    "physicalTablePage": 6,
+    "readLimit": 6,
+    "newModelCalls": 0,
+    "scientificAcceptance": false
+  },
+  "candidateRegressionPassed": 259,
+  "workspaceDeliveryExercised": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-speed-read-fresh-20261128/intent.json": "f94a48bddfb212aa60f1d517d73807fc9085b14f1994aa8d519038f2a21cf11f",
+    "tmp/openai-d2-speed-read-fresh-20261128/run.json": "b8144b4cb77b0dfbc479e98c18c0a4f011f7c779965a62f9e989f3ee63dc5369",
+    "tmp/openai-d2-speed-read-fresh-20261128/result.json": "df8122c099198691fd6434875aaaf527d7840ee29a5d6d3054affaf9d673659b",
+    "tmp/openai-d2-speed-read-fresh-20261128/calls.json": "eb691f6921f9f94c67d34307470f2ee2681f9a0a4bea45507d6b54caff3c6eaf",
+    "tmp/openai-d2-speed-read-fresh-20261128/provider.jsonl": "53078def74ac490ace6c030f81493c809bcb5f3276fe00f44340c6da1148542b",
+    "tmp/openai-d2-speed-read-fresh-20261128/independent-pdf-check.json": "a84e0984fcbd76bc97ba7329fc8c19b84e538bfe23baba59eae66601f5867739",
+    "tmp/openai-d2-speed-read-fresh-20261128/selected-benchmark-table-replay.json": "a9bf9b987af4d0f175948b363ad4afff276b55cad8ffdc4ac3f9bb510b9a3104"
+  }
+}

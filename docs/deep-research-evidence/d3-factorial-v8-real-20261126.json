@@ -1,0 +1,52 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v8",
+  "sourceCommit": "c6de0d1037c9772bdd884de479ac47e92f4fc6f6",
+  "runId": "dr_run_e59899db3fc1511e8a4d27845a735818",
+  "status": "failed",
+  "errorCode": "invalid_shared_experiment_response",
+  "automaticRetry": false,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 2,
+    "assess_relevance": 3,
+    "plan_experiment_shared": 1
+  },
+  "settledTokens": 35791,
+  "elapsedSeconds": 93.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "reportVersionId": null,
+  "originalServiceAndHistoryVerified": true,
+  "restorationSha256": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24",
+  "receiptSha256": {
+    ".payload.json": "61f7dc9cdc95d7e1151d78f13bcec210a369573d73a8b12508c6f746c9f3cdef",
+    ".calls.json": "31831a51094e83af1fd8cfa76bdf8dbb4f35829e501939db88bdcdd470670740",
+    ".execution.json": "58d175969300d00f4f395a56e17db575db0ef92a99e63505d758c09630ab3d77",
+    ".result.json": "2921dba847cf781868184b3adb5a93a70a0946799d9c5d97b3420c4676548b8f"
+  },
+  "scientificContentAccepted": false,
+  "sharedExperimentProfile": 6,
+  "generationStatus": "invalid_response",
+  "generationInputBytes": 31127,
+  "wireIssues": [
+    {
+      "code": "plan.wire_schema",
+      "path": "/steps/2/creates"
+    }
+  ],
+  "transportIssues": [
+    {
+      "rule": "maxItems",
+      "path": "/steps/2/creates"
+    }
+  ],
+  "cloneStepId": "clone_arms",
+  "cloneGroupIds": [
+    "00",
+    "10",
+    "01",
+    "11"
+  ],
+  "expandedCloneAssets": 36,
+  "scientificReviewReached": false
+}

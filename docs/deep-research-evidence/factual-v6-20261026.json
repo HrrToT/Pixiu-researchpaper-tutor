@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "c6a66cbd",
+  "promptVersion": "dr-v2.20261026.304",
+  "factualReasoningContractVersion": 6,
+  "offlineChecks": {
+    "passed": 703,
+    "testFiles": 43,
+    "elapsedSeconds": 65.42,
+    "sourceAndTestsStable": true,
+    "providerCalls": 0
+  },
+  "legacyAndWireAudit": {
+    "legacyCombinationsUnchanged": 360,
+    "legacyVersions": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "realCase": "D1-v30",
+    "modelCalls": 4,
+    "settledTokensFromWire": 20779,
+    "synthesisFinishReason": "length",
+    "synthesisInputTokens": 5905,
+    "synthesisOutputTokens": 8192,
+    "originalOutputLimit": 8192,
+    "rawPartialJsonBytes": 1992,
+    "rawPartialJsonSha256": "cd7cee786ede2a16c92911ae6b0b0cd19836d1a0d4a1010855f38e60fc38f4d8",
+    "partialContainsScopeExpressionPrefix": true,
+    "completeScopeExpressionValidated": false,
+    "automaticRetries": 0,
+    "providerCallsInThisReplay": 0,
+    "boundary": "Truncation is confirmed; no causal proof that the new grammar caused it. Lower-effort generation quality and latency need new real evidence. Existing source cases are not rerun or reinterpreted."
+  },
+  "newConfigurationProviderCases": 0,
+  "boundary": "Only eligible factual synthesis effort changes high to low. Output limit/token reservation/prompt/repair/review and old v1-v5 options remain unchanged. New real generation and scientific quality not yet verified; failed D1-v30 remains failed."
+}

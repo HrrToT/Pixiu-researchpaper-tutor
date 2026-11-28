@@ -1,0 +1,24 @@
+{
+  "explicitConditions": {
+    "模型": "Llama-2-7B-4bit",
+    "硬件": "M2-Ultra",
+    "线程": "单线程"
+  },
+  "pages": {
+    "v1": 11,
+    "v2": 12
+  },
+  "exactBoundCells": 12,
+  "visibleCharacters": 352,
+  "numericPrecheckPassed": true,
+  "providerCalls": 0,
+  "liveGenerationVerified": false,
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "controlled_scope_replay",
+  "liveRateRecoveryReceipt": "tmac-rate-finalization-live-20261127.json",
+  "restoredAcrossBothPDFCaptions": true,
+  "targetedTestsPassed": 96,
+  "offlineCompletionGateAcceptedSavedRateClaim": true,
+  "replaySha256": "c0b115a98cf674e759c09ef53a3e12b3ff4aa8a342af6d6ae9836e5dda85bebd",
+  "independentHoldoutCredit": 0
+}

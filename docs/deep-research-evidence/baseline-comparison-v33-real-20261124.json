@@ -1,0 +1,77 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v33",
+  "runId": "dr_run_97c7494ceffa5c98abbf54099279cbb6",
+  "sourceCommit": "75c8d5e92d8d3dfadde53672595c349663b0a822",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "initialCallsBeforeGeneration": 5,
+  "actualModelCalls": 13,
+  "modelCallsByStep": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify": 2,
+    "repair_claims": 2,
+    "verify_answer_coverage": 1
+  },
+  "providerReportedTokens": 78401,
+  "elapsedSeconds": 158.0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 23725,
+      "requiredBundles": 12,
+      "targets": 4,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23994,
+      "requiredBundles": 12,
+      "targets": 4,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23819,
+      "requiredBundles": 4,
+      "targets": 2,
+      "status": "compiled_unverified"
+    }
+  ],
+  "compiledPoints": 8,
+  "generationReplay": {
+    "synthesesReplayed": 3,
+    "jointRejections": [
+      "joint_example_requires_marked_baseline_and_protocol_note",
+      "joint_advice_requires_device_memory_test_first"
+    ],
+    "globalProtocolTable": "E9",
+    "globalProtocolNote": "E16",
+    "protocolNotePresentInJointInput": false,
+    "noteFirstCounterfactualBytes": 23984,
+    "noteFirstCounterfactualKeepsMandatoryEvidence": true
+  },
+  "initialVerificationAccepted": 3,
+  "initialVerificationRejections": {
+    "cmp_0_0": "numeric_mismatch",
+    "cmp_4_0": "missing_table_bindings",
+    "cmp_3_0": "semantic_unresolved",
+    "cmp_5_0": "semantic_unresolved",
+    "cmp_7_0": "semantic_unresolved"
+  },
+  "wholeAnswerAuditCalled": true,
+  "coverageGapsClassifiedAsCoherenceIssue": true,
+  "publicationHeld": true,
+  "visibleVerifiedConclusions": 0,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptHashes": {
+    ".payload.json": "6861238f49d8183885fe612ffd2ca467f87e54c7cf684f4df9500a54b431c172",
+    ".calls.json": "0c89d8ee41708b62a981de53de776674a47f28345c5923d082a9c9521aedef98",
+    ".result.json": "36da0e4edb5fc0eb0d5cbf155fe6f7e9e2a537d05b7dd01b18b959dd2bed705a",
+    ".execution.json": "13f492b0517c9a8b99d07e5e0cb4468c850935256eef9becc353caa0f69fda84"
+  }
+}

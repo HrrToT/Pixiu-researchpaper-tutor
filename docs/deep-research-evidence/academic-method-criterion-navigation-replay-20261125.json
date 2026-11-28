@@ -1,0 +1,20 @@
+{
+  "prior": {
+    "池化在其中做了什么": false,
+    "最后缓存保留哪些内容": false
+  },
+  "current": {
+    "池化在其中做了什么": true,
+    "最后缓存保留哪些内容": true
+  },
+  "installedImplementation": true,
+  "priorRequestBytes": 7803,
+  "sourcePolicy": "external_only",
+  "modelCalls": 0,
+  "scientificAcceptanceEstablished": false,
+  "currentRequestBytes": 14081,
+  "savedRunChanged": false,
+  "sourceCaseReusedForDevelopment": true,
+  "independentAcceptanceRequiresNewCase": true,
+  "targetedTestsPassed": 68
+}

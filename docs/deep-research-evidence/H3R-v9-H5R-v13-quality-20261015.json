@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-15",
+  "sourceCommit": "55c8e9c",
+  "promptVersion": "dr-v2.20261015.92",
+  "runs": [
+    {
+      "case": "H3R-v9",
+      "runId": "dr_run_6af877fb349f542585bb5dc04367cc9f",
+      "status": "completed",
+      "outcome": "partial",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 7,
+        "maxModelCalls": 18,
+        "tokens": 24548,
+        "maxTokens": 100000,
+        "externalSearches": 1,
+        "fulltextFetches": 1,
+        "elapsedSeconds": 290.0,
+        "cost": null
+      },
+      "errorCode": "",
+      "raw": "tmp/dr-acceptance-receipts/H3R-v9.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H3R-v9.calls.json",
+      "contentAccepted": false,
+      "independentHoldoutEligible": false,
+      "review": {
+        "status": "not_accepted",
+        "finalCoverage": "checked",
+        "accepted": "Only the motivation claim is published; training claim is rejected.",
+        "finding": "The rejected training claim promises correct-depth probability improvement beyond its cited passages. Published motivation still relies on unexplained technical terms.",
+        "repairStatus": "skipped_time",
+        "timeEvidenceSeconds": {
+          "external_fulltext": 130,
+          "verify": 109,
+          "synthesize_compact": 19
+        },
+        "wallClockLimitSeconds": 360,
+        "minimumRepairTimeSeconds": 90,
+        "scores": {
+          "目标回应": 2,
+          "证据支持": 4,
+          "条件完整": 3,
+          "综合价值": 2,
+          "可执行性": null,
+          "可读性": 3
+        },
+        "scoreBoundary": "Evidence support score applies to the actually published single claim, not the rejected training explanation."
+      }
+    },
+    {
+      "case": "H5R-v13",
+      "runId": "dr_run_73d13200f50e54769f6b2e0ccb82fc4c",
+      "status": "failed",
+      "outcome": "none",
+      "budget": {
+        "profile": "standard",
+        "modelCalls": 4,
+        "maxModelCalls": 18,
+        "tokens": 14081,
+        "maxTokens": 100000,
+        "externalSearches": 0,
+        "fulltextFetches": 0,
+        "elapsedSeconds": 48.0,
+        "cost": null
+      },
+      "errorCode": "invalid_synthesis_response",
+      "raw": "tmp/dr-acceptance-receipts/H5R-v13.payload.json",
+      "calls": "tmp/dr-acceptance-receipts/H5R-v13.calls.json",
+      "contentAccepted": false,
+      "independentHoldoutEligible": false,
+      "review": {
+        "status": "no_final_answer",
+        "finding": "Complete JSON array mixes seven section rows and nine claim rows; root container is invalid for the report contract.",
+        "planning": "New data prerequisite separates proposed settings; the model still emits an auxiliary original-view/resolution question. Final scope behavior is not evaluated because generation failed.",
+        "scores": null,
+        "boundary": "Raw draft and ledger preserved; no final content score or independent credit."
+      }
+    }
+  ],
+  "knownSettledModelCalls": 11,
+  "knownSettledTokens": 38629,
+  "cost": null,
+  "boundary": "Each submitted once; known terminal outcomes. Old seven unknowns remain unretried."
+}

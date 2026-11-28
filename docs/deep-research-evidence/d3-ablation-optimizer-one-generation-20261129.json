@@ -1,0 +1,79 @@
+{
+  "scope": "Single tracked OpenAI generation with archived D3 evidence, then replay of the unchanged response.",
+  "sourceCandidate": "4a31f53aa1f0ac4ba0c6a77c2965f698807ab658",
+  "caseRunId": "dr_d3_ablation_optimizer_20261129",
+  "model": "gpt-6.1-terra",
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 13489,
+    "input_tokens": 7213,
+    "output_tokens": 6276,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 7210
+  },
+  "inputBytes": 31913,
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "automaticRetries": 0,
+  "providerArtifacts": {
+    "run.json": {
+      "path": "tmp/openai-d3-ablation-optimizer-20261129/run.json",
+      "sha256": "1f0b2b0fbb9d07c9ca013935e9859d47f8f7d5c36fd1fd1567650145d7dab0f3"
+    },
+    "calls.json": {
+      "path": "tmp/openai-d3-ablation-optimizer-20261129/calls.json",
+      "sha256": "5b34e3473aae5dfbea5ba104fa8c619bd84e6c1ae8d75b6b8ac88a2944b395c0"
+    },
+    "result.json": {
+      "path": "tmp/openai-d3-ablation-optimizer-20261129/result.json",
+      "sha256": "338553c1702fa14bc2ac702f94b936b3d5d46c83f235db3f79d7ef092c355043"
+    }
+  },
+  "originalStageStatus": "invalid_response",
+  "originalIssues": [
+    {
+      "code": "plan.wire_schema",
+      "path": "/analysis"
+    },
+    {
+      "code": "plan.wire_schema",
+      "path": "/"
+    }
+  ],
+  "offlineReplay": {
+    "modelCalls": 0,
+    "sameRequest": true,
+    "sameRawResponse": true,
+    "responseDigest": "b704abb0bfb02b3154d854e9a13f6340597f8d232a2cec7cacb1b196a55bc4ea",
+    "discardedEmptyFields": [
+      "/extra",
+      "/analysis/unused"
+    ],
+    "groupCount": 4,
+    "stageStatus": "awaiting_scientific_review",
+    "hardIssues": [
+      {
+        "claimId": "shared_fact_4",
+        "reason": "absence_not_established",
+        "factId": "f5",
+        "evidenceRefs": [
+          "E6",
+          "E7"
+        ]
+      }
+    ],
+    "scientificReviewBatchBytes": [
+      20297,
+      35921,
+      35177
+    ]
+  },
+  "factOnlyRepairPreflight": {
+    "promptBytes": 16001,
+    "outputLimitTokens": 6144,
+    "modelCalls": 0
+  },
+  "targetedTestsPassed": 305,
+  "scientificApproval": false,
+  "published": false
+}

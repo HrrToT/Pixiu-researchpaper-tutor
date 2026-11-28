@@ -1,0 +1,179 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "split": "development",
+  "independentCredit": 0,
+  "initialCandidate": "a16e8697b2b14326d77275c0b64dbfcfeb1ed366",
+  "revisionCandidate": "ad64b2331462d669d9df06fbe1d8b4a5c6f6b0c9",
+  "reviewCapacityFixCandidate": "7f6b2b6096eabe9aaeabd7d2fbba108ee2cd449e",
+  "initialRunId": "dr_d3_separate_shared_fit_20261128",
+  "revisionRunId": "dr_d3_design_only_repair_20261128",
+  "standardBudget": {
+    "modelCalls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "initialTransferredPlanningCalls": 5,
+  "initialTransferredPlanningTokens": 17377,
+  "planningElapsedSeconds": 44,
+  "initialGenerationAndScienceCalls": 5,
+  "initialGenerationAndScienceTokens": 47472,
+  "initialGenerationAndScienceElapsedSeconds": 125.03,
+  "initialScience": {
+    "passedChecks": 22,
+    "totalChecks": 25,
+    "factsPassed": 8,
+    "failedChecks": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/states/2/representation",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/3/operation/action",
+          "/data/inputs/2/preparation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E7",
+            "field": "quote"
+          }
+        ],
+        "reason": "训练 SfM 初始化所需点的 RGB 及其提取或聚合规则未定义，无法确定初始 SH 参数；测试相机仅称使用冻结训练 SfM 内参，未定义多相机内参如何对应测试图像，不能保证可执行。"
+      },
+      {
+        "checkId": "section_6",
+        "status": "failed",
+        "planBindings": [
+          "/metrics/0/procedure",
+          "/metrics/1/procedure",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/steps/10/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E3",
+            "field": "before"
+          }
+        ],
+        "reason": "测试 PSNR 和 allocator 两窗口计量总体明确，但逐图 PSNR 为无穷时只对有限值求均值，与全部测试视角等权平均的估计目标不一致；全为无穷时均值亦未定义。"
+      },
+      {
+        "checkId": "section_7",
+        "status": "failed",
+        "planBindings": [
+          "/estimand",
+          "/analysis/lossConvention",
+          "/analysis/contrasts/0/weights",
+          "/analysis/contrasts/1/weights",
+          "/analysis/contrasts/2/weights",
+          "/analysis/uncertainty",
+          "/analysis/decisionRule",
+          "/metrics/0/procedure"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E13",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E13",
+            "field": "after"
+          }
+        ],
+        "reason": "主效应与交互权重及配对单位正确，但排除无穷逐图 PSNR 后的有限均值并非所称全部测试视角平均；涉及无穷或无有限均值时，对比及区间也没有可执行规则。"
+      }
+    ]
+  },
+  "initialRevisionStatus": "not_started_capacity",
+  "targetedRepair": {
+    "rawResponseCompiled": true,
+    "sourceFactsUnchanged": 8,
+    "edits": [
+      "/states/2/representation",
+      "/steps/1/operation/action",
+      "/steps/3/operation/action",
+      "/estimand",
+      "/steps/10/operation/action",
+      "/metrics/0/procedure",
+      "/analysis/uncertainty",
+      "/analysis/decisionRule"
+    ],
+    "newCalls": 1,
+    "usage": {
+      "total_tokens": 10309,
+      "input_tokens": 8627,
+      "output_tokens": 1682,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 8624
+    },
+    "elapsedSeconds": 48.86,
+    "laterReviewStatus": "not_started_capacity",
+    "finalAuditSent": false,
+    "published": false
+  },
+  "totalNewGenerationTokens": 57781,
+  "branchTokensIncludingCarriedPlanning": 75158,
+  "observedBranchWallSeconds": 217.89,
+  "offlineRepairCapacity": {
+    "originalInputBytes": 33240,
+    "newInputBytes": 29458,
+    "maxInputBytes": 32000,
+    "inputDigest": "00a514c791405efd42c14f28a2bfc4dd51a7a4a54faa46fbd831f79cbb7bc2ab",
+    "failedCheckIds": [
+      "section_2",
+      "section_6",
+      "section_7"
+    ],
+    "allProposalFieldsAndExistingQuotesPreserved": true,
+    "allSideExcerptsCitedByFindingsPreserved": true,
+    "checkedSourceFactMutationRejected": true,
+    "distinctDesignEditStillUnverified": true,
+    "providerCalls": 0,
+    "scienceApproval": false,
+    "ledgerReservationTokens": 34578
+  },
+  "offlineCountedReview": {
+    "oldInputBytes": 37530,
+    "newBatchBytes": [
+      18136,
+      33596,
+      34314
+    ],
+    "checkCount": 25,
+    "allTargetsRetained": true,
+    "priorFactsReusable": true,
+    "providerCalls": 0,
+    "scientificApproval": false
+  },
+  "testResults": {
+    "focusedResearch": 238,
+    "faultAndAcceptance": 87,
+    "faultAndAcceptanceTempDirectoryOverride": true,
+    "defaultWindowsTempPathCaseLockFailures": 8
+  },
+  "rawArtifactSha256": {
+    "openai-d3-separate-shared-fit-20261128": {
+      "intent.json": "934862b2213d86204347aa6447abfbd572b56fadcb7a0addb11f2d40f8a97ab5",
+      "calls.json": "f1de24995e67eba6aca34d0431cfa3cbca5b027643c931524d21b2f15d579bf9",
+      "run.json": "cf6a17bf256a60785593c0a6772cb6d9938747d17be00c4678a3a437796c0201",
+      "result.json": "0cb8bc768aadcbc339742fecf09ca7ae02ff41a94f917be6004d969199e23e72",
+      "provider.jsonl": "f191ecd46944a8bac01f5b602ea69719ad604b5fc6019bcdadd4e9d00a9c4d7e",
+      "design-only-repair-offline-replay.json": "4f75e41daf2013376f735cc4f3b4076625aec702f8150fe54b4f6a28b0ed5ae3"
+    },
+    "openai-d3-design-only-repair-20261128": {
+      "intent.json": "9ae3d5bc9cbc1ea2f4d4156b53902f45c8d451ad33a156ce80447b99e84e53e7",
+      "calls.json": "7ae3b54f6b28b139cae9bfecb017f8c0f7b4ca1b5e1676db23b469077ccce437",
+      "run.json": "a6803c561d15266c9b925622d4d4c6221a327ac8a0188ad43c043fa2fe473ad7",
+      "result.json": "c82e459a2942ce9c0a929cbbcfb4abcfd87a7ef94e9d1d1b35f59cc947f06893",
+      "provider.jsonl": "09e77a6f928229cb2048411d9aee2b81ff3f9e43fe3e624f483142eaf4835ca5",
+      "counted-revision-review-offline-replay.json": "b551e742bd2386e42928025ab048b271c4bdcf7d9a882484d15040d0b0386fb1"
+    }
+  },
+  "harnessReceiptNote": "The initial runner wrote published=true by testing whether the default publication dictionary was present. The authoritative database export has publication.published=false and no publication ID or outbox. No report was published in either isolated run."
+}

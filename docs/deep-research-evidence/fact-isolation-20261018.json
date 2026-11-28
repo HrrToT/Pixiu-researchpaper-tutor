@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "1bf96858",
+  "promptVersion": "dr-v2.20261018.124",
+  "contracts": {
+    "claimIsolationContractVersion": 1
+  },
+  "checks": {
+    "passed": 2025,
+    "warnings": 1,
+    "seconds": 110.99,
+    "log": "tmp/pytest-dr124-full-final.log"
+  },
+  "behavior": [
+    "Each new-run reported/inference claim gets a separate semantic request containing only its own cited original passages; another target source is physically absent.",
+    "Prospective design definitions still share their operational/scientific context. Historical unmarked factual runs keep their original batch.",
+    "Initial and repaired facts both isolate. Budget/unknown errors propagate unchanged, without retry or admission of later factual requests.",
+    "All sends retain existing atomic call/token/time admission and scope validation. The per-run budget is not enlarged.",
+    "Server owns the immutable contract; client booleans/strings cannot disable or change it.",
+    "The real graph/SQLite fixture now records ten calls, two factual checks and exactly 2000 settled fixture tokens; reopening adds none.",
+    "Reported numerical repairs must remove unreported computed differences/ratios and preserve exact table group labels."
+  ],
+  "initialFullCheck": {
+    "passed": 2024,
+    "failed": 1,
+    "log": "tmp/pytest-dr124-full.log",
+    "finding": "The existing end-to-end fixed call/token expectation still assumed one joint factual check.",
+    "resolution": "Updated to exactly two tracked fact checks, ten total sends and 2000 measured fixture tokens. Content/permission/reopen assertions retained; targeted 17 and full 2025 passed."
+  },
+  "runtime": "runtime-load-dr124-fact-isolation-20261018.json",
+  "boundary": "Request separation and budget accounting are proven offline; semantic-model judgment remains fallible and actual content still needs manual source review."
+}

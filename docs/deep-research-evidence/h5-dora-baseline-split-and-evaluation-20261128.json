@@ -1,0 +1,315 @@
+{
+  "case": "H5-DORA-FACTORIAL development retest",
+  "originalFirstRunRegraded": false,
+  "independentHoldoutCredit": false,
+  "baselineSourceReplay": {
+    "verifiedPages": [
+      {
+        "id": "ev_b0cdc0d62d8accd0312b0f491bb9469db6ca94b8c1dfd6048520fcc6a904c4ad",
+        "page": 5,
+        "role": "baseline_training_and_test_split"
+      },
+      {
+        "id": "ev_a7b3c510c313bd6df11f72aa12f6ecfc6ddc7988b1e0c1e7190576a7289526f2",
+        "page": 6,
+        "role": "baseline_tasks_and_metric"
+      }
+    ],
+    "inputBytes": 31687,
+    "requiredDomains": [
+      "memory",
+      "quality"
+    ],
+    "generationInputDigest": "81e390a66eaab497ca62ea62547a648506b4187c9ec086fda0f7c5a706ad09a3",
+    "retainedEvidenceCount": 18,
+    "providerCalls": 0,
+    "originalRunUnchanged": true,
+    "independentHoldoutCredit": false,
+    "sourceRunSha256": "b6f29aa690be4e90f56095e3a4bc69c6d8eba5bdee298a66566ad1eeff9cff87",
+    "artifact": {
+      "path": "tmp/h5-baseline-evidence-flow-20261128/result.json",
+      "sha256": "ca248e9f6aba82efd46b578fa85cff91e265868049860c90ce9b44ecabf46176"
+    },
+    "relatedRegressionPassed": 550
+  },
+  "realRetest": {
+    "intent": {
+      "candidate": "37f2d95ca926aa17d9c6c973dc6ab022aaaee357",
+      "runId": "dr_h5_dora_baseline_evidence_20261128",
+      "carriedRoutineTokens": 18834,
+      "carriedRoutineCalls": 5,
+      "carriedRoutineSeconds": 53,
+      "inputBytes": 31687,
+      "generationInputDigest": "81e390a66eaab497ca62ea62547a648506b4187c9ec086fda0f7c5a706ad09a3",
+      "requiredDomains": [
+        "memory",
+        "quality"
+      ],
+      "maxNewCalls": 13,
+      "maxTotalTokens": 100000,
+      "maxWallSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-baseline-evidence-20261128/intent.json",
+        "sha256": "4703b3e275ad830f87124e0f657750e7077d52b8159d91804a13f0df8a090df6"
+      },
+      {
+        "path": "tmp/openai-h5-dora-baseline-evidence-20261128/run.json",
+        "sha256": "0f121f3e31ce5bd78453e513fd9f7c0e45f80d8ac42cb0df1607015e64a98716"
+      },
+      {
+        "path": "tmp/openai-h5-dora-baseline-evidence-20261128/calls.json",
+        "sha256": "85e5dc7de7f2d94b4937a234084220e3b60eaff1c4ee71792ad85fab6ed7effb"
+      },
+      {
+        "path": "tmp/openai-h5-dora-baseline-evidence-20261128/result.json",
+        "sha256": "3beec44fb8406d2f59a0a35147b6790a0a942a1038c9f3c968eb68957866a6a1"
+      }
+    ],
+    "newCalls": [
+      {
+        "node": "plan_experiment_shared",
+        "totalTokens": 12175
+      },
+      {
+        "node": "repair_experiment_shared",
+        "totalTokens": 5897
+      },
+      {
+        "node": "review_experiment_shared",
+        "totalTokens": 4559
+      },
+      {
+        "node": "review_experiment_shared",
+        "totalTokens": 10386
+      },
+      {
+        "node": "review_experiment_shared",
+        "totalTokens": 10232
+      },
+      {
+        "node": "review_experiment_shared",
+        "totalTokens": 9873
+      }
+    ],
+    "newTokens": 53122,
+    "cumulativeTokensIncludingRetainedPlanning": 71956,
+    "elapsedNewSeconds": 112.77,
+    "reviewStatus": "checked",
+    "checks": {
+      "fact_": {
+        "passed": 7
+      },
+      "section_": {
+        "passed": 6,
+        "failed": 2
+      },
+      "requirement_": {
+        "failed": 1,
+        "passed": 9,
+        "unresolved": 1
+      }
+    },
+    "openVerdicts": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "reason": "给出U、L与m的形状和初始化，但训练式中的LU未显式乘论文配置所需的缩放系数32/16：式子写成W'=diag(m)(W0+(32/16)LU)/行L2范数，缺少括号明确范数是作用于W0+(32/16)LU还是仅作用于LU；该参数化无法无歧义实施。"
+      },
+      {
+        "checkId": "section_7",
+        "status": "failed",
+        "reason": "权重数组未指定与四组的映射顺序。组列表为00、10、01、11时，A和B权重互换；若按00、01、10、11则正确。必须显式绑定对比顺序，才能确定主效应及方向。"
+      },
+      {
+        "checkId": "requirement_0_0",
+        "status": "failed",
+        "reason": "四组及论文机制有界说明，但原问题所需原论文各任务训练、验证、测试划分和样本量未给出；拟议划分及事后核验不能替代这些原始事实。"
+      },
+      {
+        "checkId": "requirement_2_0",
+        "status": "unresolved",
+        "reason": "已列八任务、合并训练、逐任务测试及准确率，但未提供各任务原论文训练、验证、测试样本量或验证划分；所给证据亦不足以确定这些细节。"
+      }
+    ],
+    "followup": {
+      "section_2": "The expression already displays 32/16, but the operand of the row norm is ambiguous.",
+      "section_7": "Canonical group order 00,10,01,11 and the two factor bit assignments match the stored weights.",
+      "requirements": "Original source passages support the dataset names, pooled training and separate predefined test sets. They do not establish per-task counts or the original validation partition."
+    },
+    "passed": 22,
+    "total": 26,
+    "scientificComplete": false,
+    "finalAnswerAudited": false,
+    "published": false
+  },
+  "explicitSemanticsReplay": {
+    "commit": "ac78a253d8bdfa5e80b6392ff511ad6924aae511",
+    "sourceRunSha256": "0f121f3e31ce5bd78453e513fd9f7c0e45f80d8ac42cb0df1607015e64a98716",
+    "oldReviewDigest": "2445bc2635dd17255bfd6c111524c387eabc4fed9d87e2d919e12e75210a7c5d",
+    "candidateReviewDigest": "2d5ad0b89edd29335b0f3e01f6be579bf024300bd20d04de9b1657b713f15357",
+    "candidateGenerationBytes": 31836,
+    "generationInputLimit": 32000,
+    "countedReviewLimit": 36000,
+    "reviewBatches": [
+      {
+        "checkIds": [
+          "fact_0",
+          "fact_1",
+          "fact_2",
+          "fact_3",
+          "fact_4",
+          "fact_5",
+          "fact_6"
+        ],
+        "inputBytes": 15395,
+        "suppliedEvidenceAliases": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E8",
+          "E13",
+          "E15",
+          "E16",
+          "E17",
+          "E18"
+        ]
+      },
+      {
+        "checkIds": [
+          "section_0",
+          "section_1",
+          "section_2",
+          "section_3",
+          "section_4",
+          "section_5",
+          "section_6",
+          "section_7"
+        ],
+        "inputBytes": 32046,
+        "suppliedEvidenceAliases": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18"
+        ]
+      },
+      {
+        "checkIds": [
+          "requirement_0_0",
+          "requirement_0_1",
+          "requirement_0_2",
+          "requirement_0_3",
+          "requirement_1_0",
+          "requirement_2_0",
+          "requirement_3_0",
+          "requirement_4_0",
+          "requirement_5_0",
+          "requirement_6_0"
+        ],
+        "inputBytes": 33003,
+        "suppliedEvidenceAliases": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18"
+        ]
+      },
+      {
+        "checkIds": [
+          "requirement_7_0"
+        ],
+        "inputBytes": 30270,
+        "suppliedEvidenceAliases": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5",
+          "E6",
+          "E7",
+          "E8",
+          "E9",
+          "E10",
+          "E11",
+          "E12",
+          "E13",
+          "E14",
+          "E15",
+          "E16",
+          "E17",
+          "E18"
+        ]
+      }
+    ],
+    "sameFactBatches": true,
+    "sameTargets": true,
+    "contrastOrder": [
+      "00",
+      "10",
+      "01",
+      "11"
+    ],
+    "contrastWeights": {
+      "A": [
+        -0.5,
+        0.5,
+        -0.5,
+        0.5
+      ],
+      "B": [
+        -0.5,
+        -0.5,
+        0.5,
+        0.5
+      ],
+      "interaction": [
+        1,
+        -1,
+        -1,
+        1
+      ]
+    },
+    "scientificVerdictReused": false,
+    "providerCalls": 0,
+    "artifact": {
+      "path": "tmp/h5-explicit-semantics-replay-20261128.json",
+      "sha256": "4e5987b48e34013062582160c62d707b3094bd40d363a6fbf16a4a6ade1e062a"
+    },
+    "fixtureBoundary": "Original response retained as test fixture. The new generation instructions did not produce a revised answer in this replay.",
+    "relatedRegressionPassed": 423,
+    "existingDependencyWarnings": 1
+  }
+}

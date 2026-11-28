@@ -1,0 +1,49 @@
+{
+  "case": "D3-VQ-FACTORIAL-v7",
+  "runId": "dr_run_6be8d7b2bac25c469987cd3acdf71b3d",
+  "sourceCommit": "43df0becf6318b648ba73a1424d75353e73d4600",
+  "sharedExperimentProfile": 1,
+  "sourceCaseSplit": "development",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "unknownNode": "plan_experiment_shared",
+  "unknownCallId": "0492378b0c2bfe1de1a46507c6297ef8",
+  "failureKind": "deadline_exceeded",
+  "completeResponseSaved": false,
+  "providerResponseIdAvailable": false,
+  "automaticRetry": false,
+  "ordinarySettledCalls": 5,
+  "ordinaryLedgerTokens": 17656,
+  "unknownCalls": 1,
+  "unknownReservedTokens": 38180,
+  "reservedTokensAreActualUsage": false,
+  "unknownUsageOrCostKnown": false,
+  "elapsedSeconds": 168.0,
+  "limits": {
+    "calls": 18,
+    "tokens": 100000,
+    "seconds": 360
+  },
+  "generation": {
+    "inputBytes": 31012,
+    "inputLimitBytes": 32000,
+    "timeoutSeconds": 90,
+    "maxOutputTokens": 6144,
+    "responseStatus": "invocation_failed"
+  },
+  "rawRunSha256": "055acf5748484784ad2d323f51866fcfcfffea7e4e2f53194d2816a55f281a54",
+  "preservation": {
+    "oldRunsExact": 400,
+    "oldTasksExact": 109,
+    "oldLedgerRowsExact": 10154,
+    "active": 0,
+    "paused": 17,
+    "newRunPaused": true
+  },
+  "candidateLeftRunningToPreserveObservation": true,
+  "originalContainerRetainedStopped": true,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "providerReference": "https://api-docs.deepseek.com/api/create-response/",
+  "next": "Keep this request frozen. Diagnose future reception phases using separately frozen opt-in observation; do not replay or rename this case."
+}

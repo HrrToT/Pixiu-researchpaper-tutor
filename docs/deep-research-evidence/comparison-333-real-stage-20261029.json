@@ -1,0 +1,59 @@
+{
+  "sourceCommit": "46cdb2ed",
+  "promptVersion": "dr-v2.20261029.333",
+  "comparisonReasoningContractVersion": 4,
+  "component": "isolated saved draft independent verification and repair",
+  "freshGeneration": false,
+  "freshRetrieval": false,
+  "provider": "deepseek",
+  "model": "deepseek-v4-pro",
+  "providerCalls": 7,
+  "tokens": 37596,
+  "allSettled": true,
+  "unknownCalls": 0,
+  "automaticRetries": 0,
+  "initialComparisonAudit": {
+    "scope": "within_study",
+    "alignment": "established",
+    "supportsClaim": true,
+    "premises": [
+      {
+        "evidenceId": "E1",
+        "path": [
+          "quote"
+        ]
+      }
+    ],
+    "conditionDifferences": []
+  },
+  "acceptedClaims": 2,
+  "rejectedClaims": 0,
+  "repairRejected": [
+    {
+      "claimId": "c1",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    }
+  ],
+  "coverageStatus": "checked",
+  "gaps": 4,
+  "fullContentAcceptance": false,
+  "independentCredit": 0,
+  "productionPublish": false,
+  "productionExactlyPreserved": true,
+  "rawReceiptDirectory": "D:\\aiproj\\ai_project\\tmp\\component-comparison-333-20261029\\receipt",
+  "rawSha256": {
+    "calls.json": "ac621e2a2017d7402627a1c36f07cf63436d1fd79b268e8259d446bee26a86c5",
+    "payload.json": "494805c61f1dc2c3c80ab3f7e8a23a8799cbe1557b9de7fd1c630f50478908a8",
+    "preservation.json": "2de5d7515ec2821ca11bf3fc5bfeec2fb294e65e86cd97df5f28f6a7a1aced57",
+    "progress.json": "2f6c186d962732fd4f8d38e86b4dd6e3a5d697797971d0899d242d39683a3497",
+    "request-1.json": "c2a68f611ac6e5abb9dc75d21758d09541f652805b45d28a0b4fccdff4daac9d",
+    "request-2.json": "27416dc2a16c004af36095eee146c519b023e23fba204e2d1e67673751b3c30a",
+    "request-3.json": "0dd3f39a0688c57d78407dac92b59e2a234b9f30e81280b8a323ce591409268d",
+    "request-4.json": "e72c85063a0decb7b4d2a1a38338def405bcf271dec3a953ad0b895c370c1616",
+    "request-5.json": "91b101e8b7ae7e29171a2d73cc0780f98c993779d4ef0c106b54ad9181f4e287",
+    "request-6.json": "781353099b5e449f7026cac9ffb38876b0e433824139f8a2dc41e34fe0d79969",
+    "request-7.json": "3bc4fcaccd9c18c9cf47628c7140cb67e01893e89e2960c8fb7839e999aecce7",
+    "result.json": "6b27ca55e0db0439f217b20b68ffbf34b5221b79e47300ad5d04001089c54825"
+  }
+}

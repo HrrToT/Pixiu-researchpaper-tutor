@@ -1,0 +1,68 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "definitionHash": "94c84332c4fdd93837318204c3a4a76e58e50b180b36b63e2eb52a6a2107cd94",
+  "sourceCommit": "c0ba1f87c",
+  "productionSourceRegressionCommit": "9532bcf56",
+  "runId": "dr_run_5eaa17da2e135c8589f97786d3761953",
+  "attempt": 1,
+  "priorExactIdentityMatches": 0,
+  "scope": "Frozen question on current graph, authentic PDFs parsed by local GROBID, isolated lexical index adapter",
+  "status": "completed",
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "acceptedClaims": [
+    "c2",
+    "c3"
+  ],
+  "missedRequestedContent": [
+    "three exact table rows in both versions",
+    "statement of agreement between the two tables",
+    "same-page prose discrepancy versus a 3.0 percentage-point difference"
+  ],
+  "rawProof": {
+    "bothOriginalPDFPagesVerified": true,
+    "droppedExactPagePassages": [
+      {
+        "revision": "v1",
+        "page": 11,
+        "evidenceId": "ev_8986e422c5d19f63e66c1af3560a0b7acd43f466328801a45e8996c8ef0c37f8",
+        "firstLoss": "named-table scope rejected a literal mixed-caption passage"
+      },
+      {
+        "revision": "v2",
+        "page": 12,
+        "evidenceId": "ev_6f98787dc2994ec73aecdef1f2494bde0101fbbfba20f81a54371667d1150af7",
+        "firstLoss": "named-table scope rejected a literal mixed-caption passage"
+      }
+    ],
+    "authorProseVsTable": true,
+    "localReferenceCheckSha256": "21cea58ac41de2ba2ffb9e04fb7bbd50776f1988f6df0437423c6264944a3075"
+  },
+  "usage": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "inputTokens": 12472,
+      "outputTokens": 1027,
+      "totalTokens": 13499
+    },
+    "gpt-6.1-terra": {
+      "calls": 5,
+      "inputTokens": 20564,
+      "outputTokens": 1792,
+      "totalTokens": 22356
+    }
+  },
+  "realCalls": 10,
+  "realTokens": 35855,
+  "elapsedSeconds": 62,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "sha256": {
+    "intent.json": "1bd9133c6e17854ae5a25d3ada22c3d18837ec3664cbcd54978346897d0d9f5f",
+    "run.json": "6e085087ab145098071cb4cb29ec12c97c1843d4b9107930553cde18ebab9388",
+    "calls.json": "dd3569439ddf482515a99252ad699e375ec068755ce517c2f0c318affe59366b",
+    "result.json": "4d291f9ea944baa90f6c5cc1b8e1053acc2facb5dd958ffe5c7e3e8da69bfcc7",
+    "provider.jsonl": "6e0ce4d7b2e93b0d930782d0624f82dc9022450dc13b0dcd6293fc79b56deb21"
+  }
+}

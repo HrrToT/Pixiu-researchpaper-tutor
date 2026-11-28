@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "1986db407c02cbde1ed04f016c2c5f5870835c58",
+  "affectedRunId": "scoped-comparison-completion-full-20261117",
+  "fullRunAccepted": false,
+  "sourceUnchanged": true,
+  "runnerUnchanged": true,
+  "junitFinalized": false,
+  "minimalEventLoopDiagnostic": {
+    "sandbox": "asyncio.run(asyncio.sleep(0)) exceeded 5 seconds; subprocess terminated by diagnostic timeout",
+    "normalHost": "same command returned exit 0 and sentinel 123"
+  },
+  "action": "Stopped only the command-identity-checked sandbox pytest child so its parent could preserve incomplete evidence. Normal-host verification uses a new run ID and the same frozen source and 9545-case baseline.",
+  "normalHostRunId": "scoped-comparison-completion-host-full-20261117",
+  "incompleteReceiptSha256": "5e68f7ea86ffd99e795110838709b8609253700ddc8067d66591ae6397d106d6",
+  "modelCalls": 0,
+  "boundary": "Environment diagnosis only, not test-suite or product acceptance. Do not treat absence of JUnit as zero executed tests or a passing run."
+}

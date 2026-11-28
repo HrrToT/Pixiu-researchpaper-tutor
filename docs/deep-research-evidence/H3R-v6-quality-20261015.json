@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-15",
+  "case": "H3R-v6",
+  "runId": "dr_run_0bc76d63953b5994978ced635184cba4",
+  "promptVersion": "dr-v2.20261015.84",
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": false,
+  "eligibility": "Retired development case; no independent holdout credit",
+  "reviewer": "Primary Codex reviewing original source excerpts, final claims and raw verifier responses; not an independent human study",
+  "modelCalls": 9,
+  "settledTokens": 40173,
+  "cost": null,
+  "findings": [
+    "The run acquires actual arXiv v4 fulltext with an empty local-material snapshot and publishes a brief answer; machine outcome is complete.",
+    "The training explanation now connects loss/gradient feedback to future depth-sampling probability, improving on naming a trick alone.",
+    "The answer translates an increase in opacity as 提高透明度. Opacity is 不透明度, with the opposite transparency direction; the source explicitly says increase opacity. This is a substantive error despite a passed semantic verdict.",
+    "The phrase that sampling becomes differentiable does not distinguish the discrete index from the opacity/probability coupling. The requested opacity-to-sampled-probability binding is not explicit enough.",
+    "Planning criteria are more neutral about the gradient path, although the motivation criterion still supplies anticipated uncertainty/multimodal examples before evidence.",
+    "The .85 common terminology rule is added to generation, revision and independent verification; it has offline coverage, not a new real quality pass."
+  ],
+  "scoresOutOfFive": {
+    "goal": 3,
+    "evidence": 2,
+    "conditions": 3,
+    "synthesis": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 实际取得的是全文。pixelSplat用深度概率分布放置高斯，是因为直接回归一个确定的深度值容易陷入局部最优；改为预测高斯沿每条像素射线可能存在于哪些深度区间的概率分布，能让模型表达深度不确定性，并通过可微的替代方案避开局部极小。 [3](#research-evidence-ev_dbb8e061f95596911ddb9e96df0ae8e09be8cae6818ab3019f073d865b3a1df5) [4](#research-evidence-ev_979bc4a941c61d0a9071e6859481500635b251277259a6864a79ef3bc647d819) [5](#research-evidence-ev_dc459e2b2f6d2095de47a6553252ced2a66db27eb5ac6a0554c2549e12ff712b)\n- 训练时，网络对每个像素输出一组离散深度桶上的概率，经softmax归一化后从该分布采样高斯位置；采样操作通过重参数化技巧变得可微，当渲染损失给出梯度要求提高某位置高斯的透明度时，模型会增加未来在该位置采样的概率，从而更新深度分布参数。 [1](#research-evidence-ev_ff0836e6717522e50291877a948bb7f302f62b15c7f734065ab6e705b676737b) [2](#research-evidence-ev_bfde74339dd0ffa93ceb5fe63edaf6064884b1b1ba62e7f8c357b5057fd7cc27)\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 2 页 · 全文片段\n\n> We make\n> the sampling operation differentiable via a reparameteriza-\n> tion trick that couples the density of a sampled Gaussian\n> primitive to the probability of that location. When receiving\n> a gradient that would increase the opacity of a Gaussian at\n> a 3D location, our model increases the probability that the\n> Gaussian will be sampled at that location again in the future.\n\n**[2] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> We then define a discrete probability distribution pϕ(z)over\n> an index variable z, parameterized by a vector of discrete\n> probabilities ϕ, where its z-th element ϕzis the probability\n> that a surface exists in depth bucket bz. Probabilities ϕare\n> predicted by a fully connected neural network ffrom per-\n> pixel feature F[u]at pixel coordinate uand normalized to\n> sum to one via a softmax.\n\n**[3] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> Unfortunately, directly optimiz-\n> ing Gaussian parameters is susceptible to local minima, as\n> discussed in Section 3. Further, as we are back-propagating\n> through the representation, we cannot rely on the spawning\n> and pruning heuristics proposed in 3D-GS, as they are not\n> differentiable. Instead, we propose a differentiable alterna-\n> tive that succeeds in overcoming local minima. In Table 2,\n> we demonstrate that this leads to ≈1dB of PSNR perfor-\n> mance boost.\n\n**[4] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> Proposed: predicting a probability density of µ. Rather\n> than predicting the depth dof a Gaussian, we predict the\n> probability distribution of the likelihood that a Gaussian\n> exists at a depth dalong the ray u. We implement this as\n> a discrete probability density over a set of depth buckets.\n\n**[5] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 8 页 · 全文片段\n\n> Importance of probabilistic prediction of Gaussian\n> depths (Q2) . To investigate whether predicting the depth of\n> a Gaussian probabilistically is necessary, we perform an ab-\n> lation (No Probabilistic Prediction) which directly regresses\n> the depth, and thus the mean µ, of a pixel-aligned Gaussian\n> with a neural network. We observe a performance drop of\n> ≈1.5dB in PSNR.\n\n</details>",
+  "rawPayloadSha256": "c145917f9673b2dd66a2761c7283a2adef2c16161e44ca16e7545dedeed7ab10",
+  "rawLedgerSha256": "bc35b737644872fbcf146282f18102a63f5c5c79d0c87a26eabd13c996707576",
+  "rawArchive": "tmp/dr-acceptance-receipts/H3R-v6.payload.json",
+  "boundary": "One explicit submission, no retry. Machine outcome and literal support do not substitute for scientific/content acceptance; historical responses are not rewritten."
+}

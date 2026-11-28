@@ -1,0 +1,22 @@
+{
+  "mode": "reference-preparation HEAD only via approved system proxy; no body download or application cache writes",
+  "papers": [
+    {
+      "arxivVersion": "2312.16812v1",
+      "status": 200,
+      "contentType": "application/pdf",
+      "declaredBytes": "38398225",
+      "redirectFollowed": false
+    },
+    {
+      "arxivVersion": "2402.03307v1",
+      "status": 200,
+      "contentType": "application/pdf",
+      "declaredBytes": "41971833",
+      "redirectFollowed": false
+    }
+  ],
+  "maxApplicationPdfBytes": 33554432,
+  "providerCalls": 0,
+  "applicationWrites": 0
+}

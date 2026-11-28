@@ -1,0 +1,234 @@
+{
+  "fixture": "D3-DENSIFICATION-FACTORIAL",
+  "candidate": "1f866279cffc0add9edcd391959261216e1be8b4",
+  "fixCommit": "2fd13e530aebed63e6c3a20f2b910116c353e8aa",
+  "runId": "dr_d3_execution_v7_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "frozenPaperSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "independentHoldoutCredit": 0,
+  "workspaceWrites": 0,
+  "externalSources": 0,
+  "newElapsedSeconds": 174.41,
+  "carriedRoutineTokens": 17377,
+  "carriedRoutineCalls": 5,
+  "newGenerations": 7,
+  "newTokens": 70802,
+  "newGenerationsByStage": {
+    "plan_experiment_shared": 1,
+    "review_experiment_shared": 5,
+    "repair_experiment_shared": 1
+  },
+  "inputCountRequests": [
+    9431,
+    9730,
+    9640,
+    9313,
+    9785
+  ],
+  "cumulativeTokens": 88179,
+  "providerReservationAtStop": {
+    "kind": "tokens",
+    "limit": 100000,
+    "used": 103084
+  },
+  "initialScientificReview": {
+    "counts": {
+      "passed": 22,
+      "failed": 3
+    },
+    "failed": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/states/4/meaning",
+          "/states/5/representation",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/pairing/identityChecks"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E4",
+            "field": "after"
+          }
+        ],
+        "reason": "共享预训练要求使用后续渲染、损失、Adam和SH日程，但其相机步进及预训练更新规则未完整绑定；尤其位置学习率日程依赖全局步，预训练执行细节仅以笼统引用描述。"
+      },
+      {
+        "checkId": "requirement_3_0",
+        "status": "failed",
+        "planBindings": [
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/4/operation/action",
+          "/steps/9/operation/action",
+          "/steps/10/operation/action",
+          "/budgets/3/stopRule"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E1",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          }
+        ],
+        "reason": "第3000步密化及剔除后将全部opacity设为0.01，随后立即测试，未留任何优化步骤恢复不透明度；这会实质破坏终点评估，不能有效衡量所研究操作对重建质量的影响。"
+      },
+      {
+        "checkId": "requirement_4_0",
+        "status": "failed",
+        "planBindings": [
+          "/hypothesis",
+          "/metrics/0/procedure",
+          "/metrics/1/procedure",
+          "/metrics/2/procedure",
+          "/steps/9/operation/action",
+          "/steps/10/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E1",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          }
+        ],
+        "reason": "质量和显存指标口径清楚，但最终不透明度重置后立即测质量，使测量被共同终端干预主导，而非有效评估训练后重建质量。"
+      }
+    ]
+  },
+  "revision": {
+    "status": "awaiting_scientific_review",
+    "reusedFactPackets": 1,
+    "newDesignPacketsCompleted": 2,
+    "packetsNotSent": 2,
+    "complete": false
+  },
+  "wholeAnswerAudit": false,
+  "published": false,
+  "offlineReplay": {
+    "oldInputBytes": 31931,
+    "newInputBytes": 31925,
+    "newInputDigest": "338de07c0920b6c1fb534c672982890c66363ffc35f54b46ec2fe853f81bb4ee",
+    "frozenEvidenceCount": 14,
+    "replayedBudgetStop": {
+      "kind": "tokens",
+      "limit": 100000,
+      "used": 103084
+    },
+    "replayedSettledPackets": 3,
+    "uncheckedRequirements": [
+      "requirement_0_0",
+      "requirement_0_1",
+      "requirement_0_2",
+      "requirement_0_3",
+      "requirement_1_0",
+      "requirement_2_0",
+      "requirement_3_0",
+      "requirement_4_0",
+      "requirement_5_0"
+    ],
+    "revisionIssues": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/states/3/representation",
+          "/states/4/representation",
+          "/steps/1/operation/action",
+          "/steps/3/operation/action",
+          "/data/trainingSplit"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E7",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          }
+        ],
+        "reason": "训练SfM内参已在半分辨率图像上估计，测试注册却将该内参中位数再次按缩放比调整；测试相机参数因而与训练坐标不一致，质量评估不可按所述实现。"
+      },
+      {
+        "checkId": "section_3",
+        "status": "failed",
+        "planBindings": [
+          "/factors/0/onOperation/action",
+          "/factors/1/onOperation/action",
+          "/groups/0/levels",
+          "/groups/1/levels",
+          "/groups/2/levels",
+          "/groups/3/levels",
+          "/steps/9/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E5",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E2",
+            "field": "before"
+          }
+        ],
+        "reason": "四组和父子及Adam状态有定义，但克隆沿损失的正梯度而非下降方向移动；同时以归一化世界梯度替代论文平均视空间位置梯度门槛，导致干预不是所请求论文操作的直接开关。"
+      },
+      {
+        "checkId": "section_6",
+        "status": "failed",
+        "planBindings": [
+          "/steps/3/operation/action",
+          "/steps/9/operation/action",
+          "/steps/10/operation/action",
+          "/metrics/0/procedure",
+          "/metrics/1/procedure",
+          "/metrics/2/procedure"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E3",
+            "field": "before"
+          },
+          {
+            "evidenceId": "E1",
+            "field": "quote"
+          }
+        ],
+        "reason": "测试内参重复缩放使固定测试位姿和新视角质量参考不可靠。显存窗口的同步、重置、完整性及共享与臂窗口最大值规则明确，但不能补救质量评估坐标错误。"
+      }
+    ],
+    "newProviderCalls": 0,
+    "scientificApproval": false
+  },
+  "regressions": {
+    "executionGuidance": {
+      "passed": 319,
+      "sha256": "285514c06f5caaac25c2dc19e474e4e727a76345b32742617afdb9c9f229edd8"
+    },
+    "finalReviewAndPipeline": {
+      "passed": 122,
+      "sha256": "99bfa7d5ff1ee605d1527103148f634f68a6d42f175c75fac0f21561997dbf39"
+    }
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-execution-v7-20261128/budget-stop-and-v8-offline-replay.json": "29eb94919080b5014233ae883c2c12ac0a57824420c1f837dc8b7890ff3ec950",
+    "tmp/openai-d3-execution-v7-20261128/calls.json": "f46b3e1c1bd1a070f584d1acf7e42ef828bee325076bee4d8ab744e0e5c6d774",
+    "tmp/openai-d3-execution-v7-20261128/intent.json": "4a3e7151e6f28286d47ef2fc24ca405272132b48fe806dc2f16bea90712ce216",
+    "tmp/openai-d3-execution-v7-20261128/provider.jsonl": "28a0120327256b60fbeb47470b3c1ff6a3f22d2ec9bf2111f8a7dcdfb7507064",
+    "tmp/openai-d3-execution-v7-20261128/result.json": "78ca934f7fe9f9f2b3c57422820aa07f703ebcbbe2c71b708a508749d439a761",
+    "tmp/openai-d3-execution-v7-20261128/run.json": "afb448cfe15fd0d4b0e1aad6a088c626247c2d8f5a88a8adf8ec0e7599ac6cd2"
+  }
+}

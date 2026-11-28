@@ -1,0 +1,32 @@
+{
+  "receiptSha256": "de70ff2f145f510e99e1e14ffa95422687225c8ddb5cec75026ec77e6d3129e6",
+  "planningReplyReplayed": true,
+  "normalizedObligations": [
+    "ob-2-1"
+  ],
+  "preservedObligationIds": [
+    "ob-1-1",
+    "ob-1-2",
+    "ob-2-1",
+    "ob-2-2",
+    "ob-3-1"
+  ],
+  "legacyRepairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 12753,
+    "used": 14774
+  },
+  "newRepairEnvelopeBytes": 15825,
+  "firstRepairDispatchBytes": 15659,
+  "firstRepairTargetIds": [
+    "cmp_1_0",
+    "cmp_5_0",
+    "cmp_7_0"
+  ],
+  "mechanismEvidenceAvailableToRepair": [
+    "E3"
+  ],
+  "stoppedAtProviderBoundary": true,
+  "providerCalls": 0,
+  "scientificAcceptance": false
+}

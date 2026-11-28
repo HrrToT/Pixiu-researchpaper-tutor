@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "4a2da0e7",
+  "promptVersion": "dr-v2.20261018.140",
+  "originalRunId": "dr_run_7a166ca064b95ce6b06aab958999ccf7",
+  "phaseBudgets": [
+    {
+      "modelCalls": 3,
+      "tokens": 5319
+    },
+    {
+      "modelCalls": 5,
+      "tokens": 9208
+    }
+  ],
+  "assessmentRequests": [
+    {
+      "bytes": 8883,
+      "cap": 8905,
+      "pairs": [
+        {
+          "evidenceId": "ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27",
+          "criterionRequirement": "NTC预测高斯的什么变化"
+        },
+        {
+          "evidenceId": "ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d",
+          "criterionRequirement": "解释仅通过NTC预测变化无法表示新出现物体的原因，以及添加新高斯的必要性。"
+        },
+        {
+          "evidenceId": "ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27",
+          "criterionRequirement": "怎样利用前一帧表示"
+        },
+        {
+          "evidenceId": "ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010",
+          "criterionRequirement": "解释仅通过NTC预测变化无法表示新出现物体的原因，以及添加新高斯的必要性。"
+        },
+        {
+          "evidenceId": "ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27",
+          "criterionRequirement": "解释仅通过NTC预测变化无法表示新出现物体的原因，以及添加新高斯的必要性。"
+        }
+      ]
+    },
+    {
+      "bytes": 4580,
+      "cap": 5016,
+      "pairs": [
+        {
+          "evidenceId": "ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b",
+          "criterionRequirement": "怎样利用前一帧表示"
+        },
+        {
+          "evidenceId": "ev_91ae56d02e870fb6f5606d07e05702a3c902807655d5b3056399026b0d9d7575",
+          "criterionRequirement": "怎样利用前一帧表示"
+        }
+      ]
+    }
+  ],
+  "copiedAcquisitionCovered": true,
+  "quantityRejection": [
+    {
+      "claimId": "word-count-probe",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "4e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "realProviderCalls": 0,
+  "productionRowsChanged": 0,
+  "boundary": "Saved real passages replayed on copied data with explicitly specified fixture support verdicts. Uses actual settled pre-assessment phase budgets and unchanged maxima. Does not establish model judgment, answer quality, or independent acceptance; original run unchanged."
+}

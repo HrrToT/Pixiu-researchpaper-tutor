@@ -1,0 +1,30 @@
+{
+  "case": "H1-LOFTR",
+  "definitionHash": "0d50d081c3706a5b8f60aebd557a3655fc13631d975704a795920800caf5f124",
+  "sealCorrectedBeforeFirstSubmission": true,
+  "unchangedQuestionMaterialAndRubric": true,
+  "liveInventory": {
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "indexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0,
+    "tasksChecked": 195,
+    "taskHits": 0
+  },
+  "materialSha256": "d2f18e76fd92f234362f72d01ecf99d37d144f488360aca809bdeefed7fd2cef",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "nativeParserVerifiedPages": 10,
+  "preflightProviderCalls": 0,
+  "productionWrites": 0,
+  "preflightSha256": {
+    "intent.json": "e1f9d5fdffea5f2786f3832616354fc032defe2b9980121d8de9ca28403ba7d7",
+    "run.json": "4f2b79fa5717f521f76302296e546cf441a6112a99e4ce96e1026998fd8d2bd7",
+    "calls.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+  }
+}

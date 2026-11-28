@@ -1,0 +1,192 @@
+{
+  "firstRunId": "dr_run_33bc1a16b4225604800204d843d00e7e",
+  "sourceCommits": [
+    "f68038e2d",
+    "99c89b6ce"
+  ],
+  "sourceGlyphContractVersion": 2,
+  "localSectionContextContractVersion": 9,
+  "targetedOfflineTestsPassed": 223,
+  "providerCalls": 0,
+  "scientificContentCredit": 0,
+  "cause": "Both PDF decoders left unmapped control glyphs on page 3. The same embedded fonts declare shortleftarrow and shortrightarrow. Normal reads missed that page, and body chunks that mixed run-in method sections could be displaced.",
+  "boundary": "Only explicitly named embedded font slots were decoded. Existing source ownership, literal checks and input limit remained active. Replay stops at the actual synthesis input. No answer was generated.",
+  "replay": {
+    "runId": "dr_run_33bc1a16b4225604800204d843d00e7e",
+    "materialSha256": "e4d38a452c3805ee2c7e683cd35c32d6ada2d8d2d396888ce7383668195267ec",
+    "policies": {
+      "1.8": {
+        "controlsPage3": 36,
+        "read": {
+          "detection_acceptance": [],
+          "match_rows": [],
+          "match_columns": [],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "literal": {
+          "detection_acceptance": [],
+          "match_rows": [],
+          "match_columns": [],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "synthesis": {
+          "detection_acceptance": [],
+          "match_rows": [],
+          "match_columns": [],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "inputBytes": 23845
+      },
+      "2.8": {
+        "controlsPage3": 0,
+        "read": {
+          "detection_acceptance": [
+            3
+          ],
+          "match_rows": [
+            3
+          ],
+          "match_columns": [
+            3
+          ],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "literal": {
+          "detection_acceptance": [
+            3
+          ],
+          "match_rows": [
+            3
+          ],
+          "match_columns": [
+            3
+          ],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "synthesis": {
+          "detection_acceptance": [],
+          "match_rows": [],
+          "match_columns": [],
+          "reward_boundary": [],
+          "gradient_path": [
+            4
+          ]
+        },
+        "inputBytes": 23783
+      },
+      "2.9": {
+        "controlsPage3": 0,
+        "read": {
+          "detection_acceptance": [
+            3
+          ],
+          "match_rows": [
+            3
+          ],
+          "match_columns": [
+            3
+          ],
+          "reward_boundary": [
+            3
+          ],
+          "gradient_path": [
+            4
+          ]
+        },
+        "literal": {
+          "detection_acceptance": [
+            3
+          ],
+          "match_rows": [
+            3
+          ],
+          "match_columns": [
+            3
+          ],
+          "reward_boundary": [
+            3
+          ],
+          "gradient_path": [
+            4
+          ]
+        },
+        "synthesis": {
+          "detection_acceptance": [
+            3
+          ],
+          "match_rows": [
+            3
+          ],
+          "match_columns": [
+            3
+          ],
+          "reward_boundary": [
+            3
+          ],
+          "gradient_path": [
+            4
+          ]
+        },
+        "inputBytes": 23890
+      }
+    },
+    "providerCalls": 0
+  },
+  "compatibility": {
+    "silk": {
+      "inputBytes": 24000,
+      "sourceOperationPages": {
+        "reverse_homography": [
+          4
+        ],
+        "filtered_correspondence": [
+          4
+        ],
+        "probability_columns": [
+          4
+        ],
+        "positive_round_trips": [
+          4
+        ],
+        "keypoint_binary_loss": [
+          4
+        ]
+      },
+      "sha256": "2e6c0214b29f71095fd470926758933f16d8016ef6d4df301148962dd7b13ff2"
+    },
+    "alike": {
+      "inputBytes": 23962,
+      "sourceOperationPages": {
+        "soft_argmax": [
+          3,
+          4
+        ],
+        "gradient": [
+          4
+        ],
+        "reprojection": [
+          4
+        ],
+        "peak_spatial": [
+          5
+        ]
+      },
+      "sha256": "ce395e9428d61d2e5ee0f6db5507d941d37d0c8cc2062a1a9f7bbcd095343d9f"
+    }
+  }
+}

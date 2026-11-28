@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-18",
+  "providerCalls": 0,
+  "records": [
+    {
+      "materialId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+      "contentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+      "arxivId": "2403.01444",
+      "revision": "v4",
+      "physicalPage": 1,
+      "literalStamp": "arXiv:2403.01444v4",
+      "firstPageTextSha256": "19dc2eee7149b75278538bd6005b8c201e31486dd866afc946a046ccddf2e582"
+    },
+    {
+      "materialId": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854.pdf",
+      "contentHash": "f5708e8ffec2ce8243542fc7aa0922a468b0c845950b0554863e4c61ba70b854",
+      "arxivId": "2309.13101",
+      "revision": "v2",
+      "physicalPage": 1,
+      "literalStamp": "arXiv:2309.13101v2",
+      "firstPageTextSha256": "fabe313bcdd0fc6ddc8f20c9ca5b476ed1e31d609f3bff6c0333c9e7aa118425"
+    }
+  ],
+  "boundary": "Original snapshot file byte hashes and literal first-page arXiv revision stamps verified. Does not claim current application carries that identity into extracted evidence yet."
+}

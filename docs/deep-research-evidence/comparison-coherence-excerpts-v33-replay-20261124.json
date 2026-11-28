@@ -1,0 +1,11 @@
+{
+  "rawSavedRunSha256": "6861238f49d8183885fe612ffd2ca467f87e54c7cf684f4df9500a54b431c172",
+  "originalFalseCoherenceAcceptedByOldShape": true,
+  "originalFalseCoherenceWithoutExcerptsNowUnconfirmed": true,
+  "coverageGapsPreserved": 5,
+  "currentAuditBytes": 23283,
+  "sameRequiredEvidenceAndAuditChecklist": true,
+  "counterfactualCoherentReplyRetainsCoverageGaps": true,
+  "modelRequests": 0,
+  "scientificContentAccepted": false
+}

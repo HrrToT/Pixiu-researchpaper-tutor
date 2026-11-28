@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.80",
+  "numericReplay": {
+    "case": "H3R-v4",
+    "passedHardChecks": [
+      "c1",
+      "c2"
+    ],
+    "wrong15YiRejected": true,
+    "quotationUnmodified": true
+  },
+  "sceneReplay": {
+    "case": "H5R-v7",
+    "before": [
+      "DA_NAME_NOT_AVAILABLE"
+    ],
+    "afterExplicitBinding": [],
+    "selection": "hotdog",
+    "literalSourceLabel": "Hotdog"
+  },
+  "assetReplay": {
+    "case": "H5R-v7",
+    "rejected": [
+      {
+        "claimId": "c5",
+        "reason": "unverified_baseline_asset",
+        "detail": "AA_MISSING",
+        "assetPrerequisite": true
+      },
+      {
+        "claimId": "c3",
+        "reason": "baseline_asset_dependency",
+        "detail": "Existing baseline asset is not established: c5",
+        "dependsOn": [
+          "c5"
+        ]
+      },
+      {
+        "claimId": "c6",
+        "reason": "baseline_asset_dependency",
+        "detail": "Existing baseline asset is not established: c5",
+        "dependsOn": [
+          "c5"
+        ]
+      }
+    ]
+  },
+  "unchangedReceiptHashes": {
+    "H3R-v4.payload.json": "2d93a0cec85375c897cba8e6d8fed4556421a431402fd8ac45a22bccd92b56be",
+    "H3R-v4.calls.json": "91d0a981c3228670698aa65e3257fd120c5b837ba1f43b6465e83454aebe1118",
+    "H5R-v7.payload.json": "e1126feff9c58e33d39fe4430aa96d327b32a375e682c2083e9f21c7b1d7af0f",
+    "H5R-v7.calls.json": "99efb71a1d09b5ef0b4da96b5089d61d1101c46b574d9905864c88123c16a85d"
+  },
+  "modelCalls": 0,
+  "boundary": "Offline deterministic gate replay. A passed semantic stub permits gate isolation, not content-quality acceptance. Saved model responses and historical reports were not rewritten."
+}

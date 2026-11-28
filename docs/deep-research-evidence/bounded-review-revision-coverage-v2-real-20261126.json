@@ -1,0 +1,77 @@
+{
+  "sourceCommit": "21a0b1374d81c4f60b1e54ef84c7b7628633776d",
+  "candidate": "academic-dr-bounded-review-revision-coverage-v2-candidate-20261126",
+  "fullRegression": "bounded-review-revision-coverage-v2-full-20261126.json",
+  "case": "D3-DENSIFICATION-FACTORIAL-v17",
+  "runId": "dr_run_8d49f96a3af957d38a9676789f7cd1d7",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "modelCalls": 7,
+  "settledTokens": 35761,
+  "elapsedSeconds": 135.8,
+  "submissions": 1,
+  "automaticRetry": false,
+  "plannedReviewBatches": [
+    {
+      "checks": 7,
+      "inputBytes": 22264
+    },
+    {
+      "checks": 8,
+      "inputBytes": 31543
+    },
+    {
+      "checks": 8,
+      "inputBytes": 31239
+    }
+  ],
+  "scientificReviewCalls": 0,
+  "numericPrecheckIssues": [
+    {
+      "claimId": "shared_fact_2",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "13e0"
+      ],
+      "factId": "F3",
+      "evidenceRefs": [
+        "E1"
+      ]
+    },
+    {
+      "claimId": "shared_fact_4",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "3e1",
+        "7e0"
+      ],
+      "factId": "F5",
+      "evidenceRefs": [
+        "E3"
+      ]
+    }
+  ],
+  "contextReferencesFound": {
+    "F3": "E1/sourceContext/before",
+    "F5": [
+      "E3/sourceContext/after",
+      "E19/quote"
+    ]
+  },
+  "revisionStatus": "invalid_response",
+  "revisionEditsMatchedOriginalValues": true,
+  "scientificContentAccepted": false,
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {},
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    ".json": "a031fe1256099129feecc2efe987006e5c53b10821cdad8cf893b46a9dde73fe",
+    ".payload.json": "fd40d24b901a0ae655b5b5ddc117ab4c31ed83c3f08578df257ddbfeb43efad4",
+    ".calls.json": "ec89cd71e0e88bcf56e167757ee96fe7ade9f16db04cb9ab506b512dc4deaa28",
+    ".execution.json": "43ac8c616bb2c7bb59533465191fd37cc576e86fe46d18063e2af1574d7f8a72",
+    ".result.json": "d4a60197e7c54ff8f2d5526c258cbb3a734671cae9354ebd12aea07aad1ad954"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "case": "D5-speed-explanation-prose",
+  "sourceCommit": "c028ea6c00f2decde93c8f3f06b9aafa59080c2b",
+  "runId": "dr_run_71dc723d110b55c991fbaacdedd0cd8d",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "contractVersions": {
+    "shortComparisonLayoutContractVersion": 4,
+    "comparisonEvaluationProtocolVersion": 4,
+    "scopeExpressionReviewContractVersion": 6
+  },
+  "entryStage": "synthesize",
+  "inheritedEvidence": 43,
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "newRetrieval": false,
+  "productionWorkspaceWrites": 0,
+  "automaticRetry": false,
+  "outcome": "inconclusive",
+  "wallClockSeconds": 31.0,
+  "candidateVisibleCharacters": 134,
+  "modelCalls": [
+    {
+      "node": "synthesize",
+      "model": "gpt-6.1-terra",
+      "tokens": 8611
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 5780
+    }
+  ],
+  "tokens": 14391,
+  "draftExplainsQuotient": true,
+  "draftGivesAlignedComparisonConditions": true,
+  "inputScannerFalseNumber": "1e0",
+  "wholeAnswerAuditDispatched": false,
+  "scientificContentAccepted": false,
+  "offlineReviewReplay": {
+    "savedResponseUnchanged": true,
+    "v2AcceptedClaims": 0,
+    "v3AcceptedClaims": 1,
+    "preparedWholeAnswerAuditBytes": 17676,
+    "providerCalls": 0
+  },
+  "sha256": {
+    "intent.json": "e6a52f7cd198079f8a7062738540905b7068748c83ba5600ecb9ae532fd653c0",
+    "run.json": "f5074dd07b46c768082ee0d3ed9a6c2e07c085e89fd206d8e68372e665a5f634",
+    "calls.json": "1b857d7c0e93e96f9e93bf69bf2e8b4ece821607fd76f725518016a81ae9de53",
+    "synthesize-return.json": "1c14d2c799b86126a60dd0c45541152e717b80862c020c93fad9fa4ac84a87fa",
+    "verify-return.json": "e70398a7511f8648c0b62e64ba9cd2ba5e221a09e1a464ed7d4dd89077159e3b",
+    "publish-return.json": "734754290cad491c10496b83520b614379b594cf0033a9067de0869b1873568c"
+  }
+}

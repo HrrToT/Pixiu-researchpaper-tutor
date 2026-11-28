@@ -1,0 +1,13 @@
+{
+  "defaultRuntimeRestored": true,
+  "candidateStopped": true,
+  "oldRunsExact": 394,
+  "oldLedgerRowsExact": 10009,
+  "otherTasksExact": 104,
+  "currentRuns": 395,
+  "currentLedgerRows": 10018,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCallsInThisCheck": 0,
+  "historicalModelRequestsReplayed": false
+}

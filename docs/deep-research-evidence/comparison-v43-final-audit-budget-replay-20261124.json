@@ -1,0 +1,25 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v43",
+  "payloadSha256": "004c56b124aaffde24a0186f6d508d6e6748fafb3d35ead841feb0978cd2204c",
+  "admissionAttempts": [
+    {
+      "mandatoryEvidenceRows": 18,
+      "fixedPromptBytes": 13320,
+      "mandatoryPacketBytes": 24255,
+      "availablePromptBytes": 14946,
+      "shortfallBytes": 9309
+    },
+    {
+      "mandatoryEvidenceRows": 18,
+      "fixedPromptBytes": 13320,
+      "mandatoryPacketBytes": 24255,
+      "availablePromptBytes": 17658,
+      "shortfallBytes": 6597
+    }
+  ],
+  "settledTokens": 77818,
+  "preAuditTokenCeiling": 100000,
+  "verifiedClaimsRetained": 7,
+  "modelCalls": 0,
+  "scientificContentAccepted": false
+}

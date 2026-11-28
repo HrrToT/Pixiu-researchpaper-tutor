@@ -1,0 +1,88 @@
+{
+  "sourceRunId": "dr_run_1096e34e38835562a8a4e4b97aff0e85",
+  "historicalRunSha256": "667c4410e3f36d3237cb757e027fca51dab0c8fa1860efa056128ce9fd33f778",
+  "legacyRemainingIssueCount": 9,
+  "replayEdit": "Removed only the analysis.metricIds field from the saved response to match the new wire schema.",
+  "rawResponseChangesPersisted": false,
+  "sameSourceScopeAndEvidence": true,
+  "sourceCount": 1,
+  "estimatedRequestBytes": 31875,
+  "metricIds": [
+    "psnr",
+    "ssim",
+    "lpips",
+    "mem",
+    "storage"
+  ],
+  "analysisAndMetricsMatched": true,
+  "unresolvedRetained": true,
+  "generationStatus": "awaiting_scientific_review",
+  "firstScienceHardIssues": [
+    {
+      "claimId": "shared_fact_2",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0",
+        "2e0x"
+      ],
+      "factId": "fdense",
+      "evidenceRefs": [
+        "E2",
+        "E7",
+        "E11"
+      ]
+    },
+    {
+      "claimId": "shared_fact_4",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "factId": "fshader",
+      "evidenceRefs": [
+        "E14"
+      ]
+    },
+    {
+      "claimId": "shared_fact_5",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0"
+      ],
+      "factId": "fblend",
+      "evidenceRefs": [
+        "E13"
+      ]
+    }
+  ],
+  "scienceTargetCount": 21,
+  "scienceBatches": [
+    6,
+    8,
+    7
+  ],
+  "providerCalls": 0,
+  "scienceApproval": false,
+  "factRepairFixture": {
+    "edits": 3,
+    "diagnosedFactIds": [
+      "fdense",
+      "fshader",
+      "fblend"
+    ],
+    "revisedPrecheckIssues": [],
+    "nonFactFieldsIdentical": true,
+    "unresolvedRetained": true,
+    "interceptedStages": [
+      {
+        "node": "repair_experiment_shared",
+        "inputPromptBytes": 19187
+      },
+      {
+        "node": "review_experiment_shared",
+        "inputPromptBytes": 24972
+      }
+    ],
+    "scienceDispatchIntercepted": true
+  }
+}

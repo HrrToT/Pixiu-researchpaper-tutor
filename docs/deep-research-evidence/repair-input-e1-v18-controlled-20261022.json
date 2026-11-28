@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v18",
+  "experimentRepairInputContractVersion": 1,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "originalPayloadUnchanged": true,
+  "groups": [
+    {
+      "targetIds": [
+        "c3",
+        "c5"
+      ],
+      "inputBytes": 23804,
+      "requiredOriginalQuotesContextsMetadataExact": true,
+      "originalClaimsConditionsAndChecksExact": true,
+      "permissionsEqualVisibleOriginalScope": true,
+      "sharedPassages": 0
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 23948,
+      "requiredOriginalQuotesContextsMetadataExact": true,
+      "originalClaimsConditionsAndChecksExact": true,
+      "permissionsEqualVisibleOriginalScope": true,
+      "sharedPassages": 0
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c4",
+        "c6"
+      ],
+      "inputBytes": 23932,
+      "requiredOriginalQuotesContextsMetadataExact": true,
+      "originalClaimsConditionsAndChecksExact": true,
+      "permissionsEqualVisibleOriginalScope": true,
+      "sharedPassages": 1
+    }
+  ],
+  "allThreeGroupsReachedCallback": true,
+  "callbackTargetGroups": [
+    [
+      "c3",
+      "c5"
+    ],
+    [
+      "c1",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    [
+      "c2",
+      "c4",
+      "c6"
+    ]
+  ],
+  "allUnresolvedRemainUnrepaired": true,
+  "boundary": "Counterfactual archived-data preparation/invocation callback only. New user envelope and containment-only context sharing preserve original quotes/windows/config/checks. The callback returns unresolved, not a scientific judgement. Large offline reference ceiling never sent or applied to runtime.",
+  "sourceCommit": "d299a05d"
+}

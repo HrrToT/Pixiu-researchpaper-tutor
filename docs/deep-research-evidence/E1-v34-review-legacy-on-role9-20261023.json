@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v34",
+  "sourceCommit": "c546dac6",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "fixtureCallbacks": 2,
+  "requests": [
+    {
+      "actualFingerprintMatched": true,
+      "callId": "421bb7cb20b50172ea67f84e38056aa8",
+      "node": "verify_design_config",
+      "targetIds": [
+        "c4",
+        "c7"
+      ],
+      "inputBytes": 22708,
+      "contextIds": [
+        "c5",
+        "c6",
+        "c2",
+        "c3"
+      ]
+    },
+    {
+      "actualFingerprintMatched": true,
+      "callId": "72c97a04f8811706f178d57e5acae392",
+      "node": "verify_design_science",
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 29435,
+      "contextIds": [
+        "c5",
+        "c6",
+        "c4",
+        "c7"
+      ]
+    }
+  ],
+  "allocationAttempts": [
+    {
+      "targetIds": [
+        "c4",
+        "c7"
+      ],
+      "fullInputBytes": 22708,
+      "fixedInputBytes": 20126,
+      "maxInputBytes": 32000,
+      "referencedRows": 2,
+      "selectedRows": 2,
+      "selectedInputBytes": 22708,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c8",
+        "c9"
+      ],
+      "fullInputBytes": 29435,
+      "fixedInputBytes": 22559,
+      "maxInputBytes": 32000,
+      "referencedRows": 6,
+      "selectedRows": 6,
+      "selectedInputBytes": 29435,
+      "allRefsRetained": true,
+      "allContextsRetained": true
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairLimit": null,
+  "boundary": "Both archived initial review request fingerprints match under the new development source; all references/contexts retained. Legacy compatibility, not new content acceptance."
+}

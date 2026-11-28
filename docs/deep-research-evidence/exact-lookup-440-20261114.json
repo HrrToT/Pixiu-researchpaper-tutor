@@ -1,0 +1,15 @@
+{
+  "factory": "AcademicAcquisition._client",
+  "operation": "lookup",
+  "limit": 3,
+  "modelCalls": 0,
+  "productionLedgerWrites": 0,
+  "automaticRetry": false,
+  "status": "succeeded",
+  "items": 1,
+  "versions": [
+    "arxiv:1412.6980v1"
+  ],
+  "networkRequests": 1,
+  "seconds": 2.06
+}

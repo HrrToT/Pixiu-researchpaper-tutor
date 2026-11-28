@@ -1,0 +1,60 @@
+{
+  "sourceCase": "S1G-v7",
+  "payloadSha256": "1675a867ad8b28fadacc741fac3350c51b1ddd3ac57e05b8d0716cf280a82160",
+  "archivedSettledCoverageReplyReplayed": true,
+  "versions": {
+    "0": {
+      "status": "invalid_response",
+      "gapCount": 3,
+      "invalidCriterionObligations": [
+        "ob_3"
+      ],
+      "invalidAspectObligations": [
+        "answer_scope"
+      ],
+      "diagnosticErrors": [
+        "ob_1",
+        "ob_3",
+        "answer_scope"
+      ]
+    },
+    "2": {
+      "status": "checked",
+      "gapCount": 0,
+      "invalidCriterionObligations": [],
+      "invalidAspectObligations": [],
+      "diagnosticErrors": []
+    }
+  },
+  "preFreezeAccessPlanNormalization": [
+    {
+      "obligationId": "ob_3",
+      "requestExcerpt": "标明实际读到的是全文还是摘要。",
+      "before": {
+        "question": "实际读到的是全文还是摘要？",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "明确说明所依据的材料是论文全文还是仅摘要，并指出该信息在材料中的体现。",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "after": {
+        "question": "标明实际读到的是全文还是摘要。",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "标明实际读到的是全文还是摘要。",
+            "responseType": "identification"
+          }
+        ]
+      }
+    }
+  ],
+  "acceptedClaimsAndEvidenceUnchanged": true,
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

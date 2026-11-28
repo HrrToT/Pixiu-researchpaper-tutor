@@ -1,0 +1,74 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v31",
+  "runId": "dr_run_a610030839825777ad9bbb29929926d2",
+  "sourceCommit": "9ba1d8f6d94bfc2b4216b89d58d757c6a3d68288",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "actualModelCalls": 12,
+  "providerReportedTokens": 69872,
+  "elapsedSeconds": 180.0,
+  "historicalSnapshotBudget": {
+    "settledModelCalls": 7,
+    "reservedModelCalls": 5
+  },
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 23979,
+      "requiredBundles": 8,
+      "exactTargetIds": 4,
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23994,
+      "requiredBundles": 8,
+      "exactTargetIds": 4,
+      "status": "compiled_unverified",
+      "isolatedTargets": [
+        {
+          "targetId": "table_2_1",
+          "reason": "stage_table_permission"
+        },
+        {
+          "targetId": "table_3_1",
+          "reason": "stage_table_permission"
+        }
+      ]
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23874,
+      "requiredBundles": 8,
+      "exactTargetIds": 3,
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    }
+  ],
+  "replayedJointRejections": {
+    "joint_ob-2-1": "invalid_answer_point_schema",
+    "joint_ob-2-2_conditional_advice": "joint_advice_requires_device_memory_test_first",
+    "joint_requested_numeric_example_matched_example": "joint_example_requires_marked_baseline_and_protocol_note"
+  },
+  "compiledPoints": 6,
+  "initialSemanticAccepted": 5,
+  "coverageStatus": "budget_exhausted",
+  "coverageCapacity": {
+    "kind": "coveragePromptBytes",
+    "limit": 24000,
+    "used": 25880
+  },
+  "coherenceStatus": "held",
+  "publishedVerifiedClaims": 0,
+  "automaticRetry": false,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "scientificContentAccepted": false,
+  "receiptHashes": {
+    ".payload.json": "6147fc03d673c7123e4d7ada5b156124f602e2383b15dab07a068411f7e3b6b0",
+    ".calls.json": "0851f119d319888b244565e0a10b90417698c45d0843e981498a0d70a0c447ef",
+    ".result.json": "f3fa65f4bb111a42a6344abe0734936c169decb2dc9e946a605cafee40622adf",
+    ".execution.json": "4f4f46ca9622d6d4f6b023d39278681abf7738e15627d0f88ba1a3c6df80b2f5"
+  }
+}

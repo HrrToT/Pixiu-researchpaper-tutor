@@ -1,0 +1,31 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v54",
+  "sourceCommit": "c6de0d1037c9772bdd884de479ac47e92f4fc6f6",
+  "runId": "dr_run_c51b97e8676551be973505fb81803dfc",
+  "status": "failed",
+  "errorCode": "comparison_stage_evidence_capacity",
+  "automaticRetry": false,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3
+  },
+  "settledTokens": 18777,
+  "elapsedSeconds": 73.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "reportVersionId": null,
+  "originalServiceAndHistoryVerified": true,
+  "restorationSha256": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24",
+  "receiptSha256": {
+    ".payload.json": "ccfb04c03c66ad1e07b679ce27e9cfd55dc99bd60bb32dd5bf27165e4c9a42c1",
+    ".calls.json": "ae496a3e1a02e33af464143bc2a461ad286b575dbea52638c33aeb670eb45978",
+    ".execution.json": "16afeeb522d49fc63ee79d60f8220a2f3bb04548b132b29a759dec4bb2864784",
+    ".result.json": "18505a4bcf4be433d513d58853b52903bee09c0e811303370e39575e95b08757"
+  },
+  "scientificContentAccepted": false,
+  "comparisonCrossPaperBoundaryContractVersion": 3,
+  "scopeObservationContractVersion": 4,
+  "synthesisCalls": 0,
+  "monitorAttachmentRecovered": true
+}

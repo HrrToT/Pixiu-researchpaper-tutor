@@ -1,0 +1,91 @@
+{
+  "case": "H3-DMC",
+  "candidate": "9de709d3c348a760e7b6fd008985baf0e99a2d67",
+  "fixCommit": "9360b0f1bd60cc14178e0de3c39c7f6065788acb",
+  "runId": "dr_run_c5fe001e4d8959b7920a861e32e5f3d0",
+  "definitionHash": "1f1baa8183b4a804e9f833637987e29fb8a8a5ba009b74e02f2dc596acfe9920",
+  "emptyApplicationMaterialsAndCache": true,
+  "sourceVersion": "2403.09636v1",
+  "sourceMatchesEvaluator": true,
+  "sourcePdfSha256": "bd70a5dd909287e9a25409c467884a206b9b39853bed4dd9312be6a7148eea9f",
+  "physicalPages": 16,
+  "outcome": "partial",
+  "workspacePublication": false,
+  "reportCharacters": 224,
+  "citationAudit": [
+    {
+      "claimId": "C1",
+      "evidenceId": "ev_356808fa3a977ca4ec90a43ff2caa66538aa99d91ad9d4d521373dbe362e7083",
+      "physicalPage": 3,
+      "literalMatch": true
+    },
+    {
+      "claimId": "C2",
+      "evidenceId": "ev_356808fa3a977ca4ec90a43ff2caa66538aa99d91ad9d4d521373dbe362e7083",
+      "physicalPage": 3,
+      "literalMatch": true
+    }
+  ],
+  "verifiedClaims": [
+    {
+      "claimId": "C1",
+      "text": "推理时，DMC从当前键的首个分量得到二选一信号：经 sigmoid 和四舍五入后，1 表示合并到缓存末项，0 表示追加新项；当前查询的首个分量则经 sigmoid 得到重要性分数。"
+    },
+    {
+      "claimId": "C2",
+      "text": "追加：将新键、值放在缓存末尾，累计重要性重置为当前分数。合并：按已有累计分数和当前分数，对末项与新键、值分别加权平均，替换末项，并累加分数。方法原文：“appended to the cache or accumulated with its last element”。"
+    }
+  ],
+  "providerGenerations": 12,
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 7,
+    "tokens": 50793,
+    "normalTokens": 25871,
+    "elapsedSeconds": 69.0,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "observedSeconds": 70.91,
+  "scientificDecisionAndCacheUpdatesWereCovered": true,
+  "firstRunGap": "The citation and access criterion did not accept the visible fulltext label even though the whole-answer verdict acknowledged it.",
+  "offlineAuditReplay": {
+    "syntheticAccessBindingOnly": true,
+    "legacyStatus": "invalid_response",
+    "updatedStatus": "checked",
+    "wrongVersionStatus": "invalid_response",
+    "newGaps": [],
+    "newAuditPromptBytes": 23975,
+    "newModelCalls": 0,
+    "originalResultUnchanged": true
+  },
+  "regressions": {
+    "passed": 117,
+    "junitSha256": "d47ab677c098e96ae8560bf0dd4846ddce8cc146e48a8f0bbf76eed2dcd34f9b"
+  },
+  "independentAcceptanceCredit": 0,
+  "productionWrites": 0,
+  "rawArtifacts": {
+    "tmp/openai-h3-dmc-first-20261128/calls.json": "568fc8aeae3d77a85c45c645eb3c06a1150008deda60e96d99ff428555f9c620",
+    "tmp/openai-h3-dmc-first-20261128/citation-audit.json": "565e8491de6a10987fda82a058901b7a3af0763df78a79461ae235817ea7e8b5",
+    "tmp/openai-h3-dmc-first-20261128/intent.json": "680d37e88d53de642d7cb5ad52f6262814d1c4efc7f4de9877edfbe2deed4b69",
+    "tmp/openai-h3-dmc-first-20261128/pinned-access-audit-replay.json": "ed6f849c10cbb5806bb9de9e72b5cc40cc1a25c20e328d38cde473cc661067ce",
+    "tmp/openai-h3-dmc-first-20261128/provider.jsonl": "ade3724a6d501367ca41edb41f52f656ff3fa27f9ca4b11ed437a975dc7fa675",
+    "tmp/openai-h3-dmc-first-20261128/rendered-first-report.md": "a7f0436bdcbb6eb75596e710c2b596b2662c207667029db4aaac119e40255613",
+    "tmp/openai-h3-dmc-first-20261128/result.json": "498a2dcafae18f7d284764343dc7dea82c52ae89d6667e9fead0895053880614",
+    "tmp/openai-h3-dmc-first-20261128/run.json": "955768f238afeea9a678372cda90f1c5e846ed9eb43d5e70d7a4d9df3e95457e"
+  }
+}

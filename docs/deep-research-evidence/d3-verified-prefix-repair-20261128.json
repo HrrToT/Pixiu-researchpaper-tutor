@@ -1,0 +1,89 @@
+{
+  "codeCandidate": "47bae25a3",
+  "realRevision": {
+    "status": "invalid_response",
+    "scientificApproval": false,
+    "cumulativeTokens": 60517,
+    "newCalls": 1,
+    "elapsedSeconds": 22.75,
+    "productionWrites": 0
+  },
+  "realInput": {
+    "revisionInputBytes": 31922,
+    "legacyBytes": 37045,
+    "scientificApproval": false,
+    "carriedTokens": 52131,
+    "resolvedSourceFacts": 8,
+    "uncheckedReviewTargets": 9,
+    "suppliedEvidence": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E11",
+      "E14"
+    ],
+    "inputDigest": "54add83fba5c203af1461f78f7b499e5635535314ef76509885b663d06d8baf2",
+    "planDigest": "e284058484863e07ef793ceae7a455ecaf8483d9515a91be1b87c6621dc30bbe"
+  },
+  "actualArmOperationCharacters": 1742,
+  "actualExpandedPlanBytes": 25935,
+  "actualRejection": {
+    "code": "plan.schema",
+    "path": "/steps/9/operation/action"
+  },
+  "boundedPromptPreflight": {
+    "revisionInputBytes": 31906,
+    "legacyBytes": 37045,
+    "scientificApproval": false,
+    "carriedTokens": 52131,
+    "resolvedSourceFacts": 8,
+    "uncheckedReviewTargets": 9,
+    "suppliedEvidence": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E11",
+      "E14"
+    ],
+    "inputDigest": "c2058d27aed1fc2d8f7d9983cd2742c91d3be5f854020d48c46211703a7781a0",
+    "planDigest": "e284058484863e07ef793ceae7a455ecaf8483d9515a91be1b87c6621dc30bbe"
+  },
+  "structuralFixture": {
+    "fieldEdits": [
+      "/steps/9/operation/action",
+      "/steps/6/operation/action",
+      "/factors/0/onOperation/action"
+    ],
+    "countedBytes": 23683,
+    "expandedBytes": 25248,
+    "sourceFactsPreserved": true,
+    "scientificApproval": false,
+    "newModelCalls": 0,
+    "revisionReviewPreflight": {
+      "sent": false,
+      "batchCount": 0,
+      "inputBytes": 39933,
+      "hardIssues": []
+    }
+  },
+  "regressionTests": 358,
+  "rawArtifacts": {
+    "tmp/openai-d3-operation-capacity-review-20261128/run.json": "6bb927325efe2b74d177153065db693f2724de4c387de053f3ba179845fdc523",
+    "tmp/openai-d3-prefix-repair-20261128/run.json": "ec0fd65461bc9590679ff4a8cce882fabef1bc93390740afb9b217833790d559",
+    "tmp/openai-d3-prefix-repair-20261128/calls.json": "8b675f488e71c9b3299a9b0c499d827a02a00041c64d8a32e74749eb8bd6a680",
+    "tmp/openai-d3-prefix-repair-20261128/preflight.json": "b4b0cbe87514e62b3581b2c7d77d9712b9ca2bb935982e0ce16bcfbdb76b89d5",
+    "tmp/openai-d3-prefix-repair-20261128/result.json": "ea324cb6fbf671209b8ebefd69d38faa7324684ea6613e8828c5390105b2a9c1"
+  },
+  "boundedPromptCandidate": "8ced5e706cd19618ee03516fbb74eb9013fc30aa",
+  "boundedPromptRegressionTests": 136
+}

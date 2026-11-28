@@ -1,0 +1,49 @@
+{
+  "case": "X4G-v2",
+  "sourcePayloadSha256": "0adf896e0a678a6b760733067aad467e2c78f58539208a0f3088b3fa6f1e26bd",
+  "unchangedModelResponseSha256": "716800ea70b76378f8a269976a50dd7a83db8ff2eb92b1b268eef10f69a6cc7c",
+  "results": [
+    {
+      "newPolicy": false,
+      "status": "invalid_response",
+      "gapIds": [
+        "ob_2",
+        "ob_3",
+        "answer_scope"
+      ],
+      "invalidAspects": [
+        "answer_scope"
+      ],
+      "criterionGaps": {
+        "ob_2": [
+          "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+        ],
+        "ob_3": [
+          "第5节中深度畸变和法线一致性两个约束分别在约束什么"
+        ]
+      },
+      "displayMetadataDigest": "c83275883d2f854adac48b9a2daeaaa6059c8ef19d51e81183631daf90f4c9bf",
+      "promptBytes": 23786,
+      "checkScopedCatalog": false
+    },
+    {
+      "newPolicy": true,
+      "status": "invalid_response",
+      "gapIds": [
+        "answer_scope"
+      ],
+      "invalidAspects": [
+        "answer_scope"
+      ],
+      "criterionGaps": {},
+      "displayMetadataDigest": "f861b59c6cf4fbca12b89c4f5f3c97a7890652aa082ce1d17263684f727639c4",
+      "promptBytes": 23825,
+      "checkScopedCatalog": true
+    }
+  ],
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "oldTerminalUnchanged": true,
+  "boundary": "Actual raw response replay: locative-number false gaps removed, original illegal metadata binding still fails. No source, model decision, invalid field or old result was edited to obtain a pass."
+}

@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "c6a66cbd",
+  "caseId": "D1",
+  "attempt": 31,
+  "runId": "dr_run_4917372aa6cb576cbc86ac9a59c12f5f",
+  "promptVersion": "dr-v2.20261026.304",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 9,
+  "settledTokens": 39790,
+  "elapsedSeconds": 112,
+  "providerCost": null,
+  "synthesisFinishReason": "stop",
+  "synthesisOutputTokens": 3619,
+  "typedScopeExpressionActuallyCompiled": true,
+  "retainedFinalClaims": 1,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "oldLedgerRows": 7250,
+  "ledgerRowsAfter": 7274,
+  "oldLedgerPrefixAndAllPriorRunPayloadsPreserved": true,
+  "protectedTasksPreserved": 4,
+  "newUnknowns": 0,
+  "sourcePdfSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "visualReview": [
+    {
+      "physicalPage": 8,
+      "renderSha256": "7abde5c38e20e83681e9fd4c32a4dabe5981d8855f95652e4ccd7b78bfcba222"
+    },
+    {
+      "physicalPage": 9,
+      "renderSha256": "19b62a9c626693d8faa62ad5c033c307a7c7ac6f914d2e2386903bd31ba6c443"
+    },
+    {
+      "physicalPage": 10,
+      "renderSha256": "af291839dee3a19d3a7c304f5f892b4ed05b0e0b35515c65e7cee19366affe29"
+    },
+    {
+      "physicalPage": 16,
+      "renderSha256": "5aa3380f1a350a4b4004d9c1c79d3ffdb6dda771f72442074c815fd1cb560a70"
+    }
+  ],
+  "manualReviewBoundary": "Only physical pages 8,9,10,16 reviewed, not the entire paper or all tables; app citation metadata and old reports were not rewritten.",
+  "findings": [
+    "Initial scope settings assert <=70% and >=2 without supporting threshold evidence.",
+    "Repair restores specific 66% / SH2 observations but uses underspecified broader propositions.",
+    "Reviewer incorrectly demands author-written evidence for the entailment boundary; finite observations and absence claims need distinct analysis.",
+    "Original claim remains unaccepted; diagnosing review rationale does not establish that its ambiguous boundary is valid."
+  ]
+}

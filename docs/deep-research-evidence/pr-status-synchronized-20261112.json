@@ -1,0 +1,15 @@
+{
+  "baseRefName": "main",
+  "headRefOid": "cc53eeda2d75496c28be2b79c649919f1e3755c7",
+  "isDraft": true,
+  "mergeable": "MERGEABLE",
+  "state": "OPEN",
+  "title": "feat: 重构统一任务式学术论文助手",
+  "url": "https://github.com/HrrToT/Pixiu-researchpaper-tutor/pull/1",
+  "bodyMatchesReviewedFile": true,
+  "bodySha256": "f265e85a344a564fb562f6584b0efa7e206e887cd1fe5e03dc0cf6a6718ce4f5",
+  "connectorWriteRejected403": true,
+  "cliWriteSucceeded": true,
+  "mergeRequested": false,
+  "newModelCalls": 0
+}

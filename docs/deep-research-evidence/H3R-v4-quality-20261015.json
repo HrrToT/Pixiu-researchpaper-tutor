@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-15",
+  "case": "H3R-v4",
+  "runId": "dr_run_dec8590b28195be089eecdf4923cc991",
+  "promptVersion": "dr-v2.20261015.79",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "eligibility": "Retired development case",
+  "reviewer": "Primary Codex; source and protocol review, not a human study",
+  "modelCalls": 8,
+  "settledTokens": 26442,
+  "cost": null,
+  "report": "本回答引用：全文片段。\n\n## 核心判断\n\n- 实际取得的是全文。pixelSplat不直接预测单一深度，是因为直接优化高斯中心容易陷入局部最小值；改为预测每个像素沿射线的深度概率分布，让模型表达表面可能出现在多个深度的不确定性，从而在多个候选深度上放置高斯。 [1](#research-evidence-ev_dbb8e061f95596911ddb9e96df0ae8e09be8cae6818ab3019f073d865b3a1df5) [2](#research-evidence-ev_ce7b8faaab249296899d866a790d7d42a1b4ceb8a5856d87b96ec205b88a9ddf) [3](#research-evidence-ev_f6c0110d51d1c50b5a0c8d34dfa20083adfe9219a8dfc01a7fd27f70372220a9)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 在arXiv:2312.12337v4中，pixelSplat为什么选择用深度概率分布来放置3D高斯，而不是直接预测单一深度值？请说明动机和好处。：最终回答尚未完整回应这一问题\n- 在arXiv:2312.12337v4中，基于深度概率分布采样高斯的方案在训练时是如何进行的？损失或梯度如何回传到深度分布参数？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> Unfortunately, directly optimiz-\n> ing Gaussian parameters is susceptible to local minima, as\n> discussed in Section 3. Further, as we are back-propagating\n> through the representation, we cannot rely on the spawning\n> and pruning heuristics proposed in 3D-GS, as they are not\n> differentiable. Instead, we propose a differentiable alterna-\n> tive that succeeds in overcoming local minima. In Table 2,\n> we demonstrate that this leads to ≈1dB of PSNR perfor-\n> mance boost.\n\n**[2] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 5 页 · 全文片段\n\n> Proposed: predicting a probability density of µ. Rather\n> than predicting the depth dof a Gaussian, we predict the\n> probability distribution of the likelihood that a Gaussian\n> exists at a depth dalong the ray u. We implement this as\n> a discrete probability density over a set of depth buckets.\n> We set near and far planes dnearanddfar. Between these, we\n> discretize depth into Zbins, represented by a vector b∈RZ,\n> where its z-th element bzis defined in disparity space as\n> bz=\u0012\u0010\n> 1−z\n> Z\u0011\u00121\n> dnear−1\n> dfar\u0013\n> +1\n> dfar\u0013−1\n> .(6)\n> We then define a discrete probability distribution pϕ(z)over\n> an index variable z, parameterized by a vector of discrete\n> probabilities ϕ, where its z-th element ϕzis the probability\n> that a surface exists in depth bucket bz. Probabilities ϕare\n> predicted by a fully connected neural network ffrom per-\n> pixel feature F[u]at pixel coordinate uand normalized to\n> sum to one via a softmax.\n\n**[3] pixelSplat: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction** · 第 4 页 · 全文片段\n\n> Gaussian locations µand opacities αare not predicted directly, which would\n> lead to local minima. Instead, fpredicts per-pixel discrete probability distributions over depths pϕ(z), parameterized by ϕ. Sampling then\n> yields the locations of Gaussian primitives. The opacity of each Gaussian is set to the probability of the sampled depth bucket.\n\n</details>",
+  "findings": [
+    "The external source is actually arXiv:2312.12337v4; fulltext and page-5/page-4 mechanism excerpts are acquired without local task papers.",
+    "Literal evidence improves from one surviving quote in the previous development attempt to five; PDF line-wrap recovery preserves source bytes.",
+    "Training claim is rejected for numeric_mismatch: source 150,000 is compared literally with Chinese 15万; the current parser also splits comma-grouped source numbers. This is a false hard-gate rejection, not evidence of an incorrect training schedule.",
+    "Published motivation alone does not meet the requested complete novice explanation; the opacity/depth-probability gradient path remains absent from the final answer.",
+    "No scientific quality pass is claimed. The already retired case remains development only."
+  ],
+  "scoresOutOfFive": {
+    "goal": 2,
+    "evidence": 3,
+    "conditions": 3,
+    "synthesis": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "rawPayloadSha256": "2d93a0cec85375c897cba8e6d8fed4556421a431402fd8ac45a22bccd92b56be",
+  "rawArchive": "tmp/dr-acceptance-receipts/H3R-v4.payload.json",
+  "boundary": "One submission, all model responses known and settled; no automatic retry or independent acceptance credit."
+}

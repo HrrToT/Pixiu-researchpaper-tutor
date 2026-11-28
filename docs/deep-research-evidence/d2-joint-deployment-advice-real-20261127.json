@@ -1,0 +1,75 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceRunId": "dr_run_e2b489b1c41d585e9f196a0118738d4f",
+  "runId": "dr_d2_joint_deployment_v7_20261127",
+  "sourceCommit": "0ce1da326f540f44ce910c3552a868e022503fd5",
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "paperHashes": [
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634"
+  ],
+  "jointInputBytes": 23960,
+  "automaticRetry": false,
+  "productionWrites": 0,
+  "providerModel": "gpt-6.1-terra",
+  "callUsage": [
+    {
+      "node": "synthesize",
+      "input_tokens": 6978,
+      "output_tokens": 404,
+      "total_tokens": 7382,
+      "cached_input_tokens": 0
+    },
+    {
+      "node": "verify_advice",
+      "input_tokens": 2602,
+      "output_tokens": 226,
+      "total_tokens": 2828,
+      "cached_input_tokens": 0
+    },
+    {
+      "node": "verify",
+      "input_tokens": 4988,
+      "output_tokens": 217,
+      "total_tokens": 5205,
+      "cached_input_tokens": 0
+    },
+    {
+      "node": "verify",
+      "input_tokens": 4831,
+      "output_tokens": 280,
+      "total_tokens": 5111,
+      "cached_input_tokens": 0
+    }
+  ],
+  "totalTokens": 20526,
+  "jointTargetsCompiledInProduction": 3,
+  "semanticChecksCompleted": {
+    "deploymentMemoryAdvice": "passed",
+    "matchedNumericExample": "passed"
+  },
+  "exactBenchmarkPage": 6,
+  "exactTableCellCount": 10,
+  "crossPaperSpeedBoundary": {
+    "status": "verification_incomplete",
+    "observationsSupportedInSavedResponse": 3,
+    "observationsRequired": 4,
+    "entailmentCallDispatched": false,
+    "stopReason": "scoped_run_review_call_limit"
+  },
+  "paperColumnPlaceholdersInCompileReplay": true,
+  "wholeAnswerAuditDispatched": false,
+  "scientificAcceptance": false,
+  "sha256": {
+    "intent.json": "df6451247223dc4977dca90621b0ab2b7ee3cfe07d890bae1cbca79b3c379ab0",
+    "run.json": "4e30b8f887f46e972a82c936a200a243eb1f60051166b71f50f2d0c77017ccd3",
+    "calls.json": "8fd4b0261876aa0ffd589d5740e439547a3f2fadfad34363895f72372f9212aa",
+    "compiled.json": "65c0cc5a25503d99cd1b319b378dc67368d8e5704d91a9791717af9c57d08461",
+    "compiled-state.json": "64815ae62d8f1fc5f988e66d25bd4ee7076b549186c16eb15aecce52cf2ef9f9",
+    "review/intent.json": "7f14ac323069143910d56720813420e732e6dad9e43b643cdcca42497ead2c43",
+    "review/calls.json": "a7d05fc0e18e1976c7071783425bd2ac89c039ee0e7c86a4b218ba30100833c1",
+    "review-replay/partial-verdicts.json": "a4238a7d9e6a79723a508e38c497f7d4f6fa2d20307c402c04ec96af9681c23d"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v45",
+  "payloadSha256": "fc1127241f763d49568f5be015a5d9c51b387716911e10010f98b7da5cdb610a",
+  "mixedObligationId": "ob_e9862b2c182c6a3aa43f5840",
+  "speedTargetRestored": "joint_ob_e9862b2c182c6a3aa43f5840_comparability",
+  "publicationSubjects": [
+    "P1",
+    "P2"
+  ],
+  "priorTargetsUnchanged": true,
+  "frozenCriteriaUnchanged": true,
+  "modelCalls": 0,
+  "scientificAcceptanceEstablished": false
+}

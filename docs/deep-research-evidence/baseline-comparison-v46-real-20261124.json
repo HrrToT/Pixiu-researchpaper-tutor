@@ -1,0 +1,71 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v46",
+  "sourceCommit": "26c3d76601540f008b153c3418c1c6c5a19df5c1",
+  "runId": "dr_run_1f54eadf73c05295ae931ac13f1ed91e",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "paidModelCalls": 14,
+  "budget": {
+    "tokens": 78530,
+    "elapsedSeconds": 129.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0
+  },
+  "stages": {
+    "P1": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    "P2": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    },
+    "joint": {
+      "status": "compiled_unverified",
+      "isolatedTargets": []
+    }
+  },
+  "crossPaperTargets": {
+    "joint_ob-2-2_comparability": [
+      "P1",
+      "P2"
+    ]
+  },
+  "compileAndVerifyCounts": {
+    "compiled": 10,
+    "initiallyVerified": 5,
+    "individuallyVerified": 5
+  },
+  "initialRejections": {
+    "numeric_mismatch": 1,
+    "missing_table_bindings": 1,
+    "comparison_benchmark_example_scope": 3
+  },
+  "benchmarkExampleIndividuallyVerified": false,
+  "audit": {
+    "status": "invalid_response",
+    "bindingErrors": [],
+    "answerCoherent": null,
+    "verdicts": {
+      "ob-1-1": "partial",
+      "ob-1-2": "partial",
+      "ob-2-1": "partial",
+      "ob-2-2": "partial",
+      "requested_numeric_example": "missing",
+      "answer_scope": "missing"
+    }
+  },
+  "published": false,
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "independentCredit": 0,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "fde8ae2323199df4372739959713c7ce3381e2de2c02fb625187e7e86b2a6901",
+    ".calls.json": "1e5ea2eb8aa3563eb2b409e10703654eea41344faa03bd8d37e24a728add3479",
+    ".result.json": "5e324b5ac95239df5c765df2b1cc0ea5ad4290026aecc7d003f1fe143c2e9b94",
+    ".execution.json": "4c1d31dd92ffdb5b66ecee6afcb208231a869c02a157b1d8b754fdd80ba857b5",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}

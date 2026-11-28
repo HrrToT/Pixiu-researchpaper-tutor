@@ -1,0 +1,89 @@
+{
+  "case": "AD1N-v32",
+  "runId": "dr_run_a4251daf400559ffae30e3fabc0e7941",
+  "sourceCommit": "0b5177910db947a13a1b5354785b815187d9da4a",
+  "promptVersion": "dr-v2.20261115.452",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "actualModelCalls": 12,
+  "allCallsSettled": true,
+  "tokens": 56414,
+  "elapsedSeconds": 100.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "allSourcesExactV1Fulltext": true,
+  "renderedDraftCharacters": 184,
+  "automaticSemanticAcceptedInitialClaims": 0,
+  "finalVerifiedClaims": 1,
+  "unverifiedC1NotPublished": true,
+  "wrongSmallStepTextNotPublished": true,
+  "audienceIntroducedWrongDirection": true,
+  "wrongPhraseAbsentFromOriginalSynthesis": true,
+  "initialClaim1ReviewDiagnostic": {
+    "version": 1,
+    "reportedStatus": "failed",
+    "reasonSha256": "8818e7255334a7c29a57886d3fc6af6b5928084c58628a23d05b045a788a6e85",
+    "bindingCount": 2,
+    "newNumberCount": 2,
+    "unboundNewNumberCount": 1,
+    "errors": [
+      "new_diagnostic_numbers_not_bound"
+    ],
+    "sourceParameterIdentityContractVersion": 1
+  },
+  "diagnosticCounterfactualProof": "review-target-count-v32-diagnosis-20261115.json",
+  "repairActuallyReached": true,
+  "reverifiedRepairClaims": [
+    "c2"
+  ],
+  "correctionVersionLoaded": 2,
+  "correctionActuallyNeeded": false,
+  "correctionActuallyCalled": false,
+  "fixedProseEditorActuallyCalled": false,
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 26,
+    "ledgerRows": 9575,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "findings": [
+    "Initial synthesis did not contain the erroneous small-initial-step claim. Audience rewrite introduced it in both c1 and c2; this is a real fidelity error, not a binding-format issue. Factual review rejected/quarantined it; bad c1 is not published.",
+    "c2 was revised to the source-bound sparse-gradient/small-beta2 large-initial-step condition and independently reverified. c1 remained unresolved because diagnostic numeric provenance treated target sentence-count navigation as an unbound paper measurement. Exact offline replay reproduces this and preserves the negative verdict when removing only the meta-count phrase.",
+    "No synthesize_compact call occurred. Increased calls came from repeated relevance assessments, not compression; an intermediate commentary inference was corrected against the raw journal.",
+    "Final coverage2 explicitly reports not_needed for binding correction; true missing explanatory content remains. This case does not exercise the new low correction or prove full scientific/novice quality.",
+    "Next fix narrowly validated target-structure references in reviewer diagnostics, preserving unsupported scientific counts and negative verdicts. Track audience fidelity as an independent issue; do not loosen final science or rerun this case unchanged. Full multi-paper, experiment, fresh independent and release work remains."
+  ],
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v32.json": "d10aff647f2de5f5cd2e5ab07f304e0d2c40005ac6134b5b822bff2740d25f1c",
+    "tmp\\dr-acceptance-receipts\\AD1N-v32.result.json": "ea4c9437f39ce512cddd7499d6d9211d52edda4edc84bd5d089785427a166800",
+    "tmp\\dr-acceptance-receipts\\AD1N-v32.payload.json": "cbdce91eafd975607b40e4bc1bbb4321bd21729316bd4ae80acd1c28d0c37e7b",
+    "tmp\\dr-acceptance-receipts\\AD1N-v32.calls.json": "95b214b44f68fffb2b11e14e84b80c8de6c96671f5019c42585277d6c9e3ea89",
+    "tmp\\dr-acceptance-receipts\\AD1N-v32.preservation.json": "608053f39cddbf1de3d728e647ff724aaade9f6530228ad70e73417df7e33ee8"
+  }
+}

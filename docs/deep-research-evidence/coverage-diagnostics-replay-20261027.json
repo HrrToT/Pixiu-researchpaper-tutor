@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-27",
+  "sourceCase": "D1-v36",
+  "savedPayloadSha256": "ab8af6f7efadd6305ca11436ad61d884f86b3b49b964df2d9cdb087c01871a09",
+  "legacyRequestAndResultExactlyPreserved": true,
+  "legacyPromptBytes": 23998,
+  "diagnosticPromptBytes": 23921,
+  "legacyEvidenceRows": 15,
+  "newCompleteEvidenceRows": 11,
+  "allFourCitedQuotesAndContextsExactlyPreserved": true,
+  "oldPartialNotUpgraded": true,
+  "newAuditStatus": "invalid_response",
+  "diagnosticErrors": [
+    "ob_1",
+    "ob_2",
+    "ob_3",
+    "answer_scope"
+  ],
+  "savedPayloadUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Read-only replay of saved responses. Optional uncited rows use remaining capacity; no source fields are shortened. No new supplier response or content acceptance."
+}

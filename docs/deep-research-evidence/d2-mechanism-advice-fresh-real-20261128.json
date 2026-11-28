@@ -1,0 +1,159 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_development_mechanism_and_advice_graph_run",
+  "sourceCommit": "fe44b59b9674e68c8ef0dc5ac39782ef21734d4a",
+  "runId": "dr_run_299ffb76f9f55fb0a88c123065108e9f",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "independentHoldoutCredit": 0,
+  "reusedStageReceipts": 0,
+  "externalLiteratureSearches": 0,
+  "productionWrites": 0,
+  "usage": {
+    "generationCalls": 15,
+    "tokens": 83218,
+    "seconds": 149.0,
+    "byModel": {
+      "gpt-6-luna": {
+        "calls": 5,
+        "tokens": 17958
+      },
+      "gpt-6.1-terra": {
+        "calls": 10,
+        "tokens": 65260
+      }
+    }
+  },
+  "result": {
+    "outcome": "partial",
+    "verifiedClaims": 11,
+    "factualRejections": 0,
+    "wholeAnswerAuditStatus": "checked",
+    "coherent": true,
+    "coveredObligations": [
+      "obl1",
+      "obl2",
+      "obl3",
+      "requested_numeric_example"
+    ],
+    "remainingObligations": [
+      "obl4",
+      "answer_scope"
+    ],
+    "wholeQuestionDiagnostic": {
+      "requestExcerpt": "给出显存受限时的有条件选择建议",
+      "missingAnswerElement": "答案尚未说明何种条件下倾向选择哪一种方法。"
+    },
+    "deliveredToWorkspace": false,
+    "publicationId": "dr_pub_f48a8ca058a148bb926d560354472a20"
+  },
+  "diagnostic": {
+    "mechanismClaim": {
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_bcb72e34c04a7aefbc6d722fb2b8e6be5cc17870d28f566d921450a94f907775",
+        "ev_09252fb30a4de92eebc601686acba7679d654ad29683b41118baee8409f43d76",
+        "ev_aa738a8dc00c4e493bc3d30e20164c83b621b410ae0dfd8445a429727f2ee265",
+        "ev_cdb79f003a09cb862f6c7eaef50f58cf1cb4b03e8530de6b49677f473b7fc82d",
+        "ev_32d9efa1066089b95c4a322203ae523d553c689e83488ded4a5db98d7c9ae86c",
+        "ev_f78cc1c154671213f411599d1d99edb7dfe33a5a2ae2ac746f81509e2aede427",
+        "ev_bb0da39c78011d0fa769410197add0cca2fdb70ed36c72629fc573bf295cfab3",
+        "ev_15cf20b0877eca6f24f16a3a3e0f79d6a3e6550c998a55c12cb820d319a691b9"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "claimId": "cmp_1_0",
+      "obligationIds": [
+        "obl1"
+      ],
+      "text": "LightGaussian 压缩由位置、球谐系数（用于描述颜色随视角变化的系数）、不透明度、旋转和缩放描述的三维高斯表示：剪除冗余高斯，再通过协同适应（剪枝后调整剩余高斯以恢复信息）恢复剪枝损失的信息。为减少球谐系数，它让低阶学生模型（学习匹配教师预测的较小模型）匹配全阶教师模型（为较小模型提供学习目标的模型）预测的像素亮度；额外视角通过在训练相机位置周围作高斯采样生成。随后对重要性较低的球谐系数做向量量化（用有限的代表向量表示输入特征），将其映射到距离最近的码本（一组可供匹配的代表向量）向量。",
+      "conditions": {},
+      "verification": "semantic_passed"
+    },
+    "adviceClaim": {
+      "kind": "proposal",
+      "evidenceRefs": [
+        "ev_6cc12bbb30e5f474bc863a042d3823ebc163371fa8192ee5841a2cac88b7b893",
+        "ev_4f565ca1d529bce813c2e87b4de0f8dfa13d952157edcb148f1a0e0cb80d0123",
+        "ev_504fbfd0ce6ae9cabeb65878be4d7e2100f234732fefee51eaaf014e7de49069",
+        "ev_1706158825cd87f070381a528780dc076aca7215495f0dd6f0af412fa9cb8f3e",
+        "ev_d4f57f6a98c5b1420e93efc47651d17097f849c8a5bfcd1beb49c6b259462005",
+        "ev_e5ba454a3d812bf4f0cc82c55a2011d3085e0aa1bec36f1a1245953ef37ef52c"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "claimId": "cmp_conclusion_1",
+      "obligationIds": [
+        "obl4"
+      ],
+      "text": "先在相同场景、分辨率和运行设置下实测两种方法的峰值显存与画质，再选显存达标且画质可接受的方案；若都不达标，调整设置后重测。模型文件大小不等于峰值显存，也不等于渲染速度：原始3DGS论文指出渲染除模型外还需光栅化器显存，训练大场景的峰值显存可能更高。LightGaussian在原始训练之外还要做压缩处理：降低球谐系数阶数，并对部分系数做向量量化（用共享码本近似表示），另需微调；因此应分别测量训练、压缩和部署阶段，不能仅凭文件大小预测显存胜者。",
+      "conditions": {},
+      "verification": "proposal"
+    },
+    "glossErrorsByStage": {
+      "P1": 0,
+      "P2": 0,
+      "joint": 0
+    },
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    }
+  },
+  "sourceChecks": {
+    "literalOccurrencesAtCitedPages": 39,
+    "tableCitationOccurrences": 3,
+    "tablePhysicalPage": 6,
+    "tableRows": {
+      "3D-GS": [
+        "144",
+        "782MB",
+        "27.40",
+        "0.813",
+        "0.217"
+      ],
+      "Ours": [
+        "237",
+        "45MB",
+        "27.13",
+        "0.806",
+        "0.237"
+      ]
+    }
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/intent.json",
+      "sha256": "514b21ef108f2c5467545401fbd43766c9ec83753b544d003fe3ce8666091c40"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/run.json",
+      "sha256": "a5788afb1ef9c4d531fd13e613f975609425919e46ef8a0ece87be2967dd0891"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/calls.json",
+      "sha256": "b61deec97a9951f4c5a37cbcb344d89488fc2a16388ba9f8216091d58ce855b3"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/result.json",
+      "sha256": "08b8e4a2a8b04221e779dd9eb5e962ccde9ba1c594d4f3e0e2e56ce316438010"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/provider.jsonl",
+      "sha256": "5c7cb33d62df3e6341b480ca98ea6111ba0ff40e4ec7474eace2a85b3497a4c2"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/provider-counts.jsonl",
+      "sha256": "e4eef9f4b5171138b70f3796a4a630839918f90c74875ea8604aa1c60202d793"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/report.md",
+      "sha256": "29caf529e38f8de8e4e50cd3bc7f152ab8b8aa54bd08777c16ecd56a7ee67dc4"
+    },
+    {
+      "path": "tmp/openai-d2-mechanism-advice-fresh-20261128/citation-physical-check.json",
+      "sha256": "b1d9537537c8ce3504add96bd320ba0ad76b40f0d8957ed42ba40dbdb09ba98b"
+    }
+  ]
+}

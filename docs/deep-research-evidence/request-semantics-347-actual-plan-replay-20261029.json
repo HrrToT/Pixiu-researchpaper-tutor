@@ -1,0 +1,71 @@
+{
+  "sourceCase": "S1G-v6",
+  "payloadSha256": "0450ea6af31eee8417006894f314ccf9411d39edf075a296f1a246dd13377202",
+  "archivedSettledPlanReplyReplayed": true,
+  "before": {
+    "obligationId": "ob_3",
+    "question": "用户实际阅读的是LightGaussian论文的全文还是摘要？",
+    "requiredSources": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+    ],
+    "searchQuery": "LightGaussian full text or abstract",
+    "purpose": "answer_requirement",
+    "requestExcerpt": "标明实际读到的是全文还是摘要",
+    "completionCriteria": [
+      {
+        "criterionId": "requirement_1",
+        "requirement": "根据提供的材料，判断用户实际阅读的是全文还是摘要，并明确标注",
+        "responseType": "identification"
+      }
+    ]
+  },
+  "after": {
+    "obligationId": "ob_3",
+    "question": "标明实际读到的是全文还是摘要",
+    "requiredSources": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+    ],
+    "searchQuery": "LightGaussian full text or abstract",
+    "purpose": "answer_requirement",
+    "requestExcerpt": "标明实际读到的是全文还是摘要",
+    "completionCriteria": [
+      {
+        "criterionId": "requirement_1",
+        "requirement": "标明实际读到的是全文还是摘要",
+        "responseType": "identification"
+      }
+    ]
+  },
+  "normalizationAudit": [
+    {
+      "obligationId": "ob_3",
+      "requestExcerpt": "标明实际读到的是全文还是摘要",
+      "before": {
+        "question": "用户实际阅读的是LightGaussian论文的全文还是摘要？",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "根据提供的材料，判断用户实际阅读的是全文还是摘要，并明确标注",
+            "responseType": "identification"
+          }
+        ]
+      },
+      "after": {
+        "question": "标明实际读到的是全文还是摘要",
+        "completionCriteria": [
+          {
+            "criterionId": "requirement_1",
+            "requirement": "标明实际读到的是全文还是摘要",
+            "responseType": "identification"
+          }
+        ]
+      }
+    }
+  ],
+  "onlyOneGroundedAccessObligationChanged": true,
+  "idsSourcesAndOtherObligationsUnchanged": true,
+  "providerCalls": 0,
+  "productionWrite": false,
+  "scientificApproval": false,
+  "independentCredit": 0
+}

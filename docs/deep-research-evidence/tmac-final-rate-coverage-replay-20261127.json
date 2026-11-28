@@ -1,0 +1,20 @@
+{
+  "legacyOutcome": "complete",
+  "replayOutcome": "partial",
+  "gapQuestions": [
+    "核对 v1 表格与同页正文的数值",
+    "核对 v2 表格与同页正文的数值"
+  ],
+  "verifiedClaimsPreserved": [
+    "c1",
+    "c3"
+  ],
+  "liveProviderCalls": 0,
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "development_publication_replay",
+  "originalReceipt": "tmac-same-page-development-live-20261127.json",
+  "replaySha256": "e7ec91f6b75e80d0ad474ae6d799025a38b68d0bffb06fc01d9e4726f7b03557",
+  "targetedTestsPassed": 87,
+  "liveSemanticCorrectionUnverified": true,
+  "unseenHoldoutCredit": 0
+}

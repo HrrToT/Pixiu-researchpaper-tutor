@@ -1,0 +1,34 @@
+{
+  "sourceCommit": "63cf11891e48881327ed7041b3f6d68f7cc7a0b8",
+  "promptVersion": "dr-v2.20261116.482",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 16073,
+    "input_tokens": 9929,
+    "output_tokens": 6144
+  },
+  "unitValid": false,
+  "unitErrors": [
+    "unit.output_truncated"
+  ],
+  "inputBytes": 31872,
+  "onlyReasoningChanged": true,
+  "promptMessagesSchemaOutputCapDeadlineExact": true,
+  "rawAnswerBytes": 0,
+  "finishReason": "length",
+  "allModelCallsSettled": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "contentReview": {
+    "accepted": false,
+    "conclusion": "Initialization-only low reasoning exhausted the same6144 output allowance without visible JSON; no content could be evaluated"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-reasoning-482-reviewed-component-20261116/result.json",
+  "rawResultSha256": "96a29f101026886ea666d8c36e683e26d33405c9735dec7bb1bdfc0e929dbb0e"
+}

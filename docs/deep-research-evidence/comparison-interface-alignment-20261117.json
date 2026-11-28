@@ -1,0 +1,47 @@
+{
+  "asOf": "2026-11-17",
+  "scope": "Typed comparison producer/consumer table schema and native items/coherence transport alignment",
+  "relatedTests": 181,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit": "tmp/comparison-interface-reviewed-20261117.xml",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_audit.py": "eaba07e4cce1f1655b4e8394be6858039da2a927a79e48bd71b82002627dcc12",
+    "ai-service-python/services/deep_research/comparison_generation.py": "c302d8934cc85c7339cc1a08f9642d261ac3889b0aaa9ca0a0cbe17f5adce9d5",
+    "ai-service-python/tests/test_deep_research_comparison_audit.py": "8381723016d4cfb632854b157ad53ffc2e85f788e5d66864ce867cc29be7f3a9",
+    "ai-service-python/tests/test_deep_research_comparison_generation.py": "3834a441b903c937eb58ea76a9b9546c5b6a0befcf715ff5c0b54f082055d78a",
+    "ai-service-python/tests/test_deep_research_comparison_intent.py": "9e9f47e50fb9a6be137842d21108256691217f4f3ea6f6641ce0c222c2e22bf8"
+  },
+  "modelCalls": 0,
+  "runtimeReloaded": false,
+  "historicalResponsesReinterpreted": false,
+  "scientificContentAccepted": false,
+  "fullRegressionCoversCandidate": false,
+  "savedCapacityReplay": {
+    "scope": "Actual capacity admission on hypothetical v3 wrapper of all nine saved unverified drafts",
+    "calls": [
+      {
+        "node": "verify_answer_coverage",
+        "bytes": 23983,
+        "claims": 9,
+        "evidence": 11,
+        "checks": 10,
+        "completeRequiredEvidenceValuesMatch": true,
+        "requiredEvidenceValuesSha256": "d4a1b38743781e62d32e0c1c8da52d8c860f12a05274fadf313694bb2a8d0ea3"
+      }
+    ],
+    "status": "invalid_response",
+    "budgetLimit": null,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "historicalReceiptUnchanged": true,
+    "noAdmissionPatch": true,
+    "scientificContentAccepted": false
+  },
+  "remaining": [
+    "Mechanism and cost evidence acquisition/selection and synthesis quality.",
+    "Dataset/method/metric display and own original supporting passages must remain correct after binding field correction.",
+    "Bounded repair evidence input and real content validation; independent H1-H6/product/release gates remain open."
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "candidate": "academic-dr-research-finalization-batch-verified-candidate-20261126",
+  "sourceCommit": "455812b14f2e14a842797c2c2fb5bbed4bda46bc",
+  "fullRegression": "research-finalization-batch-verified-full-20261126.json",
+  "automaticRetry": false,
+  "cases": {
+    "D2-BASELINE-COMPRESSION-v56": {
+      "runId": "dr_run_38eccc5a6d36504f9d9ccffde2acf9b3",
+      "status": "completed",
+      "outcome": "partial",
+      "errorCode": null,
+      "modelCalls": 18,
+      "tokens": 78251,
+      "elapsedSeconds": 148.0,
+      "reportSaved": true,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "91a15bcf6bf41b47b313c175c2886379114043834fa98de746c970a8baf728a1",
+        "calls": "3bc1bc3af15d727985976049bb02e34bff3c2bacd85236d151ba228d87d7bb95",
+        "execution": "7217869ebc39c4f1263e73c3ab3b0ff0c253d3e720542f1589652d4e2f766aa5",
+        "result": "a2b7e8205ce3692c3d8e905bff1f2c04c5f7be15eb87c83adee578142bed1cf5"
+      },
+      "comparisonDraftErrors": [],
+      "scientificGap": "The partial report states the cross-paper FPS limit and a matched numerical example; six run gaps remain.",
+      "gapCount": 6
+    },
+    "D3-DENSIFICATION-FACTORIAL-v10": {
+      "runId": "dr_run_2e80f8f563485bb7aa2ab941b9776cc5",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_shared_experiment_response",
+      "modelCalls": 6,
+      "tokens": 30357,
+      "elapsedSeconds": 87.0,
+      "reportSaved": false,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "b6c195cc5a07e4a69c9ca196c7f50720bac9b7a37d457909f9f903ac938d6a3c",
+        "calls": "3ae292e05a6aab73b0ba3e9d671942cc20759e4702fae55d596d604b370b0e72",
+        "execution": "e37d7e9832b78bc928c9f83c7762eab9d011403f85767f5cbc76439712c261bc",
+        "result": "f933e79a91fa484eabeeca45b88d135d245c3061e7385b1369ebe080f96ad468"
+      },
+      "planIssues": [
+        {
+          "code": "plan.budget_allocation",
+          "path": "/budgets/0"
+        },
+        {
+          "code": "plan.incomplete_resource_accounting",
+          "path": "/metrics/3/stateIds"
+        }
+      ],
+      "allFactorLevelsPresent": true
+    },
+    "H3-RETRIEVALATTENTION-v1": {
+      "runId": "dr_run_9bb9df5044b05d6380b4a5a3a0adb527",
+      "status": "completed",
+      "outcome": "partial",
+      "errorCode": null,
+      "modelCalls": 12,
+      "tokens": 54223,
+      "elapsedSeconds": 129.0,
+      "reportSaved": true,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "8574210e6042ecae852d23b374e26da62e49570de996f4ec56fefd17941b1173",
+        "calls": "d3fe3e573ef64a9579318f4a656c89401fd14744b31ffc02b312d8ad1aa346f0",
+        "execution": "f7fe8cdebac6e027d8f93abf134bea9b7cca1c716ddf05eb9326ac7b9942b2ec",
+        "result": "b91cd30b23f193c9ba057d8bc016ad878a5d10b4cf30a74d2a465f09fc05875f"
+      },
+      "externalFulltext": {
+        "versionId": "arxiv:2409.10516v2",
+        "accessLevel": "fulltext",
+        "networkRequests": 1,
+        "cacheHit": false,
+        "contentHash": "1d5d3a08847136de0ba791e33d5c589e47d1b7e0cd7f0d0490e34bddfbc84926",
+        "pageCount": 16,
+        "matchesEvaluator": true
+      },
+      "scientificGap": "The report identifies CPU/GPU computation and combination but omits the full retention split, the static GPU window and how the partial results are weighted."
+    },
+    "D5-v19": {
+      "runId": "dr_run_4d726da450825af18bc91e52daf98562",
+      "status": "completed",
+      "outcome": "inconclusive",
+      "errorCode": null,
+      "modelCalls": 9,
+      "tokens": 37724,
+      "elapsedSeconds": 54.0,
+      "reportSaved": true,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "cfef3775fe461c3484dbb14c77bb6488f8dd9ebd5b5e53a5e185d1e1cdabfbab",
+        "calls": "b6d1a172ac3da68078268e59cba24cd43885ea583600d2e689f158f1d7b8fa09",
+        "execution": "b1fa351ab1bb5499f9dddcaa2ac9cb55e92e6dcebfd4ba3e0a86a555ce407b31",
+        "result": "6ac7e3c9b57dc243447fb98758574ca0182db327509e1a23b9a2636d0739c8e7"
+      },
+      "comparisonDraftErrors": [],
+      "parentAndArtifactsUnchanged": true,
+      "scientificGap": "The draft compiled, but the final result had no verified joint comparison."
+    },
+    "H4-AWQ-VERSIONS-v2": {
+      "runId": "dr_run_ddc0f3786ecf5d06ab83c52f72e444ff",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_synthesis_response",
+      "modelCalls": 7,
+      "tokens": 27227,
+      "elapsedSeconds": 38.0,
+      "reportSaved": false,
+      "scientificContentAccepted": false,
+      "sha256": {
+        "payload": "bed44f9745677a685b7d1acac23074d470de9e8d8b80d80722b6efe980b79525",
+        "calls": "50632647f49262b3f3452c4e9e9734982105198b070b536232007b83aefce533",
+        "execution": "727d23f1a33a5fbae6576c3c145cdc5f49a35766b838a3fb39166ddc59f566ce",
+        "result": "f23e1fc1878c6ed392fe931ea3bf799fdc05ce7d3311bd4c8c705f2166c1a066"
+      },
+      "structuredTableEvidenceFromBothVersions": true,
+      "draftVisibleCharacters": 410,
+      "characterLimit": 400,
+      "draftReversedPaperVersions": true,
+      "independentCredit": 0
+    }
+  },
+  "awqOfflineRuntimeReparse": {
+    "caseId": "H4-AWQ-VERSIONS",
+    "taskId": "dr-acceptance-h4-awq-versions-20261126",
+    "paperIds": [
+      "48bdf59ea52fccf40346ae129ef49d233ec9dcfe6b9b35e06002204c8123edfb.pdf",
+      "b24539f859d0cf01178e06e3dafd0a07553c83460d084591f22eeb32fc681727.pdf"
+    ],
+    "processing": [
+      {
+        "processingStatus": "ready",
+        "questionReady": true,
+        "ragChunkCount": 111,
+        "aiAnalysisStatus": "not_requested"
+      },
+      {
+        "processingStatus": "ready",
+        "questionReady": true,
+        "ragChunkCount": 91,
+        "aiAnalysisStatus": "not_requested"
+      }
+    ],
+    "sourcePolicy": "task_only",
+    "budgetProfile": "standard",
+    "taskCreated": true,
+    "researchSubmitted": false,
+    "modelCalls": 0,
+    "scientificContentCredit": 0,
+    "allOwnedUpdated": true,
+    "exactCustomerTableCells": true,
+    "indexedPaperHashesChecked": true
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_ddc0f3786ecf5d06ab83c52f72e444ff",
+      "dr-development-baseline-compression-20261124-v49": "dr_run_4d726da450825af18bc91e52daf98562"
+    },
+    "newModelCalls": 0
+  }
+}

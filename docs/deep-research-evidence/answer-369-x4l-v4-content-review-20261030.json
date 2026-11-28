@@ -1,0 +1,93 @@
+{
+  "promptVersion": "dr-v2.20261030.369",
+  "sourceCommit": "bbad0266",
+  "case": "X4L-v4",
+  "runId": "dr_run_bf946260276a5f39a0a2942716ab30ad",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "modelCalls": 9,
+  "tokens": 42402,
+  "elapsedSeconds": 228.818,
+  "answerCoherence": {
+    "contractVersion": 1,
+    "status": "checked",
+    "answerDigest": "6c4f2b740021af8e77aeb4656bfd5a0c7e70a01c5546d070a8f4a7834ac137e2",
+    "coherent": true,
+    "issues": []
+  },
+  "coverageGaps": 2,
+  "acceptedClaims": [
+    {
+      "claimId": "c1",
+      "text": "这里的“2D”指每个基元是二维的椭圆盘，但许多这样的盘放在三维空间中，通过朝向和位置排列，就能拼出三维场景的表面。渲染时，光线与这些盘求交，得到正确的深度和视角一致性，所以二维基元仍能表示三维场景。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847",
+        "ev_96e7d1d5264ec8b49bd7a3dcea93ccf4c4b1e62d06159091cb145bf8cb04b97f",
+        "ev_1306ca99578e5bc45b6848d4e0836e6e4663218fe63d09fd405f78bf15a2254a"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "brief",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "manualReview": {
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "scores": {
+      "targetResponse": 1,
+      "evidenceSupport": 3,
+      "conditions": 3,
+      "synthesis": 1,
+      "readability": 3
+    },
+    "reason": "Only 2D primitive / 3D scene explanation survives; both requested training constraints are absent. Correct-depth phrasing is stronger than an unconditional geometry guarantee warrants. Machine partial is appropriate; coherence true does not prove completeness.",
+    "remainingTopics": [
+      "depth distortion minimizes blending-weighted pairwise ray intersection depth dispersion",
+      "normal consistency aligns splat normals with rendered-depth-derived surface normals"
+    ],
+    "repairFailure": {
+      "kind": "repairEvidenceBytes",
+      "limit": 24000,
+      "used": 24319
+    },
+    "allDimensionsNeedAtLeast": 4
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 21,
+    "ledgerRows": 8164,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "protectedTasksExact": 12,
+  "repeatedTerminalGetExact": true,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "payloadSha256": "d75ef32775ccfafb8568d195a192d413cdb089672a91c4c080ac2239868f92be"
+}

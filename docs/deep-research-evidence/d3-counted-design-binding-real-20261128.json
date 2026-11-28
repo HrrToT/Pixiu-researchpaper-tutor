@@ -1,0 +1,136 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "split": "development",
+  "independentCredit": 0,
+  "actualCandidate": "f5b8d74511c42f2402297d5ea514d68ed032c2ff",
+  "codeFixCandidate": "644b7e9101ada5025d94cb8b0943784c218f4f1e",
+  "runId": "dr_d3_counted_design_final_20261128",
+  "continuedRunId": "dr_d3_design_only_repair_20261128",
+  "carriedCalls": 11,
+  "carriedTokens": 75158,
+  "carriedWallSeconds": 217.89,
+  "newGenerations": 1,
+  "providerInputCountRequests": 1,
+  "actualInputCount": 9310,
+  "ledgerReservationTokens": 14430,
+  "newUsage": {
+    "total_tokens": 10598,
+    "input_tokens": 9310,
+    "output_tokens": 1288,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 9307
+  },
+  "tokensIncludingCarried": 85756,
+  "observedWallSecondsIncludingCarried": 279.8,
+  "reusedFactChecks": 8,
+  "firstDesignBatchCheckCount": 8,
+  "structuralVerdict": "invalid_response",
+  "rawInvalidPointer": "/metrics/1/fitMemoryCaptures",
+  "scientificFindingsPreserved": [
+    {
+      "checkId": "section_2",
+      "status": "failed",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/9/operation/action",
+        "/states/2/representation",
+        "/data/inputs/2/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E6",
+          "field": "before"
+        }
+      ],
+      "reason": "初始 RGB 到 SH 系数的拟议规则、渲染计算和球谐频带调度未具体定义；预训练还依赖未完整给出的固定渲染及优化器规则。仅要求实现和自检不能补足可执行状态计算。"
+    },
+    {
+      "checkId": "section_4",
+      "status": "failed",
+      "planBindings": [
+        "/pairing/identityChecks",
+        "/steps/2/operation/action",
+        "/steps/4/operation/action",
+        "/states/3/representation",
+        "/states/4/representation",
+        "/states/5/representation",
+        "/steps/1/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        }
+      ],
+      "reason": "检查点深拷贝、哈希及独立可写状态有规定，但初始 SH 系数映射未定义，无法完整确定共同初值或复核检查点生成。"
+    },
+    {
+      "checkId": "section_5",
+      "status": "failed",
+      "planBindings": [
+        "/budgets/0/cap",
+        "/budgets/0/stopRule",
+        "/budgets/1/stopRule",
+        "/budgets/2/stopRule",
+        "/budgets/3/stopRule",
+        "/steps/2/operation/action",
+        "/steps/9/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "after"
+        },
+        {
+          "evidenceId": "E1",
+          "field": "quote"
+        }
+      ],
+      "reason": "四臂等步预算、准备计时和失败处理明确；但共同预训练引用未完整定义的渲染及 Adam 规则，SH 初始化和调度也缺失，无法确定完整训练程序。"
+    }
+  ],
+  "secondDesignGenerationSent": false,
+  "finalAuditSent": false,
+  "published": false,
+  "offlineReplay": {
+    "rawReviewRejectsOnLegacyContract": true,
+    "newBindingFindings": [],
+    "unmodifiedReviewCheckedIds": [
+      "section_0",
+      "section_1",
+      "section_2",
+      "section_3",
+      "section_4",
+      "section_5",
+      "section_6",
+      "section_7"
+    ],
+    "scienceFailedIds": [
+      "section_2",
+      "section_4",
+      "section_5"
+    ],
+    "scienceApproval": false,
+    "providerCalls": 0,
+    "generationInputBytes": 31884,
+    "generationKeepsExactEvidence": true
+  },
+  "targetedRegressionsPassed": 239,
+  "rawArtifactSha256": {
+    "intent.json": "299a43766f284c3837fa10cad97a9c53249122a887c1eae7b4d31995d2b809a5",
+    "calls.json": "d1463d9245ff763b89be30b062310dd23f923dd53777dbf02a896d661f6e30af",
+    "run.json": "5753f8a311060897f4b679b8585ee1561cdc88b191d41257a3b9a87770c9cd8c",
+    "result.json": "ec66ffda6ca142be63ca22b5a857d2642d22c29fd9b92115db3b0b4ac58661b6",
+    "provider.jsonl": "ed67e37dd245b6b30deda64cdb4fb84bf3b9788bd8b66c85004c876db57c4c8d",
+    "fit-binding-offline-replay.json": "08d9a0225ea9e1f374fd7bf8c547d16e4e4988c131a4b8151c34628fc50fa51a"
+  }
+}

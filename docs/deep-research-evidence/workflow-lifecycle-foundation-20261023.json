@@ -1,0 +1,107 @@
+{
+  "status": "foundation_only_not_enabled",
+  "focusedTests": 49,
+  "compatibilityTests": {
+    "files": 4,
+    "passed": 96,
+    "seconds": 6.22,
+    "logSha256": "60b8c030deb5825b4534b10d2341fb94de2177a2552404713a834304a01d48ab"
+  },
+  "sourceHashes": {
+    "services/deep_research/workflow_lifecycle.py": "5505a5a790b26be673701e08b9aaf79a4418babc052d58c1214bfc1183e8b907",
+    "tests/test_deep_research_workflow_lifecycle.py": "40f96259420233d678f36e1ad99eacfb56e7ddcad202bc8526a048d17df88a4a"
+  },
+  "abstractFixture": {
+    "frameIterations": 30,
+    "declaredRecoveryBudget": {
+      "mode": "unmatched",
+      "unit": "optimizer_steps",
+      "groups": {
+        "0": 4500,
+        "1": 9000
+      },
+      "note": "Whole treatment includes additional fitting; no matched-budget attribution."
+    },
+    "events": [
+      {
+        "id": "ntc",
+        "scope": "per_repeat",
+        "groups": [
+          "0",
+          "1"
+        ],
+        "kind": "initialize"
+      },
+      {
+        "kind": "phase",
+        "id": "stage1",
+        "scope": "per_frame",
+        "groups": [
+          "0",
+          "1"
+        ]
+      },
+      {
+        "id": "added",
+        "scope": "per_frame",
+        "groups": [
+          "1"
+        ],
+        "kind": "initialize"
+      },
+      {
+        "kind": "phase",
+        "id": "stage2",
+        "scope": "per_frame",
+        "groups": [
+          "1"
+        ]
+      },
+      {
+        "kind": "phase",
+        "id": "eval0",
+        "scope": "per_frame",
+        "groups": [
+          "0"
+        ]
+      },
+      {
+        "kind": "phase",
+        "id": "eval1",
+        "scope": "per_frame",
+        "groups": [
+          "1"
+        ]
+      },
+      {
+        "kind": "phase",
+        "id": "record0",
+        "scope": "per_frame",
+        "groups": [
+          "0"
+        ]
+      },
+      {
+        "kind": "phase",
+        "id": "record1",
+        "scope": "per_frame",
+        "groups": [
+          "1"
+        ]
+      },
+      {
+        "id": "added",
+        "scope": "per_frame",
+        "groups": [
+          "1"
+        ],
+        "kind": "dispose"
+      }
+    ]
+  },
+  "providerCalls": 0,
+  "serviceRestarts": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Validates timeline/lifetime/dataflow and declared budget accounting only. Complete initialization values, generated Workflow5, rendering integration and scientific content are not validated by this fixture. No default or runtime activation."
+}

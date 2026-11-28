@@ -1,0 +1,133 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v37",
+  "runId": "dr_run_e7459335781b52d78ec2c93d220b6b95",
+  "sourceCommit": "176570448a8210ec3de223327074e7cce6ffefef",
+  "contractVersion": 14,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 14,
+  "modelTokens": 75341,
+  "elapsedSeconds": 163.0,
+  "externalSearches": 0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 23987,
+      "requiredBundles": 8,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23339,
+      "requiredBundles": 8,
+      "status": "compiled_unverified"
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23954,
+      "requiredBundles": 8,
+      "status": "compiled_unverified"
+    }
+  ],
+  "compiledDraftClaims": 9,
+  "initialAcceptedClaims": 4,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 2,
+    "unbound_table_measurement": 2,
+    "missing_table_bindings": 1
+  },
+  "repairAcceptedNewClaims": 0,
+  "exampleError": "joint_example_requires_one_matched_table_group",
+  "exampleSelection": [
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 0,
+      "metric": "FPS"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 0,
+      "metric": "Size"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 0,
+      "metric": "PSNR"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 0,
+      "metric": "SSIM"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 0,
+      "metric": "LPIPS"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 1,
+      "metric": "FPS"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 1,
+      "metric": "Size"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 1,
+      "metric": "PSNR"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 1,
+      "metric": "SSIM"
+    },
+    {
+      "table": "E13",
+      "row": 9,
+      "group": 1,
+      "metric": "LPIPS"
+    }
+  ],
+  "boundaryError": "Invalid observed setting fields",
+  "observedSettingFields": [
+    [
+      "subject",
+      "attribute",
+      "value",
+      "evidenceRefs"
+    ],
+    [
+      "subject",
+      "attribute",
+      "value",
+      "evidenceRefs"
+    ]
+  ],
+  "publicationHold": "inconsistent_answer",
+  "coherenceIssueKinds": [
+    "scope_ambiguity"
+  ],
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "abc11daf1059fb46d5525930466de317339d7d058febcf9a7467a5ac19a7e888",
+    ".calls.json": "de904bfc0f88199eca2d9e08893c34c5431fb2cb699f645c71ee8608855da882",
+    ".result.json": "7bc0db4947c5f55004ae108873af37eba44022bab0537622d1179893f0504420",
+    ".execution.json": "b4942889ccf72ae06612d298ae3569e8c7f1662303f0d6112284c2ac2569639e"
+  }
+}

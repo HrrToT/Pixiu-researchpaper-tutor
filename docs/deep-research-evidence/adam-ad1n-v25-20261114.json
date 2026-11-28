@@ -1,0 +1,102 @@
+{
+  "case": "AD1N-v25",
+  "runId": "dr_run_9a1edaf0c7f75451a641e3f4e9b5aa51",
+  "sourceCommit": "01d5cab4",
+  "promptVersion": "dr-v2.20261114.439",
+  "split": "development",
+  "independentCredit": 0,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "actualModelCalls": 9,
+  "allCallsSettled": true,
+  "tokens": 45783,
+  "elapsedSeconds": 152,
+  "readerReached": true,
+  "readerApplied": true,
+  "draftCharacters": 233,
+  "visibleDraftCharacters": 255,
+  "characterLimit": 300,
+  "automaticAcceptedClaims": 0,
+  "automaticRejectedClaims": 2,
+  "reviewFailureReasons": [
+    [
+      "diagnostic_statement_not_in_reason"
+    ],
+    [
+      "new_diagnostic_numbers_not_bound"
+    ]
+  ],
+  "researchAssessment": "unchecked",
+  "researchStopReason": "max_requery",
+  "jointUnitAudits": [
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1",
+        "G2"
+      ],
+      "invalidUnits": []
+    },
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [],
+      "invalidUnits": [
+        "G1",
+        "G2"
+      ]
+    },
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1"
+      ],
+      "invalidUnits": []
+    }
+  ],
+  "contentAccepted": false,
+  "manualNoviceAccepted": false,
+  "manualFindings": [
+    "Reader output removed explicit mathematical symbols but still recites division/square-root operations and technical definitions; the requested role explanation remains weak.",
+    "The explanation says zero initialization causes early underestimate but does not explain how the initial zero weight causes it. It does not establish novice understanding.",
+    "Both final factual checks remained unresolved: one diagnostic statement was absent from its reason; another reason introduced a number outside its supplied diagnostic bindings. Invalid review statements are not trusted corrections.",
+    "Research assessment still has unchecked process premises. No answer coverage node ran after zero claims were accepted.",
+    "External discovery and fulltext worked in this run; no live transport failure exercised the new error metadata. The diagnostic failure path is covered by durable-ledger offline tests."
+  ],
+  "automaticRetry": false,
+  "other102TasksExact": true,
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 23,
+    "ledgerRows": 9405,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "rawArtifacts": {
+    "tmp\\dr-acceptance-receipts\\AD1N-v25.json": "b91b872995286688fddb368f341153dce9e89697f71b2750828cf79c8ea268f8",
+    "tmp\\dr-acceptance-receipts\\AD1N-v25.payload.json": "39d00af5db77c79f71d1ecb5acd738e0a62ea43a2c3fdfcff42429fba2842a0f",
+    "tmp\\dr-acceptance-receipts\\AD1N-v25.calls.json": "06d7ebe4f875198e3c4761d69e480c43729b8ad39381076ddd4390d70ad84f14",
+    "tmp\\dr-acceptance-receipts\\AD1N-v25.preservation.json": "87a69811764087294b4e24ea2f7507ce7b1219c0857c0eee8037a763869028a0"
+  }
+}

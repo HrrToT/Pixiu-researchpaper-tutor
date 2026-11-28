@@ -1,0 +1,44 @@
+{
+  "case": "M1G-v7",
+  "reads": [
+    {
+      "artifactIds": [
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:latest:artifact",
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1:artifact"
+      ],
+      "reportVersionIds": [
+        "report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1"
+      ],
+      "runId": "dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a",
+      "status": "completed",
+      "outcome": "complete"
+    },
+    {
+      "artifactIds": [
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:latest:artifact",
+        "v2-research:dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a:report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1:artifact"
+      ],
+      "reportVersionIds": [
+        "report_dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a_v1"
+      ],
+      "runId": "dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a",
+      "status": "completed",
+      "outcome": "complete"
+    }
+  ],
+  "expectedArtifactRoles": [
+    "versioned report",
+    "latest pointer"
+  ],
+  "ledgerBefore": {
+    "rows": 7889,
+    "sha256": "515d12decc383410a61dae38cf8b96c84bd173fb8229f4ff7cc5b95a0d22d932"
+  },
+  "ledgerAfter": {
+    "rows": 7889,
+    "sha256": "515d12decc383410a61dae38cf8b96c84bd173fb8229f4ff7cc5b95a0d22d932"
+  },
+  "duplicateReadCreatedNoArtifacts": true,
+  "providerCalls": 0,
+  "boundary": "Same terminal GET only, not restart/cancel/full publication recovery acceptance."
+}

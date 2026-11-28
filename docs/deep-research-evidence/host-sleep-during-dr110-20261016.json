@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-16",
+  "source": "Windows System event log; read-only filtered inspection",
+  "events": [
+    {
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "id": 42,
+      "localTime": "2026-10-16T12:00:37+08:00"
+    },
+    {
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "id": 107,
+      "localTime": "2026-10-16T12:00:53+08:00"
+    },
+    {
+      "provider": "Microsoft-Windows-Power-Troubleshooter",
+      "id": 1,
+      "localTime": "2026-10-16T16:44:06+08:00"
+    }
+  ],
+  "resumeEventFields": {
+    "SleepTime": "2026-10-16T04:00:23.7735589Z",
+    "WakeTime": "2026-10-16T08:44:05.0127648Z"
+  },
+  "affectedCases": [
+    "H5R-v19",
+    "H3R-v15"
+  ],
+  "transportErrorsRecordedAtUtc": "2026-10-16T08:44:14Z",
+  "existingControls": {
+    "sourceCommit": "ab35c73",
+    "files": [
+      "ai-service-python/llm/deadline.py",
+      "ai-service-python/llm/client.py",
+      "ai-service-python/services/deep_research/runtime.py"
+    ],
+    "observation": "Source already bounds caller wait and derives request timeout from remaining run budget."
+  },
+  "interpretation": "The long wait spans confirmed host sleep; transport errors were recorded after wake. This temporal correspondence does not confirm Provider execution, response or billing.",
+  "scope": "Only event timestamps/IDs and SleepTime/WakeTime inspected. No other event contents collected or system settings changed. No model request."
+}

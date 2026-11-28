@@ -1,0 +1,37 @@
+{
+  "offlineOnly": true,
+  "productionPolicyChanged": false,
+  "modelCalls": 0,
+  "transportMockPreservesRawContentExactly": true,
+  "transportMockPreservesFinishStop": true,
+  "noStopSequenceSent": true,
+  "maxOutputTokens": 8192,
+  "rawMalformedContentCharacters": 225,
+  "normalizerRejectsMalformedContent": true,
+  "authoritativeLengthBudget": {
+    "total": 300,
+    "scopeAndDisplay": 140,
+    "singleEditableProse": 160
+  },
+  "schemaValidUnderDraft202012": true,
+  "negativeControlsRejected": [
+    "overlength",
+    "readonly_id",
+    "extra_point",
+    "hidden_conditions"
+  ],
+  "existingResponsesAdapterBuildsPayload": true,
+  "providerSchemaEnforcementNotYetVerified": true,
+  "scientificContentAccepted": false,
+  "officialReferences": [
+    "https://api-docs.deepseek.com/api/create-response/",
+    "https://api-docs.deepseek.com/guides/json_mode/"
+  ],
+  "boundary": "HTTP mock is offline and does not prove original upstream HTTP bytes. Actual saved component raw content is incomplete while finishReason is stop; no JSON repair or replay. Schema prototype restricts only the already authoritative ID/shape/160-character allowance, requires future bounded provider test and server-owned dynamic schema/reservation wiring; no scientific approval.",
+  "runtimeEndpointNonSensitiveCheck": {
+    "providerClass": "DeepSeekLLM",
+    "scheme": "https",
+    "hostname": "api.deepseek.com",
+    "configuredModel": "deepseek-v4-pro"
+  }
+}

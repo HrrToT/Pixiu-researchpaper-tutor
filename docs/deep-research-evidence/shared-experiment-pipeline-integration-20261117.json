@@ -1,0 +1,13 @@
+{
+  "scope": "Candidate shared experiment graph, final coverage, one revision and publication integration",
+  "relatedRegression": {"passed": 213, "failures": 0, "proof": "../../tmp/shared-chain-ledger-v1-20261117.xml"},
+  "subsequentPipelineRegression": {"passed": 19, "failures": 0, "proof": "../../tmp/shared-tracked-graph-v2-20261117.xml", "overlapsRelatedRegression": true},
+  "actualLedgerAndMockHttp": true,
+  "realProviderCalls": 0,
+  "applicationWrites": 0,
+  "scientificContentAccepted": false,
+  "fullRegressionApplies": false,
+  "defaultRolloutEnabled": false,
+  "wholeRunBudgetProven": false,
+  "next": "Freeze candidate for complete offline regression; real generated output and full budget still need independent measurement."
+}

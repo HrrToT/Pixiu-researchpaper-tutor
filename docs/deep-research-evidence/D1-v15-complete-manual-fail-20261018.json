@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v15",
+  "runId": "dr_run_7aad1f21f00f5cbe8cac706868c869ff",
+  "sourceCommit": "ebcf570c",
+  "promptVersion": "dr-v2.20261018.126",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "complete",
+  "contentAccepted": false,
+  "modelCalls": 8,
+  "settledTokens": 35728,
+  "elapsedSeconds": 32.801,
+  "cost": null,
+  "report": "## 判断\n\n- 作者报告在Mip-NeRF 360数据集上，LightGaussian（Ours）的PSNR为27.13、SSIM为0.806、LPIPS为0.237；在Tank and Temple数据集上，PSNR为23.44、SSIM为0.832、LPIPS为0.202。 [1](#research-evidence-ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747)\n\n## 适用条件\n\n- 有依据的推断：该结果仅在作者使用的Mip-NeRF 360和Tanks and Temples数据集、A6000 GPU上成立；当前证据不足以证明在其他数据集、场景或硬件上仍成立。 [2](#research-evidence-ev_bce4e75aadf04109a0910d5faa2db6624ac4e4a9eed2f08718e38e2a59273b3e) [3](#research-evidence-ev_b4eb43ab5b110e91376e6f37d2c3fab77c06bb4fde5cacdd843acd7b121d13bb)\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 6 页 · 全文片段\n\n> Table row 10: Ours | 237 | 45MB | 27.13 | 0.806 | 0.237 | 357 | 25MB | 23.44 | 0.832 | 0.202\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> In addition, we utilize the Tanks and Temples dataset[65], a comprehensive unbounded dataset, and select the same scenes as used in[16].\n\n**[3] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 7 页 · 全文片段\n\n> All performance evaluations are conducted on an A6000 GPU.\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "modelOutputs": [
+    {
+      "node": "resolve_brief",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "object",
+        "receivedShape": "object"
+      }
+    },
+    {
+      "node": "plan",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "node": "extract",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    },
+    {
+      "node": "assess_relevance",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    },
+    {
+      "node": "synthesize",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "object",
+        "receivedShape": "object"
+      }
+    },
+    {
+      "node": "repair_claims",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    },
+    {
+      "node": "verify_repair",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "items"
+      }
+    },
+    {
+      "node": "verify_answer_coverage",
+      "structuredOutput": {
+        "version": 1,
+        "requestedFormat": "json_object",
+        "expectedShape": "items",
+        "receivedShape": "array_compat"
+      }
+    }
+  ],
+  "findings": [
+    "All real native array/object envelopes now normalized correctly. The runtime-path fix is confirmed beyond direct-provider offline tests.",
+    "Initial reported claim contained unreported calculated differences; hard numeric verification correctly rejected it. Initial absence assertion was rejected.",
+    "The bounded repair retained only LightGaussian table-row metrics and dropped the original 3DGS baseline and comparative judgment.",
+    "The coverage model nevertheless marked the comparison requirement and whole question covered. Machine complete is therefore a false positive for user-goal completion.",
+    "Final numbers match the cited Ours row on the visually inspected original table, but six values without the baseline do not answer whether quality is close to original 3DGS.",
+    "The wording only holds on these datasets/hardware overstates observed scope; supported on these evaluated settings would be more precise.",
+    "No unknown/retry or total-budget change. Actual factual verification and goal-response completeness remain separate gates."
+  ],
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v15.json",
+      "sha256": "341c597da028b3f3438c81bb47d9b0a7aad6bb1dbce0da2412ad0796e9e6760f"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v15.payload.json",
+      "sha256": "4556091300b5e8207913c507a5eebc8752a91775e1c0ee7bcc3268e088e1da3e"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v15.calls.json",
+      "sha256": "8b22786faeeeb749494285f2b189e1fb49d15aa19a2e9b3ee63111e89625f0e1"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v15.result.json",
+      "sha256": "6507981f94b5af0ebe9cc9a635fb4f01b53c253bbc02adaf759012ac5e45a583"
+    }
+  ],
+  "boundary": "Confirmed runtime-format improvement, but not a content acceptance pass. Original result remains complete; manual audit is stored separately."
+}

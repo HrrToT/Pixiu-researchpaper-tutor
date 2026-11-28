@@ -1,0 +1,225 @@
+{
+  "candidate": "eca29943cda267be7d95be9c426a2092e2349b42",
+  "runId": "dr_d3_counted_window_recheck_20261128",
+  "sourceRun": "dr_d3_compact_science_revision_20261128",
+  "branchStartingTokens": 65061,
+  "priorAlternativeReviewTokensExcludedFromBranch": 28504,
+  "priorBilledTokens": 93565,
+  "carriedModelCalls": 10,
+  "carriedElapsedSeconds": 209.1,
+  "requestBytes": [
+    17788,
+    34980,
+    34918
+  ],
+  "maxNewCalls": 3,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "branchFinalTokens": 86804,
+  "newModelCalls": 2,
+  "newModelTokens": 21743,
+  "providerCountCalls": 2,
+  "initialTrialProviderCountCalls": 1,
+  "initialTrialGenerationCalls": 0,
+  "separateDiagnosticCount": {
+    "timeoutSeconds": 5,
+    "contextDigest": "c1dc47fc53d576d9c4f1e3aa64d2419cf71349ff4717cc14b74d634a8389f2a9",
+    "status": 200,
+    "count": 9528,
+    "requestDigest": "39039fe7df0bfd519724a560a4ba7f192967f0745eff751086e2789ed322c3e1",
+    "elapsedSeconds": 1.91,
+    "generationCalls": 0
+  },
+  "firstTrialStop": {
+    "kind": "coveragePromptBytes",
+    "limit": 35000,
+    "used": 33540
+  },
+  "followupReviewInputCounts": [
+    9528,
+    9631
+  ],
+  "newElapsedSeconds": 60.83,
+  "scientificValid": true,
+  "scientificApproval": false,
+  "checksPassed": 20,
+  "checksTotal": 26,
+  "unresolved": [
+    {
+      "checkId": "section_1",
+      "status": "unresolved",
+      "planBindings": [
+        "/data/trainingSplit",
+        "/data/evaluationSplit",
+        "/data/splitPrecheck",
+        "/data/inputs/1/description",
+        "/data/inputs/1/preparation",
+        "/data/inputs/2/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E3",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E3",
+          "field": "before"
+        }
+      ],
+      "reason": "划分及训练隔离规则具体，但论文场景身份不能证明完整清单、内参或实现可取得；实际资产与注册可行性尚待验收。"
+    },
+    {
+      "checkId": "section_2",
+      "status": "unresolved",
+      "planBindings": [
+        "/states/4/representation",
+        "/states/7/representation",
+        "/states/8/representation",
+        "/states/9/representation",
+        "/steps/1/operation/action",
+        "/steps/8/operation/action",
+        "/data/inputs/2/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        }
+      ],
+      "reason": "状态、初始化与部分数值检查有说明，但投影、光栅化、可见性和合成仍依待获取实现及运行前锁定的测试方程；无法仅凭现有材料确认端到端可执行。"
+    },
+    {
+      "checkId": "section_5",
+      "status": "failed",
+      "planBindings": [
+        "/budgets/0/stopRule",
+        "/budgets/1/stopRule",
+        "/budgets/2/stopRule",
+        "/steps/0/budgetId",
+        "/steps/1/budgetId",
+        "/steps/2/budgetId",
+        "/steps/3/reads",
+        "/steps/8/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E4",
+          "field": "after"
+        },
+        {
+          "evidenceId": "E1",
+          "field": "quote"
+        }
+      ],
+      "reason": "共享准备使用24小时上限，但测试注册另设4小时共享上限，并在两者之间执行；未满足一个贯穿全部共享准备的墙钟上限。完成臂的优化步预算则相同。"
+    },
+    {
+      "checkId": "requirement_0_1",
+      "status": "unresolved",
+      "planBindings": [
+        "/data/splitPrecheck",
+        "/data/inputs/1/availability",
+        "/data/inputs/2/preparation",
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/8/operation/action",
+        "/budgets/2/cap",
+        "/unresolved/1"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E4",
+          "field": "quote"
+        }
+      ],
+      "reason": "初始化、划分和步数有具体选择，但图像及可信清单、软件和硬件尚未取得；投影、光栅化、可见性及验收预期也须先锁定审查。不能确认端到端可执行。"
+    },
+    {
+      "checkId": "requirement_1_0",
+      "status": "unresolved",
+      "planBindings": [
+        "/sourceFacts/0/text",
+        "/data/inputs/1/description",
+        "/data/inputs/1/preparation",
+        "/data/splitPrecheck",
+        "/data/trainingSplit",
+        "/data/evaluationSplit"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E3",
+          "field": "quote"
+        }
+      ],
+      "reason": "论文证实Bicycle属于Mip-NeRF360，但未提供完整图像及可信成员清单。方案要求取得并核验全量，实际成员和数量尚未核实，不能把场景名称或N下限当作全量证据。"
+    },
+    {
+      "checkId": "requirement_3_0",
+      "status": "unresolved",
+      "planBindings": [
+        "/pairing/identityChecks",
+        "/data/trainingSplit",
+        "/data/evaluationSplit",
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/8/operation/action",
+        "/budgets/2/stopRule",
+        "/analysis/limitations",
+        "/unresolved/1"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E1",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E2",
+          "field": "quote"
+        }
+      ],
+      "reason": "配对起点、划分、等步预算、不透明度和OOM处置均有规定，但关键渲染与可见性实现及其具体验收预期尚待锁定，资产也未提供，当前不能确认完整方案可执行。"
+    }
+  ],
+  "coherenceIssues": [
+    {
+      "reason": "共享准备与测试注册分别使用墙钟上限，不满足贯穿全部共享准备的单一上限要求。",
+      "planBindings": [
+        "/budgets/0/stopRule",
+        "/budgets/1/stopRule",
+        "/steps/2/budgetId"
+      ]
+    },
+    {
+      "reason": "数据、内参、实现和设备尚未提供；关键渲染及可见性实现和验收期望值尚待锁定，不能确认当前端到端可执行。",
+      "planBindings": [
+        "/data/inputs/1/availability",
+        "/data/inputs/2/preparation",
+        "/data/inputs/3/availability"
+      ]
+    }
+  ],
+  "finalAuditSent": false,
+  "published": false,
+  "nextReviewBytes": [
+    17788,
+    34779,
+    34982
+  ],
+  "nextGenerationBytes": 31853,
+  "sameGenerationEvidence": true,
+  "rawSha256": {
+    "intent.json": "ac1d1d5639547f8c82d6aa3747a0d09d2ee4c43d6b0bfb2f3296cfeea752b6fc",
+    "run.json": "8c2d93d837950ab83046e40ba16466c57bc24d90c0222432b959509c45f83be9",
+    "calls.json": "8e23482f255f5bdd2d09e185fd301c88544b3dc55f11e79c99e7cb756a14fc67",
+    "result.json": "46436ba98096f540a008f0324d7a0c3b36b5572b25b8548f0a852385fe9133f7"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "sourceCommit": "a43ab340157955d7ef665950be7e33e6e4437a76",
+  "promptVersion": "dr-v2.20261028.320",
+  "scope": "isolated saved-generation compaction and verification; not full workflow",
+  "initialGenerationReplayed": true,
+  "providerSubmissions": 7,
+  "allCallsSucceeded": true,
+  "totalTokens": 39611,
+  "cost": null,
+  "beforeCharacters": 435,
+  "afterCharacters": 276,
+  "characterLimit": 300,
+  "pointCount": 2,
+  "compactionStagePassed": true,
+  "acceptedClaims": 1,
+  "rejectedClaims": [
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "推广命题尚未核实：scope_expression_premises_not_bound"
+    }
+  ],
+  "coverageStatus": "checked",
+  "coverageGapCount": 4,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "remainingFinding": "Scope non-entailment response included both source path and quote in one premise. The strict current binding schema rejected it; no automatic normalization or old-result upgrade. Overall answer remains partial.",
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 7,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-compaction-320-20261028\\receipt",
+  "rawReceiptHashes": {
+    "calls.json": "37c2277445740f80f56d888deeee104c40a03efe8978846e0cdea2537eed91cd",
+    "generation-result.json": "913babfc57522a3047abb43534ea8ac21e41401a0c1fe05cba6cc6ba035ddeb1",
+    "payload.json": "32f2e4ec454040ac277d2c081ef1c5a6c6d5b6e58c0d8da58f8ab6570ac18063",
+    "preservation.json": "2de5d7515ec2821ca11bf3fc5bfeec2fb294e65e86cd97df5f28f6a7a1aced57",
+    "progress.json": "2f6c186d962732fd4f8d38e86b4dd6e3a5d697797971d0899d242d39683a3497",
+    "request-1.json": "2cca60321a51a4ce61737023146a58284cb9e3bf0990330e7f53a81f9d5ac51a",
+    "request-2.json": "0bd51e5f5da73ccd4955b24b4035b405a727a4eacf73ed0e2a1ff15910afae2b",
+    "request-3.json": "b75d1871bf981feb568bb7248de6400c6942311f5224d1f8837b80092404e976",
+    "request-4.json": "0470f904c8217ee41562262d9c0a095f54b16d3047ec4024ec1f29f50738f826",
+    "request-5.json": "553a3589eaba1472c159b7bda72495673221bee250a4d6e902a41c98161dd427",
+    "request-6.json": "9fe1037c3561fb5677425abee4ac750b9f0e12a41b92ed622cfda1a9f16856f5",
+    "request-7.json": "794c3772ad945d8b7016ca353a3c96c08267492e9f2e71dccd1e2dd229225c11",
+    "result.json": "19fd1bd17b321c175f14f25d81011037727739a4da35d44832a3b7ea44b842ee"
+  }
+}

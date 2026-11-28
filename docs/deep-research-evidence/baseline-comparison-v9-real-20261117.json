@@ -1,0 +1,76 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v9",
+  "runId": "dr_run_314e3b00bbb658e09095dac0d58db4e5",
+  "sourceCommit": "8c6a74242c48d32c75044f6030bab393e139767e",
+  "status": "completed",
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "independentHoldout": false,
+  "modelCalls": 10,
+  "modelCallStatuses": {
+    "succeeded": 10
+  },
+  "ledgerTokens": 58842,
+  "elapsedSeconds": 237.0,
+  "fixedCellSlots": 8,
+  "compiledPoints": 6,
+  "acceptedClaimIds": [
+    "cmp_4_0"
+  ],
+  "rejections": [
+    {
+      "claimId": "cmp_2_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_0_0",
+      "reason": "semantic_unresolved"
+    },
+    {
+      "claimId": "cmp_1_0",
+      "reason": "semantic_unresolved"
+    },
+    {
+      "claimId": "cmp_6_0",
+      "reason": "semantic_unresolved",
+      "executionState": "not_started",
+      "reviewTimeAdmission": {
+        "allowed": false,
+        "remainingSeconds": 133.765,
+        "requiredSeconds": 136.25,
+        "observedSettledReviews": 1
+      }
+    }
+  ],
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairEvidenceBytes",
+    "limit": 14640,
+    "used": 17558
+  },
+  "sourceGlyphRejectedEvidence": 0,
+  "observations": [
+    "Fixed-slot synthesis completed; six claims were compiled from eight cell slots; joint conclusions and some cells were missing.",
+    "Saved audience rewrite expands cmp_0_0 and cmp_1_0 from source-local mechanisms into cross-paper statements while retaining source-local evidenceRefs.",
+    "Saved audience rewrite changes processing-cost cells into performance/comparability statements; downstream factual rejection is not evidence of a broken verifier.",
+    "One factual review was not started by time admission; repair was skipped because evidence bytes 17558 exceeded limit 14640.",
+    "Final published comparison contains one supported cell; not a usable complete comparison.",
+    "This case contains no glyph-rejected evidence, so it does not establish live execution of the negative-journal edge."
+  ],
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "rawReceiptSha256": {
+    ".payload.json": "ab69a8abff6eb4c9d6fc66d2bd77dea73681264097976fd636d8df3edd36c40c",
+    ".calls.json": "bdb4af22b474ea912833ce8e656834ed3d93a3575033d8b6ce78e9e6fe362794",
+    ".result.json": "394380b7c6599cf7af8d18de7a8fc424a05e71d09de78c8ef322e20bd867cd6a",
+    ".execution.json": "53242b674c422c215ba8b6c82e2dd983f580cdc265840711f5c25e79a4a0b5f1",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}

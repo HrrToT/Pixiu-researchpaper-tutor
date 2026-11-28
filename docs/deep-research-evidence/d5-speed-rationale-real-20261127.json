@@ -1,0 +1,48 @@
+{
+  "case": "D5-speed-rationale",
+  "sourceCommit": "6a2aa4e127f220bb851289bf8d2e58f9239c74c2",
+  "runId": "dr_run_299701774aa15690ac65447a008214df",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "contractVersions": {
+    "shortComparisonLayoutContractVersion": 3,
+    "comparisonEvaluationProtocolVersion": 4,
+    "scopeExpressionReviewContractVersion": 6
+  },
+  "entryStage": "synthesize",
+  "inheritedEvidence": 43,
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "newRetrieval": false,
+  "productionWorkspaceWrites": 0,
+  "automaticRetry": false,
+  "outcome": "inconclusive",
+  "wallClockSeconds": 29.0,
+  "verifiedClaims": 0,
+  "modelCalls": [
+    {
+      "node": "synthesize",
+      "model": "gpt-6.1-terra",
+      "tokens": 8527
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 5602
+    }
+  ],
+  "tokens": 14129,
+  "reasonGenerated": true,
+  "reasonPlacedInsideComparisonQuantity": true,
+  "firstFailedReview": "The observation combined 1080p rendering capability with a qualification about timing resolution. The reviewer interpreted the qualification as excluding 1080p as a timing resolution and rejected it because the passages did not establish that exclusion.",
+  "wholeAnswerAuditDispatched": false,
+  "scientificContentAccepted": false,
+  "sha256": {
+    "intent.json": "293cc95270877f2a2a16b332d184bff4c1c97db668b5f9678bc7e016adae1a74",
+    "run.json": "1360da59d6c2992e190ef9349ae6147afff22d0f18cf19748c7002946a22feb4",
+    "calls.json": "cca7ea93aebda428ddddb5fcd0bc6836fb246ec7308bc14db5f3cd333232484e",
+    "synthesize-return.json": "2bc2c974860463a14acd5cb57b41837e4c6f8aeaf349ac62cf8bdab391726543",
+    "verify-return.json": "e70398a7511f8648c0b62e64ba9cd2ba5e221a09e1a464ed7d4dd89077159e3b",
+    "publish-return.json": "2b5f3bbec0b53f874c23a98f7da630f0f3a4c3cf17766d0bd855cec8857a08d2"
+  }
+}

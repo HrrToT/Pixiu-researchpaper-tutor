@@ -1,0 +1,63 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "offline_exact_plan_and_stage_input_routing_replay",
+  "sourceRunId": "dr_run_38b6ce0f72c05418b577e9763eadd33f",
+  "sourceCommit": "e3b1392484dd89e4470a2605e153b37b5284c9ac",
+  "snapshotVersion": {
+    "previous": 8,
+    "candidate": 9
+  },
+  "replay": {
+    "changes": [
+      {
+        "obligationId": "requested_memory_choice",
+        "sourceObligationId": "o2",
+        "criterionId": "c4",
+        "change": "placed_cross_paper_memory_advice"
+      }
+    ],
+    "preservedTargets": [
+      "joint_o3",
+      "joint_requested_numeric_example_matched_example",
+      "table_0_0",
+      "table_0_1",
+      "table_1_0",
+      "table_1_1",
+      "table_2_0",
+      "table_2_1",
+      "table_3_0",
+      "table_3_1"
+    ],
+    "addedTargets": [
+      "joint_requested_memory_choice_conditional_advice"
+    ],
+    "memoryChoiceTargets": {
+      "joint_requested_memory_choice_conditional_advice": [
+        "P1",
+        "P2"
+      ]
+    },
+    "stageBytes": {
+      "P1": 23939,
+      "P2": 23078,
+      "joint": 23947
+    },
+    "retainedReconstructedBundles": 8,
+    "providerCalls": 0,
+    "planReplay": {
+      "originalPromptSha256": "2d7e0f0a5a16a0b674167f8169adf04a5bf5f34a0290f177aba677425ffd0848",
+      "correctionPromptSha256": "3a4888a0e5955482f55c27d968ade946c59c6cdf5499b423e91dd3d974c64b35",
+      "reusedResponses": 2,
+      "criteriaPreserved": 6,
+      "otherObligationsUnchanged": true
+    }
+  },
+  "regressionPassed": 307,
+  "freshRunCredit": false,
+  "scientificAcceptance": false,
+  "artifacts": {
+    "tmp/openai-d2-deployment-separator-fresh-20261128/run.json": "d92e839a09f622365a21dd64b55119c8132c641cf242314ba9a5355b4a37c42a",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/calls.json": "c7967ccdfed1658d5233db3c2f8631f1b3a14da4ba3ce8b8cf54e13e2f4130c3",
+    "tmp/d2-memory-routing-replay-20261128.json": "0c7acab6203dbd0f9ad0f0e05b5c90947ebf315daa0e0640bcdc085efb6f16a8"
+  }
+}

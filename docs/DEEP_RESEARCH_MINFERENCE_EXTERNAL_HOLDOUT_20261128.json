@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-27T16:13:17.995396+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "minference_v1": {
+      "path": "tmp/pdfs/h3-minference-evaluator-20261128/2407.02490v1.pdf",
+      "bytes": 4866573,
+      "sha256": "b061e544a499c1e1abc292c9c996e21c5bfedbc6514703bcfca554ca7f5fe50a",
+      "pageCount": 26,
+      "arxiv": "2407.02490v1",
+      "reference": "https://arxiv.org/abs/2407.02490v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-MINFERENCE",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2407.02490v1。给初学者解释 MInference 的长文本预填充：离线阶段为每个注意力头选什么，推理时又会根据当前输入重新确定什么？以 Vertical-Slash 为例，说清它怎么选计算位置，以及为何能少算。注明获取的是摘要还是正文，引用指定版本的原文，正文 300 字以内。找不到正文时请说明。",
+      "required": [
+        "从空材料任务发现并下载指定版本全文，文件哈希和页数与评审件一致，并保留原文定位。",
+        "离线在接近的计算预算下选每个头的稀疏模式及设置，用参考输入与完整注意力的输出核对。",
+        "预填充时模式已定，Vertical-Slash 根据当前输入用末尾少量查询与键估算注意力，选高分列及斜线的索引，然后仅在所选位置计算稀疏注意力。",
+        "结论仅限长文本预填充，注明全文或摘要并引用固定版本方法正文，300 字以内。"
+      ],
+      "forbidden": [
+        "把离线决定写为固定所有输入的实际索引，或把推理时的索引估计说成重新选择每个头的模式。",
+        "把减少注意力计算误写成永久删除 KV，或保证稀疏输出等于完整注意力。",
+        "用其他版本、已有应用缓存或评审 PDF 代替本次联网。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "minference_v1",
+        "page": 5,
+        "section": "3.2 and Algorithms 1–2",
+        "checks": "Physical page 5 describes the offline search and Vertical-Slash algorithm; page 6 explains dynamically estimating indices and sparse computation."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-MINFERENCE": "93caaa070aefb7b1d2958f6779900352766fbb5685e95cbe0ce0395fe1f76f55"
+  }
+}

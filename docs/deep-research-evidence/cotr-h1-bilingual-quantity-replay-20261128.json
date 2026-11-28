@@ -1,0 +1,118 @@
+{
+  "caseId": "H1-COTR",
+  "independentCredit": 0,
+  "developmentReplay": true,
+  "originalOutcome": "inconclusive",
+  "publicationPerformed": false,
+  "newProviderCalls": 0,
+  "scope": "Saved initial hard check and saved revision reviewer reply through the production facade; no fresh generation, coverage review or publication.",
+  "runId": "dr_run_fe61e5c2fd135290a82c816b27af98ca",
+  "definitionSha256": "76e1ba35d67b5104cd297ce731bc51fa076d22aa09aab32c2b55844ee32438e8",
+  "pdfSha256": "d3f29fb51eab891e46cb4faaf199fe891ec2123e30b1b234c90fdd77228c7453",
+  "savedOriginalRunSha256": "f4f85241bfa1ce1c33531c5b7d08cb530af9923bb87f248a4622a543ff2088e5",
+  "savedCallJournalSha256": "730e6dd217854a84b2ff6e1348b523c646b6ad7b1d11171c7b0a09ba507d0ae7",
+  "savedReviewCallId": "79c7c3cc5a52ac9f2f2135fa67d1231d",
+  "replays": {
+    "23": {
+      "initialDraftWithoutSemanticVerdict": {
+        "accepted": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "1e0",
+              "2e0",
+              "2e0x",
+              "4e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：1、2、2x、4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ]
+      },
+      "savedRevisionAcceptedClaimIds": [],
+      "savedRevisionVerdict": "failed",
+      "savedRevisionDiagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "399e275fbb9fae8bc5448da64225bd8bc0a3655d48e7b2605658c0b64e532301",
+        "bindingCount": 3,
+        "newNumberCount": 2,
+        "unboundNewNumberCount": 2,
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ],
+        "sourceParameterIdentityContractVersion": 1,
+        "reviewTargetStructureContractVersion": 2,
+        "targetStructureReferences": []
+      }
+    },
+    "26": {
+      "initialDraftWithoutSemanticVerdict": {
+        "accepted": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "semantic_unresolved",
+            "detail": ""
+          }
+        ]
+      },
+      "savedRevisionAcceptedClaimIds": [
+        "c1"
+      ],
+      "savedRevisionVerdict": "passed",
+      "savedRevisionDiagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "399e275fbb9fae8bc5448da64225bd8bc0a3655d48e7b2605658c0b64e532301",
+        "bindingCount": 3,
+        "newNumberCount": 2,
+        "unboundNewNumberCount": 0,
+        "errors": [],
+        "sourceParameterIdentityContractVersion": 1,
+        "reviewTargetStructureContractVersion": 2,
+        "targetStructureReferences": [],
+        "quantitySpellingContractVersion": 26
+      }
+    }
+  },
+  "initialDraftCounterexamples": [
+    {
+      "case": "wrong_factor",
+      "reason": "numeric_mismatch",
+      "missingNumbers": [
+        "3e0x"
+      ]
+    },
+    {
+      "case": "wrong_steps",
+      "reason": "numeric_mismatch",
+      "missingNumbers": [
+        "steps:5e0"
+      ]
+    },
+    {
+      "case": "swapped_factor_and_steps",
+      "reason": "numeric_mismatch",
+      "missingNumbers": [
+        "4e0x",
+        "steps:2e0"
+      ]
+    },
+    {
+      "case": "wrong_image_count",
+      "reason": "numeric_mismatch",
+      "missingNumbers": [
+        "images:4e0"
+      ]
+    },
+    {
+      "case": "wrong_network_count",
+      "reason": "numeric_mismatch",
+      "missingNumbers": [
+        "2e0"
+      ]
+    }
+  ]
+}

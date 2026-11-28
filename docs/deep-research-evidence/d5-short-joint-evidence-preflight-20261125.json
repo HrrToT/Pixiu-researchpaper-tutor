@@ -1,0 +1,20 @@
+{
+  "case": "D5-v17",
+  "receiptSha256": "2864d9e9492a308f21696b83900bbd03558152c56e151647e23f87065454d952",
+  "retainedEvidence": 57,
+  "stageIds": [
+    "joint"
+  ],
+  "fixtureCalls": [
+    "synthesize"
+  ],
+  "draftClaims": 1,
+  "draftCitations": 2,
+  "draftVisibleCharacters": 70,
+  "limit": 200,
+  "freshProviderCalls": 0,
+  "fixturePlanAndReply": true,
+  "scientificAcceptanceEstablished": false,
+  "published": false,
+  "projectionImplementedInRun": "production"
+}

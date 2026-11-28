@@ -1,0 +1,109 @@
+{
+  "caseId": "D2-BASELINE-COMPRESSION-v11",
+  "runId": "dr_run_403c2260dab257ef8dc31eb1425d8e4c",
+  "sourceCommit": "6a88077af3bb45aac11a0535f33301c2d1ec5e75",
+  "status": "completed",
+  "outcome": "partial",
+  "scientificAcceptance": false,
+  "independentHoldout": false,
+  "automaticRetry": false,
+  "modelCalls": 14,
+  "modelCallStatuses": {
+    "succeeded": 14
+  },
+  "ledgerTokens": 71549,
+  "elapsedSeconds": 194.0,
+  "generation": {
+    "compiledPoints": 4,
+    "wireAudit": {
+      "version": 1,
+      "status": "compiled_unverified",
+      "errors": [
+        {
+          "targetId": "table_0_0",
+          "reason": "invalid_answer_target_goals"
+        },
+        {
+          "targetId": "table_1_0",
+          "reason": "invalid_answer_target_goals"
+        },
+        {
+          "targetId": "table_2_0",
+          "reason": "invalid_answer_target_goals"
+        },
+        {
+          "targetId": "table_2_1",
+          "reason": "invalid_answer_source_permission"
+        },
+        {
+          "targetId": "table_3_0",
+          "reason": "invalid_answer_target_goals"
+        },
+        {
+          "targetId": "table_3_1",
+          "reason": "invalid_answer_source_permission"
+        }
+      ],
+      "tableReferenceCount": 40,
+      "scientificApproval": false
+    },
+    "readerRewriteCalls": 0
+  },
+  "initialAcceptedClaimIds": [
+    "cmp_conclusion_1"
+  ],
+  "finalAcceptedClaimIds": [
+    "cmp_conclusion_1",
+    "cmp_3_0"
+  ],
+  "initialRejections": [
+    {
+      "claimId": "cmp_1_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_conclusion_0",
+      "reason": "absence_not_established"
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "semantic_unresolved"
+    }
+  ],
+  "initialCoverageErrors": [
+    {
+      "code": "check_identity_mismatch",
+      "obligationId": "ob_470f4270b93f82ceecd6a581"
+    }
+  ],
+  "finalCoverageErrors": [
+    {
+      "code": "invalid_check_fields",
+      "obligationId": "ob_ca6a6818c6dc44a0bd72c59e",
+      "checkId": "criterion:C2",
+      "unexpectedFieldCount": 1
+    }
+  ],
+  "repairStatus": "response_received",
+  "repairCompleted": true,
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "observations": [
+    "New uniform envelope delivered both joint answers, no reader rewrite, but six paper cells were isolated as invalid; four use foreign source goal IDs and two cite foreign evidence.",
+    "Do not repair foreign goal IDs or source ownership by matching generated prose; new identity presentation needs saved-input analysis.",
+    "Recommendation passed semantic advice review despite no table bindings for published SSIM comparison; full source/table condition and GPU-memory inference remain unapproved content concerns.",
+    "Both whole-answer reviews returned invalid structured checks. No complete comparison or independent acceptance.",
+    "One repair round executed; this proves an observed path within budget, not reliable end-to-end quality or a causal efficiency improvement."
+  ],
+  "nextAction": "Offline actual-response replay of target/goal identity presentation, recommendation embedded-fact checks and coverage schema; no immediate paid rerun.",
+  "rawReceiptSha256": {
+    ".payload.json": "d4302a3143c890767e1afc67aee00b49a8f1702e37730ff0c1e27a2995b8a4d2",
+    ".calls.json": "75a118ac51f497fb150c26ead6ccc554f857e1e32c55db80b3e27fb8f865dd07",
+    ".result.json": "a127cbec8234808f32d02b9ff1f9e5a872c334284f46ed3e7eb567867b4b3f92",
+    ".execution.json": "4cc924ddc250f3c06a1934c5632621e9ea2df5127ad7d00bed31c4a2caa1162c",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}

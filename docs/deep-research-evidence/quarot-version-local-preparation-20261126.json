@@ -1,0 +1,28 @@
+{
+  "caseId": "H4-QUAROT-VERSIONS",
+  "taskId": "dr-acceptance-h4-quarot-versions-20261126",
+  "paperIds": [
+    "6322ae57c4c241d9021f26f73eca541b4c951e627b37447c014da6aa4d0626fd.pdf",
+    "f611888c63ef63a5c0232e2c8416619f0c9ace08d0e05692731da82791202e3e.pdf"
+  ],
+  "processing": [
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 115,
+      "aiAnalysisStatus": "not_requested"
+    },
+    {
+      "processingStatus": "ready",
+      "questionReady": true,
+      "ragChunkCount": 128,
+      "aiAnalysisStatus": "not_requested"
+    }
+  ],
+  "sourcePolicy": "task_only",
+  "budgetProfile": "standard",
+  "taskCreated": true,
+  "researchSubmitted": false,
+  "modelCalls": 0,
+  "scientificContentCredit": 0
+}

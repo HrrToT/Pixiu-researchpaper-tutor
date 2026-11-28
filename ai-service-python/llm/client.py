@@ -1,4 +1,6 @@
 import json
+import math
+import ssl
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -20,6 +22,26 @@ load_dotenv()
 DEFAULT_DEEPSEEK_BASE_URL = settings.deepseek_base_url
 DEFAULT_DEEPSEEK_MODEL = settings.deepseek_model
 DEFAULT_DEEPSEEK_TRANSLATION_MODEL = settings.deepseek_translation_model
+
+
+def _tls_diagnostic(error: BaseException) -> Optional[str]:
+    pending = [error]
+    seen = set()
+    while pending and len(seen) < 12:
+        current = pending.pop()
+        if not isinstance(current, BaseException) or id(current) in seen:
+            continue
+        seen.add(id(current))
+        if isinstance(current, ssl.SSLCertVerificationError):
+            return "certificate_verification"
+        if isinstance(current, ssl.SSLError):
+            reason = getattr(current, "reason", None)
+            if reason in ("WRONG_VERSION_NUMBER", "UNSUPPORTED_PROTOCOL", "TLSV1_ALERT_PROTOCOL_VERSION"):
+                return "protocol_mismatch"
+            if reason == "UNEXPECTED_EOF_WHILE_READING" or isinstance(current, ssl.SSLEOFError):
+                return "tls_stream_closed"
+        pending.extend((current.__cause__, current.__context__, getattr(current, "reason", None), *current.args))
+    return None
 
 
 def _resolve_messages(
@@ -57,7 +79,17 @@ def _normalize_usage(
             value.get("total_tokens"),
         )
         if all(isinstance(item, int) and item >= 0 for item in fields):
-            return LLMUsage(fields[0], fields[1], fields[2], estimated=False)
+            details = value.get("prompt_tokens_details")
+            cached = cache_write = None
+            if isinstance(details, dict):
+                reads = details.get("cached_tokens")
+                writes = details.get("cache_write_tokens")
+                cached = reads if type(reads) is int and 0 <= reads <= fields[0] else None
+                cache_write = writes if type(writes) is int and 0 <= writes <= fields[0] else None
+                if cached is not None and cache_write is not None and cached + cache_write > fields[0]:
+                    cached = cache_write = None
+            return LLMUsage(fields[0], fields[1], fields[2], estimated=False,
+                            cached_input_tokens=cached, cache_write_input_tokens=cache_write)
     return LLMUsage(
         estimated_input_tokens,
         estimated_output_tokens,
@@ -97,7 +129,24 @@ def _fixture_usage(
     )
 
 
-class DeepSeekLLM:
+class CompletionHTTPClient:
+    provider = "deepseek"
+    provider_label = "DeepSeek"
+    request_flags: dict[str, Any] = {}
+
+    def configured_key(self):
+        return self.api_key or settings.deepseek_api_key
+
+    def adapt_payload(self, payload, *, responses_mode):
+        return payload
+
+    def build_responses_payload(self, messages, options):
+        from llm.responses_transport import payload
+        return payload(messages, options, model=self.model, temperature=self.temperature)
+
+    def http_error_code(self, response):
+        return response.status_code
+
     def __init__(
         self,
         model: str = DEFAULT_DEEPSEEK_MODEL,
@@ -106,21 +155,30 @@ class DeepSeekLLM:
         base_url: Optional[str] = None,
         thinking_type: Optional[str] = None,
         reasoning_effort: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
     ):
+        if timeout_seconds is not None:
+            timeout_seconds = float(timeout_seconds)
+            if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
+                raise ValueError("DeepSeekLLM timeout_seconds must be finite and positive")
         self.model = model
         self.temperature = temperature
         self.api_key = api_key
         self.base_url = (base_url or DEFAULT_DEEPSEEK_BASE_URL).rstrip("/")
         self.thinking_type = thinking_type
         self.reasoning_effort = reasoning_effort
+        self.timeout_seconds = timeout_seconds
 
     def invoke(self, request: LLMRequest) -> LLMResult:
-        api_key = self.api_key or settings.deepseek_api_key
+        from services.operation_control import check_cancelled
+        check_cancelled()
+        api_key = self.configured_key()
         if not api_key:
             raise LLMProviderError(
-                "DeepSeek credentials are not configured.",
-                provider="deepseek",
+                f"{self.provider_label} credentials are not configured.",
+                provider=self.provider,
                 model=self.model,
+                **({"status_code": 503} if self.provider == "openai" else {}),
             )
 
         resolved_messages = _resolve_messages(request.prompt, request.messages)
@@ -141,58 +199,124 @@ class DeepSeekLLM:
 
         if request.extra_body:
             payload.update(request.extra_body)
+        # Local transport control must never become a provider JSON parameter.
+        payload.pop("timeout_seconds", None)
+        from llm.responses_transport import API_KEY
+        responses_mode=API_KEY in (request.extra_body or {})
+        from llm.response_observation import OPTION as OBSERVATION_OPTION, Observation
+        observation_option=(request.extra_body or {}).get(OBSERVATION_OPTION)
+        if OBSERVATION_OPTION in (request.extra_body or {}) and (observation_option is not True or not responses_mode):
+            raise ValueError('HTTP observation requires an explicit Responses request')
+        observation=Observation() if observation_option is True else None
+        endpoint='/chat/completions'
+        schema_overhead=0
+        if responses_mode:
+            if request.stop:raise ValueError('Responses schema requests do not support stop overrides')
+            transport_options=dict(request.extra_body)
+            if self.thinking_type:transport_options.setdefault('thinking',{'type':self.thinking_type})
+            if self.reasoning_effort:transport_options.setdefault('reasoning_effort',self.reasoning_effort)
+            payload=self.build_responses_payload(resolved_messages, transport_options)
+            endpoint='/responses'
+            schema_overhead=len(json.dumps({API_KEY:'responses','response_format':transport_options['response_format']},
+                ensure_ascii=False,separators=(',',':'),allow_nan=False).encode('utf8'))
+        payload = self.adapt_payload(payload, responses_mode=responses_mode)
 
-        timeout = float(settings.deepseek_timeout_seconds)
+        timeout = self.timeout_seconds if self.timeout_seconds is not None else float(settings.deepseek_timeout_seconds)
+        if request.timeout_seconds is not None:
+            request_timeout = float(request.timeout_seconds)
+            if not math.isfinite(request_timeout) or request_timeout <= 0:
+                raise ValueError("LLM request timeout must be positive")
+            timeout = min(timeout, request_timeout)
         input_size = sum(len(str(item.get("content") or "")) for item in resolved_messages)
         estimated_input_tokens = sum(estimate_tokens(item.get("content") or "") for item in resolved_messages)
+        estimated_input_tokens += schema_overhead
         with trace_step(
             "llm_call",
             input_size=input_size,
-            meta={"provider": "deepseek", "model": self.model, "messageCount": len(resolved_messages)},
+            meta={"provider": self.provider, "model": self.model, "messageCount": len(resolved_messages)},
         ) as step:
             record_counter("llmCalls")
             record_counter("estimatedInputTokens", estimated_input_tokens)
             try:
-                response = requests.post(
-                    f"{self.base_url}/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json=payload,
-                    timeout=timeout,
-                )
-            except requests.RequestException as error:
+                from llm.deadline import call_with_deadline
+                def post(**extra):
+                    return requests.post(
+                        f"{self.base_url}{endpoint}",
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json=payload,
+                        timeout=timeout,
+                        **self.request_flags,
+                        **extra,
+                    )
+                if observation is not None:
+                    from llm.response_observation import read_json
+                    response=call_with_deadline(lambda:read_json(lambda:post(stream=True),observation,
+                        include_error=self.provider == "openai"),timeout)
+                else:
+                    response=call_with_deadline(post,timeout)
+            except (requests.RequestException, TimeoutError) as error:
+                # Preserve a bounded category, never exception text: transport
+                # messages may contain proxy credentials or request URLs.
+                if isinstance(error, requests.exceptions.ProxyError):
+                    failure_kind = "proxy_error"
+                elif isinstance(error, requests.exceptions.SSLError):
+                    failure_kind = "tls_error"
+                elif isinstance(error, requests.exceptions.ConnectTimeout):
+                    failure_kind = "connect_timeout"
+                elif isinstance(error, requests.exceptions.ReadTimeout):
+                    failure_kind = "read_timeout"
+                elif isinstance(error, TimeoutError):
+                    failure_kind = "deadline_exceeded"
+                elif isinstance(error, requests.exceptions.ConnectionError):
+                    failure_kind = "connection_error"
+                else:
+                    failure_kind = "transport_error"
                 raise LLMProviderError(
-                    "DeepSeek request failed.",
-                    provider="deepseek",
+                    f"{self.provider_label} request failed.",
+                    provider=self.provider,
                     model=self.model,
                     retryable=True,
+                    failure_kind=failure_kind,
+                    tls_diagnostic=_tls_diagnostic(error) if failure_kind == "tls_error" else None,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
 
-            if response.status_code >= 400:
+            if (response.status_code >= 400
+                    or (self.provider == "openai" and response.status_code >= 300)):
+                status_code = self.http_error_code(response)
                 raise LLMProviderError(
-                    f"DeepSeek request failed with HTTP {response.status_code}.",
-                    provider="deepseek",
+                    f"{self.provider_label} request failed with HTTP {response.status_code}.",
+                    provider=self.provider,
                     model=self.model,
-                    retryable=response.status_code == 429 or response.status_code >= 500,
-                    status_code=response.status_code,
+                    retryable=status_code == 429 or status_code >= 500,
+                    status_code=status_code,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 )
+
+            check_cancelled()
 
             try:
                 data = response.json()
+                if responses_mode:
+                    from llm.responses_transport import chat_view
+                    data=chat_view(data)
                 content = data["choices"][0]["message"]["content"]
             except (ValueError, KeyError, IndexError, TypeError) as error:
                 raise LLMProviderError(
-                    "DeepSeek returned an invalid response.",
-                    provider="deepseek",
+                    f"{self.provider_label} returned an invalid response.",
+                    provider=self.provider,
                     model=self.model,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 ) from error
             if not isinstance(content, str):
                 raise LLMProviderError(
-                    "DeepSeek returned an invalid response.",
-                    provider="deepseek",
+                    f"{self.provider_label} returned an invalid response.",
+                    provider=self.provider,
                     model=self.model,
+                    provider_observation=observation.freeze() if observation is not None else None,
                 )
 
             usage = _normalize_usage(
@@ -202,7 +326,13 @@ class DeepSeekLLM:
             )
             step["outputSize"] = len(content)
             record_counter("estimatedOutputTokens", estimate_tokens(content))
-            return LLMResult("deepseek", self.model, content, usage)
+            finish_reason = (data.get('choices') or [{}])[0].get('finish_reason') if isinstance(data, dict) else None
+            reported_model = data.get('model')
+            if not isinstance(reported_model, str) or not reported_model.strip() or len(reported_model) > 256:
+                reported_model = None
+            return LLMResult(self.provider, self.model, content, usage, finish_reason=finish_reason,
+                             reported_model=reported_model,
+                             provider_observation=observation.freeze() if observation is not None else None)
 
     def _call(
         self,
@@ -213,6 +343,8 @@ class DeepSeekLLM:
         **kwargs: Any,
     ) -> str:
         del run_manager
+        from services.operation_control import check_cancelled
+        check_cancelled()
         extra_body = kwargs.get("extra_body")
 
         # ── 15-2: LLM response cache ────────────────────────────────
@@ -256,6 +388,10 @@ class DeepSeekLLM:
             pass
 
         return result
+
+
+class DeepSeekLLM(CompletionHTTPClient):
+    pass
 
 
 class FixtureLLM:

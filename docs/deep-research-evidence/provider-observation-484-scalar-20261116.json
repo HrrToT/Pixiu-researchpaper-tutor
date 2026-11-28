@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "f740cd45149319de53f7072b3fe67f35f9a171b8",
+  "promptVersion": "dr-v2.20261116.484",
+  "case": "HTTP-RECEIPT-SCALAR-v1",
+  "isolatedTransportDiagnosticOnly": true,
+  "noPaperOrPrivateContentSent": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 2972,
+    "input_tokens": 2319,
+    "output_tokens": 653
+  },
+  "finishReason": "stop",
+  "unitValid": true,
+  "providerObservation": {
+    "version": 1,
+    "headersReceived": true,
+    "bodyReceived": true,
+    "phase": "body_received",
+    "httpStatus": 200,
+    "headersElapsedMs": 242,
+    "bodyElapsedMs": 10437
+  },
+  "requestIdPresent": false,
+  "observationPersistedInCallLedger": true,
+  "generationPayloadUnchangedByObservation": true,
+  "outputAndWholeRunBudgetsUnchanged": true,
+  "applicationDataUnchanged": true,
+  "previousUnknownPaperRequestResent": false,
+  "automaticRetry": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "boundary": "Real synthetic transport result only; no scientific or material-heavy latency acceptance",
+  "rawResult": "tmp/provider-observation-484-scalar-result-20261116/result.json",
+  "rawResultSha256": "d51aab0932877c834ecafbb4159ed79fb711b3e7ddcb10ca7454ae27ddaa77c3"
+}

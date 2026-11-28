@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-27",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted",
+  "independentCredit": 0,
+  "materials": {
+    "alike_v1": {
+      "filename": "2112.02906v1.pdf",
+      "sha256": "604edcc72304b5614c3209b15abbb056ca451b68f24679e316abf82d8b8feb97",
+      "bytes": 5289017,
+      "pageCount": 10,
+      "arxiv": "2112.02906v1",
+      "reference": "https://arxiv.org/abs/2112.02906v1"
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-ALIKE",
+      "split": "holdout",
+      "materials": [
+        "alike_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前 ALIKE v1 论文，向初学者解释 DKD 怎样从得分图得到亚像素关键点、位置的梯度如何传回得分图，以及训练中的重投影损失和峰值离散损失分别约束什么。300字以内，引用原文，不用外部资料。",
+      "required": [
+        "先经 NMS 和阈值找到整数像素候选，再在候选附近用 softmax 得分作权重求局部坐标，加回整数中心得到亚像素位置。",
+        "梯度经局部软坐标回到得分图；避免声称通过离散的 NMS 或阈值选择回传。",
+        "重投影损失拉近跨图投影后的关键点与对应检测点，峰值离散损失对离软关键点较远的高分给予更大惩罚，令得分集中在关键点处。",
+        "用可展开的原文引用覆盖检测、梯度和两项损失。"
+      ],
+      "forbidden": [
+        "把 NMS 整体称为可微。",
+        "把亚像素坐标描述为离散取最大值。",
+        "混同重投影损失与描述子的 NRE 损失，或把离散损失说成跨图位置误差。"
+      ]
+    }
+  ],
+  "review": {
+    "minimumApplicableScore": 4,
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "nonApplicable": {
+      "可执行性": "题目解释已有算法。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "page": 3,
+        "section": "§III-B, Eq. (3)–(6)",
+        "checks": "NMS and threshold, local soft-argmax and coordinate offset."
+      },
+      {
+        "page": 4,
+        "section": "Fig. 3 and §III-C.1",
+        "checks": "Backward path through the score patch and the symmetric correspondence reprojection loss."
+      },
+      {
+        "page": 5,
+        "section": "§III-C.2, Eq. (12)–(13)",
+        "checks": "Spatial distance weighted by softmax scores."
+      }
+    ],
+    "preSubmission": "Verify no substantive prior use in research runs, tasks, the index and source cache. Hash the exact PDF before isolation.",
+    "goldInputBoundary": "Only the frozen question, material identity and budget reach the application. The rubric and page anchors are for review only."
+  },
+  "caseDefinitionHashes": {
+    "H1-ALIKE": "9daa97f86703258e416624158b89b649f3fd4577f89be3a0e49931c132f5a457"
+  },
+  "firstExecutionReceipt": "deep-research-evidence/alike-h1-first-frozen-20261127.json",
+  "liveInventoryReceipt": "deep-research-evidence/alike-h1-live-preflight-20261127.json"
+}

@@ -1,0 +1,237 @@
+{
+  "legacyInputBytes": 39933,
+  "legacyBatchCount": 0,
+  "trace": [
+    {
+      "window": 32000,
+      "contract": {},
+      "batchSizes": []
+    },
+    {
+      "window": 32000,
+      "contract": {
+        "scoped": true,
+        "fit_check_count": true,
+        "pack_design_checks": true
+      },
+      "batchSizes": []
+    },
+    {
+      "window": 32000,
+      "contract": {
+        "scoped": true,
+        "required_design_evidence_only": true,
+        "fit_check_count": true,
+        "pack_design_checks": true
+      },
+      "batchSizes": []
+    },
+    {
+      "window": 35000,
+      "contract": {
+        "scoped": true,
+        "fit_check_count": true,
+        "required_design_evidence_only": true
+      },
+      "batchSizes": [],
+      "diagnostic36000": [
+        {
+          "bytes": 17996,
+          "checks": [
+            "fact_0",
+            "fact_1",
+            "fact_2",
+            "fact_3",
+            "fact_4",
+            "fact_5",
+            "fact_6",
+            "fact_7"
+          ]
+        },
+        {
+          "bytes": 35747,
+          "checks": [
+            "section_0",
+            "section_1",
+            "section_2",
+            "section_3",
+            "section_4"
+          ]
+        },
+        {
+          "bytes": 35552,
+          "checks": [
+            "section_5",
+            "section_6",
+            "section_7"
+          ]
+        },
+        {
+          "bytes": 35816,
+          "checks": [
+            "requirement_0_0",
+            "requirement_0_1",
+            "requirement_0_2",
+            "requirement_0_3"
+          ]
+        },
+        {
+          "bytes": 35712,
+          "checks": [
+            "requirement_1_0",
+            "requirement_2_0",
+            "requirement_3_0"
+          ]
+        }
+      ]
+    }
+  ],
+  "newModelCalls": 0,
+  "scientificApproval": false,
+  "v4InputBytes": 35816,
+  "v4BatchSizes": [
+    17996,
+    35747,
+    35552,
+    35816,
+    35712
+  ],
+  "v4BatchScopes": [
+    [
+      "fact_0",
+      "fact_1",
+      "fact_2",
+      "fact_3",
+      "fact_4",
+      "fact_5",
+      "fact_6",
+      "fact_7"
+    ],
+    [
+      "section_0",
+      "section_1",
+      "section_2",
+      "section_3",
+      "section_4"
+    ],
+    [
+      "section_5",
+      "section_6",
+      "section_7"
+    ],
+    [
+      "requirement_0_0",
+      "requirement_0_1",
+      "requirement_0_2",
+      "requirement_0_3"
+    ],
+    [
+      "requirement_1_0",
+      "requirement_2_0",
+      "requirement_3_0"
+    ]
+  ],
+  "factBatchReused": true,
+  "covered": 23,
+  "hardIssues": [],
+  "candidate": "316def99a",
+  "realRun": {
+    "claim_ids": [],
+    "report_version_id": "report_dr_d3_reviewed_gradient_20261128_shared_incomplete",
+    "elapsedSeconds": 83.19,
+    "newCalls": 2,
+    "cumulativeTokens": 35909,
+    "localPublication": false,
+    "publishedToWorkspace": false
+  },
+  "realGenerationState": "awaiting_scientific_review",
+  "realReviewState": "invalid_response",
+  "reviewStopReasons": [
+    "missing_numeric_source_binding"
+  ],
+  "realBatchSizes": [
+    20674,
+    35452,
+    35774
+  ],
+  "reviewAndTransportTests": 361,
+  "releaseFaultTests": 31,
+  "rawArtifacts": {
+    "tmp/openai-d3-reviewed-gradient-20261128/run.json": "7867fdbbcd253eff7f0dde12863ff31d851a63b519dac705bb644b6ab2f3cc17",
+    "tmp/openai-d3-reviewed-gradient-20261128/calls.json": "d6c05db16cf4eb8f2f36dee8860d64e1d80710ebd1f66f0d8e771b898ea8586c",
+    "tmp/openai-d3-reviewed-gradient-20261128/result.json": "1ee68da1331e1e8aae25340cefa368176afeb89d09f149b0e4a4c3dee23a6ae4",
+    "tmp/openai-d3-reviewed-gradient-20261128/intent.json": "79eb7b44db459ffd3abda21d95a5f56a9d2c229b1b092c64c3d21e96b7238bb1",
+    "tmp/openai-d3-reviewed-gradient-20261128/provider.jsonl": "52ff364b4515c7b68c68f3d84bbac0b9bf433090f2aca737f002d5f04ea82f28",
+    "tmp/d3-revised-review-batch-preflight-20261128.json": "c4d16dc807687c8ac04fddcae89cb60f80bc0b900652f2b20c471bfc9aefea4f"
+  },
+  "membershipPreflight": {
+    "oldFactBytes": 20674,
+    "newFactBytes": 20635,
+    "stableDesignPackets": 2,
+    "sameEvidenceAliases": true,
+    "newInputDigest": "995db9514cf7ee55e64cbc0303f574a1de62f3cd1f43f72caa16c6f89d8be6c8",
+    "rawFactResponseDigest": "25f33e9abd34c852830722a4cfcef674cb0cf04cc9794812412004ade8ba17a2",
+    "allEightFactsAdvanceOffline": true,
+    "newModelCalls": 0,
+    "scientificApproval": false
+  },
+  "membershipCandidate": "000e0ccb524df05f9144e7538bdaf39e7644897e",
+  "membershipTransportAndVerificationTests": 398,
+  "continuedRun": {
+    "budgetStop": {
+      "kind": "tokens",
+      "limit": 100000,
+      "used": 104311
+    },
+    "elapsedSeconds": 97.98,
+    "newCalls": 5,
+    "cumulativeTokens": 89252,
+    "localPublication": false
+  },
+  "continuedCalls": [
+    {
+      "node": "review_experiment_shared",
+      "usedTokens": 11024
+    },
+    {
+      "node": "review_experiment_shared",
+      "usedTokens": 11141
+    },
+    {
+      "node": "repair_experiment_shared",
+      "usedTokens": 10327
+    },
+    {
+      "node": "review_experiment_shared",
+      "usedTokens": 11058
+    },
+    {
+      "node": "review_experiment_shared",
+      "usedTokens": 9793
+    }
+  ],
+  "revisionReviewFailures": [
+    {
+      "checkId": "section_2",
+      "reason": "初始化 RGB 到 SH 系数的映射未规定：渲染使用 clamp(0.5+SH)，但仅写初始化 RGB。训练规则亦未规定梯度在每次反向前清零，导致累积与更新无法唯一执行。"
+    },
+    {
+      "checkId": "section_5",
+      "reason": "预训练和各臂优化步预算、准备上限及资源不足停止规则明确，但未规定每步反向前清除参数梯度；因此规定的 Adam 更新和候选梯度不能唯一复现。"
+    }
+  ],
+  "latestGenerationPreflight": {
+    "inputBytes": 31962,
+    "inputDigest": "78b6e906ee1af261bacc4063cee09be0827ad11c1a6df22b1ea9aa247b2cb0a3",
+    "sameEvidenceCount": 14,
+    "newModelCalls": 0,
+    "candidate": "a8fa6d3603aa39b28a6f5a7dd5c1bc0b9e5e0b06",
+    "focusedTests": 1
+  },
+  "continuationRawArtifacts": {
+    "tmp/openai-d3-reviewed-gradient-continuation-20261128/run.json": "ca3bc980a6e3addba4589d8af2d2fbd7d6897d5b5cf43d32544ebff09bc23c1b",
+    "tmp/openai-d3-reviewed-gradient-continuation-20261128/calls.json": "5c13b6db55cab1bbc89fd1b6bec63e7c2fc37cf60fc8f42d47c76495f2b6cece",
+    "tmp/openai-d3-reviewed-gradient-continuation-20261128/result.json": "71560ea2ab67153631745bacdf256c9dbd1e5e070276c5b3ec27c7e229d5dd30",
+    "tmp/openai-d3-reviewed-gradient-continuation-20261128/provider.jsonl": "1e2f2686a8c263ea1d01171085de3baf8e379bb36c73178253619b59e69641b5"
+  }
+}

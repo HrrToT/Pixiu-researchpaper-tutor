@@ -1,0 +1,71 @@
+{
+  "sourceRun": "dr_d3_gradient_and_condition_20261128",
+  "validationRun": "dr_d3_operation_capacity_20261128",
+  "sourceArtifactSha256": "c11a5ca2d8897bc13bdb01f3a552f20b13c1041cab7cfa025b7b26623562cace",
+  "responseDigest": "6952e15cc5cf845cc4d2b703e958e6260e10bae9eeccb841231af72fd9cc16a7",
+  "bindingDigest": "b3cf9a48fada64fb26e2211babe723ead76fa06fc11e75e06d9c59ab84c23726",
+  "proposalDigest": "e284058484863e07ef793ceae7a455ecaf8483d9515a91be1b87c6621dc30bbe",
+  "wireBytes": 22326,
+  "expandedBytes": 24952,
+  "countedBytes": 23436,
+  "legacyOutcome": "invalid_response",
+  "legacyIssues": [
+    {
+      "code": "plan.capacity",
+      "path": "/"
+    }
+  ],
+  "newState": "awaiting_scientific_review",
+  "newModelCalls": 0,
+  "scientificApproval": false,
+  "carriedTokens": 29549,
+  "reviewTargets": 23,
+  "reviewMaximumBatchBytes": 35874,
+  "reviewHardIssues": [],
+  "liveCandidate": "57cea9fc1",
+  "live": {
+    "claim_ids": [],
+    "report_version_id": "report_dr_d3_operation_capacity_20261128_shared_incomplete",
+    "elapsedSeconds": 50.33,
+    "newCalls": 3,
+    "cumulativeTokens": 52131,
+    "localPublication": false
+  },
+  "factChecksPassed": 8,
+  "repairInputBytes": 37045,
+  "repairState": "not_started_capacity",
+  "rawReviewStoppedAfterBatch": 3,
+  "recordedReviewBindingsReplay": {
+    "newModelCalls": 0,
+    "checked": 16,
+    "passed": 15,
+    "failed": {
+      "section_2": {
+        "status": "failed",
+        "reason": "Clone displacement requires the signed world-position loss gradient g at each event, but the fit rule specifies only 100-step projected-mean gradient magnitudes for gating; it does not specify which update or aggregation supplies g. Thus clone positions are not reproducibly determined."
+      }
+    },
+    "unchecked": 7,
+    "conditionalEffects": {
+      "status": "passed",
+      "reason": "Weights match the listed 00, 10, 01, 11 order; loss signs, conditional effects and interaction are defined. Seed blocks are paired independent replicates, with descriptive limits and explicit complete-block selection bias. The paper's separate ablations are distinguished from the proposed factorial."
+    }
+  },
+  "newGenerationPreflight": {
+    "inputBytes": 31875,
+    "limit": 32000,
+    "sameEvidenceCount": 14,
+    "inputDigest": "ffab6ff39d6cc2b6e49bc0ce8536357c015a3e13f3a5781508d20348aa1af801"
+  },
+  "regressionTestsOperationCapacity": 357,
+  "rawArtifacts": {
+    "tmp/openai-d3-gradient-and-condition-20261128/run.json": "c11a5ca2d8897bc13bdb01f3a552f20b13c1041cab7cfa025b7b26623562cace",
+    "tmp/openai-d3-gradient-and-condition-20261128/calls.json": "f72540598c0d5094e69950160d71d4fd0ece60c195e3594b5801f849e3bf80f6",
+    "tmp/openai-d3-operation-capacity-20261128/result.json": "7fc06ee49759eba78927a2582502a9a1f1fc95aea6353ff0a5c8f7323ad33a82",
+    "tmp/openai-d3-operation-capacity-review-20261128/run.json": "6bb927325efe2b74d177153065db693f2724de4c387de053f3ba179845fdc523",
+    "tmp/openai-d3-operation-capacity-review-20261128/calls.json": "d293e48cf21da7d169a98c31135277a586cb0a5eaa4f5c6ac7e3a7985d139e29",
+    "tmp/openai-d3-operation-capacity-review-20261128/provider.jsonl": "8917daf492c91148b041eec252a964aa7062908978f7504b49e8f0a67aa8661d"
+  },
+  "replayCandidate": "6dce5f35cdb74b2fffc9fc0475a1962370b42c0c",
+  "regressionTestsMetricBindingsAndGradientPrompt": 358
+}

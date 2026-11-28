@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-28T03:52:14.281438+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "dmc_v1": {
+      "path": "tmp/pdfs/h3-dmc-evaluator-20261128/2403.09636v1.pdf",
+      "bytes": 960832,
+      "sha256": "bd70a5dd909287e9a25409c467884a206b9b39853bed4dd9312be6a7148eea9f",
+      "pageCount": 16,
+      "arxiv": "2403.09636v1",
+      "reference": "https://arxiv.org/abs/2403.09636v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "cases": [
+    {
+      "id": "H3-DMC",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2403.09636v1。给初学者解释 DMC 在推理时怎样决定把新的键值缓存追加还是合并，这两种操作分别怎样更新缓存。注明取得的是摘要还是正文，引用指定版本的方法原文，正文不超过 300 字。找不到正文时请说明。",
+      "required": [
+        "从空材料任务发现并下载指定版本全文，文件哈希及页数与评审件一致，并保留原文定位。",
+        "解释每个时间步依据当前键向量第一个分量经 sigmoid 后取整得到合并或追加的二值决策，当前查询向量第一个分量用于预测当前词元的重要性。",
+        "说明追加开启一个新条目；合并以当前重要性和当前段累计重要性为权重，将当前键和值与最后一条分别做加权平均，并更新累计权重。",
+        "注明正文或摘要，引用固定版本方法正文，300 字以内。"
+      ],
+      "forbidden": [
+        "把键向量和查询向量在预测决策和权重中的作用对调，或把逐步决策说成预先固定的头类别。",
+        "把合并说成直接删除或追加，也不要把当前权重和段累计权重说成等权。",
+        "用其他版本、已经存在的应用缓存或评审 PDF 代替联网获取。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题解释已有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "dmc_v1",
+        "page": 3,
+        "section": "3.1 and Algorithm 1",
+        "checks": "Physical page 3 gives the decision and importance predictors, append branch, and weighted update with a running weight sum."
+      }
+    ],
+    "goldInputBoundary": "只传当前问题、空任务材料、外部来源策略及标准预算，评审件与标准留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H3-DMC": "1f1baa8183b4a804e9f833637987e29fb8a8a5ba009b74e02f2dc596acfe9920"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "case": "E1-v45",
+  "sourceCommit": "83df7a6d",
+  "errorCode": "invalid_workflow_blueprint_response",
+  "errors": [
+    "blueprint.output_truncated"
+  ],
+  "exactFrozenRequestMatchesLedger": true,
+  "actualSchemaMatchesVersion3": true,
+  "promptBytes": 23991,
+  "schemaOverheadBytes": 6550,
+  "rawResponseBytes": 23883,
+  "responseSha256": "ddf8877676a9bf9e90f106383e2f02f13de546b1beb3c1e73d9be7f084787370",
+  "finishReason": "length",
+  "workflowUsage": {
+    "total_tokens": 14533,
+    "input_tokens": 8389,
+    "output_tokens": 6144
+  },
+  "completeRecordStringsBeforeTruncation": 239,
+  "recordNamesTail": [
+    "per_frame_stage2_addition_timing_policy_control",
+    "per_frame_stage1_ntc_timing_policy_treatment",
+    "per_frame_stage1_ntc_timing_policy_control",
+    "per_frame_stage2_addition_timing_strategy_treatment",
+    "per_frame_stage2_addition_timing_strategy_control",
+    "per_frame_stage1_ntc_timing_strategy_treatment",
+    "per_frame_stage1_ntc_timing_strategy_control",
+    "per_frame_stage2_addition_timing_plan_treatment"
+  ],
+  "schemaRecords": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "minLength": 1
+    },
+    "minItems": 1,
+    "uniqueItems": true
+  },
+  "publicSynthesisReached": false,
+  "nextAction": "Bound records to the nine required categories already named by Workflow4; retain raw failed response and all required outputs. Do not increase token budget or complete truncated JSON.",
+  "independentCredit": 0
+}

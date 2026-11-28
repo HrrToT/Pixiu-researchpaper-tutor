@@ -1,0 +1,134 @@
+{
+  "case": "D2-BASELINE-COMPRESSION fresh development run",
+  "intent": {
+    "runId": "dr_run_22d9fbf1f3f153cb8134c4c20e318537",
+    "case": "D2-BASELINE-COMPRESSION",
+    "materials": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf"
+    ],
+    "modelRouting": [
+      "gpt-6.1-terra",
+      "gpt-6-luna"
+    ],
+    "automaticRetry": false,
+    "sourceCommit": "f4888e75e9e8c15bac89e679351958c6b67ffe45",
+    "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+    "networkSources": 0,
+    "productionWrites": 0,
+    "reusedStageReceipts": 0
+  },
+  "independentHoldoutCredit": false,
+  "outcome": "none",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "productionWrites": 0,
+  "published": false,
+  "terminalAuditCompleted": false,
+  "provider": {
+    "completedGenerations": 13,
+    "attempts": 14,
+    "settledTokens": 64045,
+    "settledByModel": {
+      "gpt-6.1-terra": 45962,
+      "gpt-6-luna": 18083
+    },
+    "unknownTerminalCall": {
+      "node": "verify_answer_coverage",
+      "callId": "a238b4ac381b606791853675e8fe79cc",
+      "failureKind": "proxy_error",
+      "reservedTokens": 30641,
+      "reservedAt": "2026-11-28T09:09:20Z",
+      "completedAt": "2026-11-28T10:05:12Z"
+    },
+    "unknownRetry": false
+  },
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 18145,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 9,
+    "tokens": 94686,
+    "normalTokens": 62831,
+    "elapsedSeconds": 3533.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "lastProviderEventElapsedSeconds": 183.12,
+  "observationBatch": {
+    "policy": 6,
+    "observationsAuthored": 3,
+    "packetsSent": 1,
+    "testedFourTargetBranch": false
+  },
+  "internalChecks": {
+    "acceptedClaims": 9,
+    "quoteMatches": {
+      "literal_page": 26,
+      "table_row_check_required": 2
+    },
+    "table": {
+      "source": "LightGaussian v6 p6 Table 1",
+      "group": "Mip-NeRF 360",
+      "cellsMatched": 10
+    }
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/intent.json",
+      "sha256": "f68b0a3afdc65f7b3d7fbea3b7fbfe62b4c968e42ea6a6983d0194547b521ba6"
+    },
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/run.json",
+      "sha256": "f6a507d031ddb78813d2d516b35b549f0df9d94de876a0a86c437eddd7f01ad0"
+    },
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/calls.json",
+      "sha256": "f61d4db85b28ba77f9677a7380ff2590cb020721cd6f1dba3a7149d0e9110b8d"
+    },
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/result.json",
+      "sha256": "ca2a1104be48c149115cba30cfca4452505141ceb642a9087563fda1832f496b"
+    },
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/provider.jsonl",
+      "sha256": "ea52dc85c4542a6318c12ca049f1dddca202a2efaf7e9eb5ac4cede852656b43"
+    },
+    {
+      "path": "tmp/openai-d2-four-observation-standard-20261128/internal-citation-physical-check.json",
+      "sha256": "fd8866eae14760661b2212c937cf4b29cec7577a350400e07a8c2bb0f1aa1e9d"
+    }
+  ],
+  "citationScopeReplay": {
+    "sourceRunSha256": "f6a507d031ddb78813d2d516b35b549f0df9d94de876a0a86c437eddd7f01ad0",
+    "oldRejections": {
+      "cmp_1_0": "absence_not_established",
+      "cmp_7_0": "absence_not_established"
+    },
+    "newNumericAndScopePrecheckCandidates": [
+      "cmp_1_0",
+      "cmp_7_0"
+    ],
+    "unlocatedReferencesStillRejected": true,
+    "wholePaperAbsenceStillRejected": true,
+    "providerCalls": 0,
+    "semanticApproval": false,
+    "artifact": {
+      "path": "tmp/d2-specific-quotation-scope-replay-20261128.json",
+      "sha256": "f6fcfb67a1a9ee587879915481449cbd80255cf20dbf4f4b1378451240ed0b79"
+    },
+    "commit": "956b3f0e64f88fbc8f4cbffad4134116300de69d",
+    "regressionPassed": 272
+  }
+}

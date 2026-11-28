@@ -1,0 +1,24 @@
+{
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "isolatedDatabase": "D:\\aiproj\\ai_project\\tmp\\isolated-persistence-verified-20261112\\db\\acceptance",
+  "jarSha256": "3ac7559375c93118fd6a006112e1c2d2db29b1b954bc996d5ded964c3b3c90b0",
+  "javaPort": 8187,
+  "vitePort": 4274,
+  "boundary": "Actual Java artifact persistence; no Python research/model invocation; synthetic user-authored note, not research provenance.",
+  "browserExitCode": 0,
+  "restartPersistenceVerified": true,
+  "taskCount": 1,
+  "taskRevision": 2,
+  "historyVersions": 2,
+  "ownedJavaStopped": true,
+  "browserStats": {
+    "startTime": "2026-11-12T09:35:57.825Z",
+    "duration": 11114.543000000001,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "exitCode": 0
+}

@@ -1,0 +1,77 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v41",
+  "sourceCommit": "c2d1972e3e17d034aa1b1d03b80f38546c2e7ebf",
+  "runId": "dr_run_5f41d37a6e455addb9f944d9a49e8b59",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": null,
+  "published": false,
+  "visibleVerifiedClaims": 0,
+  "modelCalls": 15,
+  "modelTokens": 83325,
+  "elapsedSeconds": 229.0,
+  "externalSearches": 0,
+  "compiledDraftClaims": 11,
+  "initialAcceptedClaims": 2,
+  "initialRejectedReasons": {
+    "numeric_mismatch": 4,
+    "unbound_table_measurement": 1,
+    "semantic_unresolved": 3,
+    "comparison_benchmark_example_scope": 1
+  },
+  "individuallyVerifiedClaimsAfterRepair": 2,
+  "wholeAnswerAuditCallStatuses": [
+    "succeeded"
+  ],
+  "initialWholeAnswerAudit": {
+    "status": "checked",
+    "verdicts": {
+      "ob-1-1": "partial",
+      "ob-1-2": "partial",
+      "ob-2-1": "missing",
+      "ob-2-2": "missing",
+      "answer_scope": "partial"
+    },
+    "budgetLimit": null,
+    "answerCoherent": false,
+    "coherenceIssueKinds": [
+      "scope_ambiguity",
+      "scope_ambiguity"
+    ]
+  },
+  "finalWholeAnswerAudit": {
+    "status": "checked",
+    "verdicts": {
+      "ob-1-1": "partial",
+      "ob-1-2": "partial",
+      "ob-2-1": "missing",
+      "ob-2-2": "missing",
+      "answer_scope": "partial"
+    },
+    "budgetLimit": null,
+    "answerCoherent": false,
+    "coherenceIssueKinds": [
+      "scope_ambiguity",
+      "scope_ambiguity"
+    ]
+  },
+  "repairBudgetStop": {
+    "batch": 2,
+    "kind": "repairEvidenceBytes",
+    "limit": 11555,
+    "used": 13143
+  },
+  "repairBatchesWithResponse": 2,
+  "blockedRepairBatchOrdinal": 3,
+  "repairFactualRecheckDispatched": false,
+  "originalRestoredWithRecordsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "70fc20ccef5f8569230aea34daf387e5180d8304278a56dc2c120055f2402eb6",
+    ".calls.json": "41e1e8b0325c13d531f21790cc91afa886e1f0a05b27b471c005825688dcf6e7",
+    ".result.json": "10635a4021343cf62f572aaf5cf7fa377763108a72faca575f8f0fd060169bee",
+    ".execution.json": "1191f6c4fd27bdf82fb4fd3e8a0d3a3befeb6db473116f4bd5ee4eed7d64ee97",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  }
+}

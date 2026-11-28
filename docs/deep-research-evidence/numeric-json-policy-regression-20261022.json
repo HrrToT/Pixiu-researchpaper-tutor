@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "a7a9a52d",
+  "promptVersion": "dr-v2.20261022.225",
+  "structuredOutputContractVersion": 9,
+  "fullOffline": {
+    "passed": 3937,
+    "warnings": 1,
+    "seconds": 253.02,
+    "files": 217,
+    "log": "tmp/pytest-dr225-full.log",
+    "sha256": "deba9446a68764a250676cccf743ff36093af6d406625c1e32eb8d2c77a9e797"
+  },
+  "focusedPassed": 170,
+  "focusedOverlap": true,
+  "newTests": 29,
+  "legacyReplayScriptCount": 26,
+  "legacyActualFingerprintsMatched": 79,
+  "controlled": {
+    "case": "E1-v19",
+    "originalRawSha256": "0520c48dda9d6e5a087a118fc076b66463d6710623aeeb7670ec8195422516ba",
+    "strictRejectionUnchanged": true,
+    "providerCalls": 0,
+    "productionWrites": 0,
+    "framing": {
+      "plan_experiment": 970,
+      "synthesize": 970,
+      "repair_claims": 989,
+      "verify_design_science": 989,
+      "verify_design_config": 989
+    }
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Producer guidance for new experimental runs only. Historical v1-v8 bytes, factual messages, strict parser, reservations and budgets unchanged. Passing offline checks does not prove live generation or scientific content quality."
+}

@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v7",
+  "runId": "dr_run_fbc8c625e6205431bc8bfe4d48cc9a02",
+  "sourceCommit": "5da25372",
+  "promptVersion": "dr-v2.20261018.142",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 12,
+  "settledTokens": 36237,
+  "elapsedSeconds": 66.409,
+  "cost": null,
+  "actualSemanticBatches": [
+    {
+      "node": "verify",
+      "claimIds": [
+        "c2"
+      ]
+    },
+    {
+      "node": "verify",
+      "claimIds": [
+        "c3"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c3",
+        "text": "遇到初始帧没有的新物体（如火焰、倒出的液体）时，仅靠变换现有高斯无法表示这些新出现的几何和外观，因此需要添加新的高斯来建模它们。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d",
+          "ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010"
+        ],
+        "conditions": {
+          "context": "新物体指初始帧中不存在的瞬态或持久对象；添加的新高斯是帧特定的，不传递到后续帧。"
+        },
+        "obligationIds": [
+          "ob_3"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "声称NTC通过多分辨率哈希编码和浅层MLP预测变换，并用当前帧图像误差调整NTC参数使变换后高斯匹配当前帧。证据E2仅表明以前一帧3DGs为初始化并在Stage1训练NTC建模变化；E1仅给出N3DV上NTC学习率0.002，其后文虽出现多分辨率哈希编码，但未提及浅层MLP，也未说明以当前帧图像误差作为训练损失。因此无法覆盖所有分句和条件。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "4e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "unchanged_semantic_rejection",
+        "detail": "声称NTC通过多分辨率哈希编码和浅层MLP预测变换，并用当前帧图像误差调整NTC参数使变换后高斯匹配当前帧。证据E2仅表明以前一帧3DGs为初始化并在Stage1训练NTC建模变化；E1仅给出N3DV上NTC学习率0.002，其后文虽出现多分辨率哈希编码，但未提及浅层MLP，也未说明以当前帧图像误差作为训练损失。因此无法覆盖所有分句和条件。",
+        "originalReason": "semantic_unresolved",
+        "progressDetail": "论断内容和引用依据未变，保留原核验拒绝结果。"
+      }
+    ]
+  },
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 4,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "Relative-reference false veto removed; the new-object explanation reaches independent semantics and is published with own citations.",
+    "Actual production initial verification sent c2 and c3 in two separate tracked requests; c2 failed and c3 passed. This verifies dispatch isolation, not checker infallibility.",
+    "Repair removed the unsupported dimension count from main prose but retained it in conditions. Trusted Preserve conditions instruction conflicts with revision of rejected conditions.",
+    "The inference about encoder/loss implementation was copied unchanged, preserving its correct semantic rejection.",
+    "Only one of three requested points is published. Acquisition also remains unchecked for stricter generated explanation criteria; no full content pass."
+  ],
+  "report": "## 判断\n\n- 遇到初始帧没有的新物体（如火焰、倒出的液体）时，仅靠变换现有高斯无法表示这些新出现的几何和外观，因此需要添加新的高斯来建模它们。 [1](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [2](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010)\n  适用条件：context：新物体指初始帧中不存在的瞬态或持久对象；添加的新高斯是帧特定的，不传递到后续帧。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 在3DGStream v4中，NTC预测了高斯的哪些变化？：最终回答尚未完整回应这一问题\n- 在3DGStream v4中，NTC如何利用前一帧的高斯表示来预测当前帧的变化？：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v7.json",
+      "sha256": "0a47d73820475002ce1329d31f32b736bd63c083a32d05c3bc8c4a5e194c4198"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v7.payload.json",
+      "sha256": "aceb85403714175f85ae858f8083715510a032af5cd64bda253d3d0ccd6775bc"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v7.calls.json",
+      "sha256": "6385a8b5089169b62552bd5b4ccacc6c61e478a54d80fafd97401d38edee9282"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v7.result.json",
+      "sha256": "ee15acd12f611572fc0c09c7cc9049630934752f94da89cc1a73cb0cf6d74f38"
+    }
+  ],
+  "boundary": "Submitted once, unchanged question/materials/budget, all rows settled. No historical unknown retry, first-result overwrite or independent credit. Safe partial result is not goal completion."
+}

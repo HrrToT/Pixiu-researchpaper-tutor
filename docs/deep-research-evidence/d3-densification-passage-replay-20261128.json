@@ -1,0 +1,19 @@
+{
+  "sourceRun": "dr_run_d93e6bed7d8f5a59a6ca53b9b4f36c92",
+  "sourceHash": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "sourcePage": 5,
+  "sourceRangeWithinPassage": [
+    594,
+    1446
+  ],
+  "quoteSha256": "a7461407b171d37bf8a07e611faeeca802f8386d4827d3ccf9f321382abed8f0",
+  "alias": "E5",
+  "oldReadPassageCount": 15,
+  "newReadPassageCount": 14,
+  "allPriorRequiredEvidencePreserved": true,
+  "addedCloneAndSplitOperativePassage": true,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "requestBytes": 31503,
+  "promptSha256": "cb942cf40f1def2869265ccba2e0f909aa72e17a5e6a569d5cdc2c3d9795f125"
+}

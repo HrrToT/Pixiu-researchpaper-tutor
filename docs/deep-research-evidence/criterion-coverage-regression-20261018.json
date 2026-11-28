@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "8be225d9",
+  "promptVersion": "dr-v2.20261018.136",
+  "evidenceCoverageContractVersion": 1,
+  "full": {
+    "passed": 2210,
+    "warnings": 1,
+    "seconds": 147.3,
+    "log": "tmp/pytest-dr136-full.log"
+  },
+  "focused": {
+    "passed": 91,
+    "seconds": 31.21,
+    "log": "tmp/pytest-dr136-requirements-final3.log",
+    "overlapsFullSuite": true
+  },
+  "initialFocusedRoutingFailure": {
+    "log": "tmp/pytest-dr136-requirements-final.log",
+    "cause": "The synthetic output passage was shorter than the existing 50-character extraction threshold.",
+    "resolution": "Made the fixture passage long enough to exercise the intended acquisition path; retained the assertion of two local batches and one retrieval."
+  },
+  "properties": [
+    "A topical or output-only hit cannot satisfy every source-specific criterion.",
+    "Criterion pair identities distinguish different requirements for one evidence/obligation tuple; ambiguous legacy tuples cannot approve them.",
+    "Generated compound criteria are split only using literal human questions; model/parent-artifact text cannot become a human requirement.",
+    "Unprovided parenthesized AI examples are removed; human examples, parenthesized lists and decimal values are preserved.",
+    "A compiled graph consumes remaining local input evidence before another search; settled pairs are reused and unknown requests remain blocked.",
+    "Old records keep their old criteria, request keys and topical relevance behavior; no publication or scientific claim is approved by acquisition coverage."
+  ],
+  "modelCalls": 0,
+  "boundary": "Offline integration and saved-real-input replay, not new provider quality or independent acceptance. Original source/identity/budget guards remain required."
+}

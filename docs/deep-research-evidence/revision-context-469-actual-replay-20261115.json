@@ -1,0 +1,16 @@
+{
+  "promptVersion": "dr-v2.20261115.469",
+  "completeInputBytes": 46775,
+  "oldLimitBytes": 40000,
+  "newLimitBytes": 64000,
+  "requestDigest": "c33ded153c1080f4c5d8365a47e32a64e30b6e48bc038ce9632132acf97b2883",
+  "promptMessagesSchemaAndOptionsExact": true,
+  "sourceRows": 20,
+  "allPublicEvidenceRetained": true,
+  "oldStatus": "not_started_capacity",
+  "newStatus": "pending",
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

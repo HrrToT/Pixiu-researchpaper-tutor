@@ -1,0 +1,67 @@
+{
+  "sourceCommit": "0b7b2df83",
+  "base": "D2-BASELINE-COMPRESSION-v24",
+  "transportBound": {
+    "oldInputBytesLimit": 19149,
+    "updatedInputBytes": 20808,
+    "updatedInputBytesLimit": 21051,
+    "maxOutputTokens": 3500,
+    "requiredEvidenceRows": 9,
+    "fixedChecks": 8
+  },
+  "probes": [
+    {
+      "name": "comparison-v12-v24-isolated-audit",
+      "wireThinking": null,
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "length",
+      "usage": {
+        "input_tokens": 6701,
+        "output_tokens": 3500,
+        "total_tokens": 10201,
+        "estimated": false
+      },
+      "auditStatus": "invalid_response",
+      "auditGaps": 6,
+      "receiptSHA256": {
+        "intent": "fa473c30c90814f2a3faaa99b9aeaa108e03bea995c529a9c16efa245c10566a",
+        "request": "6d3679a8e520103a2316c2e622e4c3575e9b3a454829057d02108708df14baaa",
+        "response": "625a7ee165e0b87fd3e13a383b49e13226840aa4b02652a683da2ccc8879c309"
+      }
+    },
+    {
+      "name": "comparison-v12-v24-runtime-audit",
+      "wireThinking": {
+        "type": "disabled"
+      },
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 6622,
+        "output_tokens": 1162,
+        "total_tokens": 7784,
+        "estimated": false
+      },
+      "auditStatus": "checked",
+      "auditGaps": 0,
+      "receiptSHA256": {
+        "intent": "8d75e0309d67b0eb4a7d8585bddc1be283875afd8480f264dfc1496e71407150",
+        "request": "994e8ec6ccf78d7a39ed806fe85a1a693cb309be52dc93eca0eb6d7ec7fa1cda",
+        "response": "8c9aaf8b5fc803ea6a66b8091119c558382176d21c2fd682afcab8969b6f3f64"
+      }
+    }
+  ],
+  "runtimeWrites": 0,
+  "newFullRuns": 0,
+  "newPublishedClaims": 0,
+  "contentReview": {
+    "passed": false,
+    "jointGoals": 2,
+    "acceptedJointConclusions": 0,
+    "jointDraftRejectedForInternalRefs": 2,
+    "visibleJointTypedCells": 0,
+    "falsePositiveAuditConfirmed": true
+  }
+}

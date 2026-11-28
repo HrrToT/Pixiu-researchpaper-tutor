@@ -1,0 +1,102 @@
+{
+  "candidate": "59890afe3c02ca81b5305a2650af49e90e9690bf",
+  "runId": "dr_d3_renderer_readiness_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "carriedRoutineTokens": 17377,
+  "carriedRoutineCalls": 5,
+  "generationRequestBytes": 31853,
+  "generationRequestDigest": "f4dc94ab63d8dea62f82facdec292a250b439fb3d6aa317ea971ebc77403ad82",
+  "maxNewCalls": 13,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "model": "gpt-6.1-terra",
+  "newModelTokens": 37172,
+  "newCalls": 4,
+  "completeScience": false,
+  "validScience": true,
+  "passed": 24,
+  "checks": 26,
+  "coherent": false,
+  "unresolved": [
+    {
+      "checkId": "requirement_0_0",
+      "status": "failed",
+      "planBindings": [
+        "/hypothesis",
+        "/groups/0/levels",
+        "/groups/1/levels",
+        "/groups/2/levels",
+        "/groups/3/levels",
+        "/sourceFacts/2/text",
+        "/sourceFacts/3/text",
+        "/sourceFacts/7/text",
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E13",
+          "field": "quote"
+        }
+      ],
+      "reason": "给出假设、四组及论文已有消融，但未明确说明论文是否描述父子高斯的优化器状态；拟议Adam状态不能替代原论文事实。"
+    },
+    {
+      "checkId": "requirement_2_0",
+      "status": "failed",
+      "planBindings": [
+        "/sourceFacts/2/text",
+        "/sourceFacts/3/text",
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action",
+        "/analysis/limitations"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        }
+      ],
+      "reason": "正确说明论文克隆和分裂的核心操作，也给出拟议优化器状态，但未交代原论文对父子优化器状态是否有描述。"
+    }
+  ],
+  "issues": [
+    {
+      "reason": "论文操作事实缺少优化器状态是否被原文说明的明确核查；不能把拟议子状态当作论文描述。",
+      "planBindings": [
+        "/sourceFacts/2/text",
+        "/sourceFacts/3/text",
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action"
+      ]
+    }
+  ],
+  "repairNotSent": "input_capacity",
+  "oldRevisionBytes": 32317,
+  "newRevisionBytes": 31960,
+  "newRevisionEvidenceAliases": [
+    "E5",
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E13"
+  ],
+  "preservedProposalEvidenceQuestionFeedback": true,
+  "latestReplayProviderCalls": 0,
+  "published": false,
+  "cumulativeTokens": 54549,
+  "rawSha256": {
+    "intent.json": "f100db5f0bad48cea5305715e8f9c4eb71ba028ee74f8ece8f0d6e8bbc8e9e3c",
+    "run.json": "539a6440be9badd1293082f00192dc4ceea54130683c55aad9f5831a665699b2",
+    "calls.json": "a08f260e48aa8a0f3ba2220d76129738047b3eafe23e0c7743706ea7223a74f8",
+    "result.json": "c85d7d6d061762cb4abcb6b9ae450c1765f0d82037bc539dc3e4df1ea71c3b5f"
+  }
+}

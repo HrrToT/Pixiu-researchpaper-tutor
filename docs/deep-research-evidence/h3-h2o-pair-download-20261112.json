@@ -1,0 +1,20 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2306.14048v1",
+      "url": "https://arxiv.org/pdf/2306.14048v1",
+      "automaticRetry": false,
+      "httpStatus": 200,
+      "bytes": 3210222,
+      "sha256": "8a9e338a7a105ce3d062578ad950764104e0666e2dc1a5eaf64638f8a4a31dc4",
+      "path": "tmp\\pdfs\\h3-h2o-review-20261112\\2306.14048v1.pdf",
+      "complete": true
+    }
+  ],
+  "modelCalls": 0,
+  "applicationCacheWrites": 0,
+  "materialImports": 0,
+  "proxy": "current system proxy",
+  "pdfGets": 1,
+  "boundary": "Evaluator-only public exact-revision PDFs; no source alteration or automatic retry."
+}

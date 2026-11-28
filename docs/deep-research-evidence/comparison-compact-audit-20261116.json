@@ -1,0 +1,37 @@
+{
+  "scope": "Actual capacity admission on hypothetical v3 wrapper of all nine saved unverified drafts",
+  "calls": [
+    {
+      "node": "verify_answer_coverage",
+      "bytes": 23988,
+      "claims": 9,
+      "evidence": 11,
+      "checks": 10,
+      "completeRequiredEvidenceValuesMatch": true,
+      "requiredEvidenceValuesSha256": "d4a1b38743781e62d32e0c1c8da52d8c860f12a05274fadf313694bb2a8d0ea3"
+    }
+  ],
+  "status": "invalid_response",
+  "budgetLimit": null,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "historicalReceiptUnchanged": true,
+  "noAdmissionPatch": true,
+  "scientificContentAccepted": false,
+  "asOf": "2026-11-16",
+  "relatedTests": 138,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit": "tmp/comparison-audit-compact-selected-20261116.xml",
+  "fullRegressionCoversCandidate": false,
+  "loadedRuntime": false,
+  "raw": "tmp/comparison-compact-audit-evidence-20261116.json",
+  "selection": "Only server comparison presentation v3 with request contract5, consolidated instructions, shared full inputs/contexts, diagnostics, and compatible scoped binding catalog.",
+  "boundary": "Capacity replay only on a hypothetical wrapper of saved unverified claims; only 12 bytes below this fixed limit. No universal capacity guarantee, no model quality/latency or scientific acceptance proof. Existing fit/admission/response validators unchanged.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_audit.py": "78dc3ada473fc254efe3137e79ebaf4c175f60a8e49448feebacfd57450c6bae",
+    "ai-service-python/services/deep_research/final_coverage.py": "8cc7c29bfeefdad7c2a6bd6fe8e2bd9f48bad32f877af7a40a5416dea47567ff",
+    "ai-service-python/tests/test_deep_research_comparison_audit.py": "185c5ac5ccd6bf98e338f5f707b4fcc8ec6292cc0028f65eb487f83def8d8ca9"
+  }
+}

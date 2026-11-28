@@ -1,0 +1,28 @@
+{
+  "archivedRunSha256": "1c40f45696aa683a1c4e7a9b34ada80407bc906659386f3e940a93a53e524069",
+  "beforeTargets": [
+    "c1",
+    "c2"
+  ],
+  "afterTargets": [
+    "c1"
+  ],
+  "preservedOriginalClaim": "c2",
+  "adjacentOriginalEvidence": "ev_3e68fb507191c083c036fbf2bc1a3789373e469081cee3b88f466545ae096309",
+  "physicalPage": 6,
+  "numericPrecheck": "candidate_for_semantic_review",
+  "incorrectDimensionRejected": "8×9",
+  "changedClaimSemanticallyApproved": false,
+  "providerCalls": 0,
+  "published": false,
+  "originalIndependentVerdictChanged": false,
+  "case": "H1-UNSUPERPOINT",
+  "independentCredit": 0,
+  "baselineReceipt": "unsuperpoint-h1-first-frozen-20261128.json",
+  "offlineRegressionsPassed": 159,
+  "repairBoundary": "Only scoped verified-text repair on a new single-paper task-only claim-verification run. The prior result came from an archived run.",
+  "artifact": {
+    "path": "tmp/unsuperpoint-h1-scoped-repair-replay-20261128.json",
+    "sha256": "4c69b585ac3a03b44d908607901e07d9e519158175083865a61c5271f01ac13a"
+  }
+}

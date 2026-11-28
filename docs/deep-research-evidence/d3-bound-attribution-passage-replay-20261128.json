@@ -1,0 +1,60 @@
+{
+  "candidate": "c23d26703e476b7dbb72fdeeaf81a1c972549609",
+  "runId": "dr_d3_bound_optimizer_attribution_20261128",
+  "sourceRun": "dr_d3_renderer_readiness_20261128",
+  "carriedTokens": 54549,
+  "carriedModelCalls": 9,
+  "carriedElapsedSeconds": 111.61,
+  "precedingFailedAlternativeTokens": 9187,
+  "revisionRequestBytes": 31978,
+  "revisionRequestDigest": "f827d6e772b17818b44cf4525f7c10822358d23ad02f1eb55b434c29ac6564d3",
+  "maxNewCalls": 9,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "newModelCalls": 1,
+  "newModelTokens": 9255,
+  "newElapsedSeconds": 16.48,
+  "branchTotalTokens": 63804,
+  "exactBaseDigestAccepted": true,
+  "revisionCompiled": true,
+  "reviewActualStatus": "not_started_precheck",
+  "oldHardIssues": [
+    {
+      "claimId": "shared_fact_2",
+      "reason": "absence_not_established",
+      "factId": "s_clone",
+      "evidenceRefs": [
+        "E5"
+      ]
+    },
+    {
+      "claimId": "shared_fact_3",
+      "reason": "absence_not_established",
+      "factId": "s_split",
+      "evidenceRefs": [
+        "E5"
+      ]
+    }
+  ],
+  "newPrecheckIssues": [],
+  "sameUnmodifiedRepairReceipt": true,
+  "wholePaperOmissionStillRejected": true,
+  "newReviewBytes": [
+    17778,
+    31963,
+    31824,
+    31679
+  ],
+  "reviewTargetCount": 26,
+  "newModelCallsDuringReplay": 0,
+  "scientificApproval": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "9f53c23e2bb1cc20e95f84d29a3f250aaccf374bb529689aa3e7be750dec2a49",
+    "run.json": "33aaba8be30d06f33cabd0bd42c3464aee5317104a25f5b1a78c3564fa7b1311",
+    "calls.json": "5ae1b6e63e4169378cea16a2306c65aa7ecaf80b04d76b64309254200572f3c0",
+    "result.json": "df9962e09e62a61c6f9875ce8a0fb286a1d6287a73dd9e4244178086da8dbb8d"
+  }
+}

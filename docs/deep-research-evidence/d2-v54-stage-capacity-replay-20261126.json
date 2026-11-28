@@ -1,0 +1,97 @@
+{
+  "receiptSha256": "ccfb04c03c66ad1e07b679ce27e9cfd55dc99bd60bb32dd5bf27165e4c9a42c1",
+  "originalStages": [
+    {
+      "sources": [
+        "P1"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 8,
+      "mandatoryInputBytes": 17768,
+      "fixedBytes": 9401,
+      "relevanceBundles": 11,
+      "absentRequiredEvidence": [],
+      "selectedRows": 15,
+      "missing": []
+    },
+    {
+      "sources": [
+        "P2"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 8,
+      "mandatoryInputBytes": 18275,
+      "fixedBytes": 9381,
+      "relevanceBundles": 10,
+      "absentRequiredEvidence": [],
+      "selectedRows": 15,
+      "missing": []
+    },
+    {
+      "sources": [
+        "P1",
+        "P2"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 10,
+      "mandatoryInputBytes": 24169,
+      "fixedBytes": 10169,
+      "relevanceBundles": 14,
+      "absentRequiredEvidence": [],
+      "selectedRows": 12,
+      "missing": [
+        {
+          "obligationId": "O6",
+          "criterionId": "C2",
+          "evidenceIds": [
+            "E8"
+          ]
+        }
+      ]
+    }
+  ],
+  "compactPolicyStages": [
+    {
+      "sources": [
+        "P1"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 8,
+      "mandatoryInputBytes": 17768,
+      "fixedBytes": 9401,
+      "relevanceBundles": 11,
+      "absentRequiredEvidence": [],
+      "selectedRows": 15,
+      "missing": []
+    },
+    {
+      "sources": [
+        "P2"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 8,
+      "mandatoryInputBytes": 18275,
+      "fixedBytes": 9381,
+      "relevanceBundles": 10,
+      "absentRequiredEvidence": [],
+      "selectedRows": 15,
+      "missing": []
+    },
+    {
+      "sources": [
+        "P1",
+        "P2"
+      ],
+      "limit": 24000,
+      "mandatoryRows": 10,
+      "mandatoryInputBytes": 23858,
+      "fixedBytes": 9858,
+      "relevanceBundles": 14,
+      "absentRequiredEvidence": [],
+      "selectedRows": 10,
+      "missing": []
+    }
+  ],
+  "stageCapacityUnchanged": true,
+  "providerCalls": 0
+}

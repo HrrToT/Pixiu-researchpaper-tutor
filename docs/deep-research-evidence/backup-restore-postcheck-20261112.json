@@ -1,0 +1,27 @@
+{
+  "restoreProof": "backup-restore-streamed-20261112.json",
+  "failedAttemptRetained": "backup-restore-verified-20261112.json",
+  "scriptSha256": "044d5d899200ee2b623176ae217b40f669d27be7bda32bed55878edc814b8aff",
+  "testPortsClosed": {
+    "8186": true,
+    "8195": true
+  },
+  "currentServiceHealth": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 885.5
+  },
+  "currentTaskPayloadsPreserved": true,
+  "modelCalls": 0,
+  "productionDataReplaced": false,
+  "scope": "Isolated backup restore and read compatibility; not live failure cutover or scientific acceptance"
+}

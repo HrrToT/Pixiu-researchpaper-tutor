@@ -1,0 +1,50 @@
+{
+  "case": "H4-KIVI-VERSIONS-v1",
+  "runId": "dr_run_c0b90dea261d51558876a75758033a22",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_synthesis_response",
+  "modelCalls": 8,
+  "tokens": 29787,
+  "elapsedSeconds": 62.0,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 1,
+    "synthesize_compact": 1
+  },
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "automaticRetry": false,
+  "acceptedClaimIds": [],
+  "rejectionReasons": {},
+  "coverageStatus": null,
+  "coverageVerdicts": {},
+  "coverageErrors": [],
+  "repairStatus": null,
+  "repairCompletedBatches": [],
+  "repairStoppedBatch": null,
+  "reportVersionId": null,
+  "workspaceArtifactOrigins": [],
+  "originalServiceAndHistoryVerified": true,
+  "receiptSha256": {
+    ".payload.json": "8076e429884431dddab5fb10388c8d01682c8176e938c3defe1894969f089992",
+    ".calls.json": "b30f4309fb31fa4531ef0ada0b86e1cc1b91bbc93171bd588ffdca7f00daf0dd",
+    ".result.json": "18f63fdeb1f7b68ce1d513852a5653ab9457a49d0872b01e22733d0087594dfd",
+    ".execution.json": "71e25663a5111ff0c17c1b90dcd25211109458510a79e4ff7075b29499b15573"
+  },
+  "sourceCommit": "07d5eb64586b256a504f7f9ee08bb6655ba966e8",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "restorationSha256": "c5494189dcbe92ac7467f29efb3bcf0a3b1dbb34b6a1fed7bb08fbe86844a923",
+  "checkedTable3Pages": {
+    "v1": 7,
+    "v2": 8
+  },
+  "firstDraftWrongTableAssociation": "v1 Table 1 as Table 3",
+  "manualContentGaps": [
+    "No published answer",
+    "Initial draft gives incorrect version differences"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "runId": "dr_run_f418cfe48b9e59d5a449ddd310f5f94b",
+  "materialSha256": "604edcc72304b5614c3209b15abbb056ca451b68f24679e316abf82d8b8feb97",
+  "sourceReads": 12,
+  "methodPassageReads": 4,
+  "methodReadPages": {
+    "soft_argmax": [
+      3,
+      4
+    ],
+    "gradient": [
+      4
+    ],
+    "reprojection": [
+      4
+    ],
+    "peak_spatial": [
+      5
+    ]
+  },
+  "synthesisEvidencePages": {
+    "soft_argmax": [
+      3,
+      4
+    ],
+    "gradient": [
+      4
+    ],
+    "reprojection": [
+      4
+    ],
+    "peak_spatial": [
+      5
+    ]
+  },
+  "synthesisInputBytes": 23984,
+  "providerCalls": 0,
+  "scope": "Production planning, PDF retrieval, reading, literal extraction and synthesis input assembly with saved model plan and isolated material/reader; no answer generation or acceptance credit.",
+  "case": "H1-ALIKE",
+  "localSectionContextContractVersion": 5,
+  "focusedOfflineTestsPassed": 125,
+  "sourceRunReceipt": "alike-h1-first-frozen-20261127.json",
+  "scientificContentCredit": 0
+}

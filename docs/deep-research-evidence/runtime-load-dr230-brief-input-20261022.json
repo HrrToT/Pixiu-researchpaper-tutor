@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "57b6efcf",
+  "sourceHashes": {
+    "facade.py": "250dfdb3651b0995cd53c8fc6212bfc2f67c6ee94dfa76e9befe15ca80488962",
+    "graph.py": "07d0cc2e5bf2f281d43888e86641ad907b0b6b904c2bafd93da915b860e7b1a2",
+    "tools.py": "4fd0c2f2d25382d0b81a64a69361dd8597a03cb1959f1f6a2747a39479ae7b21",
+    "verification.py": "cba2a1d21c112c736a4d521e4e6b49bb0dc227709bcd6928b6e899b96878c8e7",
+    "repair.py": "876ee4683b849f7fff628c1e2d878a6b8924f6acf6d2556fc276a9e2d86eed3a",
+    "repair_coverage.py": "d599b252364aacb5bc1ea59eacbbf00c7c78ae66e56c8aa78fcbf026e4784c1d",
+    "rejection_audit.py": "d89a1f6c8c57e6b1a47b2a58870a1a37be99a5efa0aa7dd336549a089cf8bb02",
+    "experiment_review_envelope.py": "71f547073666a327749b0eb4ef18f3d36b162554c7d77f47c72f8ca8bffe0cc0",
+    "experiment_repair_input_brief.py": "726624b6d13ed9aedde969c5ce27cb68073057832535be4b8c08bbca477b7ab6",
+    "review_instructions.py": "77e7df04d321e2870313a2944fef741c0d2feffb7290ef7675e8aaaa0f7e4478"
+  },
+  "actualCreatedRun": {
+    "runId": "dr_run_0e713d0d47b65879aa1642a48928d895",
+    "promptVersion": "dr-v2.20261022.230",
+    "experimentReviewEnvelopeContractVersion": 6,
+    "experimentRepairInputContractVersion": 2,
+    "experimentRepairPriorityContractVersion": 2
+  },
+  "preRestartLedgerRows": 5317,
+  "preRestartActive": 0,
+  "modelRequestsByThisProbe": 0
+}

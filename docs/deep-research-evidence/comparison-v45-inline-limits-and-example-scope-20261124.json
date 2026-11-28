@@ -1,0 +1,54 @@
+{
+  "offlineAudit": {
+    "case": "D2-BASELINE-COMPRESSION-v45",
+    "originalAuditWithThreeUnanchoredLimitsStillRejected": true,
+    "v9PromptBytes": 23985,
+    "v10PromptBytes": 23851,
+    "v9OutputAllowance": 7142,
+    "v10OutputAllowance": 7142,
+    "fixedObligations": 7,
+    "citedRowsPreserved": 16,
+    "actualModelCalls": 0
+  },
+  "isolatedLiveAudit": {
+    "case": "D2-BASELINE-COMPRESSION-v45",
+    "originalRequestDigestMatchesLedger": true,
+    "actualModelCalls": 1,
+    "providerStatus": "succeeded",
+    "usage": {
+      "total_tokens": 8411,
+      "input_tokens": 7379,
+      "output_tokens": 1032
+    },
+    "finishReason": "stop",
+    "fixedObligations": 7,
+    "returnedObligations": 7,
+    "coverageStatus": "checked",
+    "responseErrors": [],
+    "verdicts": {
+      "ob_ab81342925fc2e571fa38a28": "covered",
+      "ob_71c983b2df35552000e28e00": "partial",
+      "ob_33995ad90eb136e77fd2adcf": "partial",
+      "ob_e9862b2c182c6a3aa43f5840": "partial",
+      "ob_6b9d66f4315ba85a7b9ae94c": "partial",
+      "ob_06b46156dad2aa4098621442": "partial",
+      "answer_scope": "missing"
+    },
+    "answerCoherent": false,
+    "scientificAcceptanceEstablished": false,
+    "published": false
+  },
+  "offlineExampleScope": {
+    "case": "D2-BASELINE-COMPRESSION-v45",
+    "payloadSha256": "fc1127241f763d49568f5be015a5d9c51b387716911e10010f98b7da5cdb610a",
+    "exampleClaimId": "cmp_conclusion_1",
+    "tableBindingsUnchanged": 10,
+    "citedEvidenceUnchanged": true,
+    "displayedConditionsUnchanged": true,
+    "explicitExampleScope": true,
+    "hardChecksPassed": true,
+    "actualModelCalls": 0,
+    "scientificAcceptanceEstablished": false
+  },
+  "targetedTestsPassed": 276
+}

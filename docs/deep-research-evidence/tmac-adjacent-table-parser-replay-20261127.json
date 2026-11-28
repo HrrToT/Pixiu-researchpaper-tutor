@@ -1,0 +1,32 @@
+{
+  "case": "H4-TMAC-VERSIONS",
+  "verificationClass": "known_case_parser_regression_after_first_frozen_execution",
+  "firstExecutionReceipt": "tmac-version-h4-first-frozen-20261127.json",
+  "nativePdfFallbackRecoveredTable": true,
+  "teiIndexRecoveredTable": true,
+  "tables": [
+    {
+      "revision": "v1",
+      "page": 11,
+      "verifiedRows": 4,
+      "requestedMetricCells": 6,
+      "tableId": "pdf-page-11-table-4",
+      "selectedByUnchangedQuery": true,
+      "sha256": "7af6c76dfc9ca3c3805ec2c3f1ace1455849a98ea8da2e07a31c14d8ee53bae8"
+    },
+    {
+      "revision": "v2",
+      "page": 12,
+      "verifiedRows": 4,
+      "requestedMetricCells": 6,
+      "tableId": "pdf-page-12-table-4",
+      "selectedByUnchangedQuery": true,
+      "sha256": "ca78cf11e4bdaf919400dfcf09f48b12b2c7e6d61cd1093d4b11b329f593f0e7"
+    }
+  ],
+  "targetedTestsPassed": 82,
+  "providerCalls": 0,
+  "newIndependentCredit": 0,
+  "holdoutDisposition": "Retired from independent validation after use as a diagnostic replay",
+  "wholeReportCoverageStillUnverified": true
+}

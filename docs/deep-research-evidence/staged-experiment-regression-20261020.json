@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "901309dc",
+  "promptVersion": "dr-v2.20261020.195",
+  "fullOffline": {
+    "passed": 3122,
+    "warnings": 1,
+    "seconds": 165.96,
+    "log": "tmp/pytest-dr195-full.log",
+    "sha256": "5ff2b929ef8dd4703074bf47fbaaba01182898e048e4f9ac30e05b47a8c27957"
+  },
+  "newFocusedPassed": 33,
+  "focusedOverlap": true,
+  "providerCalls": 0,
+  "newDefaultContract": 3,
+  "oldContractVersionsUnchanged": [
+    1,
+    2
+  ],
+  "privatePlan": {
+    "outputTokens": 6144,
+    "maxCompactUtf8Bytes": 4000,
+    "reasoningEffort": "low",
+    "sourcePermission": "own E references only; no scientific approval",
+    "checkpoints": [
+      "pending",
+      "response_received",
+      "ready",
+      "invalid_response",
+      "not_started_budget"
+    ]
+  },
+  "completeConfiguration": {
+    "outputTokens": 16384,
+    "reasoningEffort": "none",
+    "allTypedRolesStillRequired": true
+  },
+  "sharedRoundLimits": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "newRequestTimeAdmissionSeconds": {
+    "planning": 150,
+    "configuration": 90
+  },
+  "controlledInput": {
+    "proof": "staged-experiment-generation-input-20261020.json",
+    "requests": [
+      {
+        "node": "plan_experiment",
+        "inputBytes": 12379,
+        "options": {
+          "max_tokens": 6144,
+          "temperature": 0.0,
+          "thinking": {
+            "type": "enabled"
+          },
+          "reasoning_effort": "low",
+          "response_format": {
+            "type": "json_object"
+          }
+        }
+      },
+      {
+        "node": "synthesize",
+        "inputBytes": 20252,
+        "options": {
+          "max_tokens": 16384,
+          "temperature": 0.2,
+          "thinking": {
+            "type": "disabled"
+          },
+          "reasoning_effort": "none",
+          "response_format": {
+            "type": "json_object"
+          }
+        }
+      }
+    ],
+    "originalEquationAndMemberQuotesInBoth": true,
+    "scientificPlanMockedUnverified": true
+  },
+  "legacyFingerprints": {
+    "synthesisAndAudience": 18,
+    "initialVerification": 3,
+    "proofs": [
+      "staged-experiment-legacy-replay-20261020.json",
+      "staged-experiment-h2f-v9-request-replay-20261020.json"
+    ]
+  },
+  "runtimeProof": "runtime-load-dr195-staged-experiment-20261020.json",
+  "ledgerRowsUnchanged": 4732,
+  "pausedUnknownPreserved": 11,
+  "boundary": "Offline input/role/budget/identity/resume tests plus runtime loading only. No new model request. No live latency, executable-content, independent acceptance or unknown settlement claimed. Invalid and unknown responses never fall back or auto-retry; independent science/source checks remain unchanged."
+}

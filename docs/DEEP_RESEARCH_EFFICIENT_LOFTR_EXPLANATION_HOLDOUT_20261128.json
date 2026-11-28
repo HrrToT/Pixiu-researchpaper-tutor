@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-28T12:14:28.504274+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
+  "independentCredit": 0,
+  "materials": {
+    "efficient_loftr_cvpr2024": {
+      "path": "tmp/h1-efficient-loftr-material-20261128/efficient-loftr-cvpr2024.pdf",
+      "arxiv": "2403.04765",
+      "reference": "https://openaccess.thecvf.com/content/CVPR2024/papers/Wang_Efficient_LoFTR_Semi-Dense_Local_Feature_Matching_with_Sparse-Like_Speed_CVPR_2024_paper.pdf",
+      "sha256": "e58112a6987b39ab129b240693d74b4610e643258cfb6ecf8c824f1976061835",
+      "bytes": 5664902,
+      "pageCount": 10
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-EFFICIENT-LOFTR",
+      "split": "holdout",
+      "materials": [
+        "efficient_loftr_cvpr2024"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据《Efficient LoFTR》CVPR 2024 会议版，向初学者解释粗匹配为什么更省计算、细匹配的两个阶段各做什么，并说明论文所报的提速量级适用于哪个版本、比较基线和测试条件。正文不超过 300 字，引用原文，不用外部资料。",
+      "required": [
+        "说明粗粒度注意力中相邻查询的信息相似，可聚合邻域并选取显著的键和值对应 token，在更少的 token 上计算注意力。",
+        "细匹配第一阶段在局部特征块内用双向最近邻定位像素级匹配，第二阶段在小邻域计算相关性及期望得到亚像素位置。",
+        "把约 2.5 倍速度绑定到 Ours (Optimized) 相对 LoFTR，标明对应 ScanNet、640×480、单张 RTX 3090 的配对匹配。",
+        "以指定会议版原文支持机制和速度条件，保留测量边界。"
+      ],
+      "forbidden": [
+        "将优化版约 2.5 倍速度归给普通版、其他基线、所有数据或任意硬件。",
+        "把细化两阶段颠倒，或称第二阶段固定一个像素而没有局部相关和亚像素修正。",
+        "把 35.6 ms 和 27.0 ms 当作两个数据集的结果，或把训练用 V100 当作推理计时设备。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "题目解释既有算法及测量边界。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "efficient_loftr_cvpr2024",
+        "page": 4,
+        "section": "§3.3 and Figure 3",
+        "checks": "粗特征聚合以及显著 token 选择。"
+      },
+      {
+        "paper": "efficient_loftr_cvpr2024",
+        "page": 5,
+        "section": "§3.4",
+        "checks": "双向最近邻进行像素级匹配，其后在小块内进行亚像素细化。"
+      },
+      {
+        "paper": "efficient_loftr_cvpr2024",
+        "page": 6,
+        "section": "§4.2 and Table 1",
+        "checks": "ScanNet、640×480、单张 RTX 3090；35.6/27.0 ms 为优化版 FP32/混合精度，LoFTR 66.2 ms。"
+      },
+      {
+        "paper": "efficient_loftr_cvpr2024",
+        "page": 1,
+        "section": "Abstract and Figure 1",
+        "checks": "优化版速度约为 LoFTR 的 2.5 倍。"
+      }
+    ],
+    "goldInputBoundary": "只向应用传入固定问题、论文、任务内材料策略与标准预算。评分标准、参考页码留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H1-EFFICIENT-LOFTR": "0f5ba62cf2b29f40e450dd539175bdb5ee925cc5180ec681b0b262d5d408f764"
+  },
+  "firstExecutionReceipt": "deep-research-evidence/efficient-loftr-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/efficient-loftr-h1-direct-citations-replay-20261128.json"
+}

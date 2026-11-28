@@ -1,0 +1,15 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v44",
+  "payloadSha256": "7d6de918200ac6f611acb44f6a4f682afe4daf912718e77aaff76215e79cd4ca",
+  "callsSha256": "008d394d44cddd2721200b1e65dce3ad94e18192fd19e7621170feb2cf5ba02a",
+  "unchangedRequestMatchesRuntimeLedger": true,
+  "target": "cmp_conclusion_1",
+  "reportedTableCellBindings": 10,
+  "reusedTablePremises": 1,
+  "oldSemanticDecision": "failed",
+  "newSemanticDecision": "passed",
+  "otherClaimDecisionUnchanged": true,
+  "newModelCalls": 0,
+  "wholeAnswerReviewedOrPublished": false,
+  "scientificAcceptanceEstablished": false
+}

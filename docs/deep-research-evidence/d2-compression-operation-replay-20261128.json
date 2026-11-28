@@ -1,0 +1,43 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "recordedRun": "dr_run_32b17e84964d5d39a1aae0aebfc54239",
+  "sourcePath": "LightGaussian 2311.17245v6",
+  "sourceSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "oldAndNewRetrievalLimit": 3,
+  "oldSelectedSourcePages": [
+    1,
+    7,
+    6
+  ],
+  "newSelectedSourcePages": [
+    1,
+    6,
+    5
+  ],
+  "literalMappingEvidence": {
+    "physicalPage": 5,
+    "evidenceId": "ev_2ba40896931390df98f8da4b4c513431210a622f76e2da800e1b60f8368f2fac",
+    "sourcePassageStart": 492,
+    "sourcePassageEnd": 874,
+    "requiredInStage": "P2",
+    "allowedTarget": "table_0_1",
+    "verifiedAgainstPhysicalPage": true
+  },
+  "originalProcessingCost": {
+    "allowedTarget": "table_1_0",
+    "documentedTrainingOrRenderingResourceEvidence": [
+      "ev_9e574f54dd34da609c7a4fb18b9680955de7b6c3e7b2d9dea1d41d8a989e3b91",
+      "ev_6cc12bbb30e5f474bc863a042d3823ebc163371fa8192ee5841a2cac88b7b893"
+    ],
+    "containsBoundedOriginalFittingGuidance": true
+  },
+  "synthesisInputBytes": {
+    "P1": 23992,
+    "P2": 23990,
+    "joint": 23904
+  },
+  "frozenPremiseBundlesRetained": true,
+  "matchedBenchmarkPairs": 16,
+  "modelCalls": 0,
+  "approvalOrPublication": false
+}

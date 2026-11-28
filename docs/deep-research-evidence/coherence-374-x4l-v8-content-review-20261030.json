@@ -1,0 +1,118 @@
+{
+  "promptVersion": "dr-v2.20261030.374",
+  "sourceCommit": "5b46fa47",
+  "case": "X4L-v8",
+  "runId": "dr_run_a222c9bf12665526bd55801577f3b4e0",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "modelCalls": 8,
+  "tokens": 34755,
+  "elapsedSeconds": 102.04,
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    {
+      "claimId": "c3",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "coveredPointRetainedExact": true,
+  "repairTargetIds": [
+    "c1",
+    "c3"
+  ],
+  "answerCoherence": {
+    "contractVersion": 1,
+    "status": "checked",
+    "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
+    "coherent": true,
+    "issues": []
+  },
+  "publicationCoherence": {
+    "contractVersion": 2,
+    "answerDigest": "8dd7ec27cf16d8bfa82651830faddbe91809395875dc3990b7e51e3031cd19ed",
+    "status": "released",
+    "heldClaimIds": [],
+    "reason": null
+  },
+  "acceptedClaims": [
+    {
+      "claimId": "c2",
+      "text": "深度畸变约束通过最小化沿射线各交点深度差的加权和，使不透明度权重集中在实际表面附近，减少体积渲染中多个半透明基元导致的噪声表面。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_32cc51aa72a9cb4d3aeb9096d0c8e8acfb4d6587204940326f58d293e1519513",
+        "ev_8d9e7b7a4dcb490331bce72f0c7e495a5928602df5d77224de46d82545073d88",
+        "ev_c95f2e040e47f358ac28b8ab23898c8ac279a4c0af0666973157747fc06d22d2",
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "basic",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    }
+  ],
+  "manualReview": {
+    "contentAccepted": false,
+    "independentCredit": 0,
+    "scores": {
+      "targetResponse": 1,
+      "evidenceSupport": 3,
+      "conditions": 3,
+      "synthesis": 2,
+      "readability": 3
+    },
+    "reason": "Only depth explanation published; representation and normal explanation are blocked by another spatial-label false numeric2 on 二维基元. Depth prose localizes weights near actual surfaces, which is stronger than the relative-depth distortion definition and risks suggesting known-surface supervision.",
+    "positiveObservation": "Covered c2 retained exactly, c1/c3 alone targeted; no unnecessary rewrite of c2, no contradictory source-absence assertion; publicationCoherence is current/released for that single accepted claim.",
+    "remaining": [
+      "Generalize spatial dimensional labels without dropping real feature/vector/output dimensions or measured counts.",
+      "Use precise operator inputs and penalized relations; do not assert true-surface anchoring from pairwise-depth concentration.",
+      "Live hold-on-conflict branch remains unexercised in this case; actual prior-result replay proves mechanics only."
+    ]
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 20,
+    "ledgerRows": 8255,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "protectedTasksExact": 12,
+  "repeatedTerminalGetExact": true,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1102,
+    "sha256": "1e91bfa73ba4a374a6cea68be25639c269fac493d5eda61162448bf500ff6118"
+  },
+  "payloadSha256": "fa6c1b6fff586859ee915438196a6fa8b5e100c8351c7608cdf420ba6b5157b4"
+}

@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "7b7d5e1c",
+  "promptVersion": "dr-v2.20261018.158",
+  "comparisonReasoningContractVersion": 1,
+  "fullOffline": {
+    "passed": 2507,
+    "warnings": 1,
+    "seconds": 161.21,
+    "log": "tmp/pytest-dr158-full.log"
+  },
+  "focused": {
+    "passed": 63,
+    "seconds": 3.89,
+    "overlapsFullSuite": true,
+    "log": "tmp/pytest-dr158-comparison-focused-fixed.log"
+  },
+  "initialFailure": {
+    "failed": 15,
+    "passed": 48,
+    "log": "tmp/pytest-dr158-comparison-focused.log",
+    "cause": "Bounded verification evidence projects sourceWorkId/sourceVersionId to workId/versionId. Initial new audit failed to recognize the projected identity and skipped cross-source validation. Adapted both exact field representations; assertions unchanged."
+  },
+  "realInputReplay": "comparison-premise-real-input-replay-20261018.json",
+  "checks": [
+    "New server contract is immutable and clients cannot disable it; absent legacy contract remains disabled.",
+    "Cross-source/version or multiple bound table-row targets require an internal comparisonAudit in addition to a semantic passed verdict.",
+    "Premises bind only each target's own exact visible quotations/context and cover its source/version identities. Foreign, missing or altered quote bindings fail.",
+    "Unknown alignment cannot carry a fabricated differences list. Demonstrated differences require two literal source-bound values of the named condition; identical values fail.",
+    "Within-study numerical comparisons retain original table cell identities and independent numeric/table checks.",
+    "A valid audit does not override an independent failed semantic verdict; structural checks do not establish the meaning or completeness of experimental alignment.",
+    "Evidence aliases are restored only in typed audit IDs, preserving exact quote text and original records.",
+    "Single-source noncomparative facts and prospective proposals receive no additional audit requirement or extra model request.",
+    "Synthesis and factual repair qualify the user's comparison premise, lead with judgement and limits, preserve metric directions and distinguish unknown alignment from demonstrated differences.",
+    "Saved repair requests cannot be retargeted to a different comparison contract after an unknown transport.",
+    "Actual legacy D5-v5 verification request fingerprint matches exactly; its historical verdict remains unchanged. Copied legacy passed response without the new audit fails the new contract."
+  ],
+  "budgetsUnchanged": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "newModelCallsForAudit": 0,
+    "note": "Audit is part of the existing independent verification request. Its full input is reserved; role output caps and total budget stay unchanged."
+  },
+  "boundary": "Offline fixtures and copied exact real-input replay. New real content must be reviewed separately; no independent pass or whole-design completion credit."
+}

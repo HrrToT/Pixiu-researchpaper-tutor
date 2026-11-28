@@ -1,0 +1,141 @@
+{
+  "gate": "D6: restart and cancel after a real D2 provider proxy error",
+  "runId": "dr_run_22d9fbf1f3f153cb8134c4c20e318537",
+  "originalEvidence": "docs/deep-research-evidence/d2-four-observation-standard-live-20261128.json",
+  "verification": {
+    "databaseClone": "SQLite online backup from read-only original for the run database and LangGraph checkpoint database",
+    "processes": 2,
+    "routes": "Production Python FastAPI router and dispatcher with ASGI test transport, repository initialize and recover on each startup",
+    "scope": "Fixed material-owner fixture for the archived case; no live Java scope request",
+    "externalModelCalls": 0,
+    "productionWrites": 0,
+    "independentHoldoutCredit": false,
+    "productionCutoverVerified": false
+  },
+  "focusedRegression": {
+    "passed": 98,
+    "testModules": [
+      "test_deep_research_unknown_recovery.py",
+      "test_deep_research_process_exit.py",
+      "test_deep_research_fault_acceptance_20261112.py",
+      "test_deep_research_elapsed_accounting.py",
+      "test_deep_research_core.py"
+    ]
+  },
+  "backup": {
+    "verifiedArchivedArtifacts": 6,
+    "originalDbFingerprint": {
+      "research.sqlite3": "e4f8882a06ef093656ea8cedf28061fa9b15d56c586c818e6be049e2fb2b1933",
+      "research.sqlite3.checkpoints": "1a7e11d183d4516324a2554d66b949074170b5b7cc15635b2e21debb905b1034"
+    },
+    "checkpoint": {
+      "checkpoints": 17,
+      "writes": 80,
+      "logicalSha256": "7ac99ded7113731f4ccf061acc5efaf807fbfa76afcd1dce7890e47158e28175"
+    }
+  },
+  "firstProcess": {
+    "initial": {
+      "status": "paused",
+      "errorCode": "unresolved_unknown",
+      "allowedActions": [
+        "cancel"
+      ],
+      "outcome": "none",
+      "revision": 168,
+      "executionEpoch": 1,
+      "visibleSources": 29,
+      "accepted": 9,
+      "rejected": 2,
+      "ledgerRows": 51,
+      "unknownCallId": "a238b4ac381b606791853675e8fe79cc",
+      "reservedTokens": 30641,
+      "ledgerTokens": 94686,
+      "published": false
+    },
+    "resume": {
+      "http": 409,
+      "errorCode": "unresolved_unknown"
+    },
+    "continueBeforeCancel": {
+      "http": 409,
+      "errorCode": "continue_requires_terminal"
+    },
+    "cancelled": {
+      "status": "cancelled",
+      "errorCode": "unresolved_unknown",
+      "allowedActions": [],
+      "outcome": "none",
+      "revision": 169,
+      "executionEpoch": 1,
+      "visibleSources": 29,
+      "accepted": 9,
+      "rejected": 2,
+      "ledgerRows": 51,
+      "unknownCallId": "a238b4ac381b606791853675e8fe79cc",
+      "reservedTokens": 30641,
+      "ledgerTokens": 94686,
+      "published": false
+    },
+    "cancelReplaySameResponse": true,
+    "graphScheduled": false,
+    "providerCalls": 0,
+    "sourceUnchanged": true,
+    "checkpointUnchanged": true,
+    "observedCommit": "57a2c27fa7b09a25db92da3b13de566b15fecb01"
+  },
+  "secondProcess": {
+    "reopened": {
+      "status": "cancelled",
+      "errorCode": "unresolved_unknown",
+      "allowedActions": [],
+      "outcome": "none",
+      "revision": 169,
+      "executionEpoch": 1,
+      "visibleSources": 29,
+      "accepted": 9,
+      "rejected": 2,
+      "ledgerRows": 51,
+      "unknownCallId": "a238b4ac381b606791853675e8fe79cc",
+      "reservedTokens": 30641,
+      "ledgerTokens": 94686,
+      "published": false
+    },
+    "resume": {
+      "http": 409,
+      "errorCode": "terminal_guard"
+    },
+    "continue": {
+      "http": 409,
+      "errorCode": "unresolved_unknown"
+    },
+    "cancelReceiptSurvived": true,
+    "graphScheduled": false,
+    "providerCalls": 0,
+    "sourceUnchanged": true,
+    "checkpointUnchanged": true,
+    "observedCommit": "57a2c27fa7b09a25db92da3b13de566b15fecb01"
+  },
+  "artifacts": [
+    {
+      "path": "tmp/d6-d2-proxy-unknown-receipt-restart-20261128/source.json",
+      "sha256": "a291dacc18a4818822e653b3acd62c153f81acc85ac64abe5f370478b3204514"
+    },
+    {
+      "path": "tmp/d6-d2-proxy-unknown-receipt-restart-20261128/cancel.json",
+      "sha256": "503fcdc5071e5b8f12a5121b6cbc8e6d24eddbe287988c4ac401d304c44287ea"
+    },
+    {
+      "path": "tmp/d6-d2-proxy-unknown-receipt-restart-20261128/cancel-response.json",
+      "sha256": "99f64818f728bf95b99c01b6241649e9d47fade7a45c6295de489d33b828b8c5"
+    },
+    {
+      "path": "tmp/d6-d2-proxy-unknown-receipt-restart-20261128/reopen.json",
+      "sha256": "289f8ec7bcb9a9e83af938c694df6eee93197ce583f61b2448b1f03f6fbdc993"
+    },
+    {
+      "path": "tmp/verify-d6-d2-proxy-unknown-restart-20261128.py",
+      "sha256": "e5104a9e3b54bc28932f12d08e622dafa5a8cfa8757584952e5fbf4e835fea81"
+    }
+  ]
+}

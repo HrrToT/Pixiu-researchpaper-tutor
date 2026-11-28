@@ -1,0 +1,20 @@
+{
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "observedOriginalReviewOnlySupersededAdvice": true,
+  "omittedObsoleteAdviceTokens": 2582,
+  "wouldRetainSeventeenModelReceipts": 17,
+  "replayedReservationsBeforeStop": 13,
+  "blockedNode": "synthesize",
+  "blockedReservationTokens": 41403,
+  "tokensBeforeBlockedReservation": 67294,
+  "totalIfAdmitted": 108697,
+  "originalTokenCeiling": 100000,
+  "budgetError": {
+    "kind": "modelCalls",
+    "limit": 18,
+    "used": 8
+  },
+  "replayDerivationOnly": true,
+  "providerCalls": 0,
+  "terminalAuditSent": false
+}

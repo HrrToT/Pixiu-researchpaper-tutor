@@ -1,0 +1,37 @@
+{
+  "sourceCommit": "206a01243f2edbfb607729afe0973d1b6b7ed620",
+  "promptVersion": "dr-v2.20261116.478",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 10587,
+    "input_tokens": 9899,
+    "output_tokens": 688
+  },
+  "unitValid": true,
+  "unitErrors": [],
+  "inputBytes": 31979,
+  "all17RequiredEvidenceRowsRetained": true,
+  "allSourceAndContextValuesExact": true,
+  "schemaAndOutputAllowanceUnchangedFrom477": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "contentReview": {
+    "accepted": false,
+    "stateCount": 1,
+    "issues": [
+      "Required numeric parameter families remain collapsed into gaussian_model",
+      "Shape axis is frame, without defined point cardinality",
+      "Initialize Gaussian parameters from shared state names an undeclared initial asset rather than defining values",
+      "Eight global unresolved items copied despite specified proposal settings"
+    ],
+    "conclusion": "Readable state-decision input did not resolve this fixed component case; no causal claim from one generation"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-decision-478-reviewed-component-20261116/result.json",
+  "rawResultSha256": "ab559c76413a54d71bbd8ca8543c5218f1b0865784c8ad224981b7eb6bc0ded6"
+}

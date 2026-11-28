@@ -1,0 +1,40 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "single_bounded_development_case",
+  "baseline": "lightglue-h1-first-frozen-20261127.json",
+  "offlinePreflight": "lightglue-method-section-synthesis-replay-20261127.json",
+  "codeCommit": "5c7ef215729e9c536d8553b17c5c7c6105c7a67f",
+  "runId": "dr_run_94fe79977ac352298225106c6b02ff67_method_diagnostic",
+  "sourceRevision": "arxiv:2306.13643v1",
+  "sourcePolicy": "task_only",
+  "providerModel": "gpt-6.1-terra",
+  "synthesisPromptBytes": 23848,
+  "synthesisPromptSha256": "a2f7a185a4cb94501d8c1a7485aeb5f88ee25bd673892e986b6c11d35119d141",
+  "providerCalls": [
+    {"node": "synthesize", "tokens": 5814},
+    {"node": "repair_claims", "tokens": 6836},
+    {"node": "verify_repair", "tokens": 4351}
+  ],
+  "totalProviderTokens": 17001,
+  "checks": {
+    "draftExplainsBothImageConfidenceAndUnmatchableJudgment": true,
+    "draftClaimRejectedForSourceAbsenceAssertion": true,
+    "repairExplainsPruningConditionsAsWellAsEarlyStop": true,
+    "repairTextAndConditionCharacters": 208,
+    "repairVerbatimCitationsFoundInPdfPages": [13, 8, 4, 4],
+    "reviewReturnedPassBeforeDiagnosticValidation": true,
+    "newUnboundDiagnosticQuantity": {"phrase": "两个条件", "parsedValue": "2e0"},
+    "nonNumericDiagnosticCounterfactualRemovedExtraQuantity": true,
+    "validFinalSemanticVerdicts": 0,
+    "answerCoverageCompleted": false
+  },
+  "harnessIssue": "The initial verification wrapper failed before provider dispatch. The harness was corrected and resumed using the same saved synthesis call and absolute deadline. The initial semantic dispatch was then denied by its time admission check with 60.653 seconds remaining and 75 seconds required. A later repair review response settled and was rejected by the production diagnostic check.",
+  "liveApplicationWrites": 0,
+  "publicationAttempted": false,
+  "independentAcceptanceCredit": false,
+  "sha256": {
+    "calls.json": "a7854592ed82e34788ed16ca189d7c16b1b7fa1701965fb1319b08805ece8c81",
+    "intent.json": "ada7cc628b3bd3ae62d80ce3f34c4b7723496887032cdd4670411c12ababe12b",
+    "run.json": "3ba4ce381f8ca2366432f085263c1a6b6406360c2ae8b24322ef67524d857a5e"
+  }
+}

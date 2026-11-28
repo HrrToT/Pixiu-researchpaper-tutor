@@ -1,0 +1,156 @@
+{
+  "case": "AD1N-v8",
+  "split": "development",
+  "runId": "dr_run_cbbf68790ee356db8700e9bfbab88bc8",
+  "sourceCommit": "eb784510",
+  "promptVersion": "dr-v2.20261107.416",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 12,
+  "settledTokens": 60399,
+  "elapsedSeconds": 104,
+  "allModelCallsSettled": true,
+  "newUnknownCalls": 0,
+  "normalCalls": 7,
+  "usedReserveCalls": 5,
+  "source": [
+    "arxiv:1412.6980",
+    "arxiv:1412.6980v1",
+    "fulltext",
+    "935a5a15616961aff21529d86a754570028843407adfe858f1d18584b84293a7"
+  ],
+  "sourceMatchesFrozenReferencePdf": true,
+  "readerEdit": {
+    "outcome": "applied",
+    "oneClaim": true,
+    "characters": 202,
+    "qualityAccepted": false,
+    "protectedBudgetActuallyUsed": false
+  },
+  "plainCompactionActuallyCalled": false,
+  "verification": {
+    "initialRejections": [],
+    "repairRejections": [],
+    "acceptedClaims": 1
+  },
+  "repair": {
+    "called": true,
+    "wordingChanged": false,
+    "boundary": "A received and factually accepted repair is not proof of progress on the coverage gap."
+  },
+  "coverage": {
+    "status": "checked",
+    "gaps": [
+      {
+        "obligationId": "O3",
+        "question": "偏差校正如何参与参数更新",
+        "missingEvidence": "最终回答尚未完整回应这一问题",
+        "stage": "answer",
+        "missingAspects": [
+          "偏差校正如何参与参数更新"
+        ],
+        "aspectEvidenceRefs": [],
+        "gapDetail": {
+          "criterionIds": [
+            "human_aspect_1"
+          ],
+          "aspectIds": [
+            "criterion:human_aspect_1"
+          ],
+          "missingContent": "当前流程角色绑定重叠，尚不能确认输入、实际操作和输出之间的关系；不能以重复整段问题作为流程证明。",
+          "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+        }
+      }
+    ],
+    "processAudits": [
+      {
+        "checkId": "criterion:human_aspect_1",
+        "reportedStatus": "covered",
+        "links": [
+          {
+            "input": {
+              "request": "偏差校正如何参与参数更新"
+            },
+            "operation": {
+              "id": "c1",
+              "field": "text",
+              "excerpt": "偏差校正通过除以1−(1−β1)^t和1−(1−β2)^t实现，并用于参数更新：θ_t=θ_{t−1}−α·m̂_t/(√v̂_t+ε)"
+            },
+            "output": {
+              "request": "参数更新"
+            }
+          }
+        ],
+        "errors": [
+          "overlapping_process_roles"
+        ]
+      }
+    ],
+    "limitAudits": [
+      {
+        "checkId": "criterion:human_aspect_1",
+        "reportedStatus": "covered",
+        "spans": [
+          {
+            "claimId": "c1",
+            "field": "text",
+            "excerpt": "论文未保证所有训练更快或收敛"
+          }
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "manualReview": {
+    "passed": false,
+    "scores": {
+      "目标回应": 3,
+      "证据支持": 3,
+      "条件完整": 3,
+      "综合价值": 3,
+      "可执行性": null,
+      "可读性": 2
+    },
+    "reason": "Core v1 correction expressions retained, but exponential averages and raw second moment remain unexplained jargon; formulas do not explain direction/scaling in ordinary actions. The boundary should be framed as what correction establishes rather than an unqualified paper-wide guarantee claim. The auditor also has an invalid full-question input binding; do not treat that formatting diagnostic alone as proof that answer text is missing."
+  },
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 26,
+    "ledgerRows": 9043,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b",
+      "dr_run_fc0931756c505c6d9a29c06abe1fdd8d",
+      "dr_run_b09de02407095586bba235843615f2b3"
+    ]
+  },
+  "otherTasksExact": 15,
+  "ledgerRows": 9043,
+  "active": 0,
+  "paused": 15,
+  "index": {
+    "collection": "literature_collection_v4_e5_small",
+    "count": 1215,
+    "sha256": "f1ab6ad746b00ce95dfb36b76fa06d011cfb04d2b0bccf1e194a826d0606465f"
+  },
+  "rawPayloadSha256": "8689e83d0be47fb9071fc5737d94868d08bd741da43972c3f43bbac8aed88166",
+  "nextAction": "Improve actual source-grounded novice explanations and distinguish invalid audit-role bindings from missing answer content; avoid unchanged repair/regeneration loops. Protected-scope budget and non-thinking compaction still require targeted real branch validation, not repeated random sampling until they appear. No further real case this turn.",
+  "boundary": "Real end-to-end partial result. This one-claim execution did not exercise the new protected-budget or compaction branch, so it cannot establish their production effectiveness. Full DR0-DR5 and independent acceptance remain open."
+}

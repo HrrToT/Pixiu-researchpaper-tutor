@@ -1,0 +1,66 @@
+{
+  "sourceRunId": "dr_d3_evaluation_preparation_scientific_review_20261127",
+  "sourceRunSha256": "cdcd99064299c9bbbcecd7c7b4a156a6ec45f453863e367e23e0e75f159f7c60",
+  "priorReviewedProposalBindingDigest": "9bd5ca6e6455865a7d7af641f9c1137d4f8ef58e9331d752b8ee047693039d83",
+  "offlineFixtureBindingDigest": "d2a3639b0b41a97e810515fc19f28212d8dae673293278a57800313c7992a0bc",
+  "qualification": "manually constructed counterexample repair, validated through the production compiler and original-source precheck",
+  "evaluationStates": {
+    "testset": "evalsplit",
+    "testcams": "pose"
+  },
+  "sharedPreparationBudgetSeconds": 86400,
+  "poseSublimitSeconds": 14400,
+  "fitStepsPerArm": 10000,
+  "checkCount": 25,
+  "reviewInputBytes": 32000,
+  "reviewBatchBytes": [
+    19314,
+    31960,
+    32000,
+    31978,
+    31936
+  ],
+  "exactFactsPrecheckIssues": [],
+  "generationInputBytes": 31751,
+  "leakageMutationsRejected": {
+    "testImagesIntoFit": [
+      {
+        "code": "plan.evaluation_state_leakage",
+        "path": "/steps/10/reads"
+      }
+    ],
+    "testCamerasIntoClone": [
+      {
+        "code": "plan.evaluation_state_leakage",
+        "path": "/steps/5/reads"
+      }
+    ]
+  },
+  "priorSettledTokens": 67874,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "independentCredit": 0,
+  "remainingOriginalTokens": 32126,
+  "originalBudgetAdmission": {
+    "batchIndex": 1,
+    "limit": 100000,
+    "spent": 67874,
+    "reservation": 37080
+  },
+  "regressionTestsPassed": 184,
+  "reviewOfNewFixtureSent": false,
+  "proposedMemoryMetric": {
+    "deviceSampleTargetHz": 20,
+    "maximumSampleGapMs": 100,
+    "boundedMeaning": "maximum observed device bytes in a complete fit window",
+    "allocatorHighWaterReportedSeparately": true,
+    "failedWindowsExcluded": true
+  },
+  "reviewedDefectsAddressedInFixture": [
+    "Training-only SfM, explicit position, scale, rotation, opacity and SH initialization, and checkpoint restoration checks.",
+    "One continuous 86400-second shared clock with the pose phase still capped at 14400 seconds.",
+    "Separate frozen training list, evaluation list and registered pose state; reject held-out reads in training or clone."
+  ]
+}

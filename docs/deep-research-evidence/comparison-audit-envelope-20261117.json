@@ -1,0 +1,51 @@
+{
+  "scope": "Versioned new-comparison audit object envelope; transport only, all content checks remain",
+  "newModelCalls": 0,
+  "applicationWrites": 0,
+  "scientificCredit": 0,
+  "relatedTests": 395,
+  "finalEnvelopeTests": 109,
+  "checks": {
+    "related": "tmp/comparison-audit-envelope-related-20261117.xml",
+    "final": "tmp/comparison-audit-envelope-final-20261117.xml"
+  },
+  "savedResponses": {
+    "scope": "Counterfactual new transport on preserved failed audit responses plus actual final content checks; not historical acceptance",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0,
+    "cases": [
+      {
+        "attempt": 1,
+        "originalPayloadSha256": "22724e24b239571e9424aa7e79735821fee9a6643263f480b756e525f2e597d3",
+        "originalUnchanged": true,
+        "legacyReceivedShape": "invalid_wrapper",
+        "newReceivedShape": "comparison_audit_v1",
+        "downstreamStatus": "checked",
+        "remainingGaps": 6,
+        "promptBytes": 23743,
+        "contentAccepted": false
+      },
+      {
+        "attempt": 2,
+        "originalPayloadSha256": "ad31b419285eba9990cb1b1856f056820dcc584cde5a3392aa79824d0be981d9",
+        "originalUnchanged": true,
+        "legacyReceivedShape": "invalid_wrapper",
+        "newReceivedShape": "comparison_audit_v1",
+        "downstreamStatus": "invalid_response",
+        "remainingGaps": 7,
+        "promptBytes": 23748,
+        "contentAccepted": false
+      }
+    ]
+  },
+  "policy": [
+    "New server comparisonAuditEnvelopeContractVersion1 only; immutable per run",
+    "Exactly items/auditType/coherent/issues root keys; duplicate JSON keys, mixed coherence rows, malformed or truncated responses rejected",
+    "Decode copies original rows and coherence into the existing strict scientific pipeline; no invented verdict",
+    "Source/ID/field/check coverage, scope limits and contradictions remain checked",
+    "Historical runs without marker preserve old request and response normalization"
+  ],
+  "fullRegression": "pending; prior9154 does not apply to this changed source",
+  "runtimeLoaded": false
+}

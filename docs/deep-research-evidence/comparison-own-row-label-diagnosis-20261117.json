@@ -1,0 +1,21 @@
+{
+  "scope": "Counterfactual consumer checks only; original source and failed model output unchanged",
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificContentAccepted": false,
+  "cases": [
+    {
+      "claimId": "cmp_1_0",
+      "hypotheticalExactMetricFields": null,
+      "unchangedWording": "table_condition_not_displayed",
+      "withExplicitOriginalOwnRowLabel": null
+    },
+    {
+      "claimId": "cmp_3_0",
+      "hypotheticalExactMetricFields": null,
+      "unchangedWording": "table_condition_not_displayed",
+      "withExplicitOriginalOwnRowLabel": null
+    }
+  ],
+  "boundary": "No production conversion or approval. A valid declared cell is not enough: current table checker still requires original Ours label in body; compare source-column display identity before another real retest."
+}

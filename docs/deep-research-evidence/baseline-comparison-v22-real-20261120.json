@@ -1,0 +1,106 @@
+{
+  "sourceCommit": "0b8c992c0c6299bfecb31b27e628325c274bad94",
+  "case": "D2-BASELINE-COMPRESSION-v22",
+  "split": "development",
+  "runId": "dr_run_691b290f15e150aea7fc0cf5566f1b4d",
+  "comparisonAuthoringContractVersion": 9,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "singleSubmission": true,
+  "automaticRetry": false,
+  "modelCalls": 16,
+  "ledgerTokens": 84500,
+  "elapsedSeconds": 191.0,
+  "settledCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 1,
+    "verify_answer_coverage": 1,
+    "repair_claims": 3,
+    "verify_repair_advice": 1
+  },
+  "otherCallsByState": {},
+  "evidenceCount": 58,
+  "typedEvidenceCount": 1,
+  "draftCount": 10,
+  "reportClaimCount": 0,
+  "draftStageRequests": [
+    {
+      "stage": "P1",
+      "inputBytes": 23996,
+      "requiredBundles": 6,
+      "targets": [
+        "table_0_0",
+        "table_1_0",
+        "table_2_0",
+        "table_3_0"
+      ]
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23998,
+      "requiredBundles": 6,
+      "targets": [
+        "table_0_1",
+        "table_1_1",
+        "table_2_1",
+        "table_3_1"
+      ]
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 23992,
+      "requiredBundles": 8,
+      "targets": [
+        "joint_ob-2-1",
+        "joint_ob-2-2"
+      ]
+    }
+  ],
+  "rejectedByReason": {
+    "absence_not_established": 5,
+    "unbound_table_measurement": 1,
+    "table_condition_not_displayed": 1,
+    "semantic_unresolved": 1
+  },
+  "finalAuditStatus": "invalid_response",
+  "finalAuditGapCount": 6,
+  "finalAuditLimit": null,
+  "repairStatus": "response_received",
+  "repairBatchStop": null,
+  "repairReleaseDeferred": null,
+  "releaseStatus": "held",
+  "scientificAcceptance": false,
+  "restore": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "newModelCalls": 0
+  },
+  "receiptSha256": {
+    "payload": "89b1469788a21e219605ff888a877012448d956f87324aac7ba0480e6c31df5f",
+    "calls": "e7951fe1927348727f538c971f976b27788b321ef66e7b8434920d5370e0ca38",
+    "result": "80c6a45ab267bb7afd9b03e37959e6f63bdeff1643628a2051e18ea08319f798",
+    "execution": "bb0599627273086e05c2c5a6501ef088e1010e99f7f2b15bf79bf517138abe73"
+  },
+  "finalAuditTransport": {
+    "finishReason": "length",
+    "usage": {
+      "total_tokens": 11445,
+      "input_tokens": 6763,
+      "output_tokens": 4682
+    },
+    "rawReasonRepeatedPhraseCount": 171,
+    "receivedShape": "truncated"
+  },
+  "initialReviewBudgetStop": false,
+  "preReleaseAcceptedBySystem": 2,
+  "repairBatchesSettled": 3,
+  "repairChecks": {
+    "accepted": 0,
+    "rejected": 2
+  }
+}

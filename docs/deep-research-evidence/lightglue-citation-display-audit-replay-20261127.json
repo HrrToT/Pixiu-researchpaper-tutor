@@ -1,0 +1,19 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "development_replay",
+  "baseline": "lightglue-strict-threshold-coverage-review-20261127.json",
+  "coverageInstructionsContractVersion": 2,
+  "checks": {
+    "acceptedReportCitationLinksAndVerbatimExpandableExcerpts": 4,
+    "reviewRequestIncludesOnlyBoundOriginalExcerptLinks": true,
+    "explicitInlineQuotationStillRequiresMainAnswerProse": true,
+    "historicalPartialVerbatimResponseUnchanged": true,
+    "syntheticCompleteReviewerResponsePassesUnchangedCoverageChecks": true,
+    "auditPromptBytesWithinCap": 20891,
+    "targetedTestsPassed": 362
+  },
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "independentAcceptanceCredit": false,
+  "localReplaySha256": "fd1a7f7ebdbf89d2086b379e50e0be3f775836ac2fa925f08b970b8421d1ce62"
+}

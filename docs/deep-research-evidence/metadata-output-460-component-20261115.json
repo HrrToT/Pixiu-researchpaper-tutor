@@ -1,0 +1,58 @@
+{
+  "promptVersion": "dr-v2.20261115.460",
+  "isolatedMetadataOnly": true,
+  "sourceCase": "D3-VQ-FACTORIAL-v3",
+  "publicPaperUrl": "https://arxiv.org/abs/2311.18159v1",
+  "pdfSha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+  "quoteCount": 18,
+  "originalPromptMessagesAndSchemaPreserved": true,
+  "promptSha256": "0e0b390bf1535dad4d08c665d4648ac2d258213eddaad05eeac711b750814059",
+  "requestDigest": "59002d99dca838f24b98819fae70362b805a4bb1482b2a36364b872bab848200",
+  "minimumRuntimeRecordExcludesOtherPrivateState": true,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "actualModelCalls": 1,
+  "allCallsSettled": true,
+  "usage": {
+    "total_tokens": 14377,
+    "input_tokens": 9854,
+    "output_tokens": 4523
+  },
+  "finishReason": "stop",
+  "unitValid": false,
+  "unitErrors": [
+    "timeline.phase.action",
+    "unit.output_capacity"
+  ],
+  "rawOutputBytes": 17828,
+  "wireOutputBytes": 10346,
+  "compiledOutputBytes": 12833,
+  "components": 5,
+  "steps": 15,
+  "truncationResolvedInThisComponent": true,
+  "applicationDataUnchanged": true,
+  "before": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "after": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "rawResult": "tmp/metadata-output-460-reviewed-component-20261115/result.json",
+  "privacyAudit": "tmp/metadata-output-460-public-review-20261115/audit.json",
+  "preflightFailureBeforeProvider": {
+    "reason": "Unsupported component budget label; corrected to standard with strict 1/50000/180 overrides after verifying zero runs and zero calls.",
+    "runs": 0,
+    "calls": 0
+  },
+  "approvalBoundary": "Initial full-runtime-payload invocation was rejected and never executed. Replaced it with an audited, minimal, public-only fixed request; subsequent review accepted the safer action.",
+  "next": "Represent operation parameters without duplicate names and fit complete four-arm metadata without dropping measurements or relaxing scientific checks; no unchanged component resubmission."
+}

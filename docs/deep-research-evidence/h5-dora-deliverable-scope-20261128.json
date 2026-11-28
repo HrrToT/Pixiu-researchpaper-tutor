@@ -1,0 +1,135 @@
+{
+  "sourceRunSha256": "0f121f3e31ce5bd78453e513fd9f7c0e45f80d8ac42cb0df1607015e64a98716",
+  "oldReviewInputDigest": "2445bc2635dd17255bfd6c111524c387eabc4fed9d87e2d919e12e75210a7c5d",
+  "newReviewInputDigest": "a81ca9358c830d4dbd847093fb0b343b2fbebe1b4319514c36286c32c684d52c",
+  "generationBytes": 31836,
+  "originalPlanUnchanged": true,
+  "factBatchesUnchanged": true,
+  "preservedHumanCriteria": [
+    "requested_scope",
+    "configuration",
+    "execution_analysis",
+    "limits"
+  ],
+  "supportingInvestigationIds": [
+    "data_availability",
+    "O1-1",
+    "O1-2",
+    "O2-1",
+    "O2-2",
+    "O3-1",
+    "O3-2"
+  ],
+  "preservedScientificDesignChecks": 8,
+  "preservedSourceFactChecks": 7,
+  "oldBatchBytes": [
+    15395,
+    31961,
+    31981,
+    30938
+  ],
+  "newBatchBytes": [
+    15395,
+    32046,
+    31448
+  ],
+  "providerCalls": 0,
+  "regradedOriginal": false,
+  "independentHoldoutCredit": false,
+  "candidate": "14cc80fc0c93032eeba177435660cb94c258f1fc",
+  "case": "H5-DORA-FACTORIAL",
+  "regressionPassed": 407,
+  "regressionWarnings": 0,
+  "offlineReceipt": {
+    "path": "tmp/h5-deliverable-scope-replay-20261128.json",
+    "sha256": "3776415de134ca33455a6238cd05693a2cdccb22f1a407585b39b4d2becc5769"
+  },
+  "rationale": "The frozen question requests a complete design based on the paper’s setting. A retrieval lead expanded this to each original split size. Those leads stay in the plan and evidence path; the scientific review checks the complete original deliverable, all design sections and all asserted facts. Final answer audit remains responsible for coverage and bounded treatment of supporting investigations.",
+  "realGeneration": {
+    "intent": {
+      "candidate": "14cc80fc0c93032eeba177435660cb94c258f1fc",
+      "runId": "dr_h5_dora_scope_generation_20261128",
+      "carriedRoutineTokens": 18834,
+      "carriedRoutineCalls": 5,
+      "carriedRoutineSeconds": 53,
+      "inputBytes": 31836,
+      "generationInputDigest": "aa5b90d7188db73cedabc63154a12ec1e5236d5bd9e9ba06f0bacae0d34de15e",
+      "requiredDomains": [
+        "memory",
+        "quality"
+      ],
+      "maxNewCalls": 1,
+      "maxTotalTokens": 100000,
+      "maxWallSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "usage": {
+      "input_tokens": 8116,
+      "output_tokens": 4386,
+      "total_tokens": 12502,
+      "estimated": false,
+      "cached_input_tokens": 1462,
+      "cache_write_input_tokens": 6651
+    },
+    "result": {
+      "generationStatus": "awaiting_scientific_review",
+      "reviewPreparedOffline": true,
+      "reviewBatchBytes": [
+        15057,
+        32887,
+        32289
+      ],
+      "hardIssues": [],
+      "reviewInputDigest": "6abe4958f0397e5012a0859661603381cc969ee056e8928b96dfe525e2f0029e",
+      "elapsedSeconds": 52.64,
+      "newCalls": 1,
+      "cumulativeTokens": 31336,
+      "localPublication": false,
+      "publishedToWorkspace": false
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-generation-20261128/intent.json",
+        "sha256": "eb8dffc23995735f0e6e8d2cd0d6cfccc33a504fda655d47dc0b80b8f51e4a3d"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-generation-20261128/run.json",
+        "sha256": "597a91b4c8d3beb0b7ed906bb07b780c6cff655c54b26dbd44d7ed6322ac93ca"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-generation-20261128/calls.json",
+        "sha256": "bc15954876801a587e446709e21656beed2c9329583cfeb4622f8cd1ae3265e3"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-generation-20261128/result.json",
+        "sha256": "1f9294dd7ca24c910c13e402992ed6de46670cccc51e7878cb15047e0e89d692"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-generation-20261128/provider.jsonl",
+        "sha256": "7aa3c7d8690a07758e3b9be026cd04a55016dbe60ba2b180f4bdee914bd40b45"
+      }
+    ],
+    "formula": {
+      "stepId": "tr",
+      "fullDirection": "U=W0+(α/r)RL",
+      "norm": "n[j]=sqrt(sum_i U[i,j]^2)",
+      "axis": 0,
+      "normalizedWeight": "W[i,j]=m[j]U[i,j]/n[j]",
+      "denominatorOnlyDetachedInB1": true
+    },
+    "dataBoundary": {
+      "proposalField": "/data/evaluationSplit",
+      "missingInCitedExcerpts": [
+        "split sample counts",
+        "validation split details"
+      ],
+      "testManifestCheckBeforeUse": true
+    },
+    "metrics": [
+      "quality",
+      "memory"
+    ],
+    "scientificReviewExecuted": false
+  }
+}

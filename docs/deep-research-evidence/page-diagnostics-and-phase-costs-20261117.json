@@ -1,0 +1,357 @@
+{
+  "scope": "New-run bounded page-resolution diagnostics, source extraction atomicity and archived phase timing",
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "scientificCredit": 0,
+  "relatedTests": 185,
+  "junit": "tmp/page-diagnostics-related-final-20261117.xml",
+  "contract": [
+    "Server-owned immutable physicalPageDiagnosticsContractVersion1; old unmarked runs do not add diagnostic state",
+    "Last16 local extraction batches only; missing batch interface is observable",
+    "Permission revocation prevents both evidence and diagnostic checkpoint",
+    "Source/quote/context/evidence validation and retry behavior unchanged",
+    "No exception text, URL, command, file path, paper text or credentials stored in diagnostic records"
+  ],
+  "actualExtractionShadow": {
+    "scope": "Actual direct extraction of saved last12 read results; empty local journal and shadow checkpoint, local Java scope/file reads only",
+    "elapsedSeconds": 7.010624646994984,
+    "sourceCount": 12,
+    "evidenceCount": 23,
+    "allSourceQuotesAndContextsMatchArchive": true,
+    "atomicShadowCheckpoints": 1,
+    "batchDiagnostics": {
+      "version": 1,
+      "batches": [
+        {
+          "version": 1,
+          "quotes": 23,
+          "repositorySeconds": 0.11074452797765844,
+          "loadSeconds": 6.09760756000469,
+          "resolveSeconds": 0.22701890500320587,
+          "loads": 2,
+          "cacheHits": 21,
+          "failures": {},
+          "resolutions": {
+            "unresolved": 16,
+            "exact": 7
+          },
+          "elapsedSeconds": 6.9449283970025135
+        }
+      ]
+    },
+    "originalRunUnchanged": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0
+  },
+  "actualFactoryBatch": {
+    "version": 1,
+    "quotes": 61,
+    "repositorySeconds": 0.41526581105426885,
+    "loadSeconds": 6.52445489501406,
+    "resolveSeconds": 0.6008316669758642,
+    "loads": 2,
+    "cacheHits": 59,
+    "failures": {},
+    "resolutions": {
+      "unresolved": 37,
+      "exact": 24
+    },
+    "elapsedSeconds": 7.733681254991097
+  },
+  "archivedStageCosts": {
+    "scope": "Authoritative archived checkpoint intervals; includes node execution/scheduling/checkpoint overhead, not CPU-only timing",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "runs": [
+      {
+        "attempt": 1,
+        "runId": "dr_run_37cd76290e445fff957e8bf15320b7a5",
+        "checkpoints": 19,
+        "stages": [
+          {
+            "node": "resolve_brief",
+            "seconds": 4.631967,
+            "start": "2026-11-16T15:44:44.443266+00:00",
+            "end": "2026-11-16T15:44:49.075233+00:00"
+          },
+          {
+            "node": "plan",
+            "seconds": 8.94664,
+            "start": "2026-11-16T15:44:49.075233+00:00",
+            "end": "2026-11-16T15:44:58.021873+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 11.283151,
+            "start": "2026-11-16T15:44:58.021873+00:00",
+            "end": "2026-11-16T15:45:09.305024+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 3.737166,
+            "start": "2026-11-16T15:45:09.305024+00:00",
+            "end": "2026-11-16T15:45:13.042190+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 59.553755,
+            "start": "2026-11-16T15:45:13.042190+00:00",
+            "end": "2026-11-16T15:46:12.595945+00:00",
+            "sourceIdsAtStart": 10,
+            "evidenceIdsBefore": 0,
+            "evidenceIdsAfter": 19
+          },
+          {
+            "node": "assess",
+            "seconds": 3.297533,
+            "start": "2026-11-16T15:46:12.595945+00:00",
+            "end": "2026-11-16T15:46:15.893478+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 2.169482,
+            "start": "2026-11-16T15:46:15.893478+00:00",
+            "end": "2026-11-16T15:46:18.062960+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 3.568321,
+            "start": "2026-11-16T15:46:18.062960+00:00",
+            "end": "2026-11-16T15:46:21.631281+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 2.457693,
+            "start": "2026-11-16T15:46:21.631281+00:00",
+            "end": "2026-11-16T15:46:24.088974+00:00",
+            "sourceIdsAtStart": 11,
+            "evidenceIdsBefore": 19,
+            "evidenceIdsAfter": 20
+          },
+          {
+            "node": "assess",
+            "seconds": 1.969635,
+            "start": "2026-11-16T15:46:24.088974+00:00",
+            "end": "2026-11-16T15:46:26.058609+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 0.546288,
+            "start": "2026-11-16T15:46:26.058609+00:00",
+            "end": "2026-11-16T15:46:26.604897+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 3.741437,
+            "start": "2026-11-16T15:46:26.604897+00:00",
+            "end": "2026-11-16T15:46:30.346334+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 0.394801,
+            "start": "2026-11-16T15:46:30.346334+00:00",
+            "end": "2026-11-16T15:46:30.741135+00:00",
+            "sourceIdsAtStart": 11,
+            "evidenceIdsBefore": 20,
+            "evidenceIdsAfter": 20
+          },
+          {
+            "node": "assess",
+            "seconds": 0.128913,
+            "start": "2026-11-16T15:46:30.741135+00:00",
+            "end": "2026-11-16T15:46:30.870048+00:00"
+          },
+          {
+            "node": "synthesize",
+            "seconds": 29.509624,
+            "start": "2026-11-16T15:46:30.870048+00:00",
+            "end": "2026-11-16T15:47:00.379672+00:00"
+          },
+          {
+            "node": "verify",
+            "seconds": 120.926863,
+            "start": "2026-11-16T15:47:00.379672+00:00",
+            "end": "2026-11-16T15:49:01.306535+00:00"
+          },
+          {
+            "node": "publish",
+            "seconds": 0.196516,
+            "start": "2026-11-16T15:49:01.306535+00:00",
+            "end": "2026-11-16T15:49:01.503051+00:00"
+          }
+        ],
+        "extractionSeconds": 62.406249
+      },
+      {
+        "attempt": 2,
+        "runId": "dr_run_767af2e555535391842c6e4ac32a13f4",
+        "checkpoints": 24,
+        "stages": [
+          {
+            "node": "resolve_brief",
+            "seconds": 3.728037,
+            "start": "2026-11-16T17:14:01.960387+00:00",
+            "end": "2026-11-16T17:14:05.688424+00:00"
+          },
+          {
+            "node": "plan",
+            "seconds": 9.350325,
+            "start": "2026-11-16T17:14:05.688424+00:00",
+            "end": "2026-11-16T17:14:15.038749+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 10.861738,
+            "start": "2026-11-16T17:14:15.038749+00:00",
+            "end": "2026-11-16T17:14:25.900487+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 3.668191,
+            "start": "2026-11-16T17:14:25.900487+00:00",
+            "end": "2026-11-16T17:14:29.568678+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 57.631249,
+            "start": "2026-11-16T17:14:29.568678+00:00",
+            "end": "2026-11-16T17:15:27.199927+00:00",
+            "sourceIdsAtStart": 10,
+            "evidenceIdsBefore": 0,
+            "evidenceIdsAfter": 20
+          },
+          {
+            "node": "assess",
+            "seconds": 1.823508,
+            "start": "2026-11-16T17:15:27.199927+00:00",
+            "end": "2026-11-16T17:15:29.023435+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 2.313092,
+            "start": "2026-11-16T17:15:29.023435+00:00",
+            "end": "2026-11-16T17:15:31.336527+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 4.219897,
+            "start": "2026-11-16T17:15:31.336527+00:00",
+            "end": "2026-11-16T17:15:35.556424+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 20.889826,
+            "start": "2026-11-16T17:15:35.556424+00:00",
+            "end": "2026-11-16T17:15:56.446250+00:00",
+            "sourceIdsAtStart": 14,
+            "evidenceIdsBefore": 20,
+            "evidenceIdsAfter": 28
+          },
+          {
+            "node": "assess",
+            "seconds": 1.776197,
+            "start": "2026-11-16T17:15:56.446250+00:00",
+            "end": "2026-11-16T17:15:58.222447+00:00"
+          },
+          {
+            "node": "advance_frontier",
+            "seconds": 0.082762,
+            "start": "2026-11-16T17:15:58.222447+00:00",
+            "end": "2026-11-16T17:15:58.305209+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 6.61959,
+            "start": "2026-11-16T17:15:58.305209+00:00",
+            "end": "2026-11-16T17:16:04.924799+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 4.216882,
+            "start": "2026-11-16T17:16:04.924799+00:00",
+            "end": "2026-11-16T17:16:09.141681+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 74.3781,
+            "start": "2026-11-16T17:16:09.141681+00:00",
+            "end": "2026-11-16T17:17:23.519781+00:00",
+            "sourceIdsAtStart": 24,
+            "evidenceIdsBefore": 28,
+            "evidenceIdsAfter": 46
+          },
+          {
+            "node": "assess",
+            "seconds": 2.328121,
+            "start": "2026-11-16T17:17:23.519781+00:00",
+            "end": "2026-11-16T17:17:25.847902+00:00"
+          },
+          {
+            "node": "acquire",
+            "seconds": 4.339888,
+            "start": "2026-11-16T17:17:25.847902+00:00",
+            "end": "2026-11-16T17:17:30.187790+00:00"
+          },
+          {
+            "node": "read",
+            "seconds": 4.757136,
+            "start": "2026-11-16T17:17:30.187790+00:00",
+            "end": "2026-11-16T17:17:34.944926+00:00"
+          },
+          {
+            "node": "extract",
+            "seconds": 25.384954,
+            "start": "2026-11-16T17:17:34.944926+00:00",
+            "end": "2026-11-16T17:18:00.329880+00:00",
+            "sourceIdsAtStart": 26,
+            "evidenceIdsBefore": 46,
+            "evidenceIdsAfter": 53
+          },
+          {
+            "node": "assess",
+            "seconds": 1.63984,
+            "start": "2026-11-16T17:18:00.329880+00:00",
+            "end": "2026-11-16T17:18:01.969720+00:00"
+          },
+          {
+            "node": "synthesize",
+            "seconds": 42.19509,
+            "start": "2026-11-16T17:18:01.969720+00:00",
+            "end": "2026-11-16T17:18:44.164810+00:00"
+          },
+          {
+            "node": "verify",
+            "seconds": 22.436914,
+            "start": "2026-11-16T17:18:44.164810+00:00",
+            "end": "2026-11-16T17:19:06.601724+00:00"
+          },
+          {
+            "node": "publish",
+            "seconds": 0.209803,
+            "start": "2026-11-16T17:19:06.601724+00:00",
+            "end": "2026-11-16T17:19:06.811527+00:00"
+          }
+        ],
+        "extractionSeconds": 178.284129
+      }
+    ]
+  },
+  "isolatedRepository": {
+    "scope": "20 actual repository no-op updates of isolated archived-run copy on same named volume; no production writes",
+    "updates": 20,
+    "totalSeconds": 1.4176313329662662,
+    "maxSeconds": 0.09688601599191315,
+    "medianSeconds": 0.07025815499946475,
+    "originalRunUnchanged": true
+  },
+  "unbatchedCounterfactual": {
+    "scope": "Counterfactual unbatched located evidence factory on first10 saved entries; local Java scope/file reads, no model or DB writes",
+    "elapsedSeconds": 9.423372071003541,
+    "entries": 10,
+    "cachedPDFs": 2,
+    "originalRunUnchanged": true
+  },
+  "boundary": "New diagnostics exercised by CLI imports and local shadow state, not loaded in the application service. Normal-path timings do not reproduce original failure or prove its underlying cause. No speculative retry/cache change.",
+  "fullRegression": "pending"
+}

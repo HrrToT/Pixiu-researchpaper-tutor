@@ -1,0 +1,84 @@
+{
+  "promptVersion": "dr-v2.20261105.377",
+  "case": "isolated failed depth-target repair",
+  "modelCalls": 2,
+  "tokens": 9067,
+  "editedRevision": [
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中。",
+      "evidenceRefs": [
+        "ev_8358ddef8f9f16f3f70fb2e1220c0fc11c02cd4d3d9d858fe544e7878720ecba"
+      ],
+      "conditions": {},
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_2"
+      ]
+    }
+  ],
+  "draftRemovalEdit": {
+    "version": 1,
+    "offsetUnit": "unicode_code_point",
+    "inputText": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中，从而让二维高斯圆盘贴近真实表面。",
+    "outputText": "深度畸变约束通过最小化沿光线各交点深度差的加权和，使权重分布集中。",
+    "inputSha256": "e429155d8a4bbdfea9eea09c84072cc6583a2d558a3ecff2f13b118dac3b9398",
+    "outputSha256": "5d8ccbedee1eca8b4401eff7b5414f998cb82dfe099cd538227aeecd949751fb",
+    "edits": [
+      {
+        "start": 32,
+        "end": 33,
+        "removed": "，",
+        "kind": "adjacent_separator_cleanup"
+      },
+      {
+        "start": 33,
+        "end": 48,
+        "removed": "从而让二维高斯圆盘贴近真实表面",
+        "kind": "declared_deletion"
+      }
+    ],
+    "alreadyRemovedSpans": [],
+    "verification": "unchecked"
+  },
+  "providerSemanticResponse": {
+    "claimId": "c2",
+    "reason": "声明准确反映了证据：深度畸变损失定义为加权和，权重为混合权重，目的是集中权重分布。",
+    "scopeAudit": {
+      "claimStrength": "bounded",
+      "evidenceStrength": "bounded",
+      "supported": true,
+      "statementPath": [
+        "text"
+      ],
+      "premises": [
+        {
+          "evidenceId": "E1",
+          "path": [
+            "quote"
+          ]
+        }
+      ]
+    }
+  },
+  "machineVerification": "received_invalid: required array envelope missing",
+  "semanticBindingsChecked": false,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "productionPreserved": true,
+  "productionLedgerRows": 8281,
+  "artifacts": {
+    "calls.json": "a46eda24a7c9fee248c890edf8d694056a0e9455d2d7468d6f94eee6496f966d",
+    "failure.json": "61e3d5a2679b3894bf7d722ebb970206a9ef9a183a16e430c26843c42a4749b6",
+    "payload.json": "c8171613ae3885ca1b2abefca6ebc3dff3daf92124c670ca97c0ef29929c25b3",
+    "preservation.json": "df8b98964c009f1806adb48f92c7658fe6c99df1cd102de2d7d0b989c94dddf9",
+    "repair-state.json": "318eb8c4f0c9048a28c79e0cf269ed03da03dabbc094799982f5c0682f91e32b",
+    "request-1.json": "fa20a18506b4b09bf417b9137ef5387410af2533651083119d3a2fd5fe4ecf35",
+    "request-2.json": "821e8761f36fce473fb45cb9a0bab4e9965fed8e071aa8a54250ffff5ddf6da8",
+    "response-1.json": "665213e31e38d9236a31b1d241616380acf59516ee07126989b1842bf628b5e6",
+    "response-2.json": "d91ca76223a3f60be6ec2c07022d0d2a05712e2951f48d978dfa9569f5431366",
+    "revision.json": "b3fca20863ce747b8625d48a4eae5d40ca1739e6a225acbd065bcbfb23b8700d"
+  },
+  "remaining": "For a single exact target, consider lossless singleton-object wrapping before all unchanged schema, decision and source-binding gates. Multi-target/mismatched/incomplete responses must still fail. Original failed case is immutable."
+}

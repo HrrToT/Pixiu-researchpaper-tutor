@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "94a2be1d",
+  "promptVersion": "dr-v2.20261018.125",
+  "checks": {
+    "passed": 2049,
+    "warnings": 1,
+    "seconds": 108.63,
+    "log": "tmp/pytest-dr125-full.log"
+  },
+  "directTransportChecks": {
+    "passed": 51,
+    "seconds": 13.12,
+    "log": "tmp/pytest-dr125-transport-final.log"
+  },
+  "runtime": "runtime-load-dr125-native-json-20261018.json",
+  "finding": "Direct DeepSeek client sent native response_format/messages correctly, but the real scope wrapper replaced the messages. Production integration was not yet proven.",
+  "supersededBy": "routed-json-20261018.json",
+  "contentAccepted": false
+}

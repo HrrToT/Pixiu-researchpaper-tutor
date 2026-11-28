@@ -1,0 +1,71 @@
+{
+  "component": "current planning only; no retrieval/generation/verification/publication",
+  "promptVersion": "dr-v2.20261029.339",
+  "sourceCase": "settled D1-v40 metadata only",
+  "plan": [
+    {
+      "itemId": "item_1",
+      "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。；区分作者报告的结果、成立条件和未验证范围。",
+      "obligations": [
+        {
+          "obligationId": "ob_1",
+          "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。",
+          "requiredSources": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+          ],
+          "searchQuery": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。",
+          "completionCriteria": [
+            {
+              "criterionId": "human_aspect_1",
+              "requirement": "核查压缩后图像质量接近原始3DGS这一说法",
+              "responseType": "explanation"
+            }
+          ]
+        },
+        {
+          "obligationId": "ob_2",
+          "question": "区分作者报告的结果、成立条件和未验证范围。",
+          "requiredSources": [
+            "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf"
+          ],
+          "searchQuery": "LightGaussian evaluation dataset scenes settings image quality",
+          "purpose": "answer_requirement",
+          "requestExcerpt": "区分作者报告的结果、成立条件和未验证范围。",
+          "completionCriteria": [
+            {
+              "criterionId": "human_aspect_1",
+              "requirement": "作者报告的结果",
+              "responseType": "explanation"
+            },
+            {
+              "criterionId": "human_aspect_2",
+              "requirement": "成立条件",
+              "responseType": "limitation"
+            },
+            {
+              "criterionId": "human_aspect_3",
+              "requirement": "未验证范围",
+              "responseType": "limitation"
+            }
+          ]
+        }
+      ],
+      "searchQuery": "LightGaussian compression image quality close to original 3DGS",
+      "dependencies": [],
+      "priority": 1,
+      "status": "pending"
+    }
+  ],
+  "providerCalls": 1,
+  "tokens": 2033,
+  "elapsedSeconds": 9.397,
+  "allSettled": true,
+  "noRetry": true,
+  "exactProductionPreservation": true,
+  "productionPublish": false,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "payloadSha256": "37010ecad7cc6458f9d4c353e81365d9dc21ba4e30021167ea92490817a152b7"
+}

@@ -1,0 +1,46 @@
+{
+  "sourceCommit": "1c5e6988f0b2e13d57bfdc1eea6386507df933a9",
+  "execution": {
+    "host": "Windows, workspace-local test directories",
+    "scope": "Previous 510-module Deep Research regression plus current tracked Deep Research modules and test_config.py",
+    "modules": 513,
+    "collected": 10467,
+    "passed": 10466,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "elapsedSeconds": 579.18,
+    "liveModelCalls": 0,
+    "fixtureBoundaries": "live_llm cases excluded and the existing HTTP model guard enabled",
+    "sandboxAttempt": "Aborted after the Windows asyncio local socketpair stalled. The complete recorded suite ran on the host."
+  },
+  "baselineComparison": {
+    "previousEvidence": "d3-derived-analysis-native-full-20261127.json",
+    "previousModules": 510,
+    "previousCases": 10153,
+    "exactBaselineCaseIds": 10125,
+    "changedParameterCaseIds": 28,
+    "allChangedCaseBaseFunctionsStillCollected": true,
+    "addedModules": ["test_config.py", "test_deep_research_pdf_benchmark_protocol.py", "test_deep_research_pdf_threshold_tables.py"]
+  },
+  "onlyFailedCase": {
+    "module": "test_deep_research_observation_short_circuit.py",
+    "test": "test_policy_requires_exact_frozen_server_version",
+    "cause": "The fixture still classified v6 as unsupported. Commit 17f8c2b9d deliberately enabled it and creates supported v6 records.",
+    "correction": "Assert versions 4, 5 and 6 are supported and continue rejecting unsupported versions and string inputs. No production behavior changed.",
+    "targetedRepeatPassed": 115,
+    "targetedRepeatFailures": 0,
+    "targetedRepeatSkipped": 0,
+    "fullSuiteRepeatedAfterFixtureCorrection": false
+  },
+  "candidateColdStartEvidence": "current-candidate-disconnected-startup-20261128.json",
+  "scientificAcceptanceCredit": 0,
+  "localArtifactDirectory": "tmp/dr-regression-20261128-host",
+  "sha256": {
+    "inputs.json": "7f48df3a63add13bd88645781fe6e6e3d418eca76d49358c4b5c73b9eb2990f5",
+    "junit.xml": "21258691aef0455a00bfcf29c86d86aed11284f5f47755483e1147d32b09efae",
+    "exit.json": "c34bc644b4dfc96082e294ccb49ac40bdf34a3c659c956ffef43981ed30b2234",
+    "observation-version-recheck.xml": "e3b9c4f5b8abed5164d39a78ba7acb53d748fee557e18c3ae0823de3d49d920b"
+  }
+}

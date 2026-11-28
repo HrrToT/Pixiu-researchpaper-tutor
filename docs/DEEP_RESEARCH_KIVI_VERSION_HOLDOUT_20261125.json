@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-25",
+  "frozenTimestamp": "2026-11-25T13:20:47.419973+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "kivi_v1": {
+      "path": "tmp/pdfs/h4-kivi-evaluator-20261125/2402.02750v1.pdf",
+      "sha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+      "bytes": 2063189,
+      "pageCount": 12,
+      "arxiv": "2402.02750v1",
+      "reference": "https://arxiv.org/abs/2402.02750v1"
+    },
+    "kivi_v2": {
+      "path": "tmp/pdfs/h4-kivi-evaluator-20261125/2402.02750v2.pdf",
+      "sha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+      "bytes": 2194402,
+      "pageCount": 15,
+      "arxiv": "2402.02750v2",
+      "reference": "https://arxiv.org/abs/2402.02750v2"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题核对版本差异，实验设计由 H5 验收。"
+    },
+    "maxAnswerCharacters": 400,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "kivi_v1",
+        "page": 7,
+        "section": "Table 3",
+        "checks": "Llama-2-13B 16-bit and KIVI-2 comparison, simulated versus residual-cache setting"
+      },
+      {
+        "paper": "kivi_v2",
+        "page": 8,
+        "section": "Table 3",
+        "checks": "Same shared rows; adds 4bit per-token simulation and KIVI-4"
+      }
+    ],
+    "goldInputBoundary": "仅问题、两篇原始论文 ID、任务材料策略及标准预算进入应用。评审要点留在应用外。",
+    "independence": "冻结前仅用于评审准备；按 arXiv 编号、标题和文件哈希审查历史载荷、索引、缓存和任务。",
+    "priorRun": "原 H4 LoRA 已用于开发诊断，其未知结果与记录保留。KIVI 是新论文版本对。"
+  },
+  "cases": [
+    {
+      "id": "H4-KIVI-VERSIONS",
+      "split": "holdout",
+      "materials": [
+        "kivi_v1",
+        "kivi_v2"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只用任务里的 KIVI v1 和 v2，核对两版表 3 的 Llama-2-13B 结果。比较 CoQA、TruthfulQA 和 GSM8K 上的 16 位基线、KIVI-2 及 4 位配置，说明哪些结果保留、哪些配置是新增报告。两版是否矛盾？请区分模拟量化和保留高精度缓存的配置，引用两版原文，400 字以内。",
+      "required": [
+        "准确归属两版表 3 的页码；把 Llama-2-13B 的 16bit 和 KIVI-2 三项共享数值对齐，说明结果未变。",
+        "识别 v2 的 4bit (K - T, V - T) 和 KIVI-4 两行是本表新增报告，列出三项对应数值并正确区分。",
+        "保留 Llama-2-13B 与任务范围，解释模拟量化覆盖全部缓存，KIVI 保留一部分全精度近期 K、V。",
+        "说明两版的共同记录与披露增加没有构成这组结果的矛盾，不推导其他模型的结果或单一因果关系。",
+        "结论优先，引用都可定位到正确的版本和表格，正文控制在 400 字。"
+      ],
+      "forbidden": [
+        "将 v2 新增两行归给 v1 表 3，将其他模型的 4 位结果当作 Llama-2-13B，或把 v1 表 1 当作 v1 表 3。",
+        "将模拟量化、KIVI-4 或 KIVI-2 视为相同配置。",
+        "把缺行当成得分为零、表示旧版没有任何 4 位实验，或仅凭披露增量宣称发生矛盾。",
+        "出现重大数值、版本或配置错误，或超出标准预算与题目材料。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H4-KIVI-VERSIONS": "7bf0e9effb4c112f6ec2bcfce3e3831d92880f8ccad7e15acecc556583288205"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "case": "M1G-v7",
+  "runId": "dr_run_bc4ce0da9efe5c3f90cd883f6a12b03a",
+  "machineOutcome": "complete",
+  "contentAcceptance": "passed_known_development_case",
+  "independentCredit": 0,
+  "visibleCharacters": 311,
+  "characterLimit": 400,
+  "semanticAccepted": 3,
+  "semanticRejected": 0,
+  "coverageStatus": "checked",
+  "coverageGaps": 0,
+  "pdfChecks": [
+    {
+      "material": "LightGaussian v6",
+      "page": 3,
+      "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "verified": "Pruning/recovery reduces Gaussian count, SH distillation removes redundant SH coefficients, VQ stores lower bit width."
+    },
+    {
+      "material": "CAT-3DGS v2",
+      "page": 3,
+      "sha256": "6cff256c171332b72324f87ae7229c391cdc8ade63850f288d11289bda4699d5",
+      "verified": "Authored contribution list: triplane hyperprior/spatial autoregression, channel autoregression/intra correlation, view-frequency-aware masking."
+    }
+  ],
+  "frozenRequiredChecks": {
+    "twoIndependentPapersAndOwnCitations": "passed",
+    "lightThreeStages": "passed",
+    "catSpatialHyperpriorAndChannelContext": "passed",
+    "sharedGoalDoesNotImplySameMechanism": "passed",
+    "noFalseCATNoMaskingOrNoQuantizationDichotomy": "passed",
+    "within400CharactersAndMaterials": "passed"
+  },
+  "scores": {
+    "targetResponse": 4,
+    "evidenceSupport": 5,
+    "conditionScope": 4,
+    "synthesisValue": 4,
+    "readability": 4
+  },
+  "notApplicable": {
+    "executability": "No experiment or actionable protocol requested."
+  },
+  "readabilityLimit": "Technical terms remain; no human learning-effect proof.",
+  "editingCallUsed": false,
+  "audienceRewriteUsed": true,
+  "sourceAccessBinding": "Actual sourceAccessSummary field used; no empty conditions bindings.",
+  "next": "External provider path, numeric comparison, experiment/insufficiency/continuation current cases, recovery/publication audit and fresh independent replacements. Do not infer global DR0-DR5 completion."
+}

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-14",
+  "caseId": "D3-v24",
+  "runId": "dr_run_c3f1ca010d705002979ace460d136e05",
+  "promptVersion": "dr-v2.20261014.61",
+  "submissionCount": 1,
+  "automaticResubmissions": 0,
+  "result": {"status": "completed", "outcome": "inconclusive", "successfulModelCalls": 10, "actualTokensFromSettledResponses": 42915, "elapsedSeconds": 114.0, "cost": null},
+  "repair": {
+    "plannedBatches": [["c4", "c6", "design_completion_budget"], ["c1", "c7", "c8"], ["c2", "c3", "c5", "c9", "design_completion_limits"]],
+    "completedRequests": 2,
+    "firstResponse": "Model revised context IDs belonging to other batches rather than the active data/metrics targets. Parser retained only the in-batch budget claim; no cross-batch promotion.",
+    "secondResponse": "Settled successful empty array, not regenerated.",
+    "thirdRequest": "Not sent: conservative reservation would exceed the ordinary token pool.",
+    "ordinaryPoolUsedBeforeRejectedRequest": 20027,
+    "rejectedReservation": {"kind": "normalTokens", "limit": 50000, "attemptedUsed": 53040},
+    "independentVerification": "The budget draft passed independently, then consistency checking withheld it because no compatible accepted groups existed. No unverified configuration was published."
+  },
+  "offlineRemainingBudgetProbe": {
+    "providerRequests": 0,
+    "inputCapWith8192OutputAnd1024Framing": 20757,
+    "mandatoryThirdRequestBytes": 21653,
+    "conclusion": "Re-fitting optional sources alone cannot admit this request. Need an explicit per-batch output/input allocation under the unchanged ordinary pool, plus frozen pending request identity for recovery."
+  },
+  "contentReview": {
+    "qualityAccepted": false,
+    "failures": ["Unsupported named scene availability", "Intervention and baseline details incomplete", "Scene/test-view sampling inconsistency", "Model failure to respect active repair targets"],
+    "verifierConcerns": ["Some initial rejection wording appears to conflate a prospective I=0 null hypothesis with a promise to prove equivalence.", "An aggregation rejection questioned per-image versus per-view even though per-view computation and within-scene averaging were explicit. Review these independently rather than weakening all checks."],
+    "presentationConcern": "The no-claim report calls this evidence insufficiency even though proposal drafting and repair admission failed. Experiment-design wording should distinguish these causes."
+  },
+  "newHoldoutPreparation": {"caseId": "H1R", "material": "MVSplat v2", "sha256": "d1becb5361d7d8aa6f2e47d1e9e257031120b4207834f5effca049a8df7e4bb9", "processingStatus": "ready", "questionReady": true, "ragChunks": 65, "aiAnalysisStatus": "not_requested", "researchCaseExecuted": false, "generationRequests": 0},
+  "rawAuthoritativeRecord": "tmp/dr-acceptance-receipts/D3-v24.authoritative.json",
+  "nextWork": ["Put explicit active-target response skeletons at the end of each batch request.", "Allocate output and input limits per batch from current ordinary capacity; freeze a pending request before dispatch so settlement/restart cannot change its identity.", "Preserve the final verifier reserve and all total limits; do not reuse truncated/empty outputs or generate them again automatically.", "Review null-hypothesis and aggregation rejection criteria using saved evidence before new paid tests."],
+  "acceptance": "Repair dispatch and fail-closed boundaries were exercised. Content-quality acceptance failed and DR0-DR5 remains incomplete."
+}

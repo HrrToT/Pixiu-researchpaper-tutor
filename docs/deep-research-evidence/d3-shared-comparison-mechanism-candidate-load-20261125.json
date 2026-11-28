@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "7283094319c086a376990b394796e094f6c7b303",
+  "fullRegression": "composite-table-revision-binding-full-20261125.json",
+  "candidate": "academic-dr-d3-shared-comparison-mechanism-candidate-20261125",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "pdfParserDependencyVerified": true,
+  "sharedExperimentProfile": 3,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 16,
+  "sourceDefault": 0,
+  "localBackupCompression": "gzip",
+  "localBackupSha256": "0d0ce085fa79e14125ae4ac62977e0ee7b2bff3e80ea4b16f7d1a386d37da35f",
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

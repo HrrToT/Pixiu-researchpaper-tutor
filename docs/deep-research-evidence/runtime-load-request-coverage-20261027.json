@@ -1,0 +1,37 @@
+{
+  "sourceCommit": "c9b87e2c6062d88a87154529cb609c30cd819a0d",
+  "promptVersion": "dr-v2.20261027.315",
+  "repairCompactionContractVersion": 1,
+  "tableIdentityContextContractVersion": 1,
+  "requestCoverageContractVersion": 1,
+  "sourceHashes": {
+    "services/deep_research/repair_compaction.py": "cf8b67c2aa22c2b3a44e85653c1c7d04b823aefa703901338a607a21185ebbf2",
+    "services/deep_research/scope_compaction.py": "ede16f2c7dbd021d72f434b06776c330615b2d68cc60aa90f0571d3a0d1d005d",
+    "services/deep_research/table_identity_context.py": "2217530eb2bfa694174979864017ac89b21517cb1d52ef5cf40f5b80945741ef",
+    "services/deep_research/request_coverage.py": "76977dfede83b5ad54d42973ceabb3ab9d765f76b911bb2d0e7e0d5e3b42f2cd",
+    "services/deep_research/final_coverage.py": "eec7acafbeb5951d5030e7340fe9281cf415488aeb0a5d3407d1a5af695bd6d7",
+    "services/deep_research/coverage_repair.py": "32d1094bbfc4fe48b203aafacb259e847c118f3295d00e7e7a99cb6e2d81ea73",
+    "services/deep_research/factual_template.py": "611620cfd79390b0b4a2e3816ce947b74dbfcc9267edc45b9a7d4331091c1c51",
+    "services/deep_research/local_sources.py": "c19d802cddff9522ca28c6fad57ac2882c0bac21d5ac522939524b09012fd579",
+    "services/deep_research/scope_expression_review.py": "e1ca77ccee7918915c93e4e109ddc6172a86b527d86fbebd64aa15615438c87e",
+    "services/deep_research/repair.py": "a5376ebaf035f82455b1b2946b5c709734cf7791e0dfccf8195a363748c499b3",
+    "services/deep_research/graph.py": "79a8165b4de24aca1f2154b31c57e3f9134a2ed4c2920db87a134bf3ec8f3e16",
+    "services/deep_research/facade.py": "a59160dab2217d48aaa8153389d98e4b38580734ba77f1377bb28f42fc7722cc",
+    "services/deep_research/repository.py": "9e77dc524ad56a4df4266ef0a6c4a16fa1745f2447b5833ea2d9aa6ff9adc357"
+  },
+  "oldLedgerAndRunPayloadsExactlyPreserved": true,
+  "ledgerRows": 7461,
+  "pausedUnknowns": 12,
+  "active": 0,
+  "protectedWorkspaces": 5,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "indexExactlyPreserved": true,
+  "health": {
+    "rag": "ok",
+    "grobid": "ok"
+  },
+  "frontendHttpStatus": 200,
+  "restarts": 1,
+  "providerCalls": 0,
+  "independentCredit": 0
+}

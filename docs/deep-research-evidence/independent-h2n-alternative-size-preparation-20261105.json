@@ -1,0 +1,26 @@
+{
+  "mode": "HEAD-only alternative candidate preparation; no model or application-cache writes",
+  "papers": [
+    {
+      "arxivVersion": "2404.10772v1",
+      "status": 200,
+      "contentType": "application/pdf",
+      "declaredBytes": "16375828"
+    },
+    {
+      "arxivVersion": "2406.06521v1",
+      "status": 200,
+      "contentType": "application/pdf",
+      "declaredBytes": "12922135"
+    },
+    {
+      "arxivVersion": "2402.14650v1",
+      "status": 200,
+      "contentType": "application/pdf",
+      "declaredBytes": "34855388"
+    }
+  ],
+  "maxApplicationPdfBytes": 33554432,
+  "providerCalls": 0,
+  "applicationWrites": 0
+}

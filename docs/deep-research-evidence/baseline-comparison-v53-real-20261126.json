@@ -1,0 +1,83 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v53",
+  "runId": "dr_run_cab073789f525b02b3e9e4d7438c3ac1",
+  "sourceCommit": "f5ef1a99570d04644290670786f15aeb4f074678",
+  "status": "completed",
+  "outcome": "partial",
+  "automaticRetry": false,
+  "modelSteps": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 3,
+    "repair_claims": 2,
+    "verify_answer_coverage": 1
+  },
+  "settledTokens": 73856,
+  "elapsedSeconds": 148.0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "reportVersionId": "report_dr_run_cab073789f525b02b3e9e4d7438c3ac1_v1",
+  "acceptedClaimIds": [
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "rejections": [
+    {
+      "claimId": "cmp_0_0",
+      "reason": "numeric_mismatch"
+    },
+    {
+      "claimId": "cmp_7_0",
+      "reason": "numeric_mismatch"
+    },
+    {
+      "claimId": "cmp_5_0",
+      "reason": "semantic_unresolved"
+    },
+    {
+      "claimId": "cmp_conclusion_0",
+      "reason": "semantic_unresolved",
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "cmp_6_0",
+      "reason": "comparison_benchmark_example_scope"
+    }
+  ],
+  "coverageStatus": "checked",
+  "receiptSha256": {
+    ".payload.json": "3d625e0b05f3aa1dc5a94b8a6c0b4b5640afc54ecf7f4a3f42867d38abe3a427",
+    ".calls.json": "fe6e7f70e789e28cb0d3535c8ac2d33fccd1b00f630fb46753ace383b72b6cac",
+    ".execution.json": "fe60a51a77307e850d3f87fdc31390a1d2874b91012fed518046736d855aaec7",
+    ".result.json": "d4bb16655b36589d2f0f8efb9ba60e217f355e87e5fc499a61fe884929335e2e"
+  },
+  "originalServiceAndHistoryVerified": true,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "repairBatchStop": {
+    "batch": 2,
+    "kind": "repairEvidenceBytes",
+    "limit": 6760,
+    "used": 10053
+  },
+  "repairCompletedBatchIndices": [
+    "0",
+    "1"
+  ],
+  "jointSpeedTargetBoundToPublicationSubjects": false,
+  "jointSpeedReviewResponse": {
+    "version": 1,
+    "responseState": "received_invalid",
+    "finishReason": "stop",
+    "contentSha256": "d00b6ee9dd2829cabb01e3ffb832c07ce325cb96b5bc006ed9e19a7c8e99f0f5",
+    "unreviewedObservationCount": 1
+  },
+  "restorationSha256": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+}

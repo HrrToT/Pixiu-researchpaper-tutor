@@ -1,0 +1,177 @@
+{
+  "component": "new-plan generation and verification over settled acquired evidence, no fresh retrieval/publication",
+  "promptVersion": "dr-v2.20261029.340",
+  "tableReferencesContractVersion": 4,
+  "sourcePayloadSha256": "7991e55b43965067dc2b19742a4d12ff83506cf146301d8e2689941194b2836c",
+  "planSourceSha256": "37010ecad7cc6458f9d4c353e81365d9dc21ba4e30021167ea92490817a152b7",
+  "providerCalls": 5,
+  "tokens": 31386,
+  "elapsedSeconds": 91.82,
+  "allSettled": true,
+  "noRetry": true,
+  "repairInvoked": false,
+  "initialClaims": [
+    {
+      "claimId": "c1",
+      "text": "在作者报告的Mip-NeRF 360数据集上，LightGaussian压缩模型与原始3D-GS的PSNR/SSIM/LPIPS分别为27.13/0.806/0.237和27.21/0.815/0.214，差值小，支持“质量接近”。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "PSNR",
+          "value": "27.13"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "SSIM",
+          "value": "0.806"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 10,
+          "groupIndex": 0,
+          "metric": "LPIPS",
+          "value": "0.237"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "PSNR",
+          "value": "27.21"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "SSIM",
+          "value": "0.815"
+        },
+        {
+          "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+          "rowNumber": 8,
+          "groupIndex": 0,
+          "metric": "LPIPS",
+          "value": "0.214"
+        }
+      ]
+    },
+    {
+      "claimId": "c2",
+      "text": "已报告设置：LightGaussian压缩模型与原始3D-GS（评估数据集：Mip-NeRF 360、Tank&Temple）。尚不能据此确认LightGaussian压缩模型相对原始3D-GS的“质量指标保持接近”在更广泛的场景、不同压缩率或训练设置中普遍成立。",
+      "kind": "inference",
+      "evidenceRefs": [
+        "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_2"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": []
+    }
+  ],
+  "claimTextCharacters": 248,
+  "localExactCellChecks": {
+    "c1": null,
+    "c2": null
+  },
+  "localPrecheck": {
+    "candidates": [
+      {
+        "claimId": "c1",
+        "text": "在作者报告的Mip-NeRF 360数据集上，LightGaussian压缩模型与原始3D-GS的PSNR/SSIM/LPIPS分别为27.13/0.806/0.237和27.21/0.815/0.214，差值小，支持“质量接近”。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.806"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.237"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.815"
+          },
+          {
+            "evidenceId": "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "LPIPS",
+            "value": "0.214"
+          }
+        ]
+      },
+      {
+        "claimId": "c2",
+        "text": "已报告设置：LightGaussian压缩模型与原始3D-GS（评估数据集：Mip-NeRF 360、Tank&Temple）。尚不能据此确认LightGaussian压缩模型相对原始3D-GS的“质量指标保持接近”在更广泛的场景、不同压缩率或训练设置中普遍成立。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_74a1bac54693e4ae4612f54763a4a84db1a1c907cc4706a86d4c8cc69922d6b8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_2"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ],
+    "rejected": []
+  },
+  "machineVerifiedClaims": 2,
+  "machineRejectedClaims": 0,
+  "machineCoverageGaps": 0,
+  "diagnosticErrors": [],
+  "productionExactlyPreserved": true,
+  "productionPublish": false,
+  "fullWorkflowReplay": false,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "review": "Exact six original-baseline/Ours Mip-NeRF360 metric cells checked. Explicit judgement plus dataset scope and stronger generalization boundary. Single sampled generated answer does not establish universal near-losslessness, current retrieval, publication, stability or independent scientific acceptance."
+}

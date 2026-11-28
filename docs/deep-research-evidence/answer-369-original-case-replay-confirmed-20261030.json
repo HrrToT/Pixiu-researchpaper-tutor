@@ -1,0 +1,27 @@
+{
+  "sourceCase": "X4L-v3",
+  "candidatePromptVersion": "dr-v2.20261030.369",
+  "sourcePayloadSha256": "21188472c721dd86266c3bacac05a749145e8e8dfeefcb2922269732ac05ae9b",
+  "quoteRetention": {
+    "oldSuppliedUnits": 14,
+    "newSuppliedUnits": 14,
+    "newQuotesExact": true,
+    "originalTargetCitationsRetained": true,
+    "sameSuppliedQuoteIds": true
+  },
+  "repairOldBytes": 23994,
+  "repairNewBytes": 23764,
+  "c1FrozenGoals": [
+    "ob_1"
+  ],
+  "repairEvidencePermissionsIdentical": true,
+  "repairOriginalTargetsIdentical": true,
+  "oldResponseLacksRequiredCoherence": true,
+  "controlledIncoherentFixturePublicationOutcome": "partial",
+  "acceptedClaimTextUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldRunChanged": false,
+  "contentAccepted": false,
+  "boundary": "Actual saved-input preparation and publication replay. The incoherence decision is a named controlled fixture, not a newly obtained model judgement; no old result is upgraded."
+}

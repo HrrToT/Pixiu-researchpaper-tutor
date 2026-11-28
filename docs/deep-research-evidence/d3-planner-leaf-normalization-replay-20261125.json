@@ -1,0 +1,28 @@
+{
+  "sourceReceiptSha256": "cb163860312ce3df6067d38e3fb0568905dac5b1d4cfcd7ed3bc86393a56e8a3",
+  "candidateInitialPlanProfile": 2,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "responses": [
+    {
+      "rawResponseSha256": "24a967f62f34b7f624ded3042defb13a7381e2b92d32755c1f2fb21e69b2fe97",
+      "removedEmptyLeafFields": 4,
+      "acceptedItemCount": 2,
+      "retainedObligationCount": 6,
+      "localPlanInvocations": [
+        "plan"
+      ],
+      "retrievalEligible": true
+    },
+    {
+      "rawResponseSha256": "1cb67e407958d75337a1f85578463e5ce2ba17695d60b98e7766a8fab7003a40",
+      "removedEmptyLeafFields": 4,
+      "acceptedItemCount": 2,
+      "retainedObligationCount": 6,
+      "localPlanInvocations": [
+        "plan"
+      ],
+      "retrievalEligible": true
+    }
+  ]
+}

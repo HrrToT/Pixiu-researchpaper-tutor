@@ -1,0 +1,46 @@
+{
+  "verified": true,
+  "tasks": 105,
+  "runs": 391,
+  "calls": 9872,
+  "historicalPaused": 15,
+  "active": 0,
+  "allTaskPayloadHashesUnchanged": true,
+  "allRunAndCallPayloadsUnchanged": true,
+  "baseline": "tmp/dr-acceptance-receipts/vq-experiment-d3-v6.after.json",
+  "health": {
+    "status": "ok",
+    "checks": {
+      "grobid": {
+        "status": "ok",
+        "message": "GROBID is reachable."
+      },
+      "rag": {
+        "status": "ok",
+        "message": "RAG backend is ready."
+      }
+    },
+    "uptime_seconds": 54914.3
+  },
+  "serviceRestarted": false,
+  "candidateEnabled": false,
+  "newIsolatedSettledDiagnostics": 3,
+  "newUnknowns": 0,
+  "oldIsolatedUnknowns": [
+    {
+      "folder": "initialization-readable-483-reviewed-component-20261116",
+      "status": "unknown",
+      "attempt": 1,
+      "settled": false,
+      "reservationAndUpdatedAtUnchanged": true
+    },
+    {
+      "folder": "shared-representation-low-reasoning-v1-result-20261116",
+      "status": "unknown",
+      "attempt": 1,
+      "settled": false,
+      "reservationAndUpdatedAtUnchanged": true
+    }
+  ],
+  "unknownRequestReplayed": false
+}

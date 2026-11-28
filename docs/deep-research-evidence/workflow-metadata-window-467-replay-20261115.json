@@ -1,0 +1,29 @@
+{
+  "engineeringReplayOnly": true,
+  "sourceRunId": "dr_run_701cc83529de50c283376a16e592db11",
+  "originalPayloadSha256": "9a78eb800fbd6393cddb9d446bf3a7b2e50d6c89ce8b1c0efeab332b3e027c2e",
+  "oldStatus": "not_started_capacity",
+  "oldInputBytes": 32221,
+  "oldMaxInputBytes": 32000,
+  "newStatus": "pending",
+  "newInputBytes": 33667,
+  "newMaxInputBytes": 40000,
+  "requiredReferences": 18,
+  "suppliedReferences": 20,
+  "allOriginalQuestionPlanRequirementsEvidenceTablesAndSourceRegistryExact": true,
+  "allOriginalRowsRetained": true,
+  "permissionsMatchActuallySuppliedRows": true,
+  "originalReceiptUnchanged": true,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "resumedOriginalRun": false,
+  "maxOutputTokens": 6144,
+  "wholeBudgetLimits": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Admission and exact input preservation on a new in-memory replay only; no provider output, complete experiment or independent quality acceptance."
+}

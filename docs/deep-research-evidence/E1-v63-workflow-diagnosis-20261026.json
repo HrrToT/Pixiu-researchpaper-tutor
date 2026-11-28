@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v63",
+  "runId": "dr_run_d7192746926e59b4a8d760be8fcc94a0",
+  "promptVersion": "dr-v2.20261026.273",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "initialErrors": [
+    "timeline.input.group_leak"
+  ],
+  "revisionErrors": [
+    "timeline.input.group_leak"
+  ],
+  "creationAndCycleErrorsAbsent": true,
+  "sameComponentsAndPhases": true,
+  "revisionInputBytes": 28168,
+  "units": {
+    "metadata": {
+      "requestDigest": "ce357a4e45e31bad8d7c28c433d9c1cd1f65c3455fb77630a18673c20af235f4",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 8704,
+        "input_tokens": 6842,
+        "output_tokens": 1862
+      }
+    },
+    "metadataRepair": {
+      "requestDigest": "4800132a001e5013fb7de403bd7b4c21dee70ae2cec6790839c969a3b54cff99",
+      "finishReason": "stop",
+      "usage": {
+        "total_tokens": 10053,
+        "input_tokens": 8187,
+        "output_tokens": 1866
+      }
+    }
+  },
+  "remainingFailure": {
+    "phaseId": "record_frame",
+    "kind": "record",
+    "sharing": "shared",
+    "groups": [
+      "arm_skip_stage2",
+      "arm_execute_stage2"
+    ],
+    "finding": "Shared record reads arm-specific evaluation outputs and treatment-only state. Canonical group guard correctly refuses cross-arm use. Separate analysis role already owns effect formulas and paired decisions."
+  },
+  "settledCalls": 8,
+  "settledTokens": 39429,
+  "elapsedSeconds": 75,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "boundary": "Ordered representation removed creation/cycle defects in this development case, but group mixing remains. No initialization/public plan or scientific acceptance. Next enforce group-specific raw observation recording and retain separate full analysis role; do not weaken the group guard or delete required comparisons."
+}

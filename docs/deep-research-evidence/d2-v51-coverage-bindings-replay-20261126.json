@@ -1,0 +1,16 @@
+{
+  "receiptSha256": "093c19248c7aae48691af055799f5d23a2c953cf5187529a1889e2035e37a635",
+  "rawAuditFinishReason": "stop",
+  "originalAuditStatus": "invalid_response",
+  "updatedAuditStatus": "invalid_response",
+  "updatedDiagnostics": [
+    {
+      "code": "unbound_covered_check",
+      "obligationId": "answer_scope",
+      "checkId": "request"
+    }
+  ],
+  "unchangedOrdinaryVerdicts": 6,
+  "providerCalls": 0,
+  "scientificContentAccepted": false
+}

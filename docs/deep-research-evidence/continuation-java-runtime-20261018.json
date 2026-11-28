@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-18",
+  "backendSourceCommit": "47f94b28",
+  "javaProcessId": 81764,
+  "runtimeJar": "tmp/dr119-java-target/backend-java-0.0.1-SNAPSHOT.jar",
+  "jarSha256": "7a853168cf2feb3a350e326ce2934737cef2e5f2a81eda226a78843124e63047",
+  "before": {
+    "ledger": {
+      "active": [],
+      "calls": 3210,
+      "ledgerSha256": "12a78781eae6de9be8804e58e7336f387985386ea8727c7f1fa9df7cf0799697",
+      "paused": [
+        "dr_run_4738564f5ff35157996a35068c62ed32",
+        "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+        "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+        "dr_run_86b3f181a5475e99aacca3dbf4370567",
+        "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "dr_run_e3521b1781825273b384a26a5edb8cdc",
+        "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "dr_run_ed10cc3347be552288079a9a588fddf5"
+      ]
+    },
+    "tasks": {
+      "count": 85,
+      "sha256": "43a2450c549b60c0494f8f86b108cae8311430fd04fd126d6ac23bf01b68ff70"
+    }
+  },
+  "after": {
+    "tasks": {
+      "count": 85,
+      "sha256": "43a2450c549b60c0494f8f86b108cae8311430fd04fd126d6ac23bf01b68ff70"
+    },
+    "ledger": {
+      "active": [],
+      "calls": 3210,
+      "ledgerSha256": "12a78781eae6de9be8804e58e7336f387985386ea8727c7f1fa9df7cf0799697",
+      "paused": [
+        "dr_run_4738564f5ff35157996a35068c62ed32",
+        "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+        "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+        "dr_run_86b3f181a5475e99aacca3dbf4370567",
+        "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "dr_run_e3521b1781825273b384a26a5edb8cdc",
+        "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "dr_run_ed10cc3347be552288079a9a588fddf5"
+      ]
+    }
+  },
+  "backupSha256": "8c96e031956aa7cff878d627743ea5f3fac9742f356a137198fbb730e184cec5",
+  "boundary": "No active research, exact PID/image/start time and port owner guarded. H2 backup after process exit. All tasks and ledger/unknown paused IDs unchanged; no model request."
+}

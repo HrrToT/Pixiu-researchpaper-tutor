@@ -1,0 +1,144 @@
+{
+  "baseCommit": "2cd8de2aa",
+  "providerCalls": 0,
+  "networkRequests": 0,
+  "scientificAcceptance": false,
+  "sourceReceiptSha256": "d4302a3143c890767e1afc67aee00b49a8f1702e37730ff0c1e27a2995b8a4d2",
+  "replays": [
+    {
+      "reviewIndex": 0,
+      "wireVersion": 1,
+      "requests": [
+        {
+          "inputBytes": 23051,
+          "requestDigest": "e31a9e1dabc93850e485ea6648915f80e23c827c93d85c9bd8e77d6632bd8364",
+          "matchesSavedRequest": true,
+          "obligations": 9,
+          "checks": 11,
+          "explicitShapes": false,
+          "completeAcceptedClaimIds": [
+            "cmp_conclusion_1"
+          ],
+          "evidenceRows": 20
+        }
+      ],
+      "status": "invalid_response",
+      "errors": [
+        {
+          "code": "check_identity_mismatch",
+          "obligationId": "ob_470f4270b93f82ceecd6a581"
+        }
+      ],
+      "scientificApproval": false
+    },
+    {
+      "reviewIndex": 0,
+      "wireVersion": 2,
+      "requests": [
+        {
+          "inputBytes": 23574,
+          "requestDigest": "a603e1a06689242887974a0b54b3b4891fd4f197ae6340f2cded348b2cb43ff2",
+          "matchesSavedRequest": false,
+          "obligations": 9,
+          "checks": 11,
+          "explicitShapes": true,
+          "completeAcceptedClaimIds": [
+            "cmp_conclusion_1"
+          ],
+          "evidenceRows": 18,
+          "allRequiredEvidenceRowsExact": true,
+          "optionalEvidenceRowCounts": [
+            18,
+            16
+          ]
+        }
+      ],
+      "status": "invalid_response",
+      "errors": [
+        {
+          "code": "check_identity_mismatch",
+          "obligationId": "ob_470f4270b93f82ceecd6a581"
+        }
+      ],
+      "scientificApproval": false
+    },
+    {
+      "reviewIndex": 1,
+      "wireVersion": 1,
+      "requests": [
+        {
+          "inputBytes": 23756,
+          "requestDigest": "d0c244dd69d464579741f5123902851c8db737aed9888ea2bda79ad65893f5fd",
+          "matchesSavedRequest": true,
+          "obligations": 9,
+          "checks": 11,
+          "explicitShapes": false,
+          "completeAcceptedClaimIds": [
+            "cmp_conclusion_1",
+            "cmp_3_0"
+          ],
+          "evidenceRows": 20
+        }
+      ],
+      "status": "invalid_response",
+      "errors": [
+        {
+          "code": "invalid_check_fields",
+          "obligationId": "ob_ca6a6818c6dc44a0bd72c59e",
+          "checkId": "criterion:C2",
+          "unexpectedFieldCount": 1
+        }
+      ],
+      "scientificApproval": false
+    },
+    {
+      "reviewIndex": 1,
+      "wireVersion": 2,
+      "requests": [
+        {
+          "inputBytes": 23958,
+          "requestDigest": "aaac2e73be8b99e24ba630898e0b635e9dffb57bee44b3bd1e44d7f5ff9abdf8",
+          "matchesSavedRequest": false,
+          "obligations": 9,
+          "checks": 11,
+          "explicitShapes": true,
+          "completeAcceptedClaimIds": [
+            "cmp_conclusion_1",
+            "cmp_3_0"
+          ],
+          "evidenceRows": 18,
+          "allRequiredEvidenceRowsExact": true,
+          "optionalEvidenceRowCounts": [
+            16,
+            14
+          ]
+        }
+      ],
+      "status": "invalid_response",
+      "errors": [
+        {
+          "code": "invalid_check_fields",
+          "obligationId": "ob_ca6a6818c6dc44a0bd72c59e",
+          "checkId": "criterion:C2",
+          "unexpectedFieldCount": 1
+        }
+      ],
+      "scientificApproval": false
+    }
+  ],
+  "boundary": "Both exact saved invalid responses stay invalid. New input adds only exact check field catalog, no generated semantic decisions. No new model response or acceptance.",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_audit.py": "264796251c36fb80c3279f0cabf2b376f3c9b3b3e9c2b5e3ba7c46eb98567471",
+    "ai-service-python/services/deep_research/comparison_presentation.py": "ee88806c4cbab62f5294e29ec6d33634d7338995729c0929cab05e395eee0431"
+  },
+  "relatedChecks": {
+    "tests": 840,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "modules": 43,
+    "runId": "comparison-check-shapes-related-20261118"
+  },
+  "fullRegressionCompleted": false,
+  "newRuntimeLoaded": false
+}

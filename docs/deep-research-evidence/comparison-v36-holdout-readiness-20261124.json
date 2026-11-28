@@ -1,0 +1,56 @@
+{
+  "cases": {
+    "D2-BASELINE-COMPRESSION": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 2,
+      "referenceOnlyCount": 0,
+      "sourcePolicy": "task_only",
+      "kind": "paper_comparison"
+    },
+    "H1-GSC": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 1,
+      "referenceOnlyCount": 0,
+      "sourcePolicy": "task_only",
+      "kind": "claim_verification"
+    },
+    "H2-ADAPT": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 2,
+      "referenceOnlyCount": 0,
+      "sourcePolicy": "task_only",
+      "kind": "paper_comparison"
+    },
+    "H3-STREAMING": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 0,
+      "referenceOnlyCount": 1,
+      "sourcePolicy": "external_only",
+      "kind": "direction_survey"
+    },
+    "H4-LORA-VERSIONS": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 2,
+      "referenceOnlyCount": 0,
+      "sourcePolicy": "task_only",
+      "kind": "claim_verification"
+    },
+    "H5-DORA-FACTORIAL": {
+      "definitionAndMaterialBytesVerified": true,
+      "materialCount": 2,
+      "referenceOnlyCount": 0,
+      "sourcePolicy": "task_only",
+      "kind": "experiment_design"
+    }
+  },
+  "priorD2TerminalStatuses": {
+    "completed": 25,
+    "failed": 10
+  },
+  "runtimeHealthPassed": true,
+  "v36Submitted": false,
+  "providerCalls": 0,
+  "scientificContentAccepted": false,
+  "sourceCommit": "1c1a13976fa8d919ea29c0746e882482ff60dfd8",
+  "scope": "Read-only preview, local material integrity and live historical-state reconciliation. No case submitted or accepted."
+}

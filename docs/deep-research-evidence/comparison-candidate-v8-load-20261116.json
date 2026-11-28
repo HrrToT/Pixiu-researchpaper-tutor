@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "68bfc26e090158a8680f9072c9433e93e08d6acc",
+  "fullRegression": "comparison-missing-draft-full-native-20261116.json",
+  "candidate": "academic-dr-cells-candidate-20261116-v8",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "health": "ok",
+  "sourceHashesMatch": true,
+  "comparisonCellsContractVersion": 1,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

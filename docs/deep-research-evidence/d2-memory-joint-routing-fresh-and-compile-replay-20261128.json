@@ -1,0 +1,126 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_run_and_exact_saved_generation_replay",
+  "sourceCommit": "819393de6fba56dd5c935692c9b7d321e112f17a",
+  "runId": "dr_run_9dee0adbf0875a5bbd0b848c4dcba272",
+  "sourcePolicy": "task_only",
+  "reusedStageReceiptsInFreshRun": 0,
+  "modelRequests": 14,
+  "tokens": 72049,
+  "seconds": 144.0,
+  "modelRoute": {
+    "gpt-6-luna": 5,
+    "gpt-6.1-terra": 9
+  },
+  "outcome": "partial",
+  "pdfChecks": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 9,
+    "literalCitationOccurrences": {
+      "true": 19
+    },
+    "sourceTableCells": {
+      "true": 10
+    }
+  },
+  "advice": {
+    "plannedByModel": true,
+    "planNormalizerActivated": false,
+    "generated": true,
+    "published": false,
+    "originalCompilerErrors": [
+      {
+        "targetId": "joint_o3_conditional_advice",
+        "reason": "joint_advice_requires_device_memory_test_first"
+      }
+    ],
+    "updatedCompilerErrors": [],
+    "replayModelRequests": 0,
+    "semanticAcceptance": false
+  },
+  "remainingAnswerGaps": [
+    {
+      "obligationId": "o2",
+      "question": "能比较什么、为什么不能直接拿两篇的FPS排名",
+      "missingEvidence": "尚未形成通过核验的联合比较结论",
+      "stage": "answer",
+      "missingAspects": [
+        "为什么不能直接拿两篇的FPS排名"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "human_aspect_2"
+        ],
+        "aspectIds": [
+          "criterion:human_aspect_2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "missingJointConclusion": true
+    },
+    {
+      "obligationId": "o3",
+      "question": "State a conditional choice for memory-constrained use and the trade-offs that support it.",
+      "missingEvidence": "尚未形成通过核验的联合比较结论",
+      "stage": "answer",
+      "missingAspects": [
+        "Provide a conditional recommendation for memory-constrained deployment, stating the relevant trade-offs and evidence boundaries without assuming either method is universally preferable.",
+        "State a conditional choice for memory-constrained use and the trade-offs that support it."
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "c5"
+        ],
+        "aspectIds": [
+          "criterion:c5"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "missingJointConclusion": true
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "为什么不能直接拿两篇的FPS排名"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "为什么不能直接拿两篇的FPS排名",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "originalFactualRejections": [
+    {
+      "claimId": "cmp_conclusion_0",
+      "reason": "semantic_unresolved",
+      "detail": "观察条件尚未通过事实核查：来源支持降低球谐阶数并量化低重要性球谐系数。\n来源明确微调码本，但所给证据未明确支持量化后还微调整个模型。"
+    }
+  ],
+  "workspaceDeliveryExercised": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/intent.json": "15219fd997e3b9650b98f3ee40e21c17a325c062079a12bf101af9d0683db706",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/run.json": "0c04993e37af46aefa8ea557ea460fbb5f5ddb0e30a6f3dbe451187da879481c",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/result.json": "ca31ec001c9445710feb526c4f30a92ef8c2dc4454a3216ed8fb03a28461c21b",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/calls.json": "9d64fe7dfece406448b9ca64245b74baa6eda916785965ea5d0c3a270f2c1273",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/provider.jsonl": "ab5c625db2b6fa8fc93124169429947d8dd480f0aa6b58e6f232452b57c6b9d4",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/independent-pdf-check.json": "d93764aa164f47d8ab0f4046672b8b8f2e1e63c87438967d4e8b82ed5a455c61",
+    "tmp/openai-d2-memory-joint-routing-fresh-20261128/advice-compile-replay.json": "575699f73a13edb0a3cc671ec7f779932c93cfeb13e39d484b2a572688c1e6f9",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/independent-pdf-check.json": "bf4f4e638474ffccce89fe49a1cfa13f85fc8962d283c54a71643b41f071f0e5"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v22",
+  "sourceCommit": "9f539cfe",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "independentCredit": 0,
+  "providerCallsDuringDiagnosis": 0,
+  "productionWritesDuringDiagnosis": 0,
+  "actualPlanningDraftFingerprintsMatched": 2,
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "inputBytes": 23919,
+      "actualFingerprintMatched": true
+    },
+    {
+      "node": "synthesize",
+      "inputBytes": 30077,
+      "actualFingerprintMatched": true
+    }
+  ],
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "observedChangesOnly": {
+    "seedRecognizedButPurposeStillMissing": true,
+    "concreteMeasurementPath": "c7.conditions.context",
+    "concreteMeasurementValue": "PSNR和SSIM在评估视图上计算，先逐视图计算再平均到帧，最后窗口平均。存储仅包含当前帧模型文件（Group A为第1阶段输出，Group B为第2阶段输出），单位为字节。训练开销测量第2阶段优化时间，Group A为0。设备拟议为NVIDIA RTX 3090，分辨率1352×1014，预热1帧，CUDA事件同步，重复3次。",
+    "oneRepairBatchActuallySent": true,
+    "doesNotProveGeneralImprovement": true
+  },
+  "confirmedReviewMismatch": {
+    "claimId": "c7",
+    "actualAggregation": "先逐视图计算再平均到帧，最后窗口平均",
+    "actualPath": "conditions.context",
+    "reviewReason": "指标未通过：PSNR和SSIM方向正确，但未指定图像/视图聚合级别（先逐视图计算再平均到帧，最后窗口平均）；存储指标未列出具体文件或模型表示，仅说明'序列化模型文件大小'；训练开销测量设备、分辨率、预热、同步、重复次数等细节在条件中提及，但未在指标定义中明确。",
+    "boundary": "Actual aggregation and timing choices were supplied in conditions. Serialization format and other actual incompatibilities can still fail. No automatic approval."
+  },
+  "confirmedStateDefect": {
+    "claimId": "c6",
+    "mode": "fresh",
+    "inputs": [],
+    "illegalDimensionReference": {
+      "inputIndex": -1,
+      "axis": 0
+    },
+    "hardReason": "workflow.states.shape"
+  },
+  "remainingIssues": [
+    "First-frame model preparation is not separately capped from per-frame NTC fitting.",
+    "GPU-event timing is labelled wall-clock; align full-stage timed boundary and actual measurement.",
+    "Specify serialized representation/files/precision and byte metric consistently.",
+    "c5 revision invented extra typed keys; c4 revision leaked internal IDs.",
+    "Only data/budget batch sent; remaining groups exceeded normal budget. Prioritize prerequisite hard failures and avoid repairing contradicted missing-field reasons."
+  ],
+  "repairStatus": "response_received",
+  "repairBatchStop": {
+    "batch": 1,
+    "kind": "repairPromptBytes",
+    "limit": 16382,
+    "used": 21683
+  },
+  "boundary": "Development result only,0/9accepted. Complete coverage/request identity is not content acceptance; no legacy upgrade or automatic retry."
+}

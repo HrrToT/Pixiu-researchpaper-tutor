@@ -1,0 +1,21 @@
+{
+  "papers": {
+    "arxiv:2205.14135": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    },
+    "arxiv:2307.08691": {
+      "ownedRunIdentityHits": [],
+      "v1CachePresent": false
+    }
+  },
+  "indexIdentityHits": [],
+  "indexBodyTitleMentions": {
+    "FlashAttention": 0,
+    "FlashAttention-2": 0
+  },
+  "indexRows": 1215,
+  "providerCalls": 0,
+  "writes": 0,
+  "scope": "Read-only candidate freshness before definition; body mentions are recorded separately from owned-paper acquisition or prior focal model cases."
+}

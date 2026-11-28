@@ -1,0 +1,58 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "verificationClass": "known_case_carry_forward_finalization",
+  "codeCommit": "1ea5b60e7e4791e0c91d8394ad9ba87c418d819c",
+  "sourceRunId": "dr_run_b43ab5787b04588cbe831451fbb8e9d6",
+  "runId": "dr_kivi_bound_review_bounded_20261127",
+  "priorReservationRejected": {
+    "reservedTokensRequested": 42407,
+    "providerCalls": 0
+  },
+  "status": "completed",
+  "outcome": "partial",
+  "reusedClaims": [
+    "c1",
+    "c3"
+  ],
+  "verifiedNumericClaim": "c2",
+  "numericDraftCellsCorrect": 18,
+  "remainingGap": "Coverage found that the answer lists both 4-bit rows under v2 without explicitly identifying which configurations were newly reported.",
+  "coverageVerifiedCacheDistinction": true,
+  "usage": [
+    {
+      "node": "verify",
+      "status": "succeeded",
+      "reservedTokens": 32167,
+      "model": "gpt-6.1-terra",
+      "input_tokens": 6705,
+      "output_tokens": 280,
+      "total_tokens": 6985,
+      "cached_input_tokens": 0
+    },
+    {
+      "node": "verify_answer_coverage",
+      "status": "succeeded",
+      "reservedTokens": 27114,
+      "model": "gpt-6.1-terra",
+      "input_tokens": 6764,
+      "output_tokens": 295,
+      "total_tokens": 7059,
+      "cached_input_tokens": 0
+    }
+  ],
+  "actualSupplementalTokens": 14044,
+  "originalTokens": 65871,
+  "combinedTokens": 79915,
+  "providerWindowSeconds": 13.0,
+  "automaticRetries": 0,
+  "scientificAcceptance": false,
+  "unseenHoldoutCredit": 0,
+  "focusedOfflineTestsPassed": 64,
+  "sha256": {
+    "intent.json": "3b90bb348003adbdd632e27f8fdfd6f56eab39a8bc15b8713d73a526a3de3ce3",
+    "calls.json": "84e0eb4f26748a73ce756ad3ae1ee59045b09427a0142ec1ee3be36da2095114",
+    "run.json": "313c2180b5368f5301c4c81a9e4bcf931039754860b6864c3793ee8b2a0fa04d",
+    "verify-return.json": "ac451523804453b041300bd765a92fda518856bb159b8be2ac1d2469c9c00cdf",
+    "publish-return.json": "c1e1358addf29f06efc39ef921853d9fe4f2aa3aef4b3dfec2a56b7e25ec0e0e"
+  }
+}

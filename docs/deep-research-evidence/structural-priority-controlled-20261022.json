@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v22",
+  "groups": [
+    {
+      "ids": [
+        "c2",
+        "c3",
+        "c6"
+      ],
+      "inputBytes": 23979
+    },
+    {
+      "ids": [
+        "c4",
+        "c5"
+      ],
+      "inputBytes": 23878
+    },
+    {
+      "ids": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "inputBytes": 23984
+    }
+  ],
+  "firstGroupContainsHardWorkflowFailure": true,
+  "everyTargetOnce": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Offline24KB preflight/callback order only, without live remaining-budget constraints. All callback dispositions unresolved; not evidence that all three real calls could fit the run budget.",
+  "sourceCommit": "00987455"
+}

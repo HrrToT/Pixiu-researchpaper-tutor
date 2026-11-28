@@ -1,0 +1,24 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "development_replay",
+  "baseline": "lightglue-h1-first-frozen-20261127.json",
+  "requestGroundingContractVersion": 5,
+  "input": "Saved provider plan response, original user question, and hash-verified LightGlue v1 PDF",
+  "checks": {
+    "originalObligationsPreserved": true,
+    "addedObligations": 1,
+    "restoredLiteralCriteria": ["继续时又怎样决定哪些点不再处理", "说清两种决定各省了什么计算"],
+    "allObligationsBoundToOriginalPaper": true,
+    "newObligationUsedOriginalItemQuery": true,
+    "newObligationCandidatePages": [1, 7, 8, 9, 8],
+    "methodHeadingPassagePage": 4,
+    "methodHeadingPassageLexicalRankForItemQuery": 8,
+    "candidateLimit": 5,
+    "targetedTestsPassed": 310
+  },
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "wholeAnswerRevalidated": false,
+  "independentAcceptanceCredit": false,
+  "localReplayReportSha256": "440d54f84220d4a4634923c61d9777726b3a9d09dccc5406e8b5e88b1a7eef76"
+}

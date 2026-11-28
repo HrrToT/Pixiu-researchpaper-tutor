@@ -1,0 +1,178 @@
+{
+  "model": "intfloat/multilingual-e5-small",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "validation": "saved material scope; publication stamping excluded",
+  "variants": {
+    "legacy": [
+      {
+        "query": "LightGaussian compression image quality PSNR SSIM LPIPS comparison original 3DGS",
+        "candidateCount": 55,
+        "selected": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-35",
+            "chunk": 35,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7b472ecd7f82d61eb9f59cfeab639315eb3588672279e06c1b51fd442129a245"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-38",
+            "chunk": 38,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7baf6c6c771c87449a2fa38ff6b84509a530962ab6e8d1ae6996a361c7e98e5c"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-37",
+            "chunk": 37,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "9870070c6c61bce2a219170178f55d3dd4b70b843f67c7cbc04948bcb9a922f0"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-39",
+            "chunk": 39,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "5fcbd79cbb5c2f9349ea8391763ac3842e57f24d06e46b94ace4675d3f0b22f8"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-52",
+            "chunk": 52,
+            "mode": "indexed_requested_row",
+            "conditionFactsInBody": false,
+            "textSha256": "7c760bd2e7a8756d8631132680ef1fd0edda2c3ac177ff6ac4ce10509113c1f3"
+          }
+        ]
+      },
+      {
+        "query": "LightGaussian compression settings evaluation conditions quality near original",
+        "candidateCount": 55,
+        "selected": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-35",
+            "chunk": 35,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7b472ecd7f82d61eb9f59cfeab639315eb3588672279e06c1b51fd442129a245"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-38",
+            "chunk": 38,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7baf6c6c771c87449a2fa38ff6b84509a530962ab6e8d1ae6996a361c7e98e5c"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-37",
+            "chunk": 37,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "9870070c6c61bce2a219170178f55d3dd4b70b843f67c7cbc04948bcb9a922f0"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-26",
+            "chunk": 26,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "d47914dda22fc8f02d62418187f88c65fc0fe65b74c7d6ee8bc20a022058764b"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-52",
+            "chunk": 52,
+            "mode": "indexed_requested_row",
+            "conditionFactsInBody": false,
+            "textSha256": "7c760bd2e7a8756d8631132680ef1fd0edda2c3ac177ff6ac4ce10509113c1f3"
+          }
+        ]
+      }
+    ],
+    "new": [
+      {
+        "query": "LightGaussian compression image quality PSNR SSIM LPIPS comparison original 3DGS",
+        "candidateCount": 55,
+        "selected": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-35",
+            "chunk": 35,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7b472ecd7f82d61eb9f59cfeab639315eb3588672279e06c1b51fd442129a245"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-38",
+            "chunk": 38,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7baf6c6c771c87449a2fa38ff6b84509a530962ab6e8d1ae6996a361c7e98e5c"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-37",
+            "chunk": 37,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "9870070c6c61bce2a219170178f55d3dd4b70b843f67c7cbc04948bcb9a922f0"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-52",
+            "chunk": 52,
+            "mode": "indexed_requested_row",
+            "conditionFactsInBody": false,
+            "textSha256": "7c760bd2e7a8756d8631132680ef1fd0edda2c3ac177ff6ac4ce10509113c1f3"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-45",
+            "chunk": 45,
+            "mode": "indexed_scope_condition",
+            "conditionFactsInBody": true,
+            "textSha256": "53c066ade661aa4fd705bc6dff3c8316e0844467c7cd007b8fc0594ad003dc6c"
+          }
+        ]
+      },
+      {
+        "query": "LightGaussian compression settings evaluation conditions quality near original",
+        "candidateCount": 55,
+        "selected": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-35",
+            "chunk": 35,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7b472ecd7f82d61eb9f59cfeab639315eb3588672279e06c1b51fd442129a245"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-38",
+            "chunk": 38,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "7baf6c6c771c87449a2fa38ff6b84509a530962ab6e8d1ae6996a361c7e98e5c"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-37",
+            "chunk": 37,
+            "mode": "indexed_hybrid",
+            "conditionFactsInBody": false,
+            "textSha256": "9870070c6c61bce2a219170178f55d3dd4b70b843f67c7cbc04948bcb9a922f0"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-52",
+            "chunk": 52,
+            "mode": "indexed_requested_row",
+            "conditionFactsInBody": false,
+            "textSha256": "7c760bd2e7a8756d8631132680ef1fd0edda2c3ac177ff6ac4ce10509113c1f3"
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vebe6b0693a86127a-chunk-45",
+            "chunk": 45,
+            "mode": "indexed_scope_condition",
+            "conditionFactsInBody": true,
+            "textSha256": "53c066ade661aa4fd705bc6dff3c8316e0844467c7cd007b8fc0594ad003dc6c"
+          }
+        ]
+      }
+    ]
+  },
+  "allSelectedTextsMatchOriginalIndex": true,
+  "sharedSourceTextsUnchanged": true
+}

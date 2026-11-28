@@ -1,0 +1,16 @@
+{
+  "scope": "Cell generation adapter and saved actual-input capacity; not scientific acceptance",
+  "inputBytes": 23449,
+  "inputCap": 24000,
+  "papers": 2,
+  "requirements": 8,
+  "evidenceRows": 13,
+  "sharedTablePackets": 3,
+  "fullOriginalQuestionRetained": true,
+  "originalQuotesRetained": true,
+  "modelCalls": 0,
+  "applicationWrites": 0,
+  "productionEnabled": false,
+  "relatedTests": 55,
+  "boundary": "New cells use existing synthesis dispatch and ordinary verification, with paper/version checks before semantic dispatch; final report rendering and full scope/budget acceptance remain to integrate."
+}

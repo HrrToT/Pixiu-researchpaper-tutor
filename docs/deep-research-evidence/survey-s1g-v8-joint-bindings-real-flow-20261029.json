@@ -1,0 +1,80 @@
+{
+  "caseId": "S1G-v8",
+  "runId": "dr_run_07072aff5a1a55888dcb80b15f2ed4b0",
+  "promptVersion": "dr-v2.20261029.348",
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 8,
+  "tokens": 30750,
+  "elapsedSeconds": 64.261,
+  "allCallsSettled": true,
+  "noRetry": true,
+  "verifiedClaims": [
+    {
+      "claimId": "c2",
+      "text": "高斯剪枝与恢复：计算全局显著性分数，剪除对场景重建贡献小的高斯，再在训练视角上微调恢复，减少冗余同时保持视觉质量。SH蒸馏：用教师模型渲染伪视图，训练学生模型将球谐系数从3阶降至2阶，消除冗余SH并保留关键光照信息。向量量化：以更低比特宽度存储高斯属性，进一步压缩模型。",
+      "kind": "reported",
+      "evidenceRefs": [
+        "ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62",
+        "ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd",
+        "ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240"
+      ],
+      "conditions": {},
+      "obligationIds": [
+        "ob_1"
+      ],
+      "detailLevel": "fulltext",
+      "tableBindings": [],
+      "verification": "semantic_passed"
+    }
+  ],
+  "initialRejected": [
+    {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "231117245e-5"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2311.17245。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  ],
+  "repairRejected": null,
+  "coverageGaps": 4,
+  "publishedBody": "本回答引用：全文片段。\n\n## 方法脉络\n\n- 高斯剪枝与恢复：计算全局显著性分数，剪除对场景重建贡献小的高斯，再在训练视角上微调恢复，减少冗余同时保持视觉质量。SH蒸馏：用教师模型渲染伪视图，训练学生模型将球谐系数从3阶降至2阶，消除冗余SH并保留关键光照信息。向量量化：以更低比特宽度存储高斯属性，进一步压缩模型。 [1](#research-evidence-ev_86994145a215296611d1166ee452117faf62798b8375946111afcd3ee39d2e62) [2](#research-evidence-ev_dc73e27d98f65ae82681705ad0bcd0f675724d67d8e180eff73563766e7e03bd) [3](#research-evidence-ev_a338259d46d124ea7f2a011130fa7bf4e3da6bc823049df2cf0d15b1a793e240)\n\n",
+  "publishedCounts": {
+    "artifacts": 2,
+    "messages": 1
+  },
+  "repeatTerminalGetExactlyUnchanged": true,
+  "oldResultsAndMessagesUnchanged": true,
+  "fiveOtherProtectedTasksUnchanged": true,
+  "indexExactlyPreserved": true,
+  "completeProductionIndexSha256": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "preservation": {
+    "oldLedgerUnchanged": true,
+    "allOldRunsUnchanged": true,
+    "newRows": 22,
+    "ledgerRows": 7629,
+    "onlyThisRunCreatedCalls": true,
+    "active": [],
+    "oldPausedRetained": true,
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+      "dr_run_98e66f2d3d555dfa822b859963f01419",
+      "dr_run_8be639c866c35ea092c735a04781b647",
+      "dr_run_1c0c2e6510165086962408b8e3cf698b"
+    ]
+  },
+  "remainingDefect": "Format-number and mixed-binding errors do not recur. Access criterion adds a different provenance clause not recognized by projection. General short-answer compaction drops requested reading guidance by keeping first two redundant factual claims. Introductory arXiv ID is treated as a source-unsupported number. Only factual mechanism claim accepted; unique repair returns empty. No whole-answer or independent acceptance.",
+  "contentAcceptance": false,
+  "independentCredit": 0
+}

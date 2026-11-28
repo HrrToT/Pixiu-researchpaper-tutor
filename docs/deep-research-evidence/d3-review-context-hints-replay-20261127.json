@@ -1,0 +1,39 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "savedRun": "dr_run_b89846fc1c945ac5bca5a0cee9d5fd3b",
+  "savedRunSha256": "a20e35901bf0eee092e513bb9ae28efc0171b1aabbcce92fe0726778db2df266",
+  "previousFirstReviewOutcome": "missing_numeric_source_binding",
+  "actualRejectedFactId": "scene",
+  "actualRejectedQuantity": "figure label 5",
+  "contextHint": [
+    {
+      "evidenceId": "E3",
+      "field": "before"
+    }
+  ],
+  "sourceReferenceHints": {
+    "scene": [
+      {
+        "evidenceId": "E3",
+        "field": "before"
+      }
+    ],
+    "splitop": [
+      {
+        "evidenceId": "E5",
+        "field": "before"
+      }
+    ]
+  },
+  "allCheckTargetsUnchanged": 22,
+  "reviewInputBytes": [
+    24077,
+    31937,
+    31811
+  ],
+  "oldResponseStillFails": true,
+  "onlyChangedFixtureField": "fact_0.evidenceBindings",
+  "fixtureCouldAdvanceToSecondBatch": true,
+  "realModelCalls": 0,
+  "scientificApproval": false
+}

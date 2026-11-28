@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-15",
+  "promptVersion": "dr-v2.20261015.78",
+  "codeCommit": "c82b985",
+  "verifierResponseReplay": {
+    "runId": "dr_run_c78295b0da0c5657a5afd9ca05788a3e",
+    "rootType": "list",
+    "claimIds": [
+      "c2"
+    ],
+    "boundary": "Format is recovered; this does not certify the verifier's scientific judgment."
+  },
+  "literalSpanReplay": [
+    {
+      "sourceId": "src_4d357e653a5f49a7c860f27aa33eafcdb1d4ca308140549eed81bd1a18f192dd",
+      "before": false,
+      "after": true,
+      "returnedUntouchedOriginalSubstring": true
+    },
+    {
+      "sourceId": "src_4d357e653a5f49a7c860f27aa33eafcdb1d4ca308140549eed81bd1a18f192dd",
+      "before": true,
+      "after": true,
+      "returnedUntouchedOriginalSubstring": true
+    },
+    {
+      "sourceId": "src_4d357e653a5f49a7c860f27aa33eafcdb1d4ca308140549eed81bd1a18f192dd",
+      "before": false,
+      "after": true,
+      "returnedUntouchedOriginalSubstring": true
+    },
+    {
+      "sourceId": "src_395869375726dac7ec1b4d93ead9f0fe5b46795c47d4fa76bd43e031b42f421c",
+      "before": false,
+      "after": true,
+      "returnedUntouchedOriginalSubstring": true
+    },
+    {
+      "sourceId": "src_1bbe30eb3ab0223dfb1cf6fa06882453e6142e894b004808ee6e343160a20038",
+      "before": false,
+      "after": true,
+      "returnedUntouchedOriginalSubstring": true
+    }
+  ],
+  "scopeCheck": "Production authorizer validates all distinct work IDs and the live snapshot once before extraction; each provider send still revalidates the live scope. Denial stops before sending.",
+  "scopeBoundary": "Historical scope timeouts were not recorded per passage; do not claim they caused this particular past extraction loss.",
+  "fullRegression": {
+    "passed": 1300,
+    "seconds": 44.23,
+    "warnings": 1,
+    "scope": "test_deep_research*.py, test_reading_*.py, test_pdf_table_columns.py, test_config.py"
+  },
+  "focused": {
+    "passed": 53,
+    "seconds": 2.51,
+    "overlap": true
+  },
+  "modelCallsDuringReplay": 0,
+  "browserProof": {
+    "runId": "dr_run_255bbc03aa215e978efacb35f64ecdac",
+    "image": "external-fulltext-citation-20261015.png",
+    "version": "arxiv:2312.12337v4",
+    "physicalPage": 5,
+    "bodyStatus": "partial",
+    "sourceModal": "Exact quotation and external source-page link verified; controlled-reader action still missing."
+  },
+  "boundary": "Final .78 changes are offline verified. No real model generation has been submitted on .78."
+}

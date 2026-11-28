@@ -1,0 +1,149 @@
+{
+  "fixture": "D2-BASELINE-COMPRESSION",
+  "candidate": "b1a5dcb4ff4bc83a5b81e0eacad44c810f456175",
+  "repairCommit": "3ef7906cd52f909fb1739fbdba8988c908a179f8",
+  "runId": "dr_run_77fc8747163454e0b3c584f6b6fec61f",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "isolatedRepository": true,
+  "automaticRetry": false,
+  "reusedStageReceipts": 0,
+  "externalSources": 0,
+  "productionWrites": 0,
+  "independentHoldoutCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "publicationPublished": false,
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 19210,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 10,
+    "tokens": 76150,
+    "normalTokens": 45360,
+    "elapsedSeconds": 132.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "providerGenerations": 15,
+  "providerUsageByModel": {
+    "gpt-6-luna": {
+      "generations": 5,
+      "tokens": 17351,
+      "cachedInputTokens": 0
+    },
+    "gpt-6.1-terra": {
+      "generations": 10,
+      "tokens": 58799,
+      "cachedInputTokens": 0
+    }
+  },
+  "acceptedClaims": [
+    "cmp_0_0",
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_6_0",
+    "cmp_7_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2"
+  ],
+  "wholeAnswerCoherence": "released",
+  "checks": {
+    "memoryLimitedAdviceClaim": "cmp_conclusion_1",
+    "processingCostClaim": "cmp_3_0",
+    "costEvidence": [
+      {
+        "paper": "LightGaussian v6",
+        "physicalPage": 7,
+        "stage": "co-adaptation",
+        "steps": 5000
+      },
+      {
+        "paper": "LightGaussian v6",
+        "physicalPage": 6,
+        "stage": "fixed-map codebook tuning",
+        "iterations": 5000
+      }
+    ],
+    "sourceOccurrences": {
+      "literal_page": 29,
+      "table_row_check_required": 4
+    },
+    "sameTableSource": {
+      "paper": "LightGaussian v6",
+      "physicalPage": 6,
+      "table": 1,
+      "dataset": "Mip-NeRF 360",
+      "match": "marked retrained 3D-GS versus Ours",
+      "fps": [
+        144,
+        237
+      ],
+      "storageMB": [
+        782,
+        45
+      ]
+    },
+    "knownGaps": [
+      "answer_scope",
+      "obl2",
+      "requested_numeric_example"
+    ],
+    "rejectedCrossPaperClaim": {
+      "claimId": "cmp_conclusion_0",
+      "reason": "The cited passage uses local reference [16] without identifying the referenced paper."
+    }
+  },
+  "diagnosticReplay": {
+    "requestIdentityUnchanged": true,
+    "rawResponseUnmodified": true,
+    "oldErrors": [
+      "new_diagnostic_numbers_not_bound"
+    ],
+    "newErrors": [],
+    "unsupportedAttributionRemainsRejected": true,
+    "numericMeasure16StillRejected": true,
+    "providerCalls": 0,
+    "reconstructedPremiseBundles": 8,
+    "replayedStageInputBytes": {
+      "P1": 21676,
+      "P2": 23473,
+      "joint": 23990
+    }
+  },
+  "regression": {
+    "beforeRepair": {
+      "path": "tmp/d2d3-b1-release-check.xml",
+      "sha256": "5e5c8c121ca73b27849d9f4f5eb012a9fcc270ff33d8b2615b25d510e8633891",
+      "passed": 1083
+    },
+    "withRepair": {
+      "path": "tmp/d2bib-new-current.xml",
+      "sha256": "10c09f31bef4f0d77e95efc9bc79b9bd1651975cb53ea8fd9fcd0dba1b41d27b",
+      "passed": 390
+    }
+  },
+  "rawArtifacts": {
+    "tmp/openai-d2-literal-intent-standard-20261128/intent.json": "255afa66cbd02056da8be720a2be7611706b86e52b45aba33a2e40125720ebf2",
+    "tmp/openai-d2-literal-intent-standard-20261128/run.json": "cab4c40ee2897ad7cbaf5dad7b6e4593c5cc2f65e0c7e41c6a5cefabe2010391",
+    "tmp/openai-d2-literal-intent-standard-20261128/result.json": "43c2517f386eaa898aaed0ba8929896c375542a5be1e2ab786d11d0db9372aac",
+    "tmp/openai-d2-literal-intent-standard-20261128/calls.json": "59b15916a4610eb19d3db54d6fdcc327afb1f05aba755c79dd42b23b96b73fe8",
+    "tmp/openai-d2-literal-intent-standard-20261128/report.md": "83ad8214b214bb43e6c20428557d833c0f67337c7d13e220603e02112829808b",
+    "tmp/openai-d2-literal-intent-standard-20261128/provider.jsonl": "024d9f2ffb824f36e9cea6b13e66ce60b043ea501eb45759f356070bd0c0280a",
+    "tmp/openai-d2-literal-intent-standard-20261128/citation-physical-check.json": "442821ba78d30ab404c27b2e6ba9eca3d40e3dffb3812afeeb05c67bd1c6c466",
+    "tmp/openai-d2-literal-intent-standard-20261128/bound-bibliography-label-offline-replay.json": "6bcee37cf690977ea6725abb6a8fd32dffa5b202aa89a4620aea6d7a01ed200a"
+  }
+}

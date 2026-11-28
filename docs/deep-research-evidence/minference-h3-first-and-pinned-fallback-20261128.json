@@ -1,0 +1,53 @@
+{
+  "case": "H3-MINFERENCE",
+  "caseDefinitionDigest": "93caaa070aefb7b1d2958f6779900352766fbb5685e95cbe0ce0395fe1f76f55",
+  "firstExecution": {
+    "commit": "1f580c101d7eeec8d1717ac86a9c46e5c3b7c660",
+    "runId": "dr_run_5e17036fcfc35aabb582f97ef3678ce4",
+    "sourcePolicy": "external_only",
+    "initialMaterials": 0,
+    "initialSourceCacheEntries": 0,
+    "systemProxy": true,
+    "status": "failed",
+    "errorCode": "external_discovery_unavailable",
+    "transportDiagnostic": {"version": 1, "origin": "metadata", "category": "tls"},
+    "externalSearches": 1,
+    "fulltextFetches": 0,
+    "providerCalls": 2,
+    "providerModel": "gpt-6-luna",
+    "providerTokens": 2529,
+    "elapsedSeconds": 32,
+    "reportPublished": false,
+    "automaticRetry": false,
+    "localArtifactDirectory": "tmp/openai-h3-minference-first-20261128",
+    "sha256": {
+      "intent.json": "fd45abaa7fa18e463b499357ff1faa453271abf7c265f406193b72f4d8e449a2",
+      "run.json": "e5d6f5d81420debb36465b0322acaaee466ace38ef9434ce536845aa5da72baf",
+      "calls.json": "646ceccb95614264d30557c4cd26eee5e10bfaa4aca357da33bcf826f062c6e2",
+      "result.json": "a9d39340b06d36383187be30fe52dbfc96520d4d0a9de749209361262211b7fe",
+      "provider.jsonl": "5fd4e8e3b4c850f6e9966f7a3d49d2e1a5d1a69d109eee035271df7c6e6b66db"
+    }
+  },
+  "fallbackDevelopmentProbe": {
+    "method": "Replay the recorded metadata failure without network and use the application's pinned PDF fallback with a fresh cache and isolated ledger.",
+    "realPdfGets": 1,
+    "actualVersion": "arxiv:2407.02490v1",
+    "actualPdfSha256": "b061e544a499c1e1abc292c9c996e21c5bfedbc6514703bcfca554ca7f5fe50a",
+    "matchesEvaluatorFile": true,
+    "cacheHit": false,
+    "physicalPages": 26,
+    "locatedPassages": 23,
+    "methodPagePassages": {"5": 3, "6": 3},
+    "reacquisitionReusedLedger": true,
+    "providerCalls": 0,
+    "localArtifactDirectory": "tmp/h3-minference-pinned-pdf-probe-20261128",
+    "sha256": {
+      "calls.json": "968bc3a8f448227f2c0dd337781e0566ec8fdd80f7a3ed7237c05d59098251b4",
+      "passages.json": "8f7b6fc3ab5804b37fe6f3f47da4ad2e831cd7441c0a5e416563139976c7eccd",
+      "probe.json": "9c43b386d5813a4ff588c1327bd2ac25e374b99eb5f59bd5ece0221d52cbf200"
+    }
+  },
+  "productionWrites": 0,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

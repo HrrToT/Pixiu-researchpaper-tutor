@@ -1,0 +1,19 @@
+{
+  "baseRunId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "baseCase": "D2-BASELINE-COMPRESSION",
+  "previousFailure": "The joint comparison cited only LightGaussian evaluation settings, so it failed the cross-paper evidence check.",
+  "replay": {
+    "input": "Saved comparison query and frozen original 3DGS v1 PDF",
+    "retrievalHits": 5,
+    "original3DgsProtocolPage": 8,
+    "jointStageInputBytes": 23856,
+    "jointStageLimitBytes": 24000,
+    "jointComparabilityAllowedEvidenceCount": 16,
+    "allFrozenPremiseBundlesRetained": true,
+    "dispatchIntercepted": true
+  },
+  "targetedOfflineTestsPassed": 178,
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "remaining": "The isolated real run lacked structured table cells. The replay does not establish a new verified joint conclusion, numeric example or conditional device-memory recommendation."
+}

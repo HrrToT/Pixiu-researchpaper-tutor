@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-23",
+  "sourceCase": "E1-v42",
+  "sourceCommit": "08908def",
+  "actualRequestFingerprintMatched": true,
+  "callId": "5a59cdf47f45fcafebd567c982cbddb9",
+  "inputBytes": 30388,
+  "maxInputBytes": 30405,
+  "targetIds": [
+    "c2",
+    "c5",
+    "c6"
+  ],
+  "boundValueCodecUsed": true,
+  "repairInputContractVersion": 5,
+  "sameInputPacket4Preflight": {
+    "admitted": true,
+    "fixtureRequests": [
+      {
+        "inputBytes": 30304,
+        "outputLimit": 4096
+      }
+    ]
+  },
+  "responseCoverage": {
+    "0": {
+      "version": 1,
+      "expectedTargetIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "submittedEditIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "unresolvedTargets": [],
+      "missingTargetIds": [],
+      "invalidTargetIds": [],
+      "unexpectedTargetIds": [],
+      "malformedEntries": 0,
+      "responseCoverageComplete": true,
+      "scientificApproval": false,
+      "expandedRevisionIds": [
+        "c2",
+        "c5",
+        "c6"
+      ],
+      "unusableEditTargetIds": []
+    }
+  },
+  "laterBatchStop": {
+    "batch": 1,
+    "kind": "repairEvidenceBytes",
+    "limit": 20720,
+    "used": 23735
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Exact actual repair5 request reconstruction; original input unchanged. Received3edits are drafts, not scientific approval; later batch stopped within budget."
+}

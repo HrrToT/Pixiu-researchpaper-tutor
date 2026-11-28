@@ -1,0 +1,375 @@
+{
+  "date": "2026-10-26",
+  "case": "E1-v66",
+  "runId": "dr_run_d78e3fd4c343595a9a4f3670b1cd5814",
+  "promptVersion": "dr-v2.20261026.276",
+  "status": "failed",
+  "units": {
+    "initial": {
+      "finishReason": "stop",
+      "errors": [
+        "timeline.cycle",
+        "timeline.input.after_disposal"
+      ],
+      "feedback": {
+        "codes": [
+          "timeline.cycle",
+          "timeline.input.after_disposal"
+        ],
+        "issues": [
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/4/reads/1",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/5/reads/0",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/6/reads/0",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.cycle",
+            "path": "/steps",
+            "actualPresent": true,
+            "actualInInvalidMetadata": "/steps"
+          }
+        ],
+        "declaredComponentIds": [
+          "initial_3dgs_frame0",
+          "stage1_ntc_result",
+          "stage2_additional_3dgs"
+        ],
+        "scientificApproval": false,
+        "authoredValuesPreserved": true,
+        "declaredStepCount": 7
+      },
+      "lifecycles": [
+        {
+          "componentId": "initial_3dgs_frame0",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 0,
+            "disposeAfter": null
+          }
+        },
+        {
+          "componentId": "stage1_ntc_result",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 1,
+            "disposeAfter": null
+          }
+        },
+        {
+          "componentId": "stage2_additional_3dgs",
+          "lifecycle": {
+            "scope": "per_frame",
+            "createBefore": 2,
+            "disposeAfter": 3
+          }
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "0",
+            "1"
+          ],
+          "reads": []
+        },
+        {
+          "index": 1,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "0",
+            "1"
+          ],
+          "reads": [
+            {
+              "state": "initial_3dgs_frame0",
+              "selector": "transformed_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "1"
+          ],
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "kind": "observe",
+          "group": "0",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            },
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        }
+      ]
+    },
+    "repair": {
+      "finishReason": "stop",
+      "errors": [
+        "timeline.cycle",
+        "timeline.input.after_disposal"
+      ],
+      "feedback": {
+        "codes": [
+          "timeline.cycle",
+          "timeline.input.after_disposal"
+        ],
+        "issues": [
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/4/reads/1",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/5/reads/0",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.input.after_disposal",
+            "path": "/steps/6/reads/0",
+            "actualPresent": true,
+            "expandedStage": "measurement",
+            "actual": {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          },
+          {
+            "code": "timeline.cycle",
+            "path": "/steps",
+            "actualPresent": true,
+            "actualInInvalidMetadata": "/steps"
+          }
+        ],
+        "declaredComponentIds": [
+          "initial_3dgs_frame0",
+          "stage1_ntc_result",
+          "stage2_additional_3dgs"
+        ],
+        "scientificApproval": false,
+        "authoredValuesPreserved": true,
+        "declaredStepCount": 7
+      },
+      "lifecycles": [
+        {
+          "componentId": "initial_3dgs_frame0",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 0,
+            "disposeAfter": null
+          }
+        },
+        {
+          "componentId": "stage1_ntc_result",
+          "lifecycle": {
+            "scope": "per_repeat",
+            "createBefore": 1,
+            "disposeAfter": null
+          }
+        },
+        {
+          "componentId": "stage2_additional_3dgs",
+          "lifecycle": {
+            "scope": "per_frame",
+            "createBefore": 2,
+            "disposeAfter": 3
+          }
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "0",
+            "1"
+          ],
+          "reads": []
+        },
+        {
+          "index": 1,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "0",
+            "1"
+          ],
+          "reads": [
+            {
+              "state": "initial_3dgs_frame0",
+              "selector": "current_frame_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "kind": "fit",
+          "group": null,
+          "groups": [
+            "1"
+          ],
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "kind": "observe",
+          "group": "0",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage1_ntc_result",
+              "selector": "transformed_3dgs"
+            },
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "kind": "observe",
+          "group": "1",
+          "groups": null,
+          "reads": [
+            {
+              "state": "stage2_additional_3dgs",
+              "selector": "additional_3dgs"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scientificCredit": 0,
+  "initialAndRevisionWireIdentical": false,
+  "boundary": "Scalar group and explicit measurement/record representation succeeded in this run; lifecycle after_disposal/cycle remain rejected. No initialization/public plan/scientific credit, no automatic retry.",
+  "revisionChanges": [
+    {
+      "path": "/steps/1/reads/0/selector",
+      "before": "transformed_3dgs",
+      "after": "current_frame_3dgs"
+    }
+  ]
+}

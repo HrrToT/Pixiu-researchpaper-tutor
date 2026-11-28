@@ -1,0 +1,104 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v34",
+  "runId": "dr_run_8c602b109ce356128cb7b9b395c4bc3f",
+  "sourceCommit": "9c66b8fb35299d0ef2a9a8a3650268d93306d993",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "actualModelCalls": 14,
+  "modelCallsByStep": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "synthesize": 3,
+    "verify_advice": 1,
+    "verify": 2,
+    "verify_answer_coverage": 1,
+    "repair_claims": 2
+  },
+  "providerReportedTokens": 75609,
+  "elapsedSeconds": 159.0,
+  "stages": [
+    {
+      "stage": "P1",
+      "inputBytes": 22518,
+      "requiredBundles": 6,
+      "targets": 4,
+      "isolatedTargets": []
+    },
+    {
+      "stage": "P2",
+      "inputBytes": 23989,
+      "requiredBundles": 6,
+      "targets": 4,
+      "isolatedTargets": []
+    },
+    {
+      "stage": "joint",
+      "inputBytes": 24000,
+      "requiredBundles": 14,
+      "targets": 4,
+      "isolatedTargets": [
+        {
+          "targetId": "joint_ob-2-1",
+          "reason": "stage_table_permission"
+        }
+      ]
+    }
+  ],
+  "matchedExample": {
+    "table": "E11",
+    "protocolNote": "E16",
+    "markedBaselineRow": 9,
+    "noteAndMarkedCellsSelected": true,
+    "typedWirePassed": true,
+    "compiledIntoFinalDraft": false
+  },
+  "comparisonCompilerRejections": [
+    {
+      "conclusionIndex": 0,
+      "reason": "Invalid observed setting fields"
+    },
+    {
+      "conclusionIndex": 1,
+      "reason": "internal_reference_in_prose"
+    }
+  ],
+  "compiledPoints": 9,
+  "adviceCompiledAndFactuallyReviewed": true,
+  "initialVerificationAccepted": 5,
+  "initialVerificationRejections": {
+    "cmp_0_0": "numeric_mismatch",
+    "cmp_4_0": "missing_table_bindings",
+    "cmp_6_0": "missing_table_bindings",
+    "cmp_1_0": "semantic_unresolved"
+  },
+  "wholeAnswerAudit": {
+    "called": true,
+    "status": "invalid_response",
+    "requestResponseErrors": [
+      {
+        "code": "invalid_check_fields",
+        "obligationId": "ob-1-1",
+        "checkId": "criterion:c-1-1-2",
+        "missingFields": [
+          "processLinks"
+        ]
+      }
+    ],
+    "missingCheckHadNoBindingsAndOmittedProcessLinks": true,
+    "coherenceStatus": "checked",
+    "coherent": false,
+    "witnessedIssueCount": 2
+  },
+  "publicationHeld": true,
+  "visibleVerifiedConclusions": 0,
+  "originalRestoredWithTasksRunsAndCallsMatching": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptHashes": {
+    ".payload.json": "23fc96ab9833e4eea977dc8fc3ccff8e9cc96c36de7bc1a468ccb3df658f4b1c",
+    ".calls.json": "f598b91e0b9c9d0d30ad6dfb825859db340c0b863e7716ed26139a5cca31ec63",
+    ".result.json": "6896636785a5b2d7e5856d1006c559b53fcacfabc98efd4fba61b134282f1069",
+    ".execution.json": "ecf795e796ad14430266beca05e2c4e7c8e9f492b2c25958ed4e29722444de0a"
+  }
+}

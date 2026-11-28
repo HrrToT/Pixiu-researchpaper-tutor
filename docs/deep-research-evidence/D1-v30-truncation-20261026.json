@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "2d80da32",
+  "caseId": "D1",
+  "attempt": 30,
+  "runId": "dr_run_e920542a5e1d5614a3f2dcdf6e25a697",
+  "promptVersion": "dr-v2.20261026.303",
+  "status": "failed",
+  "errorCode": "invalid_synthesis_response",
+  "elapsedSeconds": 128,
+  "providerCost": null,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "newUnknowns": 0,
+  "oldLedgerPrefixAndAllPriorRunPayloadsPreserved": true,
+  "oldLedgerRows": 7239,
+  "ledgerRowsAfter": 7250,
+  "protectedTasksPreserved": 4,
+  "publishedReport": false,
+  "modelCalls": 4,
+  "settledTokens": 20779,
+  "rawSynthesis": {
+    "synthesisFinishReason": "length",
+    "synthesisInputTokens": 5905,
+    "synthesisOutputTokens": 8192,
+    "rawPartialJsonBytes": 1992,
+    "rawPartialJsonSha256": "cd7cee786ede2a16c92911ae6b0b0cd19836d1a0d4a1010855f38e60fc38f4d8",
+    "partialContainsScopeExpressionPrefix": true,
+    "completeScopeExpressionValidated": false
+  },
+  "boundary": "One fixed real development case. Response is truncated and correctly rejected before report publication. The new grammar appears only as an incomplete prefix; no format/semantic/content acceptance or causal grammar diagnosis. No retry or unknown replay."
+}

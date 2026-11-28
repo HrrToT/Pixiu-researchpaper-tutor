@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "ff77a79a0dfdf4e4c8be7c1d1660d6c0b1b68b3c",
+  "testModules": 510,
+  "tests": 10149,
+  "exactBaselineTestsRetained": 10103,
+  "expandedEquivalentBaselineTests": {
+    "tests.test_deep_research_review_parameter_numbers.test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs": [
+      "test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs[0-1-True]",
+      "test_version_flag_is_server_owned_immutable_and_absent_from_legacy_runs[1-2-2]"
+    ]
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "liveModelCalls": 0,
+  "exitCode": 0,
+  "sourceMatchedCandidate": true,
+  "elapsedSeconds": 1074.471,
+  "localEvidence": "tmp/research-offline-directional-metrics-directory-20261127",
+  "sha256": {
+    "inputs.json": "e0f0fda9405fd8a8c8d8c6335550f5386af5c94b60ab374d696b918a6b0a0f5c",
+    "junit.xml": "3be09adc0286ba015c36ce5a289e54104e867a65a99c6125de76624aa9a306c2",
+    "exit.json": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6"
+  }
+}

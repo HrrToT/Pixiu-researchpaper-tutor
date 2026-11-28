@@ -1,0 +1,192 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "kind": "saved_d3_scientific_review_and_locked_fact_revision_fit",
+  "reviewSourceCommit": "fce0c33407db3b28da3562d665e448f9dcd557d1",
+  "runId": "dr_d3_prep_window_review_20261129",
+  "sourceRunId": "dr_run_500f4b9f32b65472ba37781ebf506d38",
+  "unchangedDraftBinding": "e318c7d09f0bb13af1b88a9f8d18424d4474b83ff0662aaa2b43edbabe23e00a",
+  "rawResponseDigest": "423bd57729c3af8088ce87b1f241f1cf059c44ac079e5221a6f3bb8fa1273d5d",
+  "usage": {
+    "newGenerations": 2,
+    "additionalInputCountRequests": 1,
+    "newTokens": 15078,
+    "totalCaseGenerations": 8,
+    "totalCaseTokens": 44767,
+    "continuationSeconds": 34.98,
+    "caseBudget": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    }
+  },
+  "scientificReview": {
+    "status": "stopped_design_failure",
+    "factsPassed": 10,
+    "designPassed": 6,
+    "designChecked": 8,
+    "requirementsUnchecked": 4,
+    "findings": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/states/9/representation",
+          "/states/10/representation",
+          "/states/4/meaning",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/data/inputs/2/preparation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E11",
+            "field": "before"
+          }
+        ],
+        "reason": "Representations and initialization are largely specified, but the actual Adam hyperparameters, learning rates and schedules, renderer conventions and SH progression are not specified or pinned to an available implementation. Acceptance tests alone cannot determine the training computation."
+      },
+      {
+        "checkId": "section_5",
+        "status": "failed",
+        "planBindings": [
+          "/budgets/0/cap",
+          "/budgets/0/stopRule",
+          "/budgets/1/cap",
+          "/budgets/2/cap",
+          "/budgets/2/stopRule",
+          "/budgets/3/cap",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/steps/3/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E11",
+            "field": "quote"
+          }
+        ],
+        "reason": "Equal step budgets, failure stops and cumulative preparation deadline are specified, but Adam learning rates, betas, epsilon and position/other schedules are absent. Prefit defers to fit, which also omits them, so the optimization cannot be executed as specified."
+      }
+    ]
+  },
+  "physicalDraftCitationCheck": {
+    "occurrences": 12,
+    "matchedPdfTextAndVersion": 12,
+    "pages": [
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "revisionReplay": {
+    "sourceSha256": "a2ac1f19f791be8e24cf2dec70118f21ac6c0d728e38f468b99e4c6989ce8d77",
+    "sourceReviewDigest": "f4481454166f30d63bee2378fff7a556e5143f0212e55a6a059b2d4b29ecdf0b",
+    "beforeBytes": 37333,
+    "afterBytes": 27902,
+    "suppliedEvidenceAliases": [
+      "E2",
+      "E11"
+    ],
+    "lockedFacts": [
+      "fact_0",
+      "fact_1",
+      "fact_2",
+      "fact_3",
+      "fact_4",
+      "fact_5",
+      "fact_6",
+      "fact_7",
+      "fact_8",
+      "fact_9"
+    ],
+    "unchangedProposal": true,
+    "unreviewedRequirements": [
+      "requirement_0_0",
+      "requirement_0_1",
+      "requirement_0_2",
+      "requirement_0_3"
+    ],
+    "findings": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/states/9/representation",
+          "/states/10/representation",
+          "/states/4/meaning",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/data/inputs/2/preparation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E11",
+            "field": "before"
+          }
+        ],
+        "reason": "Representations and initialization are largely specified, but the actual Adam hyperparameters, learning rates and schedules, renderer conventions and SH progression are not specified or pinned to an available implementation. Acceptance tests alone cannot determine the training computation."
+      },
+      {
+        "checkId": "section_5",
+        "status": "failed",
+        "planBindings": [
+          "/budgets/0/cap",
+          "/budgets/0/stopRule",
+          "/budgets/1/cap",
+          "/budgets/2/cap",
+          "/budgets/2/stopRule",
+          "/budgets/3/cap",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/steps/3/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E11",
+            "field": "quote"
+          }
+        ],
+        "reason": "Equal step budgets, failure stops and cumulative preparation deadline are specified, but Adam learning rates, betas, epsilon and position/other schedules are absent. Prefit defers to fit, which also omits them, so the optimization cannot be executed as specified."
+      }
+    ],
+    "providerCallsDuringReplay": 0,
+    "scientificApproval": false
+  },
+  "testsPassed": 320,
+  "newReviewProviderCallsFromReplay": 0,
+  "freshRepairDispatched": false,
+  "finalAuditPerformed": false,
+  "publicationPerformed": false,
+  "independentHoldoutCredit": 0,
+  "productionWrites": 0,
+  "artifacts": {
+    "tmp/openai-d3-prep-memory-fresh-20261129/run.json": "9239109d9cf97d6b07be7002e8bb560c4b3e3a99da29d00e294bdc3d6de6564c",
+    "tmp/openai-d3-prep-memory-fresh-20261129/prep-window-policy-replay/physical-draft-citations.json": "4c0075b25af4731b3a262e7693bcb872da2b073de822d16f2e26daff346724a6",
+    "tmp/d3-prep-window-locked-fact-repair-replay-20261129/repair-input.json": "564c297faa06714011b5134df60a1939c38fd1e18c444bbf85c93ccdd537cead",
+    "tmp/d3-prep-window-locked-fact-repair-replay-20261129/summary.json": "406fea1c6393c9e178be3c60ffffec0b81ebd013b45754858ef8f5fb24628e25",
+    "tmp/openai-d3-prep-window-review-20261129/intent.json": "6cdc3e6e1c9cf83ab7952b39421533076e7acb7d7f35d4dfb842bdc8ee41e42f",
+    "tmp/openai-d3-prep-window-review-20261129/run.json": "a2ac1f19f791be8e24cf2dec70118f21ac6c0d728e38f468b99e4c6989ce8d77",
+    "tmp/openai-d3-prep-window-review-20261129/result.json": "7e26998c910ab106ee43983bafc2adb91669d93bc024d5c49ff89124b61b39c8",
+    "tmp/openai-d3-prep-window-review-20261129/calls.json": "fa7c9c91fbdabddb07238b083b094cd686c8e2dff792c35b4b29d7d3b3f8600c",
+    "tmp/openai-d3-prep-window-review-20261129/provider.jsonl": "13e0025151c5368b2779187b4300fa3413bdd62cd2047b10e167b6a3716f9ae7"
+  }
+}

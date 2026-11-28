@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v24",
+  "sourceCommit": "57b6efcf",
+  "accepted": 0,
+  "total": 9,
+  "invalidNegativeFeedbackIds": [
+    "c1",
+    "c7",
+    "c9"
+  ],
+  "exactlyBoundNegativeFeedbackIds": [
+    "c3",
+    "c4",
+    "c5",
+    "c8"
+  ],
+  "bindingIsScientificApproval": false,
+  "observedDesignDefects": [
+    {
+      "claimId": "c4",
+      "path": [
+        "text"
+      ],
+      "original": "固定条件（预算）：共享准备阶段：第0帧3D高斯训练上限30,000次迭代；第1阶段NTC训练每帧上限100个epoch。Group B第2阶段优化每帧上限500次迭代，整个30帧窗口总迭代上限15,000次。Group A无第2阶段开销。预算单位均为优化器步数。\n\n拟议训练与恢复预算（尚未执行）：\n- 基线：重新训练，最多30000优化步\n- 停止规则：\"达到最大迭代次数或损失收敛（连续10个epoch验证损失无改善）\"\n- 恢复预算：各组未按相同预算匹配\n  - 0组：0优化步\n  - 1组：15000优化步\n- 判断边界：结果包含预算混淆因素，不能作为等预算的效应比较\n  - 说明：\"Group A无第2阶段训练，Group B总第2阶段迭代上限15,000步（30帧×500步/帧）。此为非匹配预算，用于整体阶段成本权衡，不隔离参数效应。\"",
+      "finding": "NTC uses epochs while prose calls all budgets optimizer steps; no conversion or separate typed preparation allowance. Initial reference and per-frame fitting need coherent finite accounting."
+    },
+    {
+      "claimId": "c6",
+      "path": [
+        "executionSpec",
+        "componentInitializations",
+        0,
+        "stateDefinitions"
+      ],
+      "original": [
+        {
+          "name": "ntc_weights",
+          "dtype": "float32",
+          "shape": [
+            16,
+            64,
+            64,
+            7
+          ],
+          "initializer": {
+            "mode": "normal",
+            "mean": 0.0,
+            "std": 0.01,
+            "rng": "torch.manual_seed",
+            "seed": {
+              "mode": "fixed",
+              "value": 0
+            }
+          }
+        }
+      ],
+      "finding": "Single ntc_weights tensor [16,64,64,7] is not a defined layered MLP/hash-grid state. The private plan names hash encoding/MLP but actual states/interfaces are incomplete."
+    },
+    {
+      "claimId": "c6",
+      "path": [
+        "executionSpec",
+        "baselineInitialization"
+      ],
+      "finding": "Creation requests scene bounds and neighbor-distance scales, but state values use uniform[-1,1] and constant0.01 without declared derivation."
+    },
+    {
+      "claimId": "c7",
+      "path": [
+        "text"
+      ],
+      "original": "指标：重建质量：PSNR（越高越好）和SSIM（越高越好），在评估视图上逐帧计算，然后对帧窗口取平均。存储：每帧存储字节数，Group A仅NTC权重，Group B为NTC权重+新增高斯参数（位置、旋转、尺度、不透明度、SH系数）。训练开销：每帧第2阶段优化墙钟时间（秒），在相同GPU上测量，3个预热帧，5次重复，使用CUDA事件同步。",
+      "finding": "Rendering range, serialization precision/file boundary and CPU-wall-clock vs CUDA-event region need clarification. Existing protocol must not be called wholly absent."
+    }
+  ],
+  "reviewerErrors": [
+    {
+      "claimId": "c5",
+      "finding": "Rejects proposed learning_rate0.001 because no paper quote supplies it; actual compatibility still needs checking, but author adoption is not required."
+    },
+    {
+      "claimId": "c8",
+      "path": [
+        "executionSpec",
+        "effects"
+      ],
+      "original": {
+        "psnr_diff": "PSNR_B - PSNR_A",
+        "ssim_diff": "SSIM_B - SSIM_A",
+        "storage_diff": "storage_B - storage_A",
+        "time_diff": "time_B - time_A"
+      },
+      "finding": "Bound reason says directions absent, although literal formulas explicitly say B-A. Binding is not correctness."
+    }
+  ],
+  "repair": {
+    "status": "skipped_budget",
+    "requiredBytes": 22251,
+    "availableBytes": 16128,
+    "outputReservation": 4096,
+    "normalPool": 50000,
+    "normalTokensUsed": 28752,
+    "releasedFinalizationReserveNotBorrowed": true
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Archived generation/reviewer inspection, not a holdout or upgraded pass."
+}

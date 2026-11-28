@@ -1,0 +1,29 @@
+{
+  "sourceCase": "G1N-v7",
+  "pdfSha256": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5",
+  "sourcePayloadSha256": "f754be91a1c381ae3850b469796bd483bed0b586cf4e3c627cfea5338ae82c41",
+  "readCount": 12,
+  "rawEvidenceCount": 60,
+  "synthesisVisibleCount": 14,
+  "preparedBytes": 23877,
+  "newMethodEvidence": [
+    {
+      "evidenceId": "E1",
+      "location": {
+        "page": 5,
+        "offset": 0,
+        "section": "IV. M ETHOD / A. Planar-based Gaussian Splatting Representation",
+        "sectionRole": "method",
+        "sourcePassageStart": 902,
+        "sourcePassageEnd": 1331
+      },
+      "quoteSha256": "cc6cdbad1826b16fa13235ef8088ca240bf0d604f2f339fabd8d2a47e9f9b33e"
+    }
+  ],
+  "providerCalls": 0,
+  "networkCalls": 0,
+  "productionWrites": 0,
+  "oldPayloadUnchanged": true,
+  "scientificAcceptance": false,
+  "boundary": "Prospective cached-source/read selection, literal extraction and actual synthesis preparation replay. Stopped locally before provider dispatch. No model answer or scientific quality approval."
+}

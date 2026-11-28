@@ -1,0 +1,63 @@
+{
+  "case": "H1-ALIKE",
+  "attempt": 1,
+  "definitionHash": "9daa97f86703258e416624158b89b649f3fd4577f89be3a0e49931c132f5a457",
+  "codeCommit": "754855e8e9c0a895ac75ba5809fef72509795626",
+  "runId": "dr_run_f418cfe48b9e59d5a449ddd310f5f94b",
+  "sourceRevision": "arxiv:2112.02906v1",
+  "materialSha256": "604edcc72304b5614c3209b15abbb056ca451b68f24679e316abf82d8b8feb97",
+  "scope": {
+    "mode": "task_only",
+    "retrieval": "production_lexical_pdf_fallback",
+    "productionWrites": 0,
+    "externalSearches": 0,
+    "scopeCheck": 123,
+    "pdf": 2
+  },
+  "outcome": "inconclusive",
+  "acceptedClaims": 0,
+  "scientificContentCredit": 0,
+  "findings": {
+    "activeParallelItems": [
+      "dkd",
+      "losses"
+    ],
+    "assessmentCycles": 3,
+    "readinessStop": "max_requery",
+    "missingExplicitCriterion": "位置的梯度如何传回得分图",
+    "reportBody": "empty_sections_and_claims"
+  },
+  "offlinePlanningReplay": {
+    "input": "the original settled ALIKE plan provider response",
+    "beforeContract": 2,
+    "afterContract": 3,
+    "beforeRequirements": [
+      "DKD 怎样从得分图得到亚像素关键点",
+      "训练中的重投影损失和峰值离散损失分别约束什么"
+    ],
+    "afterRequirements": [
+      "DKD 怎样从得分图得到亚像素关键点",
+      "位置的梯度如何传回得分图",
+      "训练中的重投影损失和峰值离散损失分别约束什么"
+    ],
+    "providerCalls": 0,
+    "scope": "Only plan admission and dependency preservation. No generated answer or science credit."
+  },
+  "usage": {
+    "providerCalls": 6,
+    "tokens": 18053,
+    "tokensByModel": {
+      "gpt-6-luna": 12553,
+      "gpt-6.1-terra": 5500
+    },
+    "elapsedSeconds": 42.0
+  },
+  "sha256": {
+    "intent.json": "1b9c4062dbdbeacec72cd64c20336ce6281a108d882fd3e0b63cc2d4cc4ed796",
+    "run.json": "b0bb7dee650cd264bd4307fb1881aee1ebb2a4de840f32d6e5efa88e4a4df692",
+    "calls.json": "4650122110112d0a86b21f689543aa4196084de7985f923fb6c7e1a09541cab4",
+    "result.json": "64e70a6b8d4a59d3bba27c73db7316f8b6e1e6d8c5b8fc477b8e4e3e5d173351",
+    "boundary.json": "3f4f729c1ac67f1f5dc4a354fb0deaec502358d2f74f8909548fc4aa06595e45",
+    "provider.jsonl": "2d8ea4637baae7b88d85146fdb0279e20ffbdc642651c5b0dd7270ce69e7f29a"
+  }
+}

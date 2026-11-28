@@ -1,0 +1,35 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceRunId": "dr_run_e2b489b1c41d585e9f196a0118738d4f",
+  "sourceRunSha256": "11766094ee53432c679fdf0fdc59a63a656a60186e5eaa192cc062ac1e423e2f",
+  "contractVersion": 5,
+  "movedCriterionId": "crit-comparability",
+  "originalObligationId": "obl-quality-speed",
+  "jointObligationId": "requested_speed_comparability",
+  "jointSourceAliases": [
+    "P1",
+    "P2"
+  ],
+  "previousJointTargets": [
+    "joint_obl-choice",
+    "joint_requested_numeric_example_matched_example"
+  ],
+  "newJointTargets": [
+    "joint_obl-choice",
+    "joint_requested_numeric_example_matched_example",
+    "joint_requested_speed_comparability"
+  ],
+  "jointInputBytes": 23996,
+  "inputLimitBytes": 24000,
+  "allFrozenPremiseBundlesRetained": true,
+  "availableExactBenchmarkPairChoices": 0,
+  "missingNote": {
+    "paper": "arxiv:2311.17245v6",
+    "physicalPage": 6,
+    "check": "The same-platform retraining sentence appears in the frozen PDF but is absent from the saved source/read/evidence sets."
+  },
+  "providerCalls": 0,
+  "newRetrieval": false,
+  "publishedReport": false,
+  "scientificAcceptance": false
+}

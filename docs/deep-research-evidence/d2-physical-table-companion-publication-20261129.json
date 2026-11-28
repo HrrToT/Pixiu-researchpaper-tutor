@@ -1,0 +1,50 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_publication_replay_same_pdf_table_extractions",
+  "replayBaseCommit": "749b325d4fdfbe8d6248cd388e44c0dc2b07a503",
+  "closurePolicyVersionsCompared": [
+    5,
+    6
+  ],
+  "publicationReplay": {
+    "sourceRunId": "dr_run_dd0ab944b5675bc0b61ade6f1c26361f",
+    "sourceArtifactSha256": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "claimsRetained": 8,
+    "removedGaps": [
+      {
+        "obligationId": "requested_numeric_example",
+        "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "question": "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。",
+        "checked": false,
+        "missingEvidence": "联合前提尚未就绪：给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。"
+      }
+    ],
+    "otherGapsRetained": 6,
+    "outcomeBefore": "partial",
+    "outcomeAfter": "partial",
+    "historyPreserved": true,
+    "providerCalls": 0,
+    "productionWrites": 0
+  },
+  "tableIdentityChecks": [
+    "exact same source work, version, content hash and PDF page",
+    "literal fulltext quote",
+    "unique matching block of dataset labels, metric columns, method variants and cell values",
+    "qualitative companion passed independent semantic verification"
+  ],
+  "unchangedRemainingContentFindings": [
+    "Original 3DGS compression statements still exceed the cited passages",
+    "Separate quality trend remains rejected because the baseline variant is ambiguous"
+  ],
+  "regression": {
+    "passed": 245
+  },
+  "freshProviderAcceptance": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-scoped-wording-fresh-20261129/run.json": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "tmp/d2-physical-table-companion-publication-20261129/summary.json": "1f5ab7b6cb6617ea0e07c5c83cf7b63b09d59cbd8474fa216dc8c30574140ee9",
+    "tmp/d2-physical-table-companion-publication-20261129/v5-run.json": "268ef4c1ec79793f5f3e7e76dd64175edde5847ebc583d9b5ef5a865de4eb1a5",
+    "tmp/d2-physical-table-companion-publication-20261129/v6-run.json": "7685886dd6be14f4c8937ba40d8ebc8b1029c2f50cd2c06984a60a239379465b"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "d25a35249f8c52c1131fd9407a1e048c9601d4d2",
+  "fullRegression": "comparison-resource-parser-integrated-full-20261117.json",
+  "candidate": "academic-dr-resource-parser-candidate-20261117",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "health": "ok",
+  "sourceHashesMatch": true,
+  "comparisonCellsContractVersion": 1,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

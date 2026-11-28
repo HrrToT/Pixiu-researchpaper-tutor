@@ -1,0 +1,22 @@
+{
+  "case": "H3-DUOATTENTION",
+  "definitionHash": "d5db2b7d2ed9bbbd2d66751aaa69e679a792388a043d6fbbce7d7ac5d030d314",
+  "reviewedPages": [
+    3,
+    5,
+    6
+  ],
+  "liveInventory": {
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 195,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

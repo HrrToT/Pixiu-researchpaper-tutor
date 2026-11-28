@@ -1,0 +1,41 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v41",
+  "savedPayloadSha256": "70fc20ccef5f8569230aea34daf387e5180d8304278a56dc2c120055f2402eb6",
+  "observedRealPriorAuditTokens": 7882,
+  "legacyThirdBatch": {
+    "stop": {
+      "kind": "repairEvidenceBytes",
+      "limit": 11555,
+      "used": 13143
+    },
+    "cap": 11555
+  },
+  "thirdBatchCapacityWithoutPriorAuditCharge": {
+    "cap": 19437,
+    "bytes": 19367,
+    "targetCount": 2
+  },
+  "legacyFirstRequest": {
+    "node": "verify_answer_coverage",
+    "bytes": 21913,
+    "hasBenchmarkPolicy": false,
+    "hasExplicitAbsenceRule": false
+  },
+  "newFirstRequest": {
+    "node": "repair_claims",
+    "bytes": 23985,
+    "hasBenchmarkPolicy": true,
+    "hasExplicitAbsenceRule": true
+  },
+  "savedRevisionsBlockedBeforeSemanticReview": {
+    "cmp_0_0": "absence_not_established",
+    "cmp_2_0": "absence_not_established",
+    "cmp_4_0": "absence_not_established",
+    "cmp_5_0": "comparison_benchmark_example_scope",
+    "cmp_7_0": "comparison_benchmark_example_scope"
+  },
+  "noPublishedResultInSavedRun": true,
+  "originalReceiptPreserved": true,
+  "modelCalls": 0,
+  "scientificContentAccepted": false
+}

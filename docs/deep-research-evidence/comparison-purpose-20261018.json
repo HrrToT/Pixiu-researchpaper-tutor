@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "74673c96",
+  "promptVersion": "dr-v2.20261018.128",
+  "contracts": {
+    "structuredOutputContractVersion": 3,
+    "repairProgressContractVersion": 1
+  },
+  "checks": {
+    "passed": 2081,
+    "warnings": 1,
+    "seconds": 118.32,
+    "log": "tmp/pytest-dr128-full.log"
+  },
+  "behavior": [
+    "Comparison-preservation instructions are part of the trusted reserved system messages for synthesis, compaction and repair.",
+    "The evidence/user prompt is unchanged. Each trusted system plus framing stays inside the original 1024-token reservation; no larger total budget or quote displacement.",
+    "Native versions 1/2 retain their old exact message identities. The runtime wrapper verifies version 3 against the fingerprinted request.",
+    "Purpose instructions request a supported pair before secondary metrics and evidence-bounded conditions. They do not prove goal completeness or factual correctness."
+  ],
+  "runtime": "runtime-load-dr128-purpose-20261018.json",
+  "boundary": "Transport and deterministic repair gate are tested separately from real content acceptance."
+}

@@ -1,0 +1,75 @@
+{
+  "isolatedPrototype": true,
+  "networkModelCalls": 0,
+  "scientificContentAccepted": false,
+  "cases": {
+    "H3-RETRIEVALATTENTION-v1": {
+      "payloadSha256": "8574210e6042ecae852d23b374e26da62e49570de996f4ec56fefd17941b1173",
+      "baselineBytes": 23996,
+      "prototypeBytes": 23949,
+      "evidenceBefore": 6,
+      "evidenceAfter": 15,
+      "missingBundlesBefore": 2,
+      "missingBundlesAfter": 0,
+      "baselineEvidenceSubsetRetained": false,
+      "newlyPrioritizedPassages": [
+        {
+          "id": "ev_08377a7977f07a3a6030db2bfebe4999080309c572d7d66f6f7e06ee2e48934a",
+          "page": 4
+        },
+        {
+          "id": "ev_a7af51624a585e5ebd220c0f3e24e1a81c00d4463d426eecd73c35d3f7b81752",
+          "page": 4
+        },
+        {
+          "id": "ev_fe347bb03b74e89650e03e02e8aa665284f601421a4a5176e6e87f79d0c19ec7",
+          "page": 14
+        }
+      ]
+    },
+    "H3-INFLLM-v1": {
+      "payloadSha256": "25aa0c9a3e9a129d2e44fed940fa0034cc32f1e2402b90af35e2ba446022f303",
+      "baselineBytes": 23804,
+      "prototypeBytes": 23959,
+      "evidenceBefore": 10,
+      "evidenceAfter": 20,
+      "missingBundlesBefore": 0,
+      "missingBundlesAfter": 0,
+      "baselineEvidenceSubsetRetained": true,
+      "newlyPrioritizedPassages": []
+    },
+    "H3-QUEST-v1": {
+      "payloadSha256": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+      "baselineBytes": 23885,
+      "prototypeBytes": 23857,
+      "evidenceBefore": 12,
+      "evidenceAfter": 20,
+      "missingBundlesBefore": 0,
+      "missingBundlesAfter": 0,
+      "baselineEvidenceSubsetRetained": true,
+      "newlyPrioritizedPassages": []
+    },
+    "H3-PAGEDATTENTION-v1": {
+      "payloadSha256": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+      "baselineBytes": 23885,
+      "prototypeBytes": 23958,
+      "evidenceBefore": 10,
+      "evidenceAfter": 20,
+      "missingBundlesBefore": 0,
+      "missingBundlesAfter": 0,
+      "baselineEvidenceSubsetRetained": true,
+      "newlyPrioritizedPassages": []
+    },
+    "H3-SNAPKV-v1": {
+      "payloadSha256": "13c496946d0a94b779fef9c0b637b904325c3774619582876a2ba8a100277523",
+      "baselineBytes": 23961,
+      "prototypeBytes": 23921,
+      "evidenceBefore": 8,
+      "evidenceAfter": 20,
+      "missingBundlesBefore": 0,
+      "missingBundlesAfter": 0,
+      "baselineEvidenceSubsetRetained": true,
+      "newlyPrioritizedPassages": []
+    }
+  }
+}

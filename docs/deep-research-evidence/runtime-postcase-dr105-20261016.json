@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-16",
+  "sourceCommit": "ef9f080",
+  "promptVersion": "dr-v2.20261016.105",
+  "cases": [
+    "H5R-v17",
+    "H3R-v13"
+  ],
+  "beforeCalls": 3095,
+  "addedCallRows": 37,
+  "after": {
+    "active": [],
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "calls": 3132,
+    "originalPrefixSha256": "c4818202585d6cd21e6594adbc56f2eafe63c1ae31498205de1584ab635d3243"
+  },
+  "originalLedgerRowsPreserved": true,
+  "oldPausedRunsPreserved": true,
+  "modelCalls": 0,
+  "providerNetworkRequests": 0,
+  "boundary": "Read-only post-case proof; local Docker access only, no additional model request or restart."
+}

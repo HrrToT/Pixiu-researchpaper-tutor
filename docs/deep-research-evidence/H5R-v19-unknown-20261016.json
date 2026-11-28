@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-16",
+  "case": "H5R-v19",
+  "runId": "dr_run_e9c9dc916bef519092fad8b929b2448f",
+  "sourceCommit": "ab35c73",
+  "promptVersion": "dr-v2.20261016.110",
+  "status": "paused",
+  "outcome": "none",
+  "errorCode": "unresolved_unknown",
+  "stage": "verify",
+  "budgetSnapshot": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 0,
+    "modelCalls": 3,
+    "tokens": 40932,
+    "normalTokens": 6218,
+    "elapsedSeconds": 0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 2,
+    "exhausted": "",
+    "profile": "standard"
+  },
+  "confirmedModelCalls": 4,
+  "confirmedTokens": 14726,
+  "cost": null,
+  "unknownModelCalls": [
+    {
+      "callId": "2b9bf9988820d0a929503d1eb699b388",
+      "node": "verify_design_config",
+      "reservedTokens": 26206,
+      "reservedAt": "2026-10-16T04:00:41Z",
+      "completedAt": "2026-10-16T08:44:14Z",
+      "settled": false,
+      "error": {
+        "message": "DeepSeek request failed.",
+        "type": "provider_error",
+        "status_code": null,
+        "failureKind": "transport_error"
+      }
+    }
+  ],
+  "contentAccepted": false,
+  "independentHoldoutEligible": false,
+  "sourcePayloadSha256": "82e09544b090f14f37e91439f2195e1018f9d3060de02ffb7119ab54229b5685",
+  "raw": "tmp/dr-acceptance-receipts/H5R-v19.payload.json",
+  "calls": "tmp/dr-acceptance-receipts/H5R-v19.calls.json",
+  "review": {
+    "status": "unscored_unresolved_transport",
+    "scores": null,
+    "draftFindings": [
+      "Unverified draft now uses fixed positive dimensions, but each initializer still hides the complete representation inside one opaque parameter vector.",
+      "Draft incorrectly equates optimizing opacity with increasing it/reducing transparency; optimization can raise or lower opacity.",
+      "Draft data/limits make unsupported paper-wide absence assertions and prose repeats typed fields.",
+      "No scientific response, repair or final coverage was received. These are draft observations, not a completed content review."
+    ]
+  },
+  "boundary": "One authorized submission. Request outcome/usage unknown; reservation is not measured usage. No retry, continuation, manual confirmation or new-attempt bypass. No unchecked draft published. Long transport interval spans confirmed host sleep; Provider execution/usage remains unconfirmed.",
+  "hostSleepProof": "deep-research-evidence/host-sleep-during-dr110-20261016.json"
+}

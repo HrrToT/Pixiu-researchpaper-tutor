@@ -1,0 +1,51 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v56",
+  "baseline": "research-finalization-real-batch-20261126.json",
+  "mode": "offline scientific check against the exact two frozen PDFs and the saved report",
+  "documents": [
+    {
+      "version": "arXiv:2308.04079v1",
+      "sha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+      "physicalPage": 11,
+      "verified": [
+        "The authors describe peak GPU memory above 20 GB during training of large scenes in their unoptimized prototype.",
+        "Rendering requires memory for the trained model and an additional 30–500 MB rasterizer allocation depending on scene size and image resolution."
+      ],
+      "paragraphPresentInHistoricalAcquisition": false
+    },
+    {
+      "version": "arXiv:2311.17245v6",
+      "sha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "physicalPage": 6,
+      "verified": [
+        "LightGaussian Table 1 reports 782 MB and 45 MB for the marked 3D-GS baseline and LightGaussian in the Mip-NeRF 360 group.",
+        "The table's Size column concerns model size. The accompanying protocol identifies the baseline as retrained on the authors' platform."
+      ],
+      "pairedPeakDeviceMemoryLocated": false
+    }
+  ],
+  "decision": {
+    "diskSizeComparison": "Supported for the specified table, group and benchmark variant.",
+    "renderPeakDeviceMemoryRanking": "Unresolved. The located evidence does not compare the two methods' peak device memory under matched deployment settings.",
+    "historicalRecommendation": "The stored recommendation gives an aligned measurement procedure. It omits the relevant original-paper resource context because that passage had not been acquired."
+  },
+  "providerAvailabilityCheck": {"httpStatus": 200, "isAvailable": false, "modelCalls": 0},
+  "offlineMeasurementGuard": {
+    "input": "Original 3DGS v1, physical page 11, rendering memory requirement and rasterizer allocation range",
+    "legacyClassifierReturnedMeasurement": true,
+    "directMeasurementClassifierReturnedMeasurement": false,
+    "scientificEffect": "A component requirement cannot unlock measured device-memory advice."
+  },
+  "jointStageReplay": {
+    "originalPdfPage": 11,
+    "evidenceInjection": "The version-checked physical passage was added after literal extraction for this fixture. This run does not re-test search recall.",
+    "allowedForDeviceMemoryAdvice": true,
+    "decisionMode": "measure_both_before_recommending_either",
+    "jointStageBytes": 23974,
+    "jointStageLimitBytes": 24000,
+    "generationIntercepted": true,
+    "productionWrites": 0
+  },
+  "newModelCalls": 0,
+  "scientificAcceptance": false
+}

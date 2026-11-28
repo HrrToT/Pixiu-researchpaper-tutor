@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v39",
+  "oldExtractionVersion": 2,
+  "oldFailureReproduced": true,
+  "newExtractionVersion": 3,
+  "initialSourceCount": 12,
+  "laterWaveSourceCount": 12,
+  "totalDistinctSources": 18,
+  "firstEvidenceRows": 34,
+  "laterEvidenceRows": 50,
+  "firstFactoryReads": 34,
+  "laterFactoryReads": 50,
+  "thirdFactoryReads": 50,
+  "oldEvidenceExactlyPreserved": true,
+  "thirdPassFullyIdempotent": true,
+  "originalRecordUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "boundary": "Archived read data in isolated copy using the real located_evidence_factory with deterministic empty-page fixture and fixture scope. Tests two reading waves plus resume; not actual physical page resolution, live scope, provider content or acceptance."
+}

@@ -1,0 +1,41 @@
+{
+  "asOf": "2026-11-16",
+  "sourceCommit": "c2ac34206d85af935fcbc476926a0d7d18b3dfba",
+  "sharedRepresentationVersion": 2,
+  "serverDefault": 0,
+  "productionEnabled": false,
+  "newTests": 38,
+  "relatedChecks": 194,
+  "fullRegression": 8819,
+  "baselineCasesRetained": 8781,
+  "fullRegressionProof": "deep-research-evidence/shared-representation-dependencies-20261116.json",
+  "capacityPreflight": {
+    "version": 2,
+    "status": "not_started_budget",
+    "inputBytes": 31183,
+    "schemaBytes": 3005,
+    "maxInputBytes": 32000,
+    "evidenceRows": 17,
+    "allOriginalEvidenceUnchanged": true,
+    "allQuestionPlanRequirementsTablesSourcesUnchanged": true,
+    "originalDataDigest": "543b5ba1eee940b13253309d77554e945db3bf26b9b4cea85b7e1be5d3525724",
+    "fullMetadataDigest": "53570c3e035742b5fcd003cbc6683160057a4d4773453662e38162c6b9677f22",
+    "fullMetadataBoundForValidation": true,
+    "maximumModelCalls": 0,
+    "runtimeWrites": 0,
+    "standardSchemaValidated": true,
+    "providerAccepted": false,
+    "scientificApproval": false,
+    "wholeRunBudgetFeasibilityProven": false
+  },
+  "realProof": "deep-research-evidence/shared-representation-inputs-v2-real-20261116.json",
+  "preservationProof": "deep-research-evidence/shared-representation-dependencies-preservation-20261116.json",
+  "relatedJUnitSha256": "1d83a0c142132f2b6fbfc71bb486c3eb4802a52b2deb929d616096cdba63d602",
+  "boundary": "Input/evidence consistency verified offline. Real declaration content failed. No complete experiment, final scientific review, independent acceptance or release credit.",
+  "remaining": [
+    "Model-authored complete variable inventory and coherent numeric layout",
+    "Explicit final shared-convention scientific review",
+    "Whole-run budget feasibility with actual valid declarations",
+    "Fresh complete fixed experiment and independent holdout"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scope": "cached PDF/TEI chunk rebuild with production retrieval and reading selectors; no persistent index or model calls",
+  "historicalPayloadSha256": "641473dbd5ad1f66ee2fa68667f4c6fc0c119e5b7b4f9b4f7e7bcfc5c90febbb",
+  "versions": [
+    {
+      "version": "2106.09685v1",
+      "page": 6,
+      "slots": 5,
+      "selectedTableChunks": 1,
+      "readableRows": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "version": "2106.09685v2",
+      "page": 8,
+      "slots": 5,
+      "selectedTableChunks": 2,
+      "readableRows": [
+        2,
+        3,
+        4,
+        5,
+        8,
+        9
+      ]
+    }
+  ],
+  "preferredReadOrder": [
+    {
+      "version": "2106.09685v1",
+      "page": 6
+    },
+    {
+      "version": "2106.09685v2",
+      "page": 8
+    },
+    {
+      "version": "2106.09685v2",
+      "page": 8
+    }
+  ],
+  "historicalRunUnchanged": true,
+  "knownFinalBindingResult": "ambiguous_table_series"
+}

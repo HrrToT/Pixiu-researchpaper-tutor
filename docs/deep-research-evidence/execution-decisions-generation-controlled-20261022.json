@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-22",
+  "case": "E1-v21",
+  "requests": [
+    {
+      "node": "plan_experiment",
+      "oldInputBytes": 24267,
+      "newInputBytes": 24168,
+      "allOriginalQuotesAndNonContextFieldsPreserved": true,
+      "requiredContextAliases": [
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "optionalContextAllocationChanged": [
+        "E1",
+        "E2",
+        "E3",
+        "E20"
+      ]
+    },
+    {
+      "node": "synthesize",
+      "oldInputBytes": 30494,
+      "newInputBytes": 30447,
+      "allOriginalQuotesAndNonContextFieldsPreserved": true,
+      "requiredContextAliases": [
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "optionalContextAllocationChanged": [
+        "E1",
+        "E2",
+        "E3",
+        "E20"
+      ]
+    }
+  ],
+  "originalPlanResponseReused": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Controlled generation-input capacity only. Existing fitter reallocates explicitly optional contexts; all20literal quotes/noncontextfields and requiredcontexts remain. No new scientific content judgement or legacy upgrade.",
+  "sourceCommit": "9f539cfe"
+}

@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "368e3dcd4",
+  "case": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_whole_answer_audit",
+  "providerCalls": 1,
+  "newGenerations": 0,
+  "runId": "dr_joint_audit_probe_20261127",
+  "outcome": "partial",
+  "usage": {
+    "total_tokens": 8589,
+    "input_tokens": 8110,
+    "output_tokens": 479,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 8107
+  },
+  "providerModel": "gpt-6.1-terra",
+  "coverage": "checked",
+  "coherent": true,
+  "reusedVerifiedClaims": 11,
+  "verifiedPublishedClaims": 11,
+  "gap": "向初学者比较原始表示与压缩后部署的取舍",
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-localized-audit-20261127",
+  "sha256": {
+    "intent.json": "3e235be5600cddfd6e82683394e9a35cc8fec72cb2384875b3a5be3e3f7511dc",
+    "calls.json": "766e3107230c3192dbd8116b076a6cc0f5e1384da3d9f5c5647095db0acca3b6",
+    "run.json": "af16e9864bc2a59547853b379c93b4f5dd7a306bdb42b2ab3ffe3afe5d6a5253",
+    "publish-return.json": "11485ab9b90a46c0d664a7f81e321cd840562dd6eed22174c3e808158bb3f225"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "567d653c8",
+  "sourceCase": "D2-BASELINE-COMPRESSION",
+  "scope": "isolated_single_example_ab_review",
+  "runId": "dr_single_example_probe_20261127",
+  "outcome": "partial",
+  "providerCalls": 2,
+  "actualTokens": 11194,
+  "providerNodes": [
+    "verify",
+    "verify_answer_coverage"
+  ],
+  "changedClaim": "cmp_7_0",
+  "verifiedClaims": 11,
+  "retainedOtherClaims": 10,
+  "checkedCitationIds": 20,
+  "paperPageMatches": 20,
+  "wholeAnswerCoverage": "checked",
+  "coherent": true,
+  "gap": "向初学者比较原始表示与压缩后部署的取舍",
+  "productionWrites": 0,
+  "localEvidence": "tmp/openai-d2-single-example-20261127",
+  "sha256": {
+    "intent.json": "bce1af963e198e90ae3eeb0c24623e0c747bfd71180125c96d493005af65c149",
+    "calls.json": "9db3cd459b727f0802db4d03e968518db4cbad4d9873611e7531e19e1170c70b",
+    "run.json": "6509d9d17ed3ab62310e58e0097c599970d9e1e72798ff1ae67264fac095cb7f",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "71e61d89903f51bf101112cf4cd6f589866da17987660dd7aa88ac8d7d0c9891"
+  }
+}

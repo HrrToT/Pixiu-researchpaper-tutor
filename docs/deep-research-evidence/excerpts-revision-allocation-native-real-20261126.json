@@ -1,0 +1,87 @@
+{
+  "sourceCommit": "568d2af15346c316869a3d28bf8e4b7f982f250b",
+  "candidate": "academic-dr-excerpts-revision-allocation-native-candidate-20261126",
+  "fullRegression": "excerpts-revision-allocation-native-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v15": {
+      "runId": "dr_run_8f55b01f74a5572c8b4305393e430e82",
+      "status": "failed",
+      "outcome": "none",
+      "modelCalls": 6,
+      "tokens": 30414,
+      "durationSeconds": 108.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "D3-DENSIFICATION-FACTORIAL-v15.json": "b03eeacc81506639a794f80b3e90d8a13c97cde40ac7b7211cb11bfd5369d722",
+        "D3-DENSIFICATION-FACTORIAL-v15.execution.json": "b1b86c7a85a81b1a610ebcaaf1ff639288251f273bea4b5c18cb2c047f9a5cab",
+        "D3-DENSIFICATION-FACTORIAL-v15.calls.json": "a86bbcd2aa48bd055ba6ad6fe8f69d25d316e2aca4c37f616ba9fe0a3fb5dbb0",
+        "D3-DENSIFICATION-FACTORIAL-v15.payload.json": "2adc70944e4951acc7a6be603c0a9a1c96bc283c4effd892c9a7508060deee44",
+        "D3-DENSIFICATION-FACTORIAL-v15.result.json": "8694ccd59d8d85543d930d1c8727e4ed9f9f6dae483c03a481fb1328dc0524a1"
+      },
+      "planValidated": true,
+      "generationInputBytes": 30332,
+      "generationIssues": [
+        {
+          "code": "plan.future_state",
+          "path": "/steps/3"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/3"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/3"
+        },
+        {
+          "code": "plan.future_state",
+          "path": "/steps/3"
+        },
+        {
+          "code": "plan.pairing_source",
+          "path": "/pairing/sharedStateIds"
+        }
+      ],
+      "missingStateId": "shared_scene_meta",
+      "scientificReviewReached": false
+    },
+    "H4-AWQ-VERSIONS-v7": {
+      "runId": "dr_run_e0dcf81e7c3f5c3eb86acf389e5f1d9c",
+      "status": "completed",
+      "outcome": "complete",
+      "modelCalls": 10,
+      "tokens": 69032,
+      "durationSeconds": 336.0,
+      "submissions": 1,
+      "automaticRetry": false,
+      "scientificContentAccepted": false,
+      "receiptSha256": {
+        "H4-AWQ-VERSIONS-v7.json": "001af6e1280015043aff69c15d4392a47ce81227e211134794d6d023ca5d04bf",
+        "H4-AWQ-VERSIONS-v7.execution.json": "efe34f3f9b4fa87158210df292ec68c0f46c07b5680dba57830285cdb541711e",
+        "H4-AWQ-VERSIONS-v7.calls.json": "4f193640a31f04e9f9e4af4d5138345dd5b3ee2078ae00b3b322c319c40c52ee",
+        "H4-AWQ-VERSIONS-v7.payload.json": "063739b3b9c25a29c0707bd1085423ef415e0c97d2f7d7e98f33b4d9dda13273",
+        "H4-AWQ-VERSIONS-v7.result.json": "f04fac8c328567c28706773be774610e68b9154fa600449950a5974fb819a001"
+      },
+      "applicationOutcomeComplete": true,
+      "tableCellIdentitiesVerified": 12,
+      "visibleAnswerCharacters": 276,
+      "suppliedVersions": {
+        "v1": 7,
+        "v2": 4
+      },
+      "manualContentGap": "The conclusion expands to 0.1%-1% and omits the explicit comparison with the full FP16 baseline.",
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_e0dcf81e7c3f5c3eb86acf389e5f1d9c"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}

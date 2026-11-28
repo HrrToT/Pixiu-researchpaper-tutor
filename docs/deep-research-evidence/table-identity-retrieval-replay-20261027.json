@@ -1,0 +1,218 @@
+{
+  "queries": [
+    "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+    "LightGaussian compression conditions evaluation settings scene types"
+  ],
+  "variants": {
+    "legacy": [
+      {
+        "query": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+        "rows": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "chunk": 6,
+            "page": 2,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "chunk": 86,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "chunk": 85,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-7",
+            "chunk": 7,
+            "page": 2,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "chunk": 100,
+            "page": 17,
+            "mode": "indexed_requested_row",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          }
+        ]
+      },
+      {
+        "query": "LightGaussian compression conditions evaluation settings scene types",
+        "rows": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "chunk": 6,
+            "page": 2,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "chunk": 86,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "chunk": 85,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "chunk": 100,
+            "page": 17,
+            "mode": "indexed_requested_row",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93",
+            "chunk": 93,
+            "page": 9,
+            "mode": "indexed_scope_condition",
+            "hasBaselineNote": false,
+            "conditionEvidence": true,
+            "hasTable": false
+          }
+        ]
+      }
+    ],
+    "new": [
+      {
+        "query": "LightGaussian compression image quality PSNR SSIM LPIPS original 3DGS",
+        "rows": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "chunk": 6,
+            "page": 2,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "chunk": 86,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "chunk": 85,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "chunk": 100,
+            "page": 17,
+            "mode": "indexed_requested_row",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-29",
+            "chunk": 29,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": true,
+            "conditionEvidence": false,
+            "hasTable": false
+          }
+        ]
+      },
+      {
+        "query": "LightGaussian compression conditions evaluation settings scene types",
+        "rows": [
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-6",
+            "chunk": 6,
+            "page": 2,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-86",
+            "chunk": 86,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-85",
+            "chunk": 85,
+            "page": 6,
+            "mode": "indexed_hybrid",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": true
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-100",
+            "chunk": 100,
+            "page": 17,
+            "mode": "indexed_requested_row",
+            "hasBaselineNote": false,
+            "conditionEvidence": false,
+            "hasTable": false
+          },
+          {
+            "sourceId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf-vb6fb16ee9617e59c-chunk-93",
+            "chunk": 93,
+            "page": 9,
+            "mode": "indexed_scope_condition",
+            "hasBaselineNote": false,
+            "conditionEvidence": true,
+            "hasTable": false
+          }
+        ]
+      }
+    ]
+  },
+  "productionIndexHashUnchanged": "9196054db7ac32450eb86fc91cfb12de27c732469e4cf629bf06857a3490788d",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "sourceCase": "D1-v39",
+  "embeddingModel": "intfloat/multilingual-e5-small"
+}

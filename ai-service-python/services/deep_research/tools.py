@@ -1,0 +1,2061 @@
+"""Injectable domain tools for Deep Research v2.
+
+Retrieval and model generation are tracked via the repository call ledger.
+Scope validation precedes each provider send, including audit input counting.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import re
+from typing import Any, Callable, Protocol
+
+from services.deep_research.contracts import (
+    BudgetExhaustedError,
+    CALL_STATUS_FAILED,
+    CALL_STATUS_SUCCEEDED,
+    DeepResearchError,
+    IllegalStatusTransitionError,
+    STATUS_RUNNING,
+    digest,
+)
+
+logger = logging.getLogger(__name__)
+
+
+# ── Protocols for Injectable Dependencies ──────────────────────────────────────
+
+class ScopeValidator(Protocol):
+    """Validates material authorization before EVERY retrieval/model send.
+    
+    Production facade needs authoritative Java callback or validated scope
+    revision endpoint. Default validator cannot silently authorize revoked
+    sources - fail closed if unavailable.
+    """
+    def __call__(self, run_id: str, material_id: str) -> bool: ...
+
+
+class Retriever(Protocol):
+    """Local retrieval interface matching research_executor.retrieve_current_paper_evidence.
+    
+    Uses keyword limit parameter (not positional) for clarity.
+    """
+    def __call__(self, query: str, pdf_id: str, *, limit: int = 5) -> list[dict[str, Any]]: ...
+
+
+class SourceReader(Protocol):
+    """Read source content from trusted snapshot."""
+    def __call__(self, run_id: str, source_id: str) -> dict[str, Any]: ...
+
+
+class LLMInvoker(Protocol):
+    """Direct structured LLM call with budget tracking."""
+    def __call__(self, prompt: str, extra_body: dict[str, Any]) -> dict[str, Any]: ...
+
+
+# ── Default Implementations ────────────────────────────────────────────────────
+
+class DefaultScopeValidator:
+    """Fail-closed validator that checks material against snapshot.
+    
+    In production, this MUST be replaced with authoritative Java callback
+    or validated scope revision endpoint. This default implementation only
+    checks against the initial material snapshot and cannot detect revocations.
+    """
+    
+    def __init__(self, get_run_fn: Callable[[str], dict | None]):
+        self._get_run = get_run_fn
+    
+    def __call__(self, run_id: str, material_id: str) -> bool:
+        record = self._get_run(run_id)
+        if not record:
+            return False
+        
+        materials = record.get("materials", [])
+        allowed_ids = {m.get("materialId") for m in materials}
+        
+        # Fail closed: material must be explicitly in snapshot
+        return material_id in allowed_ids
+
+
+class TrackedRetriever:
+    """Wraps retrieval with call ledger tracking and scope validation."""
+    
+    def __init__(
+        self,
+        base_retriever: Retriever,
+        scope_validator: ScopeValidator,
+        reserve_call_fn: Callable[..., tuple],
+        complete_call_fn: Callable[..., dict],
+    ):
+        self._retrieve = base_retriever
+        self._validate = scope_validator
+        self._reserve = reserve_call_fn
+        self._complete = complete_call_fn
+    
+    def __call__(self, run_id: str, query: str, pdf_id: str, *, limit: int = 5) -> list[dict[str, Any]]:
+        # Validate scope BEFORE retrieval
+        if not self._validate(run_id, pdf_id):
+            logger.warning("Scope validation failed for %s in run %s", pdf_id, run_id)
+            return []
+        
+        args_digest = digest({"query": query, "pdfId": pdf_id, "limit": limit})
+        
+        # Reserve call BEFORE network
+        try:
+            call_record, reused = self._reserve(
+                run_id=run_id,
+                node="acquire",
+                tool="retrieve",
+                args_digest=args_digest,
+                budget_delta={"modelCalls": 0, "tokens": 0},  # Retrieval doesn't count as model call
+            )
+            
+            if reused:
+                result = call_record.get("result") or {}
+                return result.get("items", []) if isinstance(result, dict) else []
+            
+        except Exception as exc:
+            logger.exception("Failed to reserve retrieve call for run %s", run_id)
+            return []
+        
+        # Execute retrieval
+        try:
+            items = self._retrieve(query, pdf_id, limit=limit)
+            
+            # Normalize source IDs via full hash (not truncated)
+            normalized = []
+            for item in items:
+                source_id = item.get("sourceId", "")
+                if not source_id:
+                    # Generate stable ID from content - FULL hash, not [:16]
+                    content_key = f"{item.get('pdfId', '')}:{item.get('chunkIndex', 0)}:{item.get('text', '')}"
+                    source_id = "src_" + hashlib.sha256(content_key.encode()).hexdigest()
+                
+                normalized.append({
+                    **item,
+                    "sourceId": source_id,
+                    "sourceWorkId": item.get("pdfId", pdf_id),
+                    "contentHash": item.get("contentHash") or hashlib.sha256(item.get("text", "").encode()).hexdigest(),
+                })
+            
+            # Complete call with result
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_SUCCEEDED,
+                result={"items": normalized},
+                reservation_token=call_record.get("reservationToken"),
+            )
+            
+            return normalized
+            
+        except Exception as exc:
+            logger.exception("Retrieval failed for run %s", run_id)
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_FAILED,
+                error={"message": str(exc)},
+                reservation_token=call_record.get("reservationToken"),
+            )
+            return []
+
+
+class TrackedSourceReader:
+    """Read source content with scope validation and ledger tracking.
+    
+    Note: Scope validation here uses source_id directly. The graph node
+    does authoritative validation using work_id (materialId) before calling
+    this reader, so this is a secondary check.
+    """
+    
+    def __init__(
+        self,
+        base_reader: SourceReader,
+        scope_validator: ScopeValidator,
+        reserve_call_fn: Callable[..., tuple],
+        complete_call_fn: Callable[..., dict],
+    ):
+        self._read = base_reader
+        self._validate = scope_validator
+        self._reserve = reserve_call_fn
+        self._complete = complete_call_fn
+    
+    def __call__(self, run_id: str, source_id: str, work_id: str | None = None) -> dict[str, Any]:
+        # Validate scope BEFORE read
+        # Use work_id if provided (for material-based validation), else source_id
+        validate_id = work_id if work_id else source_id
+        if not self._validate(run_id, validate_id):
+            logger.warning("Scope validation failed for source %s (work %s) in run %s", source_id, validate_id, run_id)
+            return {}
+        
+        args_digest = digest({"sourceId": source_id})
+        
+        try:
+            call_record, reused = self._reserve(
+                run_id=run_id,
+                node="read",
+                tool="read_source",
+                args_digest=args_digest,
+                budget_delta={"modelCalls": 0, "tokens": 0},
+            )
+            
+            if reused:
+                return call_record.get("result") or {}
+            
+        except Exception as exc:
+            logger.exception("Failed to reserve read call for source %s", source_id)
+            return {}
+        
+        try:
+            content = self._read(run_id, source_id)
+            
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_SUCCEEDED,
+                result=content,
+                reservation_token=call_record.get("reservationToken"),
+            )
+            
+            return content
+            
+        except Exception as exc:
+            logger.exception("Read failed for source %s", source_id)
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_FAILED,
+                error={"message": str(exc)},
+                reservation_token=call_record.get("reservationToken"),
+            )
+            return {}
+
+
+class TrackedLLMInvoker:
+    """Direct LLM calls with reservation BEFORE network and usage tracking.
+    
+    All model calls use get_structured_llm().invoke(LLMRequest(...)).
+    No hidden calls/retries. Ambiguous timeout = unknown, do not auto retry.
+    Send-only try separate from settlement; never catch completion exception
+    then overwrite as failed.
+    """
+    
+    def __init__(
+        self,
+        llm_client: Any,  # LLM provider instance
+        reserve_call_fn: Callable[..., tuple],
+        complete_call_fn: Callable[..., dict],
+        max_input_tokens: int = 24000,
+        request_options: Callable | None = None,
+        run_record_fn: Callable | None = None,
+        verification_max_input_bytes: int | None = None,
+        call_history_fn: Callable | None = None,
+        experiment_max_input_bytes: int | None = None,
+        workflow_revision_max_input_bytes: int | None = None,
+        workflow_metadata_max_input_bytes: int | None = None,
+        workflow_revision_context_max_input_bytes: int | None = None,
+    ):
+        self._client = llm_client
+        self._reserve = reserve_call_fn
+        self._complete = complete_call_fn
+        self._max_input = max_input_tokens
+        self._request_options = request_options
+        self._run_record = run_record_fn
+        self._call_history=call_history_fn
+        from services.deep_research.verification_capacity import VERIFICATION_INPUT_BYTES
+        if verification_max_input_bytes is not None and (
+                type(verification_max_input_bytes) is not int
+                or not 1 <= verification_max_input_bytes <= VERIFICATION_INPUT_BYTES):
+            raise ValueError('Invalid server verification input limit')
+        self._verification_max_input = (max_input_tokens if verification_max_input_bytes is None
+                                        else verification_max_input_bytes)
+        from services.deep_research.experiment_capacity import EXPERIMENT_INPUT_BYTES
+        if experiment_max_input_bytes is not None and (
+                type(experiment_max_input_bytes) is not int
+                or not 1 <= experiment_max_input_bytes <= EXPERIMENT_INPUT_BYTES):
+            raise ValueError('Invalid server experiment input limit')
+        self._experiment_max_input = (max_input_tokens if experiment_max_input_bytes is None
+                                      else experiment_max_input_bytes)
+        from services.deep_research.workflow_revision_input import MAX_INPUT as REVISION_MAX_INPUT
+        if workflow_revision_max_input_bytes is not None and (
+                type(workflow_revision_max_input_bytes) is not int
+                or not 1 <= workflow_revision_max_input_bytes <= REVISION_MAX_INPUT):
+            raise ValueError('Invalid server workflow revision input limit')
+        self._workflow_revision_max_input = (max_input_tokens if workflow_revision_max_input_bytes is None
+                                           else workflow_revision_max_input_bytes)
+        from services.deep_research.workflow_revision_context import MAX_INPUT as CONTEXT_MAX_INPUT
+        if workflow_revision_context_max_input_bytes is not None and (
+                type(workflow_revision_context_max_input_bytes) is not int
+                or not 1 <= workflow_revision_context_max_input_bytes <= CONTEXT_MAX_INPUT):
+            raise ValueError('Invalid server workflow revision context input limit')
+        self._workflow_revision_context_max_input = (max_input_tokens if workflow_revision_context_max_input_bytes is None
+                                                   else workflow_revision_context_max_input_bytes)
+        from services.deep_research.workflow_metadata_window import MAX_INPUT as METADATA_MAX_INPUT
+        if workflow_metadata_max_input_bytes is not None and (
+                type(workflow_metadata_max_input_bytes) is not int
+                or not 1 <= workflow_metadata_max_input_bytes <= METADATA_MAX_INPUT):
+            raise ValueError('Invalid server workflow metadata input limit')
+        self._workflow_metadata_max_input = (max_input_tokens if workflow_metadata_max_input_bytes is None
+                                           else workflow_metadata_max_input_bytes)
+
+    def prompt_byte_limit(self, run_id: str, node: str) -> int:
+        from services.deep_research.verification_capacity import verification_input_limit
+        record = self._run_record(run_id) if self._run_record else None
+        from services.deep_research.comparison_audit_envelope import enabled as comparison_audit_enabled, EXTENDED_INPUT_BYTES
+        if (isinstance(record, dict) and record.get('comparisonAuditEnvelopeContractVersion') in (15, 16, 17, 18, 19, 20, 21)
+                and comparison_audit_enabled(record, node)):
+            return min(self._verification_max_input, EXTENDED_INPUT_BYTES)
+        if node == 'verify_answer_coverage':
+            from services.deep_research import shared_experiment_answer_packet as experiment_packet
+            if experiment_packet.enabled(record):
+                return min(self._verification_max_input, experiment_packet.MAX_INPUT_BYTES)
+        from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
+        if node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(record):
+            return min(self._experiment_max_input, 32000)
+        from services.deep_research.comparison_intent import operations_enabled as comparison_operations_enabled,synthesis_input_limit as comparison_input_limit
+        if node=='synthesize' and comparison_operations_enabled(record):
+            return min(comparison_input_limit(record),getattr(self,'_experiment_max_input',self._max_input))
+        from services.deep_research.workflow_revision_context import enabled as context_enabled, NODE as CONTEXT_NODE, MAX_INPUT as CONTEXT_MAX_INPUT
+        if node == CONTEXT_NODE and context_enabled(record):
+            return min(getattr(self,'_workflow_revision_context_max_input',self._max_input),CONTEXT_MAX_INPUT)
+        from services.deep_research.workflow_metadata_window import enabled as metadata_enabled, NODE as METADATA_NODE, MAX_INPUT as METADATA_MAX_INPUT
+        if node == METADATA_NODE and metadata_enabled(record):
+            return min(getattr(self,'_workflow_metadata_max_input',self._max_input),METADATA_MAX_INPUT)
+        from services.deep_research.workflow_revision_input import enabled as revision_enabled, NODE as REVISION_NODE, MAX_INPUT as REVISION_MAX_INPUT
+        if node == REVISION_NODE and revision_enabled(record):
+            return min(getattr(self, '_workflow_revision_max_input', self._max_input), REVISION_MAX_INPUT)
+        from services.deep_research.experiment_capacity import transport_limit
+        legacy = verification_input_limit(record, node, self._max_input, self._verification_max_input)
+        from services.deep_research.execution_workflow_blueprint import enabled as workflow_blueprint
+        from services.deep_research.scientific_outline import enabled as outline_enabled,NODE
+        if node==NODE and outline_enabled(record):
+            from services.deep_research.planning_transport import overhead_bytes
+            return max(0,min(getattr(self,'_experiment_max_input',self._max_input),32000)-overhead_bytes(record,node))
+        if node in ('plan_workflow', 'plan_workflow_meta', 'plan_workflow_init', 'plan_workflow_representation', 'repair_workflow_meta') and workflow_blueprint(record):
+            return min(getattr(self, '_experiment_max_input', self._max_input), 32000)
+        from services.deep_research.repair_budget import experiment_repair_window
+        if node == 'repair_claims' and experiment_repair_window(record):
+            return min(getattr(self, '_experiment_max_input', self._max_input), 32000)
+        return transport_limit(record, node, legacy, getattr(self, '_experiment_max_input', self._max_input))
+
+    def uses_verification_input_contract(self, run_id: str, node: str) -> bool:
+        from services.deep_research.verification_capacity import has_verification_input_contract
+        record = self._run_record(run_id) if self._run_record else None
+        return has_verification_input_contract(record, node)
+
+    def recorded_comparison_response(self, run_id, prompt, options):
+        """Read only an exact succeeded stage call; do not reserve or send."""
+        if self._run_record is None or self._call_history is None:
+            return None
+        from services.deep_research.comparison_stage_generation import recorded_response
+        return recorded_response(self._run_record(run_id),prompt,options,self._call_history(run_id))
+    
+    def _supports_audit_counting(self, record, version_field):
+        version = record.get(version_field)
+        return (type(version) is int and version == 1 and bool(record.get("openaiResearchModels"))
+                and self._call_history is not None and self._run_record is not None
+                and callable(getattr(type(self._client), "count_audit_input", None))
+                and callable(getattr(type(self._client), "invoke_counted_audit", None)))
+
+    def supports_counted_comparison_audit(self, record):
+        from services.deep_research.comparison_audit_envelope import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedComparisonAuditContractVersion")
+
+    def count_repair_audit_reservation(self, run_id, prompt, output_tokens):
+        """Count the fallback audit's input without reserving or generating a reply."""
+        from llm.provider import LLMRequest
+        from services.deep_research.comparison_audit_envelope import COUNTED_INPUT_BYTES, larger_counted_window
+        from services.deep_research.contracts import UnresolvedUnknownError
+        from services.deep_research.finalization_pool import comparison_repair_can_use_release
+        from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN, options_for_record
+        from services.deep_research.structured_output import enabled as native_json, messages_for_record
+
+        record = self._run_record(run_id) if self._run_record else None
+        if (not record or record.get('status') != STATUS_RUNNING
+                or record.get('comparisonRepairFlowContractVersion') != 3
+                or not native_json(record) or not self.supports_counted_comparison_audit(record)
+                or not comparison_repair_can_use_release(record)):
+            return None
+        node = 'verify_answer_coverage'
+        limit = COUNTED_INPUT_BYTES if larger_counted_window(record) else self.prompt_byte_limit(run_id, node)
+        if len(prompt.encode('utf-8')) > limit:
+            return None
+        unknown = [call['callId'] for call in self._call_history(run_id) if call.get('status') == 'unknown']
+        if unknown:
+            raise UnresolvedUnknownError(run_id, unknown)
+        options = {'max_tokens': output_tokens, 'temperature': 0.0}
+        if self._request_options:
+            options = self._request_options(node, options)
+        options = options_for_record(record, node, options)
+        request = LLMRequest(prompt=prompt, messages=messages_for_record(record, node, prompt),
+                             extra_body=options, timeout_seconds=options.get('timeout_seconds'))
+        client = self._client.for_node(node) if callable(getattr(type(self._client), 'for_node', None)) else self._client
+        count = client.count_audit_input(request)
+        if type(count) is not int or count <= 0:
+            return None
+        return count + INPUT_RESERVATION_MARGIN + options['max_tokens']
+
+    def supports_counted_experiment_review(self, record):
+        from services.deep_research.shared_experiment_generation import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedExperimentReviewContractVersion")
+
+    def supports_counted_experiment_answer(self, record):
+        from services.deep_research.shared_experiment_answer_packet import enabled
+        return enabled(record) and self._supports_audit_counting(record, "countedExperimentAnswerContractVersion")
+
+    def __call__(
+        self,
+        run_id: str,
+        node: str,
+        prompt: str,
+        extra_body: dict[str, Any] | None = None,
+        use_reserve: bool = False,
+        *,
+        counted_audit: bool = False,
+    ) -> dict[str, Any]:
+        from llm.provider import DEFAULT_RESEARCH_OUTPUT_TOKENS, LLMRequest, LLMProviderError
+        from services.deep_research.factual_review import (
+            OPTION as REVIEW_OPTION, REPAIR_OUTPUT_OPTION, DIRECT_REVIEW_OPTION,
+            NAMED_TABLE_OPTION, named_table_review_enabled,
+        )
+        from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
+        bounded_review=(extra_body or {}).get(REVIEW_OPTION,False)
+        named_table_review = (extra_body or {}).get(NAMED_TABLE_OPTION, False)
+        if type(named_table_review) is not bool:
+            raise ValueError('Invalid named table review option')
+        if named_table_review and (node != 'verify' or self._run_record is None
+                                  or not named_table_review_enabled(self._run_record(run_id))):
+            raise DeepResearchError('invalid_model_options', '指定表格审核配置与运行版本不匹配，尚未发送。')
+        repair_output=(extra_body or {}).get(REPAIR_OUTPUT_OPTION,False)
+        direct_review=(extra_body or {}).get(DIRECT_REVIEW_OPTION,False)
+        if type(direct_review) is not bool:
+            raise ValueError('Invalid direct comparison review profile')
+        if direct_review:
+            from services.deep_research.comparison_measurement_display import local_contributions
+            if node != 'verify' or self._run_record is None or not local_contributions(self._run_record(run_id)):
+                raise DeepResearchError('invalid_model_options','初审直答配置与运行版本不匹配，尚未发送。')
+        if type(repair_output) is not bool:
+            raise ValueError('Invalid factual repair review output profile')
+        if repair_output:
+            from services.deep_research.comparison_review_batches import current_profile
+            if node!='verify_repair' or self._run_record is None or not current_profile(self._run_record(run_id)):
+                raise DeepResearchError('invalid_model_options','事实修订审核配置与运行版本不匹配，尚未发送。')
+        experiment_reasoning=(extra_body or {}).get(EXPERIMENT_OPTION,False)
+        from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
+        binding_reasoning=(extra_body or {}).get(BINDING_OPTION,False)
+        if type(binding_reasoning) is not bool:raise ValueError('Invalid coverage binding reasoning option')
+        if type(bounded_review) is not bool or type(experiment_reasoning) is not bool:
+            raise ValueError('Invalid bounded factual review option')
+        if self._request_options:
+            extra_body = self._request_options(node, dict(extra_body or {}))
+        elif bounded_review or named_table_review or repair_output or direct_review or experiment_reasoning or BINDING_OPTION in (extra_body or {}):
+            from services.deep_research.runtime import research_model_options
+            extra_body=research_model_options(node,dict(extra_body or {}))
+        elif node == 'repair_claims' and '_repair_output_limit' in (extra_body or {}):
+            from services.deep_research.repair_budget import repair_output_options
+            extra_body = repair_output_options(extra_body)
+        
+        from services.deep_research.structured_output import enabled as native_json, messages_for_record
+        transport_record = self._run_record(run_id) if self._run_record else None
+        structured = native_json(transport_record)
+        if type(counted_audit) is not bool or counted_audit and (
+                node != "verify_answer_coverage" or not use_reserve or not structured
+                or not (self.supports_counted_comparison_audit(transport_record)
+                        or self.supports_counted_experiment_answer(transport_record))):
+            raise DeepResearchError('invalid_model_options', '整答审核计数配置无效，尚未发送。')
+        wire_messages = messages_for_record(transport_record,node,prompt) if structured else None
+        if structured:
+            if 'messages' in (extra_body or {}):
+                raise DeepResearchError('invalid_model_options', '研究模型调用选项无效，尚未发送。')
+            from services.deep_research.planning_transport import options_for_record
+            extra_body = options_for_record(transport_record,node,extra_body or {})
+        # Full actual request digest, including native transport instructions.
+        request_identity = {"prompt": prompt, "extra": extra_body or {}}
+        if structured:
+            request_identity['messages'] = wire_messages
+        from services.deep_research.initial_plan_response import enabled as initial_plan_response_enabled
+        initial_plan_response=structured and initial_plan_response_enabled(transport_record,node)
+        if initial_plan_response:
+            request_identity['initialPlanResponseContractVersion'] = transport_record['initialPlanResponseContractVersion']
+        if counted_audit:
+            policy = ("countedComparisonAuditContractVersion" if self.supports_counted_comparison_audit(transport_record)
+                      else "countedExperimentAnswerContractVersion")
+            request_identity[policy] = 1
+        counted_fact_contract = "countedComparisonFactReviewContractVersion"
+        from llm.responses_transport import API_KEY
+        fact_options = extra_body or {}
+        fact_format = fact_options.get('response_format', {})
+        counted_fact_fallback = (structured and use_reserve and node == 'verify'
+                                 and (bounded_review or direct_review)
+                                 and (API_KEY not in fact_options and fact_format == {'type': 'json_object'}
+                                      or fact_options.get(API_KEY) == 'responses'
+                                      and fact_format.get('type') == 'json_schema')
+                                 and self._supports_audit_counting(transport_record, counted_fact_contract))
+        if counted_fact_fallback:
+            request_identity[counted_fact_contract] = 1
+        args_digest = digest(request_identity)
+        from services.deep_research.factual_review import cell_review_enabled
+        guarded_review = bounded_review or named_table_review or direct_review or (self._run_record and node == 'verify'
+                                           and cell_review_enabled(transport_record))
+        if guarded_review and self._run_record:
+            from services.deep_research.factual_review import admission
+            decision=admission(transport_record,self._call_history(run_id) if self._call_history else [],args_digest)
+            if decision['allowed'] is not True:
+                return {'notStarted':'factual_review_time_budget','admission':decision}
+        
+        # Reserve a conservative UTF-8 byte bound, then settle measured usage.
+        prompt_byte_length = len(prompt.encode("utf-8"))
+        from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN, overhead_bytes
+        transport_overhead = overhead_bytes(transport_record,node,extra_body)
+        estimated_input = prompt_byte_length + INPUT_RESERVATION_MARGIN + transport_overhead
+        max_output = (extra_body or {}).get("max_tokens", DEFAULT_RESEARCH_OUTPUT_TOKENS)
+        
+        # Reject overlarge input BEFORE reserve - enforce UTF-8 byte size limit
+        # Reject instead of silently clipping evidence or under-reserving it.
+        max_byte_length = self.prompt_byte_limit(run_id, node)
+        if counted_audit and self.supports_counted_comparison_audit(transport_record):
+            from services.deep_research.comparison_audit_envelope import COUNTED_INPUT_BYTES, larger_counted_window
+            if larger_counted_window(transport_record):
+                max_byte_length = COUNTED_INPUT_BYTES
+        if counted_audit and self.supports_counted_experiment_answer(transport_record):
+            from services.deep_research.shared_experiment_answer_packet import COUNTED_MAX_INPUT_BYTES
+            max_byte_length = COUNTED_MAX_INPUT_BYTES
+        from services.deep_research.workflow_transport import enabled as workflow_schema
+        from services.deep_research.shared_experiment_generation import enabled as shared_enabled, NODE as SHARED_NODE
+        shared_schema = node in (SHARED_NODE, 'review_experiment_shared', 'repair_experiment_shared') and shared_enabled(transport_record)
+        admission_bytes = prompt_byte_length + (transport_overhead if workflow_schema(transport_record,node) or shared_schema else 0)
+        from services.deep_research import shared_experiment_review as science
+        science_check_ids = (extra_body or {}).get(science.CHECK_IDS_OPTION)
+        counted_science_window = (
+            node == science.NODE and admission_bytes > science.MAX_INPUT and max_byte_length == science.MAX_INPUT
+            and structured and use_reserve and (science_limit := science.counted_window_limit(transport_record))
+            and science_check_ids and all(not check.startswith('fact_') for check in science_check_ids)
+            and self.supports_counted_experiment_review(transport_record)
+        )
+        if counted_science_window:
+            max_byte_length = science_limit
+            args_digest = digest({**request_identity,
+                                  science.COUNTED_WINDOW_MARKER: transport_record[science.COUNTED_WINDOW_MARKER]})
+        if admission_bytes > max_byte_length:
+            raise ValueError(
+                f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "
+                f"exceeds max {max_byte_length} bytes"
+            )
+
+        request = LLMRequest(
+            prompt=prompt,
+            messages=wire_messages,
+            extra_body=extra_body or {},
+            timeout_seconds=(extra_body or {}).get("timeout_seconds"),
+        )
+        def routed_client():
+            return self._client.for_node(node) if callable(getattr(type(self._client), "for_node", None)) else self._client
+
+        def reserve(input_allowance):
+            return self._reserve(run_id=run_id, node=node, tool="llm_invoke", args_digest=args_digest,
+                                 budget_delta={"modelCalls": 1, "tokens": input_allowance + max_output},
+                                 use_reserve=use_reserve)
+
+        def measured_allowance(count):
+            allowance = count + INPUT_RESERVATION_MARGIN
+            current = self._run_record(run_id)["budget"]
+            projected = current["tokens"] + allowance + max_output
+            if projected > current["maxTokens"]:
+                raise BudgetExhaustedError("tokens", current["maxTokens"], projected)
+            return allowance
+
+        counted_input = None
+        if counted_audit or counted_science_window:
+            from services.deep_research.contracts import UnresolvedUnknownError
+            from services.deep_research.final_coverage import coverage_prompt_byte_limit
+            client = routed_client()
+            calls = self._call_history(run_id)
+            same_call = any(call.get("node") == node and call.get("tool") == "llm_invoke"
+                            and call.get("argsDigest") == args_digest for call in calls)
+            if not same_call:
+                unknown = [call["callId"] for call in calls if call.get("status") == "unknown"]
+                if unknown:
+                    raise UnresolvedUnknownError(run_id, unknown)
+                budget = transport_record["budget"]
+                used_calls = budget["modelCalls"] + budget.get("reservedModelCalls", 0)
+                if used_calls >= budget["maxModelCalls"]:
+                    raise BudgetExhaustedError("modelCalls", budget["maxModelCalls"], used_calls)
+                limit = (max_byte_length if counted_science_window else
+                         coverage_prompt_byte_limit(budget, max_output, max_input_bytes=max_byte_length))
+                if limit <= 0 or transport_record.get("status") != STATUS_RUNNING:
+                    raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
+                if counted_science_window:
+                    minimum = budget["tokens"] + 1 + INPUT_RESERVATION_MARGIN + max_output
+                    if minimum > budget["maxTokens"]:
+                        raise BudgetExhaustedError("tokens", budget["maxTokens"], minimum)
+                counted_input = client.count_audit_input(request)
+                if type(counted_input) is not int or counted_input <= 0:
+                    if counted_science_window:
+                        raise DeepResearchError('shared_experiment_review_count_unavailable',
+                                                '科学审核输入计数暂不可用，生成请求尚未发送。')
+                    raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
+                estimated_input = measured_allowance(counted_input)
+        
+        # A rejected reservation leaves no call or usage behind. The same
+        # scientific Responses packet may then fit using a measured count.
+        try:
+            call_record, reused = reserve(estimated_input)
+        except BudgetExhaustedError as exc:
+            from services.deep_research.shared_experiment_answer_packet import MARKER as FINAL_EXPERIMENT_AUDIT
+            eligible_repair = (node == "repair_experiment_shared" and
+                               transport_record.get(FINAL_EXPERIMENT_AUDIT) == 2)
+            eligible_experiment = (use_reserve and structured and (node == science.NODE or eligible_repair)
+                                   and self.supports_counted_experiment_review(transport_record))
+            if counted_science_window or not (eligible_experiment or counted_fact_fallback):
+                raise
+            budget = self._run_record(run_id)["budget"]
+            if budget["maxTokens"] - budget["tokens"] <= max_output + INPUT_RESERVATION_MARGIN:
+                raise
+            reason = exc.details.get("kind")
+            if reason == "modelCalls":
+                # Once protected call slots fill up, a too-large token
+                # reservation can prevent selection of the normal call pool.
+                # Count only if that pool has a slot at the lowest input cost.
+                from services.deep_research.finalization_pool import select_reservation_pool
+                minimum = {"modelCalls": 1, "tokens": max_output + INPUT_RESERVATION_MARGIN + 1}
+                if select_reservation_pool(budget, minimum, True, node):
+                    raise
+            elif reason not in {"tokens", "normalTokens"}:
+                raise
+            counted_input = routed_client().count_audit_input(request)
+            if type(counted_input) is not int or counted_input <= 0:
+                raise
+            estimated_input = measured_allowance(counted_input)
+            call_record, reused = reserve(estimated_input)
+        
+        if reused:
+            if initial_plan_response:
+                from services.deep_research.initial_plan_response import verify_saved
+                verify_saved(call_record.get('result'))
+            return call_record.get("result", {"content": "", "usage": {}})
+        
+        try:
+            if counted_audit or counted_science_window:
+                result = client.invoke_counted_audit(request)
+            elif counted_fact_fallback and counted_input is not None:
+                result = routed_client().invoke_counted_audit(request)
+            else:
+                result = routed_client().invoke(request)
+        except LLMProviderError as exc:
+            # LLMProviderError with no status_code means unknown (timeout/connection)
+            # Rejected HTTP status means failed
+            is_unknown = exc.status_code is None or exc.retryable
+            error = {"message": str(exc), "type": "provider_error", "status_code": exc.status_code}
+            if exc.failure_kind in {"proxy_error", "tls_error", "connect_timeout", "read_timeout",
+                                    "deadline_exceeded", "connection_error", "transport_error"}:
+                error["failureKind"] = exc.failure_kind
+            if exc.tls_diagnostic:
+                error["tlsDiagnostic"] = exc.tls_diagnostic
+            from llm.response_observation import sanitize as sanitize_observation
+            observation=sanitize_observation(getattr(exc,'provider_observation',None))
+            if observation is not None:error['providerObservation']=observation
+            self._complete(
+                call_record["callId"],
+                status="unknown" if is_unknown else CALL_STATUS_FAILED,
+                error=error,
+                reservation_token=call_record.get("reservationToken"),
+            )
+            raise
+        except Exception as exc:
+            # Timeout/connection errors = unknown, do not auto retry
+            error_msg = str(exc).lower()
+            is_timeout = "timeout" in error_msg or "timed out" in error_msg or "connection" in error_msg
+            
+            self._complete(
+                call_record["callId"],
+                status="unknown" if is_timeout else CALL_STATUS_FAILED,
+                error={"message": str(exc), "type": "timeout" if is_timeout else "error"},
+                reservation_token=call_record.get("reservationToken"),
+            )
+            raise
+        
+        # Settlement - separate from send try
+        actual_tokens = estimated_input + max_output
+        if hasattr(result, "usage") and result.usage and not result.usage.estimated:
+            actual_tokens = result.usage.total_tokens
+        
+        response = {
+            "content": result.content if hasattr(result, "content") else "",
+            "provider": getattr(result, "provider", ""),
+            "model": getattr(result, "model", ""),
+            "finishReason": getattr(result, "finish_reason", None),
+            "usage": {
+                "total_tokens": actual_tokens,
+                "input_tokens": result.usage.input_tokens if hasattr(result.usage, "input_tokens") else 0,
+                "output_tokens": result.usage.output_tokens if hasattr(result.usage, "output_tokens") else 0,
+            },
+        }
+        if counted_input is not None:
+            response["auditInputTokens"] = counted_input
+        for field in ("cached_input_tokens", "cache_write_input_tokens"):
+            value = getattr(result.usage, field, None)
+            if type(value) is int and not result.usage.estimated:
+                response["usage"][field] = value
+        reported_model = getattr(result, "reported_model", None)
+        from llm.response_observation import sanitize as sanitize_observation
+        observation=sanitize_observation(getattr(result,'provider_observation',None))
+        if observation is not None:response['providerObservation']=observation
+        if isinstance(reported_model, str) and reported_model.strip() and len(reported_model) <= 256:
+            response["reportedModel"] = reported_model
+        if structured:
+            from services.deep_research.structured_output import normalize
+            from services.deep_research.comparison_audit_envelope import (
+                enabled as comparison_envelope, revision_coverage_enabled, uses_correction_envelope,
+            )
+            full_comparison_audit = ((revision_coverage_enabled(transport_record, node)
+                or comparison_envelope(transport_record, node)) and not uses_correction_envelope(
+                    transport_record, node, prompt))
+            response = normalize(node, response,**({'comparison_audit_envelope':True} if full_comparison_audit else {}),**({'initial_plan_response':True} if initial_plan_response else {}),**({'factual_singleton':True}
+                if type(transport_record.get('factualEnvelopeContractVersion')) is int
+                and transport_record['factualEnvelopeContractVersion'] in (1,2)
+                and type(transport_record.get('factualDecisionContractVersion')) is int
+                and transport_record['factualDecisionContractVersion']==2 else {}),
+                **({'factual_diagnostics':type(transport_record.get('reviewDiagnosticContractVersion')) is int
+                        and transport_record['reviewDiagnosticContractVersion']==2,
+                    'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
+                        and transport_record['reportingOwnershipContractVersion']==1,
+                    **({'factual_reason_parts':True} if type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3, 4) else {}),
+                    **({'factual_compact_supported':True}
+                       if type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] in (3, 4) else {}),
+                    **({'factual_repair_rejection':True}
+                       if node == 'verify_repair' and type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] == 4 else {}),
+                    **({'factual_source_fields':True} if type(transport_record.get('reviewSourceFieldReferenceContractVersion')) is int
+                       and transport_record['reviewSourceFieldReferenceContractVersion']==1
+                       and type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3, 4) else {})}
+                   if type(transport_record.get('factualEnvelopeContractVersion')) is int
+                   and transport_record['factualEnvelopeContractVersion']==2
+                   and type(transport_record.get('factualDecisionContractVersion')) is int
+                   and transport_record['factualDecisionContractVersion']==2 else {}))
+        
+        from services.deep_research.native_schema_receipt import annotate as annotate_native_schema
+        response = annotate_native_schema(response, extra_body or {})
+
+        # Settle with actual usage delta
+        token_delta = actual_tokens - (estimated_input + max_output)
+        settlement_delta = {"tokens": token_delta} if token_delta != 0 else {}
+        
+        self._complete(
+            call_record["callId"],
+            status=CALL_STATUS_SUCCEEDED,
+            result=response,
+            reservation_token=call_record.get("reservationToken"),
+            budget_delta=settlement_delta,
+        )
+        
+        return response
+
+
+# ── External Academic Integration ──────────────────────────────────────────────
+
+class ExternalAcademicAdapter:
+    """Integrates AcademicSourceClient with call ledger.
+    
+    Each network call (discover/fulltext) is separately ledgered.
+    Abstract vs fulltext distinction preserved.
+    """
+    
+    def __init__(
+        self,
+        academic_client: Any,  # AcademicSourceClient instance
+        reserve_call_fn: Callable[..., tuple],
+        complete_call_fn: Callable[..., dict],
+        *, transport_diagnostics=False,
+    ):
+        if type(transport_diagnostics) is not bool:raise ValueError('Invalid external diagnostic policy')
+        self._client = academic_client
+        self._reserve = reserve_call_fn
+        self._complete = complete_call_fn
+        self.discovery_outcomes = []
+        self._transport_diagnostics=transport_diagnostics
+
+    def _failure(self,exc):
+        result={'message':str(exc)}
+        if self._transport_diagnostics:
+            from services.deep_research_academic import AcademicAccessError
+            if isinstance(exc,AcademicAccessError) and exc.transport_diagnostic is not None:
+                result['transportDiagnostic']=exc.transport_diagnostic
+        return result
+    
+    def discover(self, run_id: str, query: str, limit: int = 6) -> list[dict[str, Any]]:
+        request_identity = {"query": query, "limit": limit, "type": "discover"}
+        if callable(getattr(type(self._client), 'discovery_request', None)):
+            request_identity = {"request": self._client.discovery_request(query, limit),
+                                "type": "discover"}
+        return self._discover_request(run_id, request_identity, lambda: self._client.discover(query, limit))
+
+    def lookup(self, run_id: str, identifiers: list[str], limit: int = 6) -> list[dict[str, Any]]:
+        request = self._client.lookup_request(identifiers, limit)
+        # Same HTTP request means the same ledger identity, even if a previous
+        # plan found it through a query containing the identifier.
+        return self._discover_request(run_id, {"request": request, "type": "discover"},
+                                      lambda: self._client.lookup(identifiers, limit))
+
+    def discover_via_deepseek(self, run_id, provider, query, *, limit=6, resolve_revisions=False):
+        return self._discover_request(run_id, {
+            'provider': 'deepseek_search', 'query': query[:113], 'limit': limit,
+            'type': 'discover',
+            **({'resolveUnversionedWork': 1} if resolve_revisions else {}),
+        }, lambda: provider(query, limit, **({'include_unversioned': True} if resolve_revisions else {}))[:3])
+
+    def _discover_request(self, run_id, request_identity, send):
+        args_digest = digest(request_identity)
+        
+        try:
+            call_record, reused = self._reserve(
+                run_id=run_id,
+                node="acquire",
+                tool="external_discover",
+                args_digest=args_digest,
+                budget_delta={"externalSearches": 1},
+            )
+            
+            if reused:
+                self.discovery_outcomes.append(call_record.get('status'))
+                return (call_record.get("result") or {}).get("items", [])
+            
+        except IllegalStatusTransitionError as exc:
+            if exc.details != {'currentStatus': 'failed', 'requestedStatus': 'pending'}:
+                raise
+            # The durable ledger refused an automatic resend of this failure.
+            self.discovery_outcomes.append(CALL_STATUS_FAILED)
+            return []
+        except Exception as exc:
+            logger.exception("Failed to reserve external discover call")
+            self.discovery_outcomes.append('not_dispatched')
+            return []
+        
+        try:
+            results = send()
+            
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_SUCCEEDED,
+                result={"items": results},
+                reservation_token=call_record.get("reservationToken"),
+            )
+            
+            self.discovery_outcomes.append(CALL_STATUS_SUCCEEDED)
+            return results
+            
+        except Exception as exc:
+            logger.exception("External discover failed")
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_FAILED,
+                error=self._failure(exc),
+                reservation_token=call_record.get("reservationToken"),
+            )
+            self.discovery_outcomes.append(CALL_STATUS_FAILED)
+            return []
+    
+    def fetch_fulltext(self, run_id: str, arxiv_id: str) -> dict[str, Any]:
+        args_digest = digest({"arxivId": arxiv_id, "type": "fulltext"})
+        
+        try:
+            call_record, reused = self._reserve(
+                run_id=run_id,
+                node="read",
+                tool="external_fulltext",
+                args_digest=args_digest,
+                budget_delta={"fulltextFetches": 1},
+            )
+            
+            if reused:
+                return call_record.get("result") or {}
+            
+        except Exception as exc:
+            logger.exception("Failed to reserve external fulltext call")
+            return {}
+        
+        try:
+            result = self._client.fetch_fulltext(arxiv_id)
+            
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_SUCCEEDED,
+                result=result,
+                reservation_token=call_record.get("reservationToken"),
+            )
+            
+            return result
+            
+        except Exception as exc:
+            logger.exception("External fulltext fetch failed")
+            self._complete(
+                call_record["callId"],
+                status=CALL_STATUS_FAILED,
+                error=self._failure(exc),
+                reservation_token=call_record.get("reservationToken"),
+            )
+            return {}
+
+
+# ── Semantic Check Adapter ─────────────────────────────────────────────────────
+
+class BudgetedSemanticChecker:
+    """Semantic verification using reserved model calls.
+    
+    Checks factual support and the logic of proposed experiments separately.
+    Uses reserve pool explicitly.
+    """
+    
+    def __init__(
+        self,
+        llm_invoker: TrackedLLMInvoker,
+        run_id: str,
+        metric_domains=None,
+        research_question=None,
+        isolate_factual_claims=False,
+        comparison_reasoning=False,
+        comparison_audit_version=1,
+        audit_source_fields=False,
+        audit_target_fields=False,
+        factual_scope=False,
+        qualitative_inference=False,
+        experiment_intent_review=False,
+        complete_factual_scope=False,
+        result_attribution=False,
+        bounded_factual_review=False,
+        named_table_review=False,
+        same_page_rate_review=False,
+        prospective_review=False,
+        configuration_consistency=0,
+        prospective_envelope=0,
+        review_batch_planning=0,
+        scope_expression_context=None,
+        boundary_quantity_grounding=False,
+        partitioned_scope_review=False,
+        single_factual_decision=False,
+        scope_observation_assertions=False,
+        consistent_scope_premises=False,
+        general_advice_review=False,
+        device_memory_advice=False,
+        benchmark_recheck_targets=None,
+        scope_source_paths=False,
+        mechanism_grounding=False,
+        singleton_factual_response=False,
+        comparison_source_paths=False,
+        reporting_ownership=False,
+        source_version_review=False,
+        review_diagnostic_bindings=False,
+        known_single_review_failure=False,
+        integrated_diagnostic_schema=False,
+        review_reason_parts=False,
+        review_source_fields=False,
+        diagnostic_parameter_ids=False,
+        diagnostic_target_structure=False,
+        diagnostic_revision_row_counts=False,
+        diagnostic_stepwise_quantities=False,
+        short_circuit_scope_observations=False,
+        focused_boundary_review=False,
+        workflow_representation_context=None,
+        comparison_review_batches=False,
+        comparison_initial_review_targets=3,
+        comparison_repair_review_output=False,
+        preserve_initial_review_budget=False,
+        direct_comparison_review=False,
+        direct_comparison_scope_review=False,
+        compact_factual_review=False,
+        bounded_beginner_lead=None,
+    ):
+        self._invoke = llm_invoker
+        self._run_id = run_id
+        self._workflow_representation_context = workflow_representation_context
+        self._metric_domains = metric_domains
+        self._research_question = research_question
+        self._general_advice_review = general_advice_review
+        self._device_memory_advice = device_memory_advice
+        self._benchmark_recheck_targets = benchmark_recheck_targets
+        self._isolate_factual_claims = isolate_factual_claims
+        self._comparison_reasoning = comparison_reasoning
+        self._comparison_audit_version = comparison_audit_version
+        self._audit_source_fields = audit_source_fields
+        self._audit_target_fields = audit_target_fields
+        self._scope_source_paths = scope_source_paths
+        self._comparison_source_paths = comparison_source_paths
+        self._reporting_ownership = reporting_ownership
+        self._source_version_review = source_version_review
+        self._review_diagnostic_bindings = review_diagnostic_bindings
+        self._known_single_review_failure = known_single_review_failure
+        self._integrated_diagnostic_schema = integrated_diagnostic_schema
+        self._review_reason_parts = review_reason_parts
+        self._review_source_fields = review_source_fields
+        self._diagnostic_parameter_ids = diagnostic_parameter_ids
+        self._diagnostic_target_structure = diagnostic_target_structure
+        self._diagnostic_revision_row_counts = diagnostic_revision_row_counts
+        self._diagnostic_stepwise_quantities = diagnostic_stepwise_quantities
+        self._short_circuit_scope_observations = short_circuit_scope_observations
+        self._focused_boundary_review = focused_boundary_review
+        self._mechanism_grounding = mechanism_grounding
+        self._singleton_factual_response = singleton_factual_response
+        self._factual_scope = factual_scope
+        self._scope_expression_context = scope_expression_context
+        self._boundary_quantity_grounding = boundary_quantity_grounding
+        self._partitioned_scope_review = partitioned_scope_review
+        self._single_factual_decision = single_factual_decision
+        self._scope_observation_assertions = scope_observation_assertions
+        self._consistent_scope_premises = consistent_scope_premises
+        self._complete_factual_scope=complete_factual_scope
+        self._result_attribution=result_attribution
+        self._bounded_factual_review=bounded_factual_review
+        self._named_table_review=named_table_review
+        self._same_page_rate_review=same_page_rate_review
+        self._qualitative_inference = qualitative_inference
+        self._experiment_intent_review = experiment_intent_review
+        self._prospective_review = prospective_review
+        self._configuration_consistency = configuration_consistency
+        self._prospective_envelope = prospective_envelope
+        self._review_batch_planning = review_batch_planning
+        self._comparison_review_batches = comparison_review_batches
+        self._comparison_initial_review_targets = comparison_initial_review_targets
+        self._comparison_repair_review_output = comparison_repair_review_output
+        self._preserve_initial_review_budget = preserve_initial_review_budget
+        self._direct_comparison_review = direct_comparison_review
+        self._direct_comparison_scope_review = direct_comparison_scope_review
+        self._compact_factual_review = compact_factual_review
+        self._bounded_beginner_lead = bounded_beginner_lead
+    
+    def __call__(self, claims: list[dict], evidence: list[dict], *, proposal_context=()) -> list[dict]:
+        return self._check(claims,evidence,list(proposal_context),'verify')
+
+    def check_revisions(self, claims, evidence, accepted_context, *, proposal_context=()):
+        """Retain design definitions without rechecking or promoting context facts."""
+        targets = {c['claimId'] for c in claims}
+        context = [c for c in [*accepted_context,*proposal_context] if c.get('claimId') not in targets
+                   and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+        return self._check(claims, evidence, context, 'verify_repair')
+
+    def _check(self, claims, evidence, accepted_context, node, *, scope_observations=False):
+        if not claims:
+            return []
+        # Config checks retain operational definitions and explicit dependencies;
+        # scientific interpretation receives the complete proposed configuration.
+        # Capacity splits happen before dispatch and
+        # remain subject to the tracked invoker's existing call/token budget.
+        proposals = [c for c in claims if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]
+        from services.deep_research.general_advice import eligible as advice_eligible
+        advice_policy=self._general_advice_review
+        advice_policy=(advice_policy() if callable(advice_policy) else advice_policy) is True
+        advice=[c for c in proposals if advice_policy and advice_eligible(c)]
+        proposals=[c for c in proposals if c not in advice]
+        facts = [c for c in claims if c.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}]
+        quantity_policy=self._boundary_quantity_grounding
+        quantity_policy=(quantity_policy() if callable(quantity_policy) else quantity_policy) is True
+        quantity_failures=[]
+        if quantity_policy and callable(self._scope_expression_context):
+            from services.deep_research.boundary_quantities import failures
+            question=self._research_question() if callable(self._research_question) else self._research_question
+            quantity_failures=failures(facts,self._scope_expression_context(facts),evidence,question)
+            blocked={v['claimId'] for v in quantity_failures}
+            facts=[c for c in facts if c['claimId'] not in blocked]
+        partitioned = self._partitioned_scope_review
+        partitioned = (partitioned() if callable(partitioned) else partitioned) is True
+        expression_targets = []
+        if partitioned and callable(self._scope_expression_context):
+            expressions = self._scope_expression_context(facts)
+            expression_targets = [(c,expressions[c['claimId']])
+                                  for c in facts if c['claimId'] in expressions]
+            facts = [c for c in facts if c['claimId'] not in expressions]
+        policy = self._experiment_intent_review() if callable(self._experiment_intent_review) else self._experiment_intent_review
+        scientific_methods = type(policy) is int and policy == 3
+        premise_failures = []
+        if scientific_methods:
+            from services.deep_research.experiment_intent import missing_paper_operation_premise
+            question = self._research_question() if callable(self._research_question) else self._research_question
+            premise_failures = [{'claimId':c['claimId'],'status':'failed',
+                'reason':'论文所述干预缺少本条自身的已核对全文依据，不能只凭方法名称或拟议参数确认实际操作。'}
+                for c in proposals if missing_paper_operation_premise(c,evidence,question)]
+        failed_ids = {v['claimId'] for v in premise_failures}
+        from services.deep_research.verification_context import CONFIG_ROLES
+        def requires_science(c):
+            return ((scientific_methods and c.get('designRole')=='groups')
+                or (c.get('designRole') == 'controls' and c.get('protocolContractVersion') in (1, 2))
+                or (c.get('designRole') == 'steps' and c.get('workflowContractVersion') in (2, 3, 4)))
+        config = [c for c in proposals if c['claimId'] not in failed_ids
+                  and c.get('designRole') in CONFIG_ROLES and not requires_science(c)]
+        science = [c for c in proposals if c not in config and c['claimId'] not in failed_ids]
+        science_node = 'verify_design_science' if node == 'verify' else 'verify_repair_design_science'
+        config_node='verify_design_config' if node=='verify' else 'verify_repair_design_config'
+        advice_node='verify_advice' if node=='verify' else 'verify_repair_advice'
+        proposal_batches = ([(config, config_node)] if config else []) + ([(science, science_node)] if science else []) + ([(advice,advice_node)] if advice else [])
+        fact_slots = max(1, 3 - len(proposal_batches))
+        # Legacy answers keep their original batch. New isolated factual
+        # checks never receive another target's citations; all requests still
+        # reserve from the unchanged run budget before dispatch.
+        isolated = (self._isolate_factual_claims() if callable(self._isolate_factual_claims)
+                    else self._isolate_factual_claims) is True
+        size = 1 if isolated else max(3, (len(facts) + fact_slots - 1) // fact_slots)
+        fact_batches=[facts[i:i + size] for i in range(0,len(facts),size)]
+        batch_policy=self._comparison_review_batches
+        batch_policy=(batch_policy() if callable(batch_policy) else batch_policy) is True
+        if batch_policy and isolated and facts:
+            from services.deep_research.comparison_review_batches import groups
+            fact_batches=groups(facts,lambda batch:self._check_batch(batch,evidence,[],node=node,_preview=True,
+                                                                   scope_observations=scope_observations),
+                                max_targets=self._comparison_target_limit(node))
+        batches = proposal_batches + [(batch, node) for batch in fact_batches]
+        verdicts = [*quantity_failures,*premise_failures]
+        envelope=self._prospective_envelope() if callable(self._prospective_envelope) else self._prospective_envelope
+        context_states={}
+        if type(envelope) is int and envelope in (2,3,4,5,6,7,8,9,10):
+            context_states={c['claimId']:c['reviewContextState'] for c in accepted_context
+                if 'reviewContextState' in c}
+            context_states.update({row['claimId']:{'status':'rejected','phase':'source_prerequisite',
+                'checks':[row]} for row in premise_failures})
+        from services.deep_research.contracts import BudgetExhaustedError
+        for batch, batch_node in batches:
+            targets = {c['claimId'] for c in batch}
+            context = [{'claimId': c.get('claimId'), 'text': c.get('text'), 'kind': c.get('kind'),
+                        'conditions': c.get('conditions', {}), 'designRole': c.get('designRole'),
+                        'executionSpec': c.get('executionSpec'), 'designContractVersion': c.get('designContractVersion'),
+                        'budgetContractVersion': c.get('budgetContractVersion'),
+                        'hypothesisContractVersion': c.get('hypothesisContractVersion')}
+                        | {'protocolContractVersion':c.get('protocolContractVersion')}
+                        | {'workflowContractVersion':c.get('workflowContractVersion')}
+                        | ({'reviewContextState':context_states[c['claimId']]}
+                           if c['claimId'] in context_states else {})
+                       for c in [*accepted_context, *proposals] if c['claimId'] not in targets]
+            try:
+                verdicts.extend(self._check_batch(batch, evidence, context, node=batch_node,
+                                                  scope_observations=scope_observations))
+            except BudgetExhaustedError as exc:
+                policy = self._preserve_initial_review_budget
+                policy = policy() if callable(policy) else policy
+                if node != 'verify' or policy is not True:
+                    raise
+                from services.deep_research.initial_review_stop import InitialReviewBudgetStop
+                raise InitialReviewBudgetStop(exc, verdicts) from exc
+        # Preserve the ordinary answer's review opportunity before spending
+        # additional calls on decomposed settings and epistemic operators.
+        if expression_targets:
+            from services.deep_research.partitioned_scope_review import review
+            try:
+                for c, expression in expression_targets:
+                    verdicts.append(review(self, c, expression, evidence, node))
+            except BudgetExhaustedError as exc:
+                policy = self._preserve_initial_review_budget
+                policy = policy() if callable(policy) else policy
+                if node != 'verify' or policy is not True:
+                    raise
+                from services.deep_research.initial_review_stop import InitialReviewBudgetStop
+                # A partially checked decomposed expression is not a verdict
+                # for its parent. Keep only completed whole-target decisions.
+                raise InitialReviewBudgetStop(exc, verdicts) from exc
+        by_id = {v['claimId']: v for v in verdicts}
+        return [by_id[c['claimId']] for c in claims]
+
+    def _comparison_target_limit(self, node):
+        from services.deep_research.comparison_review_batches import MAX_TARGETS
+
+        if node != 'verify':
+            return MAX_TARGETS
+        policy = self._comparison_initial_review_targets
+        return policy() if callable(policy) else policy
+
+    def _check_batch(self, claims: list[dict], evidence: list[dict], proposal_context: list[dict], *, node='verify', _preview=False, _planned=False, scope_observations=False) -> list[dict]:
+        from services.deep_research.general_advice import NODES as ADVICE_NODES
+        advice_mode=node in ADVICE_NODES
+        byte_limit = (self._invoke.prompt_byte_limit(self._run_id, node)
+                      if isinstance(self._invoke, TrackedLLMInvoker) else 24000)
+        config_mode=node in {'verify_design_config','verify_repair_design_config'}
+        review_version = self._prospective_review() if callable(self._prospective_review) else self._prospective_review
+        if config_mode:
+            from services.deep_research.verification_context import configuration_context
+            proposal_context=configuration_context(claims,proposal_context)
+        from services.deep_research.selection import surrounding_context
+        metric_domains = self._metric_domains() if callable(self._metric_domains) else self._metric_domains
+        from services.deep_research.verification_aliases import (
+            encode_verification_inputs, restore_visible_evidence, restore_verdict_evidence)
+        from services.deep_research.workflow_representation_review import evidence_refs, remap_refs
+        representation_context = (self._workflow_representation_context(claims, proposal_context)
+                                  if callable(self._workflow_representation_context) else None)
+        representation_refs = evidence_refs(representation_context)
+        wire_claims, wire_evidence, reverse_aliases = encode_verification_inputs(
+            claims, evidence, additional_refs=representation_refs)
+        if representation_context:
+            representation_context = remap_refs(representation_context,
+                                               {full: short for short, full in reverse_aliases.items()})
+        from services.deep_research.execution_materialization import verification_claim_view
+        wire_claims = [verification_claim_view(c) for c in wire_claims]
+        # Omit absent optional wrapper fields only. Typed configuration values,
+        # including empty collections inside executionSpec, remain untouched.
+        def present_fields(row):
+            return {key: value for key, value in row.items()
+                    if value is not None and value != {} and value != []}
+        if (isinstance(self._invoke, TrackedLLMInvoker)
+                and self._invoke.uses_verification_input_contract(self._run_id, node)):
+            # Our projection adds absent optional versions as None. Remove
+            # those wrapper placeholders BEFORE finding the exact generated
+            # suffix; a present workflow=None would otherwise hide the valid
+            # budget/protocol/hypothesis renderer. Keep every executionSpec
+            # value and original prose. Legacy requests retain their wire form.
+            wire_context = [verification_claim_view(present_fields(c)) for c in proposal_context]
+        else:
+            wire_context = [present_fields(verification_claim_view(c)) for c in proposal_context]
+        # Format claims and evidence for checking
+        claims_text = json.dumps([present_fields({
+            "claimId": c.get("claimId"),
+            "text": c.get("text", ""),
+            "kind": c.get("kind"),
+            "evidenceRefs": c.get("evidenceRefs", []),
+            "conditions": c.get("conditions", {}),
+            "tableBindings": c.get("tableBindings", []),
+            "designRole": c.get("designRole"),
+            "executionSpec": c.get("executionSpec"),
+            "designContractVersion": c.get("designContractVersion"),
+            "budgetContractVersion": c.get("budgetContractVersion"),
+            "hypothesisContractVersion": c.get("hypothesisContractVersion"),
+            "protocolContractVersion": c.get("protocolContractVersion"),
+            "workflowContractVersion": c.get("workflowContractVersion"),
+        }) for c in wire_claims], ensure_ascii=False, separators=(',', ':'))
+        
+        referenced = ({ref for claim in wire_claims for ref in claim.get("evidenceRefs", [])}
+                      | set(evidence_refs(representation_context)))
+        evidence_map = {e["evidenceId"]: present_fields({"quote": e.get("quote", ""), "conditions": e.get("conditions", {}),
+                        "sourceContext": surrounding_context(e), "location": e.get("location", {}),
+                        "sourceTitle": e.get("sourceTitle", ""),
+                        "tableData": e.get("tableData"),
+                        "workId": e.get("sourceWorkId"), "versionId": e.get("sourceVersionId"),
+                        "publicationIdentity": e.get('sourcePublicationIdentity'),
+                        "accessLevel": e.get("accessLevel")}) for e in wire_evidence if e["evidenceId"] in referenced}
+        from uuid import uuid4
+        from services.deep_research.prompt_budget import fit_evidence_prompt
+        evidence_text = uuid4().hex
+        
+        prompt = f"""Verify these claims against the evidence. For each claim, determine if the evidence supports it.
+
+Claims:
+{claims_text}
+
+Evidence:
+{evidence_text}
+
+Return JSON array of verdicts:
+[{{"claimId": "...", "status": "passed" or "failed", "reason": "..."}}]
+
+Be strict: evidence must directly support EVERY clause and condition of the specific claim.
+For each claim use ONLY its own evidenceRefs; evidence cited by another claim is not its support.
+Resolve the subject of EVERY cited clause from its preceding and following sentences.
+In contrasts (however, in contrast, on the contrary), distinguish the baseline from
+the proposed method. An "it" or "this" is not automatically the paper's own method.
+A passage criticizing a baseline cannot support a limitation assigned to the proposed
+method. If the subject is unresolved in the supplied context, fail that assertion.
+For each verdict's reason, briefly identify the asserted subject, the source subject,
+and any mismatch before judging support; do not merely restate the claimed sentence.
+Check each number's method, dataset, metric, unit and experimental setting, not just its presence.
+SourceContext is the original passage around the exact quote, not additional permission to invent facts.
+Use it to detect lost experimental scope. A numeric comparison must identify its dataset/protocol
+or explicitly say that those conditions are unknown in the available passage. Reject an isolated
+supplemental or ablation result presented as the paper's general outcome. If necessary, remove
+the numerical example rather than approving it without its scope.
+Reject claims that confuse a similar PSNR with unchanged image quality, or infer universal/exclusive
+conditions from a limited tested range. Missing passages do not prove the authors never tested it.
+For inference, verify the stated premises and reasoning; reject invented calculations or generalization.
+For proposal/suggestion/hypothesis, do not demand that an unexecuted experiment already has results.
+Instead verify that it is clearly prospective, contains no disguised established fact, and is logically valid.
+Check formulas, metric direction, conditional versus averaged factorial effects, and sign interpretations.
+An interaction formula must define whether larger values mean better quality or greater loss; never use
+one sign interpretation for PSNR/SSIM and LPIPS together. Non-significance does not prove no effect.
+Truncating coefficients is a proposed intervention, not automatically the paper's distillation procedure.
+Do not accept vague connections. A partly supported claim must fail until its wording is narrowed."""
+
+        decision_policy=self._single_factual_decision
+        decision_policy=(decision_policy() if callable(decision_policy) else decision_policy) is True
+        single_decision=False
+        reason_parts=False
+        reason_parts_version=0
+        source_field_references=False
+        if decision_policy:
+            from services.deep_research.factual_decision import eligible, prompt as decision_prompt
+            scope_policy=self._factual_scope() if callable(self._factual_scope) else self._factual_scope
+            complete_policy=self._complete_factual_scope() if callable(self._complete_factual_scope) else self._complete_factual_scope
+            # Legacy composite expressions keep their original independent
+            # decision protocol; new partitioned observations have no context.
+            expressions=self._scope_expression_context(claims) if callable(self._scope_expression_context) else {}
+            single_decision=eligible(decision_policy,claims,scope_policy,complete_policy) and not expressions
+            if single_decision:
+                schema_policy=self._integrated_diagnostic_schema
+                schema_policy=(schema_policy() if callable(schema_policy) else schema_policy) is True
+                if schema_policy:
+                    from services.deep_research.source_version_review import eligible as schema_eligible
+                    diagnostic_binding=self._review_diagnostic_bindings
+                    schema_policy=((diagnostic_binding() if callable(diagnostic_binding) else diagnostic_binding) is True
+                                   and schema_eligible(claims))
+                parts_policy=self._review_reason_parts
+                parts_policy = parts_policy() if callable(parts_policy) else parts_policy
+                reason_parts_version = (1 if parts_policy is True else parts_policy
+                                        if type(parts_policy) is int and parts_policy in (1, 2, 3, 4) else 0)
+                reason_parts = schema_policy and bool(reason_parts_version)
+                fields_policy=self._review_source_fields
+                source_field_references=reason_parts and (fields_policy() if callable(fields_policy) else fields_policy) is True
+                prompt=decision_prompt(claims_text,evidence_text,
+                    **({'diagnostic_facts':True} if schema_policy else {}),
+                    **({'reason_parts':True} if reason_parts else {}))
+
+        if all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
+            # Do not inherit factual-entailment instructions for unexecuted choices.
+            prompt = f'''Verify these claims as a prospective experimental design. These targets are suggestions,
+not claims that the papers already performed this experiment. A proposed seed, split,
+factor level, recovery budget or measurement protocol needs NO quotation proving that
+the authors used it. Judge whether it is explicit, executable and coherent. Never fail
+a clearly labeled proposed choice merely because it is absent from the paper.
+Check scientific validity as well as completeness. A role can share definitions and
+protocol details with other target/context proposals; do not demand needless repetition.
+If a target also asserts an existing paper fact, check only that factual clause against
+its own evidenceRefs; shared context is not factual evidence. Reject invented paper facts.
+
+Claims:
+{claims_text}
+
+Evidence:
+{evidence_text}
+
+Return only a JSON array, one verdict per target:
+[{{"claimId":"ID","status":"passed" or "failed","reason":"brief specific finding","designAudit":{{}}}}]
+Missing configuration, contradictory choices and invalid parameter syntax fail.
+Do not require an unexecuted experiment to have results. Do not judge context claims as targets.'''
+
+        from services.deep_research.mechanism_grounding import guidance as mechanism_instructions
+        mechanism_review = mechanism_instructions(self._mechanism_grounding() if callable(self._mechanism_grounding)
+                            else self._mechanism_grounding)
+        if mechanism_review:
+            prompt += '\n'+mechanism_review
+        inference_review = (self._qualitative_inference() if callable(self._qualitative_inference)
+                            else self._qualitative_inference) is True
+        if inference_review and any(c.get('kind') == 'inference' for c in claims):
+            from services.deep_research.audience_rewrite import QUALITATIVE_INFERENCE_REVIEW
+            prompt += '\n' + QUALITATIVE_INFERENCE_REVIEW
+        if any(row.get('publicationIdentity') for row in evidence_map.values()):
+            from services.deep_research.publication_identity import GUIDANCE as publication_guidance
+            prompt += '\n' + publication_guidance
+        from services.deep_research.synthesis import SCIENTIFIC_TERMINOLOGY
+        prompt += '\n' + SCIENTIFIC_TERMINOLOGY
+        question = self._research_question() if callable(self._research_question) else self._research_question
+        comparison_version = (self._comparison_audit_version() if callable(self._comparison_audit_version)
+                              else self._comparison_audit_version)
+        scope_source_paths = (self._scope_source_paths() if callable(self._scope_source_paths)
+                              else self._scope_source_paths) is True
+        comparison_source_paths = (self._comparison_source_paths() if callable(self._comparison_source_paths)
+                                   else self._comparison_source_paths) is True
+        compact_policy = self._compact_factual_review
+        compact_review = (node in {'verify', 'verify_repair'} and single_decision
+            and source_field_references and scope_source_paths and comparison_source_paths
+            and type(comparison_version) is int and comparison_version in (4,5)
+            and (compact_policy() if callable(compact_policy) else compact_policy) is True)
+        experiment_policy = (self._experiment_intent_review() if callable(self._experiment_intent_review)
+                             else self._experiment_intent_review)
+        experiment_intent = experiment_policy is True or (type(experiment_policy) is int and experiment_policy in (1,2,3))
+        if experiment_intent and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            from services.deep_research.experiment_intent import guidance as experiment_guidance
+            prompt += '\n'+experiment_guidance(question,{c.get('designRole') for c in claims},
+                policy_version=experiment_policy if type(experiment_policy) is int and experiment_policy in (2,3) else 1)
+        if isinstance(question, str) and question.strip():
+            prompt += '\nOriginal research question (user objective, not source evidence):\n' + json.dumps(question, ensure_ascii=False)
+            prompt += ('\nJudge this target in its actual role; the research question supplies no scientific premise.'
+                       if compact_review else
+                       '\nCheck that each target fulfills its role in answering this actual objective. '
+                       'A limitation warning does not make a design capable of identifying the requested effect. '
+                       'If the user asks to isolate intervention effects, the primary comparison must hold '
+                       'recovery/optimization budgets and other interventions fixed. Unmatched native-pipeline '
+                       'budgets can be supplementary, but cannot replace that primary comparison. '
+                       'If the user explicitly studies whole pipelines or budgets themselves, judge that '
+                       'different estimand instead; do not impose an unrelated matched-budget question.')
+        
+        if any(c.get('designContractVersion') == 2 for c in [*claims, *proposal_context]):
+            prompt += ('\nFor groups, every necessary numeric threshold, rate and degree must appear as '
+                       'a numeric parameter with an actual value. Audit each action against its parameters: '
+                       'an omitted required parameter or numeric threshold disguised as a categorical choice '
+                       'fails. A named symbol in an operation is not a chosen value. Check consistency with '
+                       'the rendered control/treatment values and shared definitions.')
+            prompt += '\nexecutionSpec is proposed configuration, not paper evidence. The application renders ' \
+                      'its exact values into the published protocol; that deterministic suffix is not repeated here. ' \
+                      'Check EVERY field and original claim text for concrete meaning and consistency: dataset, ' \
+                      'scene selection, split, seeds, replication, formulas and uncertainty. Original prose must ' \
+                      'not contradict fields; do not require duplicate prose for an explicit typed choice. Structural validation ' \
+                      'does not certify meaningful choices. A scene-seed pair is not automatically independent ' \
+                      'of another seed from the same scene; fixed checkpoints with no retraining do not produce ' \
+                      'independent training replicates. Require paired groups within units. If resampling is proposed, ' \
+                      'resample actual independent clusters. A purely descriptive comparison with explicit scope ' \
+                      'needs no confidence interval, bootstrap or population-level inference. Still require concrete ' \
+                      'view aggregation, pairing and seed handling when there are multiple seeds. Mixed metric ' \
+                      'directions must be reported as a tradeoff, not automatically no improvement or worse. ' \
+                      'Quoting a vague choice does not make it concrete.'
+        if any(c.get('protocolContractVersion')==1 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY
+            prompt += '\n'+PROTOCOL_REVIEW_POLICY
+        if any(c.get('protocolContractVersion')==2 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_protocol import PROTOCOL_REVIEW_POLICY_V2
+            prompt += '\n' + PROTOCOL_REVIEW_POLICY_V2
+        if any(c.get('workflowContractVersion')==5 for c in [*claims,*proposal_context]):
+            from services.deep_research.experiment_workflow import WORKFLOW_CONTRACT_V5
+            prompt+='\n'+WORKFLOW_CONTRACT_V5
+        if any(c.get('workflowContractVersion') in (1, 2, 3, 4) for c in [*claims, *proposal_context]):
+            versions = sorted({c['workflowContractVersion'] for c in [*claims, *proposal_context]
+                if type(c.get('workflowContractVersion')) is int and c['workflowContractVersion'] in (1, 2, 3, 4)})
+            prompt += ('\nWorkflow contract ' + '/'.join(map(str, versions)) +
+                ' binds steps to exact data/budget/controls/groups definitions. '
+                'Check each new component creation rule, per-seed rebuilding or warm starts, '
+                'split-before-fitting, train-only/validation-only checkpoint selection and '
+                'consistency with all original prose. Nonempty fields do not prove these choices. '
+                'Fixed-start replications do not establish independent baseline training. '
+                'Contract 2/3 inputs must refer to actually available selected states: a framework name '
+                'does not identify a renderer, and a base model does not automatically contain a new enhancement. '
+                'Check the transformation and initial values of EVERY new trainable state, not just an RNG seed. '
+                'Fresh creation must specify shape/count and values/RNG; deriving requires valid input selectors.')
+            if 4 in versions:
+                prompt += ('\nWorkflow 4 defines baseline initialization before training and explicit '
+                    'stateDefinitions for every component. Independently enumerate ALL states required '
+                    'by the chosen representation, then check each name/dtype/shape/initializer, actual '
+                    'input axes, broadcasting, normalization and units. A valid distribution or full list '
+                    'is not scientific approval. Check whether the creation/rendering/training operations '
+                    'are compatible with those exact values; reject omitted states or conflicting prose.')
+        if any(c.get('budgetContractVersion') == 1 for c in [*claims, *proposal_context]):
+            prompt += '\nBudget contract 1 is the canonical baseline/recovery configuration. ' \
+                      'Check prose and all other definitions against these exact typed choices. ' \
+                      'matched means equal per-group recovery amounts in one unit; unmatched is ' \
+                      'explicitly confounded by budget and cannot answer a matched-budget comparison. ' \
+                      'Binary group ID digits correspond to factors order (0=control, 1=treatment). ' \
+                      'A finite baseline cap or grounded existing-asset selection is mandatory. ' \
+                      'Do not approve a narrative that contradicts its typed budget or promises an ' \
+                      'unsupported asset. Structure alone does not prove scientific fairness.'
+        if any(c.get('hypothesisContractVersion') == 1 for c in [*claims, *proposal_context]):
+            prompt += '\nHypothesis contract 1 links a prospective statement to one analysis ID and exact effect keys. ' \
+                      'Check BOTH original prose and typed statement against that actual analysis. ' \
+                      'explore permits estimates/uncertainty but no significance or equivalence verdict; ' \
+                      'test_zero needs an interval-based zero-effect decision; assess_equivalence needs ' \
+                      'declared positive metric tolerances and a valid uncertainty interval. A near-zero ' \
+                      'estimate or non-significance does not establish additivity, equivalence or independence. ' \
+                      'Reject prose that makes a stronger promise than the linked method; do not infer correctness ' \
+                      'from matching IDs, labels or nonempty formulas.'
+
+        from services.deep_research.asset_availability import requires_existing_asset
+        if any(requires_existing_asset(c) for c in claims):
+            prompt += '''
+For an existing-baseline budget target, a passed verdict MUST include assetAvailability:
+{"evidenceId":"own fulltext ID","quote":"exact passage from that evidence quote",
+ "assetQuote":"exact selected checkpoint/model-weights identity within availabilityQuote",
+ "availabilityQuote":"exact clause explicitly stating the checkpoint or pretrained weights are released/available",
+ "locator":"published https:// access locator appearing in quote"}.
+Verify that this SAME released asset matches the target's selection rule, method, scene
+and version. A paper saying its authors trained a model does NOT establish public weights.
+A code-only release, future release, available-on-request promise or guessed checkpoint
+cannot pass. Separate clauses about code availability and model training are insufficient.
+If no release/access evidence is supplied, fail this existing-asset choice; propose finite
+baseline training in a revision rather than inventing a locator or treating unknown as available.
+This audits a published reference, not a tested download; do not claim to have fetched it.
+'''
+
+        if any(c.get('designContractVersion') == 2 and c.get('designRole') == 'data' for c in claims):
+            prompt += '''
+For each v2 data target, distinguish freely proposed parameters from existing data availability.
+An inherited subset is NOT the entire parent dataset. Resolve the exact dataset/subset,
+unit and membership from that target's own fulltext evidenceRefs. "Same scenes as [reference]"
+alone establishes neither count nor names. Unknown availability must fail, not be guessed.
+A passed data verdict MUST additionally include dataAvailability:
+{"evidenceId":"own fulltext ID","quote":"exact passage from its quote",
+ "scopeQuote":"exact words within that passage identifying the relevant data/subset",
+ "availableCount":2,"countQuote":"two","availableNames":[]}
+This is schema, not evidence. For sorted_first, bind the actual available unit count using
+its exact numeric token (plain decimal digits or English one..twenty), and ensure requested
+count does not exceed it. Never quote a count of views, methods, or another dataset as scenes.
+For all mode, the proposed count must equal the entire count of that EXACT dataset/subset.
+Full-set selection needs no invented ordering or per-unit name list when the quoted complete
+benchmark scope is unambiguous. An inherited subset whose identity remains unresolved fails.
+For named mode, instead provide availableNames with actual selected names explicitly present
+in the quoted passage, including exact capitalization; count fields may be omitted.
+Do not silently lowercase a source label in this exact-quotation audit. Verify name membership
+and subset identity; a differently capitalized requested name must be resolved explicitly.
+Only when the SAME dataset/scene identity is established, add nameBindings:
+[{"selectedName":"requested label","sourceLabel":"exact label in availableNames"}].
+This permits ASCII letter-case differences only, never synonyms, path normalization, URLs,
+version IDs or fuzzy matches. Preserve the requested selection and literal source spelling.
+Do not fail named mode solely because an unasserted original view count, resolution or
+author-used split is unavailable. Ground the selected scene names and exact dataset;
+check the proposed reproducible split as a proposed choice, including nonempty selections.
+Any factual count, released asset or paper-attributed setting still requires its own evidence.
+Do not infer dataset existence/capacity from a proposed choice or another proposal. Missing
+fulltext support or unresolved subset identity fails even when every setting is concrete.
+The dataAvailability object is an internal audit, not new experimental results.
+'''
+            if type(experiment_policy) is int and experiment_policy == 3:
+                prompt += ('\nEvidence includes literal-name candidates for named data targets. These only '
+                    'identify OWN visible quotes containing selected labels; they do not establish semantic '
+                    'membership. Bind dataAvailability to the SAME name-bearing quotation after checking '
+                    'dataset/subset identity. A parent-only citation cannot bind a scene name mentioned only '
+                    'in another quote. Preserve exact source labels/quotes; fail if no candidate establishes '
+                    'the relation. Never combine an evidenceId from one row with words from another.\n')
+
+        if any(c.get("kind") in {"proposal", "suggestion", "hypothesis"} for c in claims):
+            from services.deep_research.experimental_reasoning import design_requirements
+            from services.deep_research.design_review_policy import REVIEW_DESIGN_POLICY, REVIEW_FACTORIAL_REFERENCE
+            from services.deep_research.review_alignment import enabled as aligned_review,DESIGN_POLICY as aligned_design,factorial_reference
+            design_policy=aligned_design if aligned_review(review_version) else REVIEW_DESIGN_POLICY
+            if config_mode:
+                prompt += '\nCheck that the target configurations are executable and mutually consistent. ' \
+                          'Check parameter syntax, explicit intervention levels, split/seed rules, budgets ' \
+                          'and measurement procedures. Reject a placeholder such as "pre-register a value". ' \
+                          'Use the shared scientific definitions for consistency, but do not rederive their ' \
+                          'formulas or issue verdicts for context statements.'
+            else:
+                prompt += '\nCheck target scientific assertions against the complete proposed configuration. ' \
+                          'Reject incompatible sampling units, insufficient independent replication, invalid ' \
+                          'metric signs and decision rules. Explain a failure concisely; no full derivation ' \
+                          'is needed in the returned reason. Shared context is not itself verified by this call.\n' \
+                          + factorial_reference(review_version)
+                if any(c.get('designRole') in {'controls', 'steps'} for c in claims):
+                    prompt += ('\nFor initialization/rendering targets, enumerate the states required by the '
+                        'chosen representation and check that EACH has a defined count/shape and initial '
+                        'value/distribution or valid source transformation. A seed and one scalar do not '
+                        'initialize a whole representation. A general framework name does not specify an '
+                        'actual compatible renderer/evaluator. Fail the target when these definitions are '
+                        'missing; do not turn the omission into a harmless limitation. Check training and '
+                        'rendering losses/parameter updates against that actual state.')
+            prompt += '\nOther proposed statements, for consistency only (not evidence and not verdict targets):\n' + json.dumps(wire_context, ensure_ascii=False, separators=(',', ':'))
+            if any(c.get('designRole') for c in claims):
+                prompt += '\nFor every designRole, verify BOTH logical correctness AND fulfillment of its entire ' \
+                          'requirement below. A role label, heading or vague promise is not fulfillment. Fail the ' \
+                          'specific claim if its budget, split, procedure or decision criterion is unspecified. ' \
+                          'Use the other target claims for shared definitions but not as factual evidence.\n' + design_requirements(
+                              metric_domains, roles={c.get('designRole') for c in claims}, policy=design_policy)
+                from services.deep_research.design_audit import design_slots_for_claim
+                required_slots = {c['designRole']: slots for c in claims if c.get('designRole')
+                                  and (slots := design_slots_for_claim(c, metric_domains)) is not None}
+                audit_prompt = ('\nPassed verdicts require FLAT designAudit with these slot keys: '
+                           + json.dumps(required_slots, separators=(',', ':'))
+                           + '. Each slot is {"claimId":"target/context proposal ID","quote":"exact concrete choice"}. '
+                           'Missing/vague choices use null and fail. Paper facts cannot supply configuration. '
+                           'Check that each choice fulfills the entire slot, not mere keyword presence. '
+                           'Promises such as "fixed split", "same seed", "measure FPS" or "predeclare a tolerance" fail. '
+                           'For discontinuous text use {"quotes":[{"claimId":"ID","quote":"exact substring"}]} '
+                           'with 1 to 32 segments. Copy punctuation exactly; never join, summarize or rewrite. '
+                           'Every segment must match its source and together cover the whole slot. No mixed forms.')
+                from services.deep_research.design_audit import audit_field_roots
+                roots = audit_field_roots(dict.fromkeys(slot for slots in required_slots.values() for slot in slots),
+                    workflow_v4=any(c.get('workflowContractVersion') in (4,5) for c in [*claims, *proposal_context]))
+                controls_contract = ('a supported protocol contract' if any(c.get('protocolContractVersion') == 2
+                    for c in [*claims, *proposal_context]) else 'protocol contract 1')
+                audit_prompt += ('\nTyped choices use {"ref":{"claimId":"target/context ID",'
+                           '"path":["executionSpec","existing allowed root"]}}; the server resolves the '
+                           'UNCHANGED existing value. For 1-32 choices use {"fields":[{'
+                           '"claimId":"ID","path":["executionSpec","existing allowed root"],"value":"exact typed value"}]}. '
+                           'Path elements are object keys or zero-based integer list indices. Never quote JSON '
+                           'serialization or mix ref/fields with quote/quotes. Allowed slot roots (under '
+                           'executionSpec, source role required): ' + json.dumps(roots, separators=(',', ':'))
+                           + '. Other slots use literal quotes. Controls require ' + controls_contract + '; budget '
+                           'requires budget contract 1; step fields require a supported workflow contract. '
+                           'per_group_steps MUST bind recovery; baseline-only refs/fields fail. All choices '
+                           'together must fulfill the ENTIRE slot; bindings do not prove scientific correctness.')
+                skeleton = [{'claimId': c['claimId'], 'status': 'failed',
+                    'reason': '',
+                    'designAudit': {slot: None for slot in required_slots.get(c.get('designRole'), ())},
+                    **({'dataAvailability': None}
+                       if c.get('designContractVersion') == 2 and c.get('designRole') == 'data' else {}),
+                    **({'assetAvailability': None} if requires_existing_asset(c) else {})}
+                    for c in claims]
+                audit_prompt += '\nFill this exact per-target response skeleton. Change status only after checking. ' \
+                          'Replace a null slot with a supported quote, quotes or fields binding ' \
+                          'only if such a choice is already written; otherwise keep null and fail. ' \
+                          'Do not replace slot keys with role names or arrays. Symbolic placeholders such as ' \
+                          'an unspecified threshold or degree do not define actual intervention levels. ' \
+                          'A dataAvailability null must be replaced with the source-bound object specified above ' \
+                          'before a data target can pass; designAudit fields alone do not establish availability.\n' \
+                          + json.dumps(skeleton, ensure_ascii=False, separators=(',', ':'))
+                # Hypothesis/limits have no configuration-audit slots. Keep
+                # their complete scientific requirements and context, without
+                # unrelated field-binding schemas for other roles.
+                if required_slots:
+                    prompt += audit_prompt
+        # Projected settings are ordinary facts. The parent scope review
+        # checks cross-paper entailment against the complete evidence set.
+        comparison_enabled=not scope_observations and (self._comparison_reasoning() if callable(self._comparison_reasoning)
+                            else self._comparison_reasoning) is True
+        if comparison_enabled:
+            from services.deep_research.comparison_reasoning import audit_scope,audit_prompt as comparison_audit_prompt
+            comparison_targets={c['claimId']:audit_scope(c,evidence) for c in claims if audit_scope(c,evidence)}
+            if comparison_targets:
+                if compact_review:
+                    from services.deep_research.factual_review import compact_comparison_prompt
+                    prompt += compact_comparison_prompt(comparison_targets)
+                else:
+                    prompt+=comparison_audit_prompt(comparison_targets, comparison_version,
+                        **({'source_paths':True} if comparison_source_paths else {}),
+                        **({'single_decision':True} if single_decision else {}))
+        scope_enabled=(self._factual_scope() if callable(self._factual_scope) else self._factual_scope) is True
+        complete_scope=(self._complete_factual_scope() if callable(self._complete_factual_scope)
+                        else self._complete_factual_scope) is True
+        if scope_enabled:
+            from services.deep_research.factual_scope import audit_prompt as scope_prompt
+            targets=[c['claimId'] for c in claims if c.get('kind') in {'reported','inference'}]
+            if targets:
+                if compact_review:
+                    from services.deep_research.factual_review import COMPACT_SCOPE_PROMPT
+                    prompt += COMPACT_SCOPE_PROMPT
+                else:
+                    prompt+=scope_prompt(targets,**({'complete_statement':True} if complete_scope else {}),
+                        **({'single_decision':True} if single_decision else {}),
+                        **({'source_paths':True} if scope_source_paths else {}))
+        expression_context = (self._scope_expression_context(claims)
+                              if callable(self._scope_expression_context) else {})
+        if expression_context:
+            from services.deep_research.scope_expression_review import guidance as expression_guidance
+            prompt += expression_guidance(expression_context)
+        reporting_policy=self._reporting_ownership
+        reporting_enabled=(reporting_policy() if callable(reporting_policy) else reporting_policy) is True
+        if reporting_enabled and not advice_mode:
+            from services.deep_research.reporting_ownership import targets as reporting_targets,guidance as reporting_guidance
+            required_reporting={c['claimId']:reporting_targets(c,evidence) for c in claims if reporting_targets(c,evidence)}
+            if required_reporting:prompt+=reporting_guidance(required_reporting)
+        attribution_enabled=(self._result_attribution() if callable(self._result_attribution)
+                             else self._result_attribution) is True
+        if attribution_enabled:
+            from services.deep_research.result_attribution import targets as result_targets, audit_prompt as result_prompt
+            required={c['claimId']: result_targets(c) for c in claims if result_targets(c)}
+            if required:
+                prompt+=result_prompt(required)
+        field_bindings=(self._audit_source_fields() if callable(self._audit_source_fields)
+                        else self._audit_source_fields) is True
+        target_bindings=(self._audit_target_fields() if callable(self._audit_target_fields)
+                         else self._audit_target_fields) is True
+        has_factual_targets=any(c.get('kind') in {'reported','inference'} for c in claims)
+        if not compact_review and field_bindings and (scope_enabled or comparison_enabled) and (has_factual_targets or not target_bindings):
+            from services.deep_research.audit_source_fields import GUIDANCE as source_field_guidance
+            if scope_source_paths:
+                source_field_guidance=source_field_guidance.replace(
+                    'Use only one representation per premise: evidenceId+path OR evidenceId+quote, never both.',
+                    'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.')
+            if comparison_source_paths:
+                source_field_guidance=source_field_guidance.replace(
+                    'For scopeAudit premises require evidenceId+path only; comparisonAudit may use path OR quote, never both.',
+                    'For scopeAudit and comparisonAudit premises/condition sides use evidenceId+path, never retype a quotation; condition sides retain their literal value.')
+            prompt+='\n'+(source_field_guidance.replace('comparisonAudit.differences','comparisonAudit.conditionDifferences')
+                if type(comparison_version) is int and comparison_version in (4,5) else source_field_guidance)
+        if not compact_review and target_bindings and scope_enabled and has_factual_targets:
+            from services.deep_research.audit_source_fields import TARGET_GUIDANCE
+            prompt+='\n'+TARGET_GUIDANCE
+        from services.deep_research.prospective_review import enabled as prospective_review_enabled, policy as prospective_review_policy
+        if prospective_review_enabled(review_version) and all(
+                c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims):
+            prompt += '\n' + prospective_review_policy(review_version)
+        from services.deep_research.configuration_consistency import enabled as consistent, facts as config_facts, REVIEW as consistency_review
+        consistency_version=(self._configuration_consistency() if callable(self._configuration_consistency)
+                             else self._configuration_consistency)
+        if consistent(consistency_version) and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            derived=config_facts([*wire_claims,*wire_context])
+            if derived:
+                prompt+='\n'+consistency_review+'\nDerived configuration meanings (not evidence):\n'+json.dumps(derived,ensure_ascii=False,separators=(',',':'),allow_nan=False)
+        from services.deep_research.review_alignment import enabled as aligned_review,declaration_links
+        if aligned_review(review_version) and all(c.get('kind') in {'proposal','suggestion','hypothesis'} for c in claims):
+            links=declaration_links([*wire_claims,*wire_context])
+            if links:
+                prompt+='\nDeclared key presence (not scientific approval):\n'+json.dumps(links,ensure_ascii=False,separators=(',',':'))
+        from services.deep_research.experiment_review_envelope import enabled as review_envelope,build as build_review
+        envelope_version=(self._prospective_envelope() if callable(self._prospective_envelope)
+                          else self._prospective_envelope)
+        full_review_inputs=advice_mode or review_envelope(envelope_version,review_version,claims)
+        factual_batch_policy=self._comparison_review_batches
+        factual_batch_policy=(factual_batch_policy() if callable(factual_batch_policy) else factual_batch_policy) is True
+        complete_factual_batch=factual_batch_policy and single_decision and node in {'verify','verify_repair'}
+        if full_review_inputs and not advice_mode:
+            prompt=build_review(claims_text=claims_text,context=wire_context,question=question,
+                evidence_marker=evidence_text,metric_domains=metric_domains,config_mode=config_mode,
+                version=envelope_version)
+        if complete_factual_batch:
+            full_review_inputs=True
+        device_memory = False
+        direct_device_memory = False
+        preflight_ids = ()
+        recheck_ids = ()
+        if advice_mode:
+            from services.deep_research.general_advice import is_fixed_deployment_preflight, prompt as advice_prompt
+            policy = self._device_memory_advice
+            policy = policy() if callable(policy) else policy
+            device_memory = policy is True or type(policy) is int and policy in (2, 3, 4, 5)
+            direct_device_memory = type(policy) is int and policy == 5
+            if type(policy) is int and policy in (4, 5):
+                preflight_ids = tuple(claim['claimId'] for claim in claims if is_fixed_deployment_preflight(claim))
+            if callable(self._benchmark_recheck_targets):
+                recheck_ids = self._benchmark_recheck_targets(question, claims)
+            prompt=advice_prompt(claims_text,question,evidence_text,device_memory=device_memory,
+                                 deployment_preflight=type(policy) is int and policy in (3, 4, 5),
+                                 preflight_ids=preflight_ids, recheck_ids=recheck_ids)
+            if direct_device_memory:
+                prompt += ('\nBind a direct measured device-memory value. A buffer requirement, capacity, estimate '
+                           'or file size is insufficient. Keep training and rendering measurements separate.\n')
+        version_policy=self._source_version_review
+        version_policy=(version_policy() if callable(version_policy) else version_policy) is True
+        if version_policy:
+            from services.deep_research.source_version_review import eligible,GUIDANCE
+            if eligible(claims):prompt+='\n'+GUIDANCE
+        same_page_rate = self._same_page_rate_review
+        if (same_page_rate() if callable(same_page_rate) else same_page_rate) and any(
+                re.search(r'同页|\bsame[- ]page\b', claim['text'], re.I) for claim in claims):
+            prompt += ('\nFor an accompanying-prose claim compare each statement to its own revision. '
+                       'Different PDF page numbers across revisions do not contradict a relative same-page claim.')
+        diagnostic_policy=self._review_diagnostic_bindings
+        diagnostic_policy=(diagnostic_policy() if callable(diagnostic_policy) else diagnostic_policy) is True
+        from services.deep_research.source_version_review import eligible as diagnostic_eligible
+        diagnostic_policy=diagnostic_policy and diagnostic_eligible(claims)
+        bind_repair_rejection = reason_parts and reason_parts_version == 4 and node == 'verify_repair'
+        if diagnostic_policy:
+            parameter_policy = self._diagnostic_parameter_ids
+            parameter_policy = parameter_policy() if callable(parameter_policy) else parameter_policy
+            from services.deep_research.review_diagnostics import GUIDANCE as diagnostic_guidance
+            if reason_parts:
+                from services.deep_research.review_reason_parts import GUIDANCE as diagnostic_guidance
+                if source_field_references:
+                    from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
+            prompt+='\n'+diagnostic_guidance
+            if reason_parts and reason_parts_version in (2, 3, 4):
+                from services.deep_research.review_reason_parts import NO_NEW_EXPOSITORY_COUNTS
+                prompt += '\n' + NO_NEW_EXPOSITORY_COUNTS
+                if reason_parts_version in (3, 4):
+                    from services.deep_research.review_reason_parts import SUPPORTED_WITHOUT_NARRATION
+                    prompt += '\n' + SUPPORTED_WITHOUT_NARRATION
+            elif parameter_policy in (2, 3, 4, 5):
+                prompt += ('\nAvoid adding counts of the listed steps or source facts for exposition. '
+                           'Describe the steps directly and retain any quantities required for the verdict.\n')
+        if scope_observations and source_field_references:
+            prompt += ('\nFor reasonParts and scopeAudit.premises, copy a path exactly from '
+                       'availableSourcePaths for the cited evidence ID. Use a nonempty string leaf.\n')
+        if bind_repair_rejection:
+            from services.deep_research.factual_decision import REPAIR_REJECTION_GUIDANCE
+            prompt += '\n' + REPAIR_REJECTION_GUIDANCE
+        if representation_context:
+            from services.deep_research.workflow_representation_review import POLICY as representation_review_policy
+            prompt += '\n' + representation_review_policy + '\nExact unapproved shared representation:\n' + json.dumps(
+                representation_context, ensure_ascii=False, separators=(',', ':'))
+            full_review_inputs = True
+        template = prompt
+        source_keys = ('workId', 'versionId', 'sourceTitle')
+        source_registry = {}
+        source_aliases = {}
+        for row in evidence_map.values():
+            identity = tuple(row.get(key) for key in source_keys)
+            if identity not in source_aliases:
+                alias = f'P{len(source_aliases) + 1}'
+                source_aliases[identity] = alias
+                source_registry[alias] = {key: row.get(key) for key in source_keys}
+                if row.get('publicationIdentity'):
+                    source_registry[alias]['publicationIdentity'] = row['publicationIdentity']
+
+        def render_evidence(rows):
+            packed, used = {}, set()
+            for row in rows:
+                alias = source_aliases[tuple(row.get(key) for key in source_keys)]
+                used.add(alias)
+                packed[row['evidenceId']] = {
+                    **{key: value for key, value in row.items()
+                       if key not in (*source_keys, 'evidenceId', 'publicationIdentity')}, 'source': alias}
+            view = {'sources': {key: value for key, value in source_registry.items() if key in used},
+                    'evidence': packed}
+            if scope_observations and source_field_references:
+                from services.deep_research.review_source_fields import visible_paths
+                view['availableSourcePaths'] = {row['evidenceId']: visible_paths(row) for row in rows}
+            if type(experiment_policy) is int and experiment_policy == 3:
+                from services.deep_research.membership_candidates import named_membership_candidates
+                candidates = named_membership_candidates(wire_claims,
+                    [e for e in wire_evidence if e['evidenceId'] in packed])
+                if candidates:
+                    view['literalNameCandidatesNotMembershipProof'] = candidates
+            compact_sources=self._comparison_repair_review_output
+            compact_sources=(compact_sources() if callable(compact_sources) else compact_sources) is True
+            if compact_sources and complete_factual_batch:
+                # Reuse the existing round-trip checked input codec. Identical
+                # table packets/contexts are sent once, with no quote clipping,
+                # field deletion or change to the restored diagnostic paths.
+                from services.deep_research.shared_strings import input_text
+                rendered=input_text(view)
+            else:
+                rendered=json.dumps(view,ensure_ascii=False,separators=(',', ':'))
+            return template.replace(evidence_text,rendered,1)
+
+        def context_for(batch):
+            selected = {c['claimId'] for c in batch}
+            return [*proposal_context, *[{
+                key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
+                    'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
+                    'hypothesisContractVersion', 'protocolContractVersion', 'workflowContractVersion') if key in c
+            } for c in claims if c['claimId'] not in selected
+                and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
+
+        def split_before_dispatch():
+            policy = self._review_batch_planning() if callable(self._review_batch_planning) else self._review_batch_planning
+            if (not _planned and full_review_inputs and type(policy) is int and policy == 1
+                    and all(c.get('kind') in {'proposal', 'suggestion', 'hypothesis'} for c in claims)):
+                from services.deep_research.review_batches import plan
+                groups = plan(claims, lambda batch: self._check_batch(batch, evidence, context_for(batch),
+                    node=node, _preview=True))
+                if groups is not None:
+                    verdicts = []
+                    for batch in groups:
+                        verdicts.extend(self._check_batch(batch, evidence, context_for(batch), node=node, _planned=True))
+                    return verdicts
+            midpoint = len(claims) // 2
+            verdicts = []
+            for batch, siblings in ((claims[:midpoint], claims[midpoint:]),
+                                    (claims[midpoint:], claims[:midpoint])):
+                context = [*proposal_context, *[{
+                    key: c[key] for key in ('claimId', 'text', 'kind', 'conditions',
+                        'designRole', 'executionSpec', 'designContractVersion', 'budgetContractVersion',
+                        'hypothesisContractVersion','protocolContractVersion','workflowContractVersion') if key in c
+                } for c in siblings if c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}]]
+                verdicts.extend(self._check_batch(batch, evidence, context, node=node,
+                                                  scope_observations=scope_observations))
+            return verdicts
+
+        if _preview:
+            # A factual-decision preview also renders every own source field.
+            # It does not select a batch, fit/trim evidence, reserve or dispatch.
+            if not (full_review_inputs or single_decision):
+                raise ValueError('Preview requires complete review inputs')
+            full_prompt = render_evidence([{"evidenceId": key, **value} for key, value in evidence_map.items()])
+            return {'inputBytes': len(full_prompt.encode('utf8')), 'maxInputBytes': byte_limit}
+
+        try:
+            if full_review_inputs:
+                # The original surrounding context resolves method subjects.
+                # Split complete targets BEFORE optional-context stripping.
+                rows=[{"evidenceId": key, **value} for key,value in evidence_map.items()]
+                full_prompt=render_evidence(rows)
+                if len(full_prompt.encode('utf8'))>byte_limit:
+                    if len(claims)>1:
+                        return split_before_dispatch()
+                    return [{'claimId':claims[0]['claimId'],'status':'failed',
+                        'reason':'完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。',
+                        'executionState':'not_started','reviewInputCapacity':{
+                            'inputBytes':len(full_prompt.encode('utf8')),'maxInputBytes':byte_limit}}]
+            prompt, visible_evidence = fit_evidence_prompt(
+                [{"evidenceId": key, **value} for key, value in evidence_map.items()], render_evidence,
+                max_bytes=byte_limit)
+        except ValueError as exc:
+            if str(exc) == 'prompt_fixed_content_too_large' and len(claims) > 1:
+                return split_before_dispatch()
+            if str(exc) == 'prompt_fixed_content_too_large':
+                from services.deep_research.contracts import BudgetExhaustedError
+                raise BudgetExhaustedError('verificationPromptBytes', byte_limit,
+                    len(render_evidence([]).encode('utf-8'))) from exc
+            raise DeepResearchError('invalid_verification_input',
+                                    '声明核验输入无效；已取得的资料仍保留。') from exc
+        # Do not spend a model call on a multi-target request already known to
+        # omit its required evidence. Preserve full sibling definitions as
+        # consistency context; each target keeps its own evidence permissions.
+        if referenced - {row['evidenceId'] for row in visible_evidence}:
+            if len(claims) > 1:
+                return split_before_dispatch()
+            return [{'claimId': claims[0]['claimId'], 'status': 'failed',
+                     'reason': '请求容量限制导致引用证据未完整提供，不能确认该声明。'}]
+        visible_evidence = restore_visible_evidence(visible_evidence, reverse_aliases)
+        result = None
+        try:
+            bounded_review=(self._bounded_factual_review() if callable(self._bounded_factual_review)
+                            else self._bounded_factual_review) is True
+            from services.deep_research.factual_review import eligible as review_eligible,OPTION as REVIEW_OPTION,NAMED_TABLE_OPTION
+            review_options={REVIEW_OPTION:True} if bounded_review and node=='verify' and review_eligible(claims) else {}
+            named_table = self._named_table_review
+            named_table = named_table() if callable(named_table) else named_table
+            if review_options and named_table is True and len(claims) == 1 and claims[0].get('tableBindings'):
+                review_options = {NAMED_TABLE_OPTION: True}
+            direct_review = self._direct_comparison_review
+            direct_review = (direct_review() if callable(direct_review) else direct_review) is True
+            output_limit = 4000
+            if (direct_review and complete_factual_batch and node == 'verify'
+                    and review_eligible(claims, max_targets=self._comparison_target_limit(node))):
+                from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
+                review_options = {DIRECT_REVIEW_OPTION: True}
+                if (len(claims) == 1 and self._bounded_beginner_lead is not None
+                        and claims[0]['claimId'] == self._bounded_beginner_lead()):
+                    output_limit = 1024
+            repair_output=self._comparison_repair_review_output
+            repair_output=(repair_output() if callable(repair_output) else repair_output) is True
+            if repair_output and complete_factual_batch and node=='verify_repair' and review_eligible(claims):
+                from services.deep_research.factual_review import REPAIR_OUTPUT_OPTION
+                review_options[REPAIR_OUTPUT_OPTION]=True
+            result = self._invoke(
+                run_id=self._run_id,
+                node=node,
+                prompt=prompt,
+                extra_body={"max_tokens": output_limit, "temperature": 0.0,**review_options},
+                use_reserve=True,  # Use reserve pool for verification
+            )
+            
+            if result.get('notStarted')=='factual_review_time_budget':
+                return [{'claimId':c['claimId'],'status':'failed',
+                    'reason':'剩余时间不足以完成独立核验及最终覆盖检查，本条尚未核验。',
+                    'executionState':'not_started','reviewTimeAdmission':result['admission']} for c in claims]
+            content = result.get("content", "[]")
+            from services.deep_research.graph import _safe_parse_json
+            parsed = _safe_parse_json(content)
+            isolated_batch_failures={}
+            if single_decision:
+                from services.deep_research.factual_decision import decode
+                singleton_policy=self._singleton_factual_response
+                singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
+                repair_binding = ({'repair_rejection': True,
+                    'targets': {c['claimId']: c for c in json.loads(claims_text)}}
+                    if bind_repair_rejection else {})
+                def decode_one(rows,targets):
+                    if source_field_references:
+                        from services.deep_research.review_source_fields import resolve_response
+                        rows=resolve_response(rows,targets,visible_evidence,reverse_aliases)
+                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'compact_supported':True} if reason_parts and reason_parts_version in (3, 4) else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
+                        if singleton_policy and len(targets)==1 else {}), **repair_binding)
+                if complete_factual_batch and len(claims)>1:
+                    from services.deep_research.comparison_review_batches import decode_targets
+                    parsed,isolated_batch_failures=decode_targets(parsed,claims,result,lambda rows,c:decode_one(rows,[c]))
+                else:
+                    parsed=decode_one(parsed,claims)
+            
+            expected = {claim['claimId'] for claim in claims} - isolated_batch_failures.keys()
+            if ((result.get('finishReason') == 'length' and not isolated_batch_failures) or not isinstance(parsed, list)
+                    or len(parsed) != len(expected)
+                    or any(not isinstance(v, dict) or v.get('status') not in {'passed', 'failed'}
+                           for v in parsed)
+                    or {v.get('claimId') for v in parsed} != expected):
+                raise DeepResearchError('invalid_verification_response',
+                                        '声明核验未完整返回；不能据此判断材料不足。',
+                                        {'responseState': 'received_invalid'})
+            from services.deep_research.design_audit import validate_design_audit
+            parsed = [restore_verdict_evidence(v, reverse_aliases,
+                **({'reporting_ownership':True} if reporting_enabled else {}),
+                **({'advice':True} if advice_mode else {}),
+                **({'device_memory':True} if advice_mode and device_memory else {}),
+                **({'scope_expression':True} if expression_context else {})) for v in parsed]
+            by_id = {c['claimId']: c for c in claims}
+            if diagnostic_policy:
+                from services.deep_research.review_diagnostics import bind as bind_diagnostic, parameter_options
+                structure_policy=getattr(self,'_diagnostic_target_structure',False)
+                structure_policy=structure_policy() if callable(structure_policy) else structure_policy
+                count_policy=self._diagnostic_revision_row_counts
+                count_policy=(count_policy() if callable(count_policy) else count_policy) is True
+                stepwise_policy = self._diagnostic_stepwise_quantities
+                stepwise_policy = stepwise_policy() if callable(stepwise_policy) else stepwise_policy
+                parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
+                    **parameter_options(parameter_policy),
+                    **({'target_structure':structure_policy}
+                       if structure_policy is True or type(structure_policy) is int and structure_policy == 2 else {}),
+                    **({'revision_row_counts':True} if count_policy else {}),
+                    **({'stepwise_quantities':True} if stepwise_policy is True else {})) for v in parsed]
+            if comparison_enabled:
+                from services.deep_research.comparison_reasoning import normalize_audit_scope
+                target_by_id = {c['claimId']: c for c in claims}
+                parsed = [normalize_audit_scope(target_by_id[v['claimId']], v, visible_evidence,
+                          version=comparison_version) for v in parsed]
+            from services.deep_research.rejection_audit import enabled as rejection_binding,bind as bind_rejection
+            if full_review_inputs and not advice_mode and not complete_factual_batch and rejection_binding(envelope_version):
+                if envelope_version==10:
+                    from services.deep_research.review_field_refs import bind_refs as bind_rejection
+                parsed=[bind_rejection(v,[*json.loads(claims_text),*wire_context]) for v in parsed]
+            visible_ids = {row["evidenceId"] for row in visible_evidence}
+            for verdict in parsed:
+                if verdict['status'] != 'passed':
+                    continue
+                target = by_id[verdict['claimId']]
+                if advice_mode:
+                    from services.deep_research.general_advice import validate as validate_advice
+                    errors=validate_advice(target,verdict,visible_evidence,device_memory=device_memory,
+                                           fixed_deployment_preflight=target['claimId'] in preflight_ids,
+                                           direct_device_memory=direct_device_memory,
+                                           benchmark_recheck=target['claimId'] in recheck_ids)
+                    if errors:
+                        verdict['status']='failed'
+                        verdict['reason'] = ('显存选择缺少可核对的实际显存测量。文件大小不能用来推断显存收益。'
+                            '可给出先在目标设备实测、再依据结果选择的建议。'
+                            if 'device_memory_premise_not_established' in errors
+                            else '普通建议的用途或自身来源尚未核实：' + ', '.join(errors))
+                    continue
+                if set(target.get('evidenceRefs', [])) - visible_ids:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '请求容量限制导致引用证据未完整提供，不能确认该声明。'
+                    continue
+                if reporting_enabled:
+                    from services.deep_research.reporting_ownership import validate as validate_reporting
+                    reporting_errors=validate_reporting(target,verdict,visible_evidence,identity_evidence=evidence)
+                    if reporting_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='自报数值的论文来源尚未核实：'+', '.join(reporting_errors)
+                        continue
+                if comparison_enabled:
+                    from services.deep_research.comparison_reasoning import validate_audit
+                    comparison_errors=validate_audit(target,verdict,visible_evidence,
+                        source_field_bindings=field_bindings,version=comparison_version)
+                    if comparison_errors and not (comparison_version == 5 and scope_enabled and field_bindings
+                            and comparison_errors == ['comparison_row_premise_missing']):
+                        verdict['status']='failed'
+                        verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(comparison_errors)
+                        continue
+                if scope_enabled:
+                    from services.deep_research.factual_scope import validate_audit as validate_scope
+                    scope_errors=validate_scope(target,verdict,visible_evidence,
+                        source_field_bindings=field_bindings,target_field_bindings=target_bindings,
+                        **({'complete_statement':True} if complete_scope else {}),
+                        **({'source_paths':True} if scope_source_paths else {}))
+                    if scope_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='结论范围或必要条件尚未核实：'+', '.join(scope_errors)
+                        continue
+                if comparison_enabled and comparison_errors:
+                    from services.deep_research.comparison_reasoning import comparison_with_verified_row_premises
+                    reuse = comparison_with_verified_row_premises(target, verdict, visible_evidence)
+                    remaining = validate_audit(target,reuse,visible_evidence,
+                        source_field_bindings=field_bindings,version=comparison_version)
+                    if remaining:
+                        verdict['status']='failed'
+                        verdict['reason']='比较条件或推断前提尚未核实：'+', '.join(remaining)
+                        continue
+                    verdict.update(reuse)
+                if attribution_enabled:
+                    from services.deep_research.result_attribution import validate_audit as validate_attribution
+                    attribution_errors=validate_attribution(target,verdict,visible_evidence)
+                    if attribution_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='结果与实验用途的来源归属尚未核实：'+', '.join(attribution_errors)
+                        continue
+                if target.get('claimId') in expression_context:
+                    from services.deep_research.scope_expression_review import validate as validate_expression
+                    expression_errors=validate_expression(target,expression_context[target['claimId']],verdict,visible_evidence)
+                    if expression_errors:
+                        verdict['status']='failed'
+                        verdict['reason']='评估设置或证据推导关系尚未核实：'+', '.join(expression_errors)
+                        continue
+                missing = validate_design_audit(by_id[verdict['claimId']], verdict, [*claims, *proposal_context], metric_domains,
+                    **({'direct_fields':True} if type(review_version) is int and review_version in (2,3) else {}))
+                if missing:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '实验方案缺少可核对的具体配置：' + ', '.join(missing)
+                    continue
+                from services.deep_research.data_availability import validate_data_availability
+                availability_errors = validate_data_availability(target, verdict, visible_evidence)
+                if availability_errors:
+                    verdict['status'] = 'failed'
+                    verdict['reason'] = '所选数据范围或可用数量尚未核实：' + ', '.join(availability_errors)
+            if isolated_batch_failures:
+                combined={**isolated_batch_failures,**{v['claimId']:v for v in parsed}}
+                return [combined[c['claimId']] for c in claims]
+            return parsed
+            
+        except DeepResearchError as exc:
+            if (exc.code=='invalid_verification_response'
+                    and exc.details.get('responseState')=='received_invalid' and isinstance(result,dict)):
+                from services.deep_research.review_response_failure import eligible as isolate_invalid, unresolved
+                policy=self._known_single_review_failure
+                policy=(policy() if callable(policy) else policy) is True
+                if policy:
+                    isolation=self._isolate_factual_claims
+                    isolation=(isolation() if callable(isolation) else isolation) is True
+                    if isolate_invalid(policy,isolation,claims,result,exc,node):
+                        return [unresolved(claims[0],result)]
+            # Unknown calls, scope/budget/cancel errors and invalid inputs retain
+            # their original execution semantics. Never resend a malformed reply.
+            raise
+        except Exception as exc:
+            logger.exception("Semantic check failed for run %s", self._run_id)
+            raise DeepResearchError('invalid_verification_response',
+                                    '声明核验未完成；已取得的资料仍保留。') from exc

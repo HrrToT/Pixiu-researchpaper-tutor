@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "6371880656e1f8a4d579b61d203eec98af66b542",
+  "promptVersion": "dr-v2.20261116.476",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 11057,
+    "input_tokens": 9764,
+    "output_tokens": 1293
+  },
+  "unitValid": true,
+  "unitErrors": [],
+  "applicationDataUnchanged": true,
+  "automaticProviderRetry": false,
+  "preflightFailures": {
+    "count": 2,
+    "modelCalls": 0,
+    "providerIntents": 0,
+    "reason": "Temporary runner replaced authoritative task/run IDs; restored original IDs in separate database before first send"
+  },
+  "contentReview": {
+    "accepted": false,
+    "stateCount": 6,
+    "improvements": [
+      "No prematurely initialized codebooks/indices",
+      "Concrete opacity and rotation constants",
+      "DC and remaining 45 SH channels separated"
+    ],
+    "remainingIssues": [
+      "Selected input remains scene/image bundle; point-row axis cardinality is not defined",
+      "Nearest-neighbor scale method omits neighbor count, aggregation, metric and scale parameterization",
+      "Unresolved author omissions are mixed with already specified experimental choices, including fixed DC treatment"
+    ],
+    "boundary": "Structural unit validity is not executable method acceptance; constants and mathematical compatibility still require scientific review"
+  },
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "audit": "tmp/initialization-recipe-476-public-review-20261116-bound/audit.json",
+  "rawResult": "tmp/initialization-recipe-476-reviewed-component-20261116-bound/result.json",
+  "rawResultSha256": "72347e033fd34cd7daaa9df0c674d4b882402c90ab411bcf184bcf5b950470bc",
+  "auditSha256": "48624870e14949fdb6a058b1ecc89b766be728ddd649988c92f0204b79d8aaad"
+}

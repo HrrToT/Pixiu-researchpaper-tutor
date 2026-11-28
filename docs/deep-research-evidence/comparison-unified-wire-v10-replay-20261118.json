@@ -1,0 +1,111 @@
+{
+  "sourceReceiptSha256": "c985811ce88846e6f2a7f742225de7456f960e0683337c7b49b338bf1ea154c3",
+  "networkRequests": 0,
+  "providerCalls": 0,
+  "scientificAcceptance": false,
+  "receipts": [
+    {
+      "profile": 3,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31946,
+          "requestDigest": "47c8c3a940370b765cf2d5a9bb632a45b942531266ee6ab9ededc731c626ea31",
+          "matchesSavedRequest": true
+        },
+        {
+          "node": "synthesize_audience",
+          "inputBytes": 23371,
+          "requestDigest": "6980deab1c7898a6070b1e867af008607a7712fd435a3c6cc1f0d478b110b1fd",
+          "matchesSavedRequest": true
+        }
+      ],
+      "compiledPoints": 8,
+      "compileErrors": [
+        {
+          "conclusionIndex": 0,
+          "reason": "invalid_conclusion_obligations"
+        },
+        {
+          "conclusionIndex": 1,
+          "reason": "invalid_conclusion_obligations"
+        }
+      ],
+      "wireAudit": null,
+      "authoring": null,
+      "controlledFixture": null,
+      "missingNavigationBundles": 1,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true
+    },
+    {
+      "profile": 4,
+      "requests": [
+        {
+          "node": "synthesize",
+          "inputBytes": 31965,
+          "requestDigest": "8197d326a577480fc5696af74305a4906a9f1a5628af3d6bb7c07a437dd33745",
+          "matchesSavedRequest": false
+        }
+      ],
+      "compiledPoints": 1,
+      "compileErrors": [],
+      "wireAudit": {
+        "version": 1,
+        "status": "compiled_unverified",
+        "errors": [],
+        "tableReferenceCount": 94,
+        "scientificApproval": false
+      },
+      "authoring": {
+        "version": 1,
+        "readerExpression": "first_draft",
+        "verification": "unchecked"
+      },
+      "controlledFixture": {
+        "targetId": "table_3_0",
+        "rowNumber": 8,
+        "metric": "FPS",
+        "value": "134",
+        "quotedSource": "E12",
+        "tableReference": "V97045b0f70935c05",
+        "targetCount": 10
+      },
+      "missingNavigationBundles": 0,
+      "scientificApproval": false,
+      "sqliteCheckpointVerified": true
+    }
+  ],
+  "boundary": "Legacy uses actual v10 replies unchanged. New profile uses one explicit server-reference fixture with all other targets unresolved; no new model response or content acceptance.",
+  "baseCommit": "bcd5b8902",
+  "sourceSha256": {
+    "ai-service-python/services/deep_research/comparison_wire.py": "31e82544e8f9c371d835c6cf263a2f6c7098f23ccd006badea7877ae92a8bb25",
+    "ai-service-python/services/deep_research/comparison_cells.py": "dfedb11d2833a09f107d66d55c820c54501b002859f40d135965bd2a1870c8c9",
+    "ai-service-python/services/deep_research/comparison_generation.py": "d3b078f929b750d211486aebacb412a3cb7e5a7e24fe14171c2251f1030a0f12",
+    "ai-service-python/services/deep_research/comparison_intent.py": "2314f6706c83dfe60c2f6af48abf0512dfcf85b6b23ae54f29f68c1e1433d5cc",
+    "ai-service-python/services/deep_research/comparison_capacity.py": "5fbf81bec7a44e6fb55913ec61f395de0895a16410e5e75f74019ea033c850b5",
+    "ai-service-python/services/deep_research/facade.py": "646353b5c8ebd18bc5980b4642b3e116cb62473de2f665bc5c9340224a60b7a0",
+    "ai-service-python/services/deep_research/graph.py": "46fbc42c1325a6a34f9d96e8f9c055368c310bbd49b80bdbe285f90dc78c6db3",
+    "ai-service-python/services/deep_research/table_bindings.py": "8ce971c529610cc764e7b22a7e62589532c1a3a99730dddb8d3a166b34477aa8",
+    "ai-service-python/services/deep_research/verification.py": "8fd2f1d06342664124f790caadea43c490097e49d3ff56b309f417c42c6101aa"
+  },
+  "postGenerationApprovalStateClearedInReplay": true,
+  "tests": [
+    {
+      "runId": "comparison-unified-wire-related-20261118",
+      "cases": 475,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "runId": "comparison-unified-wire-final-targeted-20261118",
+      "cases": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "countsOverlap": true,
+  "durationBoundary": "New comparison profile only: exact complete time-component spelling backed by a valid cited duration cell. No unit conversion, rounding or automatic semantic approval; old v10 remains unchanged."
+}

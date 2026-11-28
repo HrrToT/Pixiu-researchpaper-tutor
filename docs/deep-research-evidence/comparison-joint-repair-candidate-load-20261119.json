@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "8b517b5de419c06f9d88c3face1e1c6df303b2dc",
+  "fullRegression": "comparison-joint-repair-host-full-20261119.json",
+  "candidate": "academic-dr-joint-repair-candidate-20261119",
+  "originalContainerRetained": true,
+  "allOldTasksRunsCallsExact": true,
+  "sourceHashesMatch": true,
+  "sharedExperimentProfile": 1,
+  "sharedHttpObservationProfile": 1,
+  "comparisonCellsProfile": 1,
+  "comparisonReviewBatchProfile": 2,
+  "comparisonPlanningProfile": 6,
+  "sourcePassageReuseProfile": 3,
+  "audienceMappedSourceProfile": 5,
+  "repairInstructionsProfile": 5,
+  "comparisonJointReportsProfile": 3,
+  "sourceDefault": 0,
+  "newModelCalls": 0,
+  "scientificContentAccepted": false
+}

@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-15",
+  "case": "H5R-v9 saved input",
+  "promptVersion": "dr-v2.20261015.85",
+  "promptBytes": 23905,
+  "availableEvidence": 9,
+  "visibleEvidence": 6,
+  "hotdogRowVisible": true,
+  "opacityMechanismVisible": true,
+  "modelCalls": 0,
+  "boundary": "Captures current drafting input from a saved case with a stub response; not content-quality acceptance."
+}

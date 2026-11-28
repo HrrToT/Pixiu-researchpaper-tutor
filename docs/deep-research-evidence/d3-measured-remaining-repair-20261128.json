@@ -1,0 +1,61 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "candidate": "b90a493286d263647e6cf5bd26e0d4bca4110b97",
+  "sourceRun": "dr_d3_design_stable_pointers_20261128",
+  "oldAdmissionReplay": {
+    "rejectedBeforeProvider": true,
+    "budgetStop": {
+      "kind": "modelCalls",
+      "limit": 18,
+      "used": 6
+    },
+    "inputBytes": 30330,
+    "carriedTokens": 77043,
+    "modelCalls": 0
+  },
+  "realCountAndReservation": {
+    "mode": "provider-input-count-only",
+    "requestBytes": 30330,
+    "requestDigest": "efb73a203dd8b399751057e84578ec8e6306527426cd64e89c6f4a95c98d9162",
+    "priorTokens": 77043,
+    "maxTokens": 100000,
+    "inputTokens": 8671,
+    "reservedTokens": 13791,
+    "budgetStop": null,
+    "generationCalls": 0,
+    "scope": "isolated reservation discarded after preflight"
+  },
+  "newProviderInputCountRequests": 1,
+  "newModelGenerations": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "hypotheticalDesignReview": {
+    "fixtureOnly": true,
+    "possibleEditPath": "/analysis/limitations",
+    "sourceFactsUnchanged": true,
+    "scientificApproval": false,
+    "reusesFactBatch": true,
+    "designBatches": [
+      33984,
+      34708
+    ],
+    "generationCalls": 0
+  },
+  "headroomAfterRepairInputBeforeOutput": 14286,
+  "earlierDesignAndFinalAuditInputTokens": [
+    8679,
+    8797,
+    10523
+  ],
+  "regression": {
+    "passed": 441,
+    "failed": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-design-stable-pointers-20261128/repair-token-count-offline.json": "a097911d197806f6c8a3db621630f9e3eaf9f1e4b09fe91dad037559d65c417a",
+    "tmp/openai-d3-design-stable-pointers-20261128/repair-token-count-real.json": "8a43350d0fad4814a9c6723a034616bbf7fde1c4cc5f3d0e25358b22311edbbe",
+    "tmp/openai-d3-design-stable-pointers-20261128/scoped-repair-followup-preflight.json": "1475f9ecec85a470f193859f6613e6875bbfed32c0e3f66b0737685293dea4a9",
+    "tmp/openai-d3-design-stable-pointers-20261128/scoped-repair-budget-replay.json": "09bc7dbd11478b2636df2a68fdaf18d1c05074f522ec87f637ac7143e441ef72",
+    "tmp/d3-measured-repair-regression-20261128.xml": "b69daf3d2be5805da86ac10a36c3233597f418dcf5ac37c4f9f7074c89eefc42"
+  }
+}

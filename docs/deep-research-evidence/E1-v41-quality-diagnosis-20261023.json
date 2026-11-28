@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-23",
+  "case": "E1-v41",
+  "sourceCommit": "35b77316",
+  "promptVersion": "dr-v2.20261023.250",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "repairStatus": "skipped_budget",
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 23067,
+    "used": 32265
+  },
+  "normalTokens": 21813,
+  "repairRemainingInputBytes": 23067,
+  "literalSourceEntries": 45,
+  "sourceChunks": 16,
+  "observations": [
+    "All11model calls settled64188tokens;no repair_claims call and no new unknowns.",
+    "Reviewer again asks an unexecuted directional hypothesis for already observed PSNR/SSIM outcomes; binding is not scientific truth.",
+    "Concrete defects remain in initialization operations/shapes,operation parameters,effect/storage/time definitions,camera ordering,budget aggregation and descriptive inference.",
+    "Required repair inputs32265/23849/29881bytes all exceed actual23067bytes; even raised32KB hard cap alone cannot fit current ordinary pool.",
+    "Full role grammar and lossless repeated-check strings do not establish real repair effectiveness. No new retry submitted."
+  ],
+  "nextAction": "Measure duplicate rejectionAudit raw/context field values against original targets/siblings, retaining persisted audits and exact source context. Fix prospective/observed classification in acquisition/review and improve actual workflow generation rather than lowering acceptance.",
+  "independentCredit": 0,
+  "boundary": "Development outcome and measured transport diagnosis; no content pass or independent acceptance."
+}

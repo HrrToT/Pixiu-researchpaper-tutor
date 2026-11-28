@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v23",
+  "runId": "dr_run_b54d68116ab6530cb0832ca02b78bde2",
+  "sourceCommit": "17f10918",
+  "promptVersion": "dr-v2.20261018.165",
+  "status": "completed",
+  "machineOutcome": "partial",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 11,
+  "settledTokens": 54589,
+  "elapsedSeconds": 124.66,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Short draft improved from a numeric inventory to a qualified-looking two-point answer, but used a single SH ablation rather than the main-table comparison.",
+    "The revised second claim uses only applies to a particular moderate setting; observed failures at other settings do not establish an exhaustive necessary condition. The semantic verifier accepted this overrestriction.",
+    "Unknown scope remains missing; final coverage correctly stays partial. Both source-bound qualifications and synthesis quality fail manual acceptance."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 3,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "判断",
+        "claimIds": [
+          "c1"
+        ]
+      },
+      {
+        "title": "适用条件",
+        "claimIds": [
+          "c2"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "在剪枝率66%、SH降为2阶时，作者报告SSIM仅从0.927降至0.926，质量接近原始3DGS。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext"
+      },
+      {
+        "claimId": "c2",
+        "text": "当剪枝率达70%或VQ比例接近65%时，渲染质量明显下降；因此接近性仅在较低压缩比下成立，未验证更高压缩比或不同数据集。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_88b138a6ddac400c6b8a9e849476b33f362c3ffae5a3255c6b47fd6de120c1a6",
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext"
+      }
+    ]
+  },
+  "repairDraft": [
+    {
+      "claimId": "c2",
+      "kind": "inference",
+      "text": "作者报告在剪枝率达到70%或VQ比例接近65%时渲染质量明显下降，因此“接近原始”仅适用于66%剪枝和2阶SH等温和压缩设置。",
+      "evidenceRefs": [
+        "ev_88b138a6ddac400c6b8a9e849476b33f362c3ffae5a3255c6b47fd6de120c1a6"
+      ],
+      "tableBindings": [],
+      "conditions": {
+        "pruningRatio": "70%",
+        "VQRatio": "approaching 65%",
+        "effect": "marked decline in rendering quality"
+      },
+      "detailLevel": "fulltext",
+      "obligationIds": [
+        "ob_1"
+      ]
+    }
+  ],
+  "initialVerification": {
+    "accepted": [
+      {
+        "claimId": "c1",
+        "text": "在剪枝率66%、SH降为2阶时，作者报告SSIM仅从0.927降至0.926，质量接近原始3DGS。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": [
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairChecks": {
+    "accepted": [
+      {
+        "claimId": "c2",
+        "kind": "inference",
+        "text": "作者报告在剪枝率达到70%或VQ比例接近65%时渲染质量明显下降，因此“接近原始”仅适用于66%剪枝和2阶SH等温和压缩设置。",
+        "evidenceRefs": [
+          "ev_88b138a6ddac400c6b8a9e849476b33f362c3ffae5a3255c6b47fd6de120c1a6"
+        ],
+        "tableBindings": [],
+        "conditions": {
+          "pruningRatio": "70%",
+          "VQRatio": "approaching 65%",
+          "effect": "marked decline in rendering quality"
+        },
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_1"
+        ],
+        "verification": "semantic_passed"
+      }
+    ],
+    "rejected": []
+  },
+  "report": "## 判断\n\n- 在剪枝率66%、SH降为2阶时，作者报告SSIM仅从0.927降至0.926，质量接近原始3DGS。 [1](#research-evidence-ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8)\n\n## 适用条件\n\n- 有依据的推断：作者报告在剪枝率达到70%或VQ比例接近65%时渲染质量明显下降，因此“接近原始”仅适用于66%剪枝和2阶SH等温和压缩设置。 [2](#research-evidence-ev_88b138a6ddac400c6b8a9e849476b33f362c3ffae5a3255c6b47fd6de120c1a6)\n  适用条件：pruningRatio：70%；VQRatio：approaching 65%；effect：marked decline in rendering quality\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。：最终回答尚未完整回应这一问题\n\n</details>\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 9 页 · 全文片段\n\n> With a Gaussian pruning ratio of 66% and SH reduced to 2 degrees, LightGaussian nearly maintains rendering quality (SSIM drops slightly from 0.927 to 0.926).\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> As depicted in Fig6, we note a marked decline in rendering quality when the pruning ratio reaches 70%, with a more rapid deterioration as the VQ ratio approaches 65%.\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v23.json",
+      "sha256": "3bfd49b84d2fa0151858887be33c347eeabec9f083d751846e13bc7a9008a736"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v23.payload.json",
+      "sha256": "8d2cdef5585db534cf411b3181a8e6422169ef691f97063ce878ac572a96c104"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v23.calls.json",
+      "sha256": "88cab7038923d498fbde96480a0b1a0763018e33f5c19b73e4cfaea74838df37"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v23.result.json",
+      "sha256": "ce6b8fe7a20c0c97135b3b3aa6ab6534e6dc6913eb919c621659b9b21837df48"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

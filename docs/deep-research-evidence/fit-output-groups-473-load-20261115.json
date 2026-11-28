@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "d2dbbcaa5815dffe3a903dc4818ee67cf49c8f07",
+  "promptVersion": "dr-v2.20261115.473",
+  "fullRegression": "deep-research-evidence/fit-output-groups-473-final-20261115.json",
+  "baseline": "tmp/dr-acceptance-receipts/metadata-planning-output-468.before.json",
+  "health": "ok",
+  "all105TasksExact": true,
+  "all390OldRunsExact": true,
+  "all9838CallRowsExact": true,
+  "allDeepResearchModuleHashesMatch": true,
+  "transportParserAndTableHashesMatch": true,
+  "historicalPaused": 15,
+  "active": 0,
+  "newModelCalls": 0
+}

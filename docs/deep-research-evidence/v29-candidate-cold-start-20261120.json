@@ -1,0 +1,17 @@
+{
+  "frozenBackendCommit": "98c0bb1d3774e014374078772ef2612470dcd540",
+  "candidateImage": "pixiu-research-pdf-proof:20261120",
+  "pypdf": "6.21.4",
+  "fonttools": "4.68.0",
+  "coldStartupPassed": true,
+  "databaseRunsChecked": 2,
+  "databaseCallRowsChecked": 86,
+  "copiesUnchanged": true,
+  "modelCalls": 0,
+  "network": "none",
+  "responses": {
+    "D2-BASELINE-COMPRESSION-v27": {"status": "completed", "outcome": "partial", "errorCode": "", "allowedActions": ["open_report", "view_sources", "continue"]},
+    "D3-VQ-FACTORIAL-v7": {"status": "paused", "outcome": "none", "errorCode": "unresolved_unknown", "allowedActions": ["cancel"]}
+  },
+  "boundary": "ASGI startup and research GET endpoints exercised against an isolated SQLite replay. The vector warmup and periodic monitor were skipped in this disconnected probe. No live datastore attached, no production cutover and no new report generated."
+}

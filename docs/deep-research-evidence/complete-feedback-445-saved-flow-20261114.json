@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "a337b287889b36a58baee9bbe032cc4a9ddd746e",
+  "modelCalls": 0,
+  "archivedPayloadUnchanged": true,
+  "allOtherVerificationFieldsExact": true,
+  "actualFactoryAndGraphRequestBuilderExercised": true,
+  "results": [
+    {
+      "completePolicy": false,
+      "detailCharacters": 400,
+      "promptBytes": 23935,
+      "outputTokens": 4096,
+      "containsSpecificObjection": false,
+      "containsFirstStepCounterexample": false,
+      "promptSha256": "448addbd28efe378d05d3dcf8ebb17824a3310c56c72ba01c45cdbca5d82f8c1"
+    },
+    {
+      "completePolicy": true,
+      "detailCharacters": 695,
+      "promptBytes": 23996,
+      "outputTokens": 4096,
+      "containsSpecificObjection": true,
+      "containsFirstStepCounterexample": true,
+      "promptSha256": "bb10118727282345efd24c48be2533441b40f93e5a5de501d1ec7442ff416ad9"
+    }
+  ],
+  "scientificContentAccepted": false,
+  "boundary": "Offline reconstruction only: fresh verification from archived responses, then normal coverage-repair target preparation and graph repair request generation. No actual model send, no archived result changes. Uses original24000-byte request cap with no paid-call admission; actual time/token admission still needs real validation.",
+  "originalQuotesPreserved": 5,
+  "originalContextTreatmentUnchanged": true,
+  "originalContextsAlreadyOmittedInBoth": 4,
+  "originalContextsSuppliedInBoth": 1,
+  "originalCitationPermissionsPreserved": true,
+  "optionalCandidateSelectionChanged": true,
+  "optionalCandidateBoundary": "Longer fixed feedback changes greedy optional candidate fitting within the existing frozen material scope. All five original citations and their existing context treatment/permissions remain exact; four original contexts were explicitly omitted in both requests, not newly claimed supplied."
+}

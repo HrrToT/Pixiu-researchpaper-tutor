@@ -1,0 +1,305 @@
+{
+  "date": "2026-10-25",
+  "case": "E1-v53",
+  "sourceCommit": "ee24247b",
+  "promptVersion": "dr-v2.20261023.263",
+  "runId": "dr_run_495933d2ca6850aeb7676412048e4c57",
+  "status": "failed",
+  "errorCode": "invalid_workflow_unit_response",
+  "workflowMetadataRepairContractVersion": 1,
+  "metadata": {
+    "finishReason": "stop",
+    "usage": {
+      "total_tokens": 8081,
+      "input_tokens": 7076,
+      "output_tokens": 1005
+    },
+    "rawBytes": 3245,
+    "rawSha256": "63a073b46e53ae3ac50c03c0268fb0e73b1ccd46d78c28c965e0cab91d627234",
+    "errors": [
+      "unit.json"
+    ],
+    "valueIsNull": true,
+    "completeJsonObject": true,
+    "completeOuterRowScaffolding": true,
+    "componentRows": 3,
+    "phaseRows": 8,
+    "requestDigest": "2d84c25a9ad9bf7364dbe998e0c99d4b5ac6544d247b6588f61ed9499d0f112c",
+    "ledgerDigestMatches": true
+  },
+  "version1RevisionEligible": false,
+  "revisionNodeCalls": 0,
+  "rawWireFeedback": {
+    "issues": [
+      {
+        "code": "wire.phase_refs.type",
+        "path": "/componentRows/2/2/1",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "after_stage1_ntc_fit"
+      },
+      {
+        "code": "wire.phase_refs.type",
+        "path": "/componentRows/0/2/1",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "baseline"
+      },
+      {
+        "code": "wire.phase_refs.type",
+        "path": "/componentRows/1/2/1",
+        "expected": "array of exact declared phase IDs; [] before timeline",
+        "actual": "baseline"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/0/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "baseline"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/1/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "baseline_ready"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/1/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "frame0_3dg_model"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/7/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "frame0_3dg_model"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/5/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "frame_additional_3dg_count"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/4/7/1",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "frame_additional_3dg_count"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/5/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "frame_metrics_recorded"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/6/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "frame_metrics_recorded"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/5/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "frame_psnr"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/4/7/0",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "frame_psnr"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/5/6/2",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "frame_stage2_time"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/4/7/2",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "frame_stage2_time"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/4/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "ground_truth_heldout"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/3/6/2",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "heldout_view"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/5/7/1",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "mean_additional_3dg_count"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/5/7/0",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "mean_psnr"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/5/7/2",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "mean_stage2_time"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/4/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "rendered_heldout"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/4/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "rendered_heldout"
+      },
+      {
+        "code": "wire.update.state",
+        "path": "/phaseRows/3/7/0",
+        "expected": "declared mutable state; results belong in outputs",
+        "actual": "rendered_heldout"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/2/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "stage1_ntc_fitted"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/2/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "stage1_ntc_result"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/3/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "stage1_ntc_result"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/7/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "stage1_ntc_result"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/3/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "stage2_additional_3dgs"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/6/6/0",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "stage2_additional_3dgs"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/3/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "stage2_fitted"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/1/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "training_data"
+      },
+      {
+        "code": "wire.read.columns",
+        "path": "/phaseRows/2/6/1",
+        "expected": "[state,selector] or [phaseId,outputId,selector]",
+        "actual": "training_data"
+      },
+      {
+        "code": "wire.phase_refs.unknown",
+        "path": "/phaseRows/7/5/0",
+        "expected": "one exact declared phase ID",
+        "actual": "window_summary_recorded"
+      },
+      {
+        "code": "wire.readonly.updates",
+        "path": "/phaseRows/7/7",
+        "expected": "[]; metrics are outputs, not mutable state",
+        "actual": [
+          "frame0_3dg_model",
+          "stage1_ntc_result"
+        ]
+      },
+      {
+        "code": "wire.readonly.updates",
+        "path": "/phaseRows/4/7",
+        "expected": "[]; metrics are outputs, not mutable state",
+        "actual": [
+          "frame_psnr",
+          "frame_additional_3dg_count",
+          "frame_stage2_time"
+        ]
+      },
+      {
+        "code": "wire.readonly.updates",
+        "path": "/phaseRows/5/7",
+        "expected": "[]; metrics are outputs, not mutable state",
+        "actual": [
+          "mean_psnr",
+          "mean_additional_3dg_count",
+          "mean_stage2_time"
+        ]
+      },
+      {
+        "code": "wire.readonly.updates",
+        "path": "/phaseRows/3/7",
+        "expected": "[]; metrics are outputs, not mutable state",
+        "actual": [
+          "rendered_heldout"
+        ]
+      },
+      {
+        "code": "wire.readonly.updates",
+        "path": "/phaseRows/6/7",
+        "expected": "[]; metrics are outputs, not mutable state",
+        "actual": [
+          "stage2_additional_3dgs"
+        ]
+      }
+    ],
+    "declaredPhaseIds": [
+      "baseline",
+      "stage1_ntc_fit",
+      "stage2_spawn_optimize",
+      "render_heldout",
+      "record_frame_metrics",
+      "record_window_summary",
+      "after_record_frame",
+      "after_record_window"
+    ],
+    "declaredComponentIds": [
+      "frame0_3dg_model",
+      "stage1_ntc_result",
+      "stage2_additional_3dgs"
+    ],
+    "scientificApproval": false,
+    "decodedProposal": false
+  },
+  "originalWireUnchanged": true,
+  "feedbackRuntimeIntegrated": false,
+  "initializationUnitsReached": false,
+  "publicDraftReached": false,
+  "providerRetries": 0,
+  "scientificApproval": false,
+  "independentCredit": 0,
+  "nextAction": "New revision contract version 2 should admit complete, bounded JSON with unambiguous outer columns even when a leaf cannot decode. Preserve version 1; do not fabricate selectors, fields or source permissions.",
+  "boundary": "Complete provider output, not a valid metadata proposal. Revision version 1 correctly skipped a non-decodable wire but does not yet repair this complete-format-error class."
+}

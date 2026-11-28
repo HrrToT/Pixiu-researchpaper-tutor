@@ -1,0 +1,69 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "candidate": "e9379a1cf7a46d06b89abdd1e321863893375846",
+  "runId": "dr_d3_execution_v9_shared_fit_20261128",
+  "fixCommit": "c91516b825cbb73bce19e8888ad077afef6babde",
+  "additionalModelCalls": 3,
+  "additionalTokens": 27599,
+  "carriedTokens": 17377,
+  "cumulativeTokens": 44976,
+  "elapsedSeconds": 91.88,
+  "additionalExternalSearches": 0,
+  "workspaceWrites": 0,
+  "independentCredit": 0,
+  "compiledProposalBytes": 18956,
+  "factualChecksAccepted": 8,
+  "designBatchStatus": "invalid_response",
+  "wholeAnswerAudit": false,
+  "published": false,
+  "offlineReplay": {
+    "invalidBindings": [
+      [
+        "section_4",
+        "/pairing/sharedStateIds"
+      ],
+      [
+        "section_6",
+        "/steps/11/operation/action"
+      ]
+    ],
+    "fixtureOnlyReplacements": {
+      "section_4": [
+        "/pairing/sharedStateIds",
+        "/pairing/sharedStateIds/0"
+      ],
+      "section_6": [
+        "/steps/11/operation/action",
+        "/steps/@me/operation/action"
+      ]
+    },
+    "preservedUnresolvedRequirement": "requirement_2_0",
+    "validAfterFixtureReplacement": 9,
+    "unchangedFactRequest": true,
+    "retainedCheckScopes": true,
+    "oldBatchBytes": [
+      19588,
+      31871,
+      31916
+    ],
+    "newBatchBytes": [
+      19588,
+      31848,
+      31893
+    ],
+    "newProviderCalls": 0
+  },
+  "regression": {
+    "passed": 329,
+    "failed": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/intent.json": "27edf4f4fbd7ca12059be5dcab8343b99f66fcbaa9ad804bc6c9d3dbef906552",
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/calls.json": "6f0be6dfb6091fd32160928ebb3053f9cd6493a78b3ca48c3c8642e1b5fc5653",
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/run.json": "9a4798bb1d9df93644dc4afe737dddefe3affb45047a00c2fef7fb5aa7da3267",
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/provider.jsonl": "615f404fc9633f35ef33ebb32f11d339c6a04564de19548560dd5600728e8a0c",
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/result.json": "81450cf0e6cafbc3f19db235208eb9d6d1f86b60d23d505a2408da1976431a2a",
+    "tmp/openai-d3-execution-v9-shared-fit-20261128/named-bindings-offline-replay.json": "7d6f8cf9c98f1ca6ac7e1494f652fcb6a2153a471ba090aa4b6886cfe9741f09",
+    "tmp/d3-stable-review-bindings-regression-20261128.xml": "29190a3e2138fcfef9613b9a348d53c8eeca5be09bac329df29a5ee0d34bb056"
+  }
+}

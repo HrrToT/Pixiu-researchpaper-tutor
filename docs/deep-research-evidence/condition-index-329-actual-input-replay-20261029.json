@@ -1,0 +1,136 @@
+{
+  "providerCalls": 0,
+  "oldVerificationPromptsByteIdentical": 3,
+  "permittedReportedInferenceIds": [
+    "c1"
+  ],
+  "repairPromptBytes": 23995,
+  "mandatoryTableRowsPresent": [
+    8,
+    10
+  ],
+  "tableCellValuesChanged": false,
+  "mockRepairResponse": "[]",
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "conditionSourceIndex": {
+    "tables": [
+      {
+        "evidenceId": "E5",
+        "groups": [
+          "Mip-NeRF 360 Datasets",
+          "Tank and Temple Datasets"
+        ],
+        "methods": [
+          [
+            7,
+            "Compact 3D-GS [37]"
+          ],
+          [
+            8,
+            "3D-GS [16]"
+          ],
+          [
+            9,
+            "3D-GS  *  [16]"
+          ],
+          [
+            10,
+            "Ours"
+          ]
+        ],
+        "sourceRef": "P1",
+        "columnMappingUnverified": true
+      },
+      {
+        "evidenceId": "E4",
+        "groups": [
+          "Mip-NeRF 360 Datasets",
+          "Tank and Temple Datasets"
+        ],
+        "methods": [
+          [
+            3,
+            "INGP-Big [14]"
+          ],
+          [
+            4,
+            "Mip-NeRF 360 [7]"
+          ],
+          [
+            5,
+            "VQ-DVGO [49]"
+          ],
+          [
+            6,
+            "Compressed 3D-GS  *  [34]"
+          ]
+        ],
+        "sourceRef": "P1",
+        "columnMappingUnverified": true
+      }
+    ],
+    "allowedTablesByClaim": {
+      "c1": [
+        "E5",
+        "E4"
+      ],
+      "c2": [
+        "E4",
+        "E5"
+      ]
+    }
+  },
+  "requiredOriginalSourceRowsExact": [
+    "E5",
+    "E3"
+  ],
+  "newVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E8"
+  ],
+  "oldVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+  ],
+  "requiredQuoteAndContextUnchanged": true,
+  "optionalSourceChanges": {
+    "E1": "original fitter omitted optional sourceContext with contextOmitted=true",
+    "E9": "original fitter omitted optional row"
+  },
+  "columnMappingApprovalGranted": false,
+  "newPromptSha256": "a1c2f6fc8b1d452a231991dd7ba5ada6be312b71c9c9ed64e690992d140b9e92",
+  "oldPromptSha256": "75f6423ff6c9fca2d8417ab465a580585a7c97bc9329346e7966e9b290e32750",
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-condition-index-329-offline2-20261029\\receipt",
+  "limitation": "Offline navigation/input replay with archived check responses and mock empty repair; no new-model quality proof."
+}

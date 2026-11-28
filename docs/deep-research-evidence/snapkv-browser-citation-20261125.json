@@ -1,0 +1,35 @@
+{
+  "case": "H3-SNAPKV-v1",
+  "taskId": "dr-acceptance-h3-snapkv-20261125-v1",
+  "runId": "dr_run_8c3d06669cbc574e8f05b3e2e75a037c",
+  "reportVersionId": "report_dr_run_8c3d06669cbc574e8f05b3e2e75a037c_v1",
+  "actualSavedReport": true,
+  "responseBodiesMocked": false,
+  "browserSource": "local production build served by Playwright routes",
+  "frontendCommit": "9f0a00e8f8625a4416f504f979dbeaf3ae4e7626",
+  "results": [
+    {
+      "width": 1366,
+      "height": 768,
+      "citationPage": 7,
+      "pdfPages": 18,
+      "pdfHash": "cc426479949721dfe31a2319341129beba60498e95305e88b74000ab3cf7a234",
+      "reopenedAfterReload": true,
+      "actualPdfRead": true,
+      "attemptedWritesBlocked": 0
+    },
+    {
+      "width": 1024,
+      "height": 700,
+      "citationPage": 7,
+      "pdfPages": 18,
+      "pdfHash": "cc426479949721dfe31a2319341129beba60498e95305e88b74000ab3cf7a234",
+      "reopenedAfterReload": true,
+      "actualPdfRead": true,
+      "attemptedWritesBlocked": 0
+    }
+  ],
+  "workspaceUnchanged": true,
+  "workspaceWrites": 0,
+  "modelCalls": 0
+}

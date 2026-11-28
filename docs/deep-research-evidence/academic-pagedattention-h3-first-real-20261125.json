@@ -1,0 +1,63 @@
+{
+  "case": "H3-PAGEDATTENTION-v1",
+  "runId": "dr_run_413f79f0c621559a8b712f9eacc7a515",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "reportVersionId": "report_dr_run_413f79f0c621559a8b712f9eacc7a515_v1",
+  "workspaceReportOrigins": [
+    "latest",
+    "machine"
+  ],
+  "modelCalls": 9,
+  "modelTokens": 37494,
+  "elapsedSeconds": 149.0,
+  "externalSearches": 1,
+  "fulltextFetches": 1,
+  "acquisitionLedger": [
+    {
+      "tool": "external_discover",
+      "status": "succeeded",
+      "versions": [
+        "arxiv:2309.06180v1"
+      ]
+    },
+    {
+      "tool": "external_fulltext",
+      "status": "succeeded",
+      "versionId": "arxiv:2309.06180v1",
+      "accessLevel": "fulltext",
+      "contentHash": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+      "networkRequests": 1,
+      "cacheHit": false,
+      "pages": 16
+    }
+  ],
+  "exactMetadataDiscovery": true,
+  "freshExactPdfVerified": true,
+  "evidenceVersions": [
+    "arxiv:2309.06180v1"
+  ],
+  "locatedEvidenceCount": 64,
+  "verifiedClaims": 2,
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "receiptSha256": {
+    ".payload.json": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+    ".calls.json": "e30a9edaf209ba1def47ea3ae579ff96e1c33485b7382e72ef996a1b86b14b04",
+    ".result.json": "27ea4eb46575ca384d12c1a233875ec7be7d8fc89edebf715a49d10ac5f69875",
+    ".execution.json": "7d12b905c795f5591dee7d050fc539c807c7508fbf13e150e59a839dfd71950e",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "sourceCommit": "4acc68b3956fbdde0bfa605188dbb9ca076b5bc4",
+  "answerCoverageStatus": "invalid_response",
+  "publicationCoherenceStatus": "held",
+  "heldClaims": 2,
+  "publishedScientificClaims": 0,
+  "heldCitationPages": [
+    7
+  ],
+  "scopeError": "Beam-search candidate examples do not answer the requested parallel-sampling question."
+}

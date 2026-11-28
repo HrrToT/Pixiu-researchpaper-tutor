@@ -1,0 +1,142 @@
+{
+  "developmentRun": {
+    "runId": "dr_run_a1ee6934bd7f558ebf9b3cb78fd1ee66",
+    "case": "H1-SILK",
+    "status": "completed",
+    "outcome": "partial",
+    "isolatedPublicationId": "dr_pub_f92db8db128a44c0ad74e3a27f03ad63",
+    "isolatedOutboxDelivered": false,
+    "elapsedSeconds": 88,
+    "providerCalls": 8,
+    "providerTokens": 43270,
+    "providerTokensByModel": {
+      "gpt-6-luna": 8536,
+      "gpt-6.1-terra": 34734
+    },
+    "ownedMaterialChecks": {
+      "scopeCheck": 134,
+      "pdf": 2
+    },
+    "modelStagesReused": [
+      "resolve_brief",
+      "plan"
+    ],
+    "observedBoundary": "Descriptor and detector training were retained. Pixel mapping did not survive deterministic numeric checking. The draft referenced two spans, omitting the separate third span with inverse mapping and filtering.",
+    "artifactSha256": {
+      "intent.json": "0ba1a9cab80fa97db1881c83d5d52cbae116c589a4efe6ddc679d4bccd905388",
+      "run.json": "6733590c00af9a5dfee46b250c079ae574dc593d9d96e2d224e986756f8f0deb",
+      "calls.json": "16d29aa23df3472f8cc13289ab5ec131b942edbaee7dcb8be230d2136f238fe8",
+      "result.json": "d850e5e66461435427812b0e3dc4810c3238a3cfa38879f550a66016802668bf",
+      "boundary.json": "6571e0e3c34bbe479d7cdc5958dbf4034969d06ec704f6b2aab7b3654ba317e1",
+      "provider.jsonl": "0075925cf8590e2a967858b2a958ccb93a7070d14a8280944f8074eaca8abe7a",
+      "replayed.json": "31cd960ba54903dfc45963b3a4c1a925c1121b275159a4be2e650ee28dc094bb"
+    }
+  },
+  "offlineRepair": {
+    "sourceCommits": [
+      "f60156c12",
+      "14f777f3b"
+    ],
+    "quantitySpellingContractVersion": 19,
+    "localSectionContextContractVersion": 7,
+    "priorDraftClaimIdsReachingSemantics": [
+      "c1",
+      "c2"
+    ],
+    "semanticApprovalInferred": false,
+    "targetedTestsPassed": 318,
+    "providerCalls": 0,
+    "replays": {
+      "silk": {
+        "runId": "dr_run_2f36dd1d3dd7543abe0c67bab41b7b6a",
+        "materialSha256": "cbb119e43c235221f44a224af08adbd1f2f9e3d968a95bf59dc4ac7b1aadd2bc",
+        "sourceReads": 12,
+        "methodPassageReads": 6,
+        "methodReadPages": {
+          "reverse_homography": [
+            4
+          ],
+          "filtered_correspondence": [
+            4
+          ],
+          "probability_columns": [
+            4
+          ],
+          "positive_round_trips": [
+            4
+          ],
+          "keypoint_binary_loss": [
+            4
+          ]
+        },
+        "synthesisEvidencePages": {
+          "reverse_homography": [
+            4
+          ],
+          "filtered_correspondence": [
+            4
+          ],
+          "probability_columns": [
+            4
+          ],
+          "positive_round_trips": [
+            4
+          ],
+          "keypoint_binary_loss": [
+            4
+          ]
+        },
+        "synthesisInputBytes": 24000,
+        "providerCalls": 0,
+        "scope": "Production planning, PDF retrieval, reading, literal extraction and synthesis input assembly with saved model plan and isolated material/reader; no answer generation or acceptance credit.",
+        "jointMethodPassage": {
+          "page": 4,
+          "evidenceId": "ev_2a0c822967e229ef973d56d82fb3043e036037801c9d9b54e5a1f0d3f80ab0a6",
+          "characters": 814,
+          "semanticVerification": "unchecked"
+        }
+      },
+      "alike": {
+        "runId": "dr_run_f418cfe48b9e59d5a449ddd310f5f94b",
+        "materialSha256": "604edcc72304b5614c3209b15abbb056ca451b68f24679e316abf82d8b8feb97",
+        "sourceReads": 12,
+        "methodPassageReads": 4,
+        "methodReadPages": {
+          "soft_argmax": [
+            3,
+            4
+          ],
+          "gradient": [
+            4
+          ],
+          "reprojection": [
+            4
+          ],
+          "peak_spatial": [
+            5
+          ]
+        },
+        "synthesisEvidencePages": {
+          "soft_argmax": [
+            3,
+            4
+          ],
+          "gradient": [
+            4
+          ],
+          "reprojection": [
+            4
+          ],
+          "peak_spatial": [
+            5
+          ]
+        },
+        "synthesisInputBytes": 23962,
+        "providerCalls": 0,
+        "scope": "Production planning, PDF retrieval, reading, literal extraction and synthesis input assembly with saved model plan and isolated material/reader; no answer generation or acceptance credit."
+      }
+    }
+  },
+  "scientificContentCredit": 0,
+  "acceptanceBoundary": "Saved development result and offline repair evidence. This record contains no fresh end-to-end result on the repaired code and no independent pass."
+}

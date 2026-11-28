@@ -1,0 +1,35 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v42",
+  "savedPayloadSha256": "7df68dbe708d1d2e78627cae5a59fbaa8dc7990bf000ea6a06f7d1ca87ed6709",
+  "previousBehavior": {
+    "errorCode": "invalid_comparison_stage_response",
+    "laterStagePreviews": []
+  },
+  "stageResponsePreserved": true,
+  "stageAbstentionTargets": [
+    {
+      "targetId": "table_0_0",
+      "reason": "stage_returned_null"
+    },
+    {
+      "targetId": "table_1_0",
+      "reason": "stage_returned_null"
+    },
+    {
+      "targetId": "table_2_0",
+      "reason": "stage_returned_null"
+    },
+    {
+      "targetId": "table_3_0",
+      "reason": "stage_returned_null"
+    }
+  ],
+  "laterStagePreviews": [
+    "P2",
+    "joint"
+  ],
+  "laterResponsesAreEmptyFixtures": true,
+  "addedClaims": 0,
+  "modelCalls": 0,
+  "scientificContentAccepted": false
+}

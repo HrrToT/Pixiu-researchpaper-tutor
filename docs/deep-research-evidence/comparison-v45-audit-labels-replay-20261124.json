@@ -1,0 +1,69 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v45",
+  "payloadSha256": "fc1127241f763d49568f5be015a5d9c51b387716911e10010f98b7da5cdb610a",
+  "fixedObligations": 7,
+  "modelReturnedObligations": 2,
+  "originalRequestDigestMatchesLedger": true,
+  "misplacedChecksInOriginal": 1,
+  "v8PromptBytes": 23810,
+  "v9PromptBytes": 23985,
+  "v8OutputAllowance": 7142,
+  "v9OutputAllowance": 7142,
+  "citedRowsPreserved": 16,
+  "actualModelCalls": 0,
+  "omittedRowsRemainInvalid": true,
+  "scientificAcceptanceEstablished": false,
+  "isolatedLiveAudit": {
+    "case": "D2-BASELINE-COMPRESSION-v45",
+    "originalRequestDigestMatchesLedger": true,
+    "actualModelCalls": 1,
+    "providerStatus": "succeeded",
+    "usage": {
+      "total_tokens": 8305,
+      "input_tokens": 7394,
+      "output_tokens": 911
+    },
+    "finishReason": "stop",
+    "fixedObligations": 7,
+    "returnedObligations": 7,
+    "coverageStatus": "invalid_response",
+    "responseErrors": [
+      {
+        "code": "unanchored_limit_check",
+        "obligationId": "ob_71c983b2df35552000e28e00",
+        "checkId": "criterion:C2",
+        "missingFields": [
+          "limitSpans"
+        ]
+      },
+      {
+        "code": "unanchored_limit_check",
+        "obligationId": "ob_33995ad90eb136e77fd2adcf",
+        "checkId": "criterion:C2",
+        "missingFields": [
+          "limitSpans"
+        ]
+      },
+      {
+        "code": "unanchored_limit_check",
+        "obligationId": "ob_6b9d66f4315ba85a7b9ae94c",
+        "checkId": "criterion:C2",
+        "missingFields": [
+          "limitSpans"
+        ]
+      }
+    ],
+    "verdicts": {
+      "ob_ab81342925fc2e571fa38a28": "covered",
+      "ob_71c983b2df35552000e28e00": "partial",
+      "ob_33995ad90eb136e77fd2adcf": "partial",
+      "ob_e9862b2c182c6a3aa43f5840": "covered",
+      "ob_6b9d66f4315ba85a7b9ae94c": "partial",
+      "ob_06b46156dad2aa4098621442": "covered",
+      "answer_scope": "missing"
+    },
+    "answerCoherent": true,
+    "scientificAcceptanceEstablished": false,
+    "published": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "case": "AD1N-v8",
+  "mode": "offline exact saved request replay",
+  "legacyPreparedRequestExactAgainstSavedAndCommit": "d0ca8f16",
+  "originalPayloadSha256": "8689e83d0be47fb9071fc5737d94868d08bd741da43972c3f43bbac8aed88166",
+  "oldBytes": 15855,
+  "newBytes": 15774,
+  "ownSourceRowsExact": true,
+  "draftHintOmitted": true,
+  "sourcePermissionsUnchanged": true,
+  "outputTokens": 3072,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "limit": "Prompt input verification only; no claim of improved generated readability."
+}

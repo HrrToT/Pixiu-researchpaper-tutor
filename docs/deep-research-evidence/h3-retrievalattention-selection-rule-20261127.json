@@ -1,0 +1,106 @@
+{
+  "runId": "dr_h3_retrievalattention_synthesis_20261127",
+  "sourceRunId": "dr_run_9bb9df5044b05d6380b4a5a3a0adb527",
+  "sourceCommit": "5b829e4d4479f5bfffeacc1b0925e8f275625e5a",
+  "sourceAccess": "saved_public_fulltext",
+  "freshSearch": false,
+  "model": "gpt-6.1-terra",
+  "newCalls": 1,
+  "usage": {
+    "total_tokens": 6413,
+    "input_tokens": 6136,
+    "output_tokens": 277,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 6133
+  },
+  "synthesisVerification": {
+    "reportedCPUVectorIndex": true,
+    "reportedCPUAndGPUPartialAttention": true,
+    "reportedRescalingAndWeightedMerge": true,
+    "reportedInitialTokensAndLocalWindow": false,
+    "scientificAccepted": false,
+    "published": false,
+    "independentHoldoutCredit": 0
+  },
+  "savedArtifacts": {
+    "run.json": "e42de23daf3af69eb07286ce827deb1e57cf052cf2f8f0942294f8452d515c2a",
+    "calls.json": "48026be25acb43e3e9a41e0094f739f6a969acd69b901d54ef2ba02258d39360",
+    "intent.json": "667dccfa7487a730a6102d811e648fd643ef5560e896922346891f6e650b8c32"
+  },
+  "updatedInputReplay": {
+    "H3-RETRIEVALATTENTION-v1": {
+      "sourcePayloadSha256": "8574210e6042ecae852d23b374e26da62e49570de996f4ec56fefd17941b1173",
+      "inputBytes": [
+        23663,
+        23879
+      ],
+      "evidenceCounts": [
+        14,
+        14
+      ],
+      "acceptedCitationsRetained": 2,
+      "acceptedCitationsAvailableInSavedReport": 2,
+      "newWindowEvidencePages": [
+        7
+      ]
+    },
+    "H3-INFLLM-v1": {
+      "sourcePayloadSha256": "25aa0c9a3e9a129d2e44fed940fa0034cc32f1e2402b90af35e2ba446022f303",
+      "inputBytes": [
+        23983,
+        23983
+      ],
+      "evidenceCounts": [
+        20,
+        20
+      ],
+      "acceptedCitationsRetained": 2,
+      "acceptedCitationsAvailableInSavedReport": 3,
+      "newWindowEvidencePages": []
+    },
+    "H3-QUEST-v1": {
+      "sourcePayloadSha256": "82d3dcbefd0449155a76a5d48f177a4803c38b884b94221c67c43805adb2f0c2",
+      "inputBytes": [
+        23948,
+        23948
+      ],
+      "evidenceCounts": [
+        20,
+        20
+      ],
+      "acceptedCitationsRetained": 2,
+      "acceptedCitationsAvailableInSavedReport": 2,
+      "newWindowEvidencePages": []
+    },
+    "H3-PAGEDATTENTION-v1": {
+      "sourcePayloadSha256": "c79cfe74e777bd84bfa5fbbe1c7f030c3a20f5b6e9ad87ed1ac47b1839a1337f",
+      "inputBytes": [
+        23845,
+        23845
+      ],
+      "evidenceCounts": [
+        20,
+        20
+      ],
+      "acceptedCitationsRetained": 3,
+      "acceptedCitationsAvailableInSavedReport": 3,
+      "newWindowEvidencePages": []
+    },
+    "H3-SNAPKV-v1": {
+      "sourcePayloadSha256": "13c496946d0a94b779fef9c0b637b904325c3774619582876a2ba8a100277523",
+      "inputBytes": [
+        23866,
+        23866
+      ],
+      "evidenceCounts": [
+        20,
+        20
+      ],
+      "acceptedCitationsRetained": 1,
+      "acceptedCitationsAvailableInSavedReport": 1,
+      "newWindowEvidencePages": []
+    }
+  },
+  "updatedInputProviderCalls": 0,
+  "targetedTestsPassed": 28
+}

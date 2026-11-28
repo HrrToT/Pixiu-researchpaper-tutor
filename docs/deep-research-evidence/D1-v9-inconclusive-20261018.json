@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v9",
+  "runId": "dr_run_80033d7c6a8d55608163e92f601973fc",
+  "sourceCommit": "64104406",
+  "promptVersion": "dr-v2.20261018.120",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "contentAccepted": false,
+  "modelCalls": 7,
+  "settledTokens": 25971,
+  "elapsedSeconds": 40.871,
+  "cost": null,
+  "providerModels": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro"
+  ],
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 论文中作者是否明确说明了压缩后质量接近原始3DGS的适用条件或限制（如特定压缩率、场景类型、评估设置）？：最终回答尚未完整回应这一问题\n- LightGaussian论文中报告了哪些定量指标（如PSNR、SSIM、LPIPS）来证明压缩后图像质量接近原始3DGS？：最终回答尚未完整回应这一问题\n\n</details>",
+  "findings": [
+    "No supported final claim was published; the requested two-point verification was not delivered.",
+    "First extraction batch completed; conservative exploration envelope rejected a later batch before send. The graph stopped before acquiring the dependent conditions question.",
+    "The root table claim and repaired claim were rejected because exact method display required a trailing bibliography marker [16]. Stars/training variants still must remain distinct.",
+    "The model made an unsupported paper-wide absence assertion. Existing checks rejected it, correctly; the diagnosis is not a claim of content success.",
+    "No automatic retry, unknown call or budget enlargement occurred."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v9.json",
+      "sha256": "3d780058b727f548693cb3b8b9d4420a029ba1e49c8229106de6698c3bcfcc70"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v9.payload.json",
+      "sha256": "2f3090cfb58fc03ebef08167d97e3166cbfc9326d9949316606314f63d18cb67"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v9.calls.json",
+      "sha256": "8a9b3e6146acfd6671afbdaab6f57a7fde99bb3e56e27913a2847f53a1dd3462"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v9.result.json",
+      "sha256": "a0bc1f92d93a25a9c83445a8ae8c5c3ea10e1a8d5aca2bfc5cce90de1807421c"
+    }
+  ],
+  "scores": {
+    "goalResponse": 1,
+    "evidenceSupport": null,
+    "conditions": null,
+    "synthesisValue": 1,
+    "executability": null,
+    "readability": 3
+  },
+  "scoreBoundary": "No substantive accepted answer. Not-applicable scores are not treated as passes; failed D1 remains development evidence."
+}

@@ -1,0 +1,85 @@
+{
+  "scope": "Versioned joint reported contrast, ordinary source/numeric/semantic verification and final presentation binding",
+  "relatedTests": 548,
+  "junit": "tmp/comparison-joint-reports-related-final-20261117.xml",
+  "newModelCalls": 0,
+  "applicationWrites": 0,
+  "scientificCredit": 0,
+  "sourceCounterfactual": {
+    "scope": "Hand-authored single-group reported example and hypothetical corrected joint planning role using actual archived table; not model generation, source-science approval or historical-result upgrade",
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0,
+    "originalPayloadSha256": "ad31b419285eba9990cb1b1856f056820dcc584cde5a3392aa79824d0be981d9",
+    "originalUnchanged": true,
+    "variants": [
+      {
+        "jointReports": false,
+        "reportedExampleCompiled": false
+      },
+      {
+        "jointReports": true,
+        "reportedExampleCompiled": true,
+        "sourceGroup": "Mip-NeRF 360 Datasets",
+        "exactCells": 6,
+        "normalSourceAndNumericPrechecksPassed": true,
+        "negativeSemanticCannotPass": true,
+        "otherUnresolvedGoals": [
+          "ob-1-1",
+          "ob-1-2",
+          "ob-2-2",
+          "ob-3-1",
+          "ob-3-2"
+        ],
+        "displayPreservesReportedText": true
+      }
+    ]
+  },
+  "capacityBefore": {
+    "scope": "Closed capacity-only consumer check of hypothetical joint-reported metadata on nine archived unverified drafts; no request replay",
+    "calls": [],
+    "status": "budget_exhausted",
+    "budgetLimit": {
+      "kind": "coveragePromptBytes",
+      "limit": 24000,
+      "used": 24192
+    },
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "historicalReceiptUnchanged": true,
+    "noAdmissionPatch": true,
+    "scientificContentAccepted": false
+  },
+  "capacityAfter": {
+    "scope": "Closed capacity-only consumer check of hypothetical joint-reported metadata on nine archived unverified drafts; no request replay",
+    "calls": [
+      {
+        "node": "verify_answer_coverage",
+        "bytes": 23980,
+        "claims": 9,
+        "evidence": 11,
+        "checks": 10,
+        "completeRequiredEvidenceValuesMatch": true,
+        "requiredEvidenceValuesSha256": "d4a1b38743781e62d32e0c1c8da52d8c860f12a05274fadf313694bb2a8d0ea3"
+      }
+    ],
+    "status": "invalid_response",
+    "budgetLimit": null,
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "historicalReceiptUnchanged": true,
+    "noAdmissionPatch": true,
+    "scientificContentAccepted": false
+  },
+  "invariants": [
+    "Server selects immutable comparisonJointReportsContractVersion1; unmarked old requests/compiler restrictions unchanged",
+    "Shared numerical example may use reported kind and own permitted single-publication baseline pair; no forced false inference or second-paper measurement",
+    "Other mechanisms/costs/comparability/choice goals retained; example alone does not pass full question audit",
+    "Actual synthesis node compiles reported kind and maps own aliases to evidence IDs without marking it verified",
+    "Edited foreign work/version/goal and bad numbers/metrics/rows/groups rejected; negative semantic verdict cannot pass",
+    "Final audit digest binds new policy and scientific fields of reported joint points; relabel/edit/reference/binding changes invalidate",
+    "Only duplicate transport instructions reduced; required source values kept under unchanged24KB audit limit"
+  ],
+  "fullRegression": "pending",
+  "runtimeLoaded": false
+}

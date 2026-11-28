@@ -1,0 +1,27 @@
+{
+  "sourceCommit": "d13442574e38f5d7dcc0470d40abb271ab8314df",
+  "tests": 31,
+  "failures": 0,
+  "skipped": 0,
+  "byModule": {
+    "tests.test_deep_research_deepseek_search": 16,
+    "tests.test_deep_research_external_failures": 6,
+    "tests.test_deep_research_fault_acceptance_20261112": 5,
+    "tests.test_deep_research_unknown_recovery": 4
+  },
+  "h6FrozenDefinitionHash": "f5406daff1e6be125feb91aa16d7c6fab4f3f6e3c2b5d5478b78a92da8fb6e2a",
+  "h6FixtureFirstTrackedCommit": "973fdf463fb63c024d3a87bbb876f7aca88143a1",
+  "h6FixtureUnchangedSinceFirstTracked": true,
+  "h6FixtureSourceSha256": "c05ce6e26f8c67f191226d0b0c6964ce7f1bde99dc8bfc2f87d56f47d64dd71d",
+  "h6RegressedScenarios": [
+    "test_h6_retains_acquired_abstract_then_stops_and_reopens_without_resend[discovery_503]",
+    "test_h6_retains_acquired_abstract_then_stops_and_reopens_without_resend[oversized_pdf]",
+    "test_h6_retains_acquired_abstract_then_stops_and_reopens_without_resend[search_budget]",
+    "test_h6_retains_acquired_abstract_then_stops_and_reopens_without_resend[private_dns]",
+    "test_h6_retains_acquired_abstract_then_stops_and_reopens_without_resend[redirect]"
+  ],
+  "junitSha256": "c152e6162d8f37c27cee7ce5ecdc90596656c7be0ee99a58a74be446170b9bed",
+  "caseEvidence": "offline test and fixture replay",
+  "realProviderOrScientificAcceptance": false,
+  "productionDatabaseWrites": 0
+}

@@ -1,0 +1,86 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "attempt": 3,
+  "runId": "dr_run_5227f32917f05854be3b4c9cc450e985",
+  "sourceCommit": "0a1636795ed3f876ad55bd74831cdf1ad96f192a",
+  "fullRegression": "comparison-integrated-joint-full-20261117.json",
+  "status": "failed",
+  "outcome": "none",
+  "errorCode": "invalid_synthesis_response",
+  "scientificContentAccepted": false,
+  "independentCredit": 0,
+  "modelRequests": 4,
+  "allSettled": true,
+  "newUnknownRequests": 0,
+  "reportedTokens": 21559,
+  "elapsedSeconds": 195.0,
+  "pageDiagnostics": {
+    "version": 1,
+    "batches": [
+      {
+        "version": 1,
+        "quotes": 30,
+        "repositorySeconds": 0.06340995305799879,
+        "loadSeconds": 99.1989363990142,
+        "resolveSeconds": 0.005453327015857212,
+        "loads": 30,
+        "cacheHits": 0,
+        "failures": {
+          "source_parse_failed": 30
+        },
+        "resolutions": {
+          "unresolved": 30
+        },
+        "elapsedSeconds": 99.85043644400139,
+        "physicalBatchAvailable": true,
+        "extractionSeconds": 99.85042745999817
+      },
+      {
+        "version": 1,
+        "quotes": 5,
+        "repositorySeconds": 0.02058523400046397,
+        "loadSeconds": 18.850426531003905,
+        "resolveSeconds": 0.000750820996472612,
+        "loads": 5,
+        "cacheHits": 0,
+        "failures": {
+          "source_parse_failed": 5
+        },
+        "resolutions": {
+          "unresolved": 5
+        },
+        "elapsedSeconds": 19.246031260991003,
+        "physicalBatchAvailable": true,
+        "extractionSeconds": 19.246028249006486
+      }
+    ]
+  },
+  "synthesisAdmission": {
+    "scope": "Closed replay of sole saved synthesis response through actual node; no new generation",
+    "prompt": [
+      {
+        "limit": 10,
+        "promptBytes": 31765
+      }
+    ],
+    "actualDraftPoints": 11,
+    "compilerErrors": [
+      "Comparison claim budget exceeded"
+    ],
+    "nodeResult": {
+      "error_code": "invalid_synthesis_response"
+    },
+    "originalUnchanged": true,
+    "modelCalls": 0,
+    "applicationWrites": 0,
+    "scientificCredit": 0
+  },
+  "defaultRuntimeRestored": true,
+  "allPriorRunPayloadsExact": 398,
+  "allPriorTaskPayloadsExact": 107,
+  "pausedCountPreserved": 16,
+  "active": 0,
+  "rawPrefix": "tmp/dr-acceptance-receipts/D2-BASELINE-COMPRESSION-v3",
+  "automaticRetry": false,
+  "next": "No immediate fourth trial. Diagnose parser worker source_parse_failed and repeated failed loads; preserve over-limit synthesis as unverified and evaluate bounded resource-aware correction, without raising user limits or scientific approval."
+}

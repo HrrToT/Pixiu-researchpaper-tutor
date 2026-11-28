@@ -1,0 +1,45 @@
+{
+  "case": "H3-STREAMING",
+  "definitionHash": "390b96959cae53a75d473a9a88494d28e4a95436c6977244e306168d41ea2234",
+  "baseline": "973fdf46",
+  "archiveHits": [],
+  "receiptRoots": [
+    "tmp/dr-acceptance-receipts",
+    "tmp/dr160-receipts-isolated",
+    "tmp/qoder-dr-receipt-20261013"
+  ],
+  "receiptHits": [],
+  "taskCount": 103,
+  "ownedIdentityHits": [],
+  "liveScan": {
+    "runs": 365,
+    "calls": 9226,
+    "runPayloadHits": 0,
+    "indexAnyFieldHits": 0,
+    "cacheHits": []
+  },
+  "pdfSha256Verified": true,
+  "primaryVersionMarkerVerified": true,
+  "sourceReviewedPages": [
+    1,
+    3,
+    4,
+    5,
+    7
+  ],
+  "visuallyReviewedPages": [
+    4,
+    5
+  ],
+  "productionParserPreflight": "streaming-parser-preflight-20261112.json",
+  "previewNoHttpVerified": true,
+  "previewInitialMaterialIds": [],
+  "localMaterialSubstitutionRejected": true,
+  "modelCalls": 0,
+  "applicationExternalRequests": 0,
+  "applicationImports": 0,
+  "applicationCacheWrites": 0,
+  "engineChangesForThisPaper": 0,
+  "independentCredit": 0,
+  "boundary": "Frozen H3 definition; evaluator source review/feasibility does not count as application discovery/fulltext or content quality. Initial freshness gates must be rechecked at execution."
+}

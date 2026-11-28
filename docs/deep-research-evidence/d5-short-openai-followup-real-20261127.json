@@ -1,0 +1,62 @@
+{
+  "case": "D5-short-paper-followup",
+  "sourceCommit": "fc4f2aa0f4a249398d95d8b22b915e72c460538d",
+  "runId": "dr_d5_openai_short_followup_20261127",
+  "baseAttempt": "D5-v18",
+  "parentRunId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "firstInvocationAt": "2026-11-27T00:57:47Z",
+  "materialHashes": [
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+  ],
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "entryStage": "synthesize",
+  "isolatedPublication": true,
+  "automaticRetry": false,
+  "newRetrieval": false,
+  "parentReceiptBytesUnchanged": true,
+  "status": "completed",
+  "outcome": "inconclusive",
+  "seconds": 32.0,
+  "modelCalls": [
+    {
+      "node": "synthesize",
+      "model": "gpt-6.1-terra",
+      "tokens": 7890
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 3860
+    },
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "tokens": 2803
+    }
+  ],
+  "tokens": 14553,
+  "compiledDraftWithoutErrors": true,
+  "verifiedClaims": 0,
+  "wholeAnswerAuditDispatched": false,
+  "diagnosticDetectedUnboundNewNumbers": [
+    "2e0"
+  ],
+  "manualSourceNotes": {
+    "lightGaussianV6Page7": "All performance evaluations are reported on A6000.",
+    "original3DGSV1Page8": "The evaluation section reports A6000 with an exception for Mip-NeRF360; the implementation paragraph describes the interactive viewer used to measure frame rates.",
+    "original3DGSV1Page1": "1080p describes the rendering capability; the cited passage does not establish that both papers measured FPS at that resolution.",
+    "original3DGSHardwareParagraphSuppliedToJointStage": false
+  },
+  "sha256": {
+    "intent.json": "a3758fb221c1074b20e21c623e9f1b0af1867cb1cc544c925e5008131aa65122",
+    "run.json": "746d1f21855cbf40fbc1ff275141fe1a74a6fc3ca37c214265d6f713df70571f",
+    "calls.json": "815955719c68fcbacf3baa1b0a9de94b267b6aa90a0caf577fc937b6564bdc48",
+    "synthesize-return.json": "5bf7e33b5b086720809256204aa29ee1b4d6f1c34fb8f05ea1d9094b2339e2be",
+    "verify-return.json": "e70398a7511f8648c0b62e64ba9cd2ba5e221a09e1a464ed7d4dd89077159e3b",
+    "publish-return.json": "0f3f15517f4bf0d206c4220bcbfef4556d1ddf499158880a65502ceff338f3e4"
+  },
+  "scientificContentAccepted": false
+}

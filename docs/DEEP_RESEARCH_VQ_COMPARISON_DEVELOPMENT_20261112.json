@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-12",
+  "frozenTimestamp": "2026-11-12T11:12:42.552156+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_material_not_imported",
+  "independentCredit": 0,
+  "materials": {
+    "compact_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-vq-review-20261112\\2311.18159v1.pdf",
+      "sha256": "834337574488b37f20793de624fe9598947f18fdf238444238de8320ec1b744b",
+      "bytes": 22544872,
+      "pageCount": 16,
+      "arxiv": "2311.18159v1",
+      "reference": "https://arxiv.org/abs/2311.18159v1"
+    },
+    "compressed_v1": {
+      "path": "D:\\aiproj\\ai_project\\tmp\\pdfs\\h2-vq-review-20261112\\2401.02436v1.pdf",
+      "sha256": "5e0ee4d768697333d588bf186f2b032ff4c73e9deec13618d3c9fb727148e821",
+      "bytes": 25519387,
+      "pageCount": 10,
+      "arxiv": "2401.02436v1",
+      "reference": "https://arxiv.org/abs/2401.02436v1"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题比较并提出有条件的选择建议，不要求完整新实验方案；原D3/H5实验门槛仍开放。"
+    },
+    "budgetLimits": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "independentEligibility": false,
+    "independenceReason": "Historical X1G provider receipts already exposed related bibliography and comparison results. Conservatively development-only, even though primary-source ingestion was not established.",
+    "scope": "Full multi-paper comparison development coverage; does not replace frozen unknown D2 requests, H2 independent acceptance, or full executable experiment requirements.",
+    "sourceAnchors": [
+      {
+        "paper": "compact_v1",
+        "pages": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "checks": "Separate codebooks, no position/opacity VQ by default; reported/reproduced baseline; mean memory calculation; RTX6000 context; default training overhead; normalized Int16 option versus MB."
+      },
+      {
+        "paper": "compressed_v1",
+        "pages": [
+          3,
+          4,
+          5,
+          6,
+          8
+        ],
+        "checks": "Sensitivity-aware VQ and QAT on original training images; encoding and WebGPU rendering; SIZE versus reconstruction quality; FPS at 1080p over training images, GPU/scene matrix and uncompressed renderer comparator."
+      }
+    ],
+    "sourceCautions": [
+      "Compact3D v1 uses the method abbreviation CompGS; the later title/results must not overwrite exact-v1 evidence.",
+      "Compact3D Table1 averages memory/FPS over datasets and fixes Gaussian count to its mean for memory calculation; not a directly measured packed file for every scene.",
+      "Compressed v1 Table1 average PSNR printed values and prose loss description are not fully consistent. Do not force them into an invented reconciliation; use unambiguous dataset rows or qualify exact-source wording.",
+      "Shared benchmark names permit bounded reference, not proof of aligned scenes, hardware, file formats or render protocols. Unspecified alignment is unknown, not proven different."
+    ],
+    "hardFailures": [
+      "把两个不同GPU/场景/分辨率/统计范围的FPS直接排名，或将全部加速归因于量化而忽略渲染实现。",
+      "将Compact3D v1的平均参数内存估计与另一篇编码文件SIZE直接视为同口径大小，或将归一化比值写成MB。",
+      "混合codebook大小、Int16选项、不同基线或后来版本的结果；将v1写成普遍2—3倍加速。",
+      "声称压缩普遍无损、量化无需训练/微调，或无法从论文核实却补出设备速度与内存占用。",
+      "任一严重事实/来源/数值/条件错误，未审核或未知结果计通过，或超过18次调用/100000Token/360秒。"
+    ],
+    "goldInputBoundary": "Only question/material selection/budget enter application intent. Evaluation anchors/criteria never enter model input."
+  },
+  "cases": [
+    {
+      "id": "D2-VQ-v1",
+      "split": "development",
+      "materials": [
+        "compact_v1",
+        "compressed_v1"
+      ],
+      "kind": "paper_comparison",
+      "policy": "task_only",
+      "question": "只依据当前两篇v1论文，为受限设备部署比较两种方法。先给结论，再用一个简洁表格比较压缩机制、训练或压缩代价、存储与画质取舍、渲染速度；明确哪些结果可作参考、哪些不能据现有证据公平排名，并给出有条件的选择建议。不要仅把两篇摘要并列，也不要从压缩倍数直接推出速度或画质优势。不用外部资料。",
+      "required": [
+        "围绕受限设备部署综合比较双方压缩对象、量化机制与存储表示，并说明训练或压缩阶段所需条件；不能仅并列摘要。",
+        "双方各给至少一组有配置/单位/来源的存储与画质证据，区分本方法对各自基线的变化与跨论文可比性；不要求列全部表格。",
+        "讨论渲染性能时绑定原实验条件与实现差异，区分论文报告、可合理推断和未对齐/未知；不能用压缩倍数推出速度或质量。",
+        "给出有证据支持且有条件的选择建议，说明需要在目标设备或统一协议下补测的关键问题；不要求编造实际部署结果。",
+        "结论优先，简洁表格与必要解释相配合，双方引用均可回查到指定v1；保留不确定性但不能用一概不可比回避比较。"
+      ],
+      "forbidden": [
+        "把两个不同GPU/场景/分辨率/统计范围的FPS直接排名，或将全部加速归因于量化而忽略渲染实现。",
+        "将Compact3D v1的平均参数内存估计与另一篇编码文件SIZE直接视为同口径大小，或将归一化比值写成MB。",
+        "混合codebook大小、Int16选项、不同基线或后来版本的结果；将v1写成普遍2—3倍加速。",
+        "声称压缩普遍无损、量化无需训练/微调，或无法从论文核实却补出设备速度与内存占用。",
+        "任一严重事实/来源/数值/条件错误，未审核或未知结果计通过，或超过18次调用/100000Token/360秒。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "D2-VQ-v1": "7a15c0a62f34672f59a6ec61c34a39ae2f8633433adafa6432dd50573d7558c3"
+  }
+}

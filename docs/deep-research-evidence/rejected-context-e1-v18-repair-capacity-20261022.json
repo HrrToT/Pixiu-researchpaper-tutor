@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v18",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "groups": [
+    {
+      "targetIds": [
+        "c3",
+        "c5"
+      ],
+      "state": "fits",
+      "inputBytes": 23818
+    },
+    {
+      "targetIds": [
+        "c1",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "state": "fits",
+      "inputBytes": 23906
+    },
+    {
+      "targetIds": [
+        "c2",
+        "c4",
+        "c6"
+      ],
+      "state": "not_started",
+      "kind": "repairEvidenceBytes",
+      "limit": 24000,
+      "used": 25870
+    }
+  ],
+  "boundary": "Offline preparation only, same archived original targets and rejections with current frozen repair options. Not a model resend or a scientific result.",
+  "sourceCommit": "8e6eb16a"
+}

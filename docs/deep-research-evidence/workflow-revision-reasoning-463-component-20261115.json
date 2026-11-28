@@ -1,0 +1,41 @@
+{
+  "promptVersion": "dr-v2.20261115.463",
+  "sourceCommit": "029d4ae827f6aa3143a08ceb41b635bb9709d705",
+  "isolatedMetadataRevisionOnly": true,
+  "onlyProviderReasoningChanged": true,
+  "promptMessagesSchemaOutputCapDeadlineExact": true,
+  "modelCalls": 1,
+  "maximumCalls": 1,
+  "maximumTokens": 50000,
+  "maximumSeconds": 180,
+  "actualCallSeconds": 50.0,
+  "inputBytes": 38117,
+  "usage": {
+    "total_tokens": 18208,
+    "input_tokens": 12064,
+    "output_tokens": 6144
+  },
+  "finishReason": "length",
+  "rawAnswerBytes": 0,
+  "unitValid": false,
+  "unitErrors": [
+    "unit.output_truncated"
+  ],
+  "applicationDataUnchanged": true,
+  "applicationCounts": {
+    "calls": 9758,
+    "runs": 388,
+    "callsSha256": "1efc49108a93480e55d96fbd523ff084f8da91e933fc175270c159edc1e22b7d",
+    "runsSha256": "02cbc43cf979f210a1ea37a582d77759bfdb72e870142dbda46190ce0db65498"
+  },
+  "rawResult": "tmp\\workflow-revision-reasoning-463-reviewed-component-20261115\\result.json",
+  "rawResultSha256": "1cf39e3b96881d70cb7a67f2045e3290f72c9e98d852d69733e0467040300778",
+  "publicAudit": "tmp\\workflow-revision-reasoning-463-public-review-20261115\\audit.json",
+  "publicAuditSha256": "b4662a67b4f87b4dd9a86dcf00cbe4ef0cf837c3e3d84a806b584bf2eee193da",
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "automaticRetry": false,
+  "decision": "Do not enable reasoning by default: output allowance exhausted with no visible JSON. New .464 runs freeze version0; historical version1 requests remain immutable.",
+  "reasoningTokenBreakdownAvailable": false,
+  "boundary": "One controlled development component, not a complete experiment or general model-quality conclusion."
+}

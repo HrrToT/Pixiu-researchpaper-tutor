@@ -1,0 +1,59 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v48",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "runId": "dr_run_cba6fca72ab450449b72aa037ad6df51",
+  "sourceCommit": "6eb82ccf0ccc5a6216b07c774d4d785edbb6069d",
+  "paidCalls": 16,
+  "tokens": 78569,
+  "elapsedSeconds": 140.0,
+  "externalSearches": 0,
+  "protocolNoteEvidenceAliases": [
+    "E17"
+  ],
+  "pairOptionsByTarget": {
+    "joint_ob-2-1_matched_example": 10
+  },
+  "compiledClaims": 11,
+  "verifiedClaims": 4,
+  "exampleIndividuallyVerified": false,
+  "exampleTableBindings": 0,
+  "finalRejections": {
+    "numeric_mismatch": 1,
+    "missing_table_bindings": 1,
+    "semantic_unresolved": 4,
+    "comparison_benchmark_example_scope": 1
+  },
+  "answerCoverageStatus": "checked",
+  "coverageVerdicts": {
+    "ob-1-1": "partial",
+    "ob-1-2": "partial",
+    "ob-2-1": "partial",
+    "ob-2-2": "missing",
+    "ob-3-1": "partial",
+    "answer_scope": "missing"
+  },
+  "reportVersionId": "report_dr_run_cba6fca72ab450449b72aa037ad6df51_v1",
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "ca33107c9b100c49d442c145bca464ed89fa10164421c12a723b7f16af06d6e6",
+    ".calls.json": "8bae8760247f0704c2eebc65ff3bc29b973e717b610ff8d76741bbd24ae5e2ef",
+    ".result.json": "c9b7f40ce7ff00b06eb03be8aa4acde79cc132f7238e5461db8faf6a99ef505f",
+    ".execution.json": "5adca69470573b8491cc1979f05317b782ba97f01de11e4041f3c207fb09048e",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "sameSettingPeakMemoryTestFirstVerified": true,
+  "optionalRepairStop": {
+    "batch": 1,
+    "kind": "repairPromptBytes",
+    "limit": 6757,
+    "used": 9630
+  },
+  "crossPaperBoundaryRevisionRejection": "absence_not_established"
+}

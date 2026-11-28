@@ -1,0 +1,155 @@
+{
+  "fixture": "D3-DENSIFICATION-FACTORIAL",
+  "split": "development",
+  "independentCredit": 0,
+  "candidate": "893f6cfbf737d446dc2e9c77167e9e4c76ae0609",
+  "fixCommit": "7ac22d4a5510d838a2ae18f509f300bb39f97ed0",
+  "runId": "dr_d3_renderer_defined_20261128",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "approvedSource": "Original 3D Gaussian Splatting v1 frozen task excerpts",
+  "sourceSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+  "isolation": {
+    "externalSources": 0,
+    "workspaceWrites": 0,
+    "stagePolicy": "frozen planning and evidence; regenerate, review and attempt one repair"
+  },
+  "carriedRoutine": {
+    "generations": 5,
+    "tokens": 17377
+  },
+  "newGenerations": 5,
+  "newGenerationsByStage": {
+    "plan_experiment_shared": 1,
+    "review_experiment_shared": 3,
+    "repair_experiment_shared": 1
+  },
+  "newTokens": 48576,
+  "newElapsedSeconds": 140.41,
+  "cumulativeTokens": 65953,
+  "limits": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360
+  },
+  "generationRequestBytesWithOverhead": 31884,
+  "actualGenerationPromptBytes": 23058,
+  "scienceReview": {
+    "valid": true,
+    "counts": {
+      "passed": 24,
+      "failed": 3
+    },
+    "failedChecks": [
+      {
+        "checkId": "section_2",
+        "status": "failed",
+        "planBindings": [
+          "/steps/1/operation/action",
+          "/steps/9/operation/action",
+          "/states/1/representation",
+          "/states/2/representation",
+          "/states/3/representation",
+          "/data/inputs/1/preparation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E5",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E7",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          }
+        ],
+        "reason": "训练所需世界位置梯度被规定为由二维屏幕中心梯度经投影雅可比转换；它不包含位置对投影协方差、球谐视角方向等项的贡献，不能据此实现文中所称完整世界位置梯度。"
+      },
+      {
+        "checkId": "section_3",
+        "status": "failed",
+        "planBindings": [
+          "/factors/0/onOperation/action",
+          "/factors/1/onOperation/action",
+          "/groups/0/levels",
+          "/groups/1/levels",
+          "/groups/2/levels",
+          "/groups/3/levels",
+          "/steps/9/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E5",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E2",
+            "field": "after"
+          }
+        ],
+        "reason": "四组及父子、Adam处理已规定，但方案明确不做世界或视空间的大高斯剔除；论文指出会周期性移除这两类过大的高斯。此共同方法删减不符合保持其余方法不变的对照要求。"
+      },
+      {
+        "checkId": "section_6",
+        "status": "failed",
+        "planBindings": [
+          "/metrics/0/procedure",
+          "/metrics/1/procedure",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/steps/10/operation/action",
+          "/states/5/representation",
+          "/states/11/representation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E3",
+            "field": "before"
+          },
+          {
+            "evidenceId": "E13",
+            "field": "quote"
+          }
+        ],
+        "reason": "续训窗口和失败处理明确，但预训练窗口排除初始模型加载；主指标却称整段训练峰值，不能保证覆盖加载时的最大分配。应纳入加载或将指标明确限定为所计量窗口峰值。"
+      }
+    ]
+  },
+  "revision": {
+    "status": "invalid_response",
+    "legacyError": "Forbidden replacement",
+    "reason": "An identical /unresolved edit repeated the top-level unresolved list."
+  },
+  "wholeAnswerAudit": false,
+  "published": false,
+  "scienceApproval": false,
+  "offlineReplay": {
+    "inputBytesBefore": 31884,
+    "inputBytesAfter": 31931,
+    "sameContextDigest": true,
+    "frozenEvidenceCount": 14,
+    "rawRunSha256": "bf786e17f47f7b5f96b59f817bad095b8991094280e6508dfa3f3af3937ca6b7",
+    "rawRevisionDigest": "a551a8e3e9aa84e211a42dd98f695705ff0f87659bebfe283eebe58cb636e201",
+    "legacyReason": "Forbidden replacement",
+    "newRevisionBindingDigest": "fb13a97b163d68a91e8f019f261a3d28f150212460ff9f192b3d89f0a83533fe",
+    "unresolvedPrerequisitesPreserved": 3,
+    "sourceFactsPreserved": 10,
+    "scientificApproval": false,
+    "providerCalls": 0,
+    "inputDigestAfter": "5b3ca64d55dcb9918a7eb24e847729e79faa024681a856b11cf9739d2c8a473d"
+  },
+  "regression": {
+    "passed": 319,
+    "sha256": "6508de07277ef09adacd568e5c3436598ecfa437d7de08aa1e4d7601a51c3f7a"
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-renderer-defined-20261128/calls.json": "dd0c02beb6afe004cc3aaf86ddc7a33029c4f2e149be3c78e512dac572e678fd",
+    "tmp/openai-d3-renderer-defined-20261128/execution-and-prerequisite-replay.json": "beb394ae7981ccb6e7771e1bea97bd2e5a64bc2c168de5183f04f28ca850f1f1",
+    "tmp/openai-d3-renderer-defined-20261128/intent.json": "5e57b9625edef78d898af1af63cf1bb942de773c97199c3a8841dae09a3c06fe",
+    "tmp/openai-d3-renderer-defined-20261128/provider.jsonl": "865d7ad452889cc982bb1f76a5b4399ae77e1dee1f94d1d80b859328ab7f43fd",
+    "tmp/openai-d3-renderer-defined-20261128/result.json": "758de6ec0f0f39a7155626bf59f65853c5ae9fbeacc4bf9a23bd07cdd10fb3d8",
+    "tmp/openai-d3-renderer-defined-20261128/run.json": "bf786e17f47f7b5f96b59f817bad095b8991094280e6508dfa3f3af3937ca6b7"
+  }
+}

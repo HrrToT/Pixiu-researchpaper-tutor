@@ -1,0 +1,193 @@
+{
+  "sourceCommit": "8bc2aa5da4981b30c807e138928335c31ffb27bd",
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "runId": "dr_run_0d8f9f8cd79959688389c47a167a79cd",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "elapsedSeconds": 105.0,
+  "submissions": 1,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "providerCalls": 7,
+  "actualTotalTokens": 33992,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16126,
+      "output_tokens": 1011,
+      "total_tokens": 17137,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 15551
+    },
+    "gpt-6.1-terra": {
+      "calls": 2,
+      "input_tokens": 13065,
+      "output_tokens": 3790,
+      "total_tokens": 16855,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 13059
+    }
+  },
+  "modelCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "plan_experiment_shared": 1,
+    "repair_experiment_shared": 1
+  },
+  "stageEvidence": {
+    "sharedExperimentGeneration": {
+      "status": "awaiting_scientific_review",
+      "inputBytes": 31517,
+      "groups": [
+        {
+          "id": "00",
+          "levels": {
+            "A": 0,
+            "B": 0
+          }
+        },
+        {
+          "id": "10",
+          "levels": {
+            "A": 1,
+            "B": 0
+          }
+        },
+        {
+          "id": "01",
+          "levels": {
+            "A": 0,
+            "B": 1
+          }
+        },
+        {
+          "id": "11",
+          "levels": {
+            "A": 1,
+            "B": 1
+          }
+        }
+      ],
+      "unresolved": [
+        "Bicycle 原始图像、相机、训练专用 SfM、可运行实现及设备均未提供；须先取得并完成预检。",
+        "必须确认实现能按指定规则暴露梯度、动态增删参数及 Adam 状态，并能完整计量目标设备分配器峰值；不能满足则停止而非采用未知默认值。"
+      ]
+    },
+    "sharedExperimentReview": {
+      "status": "not_started_precheck",
+      "inputBytes": 31931,
+      "hardIssues": [
+        {
+          "claimId": "shared_fact_3",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "2e0"
+          ],
+          "factId": "f_splitop",
+          "evidenceRefs": [
+            "E5"
+          ]
+        }
+      ],
+      "batches": [
+        {
+          "inputBytes": 21355,
+          "checks": 6
+        },
+        {
+          "inputBytes": 31931,
+          "checks": 8
+        },
+        {
+          "inputBytes": 31495,
+          "checks": 7
+        }
+      ]
+    },
+    "sharedExperimentRevision": {
+      "status": "awaiting_scientific_review",
+      "inputBytes": 18598,
+      "groups": [
+        {
+          "id": "00",
+          "levels": {
+            "A": 0,
+            "B": 0
+          }
+        },
+        {
+          "id": "10",
+          "levels": {
+            "A": 1,
+            "B": 0
+          }
+        },
+        {
+          "id": "01",
+          "levels": {
+            "A": 0,
+            "B": 1
+          }
+        },
+        {
+          "id": "11",
+          "levels": {
+            "A": 1,
+            "B": 1
+          }
+        }
+      ],
+      "unresolved": [
+        "Bicycle 原始图像、相机、训练专用 SfM、可运行实现及设备均未提供；须先取得并完成预检。",
+        "必须确认实现能按指定规则暴露梯度、动态增删参数及 Adam 状态，并能完整计量目标设备分配器峰值；不能满足则停止而非采用未知默认值。"
+      ]
+    },
+    "sharedExperimentRevisionReview": {
+      "status": "not_started_precheck",
+      "inputBytes": 31959,
+      "hardIssues": [
+        {
+          "claimId": "shared_fact_3",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "2e0"
+          ],
+          "factId": "f_splitop",
+          "evidenceRefs": [
+            "E5"
+          ]
+        }
+      ],
+      "batches": [
+        {
+          "inputBytes": 21383,
+          "checks": 6
+        },
+        {
+          "inputBytes": 31959,
+          "checks": 8
+        },
+        {
+          "inputBytes": 31523,
+          "checks": 7
+        }
+      ]
+    }
+  },
+  "release": {
+    "complete": false,
+    "repairAttempted": true
+  },
+  "localReceiptDir": "tmp/openai-d3-release-audit-20261127",
+  "billedCurrencyCharge": null,
+  "sha256": {
+    "intent.json": "191af446a27301c8b691ac6ebc8548fbcfd256be50f62f37e139360f18c0311f",
+    "provider.jsonl": "399dbba96483c25dd641dfacfc67c2bb54d9165cde888cce8746073f8c4d97dc",
+    "calls.json": "b9e3e498ff86ee843fa6d807f585ad72b7003e45e531fec73e1aced4336f57a2",
+    "run.json": "2693506fae17d08eea84521b66ea5efb42c0203b07925b8bf7aa8d86dfb38a73",
+    "result.json": "e4c536943a684cff96296fe3ccb4aeb986dbbefdc2f59a86682015eaf503b182"
+  }
+}

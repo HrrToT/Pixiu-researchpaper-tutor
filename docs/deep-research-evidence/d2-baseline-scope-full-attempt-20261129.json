@@ -1,0 +1,71 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "split": "development",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "sourceCommit": "7ab4ef7d074f72cf4e3b0efa04ac7c09d7d1b210",
+  "runId": "dr_run_3948719eb07e5f939625b4fb2011b54d",
+  "artifacts": {
+    "tmp/openai-d2-baseline-scope-fresh-20261129/intent.json": "1f4c67633e1f32f4db3ecd86a03487bd605144275caa33ac3c8c3efe62383c7e",
+    "tmp/openai-d2-baseline-scope-fresh-20261129/run.json": "ce5aacec194982dda101fe8eab9bde534c49d31dd495d599be8178f3f628b6d3",
+    "tmp/openai-d2-baseline-scope-fresh-20261129/calls.json": "44419c40d40dfbce516f8c8e8a18f8c603a9807c7b70c6c7b983909103294528",
+    "tmp/openai-d2-baseline-scope-fresh-20261129/result.json": "9b9b7ea61978c356645135958c6d91c666286b4e92e9ee47013b65d512fd128a",
+    "tmp/openai-d2-baseline-scope-fresh-20261129/provider.jsonl": "891a6d058402f84f6a402fbca4e6dbd62e917331fd5d7b19f04918d7f9686335"
+  },
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "modelCalls": 12,
+  "providerCallsByModel": {
+    "gpt-6-luna": 5,
+    "gpt-6.1-terra": 7
+  },
+  "providerUsageTokens": 64008,
+  "durationSeconds": 105.0,
+  "unknownCalls": 0,
+  "externalSearches": 0,
+  "productionWrites": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "initialAcceptedClaims": [
+    "cmp_0_0",
+    "cmp_4_0",
+    "cmp_6_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1"
+  ],
+  "initialRejectedClaims": {
+    "cmp_2_0": "numeric_mismatch",
+    "cmp_1_0": "semantic_unresolved",
+    "cmp_3_0": "semantic_unresolved"
+  },
+  "declinedPaperTargets": [
+    "table_2_1",
+    "table_3_1"
+  ],
+  "isolatedTargets": [
+    {
+      "targetId": "joint_ob3",
+      "reason": "stage_cross_paper_setting_owner"
+    }
+  ],
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "remainingBeforeOptionalRepair": 35992,
+  "offlineRepairAdmissionReplay": {
+    "productionForecastBytesPlusEnvelope": 32779,
+    "countedPromptBytes": 29255,
+    "mockInputTokens": 9500,
+    "forecastWithMockCount": 14024,
+    "repairWindowWithMockCountBytes": 16848,
+    "fittedRepairPromptBytes": 16839,
+    "repairOutputLimitTokens": 4096,
+    "liveCountDispatched": false,
+    "repairGenerationDispatched": false
+  },
+  "scientificApproval": false,
+  "independentHoldoutCredit": false,
+  "productionPublicationVerified": false
+}

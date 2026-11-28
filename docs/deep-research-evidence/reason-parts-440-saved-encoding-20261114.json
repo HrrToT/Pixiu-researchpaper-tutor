@@ -1,0 +1,22 @@
+{
+  "sourceCase": "AD1N-v25 archived verification responses",
+  "rawArtifactSha256": "06d7ebe4f875198e3c4761d69e480c43729b8ad39381076ddd4390d70ad84f14",
+  "legacyDecodeAndPromptExact": true,
+  "scientificReviewQuestionAndSourcesPrefixExact": true,
+  "encodingExamples": [
+    {
+      "claimId": "c1",
+      "reportedDecisionPreserved": "failed",
+      "allOriginalReasonAndSourceBindingsRetained": true
+    },
+    {
+      "claimId": "c2",
+      "reportedDecisionPreserved": "passed",
+      "allOriginalReasonAndSourceBindingsRetained": true
+    }
+  ],
+  "modelCalls": 0,
+  "scientificAcceptance": false,
+  "historicalRunMutated": false,
+  "boundary": "Offline encoding examples only, retaining original unsupported/unverified prose and source bindings. No source diagnostic is reclassified or trusted, no verdict is upgraded, and no new model adherence or scientific acceptance is demonstrated."
+}

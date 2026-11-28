@@ -1,0 +1,65 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "runId": "dr_d3_execution_v8_repacked_20261128",
+  "attemptCandidate": "f325ad960de88f18d40c24d7f4bd152692ef0e21",
+  "sourceRun": "dr_d3_densification_regeneration_20261128",
+  "fixCommit": "59cc38b19731d2f781ecc85b40f99432c94faba6",
+  "independentCredit": 0,
+  "newCalls": 1,
+  "model": "gpt-6.1-terra",
+  "newUsage": {
+    "total_tokens": 12155,
+    "input_tokens": 7334,
+    "output_tokens": 4821,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 7331
+  },
+  "carriedTokens": 17377,
+  "compoundedTokens": 29532,
+  "elapsedSeconds": 57.84,
+  "originalOutcome": "rejected_before_scientific_review",
+  "structuralViolations": [
+    {
+      "code": "plan.wire_schema",
+      "path": "/steps/9/operation"
+    }
+  ],
+  "repackedReviewStarted": false,
+  "published": false,
+  "workspaceWrites": 0,
+  "externalSearches": 0,
+  "automaticRetry": false,
+  "offlineReplay": {
+    "originalActionCharacters": 2843,
+    "schemaActionLimit": 1600,
+    "rawJsonBytes": 21595,
+    "diagnosticArmActionCharacters": 1557,
+    "diagnosticExpandedBytes": 24512,
+    "productionPlanLimitBytes": 24000,
+    "diagnosticIssueAfterSplitting": [
+      {
+        "code": "plan.capacity",
+        "path": "/"
+      }
+    ],
+    "oldRequestBytes": 31925,
+    "newRequestBytes": 31912,
+    "newInputDigest": "4064ee6d37f13d440ac1a58ed029e58a38923fc2b39becf17ac698f5e00fe5c3",
+    "evidenceAliasesUnchanged": true,
+    "newProviderCalls": 0,
+    "originalResponsePreserved": true
+  },
+  "regression": {
+    "passed": 324,
+    "failed": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-execution-v8-repacked-20261128/intent.json": "97082159758c1e51674633cb803efc2a78dc3f949d552405b73845986d513028",
+    "tmp/openai-d3-execution-v8-repacked-20261128/run.json": "029f28119ae6f025e14cc0029e381b24b443fef93358e6b33e1003efc610f181",
+    "tmp/openai-d3-execution-v8-repacked-20261128/calls.json": "2d3375f6c32c6db51c26f85735d63cc08c13579e53cf2d77873512e5ac42e468",
+    "tmp/openai-d3-execution-v8-repacked-20261128/result.json": "71a34325c56b84fed1200a08ce1d8931b20b2968b64f8195127fe094134e3283",
+    "tmp/openai-d3-execution-v8-repacked-20261128/provider.jsonl": "66b5b6fcda65be76ae981851a9cf9201c6c33fdcc42bdd17127945a651868e8e",
+    "tmp/openai-d3-execution-v8-repacked-20261128/field-capacity-replay.json": "261b2cc4600ac7f514867463e1d709b930aea25b5c999b69a4276c64e837b9cc",
+    "tmp/d3-shared-fit-guidance-regression-20261128.xml": "56fc6668b3480057bab59ea368f9b5db410ab43657b64e6beda3e78a36e69ba9"
+  }
+}

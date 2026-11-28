@@ -1,0 +1,154 @@
+"""Literal display axes and fixed answer slots, never scientific coverage."""
+from copy import deepcopy
+import re
+
+_TABLE_MENTION = re.compile(r'表格|\btable\b', re.I)
+_TABLE_PROHIBITION = re.compile(r'(?:不要|不用|无需|取消|去掉)[^。！？\n]{0,8}表格|\b(?:no|without)\s+(?:a\s+)?table\b', re.I)
+_TABLE_LAYOUT = re.compile(
+    r'(?:用|以|输出|给出|生成|制作|列成|整理成|汇总成)[^，。！？；\n]{0,6}表格(?!里|中|内|的)'
+    r'|表格(?:的)?(?:形式|呈现|展示|对照|对比|比较)'
+    r'|\b(?:as|in|using|use|make|include|give|provide|present)\s+(?:a\s+)?(?:comparison\s+)?table\b', re.I)
+_SPEED_COMPARISON_REASON = re.compile(
+    r'(?:为什么|为何|说明原因)[^。！？\n]{0,70}(?:相除|比值|排名)'
+    r'|\b(?:why|explain why)\b[^.!?\n]{0,100}\b(?:divide|ratio|quotient|rank)\w*\b', re.I)
+
+
+def short_prose_enabled(record, question, limit):
+    """Use prose for new, explicitly length-limited comparisons without a table requirement."""
+    version = record.get('shortComparisonLayoutContractVersion')
+    if (type(version) is not int or version not in (1, 2, 3, 4, 5)
+            or type(limit) is not int or limit <= 0 or (version < 5 and limit > 300)):
+        return False
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    for layer in layers:
+        if _TABLE_PROHIBITION.search(layer):
+            return True
+        if (_TABLE_LAYOUT if version == 5 else _TABLE_MENTION).search(layer):
+            return False
+    return True
+
+
+def short_speed_reason_requested(question):
+    from services.deep_research.comparison_joint_reports import _SPEED
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    return any(_SPEED.search(layer) and _SPEED_COMPARISON_REASON.search(layer) for layer in layers)
+
+
+def requires_speed_explanation_prose(record, question, limit, targets, paper_subjects):
+    if record.get('shortComparisonLayoutContractVersion') not in (4, 5) or len(targets) != 1:
+        return False
+    target, = targets
+    return (target['targetId'] in paper_subjects and not target.get('deliverable')
+            and short_prose_enabled(record, question, limit) and short_speed_reason_requested(question))
+
+
+def short_prose_guidance(record, question, limit, target_count):
+    if not short_prose_enabled(record, question, limit):
+        return ''
+    share = max(1, (limit - min(30, limit // 5)) // max(1, target_count))
+    if record.get('shortComparisonLayoutContractVersion') in (3, 4, 5):
+        if short_speed_reason_requested(question):
+            return (f'Render short cited paragraphs within {limit} characters total, roughly {share} per point. '
+                    'For a requested speed ratio or ranking explanation, give the conclusion and why: '
+                    'an unaligned test condition can affect FPS independently of the method, so the quotient '
+                    'cannot isolate the method effect. Cite both studies. Keep any confirmed common setup, '
+                    'and distinguish a claimed rendering capability from a condition of a reported timing test. '
+                    'A list of unknown conditions alone leaves why unanswered. For a joint target without '
+                    'a dedicated deliverable, use concise cited inference prose to include the reason.\n')
+    return (f'The app renders all stages as short cited paragraphs, within {limit} characters in total. '
+            f'Aim for about {share} Chinese characters per point including conditions. This is a target, '
+            'not permission to omit what the user asks. Give one concise source-local result per paper point; '
+            'the app supplies its paper label, so omit repeated full titles. The joint point states the '
+            'comparison verdict and the shortest source-backed reason. Keep only settings needed to establish '
+            'or qualify that verdict. In comparability boundaries, observedSettings are relevant protocols, '
+            'not a second list of FPS or other outcomes from the paper points. Do not restate per-paper results '
+            'or list several unchecked conditions. If a shared condition cannot be verified, say which '
+            'alignment remains unestablished without claiming that the papers used different settings. '
+            'Keep any required units, dataset or benchmark conditions, and exact evidence IDs.\n')
+
+
+def explicit_axes(question):
+    """Recognize a short explicit list after a table-comparison instruction.
+
+    Ambiguous/multiple lists retain the existing planned layout. Conjunctions
+    inside a dimension remain intact; no generated label supplies missing text.
+    """
+    if not isinstance(question,str):return []
+    patterns=(r'表格[^。！？；;\n]{0,12}?(?:比较|对比|对照)\s*([^。！？；;\n]+)',
+              r'\btable\s+(?:to\s+)?compare\s+([^.!?;\n]+)')
+    layers=getattr(question,'point_instruction_layers',getattr(question,'instruction_layers',(question,)))
+    for layer in layers:
+        if not isinstance(layer,str):continue
+        if _TABLE_PROHIBITION.search(layer):return []
+        lists=[];matched=False
+        for pattern in patterns:
+            for match in re.finditer(pattern,layer,re.I):
+                matched=True;text=match[1].strip(' ：:')
+                parts=re.split('、',text) if '、' in text else re.split(r',\s*(?:and\s+)?',text)
+                parts=[p.strip() for p in parts]
+                if (2<=len(parts)<=6 and len(set(parts))==len(parts)
+                        and all(p and len(p)<=40 and p in layer for p in parts)):
+                    lists.append(parts)
+        if matched:return lists[0] if len(lists)==1 else []
+    return []
+
+
+def apply_slots(plan,question,*,literal_goal_bindings=False):
+    """Separate display rows from frozen research goals and source scopes."""
+    result=deepcopy(plan);result['fixedSlots']=True
+    roles=plan['roles'];axes=explicit_axes(question)
+    if axes:
+        cells=[]
+        for axis_index,label in enumerate(axes):
+            for source_index,(source,info) in enumerate(plan['sources'].items()):
+                allowed=[oid for oid,role in roles.items() if role['kind']!='supporting'
+                         and source in role['sourceAliases']]
+                if literal_goal_bindings:
+                    exact = [oid for oid in allowed if roles[oid]['kind'] == 'per_paper'
+                             and (roles[oid]['requestExcerpt'] == label or label in
+                                  [part.strip() for part in re.split(r'[、,]', roles[oid]['requestExcerpt'])])]
+                    if exact:
+                        allowed = exact
+                if not allowed:continue
+                from services.deep_research.source_labels import source_display_title
+                cells.append({'cellId':f'table_{axis_index}_{source_index}',
+                    'axisId':f'table_axis_{axis_index}','axisTitle':label,
+                    'obligationId':allowed[0],  # Navigation only until a claim binds actual goals.
+                    'allowedObligationIds':allowed,'question':label,'source':source,
+                    'sourceTitle':source_display_title(info.get('title'),f'论文{source_index+1}'),
+                    'evidenceIds':[eid for eid,e in plan['evidence'].items() if e['source']==source],
+                    'preferredEvidenceIds':[eid for eid,e in plan['evidence'].items()
+                                            if e['source']==source and set(e['obligations'])&set(allowed)]})
+        result.update(cells=cells,explicitAxes=axes)
+    result['conclusionSlots']=sum(max(1,len(o.get('completionCriteria',[])))
+        for o in plan['requirements'] if roles[o['obligationId']]['kind']=='joint')
+    return result
+
+
+def decode_slots(payload,plan,*,max_claims):
+    """Normalize one point per cell without accepting arrays or truncating data."""
+    if (not isinstance(payload,dict) or set(payload)!={'cells','conclusions'}
+            or not isinstance(payload['cells'],list) or not isinstance(payload['conclusions'],list)):
+        raise ValueError('Invalid fixed comparison slots')
+    limit=min(plan['conclusionSlots'],max(0,max_claims-len(plan['cells'])))
+    if len(payload['conclusions'])>limit:
+        raise ValueError('Comparison conclusion slots exceeded')
+    expected={c['cellId']:c for c in plan['cells']};cells=[];bindings={}
+    for row in payload['cells']:
+        if not isinstance(row,dict) or not isinstance(row.get('cellId'),str) or row['cellId'] not in expected:
+            raise ValueError('Invalid comparison slot identity')
+        cell=expected[row['cellId']];dynamic='allowedObligationIds' in cell
+        keys={'cellId','claim','unresolved'}|({'obligationIds'} if dynamic else set())
+        if (set(row)!=keys or type(row.get('unresolved')) is not bool
+                or row['claim'] is not None and not isinstance(row['claim'],dict)
+                or row['claim'] is None and not row['unresolved']):
+            raise ValueError('Invalid comparison slot shape')
+        goals=row.get('obligationIds',[cell['obligationId']])
+        if (not isinstance(goals,list) or row['claim'] is not None and not goals
+                or any(not isinstance(oid,str) or oid not in cell.get('allowedObligationIds',[cell['obligationId']]) for oid in goals)
+                or len(set(goals))!=len(goals)):
+            raise ValueError('Invalid comparison slot goals')
+        bindings[row['cellId']]=list(goals)
+        cells.append({'cellId':row['cellId'],'claims':[] if row['claim'] is None else [deepcopy(row['claim'])],
+                      'unresolved':row['unresolved']})
+    return {'cells':cells,'conclusions':deepcopy(payload['conclusions'])},bindings

@@ -1,0 +1,47 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "recordedRun": "dr_run_32b17e84964d5d39a1aae0aebfc54239",
+  "historicalPoolSize": 54,
+  "historicalPoolDigest": "c8c7af54edce3c44623170d6ce070ae1e4389573b7bfbcc83c286d96997ea050",
+  "historicalFirstRequestByteIdentical": true,
+  "original": {
+    "contractVersion": 6,
+    "requestBytes": 18847,
+    "criteria": 3,
+    "boundaryReferences": [
+      "ev_c6ccb1eddd68e0e0b299469c36f735d26e392fbac5dc95deee020b1fef7e4b34",
+      "ev_31a0b992c6f47f355495e18e20f2a37f13228b51125710c90f5815937baf2451",
+      "ev_4f0b8b3dc332691876296e556a51e21c034b56f11b70d8b5c7d4a4e6d4425c4b",
+      "ev_b3df1e31450a88e6abe6e3c27e4d4feefe6c9f1951299258e6ed1100c0774d7b"
+    ]
+  },
+  "new": {
+    "contractVersion": 7,
+    "requestBytes": 19095,
+    "criteria": 4,
+    "sameNewInputsWithoutSharingBytes": 20773,
+    "allOtherPreviouslyIncludedReferencesIdentical": true,
+    "decodedSharedInputsIdentical": true,
+    "boundaryReferencesWithVerifiedPhysicalPages": [
+      {
+        "evidenceId": "ev_e5ba454a3d812bf4f0cc82c55a2011d3085e0aa1bec36f1a1245953ef37ef52c",
+        "sourceSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+        "physicalPage": 6
+      },
+      {
+        "evidenceId": "ev_e1f1f56e499fae551482dbfdbdb1b83d68c609825b4c8c8dba38ade4fe5ef57c",
+        "sourceSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+        "physicalPage": 8
+      },
+      {
+        "evidenceId": "ev_1706158825cd87f070381a528780dc076aca7215495f0dd6f0af412fa9cb8f3e",
+        "sourceSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+        "physicalPage": 7
+      }
+    ],
+    "newlyIncludedCriterion": "Provide a conditional recommendation for the stated memory-constrained use case, identifying the conditions supporting each choice and grounding the tradeoff in the papers' reported evidence."
+  },
+  "paidCalls": 0,
+  "readinessVerdictReexecuted": false,
+  "scientificAcceptance": false
+}

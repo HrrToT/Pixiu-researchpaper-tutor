@@ -1,0 +1,32 @@
+{
+  "sourceCommit": "cae58b723513f42b5e390245c03cb3a7a1750de5",
+  "promptVersion": "dr-v2.20261116.483",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelAttempts": 1,
+  "providerStatus": "unknown",
+  "settled": false,
+  "failureKind": "deadline_exceeded",
+  "providerResponseIdPresent": false,
+  "actualUsageKnown": false,
+  "conservativeReservedTokens": 39139,
+  "reservedTokensAreNotActualUsage": true,
+  "unitValid": false,
+  "inputBytes": 31971,
+  "all17EvidenceAndContextValuesExact": true,
+  "scientificInstructionsByteExact": true,
+  "schemaEquivalentAfterReferenceExpansion": true,
+  "sameThinkingOutputCapAndDeadline": true,
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "contentReview": {
+    "accepted": false,
+    "conclusion": "No response received by the90-second deadline; generation result and actual provider usage remain unknown"
+  },
+  "productionLoaded": false,
+  "retainedRuntime": ".476",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-readable-483-reviewed-component-20261116/result.json",
+  "rawResultSha256": "df5afbabbd7243980e6183906bb3bcad4d5a5edad722937b66b02f3451c377ca"
+}

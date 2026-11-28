@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v12",
+  "runId": "dr_run_d08f82b1b1d454f79fea737a038f33be",
+  "sourceCommit": "92598500",
+  "promptVersion": "dr-v2.20261018.123",
+  "question": "只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。区分作者报告的结果、成立条件和未验证范围。只写最关键的两点，300字以内。",
+  "status": "completed",
+  "outcome": "partial",
+  "contentAccepted": false,
+  "modelCalls": 10,
+  "settledTokens": 36855,
+  "elapsedSeconds": 45.754,
+  "cost": null,
+  "report": "## 判断\n\n- 有依据的推断：当前取得的证据支持该结论在Mip-NeRF 360和Tanks and Temples这两个真实世界大规模场景数据集上成立；不足以证明该结论在合成物体级数据集或其他场景条件下仍成立。 [1](#research-evidence-ev_6c3f9b012c39684432b77cf0c88e035389f5c8ff4cad44d639145c7446482d2b) [2](#research-evidence-ev_3bf0ecb6ef9ddccf2796035ad84f0a54df8e666d31999ebc1c17a6a7411487e8)\n\n<details>\n<summary>还有 2 项未完成</summary>\n\n- 作者报告了哪些具体的图像质量指标数值，用于支持压缩后质量接近原始3DGS的说法？：最终回答尚未完整回应这一问题\n- 作者报告的图像质量结果是在哪些数据集和场景上获得的？：最终回答尚未完整回应这一问题\n\n</details>\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> We conduct comparisons using the scene-scale view synthesis dataset provided by Mip-NeRF360[64], which comprises nine real-world large-scale scenes, including five unbounded outdoor and four indoor settings with complex backgrounds.\n\n**[2] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 全文片段\n\n> In addition, we utilize the Tanks and Temples dataset[65], a comprehensive unbounded dataset, and select the same scenes as used in[16].\n\n</details>",
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established"
+      }
+    ]
+  },
+  "finalCoverageStatus": "checked",
+  "findings": [
+    "A model-computed PSNR difference was put in a reported claim. Original cited rows contain the operands, not the derived difference; numeric_mismatch correctly rejected it.",
+    "The repair kept those computed differences under the same reported kind, so that first point remained rejected.",
+    "The table dataset spelling must remain aligned with the cited table group; a different prose spelling must not silently replace the group identity.",
+    "Only the limited-scope inference was published; it does not fulfill the two-point quality verification. Its own citations describe datasets, so manual acceptance still requires checking its quality premise rather than trusting the batch semantic pass.",
+    "Final coverage remained partial with concrete missing answer aspects. No automatic request retry or budget enlargement occurred."
+  ],
+  "scores": {
+    "goalResponse": 2,
+    "evidenceSupport": 2,
+    "conditions": 3,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 4
+  },
+  "rawFiles": [
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v12.json",
+      "sha256": "3af2154cc62350a91d9255b1c9745e045ccc30a736e47f4d2ee2bd7eda8f498a"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v12.payload.json",
+      "sha256": "dd8bf823dab8855d1285035be9c5cf9e33c989c06d29356811cdcc6f01fbed26"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v12.calls.json",
+      "sha256": "944513777a63c36e81207d0ed3585b1f9e8f84d1b8f9dad1b9311be1383851c5"
+    },
+    {
+      "path": "tmp\\dr-acceptance-receipts\\D1-v12.result.json",
+      "sha256": "5a5c2ad5a45cae6e6bb56023a749290a0a07b342f26015b65fcdc9a16781fb8d"
+    }
+  ],
+  "boundary": "Recorded original outcome, not a content pass; no production records changed."
+}

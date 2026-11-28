@@ -1,0 +1,16 @@
+{
+  "case": "X4G-v1",
+  "originalPayloadSha256": "78d455a2a462880decc1a42851f38d0ec4fa61dd2abf8fd465a748d1a5655b94",
+  "quantitySpellingVersion9NumericRejections": [
+    "c2",
+    "c3"
+  ],
+  "quantitySpellingVersion10NumericRejections": [],
+  "semanticCheckerStillRequired": true,
+  "unresolvedSemanticVerdictAcceptsNoClaims": true,
+  "originalPayloadUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "boundary": "Only a spatial surface-name count false positive is removed. Both original multi-clause claims still need complete own semantic source support; no scientific acceptance is inferred."
+}

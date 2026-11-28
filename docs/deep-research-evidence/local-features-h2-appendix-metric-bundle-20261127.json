@@ -1,0 +1,59 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "offline_pdf_to_ready_synthesis_packet",
+  "independentCredit": 0,
+  "providerCalls": 0,
+  "baseline": "deep-research-evidence/local-features-h2-synthesis-live-and-clause-replay-20261127.json",
+  "savedPlan": "Replayed the raw plan from the baseline with the current literal comparison clause normalization.",
+  "scope": "Original local PDFs were parsed in the lexical fallback path. Stopped before any provider dispatch.",
+  "replay": {
+    "providerCalls": 0,
+    "readinessUnits": [
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6"
+    ],
+    "synthesisStages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23997,
+        "targetCount": 2,
+        "allThreeVisible": true,
+        "targetsAllowingBundle": 2
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23668,
+        "targetCount": 2,
+        "allThreeVisible": false,
+        "targetsAllowingBundle": 0
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23991,
+        "targetCount": 2,
+        "allThreeVisible": true,
+        "targetsAllowingBundle": 2
+      }
+    ],
+    "threeEvidenceIds": [
+      "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050",
+      "ev_aff310618d68f5ee88971435ee47a6895cf127c1cd36ea8a13c04476bfc48975",
+      "ev_c2e603af11bc33b3c64a37a682bb667945e395c4187cadf0d5d24add6b1ee20f"
+    ],
+    "tablePage": 7,
+    "protocolPage": 7,
+    "metricDefinitionPage": 10,
+    "metricDefinition": "Homography Estimation",
+    "originalDefinitionSha256": "d8d7c86774e3569a6b5112776431cb0054b15b9ce70e9cd0111487f1a679d993"
+  },
+  "localRegressionPassed": 141,
+  "artifact": {
+    "name": "h2-appendix-metric-closure-20261127.json",
+    "sha256": "235fa6b5d2dc3507ac905742ce9a63c9f0b3402d55ae4345e293e851c0aa7855"
+  },
+  "scientificConclusionVerified": false
+}

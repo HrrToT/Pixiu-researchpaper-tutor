@@ -1,0 +1,37 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "saved_review_publication_and_located_quote_scope_replay",
+  "sourceCommit": "74550c642096fd3bfad893177305735242ce6d8a",
+  "publicationReplay": {
+    "sourceRunId": "dr_run_bbc93c1fb86d585babe92a2124b06d54",
+    "claimsRetained": 6,
+    "removedGap": {
+      "obligationId": "requested_numeric_example",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。"
+    },
+    "otherGapsRetained": 6,
+    "outcomeAfter": "partial",
+    "providerCalls": 0,
+    "productionWrites": 0
+  },
+  "quotationScopeReplay": {
+    "claimId": "cmp_1_0",
+    "originalMayProceedToSemanticReview": true,
+    "wholePaperNegationRejected": true,
+    "semanticAcceptance": false,
+    "providerCalls": 0
+  },
+  "regressionPassed": 174,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/run.json": "81d6e2598458cebc6786f2892984b40da57b33f123c5ff94cefdbca8a8fcc41b",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/matched-example-companion-gap-replay.json": "ceebc0070dfee53dac333e829442ec4b2dd98e72f5624098e53f0ba3cba95d43",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/located-quotation-scope-replay.json": "ffb22a2d3e88d33b6c76c56ad028634b776b21b9a0e95c67975150b1a2b27fd4",
+    "tmp/d2-matched-example-companion-publication-20261129/summary.json": "e651502b4804ecbb7cbc7c2f50d764b7e5b99b9f786dca93905f536542e91464",
+    "tmp/d2-matched-example-companion-publication-20261129/v4-run.json": "59e1ce81429456edda1745f12014bacefedf5bcdb435bc434a106982ca2d355b",
+    "tmp/d2-matched-example-companion-publication-20261129/v5-run.json": "834fd2fc1e5cb60ea71d4f5cda20f9d4a460e24c5a2ced9cfeced183d729bba5"
+  }
+}

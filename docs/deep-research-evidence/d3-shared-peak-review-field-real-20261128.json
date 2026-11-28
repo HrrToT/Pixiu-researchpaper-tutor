@@ -1,0 +1,104 @@
+{
+  "candidate": "8a27b82577fc903fdca54dfa324d58d0ee352426",
+  "runId": "dr_d3_shared_peak_recheck_20261128",
+  "sourceRun": "dr_d3_sh_indexed_full_20261128",
+  "carriedTokens": 65075,
+  "carriedModelCalls": 10,
+  "carriedElapsedSeconds": 144.62,
+  "originalRevisionResponseDigest": "5592c04abdf2aa71567e5cba9e9603406fafa2e6ee0adeb9b629dfccc5c9c2cf",
+  "reviewBatchBytes": [
+    16072,
+    34720,
+    34939
+  ],
+  "maxNewCalls": 3,
+  "maxTotalTokens": 100000,
+  "maxWallSeconds": 360,
+  "authorityWrites": 0,
+  "actualNewCalls": 1,
+  "newModelTokens": 10890,
+  "elapsedSeconds": 48.55,
+  "cumulativeTokens": 75965,
+  "status": "invalid_response",
+  "stoppedAtBatchIndex": 1,
+  "actualInvalidEvidenceField": "sourceContext.after",
+  "sameRawRecordDecodesWithExactAlias": true,
+  "memoryCheckStatusAfterAlias": "passed",
+  "unresolvedScienceFindings": [
+    {
+      "checkId": "section_2",
+      "status": "failed",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/9/operation/action",
+        "/states/2/representation",
+        "/states/3/representation",
+        "/data/inputs/1/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E7",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        }
+      ],
+      "reason": "训练SfM未规定如何取得或估计训练内参，而测试注册要求可信内参；密化后各事件及子体的唯一ID分配次序也未定义，影响按父ID采样及深度排序破平，阻碍可复现执行。"
+    },
+    {
+      "checkId": "section_3",
+      "status": "failed",
+      "planBindings": [
+        "/factors/0/onOperation/action",
+        "/factors/1/onOperation/action",
+        "/groups/0/levels",
+        "/groups/1/levels",
+        "/groups/2/levels",
+        "/groups/3/levels",
+        "/steps/9/operation/action"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E5",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E13",
+          "field": "quote"
+        }
+      ],
+      "reason": "四个开关组合及父子和Adam规则明确，但克隆子体位置使用负的平均梯度方向；论文原文要求沿位置梯度方向移动，未说明该负号为何符合该方向，存在方法偏离。"
+    }
+  ],
+  "coherenceIssues": [
+    {
+      "reason": "克隆位移的负梯度方向与论文所述沿位置梯度方向不一致，需澄清梯度符号约定或修正操作。",
+      "planBindings": [
+        "/steps/9/operation/action",
+        "/factors/0/onOperation/action"
+      ]
+    },
+    {
+      "reason": "训练内参来源及新生高斯唯一ID的确定性分配顺序未充分定义，影响准备可行性与复现。",
+      "planBindings": [
+        "/steps/1/operation/action",
+        "/steps/2/operation/action",
+        "/steps/9/operation/action"
+      ]
+    }
+  ],
+  "newGenerationRequestBytes": 31939,
+  "nextModelCallsDuringReplay": 0,
+  "scientificApproval": false,
+  "finalAuditSent": false,
+  "published": false,
+  "rawSha256": {
+    "intent.json": "839d5e2551010b9f9511e019dc09d1b006637713812ae1a56f480b1efa477638",
+    "run.json": "c05b33588996ae63d670ed95ac3e6ba56dc20dccb3edc7db074b19af82456840",
+    "calls.json": "760d1f4ffed414fcdf3cec3f4ba0f186ca940d91f650cec65a34e0b21cdcd402",
+    "result.json": "8ee0814cdbff559882d6d7c39fe87709021f02790d80c5c5e174737056b9fa77"
+  }
+}

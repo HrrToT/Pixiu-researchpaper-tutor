@@ -1,0 +1,15 @@
+{
+  "case": "D2-VQ-v1-v2",
+  "claimId": "c4",
+  "newModelCalls": 0,
+  "originalProposalCandidate": true,
+  "newVersion8RejectsBeforeSemanticReview": true,
+  "rejection": {
+    "claimId": "c4",
+    "reason": "absence_not_established",
+    "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+  },
+  "oldCaseUnchanged": true,
+  "scientificAcceptance": false,
+  "sourceCommit": "782d763f"
+}

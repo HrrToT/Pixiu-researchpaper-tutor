@@ -1,0 +1,37 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v40",
+  "savedPayloadSha256": "1ff997c56b64f69bd8b5460a81aab2d94f0589f5fda4fc437a2bc92a8589667d",
+  "changedRunContractInReplayOnly": true,
+  "beforeCandidates": 11,
+  "afterCandidates": 9,
+  "blockedOutOfScopeClaimIds": [
+    "cmp_6_0",
+    "cmp_7_0"
+  ],
+  "exampleClaimIdPreserved": "cmp_conclusion_0",
+  "allOtherClaimContentAndCitationsUnchanged": true,
+  "modelCalls": 0,
+  "scientificContentAccepted": false,
+  "productionStageAdmission": [
+    {
+      "stage": "P1",
+      "oldInputBytes": 23971,
+      "newInputBytes": 23999,
+      "sameRequiredEvidence": true
+    },
+    {
+      "stage": "P2",
+      "oldInputBytes": 23984,
+      "newInputBytes": 23997,
+      "sameRequiredEvidence": true
+    },
+    {
+      "stage": "joint",
+      "oldInputBytes": 23967,
+      "newInputBytes": 23967,
+      "sameRequiredEvidence": true
+    }
+  ],
+  "allPremiseBundlesRetained": true,
+  "legacyStagesIdentical": true
+}

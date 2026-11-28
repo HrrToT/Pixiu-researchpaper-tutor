@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-18",
+  "case": "D5-v14",
+  "runId": "dr_run_57ec371728d850fb9578d94b5efa1a8c",
+  "sourceCommit": "7186e037",
+  "promptVersion": "dr-v2.20261018.173",
+  "status": "completed",
+  "machineOutcome": "complete",
+  "contentAccepted": true,
+  "independentCredit": 0,
+  "modelCalls": 6,
+  "settledTokens": 31817,
+  "elapsedSeconds": 117.379,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "high",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "Manual review accepts the requested narrow development follow-up: it first corrects arithmetic impossibility, then limits the interpretation to an unestablished isolated method-speedup comparison. No raw speedup is computed and no actual platform difference is asserted.",
+    "Both original-paper identities support their own reported experimental provenance: LightGaussian says it re-trains baselines on its platform; original3DGS table caption says non-dagger entries were obtained in its own experiments. The answer does not claim dagger-adopted baselines establish original3DGS timing conditions.",
+    "The unknown-alignment sentence is a limitation of the selected premises, not an assertion that either author omitted all other reporting or that the hardware is known different. The final comparability phrase is read in the explicitly stated method-speedup scope; it could still be phrased more precisely.",
+    "Actual independent semantic response explicitly treats arithmetic as a logical definition, not a paper-attributed fact; comparisonAudit binds each original source, alignment not_established, differences empty, plus a bounded source-bound scopeAudit.",
+    "Six model calls only: brief, plan, joint relevance, synthesis, independent verify and final coverage. No acquire/read/extract tool is repeated; current child reuses inherited source/evidence and preserves the parent report. No repair was needed.",
+    "The header 差异原因 is a stale generic label despite unknown alignment; this is a presentation improvement still to make. It does not alter the bounded actual claim or turn unknown conditions into empirical differences.",
+    "No independent credit. The old first-five0/5, all historical unknowns and original criteria remain unchanged. General comparison definitions introduce no external task evidence, runtime dependency or budget expansion."
+  ],
+  "scores": {
+    "goalResponse": 4,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 4,
+    "executability": null,
+    "readability": 4
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "差异原因",
+        "claimIds": [
+          "c1"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "算术上可除，但不可把两论文FPS直接相除得出方法加速：FPS来自各自独立测量，LightGaussian在自有平台重训基线，3DGS按自身设置报告；证据未建立两论文硬件、场景、分辨率一致，相同FPS标签不保证同一测量操作，故直接相除缺乏可比性。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a",
+          "ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": null,
+  "initialVerification": null,
+  "repairChecks": null,
+  "report": "## 差异原因\n\n- 有依据的推断：算术上可除，但不可把两论文FPS直接相除得出方法加速：FPS来自各自独立测量，LightGaussian在自有平台重训基线，3DGS按自身设置报告；证据未建立两论文硬件、场景、分辨率一致，相同FPS标签不保证同一测量操作，故直接相除缺乏可比性。 [1](#research-evidence-ev_8fd3f847d043bbae423552d837a23f0207800e59770d35852b585f53e37f432a) [2](#research-evidence-ev_968d0018e986202e87c75f29e0e96759dc070a82e1c1754eb14e67aa7b344596)\n\n推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS** · 第 16 页 · 全文片段\n\n> We re-train 3D-GS, Compressed 3D-GS, Compact 3D-GS using their original code and 3D-GS configurations on our platform, to perform a fair comparison.\n\n**[2] 3D Gaussian Splatting for Real-Time Radiance Field Rendering** · 第 8 页 · 全文片段\n\n> Table 1 . Quantitative evaluation of our method compared to previous work, computed over three datasets. Results marked with dagger † have been directly adopted from the original paper, all others were obtained in our own experiments. 𝑆𝑆𝐼 𝑀 ↑ 𝑃𝑆𝑁 𝑅 ↑ 𝐿𝑃𝐼 𝑃𝑆 ↓ Train FPS Mem 𝑆𝑆𝐼 𝑀 ↑ 𝑃𝑆𝑁 𝑅 ↑ 𝐿𝑃𝐼 𝑃𝑆 ↓ Train FPS Mem 𝑆𝑆𝐼 𝑀 ↑ 𝑃𝑆𝑁 𝑅 ↑ 𝐿𝑃𝐼 𝑃𝑆 ↓\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v14.json",
+      "sha256": "239e004af081f1223c286b781112c3c012596b08c74e0a8fcdcd9bb9e1164cb8"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v14.payload.json",
+      "sha256": "7743ac6cf334a3f0eb7ec25a123d8e2df37adf837b8a274bb516df16d406a92e"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v14.calls.json",
+      "sha256": "42abc92ff73db85f39d4fb1bce6bf825f753eebc2f11e3765d0797d4fbd723de"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D5-v14.result.json",
+      "sha256": "74f8e413671fb6293d5a4662fea746e629305626b9ea01a537cc350ccd0467da"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Historical content is not retried unchanged or upgraded. Manual acceptance applies only to this narrow new development result. No independent credit."
+}

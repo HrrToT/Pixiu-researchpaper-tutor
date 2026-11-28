@@ -1,0 +1,139 @@
+{
+  "candidate": "6e3559e3177d2548c196d2bd07c0ac59db435542",
+  "fixture": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_c2f0292b12b4581c918abfb1b09adca4",
+  "profile": "standard",
+  "layout": "isolated real graph; authorized task files via in-process file adapter; no live workspace writes",
+  "reusedStageReceipts": 0,
+  "independentHoldoutCredit": 0,
+  "status": "completed",
+  "outcome": "partial",
+  "providerUsageByModel": {
+    "gpt-6-luna": 19818,
+    "gpt-6.1-terra": 62026
+  },
+  "generationsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 4,
+    "synthesize": 3,
+    "verify": 6,
+    "verify_answer_coverage": 1
+  },
+  "providerInputCountRequests": [
+    {
+      "model": "gpt-6.1-terra",
+      "elapsed": 141.61,
+      "inputTokenCount": 8285,
+      "promptBytes": 29474
+    }
+  ],
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "reserveModelCalls": 5,
+    "reserveTokens": 50000,
+    "maxExternalSearches": 6,
+    "maxFulltextFetches": 6,
+    "finalizationBudgetVersion": 1,
+    "releasedReserveTokens": 16863,
+    "explorationAllocationVersion": 1,
+    "modelCalls": 11,
+    "tokens": 81844,
+    "normalTokens": 48707,
+    "elapsedSeconds": 151.0,
+    "externalSearches": 0,
+    "fulltextFetches": 0,
+    "reservedModelCalls": 5,
+    "exhausted": "",
+    "profile": "standard",
+    "elapsedMeasurement": "wall_clock"
+  },
+  "claimsPublished": 10,
+  "answerCoherent": true,
+  "finalAnswerAuditGaps": [
+    {
+      "obligationId": "baseline_comparability",
+      "missingAspects": [
+        "为什么不能直接拿两篇的FPS排名"
+      ]
+    },
+    {
+      "obligationId": "memory_limited_choice",
+      "missingAspects": [
+        "State a conditional recommendation for memory-limited use, linking the conditions to evidence reported in the two specified papers and noting limits where the evidence does not establish a choice.",
+        "Give a conditional choice recommendation for a memory-limited deployment, grounded in the two papers' reported evidence."
+      ]
+    },
+    {
+      "obligationId": "answer_scope",
+      "missingAspects": [
+        "并给出显存受限时的有条件选择建议"
+      ]
+    }
+  ],
+  "repairLimit": {
+    "kind": "repairPromptBytes",
+    "limit": 0,
+    "used": 1
+  },
+  "comparisonWireErrors": [
+    {
+      "targetId": "joint_memory_limited_choice_conditional_advice",
+      "reason": "invalid_joint_device_memory_advice"
+    }
+  ],
+  "sourceChecks": {
+    "occurrences": {
+      "literal_page": 32,
+      "table_row_check_required": 1
+    },
+    "tableGroupVerified": "LightGaussian v6, p6 Table 1, Mip-NeRF 360, marked retrained 3D-GS versus Ours"
+  },
+  "offlineReplay": {
+    "originalClaimCount": 10,
+    "replayedClaimCount": 11,
+    "replayedAdviceId": "cmp_conclusion_1",
+    "addedAdviceGoal": "memory_limited_choice",
+    "unrelatedClaimsPreserved": true,
+    "oldCostSourcePages": {
+      "codebook": [],
+      "recovery": [
+        7
+      ]
+    },
+    "newCostSourcePages": {
+      "codebook": [
+        6
+      ],
+      "recovery": [
+        7
+      ]
+    },
+    "replayedStageInputBytes": {
+      "P1": 23918,
+      "P2": 23982,
+      "joint": 23968
+    },
+    "replayedPremiseBundleCount": 13,
+    "providerCalls": 0,
+    "previousPublishedOutcomeUnchanged": true,
+    "candidate": "af56686c6ca642ee96cb9d8b34beeb564e2e5938",
+    "focusedTestsPassed": 295,
+    "scientificReviewForReplayedAdvice": false,
+    "freshFullGraphVerificationPending": true,
+    "observedCompatibilityFix": "The literal GPU-memory role anchor survives the planner paraphrase. The same recorded advice now compiles. The cost query keeps separately scoped source passages."
+  },
+  "rawArtifactSha256": {
+    "intent.json": "41548bc3e2216bead3d79b64f2e37a364ecc0d608591e0758768a459d2b80a38",
+    "calls.json": "af5f31453fd6539e351c9a2fbbd9511e9e6889f37abcaba32ce9b79813790570",
+    "run.json": "e9fb098aba8d40a5d3d3d92f0d89d5846611b132aa51f602303f9290cafe4b14",
+    "result.json": "82b83f7c689cbb477c2ea7c529e4b1f7d35d95b2d68960e78acf4d052b6a98d1",
+    "provider.jsonl": "17c5977fb2bd117edcd189bd5e7814489dc6a1d39353e95352d3a1ac051af593",
+    "provider-counts.jsonl": "5dc2f4b6252d3be061af0a75deb136d9e93a48e5a944fa680e4f0f6c2cfd5965",
+    "report.md": "2a0d904d0326826a7d42bb356fb9b5a2165621a9e7fbfc6da580d9391c45ee8b",
+    "citation-physical-check.json": "8a13f57450f83ae225076e7a66739bd0933e09b2f85059eb2f86089f442267bd",
+    "advice-cost-offline-replay.json": "f9f88a148bb35453faecbf896dbba7e32ffe405010b744045a8b95e0233e8484"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "case": "H1F-v3",
+  "runId": "dr_run_3db7bde71b4d595085433edd6b47e277",
+  "sourceCommit": "1e6daa48",
+  "promptVersion": "dr-v2.20261018.133",
+  "evaluationUse": "retired-case diagnostic",
+  "independent": false,
+  "status": "completed",
+  "outcome": "complete",
+  "modelCalls": 14,
+  "settledTokens": 45330,
+  "elapsedSeconds": 77.235,
+  "cost": null,
+  "report": "## 判断\n\n- NTC预测每个3D高斯的位置移动（前三个数）和旋转（后四个数，用四元数表示），不预测大小、透明度或颜色。它把前一帧的高斯作为输入，通过多分辨率哈希编码和浅层网络，对每个高斯输出一个7维变换，然后把这个变换应用到该高斯上，得到当前帧的变换后高斯。 [1](#research-evidence-ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27) [2](#research-evidence-ev_bfab32e9bc3bcbb785659f709b584f41c58cfd4518df268ed6dcc205445bee46) [3](#research-evidence-ev_f51816e595f8373d3a4ec3dd73ea8147f5eb4a359e0f6b53a04cb89e24cfb73b)\n- 有依据的推断：当前取得的证据支持NTC只预测位置和旋转的变化，并利用前一帧高斯作为输入；不足以证明NTC能预测缩放、不透明度或颜色变化，也不足以证明仅靠变换能处理所有新出现物体。 [1](#research-evidence-ev_53a20733d81449e6cca09191ffa6cd19d5f909f9adbe1b417e097e42e9772c27) [4](#research-evidence-ev_e7de61ef0fd681ab0977e7b9fe49a474f093c8e746ee3127ae06cf46e827401d) [5](#research-evidence-ev_e26356dfb0f9a52b4e8e6490ad8668c7768c577629c80adc7d8a0d09449be010) [6](#research-evidence-ev_353ec6eea6b67b0f3f5fa7782ee1eef537cfc4a6774ca16561bc74da3d7fc5f9)\n\n论文事实已按所列原文核对。推断限于所列证据和适用条件。\n\n<details>\n<summary>原文依据</summary>\n\n**[1] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions.\n\n**[2] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> Given multi-resolution hash encoding coupled with MLP, our NTC is formalized as:\n\n**[3] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Then, for each timestep i, we use the 3DGs of previous timestep i − 1 as initialization and pass it to a two-stage pipeline.(1)In Stage 1, we train a Neural Transformation Cache (NTC) to model the transformations of 3DGs.\n\n**[4] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 第 5 页 · 全文片段\n\n> However, this approach falters when faced with objects not present in the initial frame, such as transient objects like flames or smoke, and new persistent objects like the liquid poured out of a bottle.\n\n**[5] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Since 3DG is an unstructured explicit representation, it's essential to add new 3DGs to model these emerging objects.\n\n**[6] 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos** · 全文片段\n\n> Considering constraints related to model storage requirements and training complexities, it's not feasible to generate an extensive number of additional 3DGs nor allow them to be used in subsequent frames, as this would cause 3DGs to accumulate over time.\n\n</details>",
+  "contentAccepted": false,
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 4,
+    "conditions": 4,
+    "synthesisValue": 3,
+    "executability": null,
+    "readability": 3
+  },
+  "findings": [
+    "The necessary-reason passage was retrieved and extracted. The synthesis and novice rewrite both contain the reason for adding representations of new objects.",
+    "Local absence_not_established rejects the explanation before semantic review because it contains \"不存在\" describing initial-frame content, not a missing publication experiment. The same rejection survives repair.",
+    "The remaining generic evidence limitation does not explain the requested reason. The final answer has two points, yet the semantic completion audit and machine outcome say complete.",
+    "The planner still introduces unprovided candidate attributes. Neutral-planning instructions are still not accepted as a complete fix.",
+    "Original first-run scoring, failed diagnostic v2 and all their identities are retained. This diagnostic is not independent acceptance."
+  ],
+  "requestedPointCount": 3,
+  "displayedPointCount": 2,
+  "rootCause": "An overbroad deterministic publication-absence filter removes a supported method premise; final display count has no deterministic guard in .133.",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v3.json",
+      "sha256": "353540b8222cdc00f3d843d1ad816af0af881d275759f5d16c5ca16c42302afc"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v3.payload.json",
+      "sha256": "a487cc908a3ee28401fccfd1dcf4e24fc4802db1fcc94ea035c8cfc803da26aa"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v3.calls.json",
+      "sha256": "30a1516d0764dd1f105723728b6dbae689eeb05df691df2b7a7d928d8f4a5f25"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H1F-v3.result.json",
+      "sha256": "118bf2dfcb2d0542035b77f92dce14d06d814ba1bb1e1b04a39b59abafc87948"
+    }
+  ],
+  "boundary": "Each case submitted once, same frozen question/materials/budget. No automatic resend, unknown bypass or independent credit. Original first result unchanged."
+}

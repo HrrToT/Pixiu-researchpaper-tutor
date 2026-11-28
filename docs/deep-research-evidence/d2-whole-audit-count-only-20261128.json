@@ -1,0 +1,20 @@
+{
+  "case": "D2 full required evidence only",
+  "api": "POST /v1/responses/input_tokens",
+  "http": 200,
+  "model": "gpt-6.1-terra",
+  "bodyDigest": "15795d64fbe173c53c3b3f413988e806b3c43572794c0aec1a0c0cf511794bfb",
+  "promptBytes": 30371,
+  "countedInputTokens": 8923,
+  "carriedTokens": 79730,
+  "maxTokens": 100000,
+  "proposedOutputCap": 3500,
+  "requiredCitedRows": 23,
+  "claimCount": 11,
+  "sourceVersions": ["arxiv:2308.04079v1", "arxiv:2311.17245v6"],
+  "hasSimulatedSpeedVerdict": true,
+  "completionCalls": 0,
+  "countRequestsForThisPacket": 1,
+  "noRetry": true,
+  "remainingAfterMeasuredInputAndOutputCap": 7847
+}

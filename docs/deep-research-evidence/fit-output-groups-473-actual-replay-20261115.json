@@ -1,0 +1,16 @@
+{
+  "promptVersion": "dr-v2.20261115.473",
+  "componentInputBytes": 40469,
+  "original28ErrorInputBytes": 45400,
+  "oldOriginal28ErrorInputBytes": 50973,
+  "original28ErrorsSupported": true,
+  "savedModelDecisionCompilesUnderV2": true,
+  "oldV1RemainsInvalidWithoutResend": true,
+  "allUneditedMetadataFieldsExact": true,
+  "all20EvidenceRowsAndFullFeedbackRetained": true,
+  "sourceRefsExact": true,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

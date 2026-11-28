@@ -1,0 +1,72 @@
+{
+  "case": "H1-DISK",
+  "frozenCaseDigest": "07d3988aaf0796797231931eee66ed0aef0402cd7ba9041ff243faa880723878",
+  "sourceTree": "f34e86b16817236dd3417ce1fbe2622cf74d6fd7",
+  "runId": "dr_run_33bc1a16b4225604800204d843d00e7e",
+  "status": "completed",
+  "outcome": "partial",
+  "independentFirstExecution": true,
+  "automaticRetry": false,
+  "elapsedSeconds": 76.0,
+  "actualProviderCalls": 10,
+  "actualProviderTokens": 40294,
+  "providerTokensByModel": {
+    "gpt-6-luna": 6412,
+    "gpt-6.1-terra": 33882
+  },
+  "externalSearches": 0,
+  "verifiedClaimCount": 2,
+  "verifiedProseCharacters": 179,
+  "coverage": {
+    "heatmap-selection": "partial",
+    "point-matching": "partial",
+    "reward-learning": "partial",
+    "answer_scope": "partial"
+  },
+  "verifiedCitationPages": [
+    2,
+    4
+  ],
+  "isolatedPublicationId": "dr_pub_c4d1b143696a4144b5674a64d9695768",
+  "isolatedOutboxDelivered": false,
+  "primarySourceReview": {
+    "reviewer": "main agent checked the saved first response against the exact PDF and the frozen rubric",
+    "scores": {
+      "目标回应": 2,
+      "证据支持": 3,
+      "条件完整": 2,
+      "综合价值": 2,
+      "可执行性": null,
+      "可读性": 3
+    },
+    "checks": {
+      "grid_proposal_and_acceptance": "Partial. Mentions grid sampling and at most one point. Omits within-cell score normalization and score-dependent acceptance, which appear in section 3, page 3.",
+      "bidirectional_matching": "Partial. Mentions extracting features then matching. Omits descriptor distances, independent directional distributions and reciprocal sampling probability, which appear on page 3.",
+      "geometry_reward_and_learning": "Partial. Page 4 supports the explanation of reward-weighted learning and the extra keypoint penalty. The answer omits the geometric reward assignments and neutral plausible matches on page 3.",
+      "beginner_readability": "Short with source links, but names the policy gradient without explaining the key operations or the reward assignment."
+    },
+    "applicableMinimum": 4,
+    "accepted": false
+  },
+  "diagnosis": {
+    "firstRunPagesRead": [
+      1,
+      2,
+      4,
+      8,
+      12
+    ],
+    "page3ExcerptSupplied": false,
+    "classification": "required method page absent from acquisition"
+  },
+  "artifactSha256": {
+    "intent.json": "6ff2155b3ab96e383438e03940b134b40130c486829921bb70adfd41a2385667",
+    "run.json": "3fb51dbf3eafb88bec688128ee2e31d9e59da5a9876a7a11ad9d720bcf14719d",
+    "calls.json": "34c931a48e90269ff32857eac8f2cd19461670df23ffbcd3405310869cd6efb3",
+    "result.json": "abfbf0952d677737c4c05572851f00dd0135ffe5c87ecab63294fa6bd60d5c74",
+    "boundary.json": "2bc94792e15cec42a8a1df77cce7ae9a372c5289bf53413819f4732306d3872c",
+    "provider.jsonl": "300bae8a1671236f79b4ead914d279640d1aeae3753a677bf4918f107772b854"
+  },
+  "scientificContentCredit": 0,
+  "eligibleForIndependentCreditOnRetry": false
+}

@@ -1,0 +1,20 @@
+{
+  "case": "H3-DMC",
+  "definitionHash": "1f1baa8183b4a804e9f833637987e29fb8a8a5ba009b74e02f2dc596acfe9920",
+  "reviewedPages": [
+    3
+  ],
+  "liveInventory": {
+    "runs": 500,
+    "runHits": 0,
+    "indexFields": 19825,
+    "sourceOrBodyIndexHits": 0,
+    "bibliographyMentions": 0,
+    "cacheHits": 0
+  },
+  "tasksChecked": 195,
+  "previewVerified": true,
+  "materialImports": 0,
+  "modelCalls": 0,
+  "independentCredit": 0
+}

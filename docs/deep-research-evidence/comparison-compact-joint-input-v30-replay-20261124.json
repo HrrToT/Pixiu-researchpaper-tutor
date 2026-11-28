@@ -1,0 +1,143 @@
+{
+  "receiptSha256": "7c0fa94a3f435b2708f2b02d2434ab5cbf9a015ea5b61e4e59c6bad1e7321db7",
+  "sameDecodedMandatoryPackets": true,
+  "replays": [
+    {
+      "version": 6,
+      "outcome": "comparison_stage_evidence_capacity",
+      "stages": [
+        {
+          "stagesMeasured": 1,
+          "mandatoryRows": 6,
+          "totalRows": 22,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 14567,
+          "requiredContexts": 4,
+          "instructionsBytes": 7650,
+          "typedCells": 0
+        },
+        {
+          "stagesMeasured": 2,
+          "mandatoryRows": 9,
+          "totalRows": 33,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 17216,
+          "requiredContexts": 6,
+          "instructionsBytes": 7650,
+          "typedCells": 0
+        },
+        {
+          "stagesMeasured": 3,
+          "mandatoryRows": 11,
+          "totalRows": 55,
+          "mandatoryBundles": 18,
+          "missingBundles": 4,
+          "window": 24000,
+          "allMandatoryBytes": 27347,
+          "requiredContexts": 2,
+          "instructionsBytes": 8848,
+          "typedCells": 94
+        }
+      ]
+    },
+    {
+      "version": 7,
+      "outcome": "comparison_stage_evidence_capacity",
+      "stages": [
+        {
+          "stagesMeasured": 1,
+          "mandatoryRows": 6,
+          "totalRows": 22,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 14567,
+          "requiredContexts": 4,
+          "instructionsBytes": 7650,
+          "typedCells": 0
+        },
+        {
+          "stagesMeasured": 2,
+          "mandatoryRows": 9,
+          "totalRows": 33,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 17216,
+          "requiredContexts": 6,
+          "instructionsBytes": 7650,
+          "typedCells": 0
+        },
+        {
+          "stagesMeasured": 3,
+          "mandatoryRows": 11,
+          "totalRows": 55,
+          "mandatoryBundles": 18,
+          "missingBundles": 4,
+          "window": 24000,
+          "allMandatoryBytes": 27303,
+          "requiredContexts": 2,
+          "instructionsBytes": 8772,
+          "typedCells": 94
+        }
+      ]
+    },
+    {
+      "version": 8,
+      "outcome": "reached_mock_dispatch_without_request",
+      "stages": [
+        {
+          "stagesMeasured": 1,
+          "mandatoryRows": 6,
+          "totalRows": 22,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 14567,
+          "requiredContexts": 4,
+          "instructionsBytes": 7650,
+          "typedCells": 0,
+          "stage": "P1",
+          "admittedBytes": 23972,
+          "suppliedEvidence": 15
+        },
+        {
+          "stagesMeasured": 2,
+          "mandatoryRows": 9,
+          "totalRows": 33,
+          "mandatoryBundles": 7,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 17216,
+          "requiredContexts": 6,
+          "instructionsBytes": 7650,
+          "typedCells": 0,
+          "stage": "P2",
+          "admittedBytes": 23993,
+          "suppliedEvidence": 16
+        },
+        {
+          "stagesMeasured": 3,
+          "mandatoryRows": 11,
+          "totalRows": 55,
+          "mandatoryBundles": 18,
+          "missingBundles": 0,
+          "window": 24000,
+          "allMandatoryBytes": 22980,
+          "requiredContexts": 2,
+          "instructionsBytes": 4449,
+          "typedCells": 94,
+          "stage": "joint",
+          "admittedBytes": 23989,
+          "suppliedEvidence": 13
+        }
+      ]
+    }
+  ],
+  "actualModelRequests": 0,
+  "scientificContentAccepted": false
+}

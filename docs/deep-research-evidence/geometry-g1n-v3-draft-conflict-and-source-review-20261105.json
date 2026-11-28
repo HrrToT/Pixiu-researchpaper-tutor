@@ -1,0 +1,122 @@
+{
+  "case": "G1N-v3",
+  "split": "development",
+  "runId": "dr_run_7847d6af15ad55379b94e6faad586a24",
+  "promptVersion": "dr-v2.20261105.391",
+  "status": "failed",
+  "errorCode": "invalid_synthesis_response",
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "allModelCallsSettled": true,
+  "tokens": 24920,
+  "persistedElapsedSeconds": 0,
+  "elapsedAccountingDiscrepancyStillOpen": true,
+  "synthesisFinishReason": "stop",
+  "rawDraftSha256": "59d5c639d9007897651a22b71f22f41ad1391bec345c528b933dd290fd283546",
+  "rawDraftCharacters": 5505,
+  "claimCount": 5,
+  "materializationErrors": [
+    {
+      "claimId": "c4",
+      "reason": "Scope expression cannot overwrite authored factual prose",
+      "originalClaim": {
+        "claimId": "c4",
+        "text": "两篇论文均未在提供的证据中报告模型存储大小或显存占用，因此无法比较。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "E4",
+          "E9"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_5"
+        ],
+        "detailLevel": "medium",
+        "tableBindings": [],
+        "scopeExpression": {
+          "observedSettings": [
+            {
+              "subject": "PGSR",
+              "attribute": "硬件",
+              "value": "Nvidia RTX 4090 GPU"
+            },
+            {
+              "subject": "GOF",
+              "attribute": "硬件",
+              "value": "NVIDIA A100 GPU"
+            }
+          ],
+          "notEstablished": [
+            {
+              "quantifier": "exists",
+              "domain": "两篇论文",
+              "subject": "模型存储或显存占用",
+              "comparator": "无",
+              "predicate": "报告了具体数值"
+            }
+          ]
+        },
+        "draftingBasis": {
+          "premiseStatus": "not_established",
+          "observations": [
+            {
+              "evidenceId": "E4",
+              "quote": "All experiments in this paper are conducted on Nvidia RTX 4090 GPU."
+            },
+            {
+              "evidenceId": "E9",
+              "quote": "All experiments are conducted on an NVIDIA A100 GPU."
+            }
+          ],
+          "scopeDecision": "bounded_inference",
+          "unresolved": "两篇论文的模型存储或显存占用数据未在提供的证据中出现。"
+        }
+      }
+    }
+  ],
+  "contentReview": [
+    {
+      "claimId": "c2",
+      "issue": "PGSR mean Chamfer stated as0.42; cached exact-v1 PDF page9 TableII reports PGSR mean0.49 and1.0h. Supplied E4 quotes hardware only; cannot support numerical claim.",
+      "sourceContentHash": "42d2f62bb336cf6dacc11acacc03f60babc34b1cb5d7596ce9fdf2346ac48ee5"
+    },
+    {
+      "claimId": "c3",
+      "issue": "GOF authored performance confused with comparator row in PGSR. Own E8 reports outdoor24.82/.750/.202 indoor30.79/.924/.184. Public prose instead copies PGSR comparator row24.76/.742/.225 and30.80/.928/.167. Declared tableBindings quote own values so public prose and bindings disagree."
+    }
+  ],
+  "causeIsolation": {
+    "truncation": "not observed in this attempt; complete JSON returned",
+    "scopeConflict": "c4 simultaneously authored text and scopeExpression; current strict rejection retained",
+    "reading": "Unicode word boundaries lose DTU when adjacent to Chinese; legacy result target becomes generic",
+    "preservation": {
+      "oldLedgerUnchanged": true,
+      "allOldRunsUnchanged": true,
+      "newRows": 30,
+      "ledgerRows": 8672,
+      "onlyThisRunCreatedCalls": true,
+      "active": [],
+      "oldPausedRetained": true,
+      "paused": [
+        "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+        "dr_run_ed10cc3347be552288079a9a588fddf5",
+        "dr_run_86b3f181a5475e99aacca3dbf4370567",
+        "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+        "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+        "dr_run_e3521b1781825273b384a26a5edb8cdc",
+        "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+        "dr_run_e9c9dc916bef519092fad8b929b2448f",
+        "dr_run_4738564f5ff35157996a35068c62ed32",
+        "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+        "dr_run_98e66f2d3d555dfa822b859963f01419",
+        "dr_run_8be639c866c35ea092c735a04781b647",
+        "dr_run_1c0c2e6510165086962408b8e3cf698b"
+      ]
+    }
+  },
+  "limitations": [
+    "No accepted report or final factual verification from this run.",
+    "New reading-policy replay proves ranking only; no new extraction/synthesis/content acceptance.",
+    "No resubmission or automatic retry."
+  ]
+}

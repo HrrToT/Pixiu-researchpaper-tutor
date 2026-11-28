@@ -1,0 +1,44 @@
+{
+  "factory": "AcademicAcquisition._client",
+  "proxyConfigured": true,
+  "cacheDisabledForProbe": true,
+  "automaticRetry": false,
+  "modelCalls": 0,
+  "independentCredit": 0,
+  "capabilities": {
+    "engineVersion": "deep-research-v2",
+    "enabled": true,
+    "externalAcademic": true,
+    "fulltext": true,
+    "budgetProfiles": [
+      "standard",
+      "extended"
+    ]
+  },
+  "metadata": {
+    "versionId": "arxiv:2403.17888v3",
+    "accessLevel": "abstract",
+    "seconds": 1.82,
+    "contentHash": "bd15614e64f6f78db443d3d973af84f135f80d0f44bd48fadb46e8229087d849"
+  },
+  "fulltext": {
+    "versionId": "arxiv:2403.17888v3",
+    "accessLevel": "fulltext",
+    "pages": 13,
+    "characters": 62436,
+    "contentHash": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7",
+    "networkRequests": 1,
+    "seconds": 55.206
+  },
+  "productionPreserved": true,
+  "before": {
+    "ledgerRows": 8281,
+    "ledgerSha256": "52359525f2ff2d95e78ddebac0f1be6098fe4eec424097b2d40fff932a68133f",
+    "payloadSha256": "dbc260952fb015ca54ba3ec98140a272212a36ef77af80dc25f01f1d2d37858f"
+  },
+  "after": {
+    "ledgerRows": 8281,
+    "ledgerSha256": "52359525f2ff2d95e78ddebac0f1be6098fe4eec424097b2d40fff932a68133f",
+    "payloadSha256": "dbc260952fb015ca54ba3ec98140a272212a36ef77af80dc25f01f1d2d37858f"
+  }
+}

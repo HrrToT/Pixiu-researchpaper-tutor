@@ -1,0 +1,27 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "offline_document_acquisition_preflight",
+  "manifest": "../DEEP_RESEARCH_LIGHTGLUE_EXPLANATION_HOLDOUT_20261127.json",
+  "initialIsolatedWorkerOutcome": "timed_out_at_20_seconds",
+  "currentWorkerDeadlineSeconds": 20,
+  "comparison": "Legacy uncapped in-process parser compared with the current bounded isolated worker, with both optional table flags enabled",
+  "documents": {
+    "2306.13643v1.pdf": {
+      "pages": 18,
+      "identicalPayload": true,
+      "payloadSha256": "09832534c98797f05a7b863151bbfffa60311e728c752dfbc7cc1889db4eea45",
+      "legacyInProcessSeconds": 26.583,
+      "currentIsolatedSeconds": 11.546
+    },
+    "2104.00680v1.pdf": {
+      "pages": 10,
+      "identicalPayload": true,
+      "payloadSha256": "3c451423cfb82d3491ded4dea7328a60e240bf737a94e16a9f904cd8850ae5f5",
+      "legacyInProcessSeconds": 12.766,
+      "currentIsolatedSeconds": 13.319
+    }
+  },
+  "targetedTestsPassed": 136,
+  "newProviderCalls": 0,
+  "independentAcceptanceCredit": false
+}

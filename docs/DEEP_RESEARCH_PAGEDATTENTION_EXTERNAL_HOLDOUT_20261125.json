@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-25",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed_no_application_materials",
+  "independentCredit": 0,
+  "materials": {
+    "pagedattention_v1": {
+      "path": "tmp/pdfs/h3-pagedattention-evaluator-20261125/2309.06180v1.pdf",
+      "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+      "bytes": 1459631,
+      "pageCount": 16,
+      "arxiv": "2309.06180v1",
+      "reference": "https://arxiv.org/abs/2309.06180v1",
+      "role": "evaluator_reference_only_never_import_for_this_case"
+    }
+  },
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "本题要求解释并行采样机制，无实验设计任务。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "pagedattention_v1",
+        "page": 7,
+        "section": "4.4 Parallel Sampling and Figure 8",
+        "check": "Prompt logical blocks map to the same physical KV blocks. When multiple sequences reference a block and one must modify it, it gets an independent copy; decrement the old reference count. A sole owner can write in place."
+      }
+    ],
+    "executionGates": {
+      "beforeSubmission": "Frozen reference hash matches. Verify no prior case, no matching cache or indexed copy and no material in the new task.",
+      "discovery": "A successful real metadata discovery call establishes exact arXiv v1. A pinned direct PDF fetch counts separately from metadata discovery.",
+      "fulltext": "A fresh network PDF fetch matches the frozen content hash and version. Inspect original passages and source locations.",
+      "publication": "Read the saved report and verify its actual source locations, key facts and the 300-character limit."
+    },
+    "goldInputBoundary": "Only the question, empty task materials, external-only policy and standard budget enter the application. Reference download, anchors and criteria remain evaluator-only."
+  },
+  "cases": [
+    {
+      "id": "H3-PAGEDATTENTION",
+      "split": "holdout",
+      "materials": [],
+      "kind": "direction_survey",
+      "policy": "external_only",
+      "question": "请在线查找并阅读 arXiv:2309.06180v1。给初学者解释并行采样时，同一个提示的多个输出共同保留哪些 KV，写入时引用计数起什么作用。写明实际取得的是摘要还是正文，引用方法原文，300 字以内。只用指定版本，查不到正文时请说明。",
+      "required": [
+        "空材料任务真实发现并取到指定版本的完整 PDF，哈希与评审冻结件一致，原文引用可定位。",
+        "区分逻辑块与物理块，同提示的样本共享的是已经存储的提示 KV，而非必然共享后续生成的 KV。",
+        "说明计数代表有多少逻辑块引用该物理块。要改写的物理块仍被多个样本引用时，写入者另取一块、复制旧内容并减少旧块计数；只有一个引用时可直接写。",
+        "说明取得正文还是摘要，控制回答篇幅，使用指定版本的实际方法证据。"
+      ],
+      "forbidden": [
+        "把共享理解为复制整个提示缓存、合并后续样本输出，或每次写入都复制所有块。",
+        "混淆引用计数与生成 token 数，或声称该机制近似丢弃历史 KV。",
+        "用评审文件或缓存代替应用本次联网，伪造原文位置，把不完整的核验计作验收通过。"
+      ]
+    }
+  ],
+  "caseDefinitionHashes": {
+    "H3-PAGEDATTENTION": "6047951396d503e219b119a23c460ff0d76a87f0c5138e5bad903e869c92fbd7"
+  }
+}

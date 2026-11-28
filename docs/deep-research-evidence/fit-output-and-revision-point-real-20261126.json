@@ -1,0 +1,73 @@
+{
+  "sourceCommit": "c7b3d3147d88f8f382522cb6b748974792f43247",
+  "candidate": "academic-dr-fit-output-and-revision-point-candidate-20261126",
+  "fullRegression": "fit-output-and-revision-point-full-20261126.json",
+  "cases": {
+    "D3-DENSIFICATION-FACTORIAL-v19": {
+      "runId": "dr_run_c2efa6038e9055379156f46270cadd5b",
+      "status": "failed",
+      "outcome": "none",
+      "errorCode": "invalid_shared_experiment_response",
+      "modelCalls": 7,
+      "settledTokens": 33478,
+      "elapsedSeconds": 138.7,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "39e7f3fc53b1eab32f64acb99fa7b16ca3fdcc69110545833eaa88cb40bc73d2",
+        ".payload.json": "cf83474320d7aa0b46be300f1307a64d4c0da0d6b4b75e9f413480492cad9af7",
+        ".calls.json": "cdb7470d68151264d2bfaee008b215e822aa1e8b2f91e5b1e049343ecfc98c5b",
+        ".execution.json": "71578e650a3cccd6b7e94435beaaab1e68bce0bd9db4e56edac7fd0c11671c59",
+        ".result.json": "9555caf01c32bf74147fe2f61240f2baef5c254942acf2c2532e1475876f2dc8"
+      },
+      "generationIssues": [
+        {
+          "code": "plan.pairing_source",
+          "path": "/pairing/sharedStateIds"
+        },
+        {
+          "code": "plan.pairing_clone",
+          "path": "/pairing/cloneStepIds"
+        },
+        {
+          "code": "plan.unpaired_groups",
+          "path": "/pairing/cloneStepIds"
+        }
+      ],
+      "scientificReviewReached": false
+    },
+    "H4-AWQ-VERSIONS-v10": {
+      "runId": "dr_run_864816f6d8f857769e1c1d0591602a7d",
+      "status": "paused",
+      "outcome": "none",
+      "errorCode": "unresolved_unknown",
+      "modelCalls": 6,
+      "settledTokens": 59374,
+      "elapsedSeconds": 257.6,
+      "submissions": 1,
+      "automaticRetry": false,
+      "receiptSha256": {
+        ".json": "c12fa463803a341d05a88889e19a273811b6fc4827a07da657db85cfcab175ac",
+        ".payload.json": "5e974dd2b8b073675d8d83693e0b5fb68919416bdb24d185be4f48e4ff94b6a3",
+        ".calls.json": "6359db11d65c2468539348f36836a33daba0d66dd218e4788cefa026f2169720",
+        ".execution.json": "3846e47a16efdaf449b5c3a6bab6aeab8d77f3a1230db750b6f2c1b5c8306840",
+        ".result.json": "19b660e06fea179ecbf966f9513fd4c492a3fc4d26820a575c67e6580b6cd60c"
+      },
+      "unknownNode": "verify",
+      "unknownFailureKind": "deadline_exceeded",
+      "resumedReadOnly": true,
+      "numericDraftCells": 12,
+      "reportPublished": false,
+      "independentHoldoutAccepted": false
+    }
+  },
+  "restoration": {
+    "originalRestored": true,
+    "allCurrentTasksRunsCallsExact": true,
+    "verifiedWorkspaceExtensions": {
+      "dr-acceptance-h4-awq-versions-20261126": "dr_run_864816f6d8f857769e1c1d0591602a7d"
+    },
+    "newModelCalls": 0
+  },
+  "scientificContentAccepted": false
+}

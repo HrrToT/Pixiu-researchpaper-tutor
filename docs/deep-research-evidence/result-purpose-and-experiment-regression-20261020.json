@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-20",
+  "sourceCommit": "6a7b8105",
+  "promptVersion": "dr-v2.20261020.190",
+  "fullOfflineRegressions": [
+    {
+      "sourceCommit": "104c670d",
+      "passed": 3052,
+      "warnings": 1,
+      "seconds": 157.54,
+      "log": "tmp/pytest-dr189-full.log",
+      "sha256": "b58b4051c3b65d4eed15d2ac720720a6ce566bf4f5d1d9225f755c270ceecfd5"
+    },
+    {
+      "sourceCommit": "6a7b8105",
+      "passed": 3063,
+      "warnings": 1,
+      "seconds": 119.04,
+      "log": "tmp/pytest-dr190-full.log",
+      "sha256": "47bf407d72f75d5e069939f4ca7d4e48fe7dfc5d79dc458e5f2fb658ed53ecd9"
+    }
+  ],
+  "focused": [
+    {
+      "scope": "indefinite collection boundary and existing quantities",
+      "passed": 124
+    },
+    {
+      "scope": "result attribution, scope, prose and repair",
+      "passed": 84
+    },
+    {
+      "scope": "shared experiment grammar, premise allocation and workflow",
+      "passed": 66
+    }
+  ],
+  "focusedOverlapWithFull": true,
+  "actualHistoricalRequestFingerprintsMatched": 17,
+  "providerCalls": 0,
+  "newContracts": {
+    "quantitySpellingContractVersion": 6,
+    "absenceScopeContractVersion": 7,
+    "factualScopeContractVersion": 4,
+    "experimentDraftContractVersion": 1
+  },
+  "boundary": "Offline checks and archived-input replay only; not generated content acceptance. Exact quotes, old contracts, scientific validators, original first-five0/5, unknown calls and independent eligibility unchanged."
+}

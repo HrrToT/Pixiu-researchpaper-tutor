@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-20",
+  "case": "H2F-v9",
+  "sourceCommit": "6a7b8105",
+  "promptVersion": "dr-v2.20261020.190",
+  "runId": "dr_run_a8bd62f9ae3d52ff806f537065f55b2d",
+  "status": "paused",
+  "errorCode": "unresolved_unknown",
+  "contentAccepted": false,
+  "scores": null,
+  "independentCredit": 0,
+  "attemptedModelCalls": 12,
+  "settledModelCalls": 11,
+  "settledTokens": 50043,
+  "unknownCalls": [
+    {
+      "callId": "3b40bcce0f134d9a5c10c01b1d27e811",
+      "node": "verify",
+      "reservedTokensNotMeasuredUsage": 37738,
+      "reservedAt": "2026-10-20T07:12:55Z",
+      "completedAt": "2026-10-20T07:14:09Z",
+      "error": {
+        "message": "DeepSeek request failed.",
+        "type": "provider_error",
+        "status_code": null,
+        "failureKind": "deadline_exceeded"
+      }
+    }
+  ],
+  "budgetTokensIncludingUnknownReservation": 87781,
+  "elapsedSeconds": 0,
+  "externalSearches": 0,
+  "fulltextFetches": 0,
+  "beforeLedgerRows": 4631,
+  "after": {
+    "calls": 4683,
+    "active": [],
+    "paused": [
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_ed10cc3347be552288079a9a588fddf5",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_a8bd62f9ae3d52ff806f537065f55b2d"
+    ]
+  },
+  "oldLedgerAllPayloadsAndTaskEntitiesPreserved": true,
+  "findings": [
+    "No final report/publication or content acceptance. Two individual verifier responses do not establish a completed comparison.",
+    "The third initial verify request was launched at07:12:55Z; the6min round ended07:14:09Z. The prior two verify calls took52s and63s. The third result is unknown and must not be resubmitted or bypassed by a new attempt/task.",
+    "Initial verify still uses high hidden reasoning/16384 output tokens for each short factual claim; unlike direct repair verification, it spends a large fraction of the round. Fix bounded factual review and pre-dispatch time admission while retaining independent evidence audits.",
+    "New main-result audit and indefinite collection positive path were not positively exercised in a published live answer; their evidence remains offline only.",
+    "H5 shared-grammar proof remains a controlled extraction-pool fitting fixture, not live experimental-design acceptance."
+  ],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v9.json",
+      "sha256": "e03ea325c1cdcd8642f06d6ce082be1e405364278c4353f253463b4459c92dff"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v9.payload.json",
+      "sha256": "52ff5173f61189e752eb629cb7463638b319b2b4cd4b1bcc38bbba3a7f0230a4"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v9.calls.json",
+      "sha256": "65148ae30baa8e30668da336db02fe7c8cf52aded8745392a3e627bbcd0b8537"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/H2F-v9.result.json",
+      "sha256": "1dc5f417da829194e1319e2a31a164e22ffaad6215f528c5bd89132c7140e0c9"
+    }
+  ],
+  "boundary": "One submission only. Preserve new unknown reservation and nine old paused unknown runs; no retry or historical outcome upgrade. Token reservations are not actual measured usage."
+}

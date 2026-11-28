@@ -1,0 +1,118 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "initialCandidate": "006f4008e74c656044c0af179e2e3e98e2596d46",
+  "ordinalFix": "3ae7bc34ddbffc967a6e73ca0f5f1dda2a971316",
+  "executionGuidanceFix": "afe0da106ea5e4d94c475ca9236384d13995052d",
+  "initialRunId": "dr_run_e27117e553015c3a8705007b827108ac",
+  "initialOutcome": "inconclusive",
+  "initialTokens": 34962,
+  "initialProviderCalls": 7,
+  "initialElapsedSeconds": 125.47,
+  "initialStateHadNoPriorReceipts": true,
+  "resumeRunId": "dr_d3_fresh_ordinal_review_20261128",
+  "resumeTokens": 26479,
+  "cumulativeTokens": 61441,
+  "cumulativeProviderCalls": 10,
+  "resumeRevisionUnchanged": true,
+  "localExternalSearches": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "literalOrdinalReplay": {
+    "initial": {
+      "before": [
+        {
+          "claimId": "shared_fact_1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "1e0"
+          ],
+          "factId": "s2",
+          "evidenceRefs": [
+            "E6"
+          ]
+        },
+        {
+          "claimId": "shared_fact_5",
+          "reason": "absence_not_established",
+          "factId": "s6",
+          "evidenceRefs": [
+            "E11",
+            "E14"
+          ]
+        }
+      ],
+      "after": [
+        {
+          "claimId": "shared_fact_5",
+          "reason": "absence_not_established",
+          "factId": "s6",
+          "evidenceRefs": [
+            "E11",
+            "E14"
+          ]
+        }
+      ]
+    },
+    "revised": {
+      "before": [
+        {
+          "claimId": "shared_fact_1",
+          "reason": "numeric_mismatch",
+          "missingReportedNumbers": [
+            "1e0"
+          ],
+          "factId": "s2",
+          "evidenceRefs": [
+            "E6"
+          ]
+        }
+      ],
+      "after": []
+    },
+    "sourceChecks": {
+      "samplingQuotePhysicalPage": 8,
+      "ablationContinuationPhysicalPage": 9
+    },
+    "originalRunOutcome": "inconclusive",
+    "retainedRevision": "4a9d65e40cf6320a541a155157c57d022350ce6d37ffb05a41874983e503f540",
+    "modelCalls": 0
+  },
+  "scientificReview": {
+    "passed": 20,
+    "unresolved": [
+      {
+        "checkId": "section_2",
+        "reason": "状态、初始化和大部分训练规则具体，但致密化按每像素投影中心梯度与 0.0002 比较；证据未说明该阈值对应此坐标单位。两臂致密化触发可能系统偏离论文，须明确坐标尺度并校准或将该选择及其后果明确列为限制。"
+      },
+      {
+        "checkId": "section_7",
+        "reason": "配对主效应和交互权重、符号、重复单位及缺失偏差说明合理；但明确请求的条件效应未单列计算或报告规则，不能仅凭主效应和交互的权重确保回答各开关在另一开关不同水平下的作用。"
+      }
+    ]
+  },
+  "newGuidancePreflight": {
+    "oldBytes": 31618,
+    "newBytes": 31689,
+    "evidenceCount": 14,
+    "sameEvidenceAndCriteria": true,
+    "newModelCalls": 0
+  },
+  "completeReportPublished": false,
+  "regression": {
+    "passed": 423,
+    "lastPromptTestPassed": 1
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-provenance-fresh-20261128/intent.json": "924b135bc8aab2c575bba3d02bb1a90a8d26ebdaa7530f9dd5a0933051e6439d",
+    "tmp/openai-d3-provenance-fresh-20261128/calls.json": "37e4e4c26a4b5ef009ed763fe56f8421d0fe65610b36dab96fa69b155cb5e5b6",
+    "tmp/openai-d3-provenance-fresh-20261128/run.json": "5feaf8b2dc764d7275cdc609184269a3e763edf2a44dbf86a9a85742cddf95f0",
+    "tmp/openai-d3-provenance-fresh-20261128/result.json": "7f3b9865834b7d94ce76b2dcc52eeabdd674ee138b16106ffeae4ba8b375a269",
+    "tmp/openai-d3-provenance-fresh-20261128/ordinal-sampling-and-citation-replay.json": "c2664e0fbaf62b9e0d3537390a3b8d50511c51406d57475fc557240dd40d9e74",
+    "tmp/openai-d3-provenance-fresh-20261128/gradient-and-conditional-effect-preflight.json": "17d21dc6ff0b7a8eebb6e24d662e5947ff640b03e86ee8a1adfe08caf5186625",
+    "tmp/openai-d3-fresh-ordinal-review-20261128/intent.json": "adfb70dae56d4ad6708a3239663b31c9f0ae8c1c1b81483c7a4ccbdb5604bc0c",
+    "tmp/openai-d3-fresh-ordinal-review-20261128/calls.json": "30c5cefdc3913673fc3c9be89856a6fb11dfc8a351de0eabf2364922e1870137",
+    "tmp/openai-d3-fresh-ordinal-review-20261128/run.json": "f8646157862fc537746366def09e9ebf08e333eff3632705201b73457fecf6d6",
+    "tmp/openai-d3-fresh-ordinal-review-20261128/result.json": "128f5176a0078957d2617edf54797c5d557a8235edba81cfd9b901f040e4b933",
+    "tmp/d3-fresh-scientific-requirements-regression-20261128.xml": "4cd064f39345c381b5b268458dfd91b9283700410b25ea71b58336d66841a46b"
+  }
+}

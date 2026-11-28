@@ -1,0 +1,16 @@
+{
+  "engineeringOnly": true,
+  "applicationUnitErrors": [],
+  "applicationFieldIssues": [],
+  "allUneditedFieldsExact": true,
+  "sourceRefsExact": true,
+  "oldLocalEditorResult": "invalid_response",
+  "oldLocalEditorErrors": [
+    "unit.metadata_edit.fit_outputs"
+  ],
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0,
+  "boundary": "Diagnostic composition only, not relabelling original failed run or new protocol acceptance."
+}

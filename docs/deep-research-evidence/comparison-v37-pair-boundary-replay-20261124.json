@@ -1,0 +1,28 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v37",
+  "savedPayloadSha256": "abc11daf1059fb46d5525930466de317339d7d058febcf9a7467a5ac19a7e888",
+  "newContractVersion": 15,
+  "legacyStagesExact": true,
+  "requiredEvidenceUnchanged": true,
+  "jointPromptBytes": 23996,
+  "validatedCandidateCount": 10,
+  "compiledExampleRows": [
+    9,
+    10
+  ],
+  "exampleGroup": "Mip-NeRF 360 Datasets",
+  "evidenceRefs": [
+    "E13",
+    "E19"
+  ],
+  "compiledExampleBindings": 10,
+  "boundarySettingRefsNormalized": true,
+  "actualModelCalls": 0,
+  "scientificContentAccepted": false,
+  "auditInputReplay": {
+    "acceptedClaims": 4,
+    "paperColumnLabelsInlined": 3,
+    "claimWordingAndLayoutUnchanged": true,
+    "coherenceVerdictReplayed": false
+  }
+}

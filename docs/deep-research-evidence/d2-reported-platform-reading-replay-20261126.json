@@ -1,0 +1,18 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v56",
+  "baseline": "research-finalization-real-batch-20261126.json",
+  "mode": "offline replay from the saved acquisition candidates through reading, literal extraction and staged generation admission",
+  "cause": "The original 3DGS evaluation platform passage was present in the acquired candidates and absent from the selected read set.",
+  "before": {"readCount": 12, "original3DGSHardwarePageInEvidence": null, "original3DGSHardwareStages": {}},
+  "after": {
+    "readCount": 12,
+    "original3DGSHardwarePageInEvidence": 8,
+    "original3DGSHardwareStages": {"P1": 23352, "joint": 23997},
+    "stageLimitBytes": 24000,
+    "measurementExceptionRetained": "The platform sentence expressly excepts the Mip-NeRF360 method."
+  },
+  "modelCalls": 0,
+  "originalRunModified": false,
+  "scientificAcceptance": false,
+  "boundary": "The replay used frozen acquired passages from the original case and intercepted generation dispatch. The newly supplied original-paper setup is evidence for the next answer, not proof that it will appear in the final comparison or that the sources are directly comparable."
+}

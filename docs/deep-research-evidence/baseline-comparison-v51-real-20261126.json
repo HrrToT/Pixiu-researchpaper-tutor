@@ -1,0 +1,67 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v51",
+  "runId": "dr_run_16e07591bb8c5fe1a60ac7bab7654ca2",
+  "status": "completed",
+  "outcome": "partial",
+  "errorCode": "",
+  "modelCalls": 16,
+  "tokens": 75578,
+  "elapsedSeconds": 162.0,
+  "externalSearches": 0,
+  "automaticRetry": false,
+  "overBudget": false,
+  "compiledClaims": 10,
+  "verifiedClaims": 6,
+  "rejectedReasons": {
+    "numeric_mismatch": 3,
+    "missing_table_bindings": 1
+  },
+  "coverageStatus": "invalid_response",
+  "coverageVerdicts": {
+    "ob-1-1": "covered",
+    "ob-1-2": "covered",
+    "ob-2-1": "covered",
+    "ob-2-2": "covered",
+    "ob-3-1": "covered",
+    "ob-3-2": "covered",
+    "answer_scope": "partial"
+  },
+  "reportVersionId": "report_dr_run_16e07591bb8c5fe1a60ac7bab7654ca2_v1",
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "originalServiceRestored": true,
+  "receiptSha256": {
+    ".payload.json": "093c19248c7aae48691af055799f5d23a2c953cf5187529a1889e2035e37a635",
+    ".calls.json": "a3d1911827dd897b4bf80512761141a46e1983b342e88e19f31c5a0624fc8ac9",
+    ".result.json": "97bf29b52acfbcccbe370c687cadd409b56793edfe054280eb3b37176cfc3364",
+    ".execution.json": "7127b5f2a6751b6ce3fe013720f1600b6fc556228de6ebbedfe9caf03b2e911f",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "sourceCommit": "00113568b621be1200f5c6afddae6091160e3753",
+  "fulltextFetches": 0,
+  "repairStatus": "response_received",
+  "acceptedClaimIds": [
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_6_0",
+    "cmp_conclusion_1",
+    "cmp_conclusion_2",
+    "cmp_0_0"
+  ],
+  "repairCompletedBatches": [
+    "0"
+  ],
+  "repairStoppedBatch": {
+    "batch": 1,
+    "kind": "repairEvidenceBytes",
+    "limit": 11862,
+    "used": 13315
+  },
+  "normalizedStorageQualityCriterion": "按原文说明该论文报告的存储、画质取舍及适用条件。此项用定性描述，测量值集中在一组同表同口径示例中。",
+  "speedOutsideMatchedExample": true,
+  "apparentCoverageAccepted": false,
+  "scientificContentAccepted": false,
+  "independentCredit": 0
+}

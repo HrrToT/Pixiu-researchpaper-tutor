@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-20",
+  "sourceCase": "E1-v3",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "oldActualFailureReproduced": {
+    "kind": "repairEvidenceBytes",
+    "limit": 19967,
+    "used": 25192
+  },
+  "oldFullRewriteOutputReservation": 8192,
+  "newEditOutputReservation": 4096,
+  "globalInputByteCapUnchanged": 24000,
+  "actualNormalTokensRemaining": 29183,
+  "newInputBytes": 23885,
+  "completeReservation": 29005,
+  "writableIds": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "sourceEvidenceRows": 9,
+  "allOriginalCitationsAndContextsPreserved": true,
+  "originalProseAndAllSpecsPreserved": true,
+  "allOriginalReasonsAndDetailsPreserved": true,
+  "originalRecordDigest": "175040c8f0203dab93df7438272ff4dd36a2d27d67517db21a6b49ad9113786c",
+  "mockedDispatchCalls": 1,
+  "batches": [
+    [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ]
+  ],
+  "boundary": "Controlled replay of actual E1-v3 saved input and remaining budget. Lossless column rows retain original prose/specs, exact required quotes/contexts/tables and own permissions. Reduced edit OUTPUT reservation, original24000input maximum and100k/18call/6min budget unchanged. Mock empty response only, no model revision, scientific content, runtime dispatch or independent acceptance; historical E1 inconclusive unchanged."
+}

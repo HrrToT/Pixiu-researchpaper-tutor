@@ -1,0 +1,19 @@
+{
+  "case": "AD1N-v16",
+  "mode": "offline full checker factory, exact two received replies, saved HTTP402 reproduced as a local error if third request attempted",
+  "baselineCommit": "98653b4c",
+  "legacyRequestsAndFailureMatchFrozenBaseline": true,
+  "candidateRequestsExactlyLegacyFirstTwo": true,
+  "legacyAttemptedReviewCalls": 3,
+  "candidateAttemptedReviewCalls": 2,
+  "priorMachinePassedSiblingRetained": true,
+  "failedParentStillUnverified": true,
+  "unreviewedObservationCount": 1,
+  "unreviewedPropositionCount": 1,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "rawPayloadSha256": "e62d9b89d807f2a0cf9dd6313ea6451e1077b5c4cb31e1cb1ded3b6b3393e211",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "boundary": "Known failed-parent work skipped, no scientific approval or total-run cost/latency acceptance. The prior machine-pass is not manual content acceptance."
+}

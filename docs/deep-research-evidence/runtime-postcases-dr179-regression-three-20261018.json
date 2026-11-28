@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "sourceCommit": "04b8c4f1",
+  "promptVersion": "dr-v2.20261018.179",
+  "beforeLedgerRows": 4280,
+  "after": {
+    "calls": 4360,
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "newRunIds": [
+      "dr_run_64865d64577f558a99bbad6d1a236ef9",
+      "dr_run_9528cc27aded52969b30d37198d5f782",
+      "dr_run_f91ce541be585fbaa52c7cfa0a874f97"
+    ]
+  },
+  "oldLedgerAndAllPayloadsPreserved": true,
+  "oldTaskEntitiesPreserved": {
+    "dr-acceptance-h2f-2026-10-18": true,
+    "dr-acceptance-h3f-2026-10-18": true,
+    "dr-acceptance-h5f-2026-10-18": true
+  },
+  "cases": [
+    {
+      "case": "H3F-v7",
+      "runId": "dr_run_64865d64577f558a99bbad6d1a236ef9",
+      "machineOutcome": "complete",
+      "contentAccepted": false,
+      "modelCalls": 9,
+      "settledTokens": 42118,
+      "elapsedSeconds": 191.143
+    },
+    {
+      "case": "H2F-v3",
+      "runId": "dr_run_f91ce541be585fbaa52c7cfa0a874f97",
+      "machineOutcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 12,
+      "settledTokens": 48039,
+      "elapsedSeconds": 141.112
+    },
+    {
+      "case": "H5F-v3",
+      "runId": "dr_run_9528cc27aded52969b30d37198d5f782",
+      "machineOutcome": "partial",
+      "contentAccepted": false,
+      "modelCalls": 10,
+      "settledTokens": 39033,
+      "elapsedSeconds": 86.543
+    }
+  ],
+  "modelCalls": 31,
+  "settledTokens": 129190,
+  "cost": null,
+  "independentCredit": 0,
+  "boundary": "Three fixed retired development submissions, each once. All settled; no new unknown, no old-object overwrite, no content pass or historical score upgrade."
+}

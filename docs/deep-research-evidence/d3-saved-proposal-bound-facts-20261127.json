@@ -1,0 +1,36 @@
+{
+  "sourceRun": "dr_run_b89846fc1c945ac5bca5a0cee9d5fd3b",
+  "replayRun": "dr_d3_saved_proposal_audit_20261127",
+  "sourceCommit": "60ad4075816c786377c2c464aa6c8589ff9a725e",
+  "proposalBindingDigest": "8c2adba266e73aed4a00a19ae3680bced0bdf32c32d781d3d2db218e28c32fd2",
+  "reusedExactGeneratedProposal": true,
+  "actualNewModelCalls": 1,
+  "actualNewTokens": 7179,
+  "model": "gpt-6.1-terra",
+  "generationCalls": 0,
+  "repairCalls": 0,
+  "scientificReviewBatchesCompletedAtProvider": 1,
+  "finalAuditCalls": 0,
+  "actualAuditStoppedOn": "foreign_evidence_binding",
+  "affectedCheck": "fact_3",
+  "allowedEvidence": [
+    "E5"
+  ],
+  "foreignAlias": "E2",
+  "figure5BeforeBindingCorrect": true,
+  "candidateSchemaRejectsActualOldResponse": true,
+  "candidateFixtureStopsBeforeSecondDispatch": true,
+  "candidateReviewInputBytes": [
+    27657,
+    31937,
+    31811
+  ],
+  "candidateCheckCount": 22,
+  "candidateReplayPaidCalls": 0,
+  "scientificallyAccepted": false,
+  "sha256": {
+    "intent.json": "d8fa15d7935b9d567fa27bfa73d9499d66fe40ceeb0a060f6c7a2221532d80f3",
+    "run.json": "193ed75c90ff7c33f1989b9c35c91eb5c9e0506536769a99b0bcc37b87b2bc1f",
+    "calls.json": "b8f625eeae272d24a73bffe04ceef68d146d9e40fbcd47182df13148dc3de0a3"
+  }
+}

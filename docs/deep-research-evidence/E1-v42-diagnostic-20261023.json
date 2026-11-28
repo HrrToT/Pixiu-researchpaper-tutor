@@ -1,0 +1,846 @@
+{
+  "date": "2026-10-23",
+  "sourceCommit": "08908def",
+  "promptVersion": "dr-v2.20261023.252",
+  "case": "E1-v42",
+  "split": "development",
+  "runId": "dr_run_a312e59d83685a248519dd4b3cfadd37",
+  "questionUnchanged": true,
+  "frozenCaseCommit": "a023b204",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "reportedPayloadElapsedSeconds": 140.371,
+  "observedElapsedSeconds": 140.0,
+  "settledModelCalls": 10,
+  "settledTokens": 61210,
+  "unsettledModelCalls": 0,
+  "independentCredit": 0,
+  "verificationSummary": {
+    "accepted": 0,
+    "rejected": 9
+  },
+  "generationAllocation": {
+    "version": 1,
+    "planningEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9",
+      "E10"
+    ],
+    "suppliedEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10",
+      "E9"
+    ],
+    "requiredEvidenceAliases": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10"
+    ],
+    "unverifiedPlanReferences": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E10"
+    ],
+    "missingPremiseBundles": [],
+    "rawInputBytes": 30419,
+    "encodedInputBytes": 30150,
+    "maxInputBytes": 32000,
+    "planBasisDigest": "a78989b9996dbd819f29135c82d5e2e60fb3f67d1fcba8e15fbde4a374c8e65f",
+    "planReferencesAreEvidenceApproval": false,
+    "planningEvidenceIds": [
+      "ev_1eb4c9fdd24de3ea264f8cefc5924a37d16ab84865925a0db5237cc11ced5b0a",
+      "ev_719100b0caa2ede9c6fd744d770dec104ae582968d6fa4fe0be3bfd4084fed66",
+      "ev_f96749bc7c0c95524f18d91b36ae6dcaa3b370ac52c9e840e87fbc2078c51b0a",
+      "ev_e7ad2ae39a57713454bf061191a27d7fe5ef3b09578876a217239ae81d7fccc8",
+      "ev_f369be52390464f7ef5b5c06970dc3cdf2d88fd5060208bd60734666d6f006e1",
+      "ev_19891f15d396196291c015e0ec23a3a507612048a4605ec5249d00155bd7e769",
+      "ev_0a689ba07517e3c4f3bd278066eb23e2db478ee98a58e9f5a7982154e4a1aeb4",
+      "ev_0ae830d93215a12677d66c33033e65bcc8e4d140262b1b65bae9ce94da27e1c1",
+      "ev_8f0632e5f222c076cf61e61ffb4310e77de61f18a9b04d0dfdb0d243b16bbf67",
+      "ev_bb54889917ce25a94f87024e42bd84b22b1bea1a4033574edc21d1ea1975d1df"
+    ],
+    "suppliedEvidenceIds": [
+      "ev_1eb4c9fdd24de3ea264f8cefc5924a37d16ab84865925a0db5237cc11ced5b0a",
+      "ev_719100b0caa2ede9c6fd744d770dec104ae582968d6fa4fe0be3bfd4084fed66",
+      "ev_f96749bc7c0c95524f18d91b36ae6dcaa3b370ac52c9e840e87fbc2078c51b0a",
+      "ev_e7ad2ae39a57713454bf061191a27d7fe5ef3b09578876a217239ae81d7fccc8",
+      "ev_f369be52390464f7ef5b5c06970dc3cdf2d88fd5060208bd60734666d6f006e1",
+      "ev_19891f15d396196291c015e0ec23a3a507612048a4605ec5249d00155bd7e769",
+      "ev_0a689ba07517e3c4f3bd278066eb23e2db478ee98a58e9f5a7982154e4a1aeb4",
+      "ev_0ae830d93215a12677d66c33033e65bcc8e4d140262b1b65bae9ce94da27e1c1",
+      "ev_bb54889917ce25a94f87024e42bd84b22b1bea1a4033574edc21d1ea1975d1df",
+      "ev_8f0632e5f222c076cf61e61ffb4310e77de61f18a9b04d0dfdb0d243b16bbf67"
+    ]
+  },
+  "directSourcePassageEntries": 44,
+  "modelNodeCounts": {
+    "assess_relevance": 3,
+    "plan": 1,
+    "plan_experiment": 1,
+    "repair_claims": 1,
+    "resolve_brief": 1,
+    "synthesize": 1,
+    "verify_design_config": 1,
+    "verify_design_science": 1
+  },
+  "repairStatus": "response_received",
+  "repairAdmission": null,
+  "planEncodingAudit": {
+    "rawBytes": 7185,
+    "wireBytes": 6649,
+    "canonicalBytes": 7980,
+    "preferredSlotBytes": 2500,
+    "rawLimitBytes": 8192,
+    "wireLimitBytes": 8192,
+    "fitsPreferredSlot": false,
+    "scientificApproval": false
+  },
+  "initialRepresentationAudit": [
+    {
+      "phase": "synthesis",
+      "claimId": "c1",
+      "designRole": "hypothesis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "hypothesis"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c2",
+      "designRole": "groups",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "groups"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c3",
+      "designRole": "data",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "data"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c4",
+      "designRole": "budget",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "budget"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c5",
+      "designRole": "controls",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "controls"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c6",
+      "designRole": "steps",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "steps"
+    },
+    {
+      "phase": "synthesis",
+      "claimId": "c8",
+      "designRole": "analysis",
+      "path": "/executionSpec",
+      "kind": "single_role_wrapper",
+      "role": "analysis"
+    }
+  ],
+  "repairRepresentationAudit": {},
+  "rejectedClaims": [
+    {
+      "claimId": "c1",
+      "reason": "internal_reference_in_prose"
+    },
+    {
+      "claimId": "c6",
+      "reason": "incomplete_experiment_workflow",
+      "detail": "workflow.states.shape, workflow.creation.unavailable_input, workflow.states.operation_rule",
+      "revisionRejection": {
+        "claimId": "c6",
+        "reason": "incomplete_experiment_workflow",
+        "detail": "workflow.states.shape, workflow.creation.unavailable_input"
+      }
+    },
+    {
+      "claimId": "c9",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "第2阶段新增高斯的操作仅给出阈值参数，未指定选择3DG的具体规则（如按梯度排序取前k个或全部超过阈值的3DG），导致处理组操作不可复现。；未明确新增高斯在每帧结束后丢弃的具体时机（如优化完成后立即丢弃还是评估后丢弃）以及丢弃后状态如何恢复，影响存储和时间的测量。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "reason": "第2阶段新增高斯的操作仅给出阈值参数，未指定选择3DG的具体规则（如按梯度排序取前k个或全部超过阈值的3DG），导致处理组操作不可复现。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "factors": [
+                {
+                  "name": "stage2",
+                  "control": {
+                    "action": "skip_stage2",
+                    "parameters": []
+                  },
+                  "treatment": {
+                    "action": "execute_stage2",
+                    "parameters": [
+                      {
+                        "name": "tau_grad",
+                        "type": "number",
+                        "value": 0.00015
+                      },
+                      {
+                        "name": "tau_alpha",
+                        "type": "number",
+                        "value": 0.01
+                      },
+                      {
+                        "name": "spawn_scale_factor",
+                        "type": "number",
+                        "value": 0.8
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c2",
+            "reason": "未明确新增高斯在每帧结束后丢弃的具体时机（如优化完成后立即丢弃还是评估后丢弃）以及丢弃后状态如何恢复，影响存储和时间的测量。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "factors": [
+                {
+                  "name": "stage2",
+                  "control": {
+                    "action": "skip_stage2",
+                    "parameters": []
+                  },
+                  "treatment": {
+                    "action": "execute_stage2",
+                    "parameters": [
+                      {
+                        "name": "tau_grad",
+                        "type": "number",
+                        "value": 0.00015
+                      },
+                      {
+                        "name": "tau_alpha",
+                        "type": "number",
+                        "value": 0.01
+                      },
+                      {
+                        "name": "spawn_scale_factor",
+                        "type": "number",
+                        "value": 0.8
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "9d68901e6dccedc620d4c5fe6162fd3ce60e229be8052f3e3350ad9d3222c9cf",
+          "requestContextDigest": "5b61ad5b931b2c4407bb88e058d3e61f65621ac4e73753959ccc5d9f6c747518",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c2",
+              "field": "executionSpec",
+              "reason": "第2阶段新增高斯的操作仅给出阈值参数，未指定选择3DG的具体规则（如按梯度排序取前k个或全部超过阈值的3DG），导致处理组操作不可复现。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c2",
+              "field": "executionSpec",
+              "reason": "未明确新增高斯在每帧结束后丢弃的具体时机（如优化完成后立即丢弃还是评估后丢弃）以及丢弃后状态如何恢复，影响存储和时间的测量。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "62a6f33c37c0ca586ee694d07018d043d70b27914fb194d67588a30e930efc6a",
+          "scientificRejectionVerified": false
+        }
+      },
+      "revisionRejection": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": null,
+        "reviewInputCapacity": {
+          "inputBytes": 38911,
+          "maxInputBytes": 32000
+        }
+      }
+    },
+    {
+      "claimId": "c3",
+      "reason": "semantic_unresolved",
+      "detail": "场景列表使用命名模式，但证据E1和E2仅提及'flame salmon'，未提供该场景在数据集中的成员资格或可用性证明。；相机划分规则为每5个视图留1个评估视图，但未枚举实际帧ID或评估视图ID，无法验证划分的完整性和无重叠。；种子值0未说明其用途（如划分、训练或初始化），且未提供生成规则或实际整数种子。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c3",
+            "reason": "场景列表使用命名模式，但证据E1和E2仅提及'flame salmon'，未提供该场景在数据集中的成员资格或可用性证明。",
+            "path": [
+              "executionSpec",
+              "scenes"
+            ],
+            "value": {
+              "mode": "named",
+              "names": [
+                "flame salmon"
+              ]
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "相机划分规则为每5个视图留1个评估视图，但未枚举实际帧ID或评估视图ID，无法验证划分的完整性和无重叠。",
+            "path": [
+              "executionSpec",
+              "split"
+            ],
+            "value": {
+              "mode": "every_nth",
+              "order": "lexicographic",
+              "stride": 5,
+              "offset": 0
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c3",
+            "reason": "种子值0未说明其用途（如划分、训练或初始化），且未提供生成规则或实际整数种子。",
+            "path": [
+              "executionSpec",
+              "seeds"
+            ],
+            "value": [
+              0
+            ]
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "f2e7858264d2821ada330099e59407bb0cd68902d37db253f6a83c50a502023b",
+          "requestContextDigest": "e0778764f36b42d7757c8da40c965a0ac0d7c2f3553692704c25a960faea587f",
+          "originalFindings": [
+            {
+              "kind": "unsupported",
+              "claimId": "c3",
+              "field": "executionSpec/scenes",
+              "reason": "场景列表使用命名模式，但证据E1和E2仅提及'flame salmon'，未提供该场景在数据集中的成员资格或可用性证明。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec/split",
+              "reason": "相机划分规则为每5个视图留1个评估视图，但未枚举实际帧ID或评估视图ID，无法验证划分的完整性和无重叠。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c3",
+              "field": "executionSpec/seeds",
+              "reason": "种子值0未说明其用途（如划分、训练或初始化），且未提供生成规则或实际整数种子。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "f803dfd468a8978c7ca844c36d24b087d54cb9612551a8e2241779a03710e11f",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c4",
+      "reason": "semantic_unresolved",
+      "detail": "基线模式为训练，但未提供基线最大预算或已发布资产支持，无法确定共享准备阶段的总步数上限。；恢复预算仅给出处理组总步数9000，未明确每帧步数或控制组跳过阶段的具体含义，且未覆盖所有拟合阶段。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "reason": "基线模式为训练，但未提供基线最大预算或已发布资产支持，无法确定共享准备阶段的总步数上限。",
+            "path": [
+              "executionSpec",
+              "baseline"
+            ],
+            "value": {
+              "mode": "train",
+              "unit": "optimizer_steps",
+              "maxBudget": 6000,
+              "stoppingRule": "stop after 3000 optimizer steps for Frame0_3DG and 3000 for NTC, or when training-view L1 loss stops decreasing for 200 consecutive steps"
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c4",
+            "reason": "恢复预算仅给出处理组总步数9000，未明确每帧步数或控制组跳过阶段的具体含义，且未覆盖所有拟合阶段。",
+            "path": [
+              "executionSpec",
+              "recovery"
+            ],
+            "value": {
+              "mode": "unmatched",
+              "unit": "optimizer_steps",
+              "groups": {
+                "0": 0,
+                "1": 9000
+              },
+              "note": "处理组每帧300步共30帧，控制组跳过第2阶段。该比较描述整个第2阶段的增量取舍，不隔离新增参数与额外优化。"
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "f2e7858264d2821ada330099e59407bb0cd68902d37db253f6a83c50a502023b",
+          "requestContextDigest": "e0778764f36b42d7757c8da40c965a0ac0d7c2f3553692704c25a960faea587f",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c4",
+              "field": "executionSpec/baseline",
+              "reason": "基线模式为训练，但未提供基线最大预算或已发布资产支持，无法确定共享准备阶段的总步数上限。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c4",
+              "field": "executionSpec/recovery",
+              "reason": "恢复预算仅给出处理组总步数9000，未明确每帧步数或控制组跳过阶段的具体含义，且未覆盖所有拟合阶段。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "088ea9a8b7f753aac8e56cadd5a73df904f49d6f912f396984f86f70ee20d917",
+          "scientificRejectionVerified": false
+        }
+      }
+    },
+    {
+      "claimId": "c5",
+      "reason": "semantic_unresolved",
+      "detail": "第0帧3DG资产（flame_salmon_frame0_3dg）未在证据中提供实际文件或参数数量，无法确认其存在和可加载性。；NTC哈希表大小（524288）和MLP隐藏宽度（64）为方案选择，但未提供与论文实现兼容的证据，且未说明这些值如何从论文或代码中确定。；第2阶段新增3DG的初始化中，选择器（selected_positions等）未定义具体选择规则，无法确定哪些3DG被选中用于派生新增高斯。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "unsupported",
+            "claimId": "c5",
+            "reason": "第0帧3DG资产（flame_salmon_frame0_3dg）未在证据中提供实际文件或参数数量，无法确认其存在和可加载性。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  },
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3D Gaussian splatting renderer"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "adam",
+                "parameters": [
+                  {
+                    "name": "learning_rate",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "beta1",
+                    "type": "number",
+                    "value": 0.9
+                  },
+                  {
+                    "name": "beta2",
+                    "type": "number",
+                    "value": 0.999
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "none",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c5",
+            "reason": "NTC哈希表大小（524288）和MLP隐藏宽度（64）为方案选择，但未提供与论文实现兼容的证据，且未说明这些值如何从论文或代码中确定。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  },
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3D Gaussian splatting renderer"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "adam",
+                "parameters": [
+                  {
+                    "name": "learning_rate",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "beta1",
+                    "type": "number",
+                    "value": 0.9
+                  },
+                  {
+                    "name": "beta2",
+                    "type": "number",
+                    "value": 0.999
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "none",
+                "parameters": []
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c5",
+            "reason": "第2阶段新增3DG的初始化中，选择器（selected_positions等）未定义具体选择规则，无法确定哪些3DG被选中用于派生新增高斯。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "initialization": {
+                "workflowClaimId": "c6"
+              },
+              "rendering": {
+                "action": "render_3dgs",
+                "parameters": [
+                  {
+                    "name": "resolution",
+                    "type": "choice",
+                    "value": "640x360"
+                  },
+                  {
+                    "name": "renderer",
+                    "type": "choice",
+                    "value": "3D Gaussian splatting renderer"
+                  }
+                ]
+              },
+              "optimizer": {
+                "action": "adam",
+                "parameters": [
+                  {
+                    "name": "learning_rate",
+                    "type": "number",
+                    "value": 0.001
+                  },
+                  {
+                    "name": "beta1",
+                    "type": "number",
+                    "value": 0.9
+                  },
+                  {
+                    "name": "beta2",
+                    "type": "number",
+                    "value": 0.999
+                  }
+                ]
+              },
+              "otherInterventions": {
+                "action": "none",
+                "parameters": []
+              }
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "9d68901e6dccedc620d4c5fe6162fd3ce60e229be8052f3e3350ad9d3222c9cf",
+          "requestContextDigest": "5b61ad5b931b2c4407bb88e058d3e61f65621ac4e73753959ccc5d9f6c747518",
+          "originalFindings": [
+            {
+              "kind": "unsupported",
+              "claimId": "c5",
+              "field": "executionSpec",
+              "reason": "第0帧3DG资产（flame_salmon_frame0_3dg）未在证据中提供实际文件或参数数量，无法确认其存在和可加载性。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "field": "executionSpec",
+              "reason": "NTC哈希表大小（524288）和MLP隐藏宽度（64）为方案选择，但未提供与论文实现兼容的证据，且未说明这些值如何从论文或代码中确定。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c5",
+              "field": "executionSpec",
+              "reason": "第2阶段新增3DG的初始化中，选择器（selected_positions等）未定义具体选择规则，无法确定哪些3DG被选中用于派生新增高斯。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "35fa0db6aaa117ffa68a1ea25bd850ff45b912998940cef99c7c9184ba72b6fe",
+          "scientificRejectionVerified": false
+        }
+      },
+      "revisionRejection": {
+        "claimId": "c5",
+        "reason": "semantic_unresolved",
+        "detail": "完整核验输入超出容量，本条尚未核验，不能据此判断论文证据不足。",
+        "executionState": "not_started",
+        "reviewTimeAdmission": null,
+        "reviewInputCapacity": {
+          "inputBytes": 38974,
+          "maxInputBytes": 32000
+        }
+      }
+    },
+    {
+      "claimId": "c7",
+      "reason": "semantic_unresolved",
+      "detail": "核验拒绝项没有绑定到实际输入，尚未形成可用判断；保留原始响应。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "invalid",
+        "errors": [
+          "finding.0.field_reference"
+        ],
+        "originalReason": "指标目标缺少执行规范，仅提供文本和条件；质量指标未指定聚合级别，速度指标未提供设备、分辨率、预热、同步、计时区域和重复次数，存储指标未列出包含的文件或模型表示。",
+        "originalFindings": [
+          {
+            "kind": "missing_field",
+            "claimId": "c7",
+            "field": "executionSpec",
+            "reason": "指标目标缺少执行规范，无法验证质量、速度和存储指标的具体实现。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "field": "text",
+            "reason": "质量指标PSNR和SSIM未指定图像/视图聚合级别，无法确定逐帧报告的具体计算方式。"
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c7",
+            "field": "conditions",
+            "reason": "速度指标未提供设备、分辨率、预热、同步、计时区域和重复次数，存储指标未列出包含的文件或模型表示。"
+          }
+        ],
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "f2e7858264d2821ada330099e59407bb0cd68902d37db253f6a83c50a502023b",
+          "requestContextDigest": "e0778764f36b42d7757c8da40c965a0ac0d7c2f3553692704c25a960faea587f",
+          "originalFindings": [
+            {
+              "kind": "missing_field",
+              "claimId": "c7",
+              "field": "executionSpec",
+              "reason": "指标目标缺少执行规范，无法验证质量、速度和存储指标的具体实现。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c7",
+              "field": "text",
+              "reason": "质量指标PSNR和SSIM未指定图像/视图聚合级别，无法确定逐帧报告的具体计算方式。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c7",
+              "field": "conditions",
+              "reason": "速度指标未提供设备、分辨率、预热、同步、计时区域和重复次数，存储指标未列出包含的文件或模型表示。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "4c5fcab4dd2b98e367a850af80342307a6f30f3c7188bb468598f062b081dc08",
+          "scientificRejectionVerified": false
+        }
+      },
+      "executionState": "received_invalid"
+    },
+    {
+      "claimId": "c8",
+      "reason": "semantic_unresolved",
+      "detail": "决策边界仅描述为“报告中位数差异是否为正/负及其大小”，未定义可操作的阈值或标准来判断差异是否值得关注，导致解释主观。；未说明如何处理逐帧差异中的缺失值或异常值（如某帧评估失败），也未定义中位数计算时的帧集合是否固定。",
+      "rejectionAudit": {
+        "version": 1,
+        "bindingState": "verified",
+        "findings": [
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "reason": "决策边界仅描述为“报告中位数差异是否为正/负及其大小”，未定义可操作的阈值或标准来判断差异是否值得关注，导致解释主观。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "effects": {
+                "psnr_diff": "treatment_psnr - control_psnr",
+                "ssim_diff": "treatment_ssim - control_ssim",
+                "storage_diff": "treatment_storage_bytes - control_storage_bytes",
+                "time_diff": "treatment_stage2_ms - control_stage2_ms"
+              },
+              "uncertainty": {
+                "mode": "descriptive",
+                "boundary": "report per-frame differences and their median across frames"
+              },
+              "decision": {
+                "mode": "descriptive",
+                "boundary": "report whether median differences are positive/negative and their magnitude"
+              }
+            }
+          },
+          {
+            "kind": "incomplete",
+            "claimId": "c8",
+            "reason": "未说明如何处理逐帧差异中的缺失值或异常值（如某帧评估失败），也未定义中位数计算时的帧集合是否固定。",
+            "path": [
+              "executionSpec"
+            ],
+            "value": {
+              "effects": {
+                "psnr_diff": "treatment_psnr - control_psnr",
+                "ssim_diff": "treatment_ssim - control_ssim",
+                "storage_diff": "treatment_storage_bytes - control_storage_bytes",
+                "time_diff": "treatment_stage2_ms - control_stage2_ms"
+              },
+              "uncertainty": {
+                "mode": "descriptive",
+                "boundary": "report per-frame differences and their median across frames"
+              },
+              "decision": {
+                "mode": "descriptive",
+                "boundary": "report whether median differences are positive/negative and their magnitude"
+              }
+            }
+          }
+        ],
+        "scientificRejectionVerified": false,
+        "referenceBinding": {
+          "version": 1,
+          "catalogueDigest": "9d68901e6dccedc620d4c5fe6162fd3ce60e229be8052f3e3350ad9d3222c9cf",
+          "requestContextDigest": "5b61ad5b931b2c4407bb88e058d3e61f65621ac4e73753959ccc5d9f6c747518",
+          "originalFindings": [
+            {
+              "kind": "incomplete",
+              "claimId": "c8",
+              "field": "executionSpec",
+              "reason": "决策边界仅描述为“报告中位数差异是否为正/负及其大小”，未定义可操作的阈值或标准来判断差异是否值得关注，导致解释主观。"
+            },
+            {
+              "kind": "incomplete",
+              "claimId": "c8",
+              "field": "executionSpec",
+              "reason": "未说明如何处理逐帧差异中的缺失值或异常值（如某帧评估失败），也未定义中位数计算时的帧集合是否固定。"
+            }
+          ],
+          "originalStatus": "failed",
+          "expandedFindingsDigest": "7be0abda6baafdc9575df4d86c4af552c8561c7817ae1aefa7ab348e55fd4c50",
+          "scientificRejectionVerified": false
+        }
+      }
+    }
+  ],
+  "acceptedClaims": [],
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v42.json",
+      "sha256": "c3a2ce9a8be7ce94b1e7b74f405b4523415306e2388208d7640cc427fa752178"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v42.payload.json",
+      "sha256": "c3cd24817efa7c852595aea83f50578d66dfcd700e9beb6c7b3bff78266b6928"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v42.calls.json",
+      "sha256": "33e3bf1cc4c9d6f680da076d98dbe4bb58a56bcc45bd7da89cc104ceb1a0b636"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/E1-v42.result.json",
+      "sha256": "fca81ae2b4a53a83ad07fd9992abf95953500ca5d59b3c7f74bca7c37b9bfb86"
+    }
+  ],
+  "boundary": "One fixed development submission, no automatic retry. Representation normalization does not approve science or upgrade historical/independent results."
+}

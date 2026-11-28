@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-22",
+  "sourceCommit": "57b6efcf",
+  "promptVersion": "dr-v2.20261022.230",
+  "fullOffline": {
+    "passed": 4043,
+    "files": 222,
+    "warnings": 1,
+    "seconds": 3008.13,
+    "log": "tmp/pytest-dr230-full.log",
+    "sha256": "6e6e7c8965645887af81ddc95c6eaf1f5e55e213ef2483a2dc767aa4f9b50d73"
+  },
+  "focusedPassed": 138,
+  "focusedOverlap": true,
+  "newTests": 21,
+  "legacyScripts": 31,
+  "legacyPhysicalFingerprintsMatched": 92,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "validationCorrections": [
+    "Initial focused test supplied no evidence while retaining own evidenceRefs, so it never reached the intended negative-audit branch. Corrected fixture.",
+    "Retained the existing rejected-context label in brief instructions; all other context/evidence-isolation checks unchanged."
+  ],
+  "boundary": "Trusted instructions condensed; every original data block and scientific/parser gate retained. Capacity/callback success is not scientific acceptance; no larger windows or run budgets."
+}

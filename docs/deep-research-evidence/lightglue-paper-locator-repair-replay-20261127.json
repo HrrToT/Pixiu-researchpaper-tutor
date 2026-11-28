@@ -1,0 +1,29 @@
+{
+  "case": "H1-LIGHTGLUE",
+  "classification": "development_replay",
+  "baseline": "lightglue-h1-first-frozen-20261127.json",
+  "citationPresentationContractVersion": 6,
+  "input": "Saved first-attempt repair response and original evidence, replayed through the production verify node",
+  "checks": {
+    "legacyRepairDraftMatchedArchivedDraft": true,
+    "c1": {
+      "old": "internal_reference_in_prose",
+      "new": "eligible_for_semantic_review",
+      "removed": "（P1，第13页）",
+      "reportedThresholdPreserved": "95%"
+    },
+    "c2": {
+      "old": "internal_reference_in_prose",
+      "new": "internal_reference_in_prose",
+      "retained": "（P1，第8、13页）",
+      "reason": "Page 8 was in the task evidence pool but not among c2's frozen citations."
+    },
+    "frozenCitationsAndConditionsPreserved": true,
+    "targetedTestsPassed": 213
+  },
+  "semanticReviewExecuted": false,
+  "independentAcceptanceCredit": false,
+  "newProviderCalls": 0,
+  "newProviderTokens": 0,
+  "localReplayReportSha256": "0a6f7503e4680b05818dd26972c74c4e10cd851524dd7267f37db7438eaed116"
+}

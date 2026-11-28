@@ -1,0 +1,193 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "qualification": "exposed_development_retest_and_offline_source_binding_replay",
+  "independentCredit": 0,
+  "live": {
+    "runId": "dr_run_e6143f5b9a345540a209d27446b68729",
+    "sourceTree": "dcaabb47719e4b15e0a9e78b217e2092d3298574",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 13,
+    "countsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "verify": 4,
+      "verify_answer_coverage": 1
+    },
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 8
+    },
+    "providerTokens": 59750,
+    "elapsedSeconds": 129.0,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 210,
+      "pdf": 4
+    },
+    "automaticRetry": false,
+    "storedPartialPublicationId": "dr_pub_1e56fc26b3e241108212243817ff5b4c",
+    "visibleCharacters": 520,
+    "characterLimit": 600,
+    "verificationSummary": {
+      "accepted": 6,
+      "rejected": 0
+    },
+    "coverage": {
+      "supervision-features": "covered",
+      "reported-results": "partial",
+      "cross-paper-comparability": "partial",
+      "matched-rerun": "partial",
+      "answer_scope": "partial"
+    },
+    "verifiedClaimIds": [
+      "cmp_0_0",
+      "cmp_1_0",
+      "cmp_2_0",
+      "cmp_3_0",
+      "cmp_4_0",
+      "cmp_conclusion_0"
+    ],
+    "remaining": [
+      "D2-Net own conditioned quantitative result is absent.",
+      "Internal comparison under the protocol in D2-Net is not answered.",
+      "Like-for-like recheck is not delivered in the stored partial publication."
+    ],
+    "repairStatus": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 8839,
+      "used": 11327
+    },
+    "rawReceiptSha256": {
+      "run.json": "76cfbc348d59526ac9d2adab2213df83cad8c201a9938e2767685fc5b17858b3",
+      "calls.json": "46829a859dc7a9d482ed49c10dcda71d48ff132bbf913baa4ae8e56290bad999",
+      "provider.jsonl": "8ba52e7f4baeff131f74f832fef3435305f48bac772f0b0fdc35073966c98df5",
+      "result.json": "f72eb248eaa9092190296622dc3bbd962cd60a5ffe3d546a42927226470f1b1b"
+    }
+  },
+  "sourceSelectionDiagnosis": {
+    "invalidPlannerId": "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e1.pdf",
+    "selectedMaterialWithMissingId": "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1.pdf",
+    "liveStages": [
+      {
+        "stageId": "P1",
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "targets": [
+          "joint_cross-paper-comparability",
+          "joint_matched-rerun"
+        ]
+      }
+    ],
+    "repairScope": "Initial typed comparison plans with exactly two frozen local materials and a matching explicit focus pair. The obligation asks for two distinct IDs and exactly one is valid."
+  },
+  "offlineReplay": {
+    "runId": "dr_run_e6143f5b9a345540a209d27446b68729",
+    "providerCalls": 0,
+    "planSourceBindings": [
+      {
+        "obligationId": "supervision-features",
+        "change": "bound_selected_comparison_pair"
+      },
+      {
+        "obligationId": "reported-results",
+        "change": "bound_selected_comparison_pair"
+      },
+      {
+        "obligationId": "cross-paper-comparability",
+        "change": "bound_selected_comparison_pair"
+      },
+      {
+        "obligationId": "matched-rerun",
+        "change": "bound_selected_comparison_pair"
+      }
+    ],
+    "retainedJointCriteria": [
+      "说明能否把两篇论文的 HPatches 数字直接用于排序",
+      "D2-Net 论文内部与 SuperPoint 的比较能支持什么"
+    ],
+    "bothMeasurementTargets": [
+      {
+        "sourceVersionId": "arxiv:1905.03561v1",
+        "targetId": "cell_1_0",
+        "evidenceId": "ev_0955077ee48dd8bbbc82676bf57419f5f55ab8cabe47f0f4dd6d81a960040664"
+      },
+      {
+        "sourceVersionId": "arxiv:1712.07629v1",
+        "targetId": "cell_1_1",
+        "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050"
+      }
+    ],
+    "jointEvidence": {
+      "joint_cross-paper-comparability": {
+        "sourceVersions": [
+          "arxiv:1712.07629v1",
+          "arxiv:1905.03561v1"
+        ],
+        "d2FigureBaselineRow": true,
+        "d2PublishedMmaThreshold": true,
+        "d2ReciprocalMatchingCondition": true
+      },
+      "joint_matched-rerun": {
+        "sourceVersions": [
+          "arxiv:1712.07629v1",
+          "arxiv:1905.03561v1"
+        ],
+        "d2FigureBaselineRow": true,
+        "d2PublishedMmaThreshold": true,
+        "d2ReciprocalMatchingCondition": true
+      }
+    },
+    "inputLimitBytes": 24000,
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23991,
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1",
+          "cell_1_0"
+        ]
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23992,
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23949,
+        "targets": [
+          "joint_cross-paper-comparability",
+          "joint_matched-rerun"
+        ]
+      }
+    ],
+    "storedPlannerResponseReused": true,
+    "sourcePdfsReadLocally": 2,
+    "generationSent": false,
+    "semanticReviewOrPublicationPerformed": false
+  },
+  "regressionTestsPassed": 157
+}

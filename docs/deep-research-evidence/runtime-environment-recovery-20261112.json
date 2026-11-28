@@ -1,0 +1,52 @@
+{
+  "observedDate": "2026-11-12",
+  "initialState": "Docker and project Java/Python services were stopped; ports 8000/8081 not listening",
+  "normalDockerStart": "failed and exited",
+  "failure": "Inference manager could not remove Docker/run/dockerInference communication endpoint",
+  "recoveryAuthorization": "Latest explicit two-directory backup-and-start approval had not previously been used; consumed exactly once here",
+  "preconditions": {
+    "dockerProcessesExited": true,
+    "resolvedPathsChecked": true,
+    "directoriesNotReparsePoints": true,
+    "onlyKnownEndpoints": true,
+    "allEndpointsZeroBytes": true
+  },
+  "backups": [
+    {
+      "original": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run",
+      "backup": "C:\\Users\\Lenovo\\AppData\\Local\\Docker\\run.codex-backup-20261112-105057-114",
+      "entries": ["dockerInference", "userAnalyticsOtlpHttp.sock"]
+    },
+    {
+      "original": "C:\\Users\\Lenovo\\AppData\\Local\\docker-secrets-engine",
+      "backup": "C:\\Users\\Lenovo\\AppData\\Local\\docker-secrets-engine.codex-backup-20261112-105057-114",
+      "entries": ["engine.sock"]
+    }
+  ],
+  "deletedFiles": 0,
+  "wslResets": 0,
+  "volumesModifiedByRecovery": false,
+  "engineVersionAfterRecovery": "29.1.3",
+  "stoppedResearchVolumeSnapshot": {
+    "method": "network-disabled helper; original volume read-only; SQLite and existing WAL/SHM copied into temporary memory filesystem for querying",
+    "ledgerRows": 9077,
+    "activeRuns": 0,
+    "pausedRuns": 15,
+    "priorRunHashesExact": true,
+    "initialDirectReadOnlyQuery": "could not open WAL-mode database; no application started or source volume written"
+  },
+  "projectServices": {
+    "originalResearchContainerStarted": 1,
+    "originalJavaStarted": 1,
+    "javaDatabaseBackedUpAndHashCheckedBeforeStart": true,
+    "loadedPromptVersion": "dr-v2.20261112.419",
+    "ready": true,
+    "coldLedgerAndPayloadsExact": true,
+    "protectedTasksExact": 16,
+    "indexRows": 1215,
+    "indexHashExact": true
+  },
+  "loadEvidence": "runtime-load-audience-publication-419-20261112.json",
+  "providerCallsForRecovery": 0,
+  "contentAcceptance": false
+}

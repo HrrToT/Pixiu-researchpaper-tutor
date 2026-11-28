@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-18",
+  "runtimePromptVersion": "dr-v2.20261018.140",
+  "before": {
+    "active": [],
+    "calls": 3569,
+    "ledgerSha256": "7550c91c31751b0d2a2aa9b3ad9d70a1be12c67f0a4a1dbbc9981dc6e1505024",
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ]
+  },
+  "after": {
+    "active": [],
+    "paused": [
+      "dr_run_4738564f5ff35157996a35068c62ed32",
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_e9c9dc916bef519092fad8b929b2448f",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "calls": 3591,
+    "newRows": 22,
+    "newRunIds": [
+      "dr_run_838687fc88c25b888537961f934dffe2"
+    ],
+    "originalLedgerSha256": "7550c91c31751b0d2a2aa9b3ad9d70a1be12c67f0a4a1dbbc9981dc6e1505024"
+  },
+  "historicalLedgerUnchanged": true,
+  "pausedUnknownIdentitiesUnchanged": true,
+  "boundary": "Only H1F-v6 adds settled rows. No active run or new unknown; full old ledger prefix and paused identities unchanged."
+}

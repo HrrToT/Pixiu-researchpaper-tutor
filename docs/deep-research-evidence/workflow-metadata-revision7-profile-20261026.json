@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-26",
+  "promptVersion": "dr-v2.20261026.269",
+  "workflowMetadataRepairContractVersion": 7,
+  "workflowMetadataRowsContractVersion": 2,
+  "metadataSchema": "workflow_metadata_action_objects_v1",
+  "metadataOutputTokenCap": 3072,
+  "rawResponseByteCap": 16384,
+  "semanticContentByteCap": 8192,
+  "wholeRunLimits": {
+    "calls": 18,
+    "tokens": 100000,
+    "wallSeconds": 360
+  },
+  "profileRegression": {
+    "files": 17,
+    "passed": 320,
+    "seconds": 40.42,
+    "fixtureDrive": "C:",
+    "log": "tmp/pytest-dr269-profile-20261026.log"
+  },
+  "baseFullRegression": {
+    "sourceCommit": "eff6dfd7",
+    "codeBaselineCommit": "947baa1f",
+    "files": 259,
+    "passed": 4780,
+    "seconds": 359.06,
+    "sourceStable": true,
+    "fixtureDrive": "C:",
+    "originalDiskFullRunPreserved": true
+  },
+  "sourceHashes": {
+    "services/deep_research/facade.py": "7cfe9654b82b67b25a498636f25d140f72fb06785bbab22434fe985c96e85e9c",
+    "tests/test_deep_research_workflow_lifecycle_profile.py": "f4eddd3148d85ce70fdde164a68b8fb7aed94281ee394e713dc904595a17ceab",
+    "tests/test_deep_research_workflow_metadata_repair.py": "cbaaf3968d2200340ce7f527e356d5878dfd88d79f09f8141fc4c7989c509847"
+  },
+  "oldRunsMigrated": false,
+  "clientOverridesAccepted": false,
+  "runtimeLoaded": false,
+  "providerCalls": 0,
+  "scientificApproval": false,
+  "boundary": "New-run activation only; fixed-source full retest and profile tests are separate. Runtime load and actual correction/scientific quality remain unverified."
+}

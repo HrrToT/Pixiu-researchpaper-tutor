@@ -1,0 +1,18 @@
+{
+  "promptVersion": "dr-v2.20261115.475",
+  "inputBytes": 31703,
+  "oldScopedInputBytes": 31930,
+  "inputLimitBytes": 32000,
+  "allInputEvidenceMetadataInterfacesAndChoicesExact": true,
+  "metadataRequestExact": true,
+  "requiredAliasesExact": true,
+  "evidenceRows": 17,
+  "newNativeSchema": "workflow_init_v2_state_baseline",
+  "deriveLayoutAndDimensionsUnchanged": true,
+  "outputTokenCap": 6144,
+  "timeoutSeconds": 90,
+  "newModelCalls": 0,
+  "applicationWrites": false,
+  "scientificAcceptance": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,128 @@
+{
+  "sourceCommit": "1796350b8a2b22fdf21b2b54382deaa908e81761",
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "runId": "dr_run_b89846fc1c945ac5bca5a0cee9d5fd3b",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "errorCode": "",
+  "elapsedSeconds": 104.0,
+  "submissions": 1,
+  "automaticRetries": 0,
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "providerCalls": 7,
+  "actualTotalTokens": 35670,
+  "usageByModel": {
+    "gpt-6-luna": {
+      "calls": 5,
+      "input_tokens": 16000,
+      "output_tokens": 1084,
+      "total_tokens": 17084,
+      "cached_input_tokens": 1270,
+      "cache_write_input_tokens": 14155
+    },
+    "gpt-6.1-terra": {
+      "calls": 2,
+      "input_tokens": 14063,
+      "output_tokens": 4523,
+      "total_tokens": 18586,
+      "cached_input_tokens": 1458,
+      "cache_write_input_tokens": 12599
+    }
+  },
+  "modelCallsByNode": {
+    "resolve_brief": 1,
+    "plan": 1,
+    "assess_relevance": 3,
+    "plan_experiment_shared": 1,
+    "review_experiment_shared": 1
+  },
+  "stageEvidence": {
+    "sharedExperimentGeneration": {
+      "status": "awaiting_scientific_review",
+      "inputBytes": 31975,
+      "groups": [
+        {
+          "id": "00",
+          "levels": {
+            "A": 0,
+            "B": 0
+          }
+        },
+        {
+          "id": "10",
+          "levels": {
+            "A": 1,
+            "B": 0
+          }
+        },
+        {
+          "id": "01",
+          "levels": {
+            "A": 0,
+            "B": 1
+          }
+        },
+        {
+          "id": "11",
+          "levels": {
+            "A": 1,
+            "B": 1
+          }
+        }
+      ],
+      "unresolved": [],
+      "pendingAssetIds": [
+        "images",
+        "impl",
+        "device"
+      ]
+    },
+    "sharedExperimentReview": {
+      "status": "invalid_response",
+      "inputBytes": 31967,
+      "hardIssues": [],
+      "stoppedAfterInvalidBatch": 0,
+      "invalidBatchBindings": [
+        "missing_numeric_source_binding"
+      ],
+      "valid": false,
+      "complete": false,
+      "scientificApproval": false,
+      "errors": [
+        "invalid_review_response"
+      ],
+      "verdictCounts": {},
+      "batches": [
+        {
+          "inputBytes": 23729,
+          "checks": 7
+        },
+        {
+          "inputBytes": 31967,
+          "checks": 8
+        },
+        {
+          "inputBytes": 31750,
+          "checks": 7
+        }
+      ],
+      "receivedBatchFinishReasons": [
+        "stop"
+      ]
+    }
+  },
+  "release": {
+    "complete": false,
+    "repairAttempted": false
+  },
+  "localReceiptDir": "tmp/openai-d3-conditional-prerequisites-20261127",
+  "billedCurrencyCharge": null,
+  "sha256": {
+    "intent.json": "3192c246a0c453fb34008b69f0e56b2695b44906d93e0e1aa0ddb89bceadb3ac",
+    "provider.jsonl": "d275c74e652645d03280cc85e10dc63840bc4f32ffb295d15546d972a134ce49",
+    "calls.json": "ca238fffc31ee7b38849d82eddc2bda2b0fe717ae5df2e4e9710751d5127d340",
+    "run.json": "a20e35901bf0eee092e513bb9ae28efc0171b1aabbcce92fe0726778db2df266",
+    "result.json": "a343a92b096af9915cdaef96986420a1bbb1e3396702a551eff82832a0cd1014"
+  }
+}

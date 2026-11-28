@@ -1,0 +1,538 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "independentCredit": 0,
+  "qualification": "exposed_development_run_then_offline_layout_replay",
+  "live": {
+    "runId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "sourceTree": "b4781d1d3e89f6f0ed88872d10b872de55c945d7",
+    "status": "failed",
+    "outcome": "none",
+    "errorCode": "invalid_synthesis_response",
+    "providerCalls": 9,
+    "countsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1
+    },
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 4
+    },
+    "providerTokens": 40368,
+    "elapsedSeconds": 98.0,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 265,
+      "pdf": 4
+    },
+    "jointTargets": [
+      "joint_o3",
+      "joint_o4"
+    ],
+    "automaticRetry": false,
+    "reportPublished": false,
+    "rawReceiptSha256": {
+      "run.json": "e9fd450dc65e0b3217797ae66dc27fa8341ef1d3fdb09afd802df3d11b96880b",
+      "calls.json": "8e144bdf9ed21dd34647c252af4d328da065abd02795c884492f3cef82e85c3b",
+      "provider.jsonl": "268800050176db5daa1fc5e3cd82018d099bacf73709c0a40bd3ff694223bd7b",
+      "result.json": "7cbf169fd62ae38514a8029938bd58f3f560bf5e734c0910891198f897a82562"
+    }
+  },
+  "diagnosis": {
+    "legacyCountsWithoutComparisonLayout": 499,
+    "legacyCountsWithComparisonTable": 628,
+    "characterLimit": 600
+  },
+  "recordedResponseReplay": {
+    "actualRunId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "providerCalls": 0,
+    "usedRecordedDraftAndEditorResponses": true,
+    "visibleCharacters": 519,
+    "characterLimit": 600,
+    "pointIds": [
+      "cmp_1_0",
+      "cmp_2_0",
+      "cmp_3_0",
+      "cmp_4_0",
+      "cmp_5_0",
+      "cmp_conclusion_0",
+      "cmp_conclusion_1"
+    ],
+    "numericAndCitationPrecheckCandidates": 7,
+    "semanticReviewPerformed": false,
+    "independentCredit": 0,
+    "adviceReviewTarget": "cmp_conclusion_1",
+    "layout": "cited_prose"
+  },
+  "freshStagePreflight": {
+    "providerCalls": 0,
+    "inputBoundBytes": 24000,
+    "stages": [
+      {
+        "id": "P1",
+        "inputBytes": 23991,
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1",
+          "cell_1_0"
+        ]
+      },
+      {
+        "id": "P2",
+        "inputBytes": 23990,
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "id": "joint",
+        "inputBytes": 23997,
+        "targets": [
+          "joint_o3",
+          "joint_o4"
+        ]
+      }
+    ]
+  },
+  "contentGapsInRecordedDraft": [
+    "SuperPoint supervision was absent.",
+    "D2-Net used a threshold attached to a trend instead of a measured result.",
+    "The recheck advice was general instead of specifying benchmark operations."
+  ],
+  "boundary": "Fresh preflight stopped before dispatch. The shorter display used the unchanged recorded draft and editor output. Deterministic checks do not establish semantic review, whole-answer coverage, publication or scientific acceptance.",
+  "figureCountRetentionReplay": {
+    "providerCalls": 0,
+    "inputBoundBytes": 24000,
+    "stages": [
+      {
+        "id": "P1",
+        "inputBytes": 23991,
+        "targets": [
+          "cell_0_0_axis_0",
+          "cell_0_0_axis_1",
+          "cell_1_0"
+        ]
+      },
+      {
+        "id": "P2",
+        "inputBytes": 24000,
+        "targets": [
+          "cell_0_1_axis_0",
+          "cell_0_1_axis_1",
+          "cell_1_1"
+        ]
+      },
+      {
+        "id": "joint",
+        "inputBytes": 23997,
+        "targets": [
+          "joint_o3",
+          "joint_o4"
+        ]
+      }
+    ],
+    "figureCounts": {
+      "evidenceId": "ev_997d1915dfb73691fbfb377ca5876acc9bc24de5540f480c5b1153e16c02b118",
+      "stage": "P2",
+      "target": "cell_1_1",
+      "printedVariant": "D2 MS Trained (ours)",
+      "printedCountColumns": [
+        "# Features",
+        "# Matches"
+      ],
+      "printedValues": [
+        "8.3K",
+        "2.8K"
+      ]
+    },
+    "actualRunId": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "sourcePage": 6,
+    "sourceQuoteSha256": "d5230085d1776f76e5635d3d38f9a174d85a5331dcc11b2f1e17b16d005c1577",
+    "knownBeforeSynthesis": true,
+    "presentInHistoricalSynthesis": false,
+    "scientificApproval": false,
+    "boundary": "The unchanged literal quote was restored to the owning paper quantitative target before model dispatch. The replay did not generate, review or publish a figure claim."
+  },
+  "trainingSupervisionFromPdfReplay": {
+    "sourceRun": "dr_run_3287aba9d02151ce9438583bf07d127f",
+    "providerCalls": 0,
+    "literalSupervisionPremises": [
+      {
+        "versionId": "arxiv:1905.03561v1",
+        "targetId": "cell_0_0_axis_0",
+        "page": 1,
+        "evidenceId": "ev_d22d940da66a2e3004836d0f7a0525ce198bb0341dca41b240a3c16213a69e93",
+        "exactQuoteSha256": "ebaa7ab4a914cf677ce782ed41f71f955424472a01303db09c3bf6c6beaa9d72"
+      },
+      {
+        "versionId": "arxiv:1712.07629v1",
+        "targetId": "cell_0_1_axis_0",
+        "page": 2,
+        "evidenceId": "ev_5512e098b124b92d78f0a0598d868bfbdd9764a2fc86250196f36f7952e39190",
+        "exactQuoteSha256": "3cba4fe43559d1fbf9bf119a56fcd15efb7191f638fb77e92cbefffe6741386e"
+      }
+    ],
+    "requiredOriginalTableRetained": true,
+    "namedFigureCountRetained": true,
+    "pdfReads": 2,
+    "inputLimitBytes": 24000,
+    "stages": [
+      {
+        "stageId": "P1",
+        "inputBytes": 23991
+      },
+      {
+        "stageId": "P2",
+        "inputBytes": 23915
+      },
+      {
+        "stageId": "joint",
+        "inputBytes": 23983
+      }
+    ],
+    "scientificApproval": false,
+    "boundary": "Fresh local PDF retrieval, source allocation, literal extraction and stage preparation used the saved plan and exact material identities. A no-provider stop precedes generation. Supervision evidence for each paper, the threshold table and the named figure remain in the same bounded preparation."
+  },
+  "combinedEvidenceRealDevelopmentRun": {
+    "runId": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+    "sourceTree": "83c7a8cbb8555458e7376709318e31a2d45bf6d4",
+    "status": "failed",
+    "outcome": "none",
+    "providerCalls": 9,
+    "providerTokens": 39599,
+    "countsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 4
+    },
+    "callsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "synthesize_compact": 1
+    },
+    "elapsedSeconds": 106.0,
+    "errorCode": "invalid_synthesis_response",
+    "automaticRetry": false,
+    "localMaterialBoundary": {
+      "scopeCheck": 265,
+      "pdf": 4
+    },
+    "externalSearches": 0,
+    "verificationStarted": false,
+    "reportPublished": false,
+    "independentCredit": 0,
+    "observed": {
+      "draftContainsBothSupervisionOrigins": true,
+      "draftContainsScopedRecheck": true,
+      "draftContainsD2NetReportedMeasurementValue": false,
+      "figureEvidencePresent": true,
+      "figureHintPresent": false
+    },
+    "rawReceiptsSha256": {
+      "run.json": "3b163214541ef41d5c0e179bba00e03e730f8527d4c65af1b508fab31cf888a7",
+      "calls.json": "0a9349ed74b531f915cb3d696bfe44eaade77fadc3a89597958efdf5f498a0cf",
+      "provider.jsonl": "19a0522b5003233a3b4ffc5355d06190c6e874c530f3089fa84848f924d3e5c7",
+      "result.json": "4884f63ea73f3429871c773d54e1c745387b572fbb66103f1fe06cffa664fdc4"
+    }
+  },
+  "combinedEvidencePostRunReplays": {
+    "groupedProse": {
+      "sourceRun": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+      "providerCalls": 0,
+      "historicalEditedCharacters": 612,
+      "groupedEditedCharacters": 596,
+      "unmodifiedEditorResponse": true,
+      "claimIds": [
+        "cmp_0_0",
+        "cmp_1_0",
+        "cmp_2_0",
+        "cmp_3_0",
+        "cmp_4_0",
+        "cmp_5_0",
+        "cmp_conclusion_0",
+        "cmp_conclusion_1"
+      ],
+      "allClaimsRetained": true,
+      "semanticReviewPerformed": false,
+      "independentCredit": 0,
+      "adviceReviewTarget": "cmp_conclusion_1"
+    },
+    "figurePlanBinding": {
+      "providerCalls": 0,
+      "inputBoundBytes": 24000,
+      "stages": [
+        {
+          "id": "P1",
+          "inputBytes": 23998,
+          "targets": [
+            "cell_0_0_axis_0",
+            "cell_0_0_axis_1",
+            "cell_1_0"
+          ]
+        },
+        {
+          "id": "P2",
+          "inputBytes": 23987,
+          "targets": [
+            "cell_0_1_axis_0",
+            "cell_0_1_axis_1",
+            "cell_1_1"
+          ]
+        },
+        {
+          "id": "joint",
+          "inputBytes": 23993,
+          "targets": [
+            "joint_O3",
+            "joint_O4"
+          ]
+        }
+      ],
+      "figureCounts": {
+        "evidenceId": "ev_997d1915dfb73691fbfb377ca5876acc9bc24de5540f480c5b1153e16c02b118",
+        "stage": "P1",
+        "target": "cell_1_0",
+        "printedVariant": "D2 MS Trained (ours)",
+        "printedCountColumns": [
+          "# Features",
+          "# Matches"
+        ],
+        "printedValues": [
+          "8.3K",
+          "2.8K"
+        ]
+      },
+      "actualRunId": "dr_run_2055bf96ae3b5e798bc1172ae2269185"
+    },
+    "boundary": "Separate local replays reused unchanged received wording for layout and prepared a fresh comparison target packet for the figure. Neither made a provider call, generated new measurement prose, executed semantic review or published a report."
+  },
+  "deferredLengthVerificationReplay": {
+    "sourceRun": "dr_run_2055bf96ae3b5e798bc1172ae2269185",
+    "providerCalls": 0,
+    "unchangedOriginalModelOutput": true,
+    "deferredLength": {
+      "limit": 600,
+      "characters": 612
+    },
+    "claimsPreparedForVerification": 8,
+    "deterministicPrecheck": {
+      "candidates": 8,
+      "rejected": []
+    },
+    "semanticReviewPerformed": false,
+    "published": false,
+    "independentCredit": 0,
+    "boundary": "The unchanged historical editor output reaches the normal deterministic precheck despite exceeding the publication limit. The final report retains the human limit. Publication tests assemble full, partial and held payloads from fixture verdicts separately. No scientific verdict or live publication was produced."
+  },
+  "boundedPublicationRealDevelopmentRun": {
+    "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+    "sourceTree": "2daeae1f120868044e67521cd7c3b25e1d24918b",
+    "status": "completed",
+    "outcome": "partial",
+    "providerCalls": 13,
+    "providerTokens": 62129,
+    "callsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 8
+    },
+    "callsByNode": {
+      "resolve_brief": 1,
+      "plan": 1,
+      "assess_relevance": 3,
+      "synthesize": 3,
+      "verify_advice": 1,
+      "verify": 2,
+      "repair_claims": 1,
+      "verify_answer_coverage": 1
+    },
+    "elapsedSeconds": 142.0,
+    "automaticRetry": false,
+    "externalSearches": 0,
+    "localMaterialBoundary": {
+      "scopeCheck": 269,
+      "pdf": 4
+    },
+    "publicationId": "dr_pub_9a93134c60ad45a5936695ae447ab5f1",
+    "visibleCharacters": 274,
+    "characterLimit": 600,
+    "publicClaimCount": 4,
+    "publishedClaimIds": [
+      "cmp_0_0",
+      "cmp_1_0",
+      "cmp_3_0",
+      "cmp_conclusion_1"
+    ],
+    "rejectedClaimReasons": {
+      "cmp_2_0": "numeric_mismatch",
+      "cmp_conclusion_0": "semantic_unresolved"
+    },
+    "initialWronglyJointMeasurementTarget": "joint_obl_results",
+    "benchmarkRecheckReviewedAndPublished": true,
+    "applicationScopedPublication": true,
+    "dispatchedToExistingUserWorkspace": false,
+    "independentCredit": 0,
+    "rawReceiptSha256": {
+      "run.json": "8cb49fb33e52e29edb2d4808f48ab6a1d543cce110bb9e0a5cb547d4fa109e6c",
+      "calls.json": "57fd6ae7c19cfef24cf9e2f637886443d4213f12a895900ae85c74b1a805a9c0",
+      "provider.jsonl": "28f5974d31d25f2e48e9fa69ae4706dc0a0fba92d67f41a768f307e3a34b7eae",
+      "result.json": "4d454dacc162a5de6b4647f73ca5d4cc432d3be0c38e7bfcacfff069d950c35d"
+    }
+  },
+  "boundedPublicationPostRunReplays": {
+    "measurementRoles": {
+      "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "providerCalls": 0,
+      "planRoleChange": {
+        "obligationId": "obl_results",
+        "change": "per_paper_quantitative_result_role"
+      },
+      "bothMeasurementTargets": [
+        {
+          "sourceVersionId": "arxiv:1712.07629v1",
+          "targetId": "cell_1_0",
+          "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050"
+        },
+        {
+          "sourceVersionId": "arxiv:1905.03561v1",
+          "targetId": "cell_1_1",
+          "evidenceId": "ev_0955077ee48dd8bbbc82676bf57419f5f55ab8cabe47f0f4dd6d81a960040664"
+        }
+      ],
+      "inputLimitBytes": 24000,
+      "stages": [
+        {
+          "stageId": "P1",
+          "inputBytes": 23987,
+          "targets": [
+            "cell_0_0_axis_0",
+            "cell_0_0_axis_1",
+            "cell_1_0"
+          ]
+        },
+        {
+          "stageId": "P2",
+          "inputBytes": 23990,
+          "targets": [
+            "cell_0_1_axis_0",
+            "cell_0_1_axis_1",
+            "cell_1_1"
+          ]
+        },
+        {
+          "stageId": "joint",
+          "inputBytes": 23977,
+          "targets": [
+            "joint_obl_comparability",
+            "joint_obl_rerun"
+          ]
+        }
+      ]
+    },
+    "bicubicTerminology": {
+      "claimId": "cmp_2_0",
+      "providerCalls": 0,
+      "priorReason": "numeric_mismatch",
+      "exactSameClaimNowEligibleForSemanticReview": true,
+      "actualThreeRepeatedOperationsStillRejected": true
+    },
+    "boundary": "The recorded plan was normalized and the two frozen PDFs were retrieved again locally. Both distinct paper targets have the exact measured evidence and the joint scope remains independent. Numeric precheck separately reused the unchanged original SuperPoint claim. The replays sent no provider request and did not certify semantic content or an independent holdout."
+  },
+  "isolatedComparabilityBoundaryValidation": {
+    "historicalObservationReplay": {
+      "sourceRun": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "originalClaimId": "cmp_conclusion_0",
+      "providerCalls": 0,
+      "sameRawObservationVerdicts": true,
+      "previousPolicy": {
+        "returnedStatus": "failed",
+        "observations": 2,
+        "boundaryReady": false,
+        "reason": "观察条件尚未通过事实核查：审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ]
+      },
+      "updatedPolicy": {
+        "observationReplay": true,
+        "boundaryReady": true,
+        "providerCalls": 0,
+        "dispatchPoints": 2
+      },
+      "unsupportedThreeConditions": {
+        "returnedStatus": "failed",
+        "observations": 2,
+        "boundaryReady": false,
+        "reason": "观察条件尚未通过事实核查：审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ]
+      },
+      "boundaryEntailmentReviewed": false,
+      "independentCredit": 0
+    },
+    "newEntailmentReview": {
+      "scope": "single_cross_paper_boundary_on_exposed_development_case",
+      "runId": "dr_run_e050826133a351b0b6e7ef8ff57865d3",
+      "claimId": "cmp_conclusion_0",
+      "model": "gpt-6.1-terra",
+      "providerCalls": 1,
+      "providerTokens": 2861,
+      "requestBytes": 10787,
+      "requestDigest": "6fd0089fd7a1c46b4f77d5ffcbab5eca62b2dbf3a53a656d2addca412e81606b",
+      "automaticRetry": false,
+      "status": "passed",
+      "boundary": {
+        "index": 0,
+        "proposition": "当前所引证据提供了足以比较SuperPoint与D2-Net的HPatches图像对及评测指标的对齐的对应数据和必要条件",
+        "relation": "not_entailed",
+        "quantification": "explicit",
+        "isNegation": false,
+        "authorOmission": false,
+        "reason": "引文未提供足以核对两者图像对和评测指标是否对齐的对应数据及必要条件。",
+        "premises": [
+          {
+            "evidenceId": "ev_17b84ca9d93afb4af4d99df5514843765f1ef8b1e4b94ba57137aacf2b5ace79",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_f60debc24f2d1a9596d8152d289f65bf9ddd0205a7f2e3c8ca0028f307d4ccfe",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "ev_f60debc24f2d1a9596d8152d289f65bf9ddd0205a7f2e3c8ca0028f307d4ccfe",
+            "path": [
+              "sourceContext",
+              "before"
+            ]
+          },
+          {
+            "evidenceId": "ev_888db1ba8d460279e4032086df83219e8e147d0b10c3487344ebbc657d26b7e3",
+            "path": [
+              "quote"
+            ]
+          }
+        ],
+        "diagnosticFacts": []
+      },
+      "publicationPerformed": false,
+      "independentCredit": 0,
+      "receiptSha256": {
+        "preflight.json": "42bdb57407ae5090f16001471e87ba3a2ad4c078ef1aadf7c5b13512a05de8b5",
+        "dispatch.json": "0b760931f8d0d185cad4307ad8492f2576b9e6187da849c3491222a7472e614f",
+        "raw.json": "6f8b563d0843f333d59ccbee09c15cc0ee66f73a9cf0eb1b380464c934a89956",
+        "result.json": "26701cffc3f79fa52e80d16657fc730b441bee0f689c7773952366c1eae2a2ac"
+      }
+    },
+    "boundary": "The exact stored observations were replayed through updated numeric diagnostic binding. Only the previously unreached entailment question used a real model and was checked by the production validator. No new answer or publication was produced."
+  }
+}

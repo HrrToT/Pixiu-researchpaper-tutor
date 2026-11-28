@@ -1,0 +1,135 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_cost_authoring_checkpoint_branch",
+  "independentHoldoutCredit": 0,
+  "sourceCommit": "7461573895989163b9f10576bf34f493fa53d165",
+  "originalRunId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "isolatedRunId": "dr_d2_cost_target_real_20261128",
+  "usage": {
+    "carriedGenerations": 15,
+    "carriedTokens": 67245,
+    "newGenerations": 3,
+    "newGenerationTokens": 17070,
+    "tokensByStage": {
+      "repair_claims": 4403,
+      "verify_repair": 3777,
+      "verify_answer_coverage": 8890
+    },
+    "totalGenerations": 18,
+    "totalTokens": 84315,
+    "accountedSeconds": 166.495,
+    "newProviderCountingRequests": 1,
+    "externalLiteratureSearches": 0
+  },
+  "result": {
+    "outcome": "partial",
+    "verifiedClaims": 10,
+    "publicationId": "dr_pub_cc6482f5b166431db3e554321b19f46c",
+    "deliveredToWorkspace": false,
+    "wholeAnswerAuditStatus": "checked",
+    "unmetObligationIds": [
+      "o1",
+      "answer_scope"
+    ]
+  },
+  "costDiagnostic": {
+    "draft": "原始场景拟合中，论文报告了本方法训练7,000次和30,000次迭代两种配置。拟合还交替进行高斯密度调整；针对拍摄角度有缺失的场景，先优化基础颜色，再每训练1,000次迭代增加一个球谐频带，直到全部四个频带纳入。这些引文不能量化上述额外操作的单独成本。",
+    "citations": [
+      "ev_16794082a489d9359b2eac7caf9b063c326408499e3729b3a4f3d474819ad547",
+      "ev_33e0dc2b642da4fcbda38f206dd96a28f873aeeb009abd3074b6d7bb8cd80587",
+      "ev_fdbde2fa9c3a15a634cda58cccc2898eff0c06d118012d32d4d60ac0bef3a3ba"
+    ],
+    "originalNumericDiagnostic": [
+      "3e4",
+      "7e3"
+    ],
+    "independentRejection": {
+      "claimId": "cmp_2_0",
+      "reason": "semantic_unresolved",
+      "detail": "原文将自适应密度控制操作与高斯参数优化步骤交错进行。\n证据支持密度控制与参数优化为不同操作，但未明确给出其单独开销；迭代次数也不能直接量化该开销。\n原文中的 α 是不透明度，而非透明度。"
+    },
+    "rawIndependentVerdict": {
+      "claimId": "cmp_2_0",
+      "reasonParts": [
+        {
+          "text": "原文将自适应密度控制操作与高斯参数优化步骤交错进行。",
+          "evidenceId": "E1",
+          "path": [
+            "quote"
+          ]
+        },
+        {
+          "text": "证据支持密度控制与参数优化为不同操作，但未明确给出其单独开销；迭代次数也不能直接量化该开销。"
+        },
+        {
+          "text": "原文中的 α 是不透明度，而非透明度。",
+          "evidenceId": "E1",
+          "path": [
+            "sourceContext",
+            "before"
+          ]
+        }
+      ],
+      "scopeAudit": {
+        "claimStrength": "bounded",
+        "evidenceStrength": "bounded",
+        "supported": false,
+        "statementPath": [
+          "text"
+        ],
+        "premises": [
+          {
+            "evidenceId": "E1",
+            "path": [
+              "quote"
+            ]
+          },
+          {
+            "evidenceId": "E1",
+            "path": [
+              "sourceContext",
+              "before"
+            ]
+          },
+          {
+            "evidenceId": "E2",
+            "path": [
+              "quote"
+            ]
+          }
+        ]
+      }
+    },
+    "observedMismatch": "The draft does not mention alpha or opacity. It expressly excludes a separately quantified cost. The verifier discussed alpha terminology and did not identify which submitted wording introduced a separate cost. This mismatch does not establish that all draft clauses are correct."
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/intent.json",
+      "sha256": "0612c2ec2001638c52489ee257702c37e3795a95be0336c0580b07975d3c5af5"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/run.json",
+      "sha256": "1aeec8ddaf2ee4ed7da66e5fb5b1a4b6c886c54eadb7320b527a0a6e851b26a8"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/calls.json",
+      "sha256": "a0afe077201f036afe225781db468b7d9bde8bcd04ca24855b81f4054faa279b"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/counts.json",
+      "sha256": "669c22ee166e3a988473edef4379b34738ca9d7973341ece898bde94b8cba494"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/summary.json",
+      "sha256": "97bc8b441352a0349bffd90efea3f432401b1f445bd8cbd8dcac6e84a95129f9"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-real-20261128/publish-return.json",
+      "sha256": "3363b9f2cc646e166e73a32716e489687f373e957f1cdc118d9ff0171a84c3bc"
+    },
+    {
+      "path": "tmp/openai-d2-cost-target-compact-preflight-20261128/repair-request.txt",
+      "sha256": "0c6e9e35de512144135627129b9c825bf5b720c04c3c9b80b415cc75e6691aea"
+    }
+  ]
+}

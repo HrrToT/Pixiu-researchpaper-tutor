@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "d608b66fa97db6c95ecb45bf57abc5e9f0daf35f",
+  "promptVersion": "dr-v2.20261116.477",
+  "sourceCase": "D3-VQ-FACTORIAL-v6",
+  "isolatedComponentOnly": true,
+  "modelCalls": 1,
+  "usage": {
+    "total_tokens": 10752,
+    "input_tokens": 9860,
+    "output_tokens": 892
+  },
+  "unitValid": true,
+  "unitErrors": [],
+  "applicationDataUnchanged": true,
+  "automaticRetry": false,
+  "inputBytes": 31783,
+  "all17RequiredEvidenceRowsRetained": true,
+  "allSourceAndContextValuesExact": true,
+  "contentReview": {
+    "accepted": false,
+    "stateCount": 1,
+    "regressedFrom476": true,
+    "issues": [
+      "All six planned parameter families collapsed into one gaussian_model float32 tensor",
+      "Declared selected entity axis is frame; this does not establish Gaussian point cardinality",
+      "Method steps delegate actual parameter initialization to a generic 3DGS-style model; outputLayout only repeats gaussian_model",
+      "All eight global unresolved strings copied, including settings already specified by proposal"
+    ],
+    "boundary": "Typed interface and method preservation are verified; scientific completeness and reproducibility are not"
+  },
+  "deploymentDecision": "Keep existing .476 application runtime; do not load .477 based on structure-only validity",
+  "independentCredit": 0,
+  "wholeCaseSubmitted": false,
+  "rawResult": "tmp/initialization-structured-477-reviewed-component-20261116/result.json",
+  "rawResultSha256": "540c3fcdaaabd84e5ab27a54b07bbb15832d9541d7ebf4499c87cd8c6fcc7f62"
+}

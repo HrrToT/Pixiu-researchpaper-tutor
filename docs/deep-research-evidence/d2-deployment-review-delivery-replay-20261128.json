@@ -1,0 +1,91 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_verified_deployment_premises_publication_and_delivery",
+  "sourceCommit": "343f3342f90514c1b7fd6f6ab7ec434162467b97",
+  "priorRealReview": "docs/deep-research-evidence/d2-pairwise-memory-review-real-20261128.json",
+  "freshRunCredit": 0,
+  "independentHoldoutCredit": 0,
+  "newModelCalls": 0,
+  "productionWrites": 0,
+  "publicationReplay": {
+    "originalRunId": "dr_d2_pairwise_memory_review_real_20261128",
+    "runId": "dr_d2_pairwise_advice_review_publication_replay_20261128",
+    "exactAdviceRequestDigest": "e4037c6b39dd91fec358ed21097dbcb57c55e854cbfd5c2e4de451f637786846",
+    "originalPublicationGap": [
+      {
+        "obligationId": "obl4",
+        "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+        "question": "依据两篇论文的证据，给出显存受限时有条件的选择建议。",
+        "checked": true,
+        "missingEvidence": "联合前提尚未就绪：结合论文所述的存储、画质与部署取舍，提出适用于显存受限情形且明确条件的选择建议。"
+      }
+    ],
+    "finalOutcome": "complete",
+    "verifiedAdvicePremiseIds": [
+      "ev_1706158825cd87f070381a528780dc076aca7215495f0dd6f0af412fa9cb8f3e",
+      "ev_4f565ca1d529bce813c2e87b4de0f8dfa13d952157edcb148f1a0e0cb80d0123",
+      "ev_504fbfd0ce6ae9cabeb65878be4d7e2100f234732fefee51eaaf014e7de49069",
+      "ev_6cc12bbb30e5f474bc863a042d3823ebc163371fa8192ee5841a2cac88b7b893"
+    ],
+    "publishedToWorkspace": false,
+    "modelCalls": 0
+  },
+  "delivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Exact saved audited D2 complete report, replayed with graph and model dispatch disabled",
+    "originalRunId": "dr_d2_pairwise_advice_review_publication_replay_20261128",
+    "replayRunId": "dr_run_122cda46d0c55ffd93e90700b31741ab",
+    "sourceArtifactSha256": "07fa58fd426a9716b13e09ac64fcecb11306b14f6ee9ed58ce00c632db1828ef",
+    "reportOutcome": "complete",
+    "reportClaims": 11,
+    "sourcePages": {
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf": [
+        1,
+        2,
+        8,
+        9,
+        11
+      ]
+    },
+    "duplicateDeliverySuppressed": true,
+    "documentsMatchHash": true,
+    "crossTaskFileDenied": true,
+    "restartedAndReadAgain": true,
+    "materialReadinessFixture": true,
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true
+  },
+  "artifacts": [
+    {
+      "path": "tmp/d2-deployment-receipt-publication-replay-20261128/run.json",
+      "sha256": "07fa58fd426a9716b13e09ac64fcecb11306b14f6ee9ed58ce00c632db1828ef"
+    },
+    {
+      "path": "tmp/d2-deployment-receipt-publication-replay-20261128/summary.json",
+      "sha256": "4895273d68b3fff35b67dcc7fccd2d66fa61fea8654bfbd92eb3668b164170b4"
+    },
+    {
+      "path": "tmp/publication-integration-d2-deployment-review-complete-20261128/receipt.json",
+      "sha256": "2dc94e60c1938af513a13e82b5c65e70e47a0c959bef565e3c64ba2ff785b607"
+    },
+    {
+      "path": "tmp/publication-integration-d2-deployment-review-complete-20261128/task-first-read.json",
+      "sha256": "3190872c106595e320cf3c246461c692d7c629a2fd5c9265efb4a9074cfb812b"
+    },
+    {
+      "path": "tmp/publication-integration-d2-deployment-review-complete-20261128/report-first-read.json",
+      "sha256": "a6dd6ed18f7b6e75f9665fd67f29ac1d28889632770ed3f5e8a786082688d9ee"
+    }
+  ]
+}

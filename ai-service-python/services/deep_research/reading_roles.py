@@ -1,0 +1,381 @@
+"""Rank substantive passages for literal request roles within the read cap.
+
+These are navigation hints, never evidence support or a completeness verdict.
+Each returned object is an unchanged, already source-eligible acquisition row.
+"""
+import re
+
+from services.deep_research.obligation_binding import eligible_obligation_ids
+
+_ASKS = (
+    ('representation', r'表示|表征|基元|参数化|\brepresent\w*|\bprimitives?\b'),
+    ('procedure', r'提取|融合|流程|步骤|重建路径|网格|\b(?:extract\w*|fus\w*|procedur\w*|pipeline|mesh)\b'),
+    ('result', r'精度|质量|性能|数值|指标|耗时|速度|\b(?:results?|accurac\w*|quality|performance|metrics?|PSNR|SSIM|LPIPS|FPS|latency)\b'),
+    ('settings', r'硬件|分辨率|评测条件|实验条件|数据集版本|\b(?:hardware|resolution|protocols?|evaluation settings|experimental settings)\b'),
+    ('provenance', r'自报|同表|复现|重训|\b(?:provenance|reproduced?|retrained?|same.table|author.reported)\b'),
+    ('resource', r'显存|存储|内存|\b(?:VRAM|memory|storage|model size)\b'),
+)
+_BODY = {
+    'representation': r'\b(?:represent\w*|primitives?|parametri\w*|flatten\w*|compress\w*|ellipsoid\w*|covariance)\b|表示|表征|参数化|基元',
+    'procedure': r'\b(?:extract\w*|fus\w*|integrat\w*|construct\w*|convert\w*|transform\w*)\b|提取|融合|构建|变换',
+    'result': r'\b(?:Table|chamfer|PSNR|SSIM|LPIPS|FPS|latency|F1|accuracy|quantitative|evaluation|results?|time)\b|精度|质量|定量|耗时',
+    'settings': r'\b(?:GPU|CPU|hardware|processors?|resolution|iterations?|protocol|experiments?|setup)\b|硬件|分辨率|实验设置',
+    'provenance': r'\b(?:Table|caption|denot\w*|marked|re.train\w*|fine.tun\w*|baselines?|comparison)\b|表注|重训|复现',
+    'resource': r'\b(?:VRAM|memory|storage|megabytes?|gigabytes?|model size)\b|显存|内存|存储',
+}
+_STOP = {'the','and','for','with','from','this','that','what','which','how','why','are','does',
+         'paper','arxiv','http','https','org','psnr','ssim','lpips','fps','f1','gpu','cpu','vram'}
+_REF_REQUEST = re.compile(r'参考文献|书目|\bbibliograph\w*|\b(?:references?|citations?)\s+(?:list|section)\b', re.I)
+_SPEED_REQUEST = re.compile(r'提速|加速倍数|快(?:了)?(?:多少|几)倍|\bspeed[ -]?ups?\b|\bhow much faster\b', re.I)
+_SPEED_RATIO = re.compile(
+    r'(?<![\d.])\d+(?:\.\d+)?\s*(?:×|x|times)\s*(?:faster\s+than|as fast as)|'
+    r'(?:提速|加速|快)\s*(?:约)?\s*\d+(?:\.\d+)?\s*倍', re.I)
+_TIMING = re.compile(r'\b(?:running times?|inference times?|runtimes?|latency|processing times?|timing)\b|推理耗时|运行时间', re.I)
+_HARDWARE = re.compile(r'\b(?:GPU|CPU|RTX|NVIDIA|A100|H100|V100)\b|显卡|处理器', re.I)
+_IMAGE_SIZE = re.compile(r'\d{2,5}\s*[×x]\s*\d{2,5}', re.I)
+_INPUT_RESOLUTION = re.compile(r'\b(?:resolution|images?\s+(?:are\s+)?resized)\b|分辨率', re.I)
+_TRAINING_TIME = re.compile(r'\b(?:training time|training takes|time (?:for|to) train)\b|训练耗时', re.I)
+_STAGE_REQUEST = re.compile(r'两个阶段|两阶段|分两步|各(?:个)?阶段|\b(?:two[- ]stage|each stage)\b', re.I)
+_FIRST_STAGE = re.compile(r'\b(?:first stage|stage one|first step)\b|第一(?:阶段|步)', re.I)
+_NEXT_STAGE = re.compile(r'\b(?:second stage|stage two|second step|then)\b|第二(?:阶段|步)|随后', re.I)
+_COMPUTE_REQUEST = re.compile(r'省计算|减少计算|降低计算|计算冗余|\b(?:save|reduce)\s+(?:the\s+)?comput\w*', re.I)
+_REDUCED_INPUTS = re.compile(r'\b(?:process|attend to|operate on)\s+(?:fewer|reduced)\s+(?:tokens|features)\b|'
+                            r'在更少的(?:特征|特征单元|词元)上计算', re.I)
+_AVOIDED_COMPUTE = re.compile(
+    r'\b(?:skip|avoid|eliminate)\s+(?:the\s+)?(?:expensive|costly)\s+'
+    r'(?:3D\s+convolutions?|operations?|processing)\b|省去昂贵的(?:三维卷积|计算)', re.I)
+
+
+def direct_quantity_and_stage_bundles(rows, obligations, *, absolute_runtime=False):
+    """Retrieve self-contained citable passages for speed and stage requests."""
+    from services.deep_research.runtime_evidence import faster_variant, rate_requested, rate_values, tradeoff_requested, tradeoff_roles
+
+    bundles = []
+    for oid, obligation in obligations.items():
+        criteria = obligation.get('completionCriteria') or [{'requirement': obligation['question']}]
+        query = obligation.get('question', '')
+        speed = next((c for c in criteria if _SPEED_REQUEST.search(c.get('requirement', ''))), None)
+        stages = next((c for c in criteria if _STAGE_REQUEST.search(c.get('requirement', ''))), None)
+        compute = next((c for c in criteria if _COMPUTE_REQUEST.search(c.get('requirement', ''))), None)
+        runtime = absolute_runtime and rate_requested(query)
+        if speed is None and stages is None and compute is None and not runtime and not _SPEED_REQUEST.search(query):
+            continue
+        own = [e for e in rows if e.get('accessLevel') == 'fulltext'
+               and e.get('sourceWorkId') and e.get('sourceVersionId') and e.get('contentHash')
+               and e.get('verification', {}).get('literal') == 'passed'
+               and oid in e.get('obligationIds', ())
+               and quality({'text': e['quote'], 'location': e.get('location', {})}, query)[0]
+               and oid in eligible_obligation_ids(
+                   {'workId': e.get('sourceWorkId'), 'versionId': e.get('sourceVersionId'),
+                    'ownerMaterialId': e.get('ownerMaterialId')}, obligations)]
+        for request, role, matches in (
+                (stages, 'explicit_stages', lambda text: _FIRST_STAGE.search(text) and _NEXT_STAGE.search(text)),
+                (compute, 'reduced_compute_inputs',
+                 lambda text: _REDUCED_INPUTS.search(text) or (absolute_runtime and _AVOIDED_COMPUTE.search(text)))):
+            if request is None:
+                continue
+            direct = [e for e in own if matches(e['quote'])]
+            if direct:
+                lead = min(direct, key=lambda e: len(e['quote']))
+                bundles.append({'obligationId': oid, 'criterionId': request.get('criterionId', 'whole_obligation'),
+                                'requirement': request['requirement'], 'source': lead['sourceVersionId'],
+                                'navigationRole': role, 'evidenceIds': [lead['evidenceId']]})
+        if runtime and tradeoff_requested(query):
+            tradeoffs = [next((e for e in own if tradeoff_roles(e['quote'])[i]), None) for i in range(2)]
+            available = [e for e in tradeoffs if e]
+            if available:
+                bundles.append({'obligationId': oid, 'criterionId': 'whole_obligation', 'requirement': query,
+                                'source': available[0]['sourceVersionId'], 'navigationRole': 'runtime_tradeoff',
+                                'evidenceIds': list(dict.fromkeys(e['evidenceId'] for e in available
+                                                                 if _same_version(e, available[0])))})
+        if runtime and re.search(r'速度|测速|帧率|吞吐|\b(?:speed|runtime|throughput|latency)\b', query, re.I):
+            rates = [e for e in own if not e.get('tableData') and rate_values(e['quote'])]
+            faster = next((e for e in rates if faster_variant(e['quote'])), None)
+            baselines = [e for e in rates if not faster_variant(e['quote'])
+                         and re.search(r'\b(?:running at|inference at|operates at|runs at)\b|运行速度', e['quote'], re.I)
+                         and not re.search(r'\bspeedup\s+from\b', e['quote'], re.I)
+                         and (not faster or rate_values(e['quote']) - rate_values(faster['quote']))]
+            baseline = max(baselines, key=lambda e: bool(re.search(r'\b(?:enables|achieves?)\s+inference\s+at\b',
+                                                                    e['quote'], re.I)), default=None)
+            direct = [e for e in (baseline, faster) if e]
+            if direct:
+                bundles.append(_runtime_bundle(oid, query, direct, own))
+        if speed is None and not _SPEED_REQUEST.search(query):
+            continue
+        ratios = [e for e in own if _SPEED_RATIO.search(e['quote'])]
+        if not ratios:
+            continue
+        ratio = max(ratios, key=lambda e: (
+            bool(re.search(r'\b(?:efficiency[ -]+)?optimi[sz]\w*\s+(?:model|method|variant)\b',
+                           e['quote'], re.I)),
+            bool(re.search(r'\b(?:our|proposed)\s+(?:\w+\s+){0,3}(?:model|method|approach|variant)\b',
+                           e['quote'], re.I)),
+            -len(e['quote'])))
+        same_version = [e for e in own if all(e.get(key) and e[key] == ratio.get(key)
+                        for key in ('sourceWorkId', 'sourceVersionId', 'contentHash'))]
+        timing = next((e for e in same_version if _TIMING.search(e['quote'])
+                       and _HARDWARE.search(e['quote']) and not _TRAINING_TIME.search(e['quote'])), None)
+        evidence_ids = [ratio['evidenceId']]
+        if timing:
+            evidence_ids.append(timing['evidenceId'])
+            page = timing.get('location', {}).get('page')
+            dimensions = next((e for e in same_version if page and e.get('location', {}).get('page') == page
+                               and _INPUT_RESOLUTION.search(e['quote']) and _IMAGE_SIZE.search(e['quote'])), None)
+            if dimensions and dimensions['evidenceId'] not in evidence_ids:
+                evidence_ids.append(dimensions['evidenceId'])
+        bundles.append({'obligationId': oid, 'criterionId': (speed or {}).get('criterionId', 'whole_obligation'),
+                        'requirement': (speed or {}).get('requirement', query),
+                        'source': ratio['sourceVersionId'], 'navigationRole': 'reported_speed',
+                        'evidenceIds': evidence_ids})
+    return bundles
+
+
+def _same_version(left, right):
+    return all(left[key] == right[key] for key in ('sourceWorkId', 'sourceVersionId', 'contentHash'))
+
+
+def _runtime_bundle(oid, query, rates, rows):
+    first = rates[0]
+    ids = [e['evidenceId'] for e in rates if _same_version(e, first)]
+    devices = [e for e in rows if _same_version(e, first)
+               and _TIMING.search(e['quote']) and _HARDWARE.search(e['quote'])
+               and not _TRAINING_TIME.search(e['quote'])]
+    device = max(devices, key=lambda e: bool(re.search(
+        r'\b(?:measured|timed|evaluated)\s+on\b', e['quote'], re.I)), default=None)
+    if device and device['evidenceId'] not in ids:
+        ids.append(device['evidenceId'])
+    return {'obligationId': oid, 'criterionId': 'whole_obligation', 'requirement': query,
+            'source': first['sourceVersionId'], 'navigationRole': 'reported_runtime', 'evidenceIds': ids}
+
+
+def _text(source):
+    from services.deep_research.requested_measurements import _body
+    # Normalize line wraps only in a ranking view. Returned source text stays exact.
+    return re.sub(r'(?<=[A-Za-z])-[ \t]*\r?\n[ \t]*(?=[A-Za-z])', '', _body(source))
+
+
+def quality(source, query=''):
+    """Background/reference hints cannot override a literal bibliography request."""
+    loc=source.get('location') or {}
+    reference=(loc.get('sectionRole')=='references' or bool(re.search(
+        r'\breferences?\b|\bbibliograph\w*', str(loc.get('section','')), re.I)))
+    text=_text(source)
+    expression=bool(re.search(r'[=＝≤≥<>]|\d+(?:\.\d+)?\s*(?:FPS|ms|GB|MB|%)\b',text,re.I))
+    numeric_row=(len(re.findall(r'\d+\.\d+',text))>=3
+                 and bool(re.search(r'\bTable\s+[IVX0-9]+',source.get('rankingContext',''),re.I)))
+    tiny=(len(re.sub(r'\s+', '', text))<40 and not source.get('tableData')
+          and not expression and not numeric_row and not _REF_REQUEST.search(query))
+    return (not(reference and not _REF_REQUEST.search(query)), not tiny)
+
+
+def _terms(query, sources, *, mixed_script_terms=False):
+    ignored=set(_STOP)
+    for source in sources:
+        title=str(source.get('title',''))
+        label=title.split(':',1)[0]
+        words=re.findall(r'[A-Za-z][A-Za-z0-9-]*', label)
+        ignored.update(w.casefold() for w in words)
+        if words:ignored.add(''.join(w[0] for w in words).casefold())
+    pattern = (r'(?<![A-Za-z0-9_-])[A-Za-z][A-Za-z0-9-]{1,}(?![A-Za-z0-9_-])'
+               if mixed_script_terms else r'\b[A-Za-z][A-Za-z0-9-]{1,}\b')
+    return tuple(dict.fromkeys(w.casefold() for w in re.findall(pattern,query)
+                               if w.casefold() not in ignored))
+
+
+def requests(obligations, sources, *, mixed_script_terms=False,processing_cost=False):
+    """Deduplicate role/source targets; retain literal benchmark terms separately."""
+    if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
+    result=[];seen=set()
+    for oid, obligation in obligations.items():
+        if processing_cost:
+            from services.deep_research.processing_cost_sources import obligation_requested
+            if obligation_requested(obligation):
+                result.append({'role':'processing_cost','terms':(),'query':obligation.get('question',''),
+                               'obligationId':oid,'criterionId':'whole_obligation'})
+        criteria=obligation.get('completionCriteria') or [{'requirement':obligation.get('question','')}]
+        for criterion in criteria:
+            query=criterion.get('requirement','')
+            if not isinstance(query,str):continue
+            for role,pattern in _ASKS:
+                if not re.search(pattern,query,re.I):continue
+                terms=_terms(query,sources,mixed_script_terms=mixed_script_terms) if role=='result' else ()
+                # Later selection still checks source eligibility for each real oid.
+                key=(role,terms,tuple(obligation.get('requiredSources') or ()))
+                if key in seen:continue
+                seen.add(key)
+                result.append({'role':role,'terms':terms,'query':query,'obligationId':oid,
+                               'criterionId':criterion.get('criterionId','whole_obligation')})
+    return result
+
+
+def score(source, request):
+    if request['role']=='processing_cost':
+        from services.deep_research.processing_cost_sources import score as cost_score
+        return cost_score(source)
+    text=_text(source);role=request['role'];matches=list(re.finditer(_BODY[role],text,re.I))
+    if not matches and not (role=='result' and len(re.findall(r'\d+\.\d+',text))>=5
+                            and re.search(r'\b(?:Table|Mean|PSNR|SSIM|LPIPS|F1)\b',source.get('rankingContext',''),re.I)):
+        return 0
+    own=bool(re.search(r'\b(?:we|our|this work)\b|本文|我们',text,re.I))
+    numeric=bool(re.search(r'\d\.\d|\d+\s*(?:ms|min|hours?|FPS|GB|MB|%)\b',text,re.I))
+    terms=request['terms'];context=source.get('rankingContext','')
+    normalized=re.sub(r'[^a-z0-9]', '', (text+' '+context).casefold())
+    hits=sum(re.sub(r'[^a-z0-9]', '', t) in normalized for t in terms)
+    if terms and not hits:return 0
+    loc=source.get('location') or {}
+    method=loc.get('sectionRole')=='method' or bool(re.search(r'\bmethod|\bimplementation',str(loc.get('section','')),re.I))
+    if role=='result':
+        table=(len(re.findall(r'\d+\.\d+',text))>=5 and bool(re.search(
+            r'\b(?:Table|Mean|PSNR|SSIM|LPIPS|F1)\b',text+' '+context,re.I)))
+        direct=re.sub(r'[^a-z0-9]', '', text.casefold())
+        direct_hits=sum(re.sub(r'[^a-z0-9]', '', t) in direct for t in terms)
+        captions=re.findall(r'\bTable\s+[IVX0-9]+[.:]?\s*(?:Quantitative|Results|Evaluation|Comparison|Ablation)'
+                            r'[^.!?]{0,350}',text+' '+context,re.I)
+        caption_hits=sum(any(re.sub(r'[^a-z0-9]', '', t) in re.sub(r'[^a-z0-9]', '', c.casefold())
+                             for c in captions) for t in terms)
+        return 16*caption_hits+10*table+6*numeric+4*hits+8*direct_hits+min(3,len(matches))
+    if role=='settings':
+        platform=bool(re.search(r'\b(?:GPU|CPU|hardware|resolution|processors?)\b|硬件|分辨率',text,re.I))
+        return 8*platform+2*numeric+min(3,len(matches))
+    if role=='representation':
+        parameterization=bool(re.search(r'[=＝Σ∑]|\b(?:parameteriz\w*|parametris\w*)\b',text,re.I))
+        transformation=min(2,sum(bool(re.search(r'\b'+verb+r'\w*\b'
+            r'[^.!?]{0,200}\b(?:scales?|axes|axis|matrix|dimensions?|parameters?|covariance|basis|tensor)\b',text,re.I))
+            for verb in ('compress','flatten','project','transform')))
+        return 5*transformation+3*parameterization+3*own+2*method+min(5,len(matches))
+    if role=='procedure':
+        stages=min(2,len(re.findall(r'\b(?:followed by|subsequently|post.training|then)\b|随后|然后',text,re.I)))
+        authored=bool(re.search(r'\bwe\s+(?:\w+\s+){0,3}(?:extract\w*|fus\w*|construct\w*|'
+            r'convert\w*|introduc\w*|develop\w*|render\w*|integrat\w*)\b',text,re.I))
+        return 6*authored+4*stages+4*own+3*method+min(5,len(matches))
+    return 2*own+2*numeric+min(4,len(matches))
+
+
+def order(sources, obligations, fallback, *, extracted=(), mixed_script_terms=False, measurement_tables=False,processing_cost=False):
+    """Balance requested roles/papers; novelty is not permission to read rubbish."""
+    if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
+    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms)
+    if processing_cost:
+        from services.deep_research.processing_cost_sources import obligation_requested
+        for oid,obligation in reversed(list(obligations.items())):
+            if obligation_requested(obligation):
+                targets.insert(0,{'role':'processing_cost','terms':(),'query':obligation.get('question',''),
+                                  'obligationId':oid})
+    identity=lambda s:(s.get('workId'),s.get('versionId'))
+    works=list(dict.fromkeys(identity(s) for s in sources))
+    extracted=set(extracted);queues=[]
+    from services.deep_research.measurement_table_navigation import score as table_score
+    navigation=lambda source,request:table_score(source,request) if measurement_tables else 0
+    for request in targets:
+        for work in works:
+            own=[s for s in sources if identity(s)==work
+                 and request['obligationId'] in eligible_obligation_ids(s,obligations)]
+            if request['role']=='processing_cost':
+                from services.deep_research.processing_cost_sources import score as cost_score
+                ranked=sorted(own,key=lambda s:(quality(s,request['query']),cost_score(s),
+                    (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
+                if ranked and quality(ranked[0],request['query'])==(True,True) and cost_score(ranked[0])>0:
+                    queues.append(ranked)
+                continue
+            ranked=sorted(own,key=lambda s:(quality(s,request['query']),navigation(s,request),score(s,request),
+                (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
+            # A failed lexical match does not become a positive evidence claim.
+            if ranked and quality(ranked[0],request['query'])==(True,True) and (score(ranked[0],request)>0 or navigation(ranked[0],request)>0):
+                queues.append(ranked)
+    selected=[];seen=set()
+    # A passage selected for two requested roles uses one slot. Do not consume
+    # another slot merely because that same head already served an earlier role.
+    for queue in queues:
+        source=queue[0]
+        if source['sourceId'] not in seen:
+            selected.append(source);seen.add(source['sourceId'])
+    query=' '.join(o.get('question','') for o in obligations.values())
+    ordinary_targets=[r for r in targets if r['role']!='processing_cost']
+    tail=sorted(fallback,key=lambda s:(quality(s,query),max((navigation(s,r) for r in ordinary_targets),default=0),max((score(s,r) for r in ordinary_targets),default=0),
+        (s['sourceId'],s.get('contentHash')) not in extracted),reverse=True)
+    while tail:
+        counts={work:sum(identity(s)==work for s in selected) for work in works}
+        best=min((s for s in tail if s['sourceId'] not in seen),
+                 key=lambda s:counts[identity(s)],default=None)
+        if best is None:break
+        selected.append(best);seen.add(best['sourceId']);tail.remove(best)
+    return selected
+
+
+def premise_bundles(rows, obligations, *, mixed_script_terms=False,procedure_targets=False,measurement_tables=False,processing_cost=False,authored_rows=False):
+    """Carry request-role navigation into synthesis, not a new factual verdict.
+
+    A full source passage can locate a benchmark heading while its unchanged
+    quoted row carries values. This only ranks candidates; it never copies
+    context from another source or replaces the independent ownership checks.
+    """
+    if type(procedure_targets) is not bool:raise ValueError('Invalid procedure target policy')
+    if type(measurement_tables) is not bool:raise ValueError('Invalid measurement table navigation policy')
+    from services.deep_research.measurement_table_navigation import score as table_score
+    rows=[row for row in rows if row.get('verification',{}).get('literal')=='passed']
+    sources=[{'title':row.get('sourceTitle','')} for row in rows]
+    if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
+    from services.deep_research.measurement_table_navigation import row_priority
+    targets=requests(obligations,sources,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost);chosen=[];seen=set();bundles=[];result_leads={}
+    for request in targets:
+        allowed=[e for e in rows if e.get('sourceWorkId') and request['obligationId'] in eligible_obligation_ids(
+            {'workId':e.get('sourceWorkId'),'versionId':e.get('sourceVersionId'),
+             'ownerMaterialId':e.get('ownerMaterialId')},obligations)]
+        for work in dict.fromkeys((e['sourceWorkId'],e.get('sourceVersionId')) for e in allowed):
+            own=[e for e in allowed if (e['sourceWorkId'],e.get('sourceVersionId'))==work]
+            def view(row):
+                context=row.get('sourceContext','')
+                if not isinstance(context,str):context=''
+                return {'text':row.get('quote',''),'location':row.get('location',{}),
+                        'tableData':row.get('tableData'),'rankingContext':context,'accessLevel':row.get('accessLevel')}
+            from services.deep_research.procedure_targets import score as target_score
+            ranked=sorted(own,key=lambda e:(quality(view(e),request['query']),
+                target_score(e.get('quote',''),request) if procedure_targets else 0,
+                table_score(view(e),request) if measurement_tables else 0,
+                row_priority(view(e),request) if authored_rows and measurement_tables else 0,
+                score(view(e),request),-len(e.get('quote',''))),reverse=True)
+            # Generic author-report versus comparison-row provenance uses the
+            # same requested result row. A separate ablation is not a substitute.
+            # Explicit variant/marker questions still select actual caption prose.
+            if request['role']=='provenance' and not re.search(r'重训|微调|标记|星号|\*|'
+                    r'\bre.train\w*|\bfine.tun\w*|\bmark\w*|\bstar\w*',request['query'],re.I):
+                shared=[e for e in result_leads.get(work,[]) if e in own]
+                if shared:ranked=shared
+            if request['role']=='result' and not request['terms'] and re.search(
+                    r'核对|条件|方向|\b(?:settings?|conditions?|directions?)\b',request['query'],re.I):
+                shared=[e for e in result_leads.get(work,[]) if e in own]
+                if shared:ranked=shared
+            if not ranked or quality(view(ranked[0]),request['query'])!=(True,True) or (score(view(ranked[0]),request)<=0
+                    and not (measurement_tables and table_score(view(ranked[0]),request)>0)):
+                continue
+            lead=ranked[0]
+            if request['role']=='result':result_leads.setdefault(work,[]).append(lead)
+            group=[lead]
+            def same_origin(e):
+                return (all(e.get(k)==lead.get(k) for k in ('sourceId','sourceWorkId','sourceVersionId','contentHash','sourceContext'))
+                        and isinstance(lead.get('sourceContext'),str) and bool(lead['sourceContext'])
+                        and all((e.get('location') or {}).get(k)==(lead.get('location') or {}).get(k)
+                                for k in ('page','offset','section')))
+            if request['role']=='procedure' and re.match(
+                    r'^\s*(?:Subsequently\b|Then\b|This\b|These\b|It\b|随后|然后|其中)',lead.get('quote',''),re.I):
+                loc=lead.get('location') or {};start=loc.get('sourcePassageStart')
+                prior=[e for e in own if e is not lead and type(start) is int and start>0
+                    and same_origin(e)
+                    and type((e.get('location') or {}).get('sourcePassageEnd')) is int
+                    and e['location']['sourcePassageEnd']==start]
+                if len(prior)==1:group=[prior[0],lead]
+            elif request['role']=='result' and not re.search(r'\bTable\s+[IVX0-9]+',lead.get('quote',''),re.I):
+                start=(lead.get('location') or {}).get('sourcePassageStart')
+                captions=[e for e in own if e is not lead and same_origin(e)
+                    and type(start) is int and type((e.get('location') or {}).get('sourcePassageEnd')) is int
+                    and e['location']['sourcePassageEnd']<=start
+                    and re.search(r'\bTable\s+[IVX0-9]+|\bQuantitative (?:comparison|results)',e.get('quote',''),re.I)]
+                if captions:
+                    caption=max(captions,key=lambda e:e['location']['sourcePassageEnd'])
+                    group=[caption,lead]
+            bundles.append({'obligationId':request['obligationId'],'criterionId':request['criterionId'],
+                'requirement':request['query'],'source':lead['sourceVersionId'],
+                'navigationRole':request['role'],'evidenceIds':[e['evidenceId'] for e in group]})
+            for e in group:
+                if e['evidenceId'] not in seen:chosen.append(e);seen.add(e['evidenceId'])
+    return chosen,bundles

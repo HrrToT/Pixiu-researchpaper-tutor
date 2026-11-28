@@ -1,0 +1,48 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "sourceRunId": "dr_d3_scientific_repair_20261127",
+  "savedReceiptSha256": "3100ccdf961bc76a70a4d0c03b586ff063b3f9ecf330c2a1796f10246edbb60e",
+  "reviewPacketVersion": 3,
+  "priorGenerationBindingDigest": "8c2adba266e73aed4a00a19ae3680bced0bdf32c32d781d3d2db218e28c32fd2",
+  "revisedGenerationBindingDigest": "bd178fcde8df6993c6860581dd10616e366233180c83d1bcc958341bc0655e42",
+  "reusedFactCheckIds": [
+    "fact_0",
+    "fact_1",
+    "fact_2",
+    "fact_3",
+    "fact_4",
+    "fact_5",
+    "fact_6"
+  ],
+  "reusedFactResponseDigest": "8e8ead9f6fccc34360d3bf14eb30304714464e7969d66e30a84969811b2ae473",
+  "pendingDesignCheckIds": [
+    "section_0",
+    "section_1",
+    "section_2",
+    "section_3",
+    "section_4",
+    "section_5",
+    "section_6",
+    "section_7",
+    "requirement_0_0",
+    "requirement_0_1",
+    "requirement_0_2",
+    "requirement_0_3",
+    "requirement_1_0",
+    "requirement_2_0",
+    "requirement_3_0"
+  ],
+  "pendingDesignInputBytes": [
+    31849,
+    31981
+  ],
+  "maxProviderCallsAvoidedPerEquivalentReview": 1,
+  "initialBudgetAdmission": {
+    "batchIndex": 1,
+    "limit": 100000,
+    "spent": 67740,
+    "reservation": 36969
+  },
+  "realProviderCalls": 0,
+  "scientificApproval": false
+}

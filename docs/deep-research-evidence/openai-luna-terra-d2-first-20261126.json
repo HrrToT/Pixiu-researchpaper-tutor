@@ -1,0 +1,81 @@
+{
+  "sourceCommit": "4ed60b2bc",
+  "case": "D2-BASELINE-COMPRESSION",
+  "runId": "dr_run_d8246fe0f5015db8b77350349af8ba82",
+  "status": "completed",
+  "outcome": "partial",
+  "caseSubmissions": 1,
+  "automaticReruns": 0,
+  "mode": "Real generation via the production research graph, with an isolated ledger and hash-verified local PDFs served through the application's PDF retrieval path",
+  "publicationScope": "isolated ledger only",
+  "productionWrites": 0,
+  "externalSearches": 0,
+  "externalFulltextFetches": 0,
+  "elapsedSeconds": 164.53,
+  "providerReportedUsage": {
+    "gpt-6-luna": {"calls": 5, "inputTokens": 15867, "outputTokens": 1566, "totalTokens": 17433},
+    "gpt-6.1-terra": {"calls": 10, "inputTokens": 55070, "outputTokens": 4036, "totalTokens": 59106},
+    "total": {"calls": 15, "inputTokens": 70937, "outputTokens": 5602, "totalTokens": 76539}
+  },
+  "estimatedUsdAtStandardUncachedRates": 0.0776197,
+  "usageAudit": {
+    "method": "Matched the model and input, output, and total token counts in order for all 15 saved provider events and settled model invocation records. No new calls were made.",
+    "matchedCalls": 15,
+    "localArtifactSha256": {
+      "calls.json": "7760693f280b4449095b0e085d59a47627d04a4f60ee334975094ea0eb5bb2c6",
+      "provider.jsonl": "aeff29b3dc474d2d04f2b669cf9262e84babd92d5136bbb109d58ed3647b0b41"
+    },
+    "byWorkflowNode": {
+      "resolve_brief": { "calls": 1, "inputTokens": 592, "outputTokens": 182 },
+      "plan": { "calls": 1, "inputTokens": 1550, "outputTokens": 1102 },
+      "assess_relevance": { "calls": 3, "inputTokens": 13725, "outputTokens": 282 },
+      "synthesize": { "calls": 3, "inputTokens": 19299, "outputTokens": 1148 },
+      "verify": { "calls": 3, "inputTokens": 13971, "outputTokens": 1420 },
+      "verify_answer_coverage": { "calls": 2, "inputTokens": 12514, "outputTokens": 750 },
+      "repair_claims": { "calls": 1, "inputTokens": 5649, "outputTokens": 339 },
+      "verify_repair": { "calls": 1, "inputTokens": 3637, "outputTokens": 379 }
+    }
+  },
+  "pricingBoundary": "Calculated from provider token totals, with no cache discount. The actual API billing line and grant deduction were not checked.",
+  "secondCaseOfflinePreflight": {
+    "sourceCommit": "888f251e4",
+    "materialSha256": [
+      "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+      "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+    ],
+    "modelSnapshot": ["gpt-6.1-terra", "gpt-6-luna"],
+    "budget": {"maxModelCalls": 18, "maxTokens": 100000, "maxWallClockSeconds": 360},
+    "casePolicy": "task_only",
+    "newExecutionRequested": false,
+    "paidOutputDirectoryCreated": false,
+    "providerRequests": 0,
+    "boundary": "An isolated deferred run was created with a fake credential and its ledgers checked empty. Live execution is pending authorization."
+  },
+  "offlineInitialReviewWindowReplay": {
+    "sourceReceiptSha256": "f41f30d3c66ff52f48b271c876f548bc9131d2de4c097e37a843936c9b33d27d",
+    "sourceClaims": "Eight claims in the saved terminal report body; the replay does not reconstruct the original pre-review draft.",
+    "replayCodeCommit": "fa7525a44",
+    "workflowNode": "verify",
+    "savedAuthoringContractVersion": 16,
+    "testedWindowBytes": [32000, 28000, 24000],
+    "requestCountPerWindow": 3,
+    "requestDigestsUnchangedAcrossWindows": true,
+    "reservationUpperBoundsPerRequest": [26321, 26579, 21800],
+    "historicalContractVersion2Control": {
+      "32000": { "requestCount": 3, "sumReservationUpperBounds": 96935 },
+      "24000": { "requestCount": 4, "sumReservationUpperBounds": 118791 }
+    },
+    "providerRequests": 0,
+    "liveLedgerMutations": 0,
+    "boundary": "Empty fixture verdicts approve no claims. Identical request digests show that changing this window alone did not reduce the replayed requests; reservation bounds are not billing or estimated savings. Coverage and repair are outside the replay."
+  },
+  "qualityReview": {
+    "literalCitationsChecked": 12,
+    "literalCitationsMatchedTheirPdfPage": 12,
+    "verifiedExamples": ["Original 3DGS initialization and adaptive density control", "LightGaussian post-training fine-tuning, including the separately reported 5000-step operations"],
+    "remainingGaps": ["LightGaussian compression and rendering comparison cells were withheld", "No comparable numerical baseline example was released", "No verified joint conclusion on FPS comparability or a conditional memory-limited choice was released"],
+    "diagnostic": "The joint comparability-and-choice target was isolated as stage_cross_paper_evidence. Two comparison cells remained semantic_unresolved after repair.",
+    "scientificAcceptance": false
+  },
+  "localEvidence": "tmp/openai-d2-luna-terra-first-20261126"
+}

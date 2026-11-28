@@ -1,0 +1,32 @@
+{
+  "promptVersion": "dr-v2.20261105.379",
+  "sourceCase": "X4L-v10",
+  "payloadSha256": "66aed5c2e0e155dc5fa777968ee3dc4143badf4a1a4a28d6884718ce5f50f76f",
+  "results": {
+    "initial": {
+      "promptBytes": 23445,
+      "requiredRows": 8,
+      "selectedRows": 13,
+      "allRequiredRowsExact": true,
+      "allSelectedRowsExact": true,
+      "mockEmptyResponseIsNotAccepted": true,
+      "promptSha256": "7f37ab7368d3f06c0cd9e76986f08820c4663f682d28d3fd5f5721cfa1427a22"
+    },
+    "final": {
+      "promptBytes": 23997,
+      "requiredRows": 10,
+      "selectedRows": 13,
+      "allRequiredRowsExact": true,
+      "allSelectedRowsExact": true,
+      "mockEmptyResponseIsNotAccepted": true,
+      "promptSha256": "c1ecb1f16837e3eae51dbff873586c03b180b159e049fd0eae75252655cafb06"
+    }
+  },
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "budgetBytes": 24000,
+  "budgetIncreased": false,
+  "originalInputsUnchanged": true
+}

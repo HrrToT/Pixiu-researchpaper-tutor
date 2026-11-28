@@ -1,0 +1,46 @@
+{
+  "base": "D2-BASELINE-COMPRESSION-v24",
+  "authoringContractVersion": 14,
+  "jointTargetCount": 3,
+  "mandatoryEvidenceRows": 7,
+  "jointRequestBytes": 23888,
+  "probes": [
+    {
+      "case": "comparison-v14-v24-joint-isolated",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 7480,
+        "output_tokens": 1989,
+        "total_tokens": 9469,
+        "estimated": false
+      },
+      "sameTableExampleAdmitted": true,
+      "adviceWireAdmitted": false,
+      "receiptSHA256": {
+        "intent": "454d593a69e0e2cf6720806e0825bdf22404153698cc1e1efe5198e278aaad51",
+        "request": "ebf22b7558d622cf5eb14f34f0c532e52483771652be6cf352102952d4018744",
+        "response": "8a35b6b089420180d9e10f0089cb69ffbbd48783fc9cb275d961b34e0fe841ad"
+      }
+    },
+    {
+      "case": "comparison-v14-v24-memory-gate",
+      "finishReason": "stop",
+      "usage": {
+        "input_tokens": 7445,
+        "output_tokens": 702,
+        "total_tokens": 8147,
+        "estimated": false
+      },
+      "sameTableExampleAdmitted": true,
+      "adviceWireAdmitted": true,
+      "receiptSHA256": {
+        "intent": "102cee3376b869460b88cd27d7e263b9cae1407674ed3bc932b5fc3f5aba0f15",
+        "request": "9d649815cf955a3b6dfa9303bc45639f8e74d2762790446bf3c4c68218b7f06c",
+        "response": "d39044292583298d42ff50ec43c9e90fb56fc6ef7f0dbc482ff0d29545cae1bf"
+      }
+    }
+  ],
+  "publishedClaims": 0,
+  "scientificAcceptance": false,
+  "manualFinding": "Both numerical drafts use the unstarred 3D-GS row. The visible note marks platform-matched retraining with an asterisk. Alignment of the selected baseline and the comparative protocol remains unverified."
+}

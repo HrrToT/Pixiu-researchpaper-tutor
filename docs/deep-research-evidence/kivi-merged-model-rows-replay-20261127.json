@@ -1,0 +1,33 @@
+{
+  "source": "Local GROBID TEI and actual PDF drawing geometry",
+  "tables": [
+    {
+      "revision": "v1",
+      "page": 7,
+      "pdfSha256": "1b2cd30574a44633a4025178d5de8a4c8398205f82ddcb4a59651ae4d6e1dfe4",
+      "teiSha256": "1bbcf4c8eb260fcca1bc74956fdfe8847db3c4634a40ef9444a88a5821ac74a9",
+      "tableId": "pdf-page-7-table-3",
+      "verifiedRows": 25,
+      "requiredModelConfigurations": 2,
+      "structuredChunks": 3
+    },
+    {
+      "revision": "v2",
+      "page": 8,
+      "pdfSha256": "df31ef32d71bfb280c533c5db8220cadf5ef42076bf45d82ba4c8da8e50ea5f4",
+      "teiSha256": "5781e50570509ef447761073ce03baa4cc7a41300dd33fb05a2d6475f87d6387",
+      "tableId": "pdf-page-8-table-3",
+      "verifiedRows": 32,
+      "requiredModelConfigurations": 4,
+      "structuredChunks": 3
+    }
+  ],
+  "providerCalls": 0,
+  "scientificContentAccepted": false,
+  "previousVerifiedRows": {
+    "v1": 19,
+    "v2": 32
+  },
+  "focusedTestsPassed": 57,
+  "outstanding": "Explicit change classification in the final answer and live coverage acceptance."
+}

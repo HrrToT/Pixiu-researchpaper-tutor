@@ -1,0 +1,71 @@
+{
+  "case": "H1-SILK",
+  "developmentOnly": true,
+  "sourceCommit": "81d4ff64403624013ffa1a9150102182f8c13ba8",
+  "runId": "dr_run_30724e4787f155f1b53ce06adbc3357c",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "elapsedSeconds": 29.0,
+  "providerCalls": 3,
+  "providerTokens": 14038,
+  "providerTokensByModel": {
+    "gpt-6-luna": 8324,
+    "gpt-6.1-terra": 5714
+  },
+  "externalSearches": 0,
+  "isolatedPublicationId": "dr_pub_156515b0c6394d2e9009355a18a72591",
+  "isolatedOutboxDelivered": false,
+  "jointAssessmentResponseAudits": [
+    {
+      "version": 1,
+      "status": "checked",
+      "validUnits": [
+        "G1",
+        "G3"
+      ],
+      "invalidUnits": [
+        "G2"
+      ]
+    },
+    {
+      "version": 1,
+      "status": "invalid_envelope",
+      "validUnits": [],
+      "invalidUnits": []
+    }
+  ],
+  "observedBoundary": "Two readiness units remained valid. The probability and training unit returned changed PDF transcription, then its next assessment returned null. The needed probability definition remained in a scoped source and literal extraction entry, absent from the latest readResults and omitted from synthesis. The provider returned an empty draft.",
+  "artifactSha256": {
+    "intent.json": "8383dff44e4acc20aa3b08e76f4571e22bd9a4d1b3140466576af682baa06374",
+    "run.json": "8471e4a5b71358fedfca05048bc5f7659d5428051337cfcef68cf3dbbd836bcb",
+    "calls.json": "8a27e9d26ec42a6a194990e3d41ed16865354d389b0af2e48068759f569a4c79",
+    "result.json": "c61cb13d00a9e7eae80e09f20744266531291b53cd0de7b6f6320bd62844d1a2",
+    "boundary.json": "ba1621baeec4a3b72f808ada37c416e2712ed8128e2b0af5dc135707b56ddb6e",
+    "provider.jsonl": "4683e491a43cec9befff323953b98090a697e39203eaa955580a703e2dbba078",
+    "replayed.json": "31cd960ba54903dfc45963b3a4c1a925c1121b275159a4be2e650ee28dc094bb"
+  },
+  "offlineRepair": {
+    "sourceCommit": "e4a31a76f",
+    "targetedTestsPassed": 319,
+    "sameRunSynthesisInputReplay": {
+      "runId": "dr_run_30724e4787f155f1b53ce06adbc3357c",
+      "evidenceId": "ev_5a4f40455b2c6d7b7a8bf7ac13b149df3f9d4ef591e4b7420648cde8b626332c",
+      "page": 4,
+      "section": "3 Methodology / 3.3 Descriptors Deﬁne Matching Probability",
+      "policies": {
+        "7": {
+          "synthesisInputBytes": 23987,
+          "selectedEvidence": 12,
+          "probabilityDefinitionSupplied": false
+        },
+        "8": {
+          "synthesisInputBytes": 23886,
+          "selectedEvidence": 10,
+          "probabilityDefinitionSupplied": true
+        }
+      },
+      "providerCalls": 0
+    }
+  },
+  "scientificContentCredit": 0
+}

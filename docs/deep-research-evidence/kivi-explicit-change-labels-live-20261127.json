@@ -1,0 +1,60 @@
+{
+  "case": "H4-KIVI-VERSIONS",
+  "verificationClass": "known_case_carry_forward_finalization",
+  "commit": "a2245de11e721a4c79e624f59b7aaa76bfe75b6b",
+  "sourceRunId": "dr_run_b43ab5787b04588cbe831451fbb8e9d6",
+  "runId": "dr_kivi_change_label_review_20261127",
+  "status": "completed",
+  "outcome": "complete",
+  "retainedClaims": [
+    "c1",
+    "c3"
+  ],
+  "verifiedClaims": [
+    "c1",
+    "c2",
+    "c3"
+  ],
+  "coveredObligations": [
+    "extract-and-compare-results",
+    "classify-configurations-and-changes",
+    "answer_scope"
+  ],
+  "exactBoundCells": 18,
+  "addedConfigurations": [
+    "4bit (K -T, V -T)",
+    "KIVI-4"
+  ],
+  "visibleCharactersAtOfflinePresentationPrecheck": 358,
+  "providerWindowSeconds": 14,
+  "usage": [
+    {
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "reservedTokens": 32070,
+      "input_tokens": 6621,
+      "output_tokens": 300,
+      "total_tokens": 6921
+    },
+    {
+      "node": "verify_answer_coverage",
+      "model": "gpt-6.1-terra",
+      "reservedTokens": 27063,
+      "input_tokens": 6980,
+      "output_tokens": 312,
+      "total_tokens": 7292
+    }
+  ],
+  "actualSupplementalTokens": 14213,
+  "automaticRetries": 0,
+  "newEvidence": "Literal contiguous old-version rows 7–14 re-established through the owned isolated local index; original accepted claim citations retained.",
+  "unseenHoldoutCredit": 0,
+  "productionDeployed": false,
+  "sha256": {
+    "intent.json": "d49b37d93fa82b6a2b5c1e1f4468ea5be3d5557abe2a6290ea00ea69bfe515bb",
+    "calls.json": "5e4f015de6bd64c07ffa6bc26cffca692dca1e5e685af6c2898a4827590ef61e",
+    "run.json": "59b8ff7785d5415e8a82061520204df45b1cdec249994d57dc309e7f345ba0c0",
+    "verify-return.json": "ac451523804453b041300bd765a92fda518856bb159b8be2ac1d2469c9c00cdf",
+    "publish-return.json": "d81bbe4b8b09ff923541d51cc44369df44d56b3acb361ad7acf7fca6dd10e059"
+  }
+}

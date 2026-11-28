@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-22",
+  "sourceCase": "E1-v27",
+  "originalRunStatus": "failed",
+  "originalRunRemainsFailed": true,
+  "newPrivateRepresentationAdmissible": true,
+  "allChoiceValuesUnitsCapsStatesSourceRefsUnchanged": true,
+  "rawCompactBytes": 3980,
+  "newTupleBytes": 3871,
+  "unchangedPlanCapBytes": 4000,
+  "fittingStepLabelPreserved": "steps",
+  "positivePhasesRequireStateNames": true,
+  "publicBudgetGrammarUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "scientificApproval": false,
+  "boundary": "Controlled representation check only; old execution is not upgraded or resumed. State names are unverified declarations; reference acquisition, phase accounting and scientific consistency still require independent final checks.",
+  "sourceCommit": "8760db13"
+}

@@ -1,0 +1,793 @@
+{
+  "sourceCase": "isolated metadata output component 460",
+  "scientificApproval": false,
+  "wire": {
+    "sourceRefs": [
+      "E1",
+      "E2",
+      "E3",
+      "E5",
+      "E7",
+      "E9",
+      "E10",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E19",
+      "E20"
+    ],
+    "baselineMode": "train",
+    "replicationMode": "retrained_per_seed",
+    "components": [
+      {
+        "componentId": "shared_3dgs_base",
+        "appliesTo": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "sh_codebook",
+        "appliesTo": [
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "scale_rotation_codebook",
+        "appliesTo": [
+          "01",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "sh_assignment_indices",
+        "appliesTo": [
+          "10",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      },
+      {
+        "componentId": "scale_rotation_assignment_indices",
+        "appliesTo": [
+          "01",
+          "11"
+        ],
+        "lifecycle": {
+          "scope": "per_repeat",
+          "createInScope": "before_first_use",
+          "disposeAfter": "scope_end"
+        }
+      }
+    ],
+    "checkpointSelection": {
+      "mode": "fixed_budget"
+    },
+    "unresolved": [
+      "exact_tanks_and_temples_train_test_split",
+      "exact_kmeans_initialization_iterations_and_update_frequency",
+      "exact_dc_color_policy_for_factorial_design",
+      "exact_codebook_sizes_for_sh_and_scale_rotation_groups",
+      "exact_rendering_implementation_and_fps_measurement_conditions",
+      "exact_memory_accounting_convention",
+      "exact_random_seed_and_repeat_protocol",
+      "exact_shared_base_model_training_budget_and_stopping_rule"
+    ],
+    "frameIterations": 2,
+    "steps": [
+      {
+        "scope": "per_repeat",
+        "kind": "setup",
+        "reads": [],
+        "groups": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ],
+        "sharing": "shared",
+        "updates": [
+          "shared_3dgs_base"
+        ],
+        "outputs": [
+          "shared_3dgs_base"
+        ],
+        "action": {
+          "action": "train_or_load_shared_3dgs_base",
+          "parameters": [
+            {
+              "name": "scene",
+              "type": "choice",
+              "value": "tanks_and_temples_train_or_truck"
+            },
+            {
+              "name": "training_views",
+              "type": "choice",
+              "value": "paper_sfm_training_views"
+            },
+            {
+              "name": "position_quantization",
+              "type": "choice",
+              "value": "off"
+            },
+            {
+              "name": "dc_color_handling",
+              "type": "choice",
+              "value": "identical_across_groups"
+            }
+          ]
+        },
+        "budget": null
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "fit",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "sh_coefficients"
+          }
+        ],
+        "groups": [
+          "10",
+          "11"
+        ],
+        "sharing": "shared",
+        "updates": [
+          "sh_codebook",
+          "sh_assignment_indices"
+        ],
+        "outputs": [
+          "sh_codebook",
+          "sh_assignment_indices"
+        ],
+        "action": {
+          "action": "fit_kmeans_sh_quantization",
+          "parameters": [
+            {
+              "name": "codebook_size",
+              "type": "choice",
+              "value": "proposed_4096"
+            },
+            {
+              "name": "kmeans_iterations",
+              "type": "choice",
+              "value": "proposed_100"
+            },
+            {
+              "name": "random_repeats",
+              "type": "choice",
+              "value": "proposed_3"
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 100
+        }
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "fit",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "scale_parameters"
+          },
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rotation_parameters"
+          }
+        ],
+        "groups": [
+          "01",
+          "11"
+        ],
+        "sharing": "shared",
+        "updates": [
+          "scale_rotation_codebook",
+          "scale_rotation_assignment_indices"
+        ],
+        "outputs": [
+          "scale_rotation_codebook",
+          "scale_rotation_assignment_indices"
+        ],
+        "action": {
+          "action": "fit_kmeans_scale_rotation_quantization",
+          "parameters": [
+            {
+              "name": "codebook_size",
+              "type": "choice",
+              "value": "proposed_4096"
+            },
+            {
+              "name": "kmeans_iterations",
+              "type": "choice",
+              "value": "proposed_100"
+            },
+            {
+              "name": "random_repeats",
+              "type": "choice",
+              "value": "proposed_3"
+            }
+          ]
+        },
+        "budget": {
+          "unit": "optimizer_steps",
+          "perExecution": 100
+        }
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "per_gaussian_indices"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "lpips"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_quality_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "quality_metrics"
+          ]
+        },
+        "outputs": [
+          "quality_metrics"
+        ],
+        "group": "00"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "lpips"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_quality_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "quality_metrics"
+          ]
+        },
+        "outputs": [
+          "quality_metrics"
+        ],
+        "group": "01"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "lpips"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_quality_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "quality_metrics"
+          ]
+        },
+        "outputs": [
+          "quality_metrics"
+        ],
+        "group": "10"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "per_gaussian_indices"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_reconstruction_quality",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "ssim"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "psnr"
+            },
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "lpips"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_quality_metrics",
+            "parameters": []
+          },
+          "outputs": [
+            "quality_metrics"
+          ]
+        },
+        "outputs": [
+          "quality_metrics"
+        ],
+        "group": "11"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "fps"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "rendering_performance"
+          ]
+        },
+        "outputs": [
+          "rendering_performance"
+        ],
+        "group": "00"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "fps"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "rendering_performance"
+          ]
+        },
+        "outputs": [
+          "rendering_performance"
+        ],
+        "group": "01"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "fps"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "rendering_performance"
+          ]
+        },
+        "outputs": [
+          "rendering_performance"
+        ],
+        "group": "10"
+      },
+      {
+        "scope": "per_frame",
+        "kind": "observe",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "rendered_view"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "per_gaussian_indices"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_entries"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "per_gaussian_indices"
+          }
+        ],
+        "measurement": {
+          "action": "measure_rendering_performance",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "fps"
+            }
+          ]
+        },
+        "recording": {
+          "inputs": "all_measurements",
+          "action": {
+            "action": "record_rendering_performance",
+            "parameters": []
+          },
+          "outputs": [
+            "rendering_performance"
+          ]
+        },
+        "outputs": [
+          "rendering_performance"
+        ],
+        "group": "11"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "record",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "model_size_bytes"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "indices_size_bytes"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "indices_size_bytes"
+          }
+        ],
+        "sharing": "per_group",
+        "updates": [],
+        "outputs": [
+          "storage_metrics"
+        ],
+        "action": {
+          "action": "record_storage_metrics",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "memory_mb"
+            }
+          ]
+        },
+        "budget": null,
+        "group": "00"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "record",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "model_size_bytes"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "indices_size_bytes"
+          }
+        ],
+        "sharing": "per_group",
+        "updates": [],
+        "outputs": [
+          "storage_metrics"
+        ],
+        "action": {
+          "action": "record_storage_metrics",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "memory_mb"
+            }
+          ]
+        },
+        "budget": null,
+        "group": "01"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "record",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "model_size_bytes"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "indices_size_bytes"
+          }
+        ],
+        "sharing": "per_group",
+        "updates": [],
+        "outputs": [
+          "storage_metrics"
+        ],
+        "action": {
+          "action": "record_storage_metrics",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "memory_mb"
+            }
+          ]
+        },
+        "budget": null,
+        "group": "10"
+      },
+      {
+        "scope": "per_repeat",
+        "kind": "record",
+        "reads": [
+          {
+            "state": "shared_3dgs_base",
+            "selector": "model_size_bytes"
+          },
+          {
+            "state": "sh_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "sh_assignment_indices",
+            "selector": "indices_size_bytes"
+          },
+          {
+            "state": "scale_rotation_codebook",
+            "selector": "codebook_size_bytes"
+          },
+          {
+            "state": "scale_rotation_assignment_indices",
+            "selector": "indices_size_bytes"
+          }
+        ],
+        "sharing": "per_group",
+        "updates": [],
+        "outputs": [
+          "storage_metrics"
+        ],
+        "action": {
+          "action": "record_storage_metrics",
+          "parameters": [
+            {
+              "name": "metric",
+              "type": "choice",
+              "value": "memory_mb"
+            }
+          ]
+        },
+        "budget": null,
+        "group": "11"
+      }
+    ]
+  }
+}

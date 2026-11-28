@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-20",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "diagnostic": "SQLite mode=ro, exact owner, existing e5 collection, no vector search/embedding/model request",
+  "owner": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+  "indexedDocumentsRead": 61,
+  "documentReadCap": 400,
+  "ownedIndexSnapshotSha256": "783855491273fd1641f9bca5ce5bb1d665bfb70076104e5d5447b1b465b60a0e",
+  "controlledSelectedIds": [
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-17",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-3",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-30",
+    "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-31"
+  ],
+  "retrievalCap": 5,
+  "definition": {
+    "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-21",
+    "location": {
+      "page": 4,
+      "chunk": 21,
+      "section": "Neural Transformation Cache"
+    },
+    "text": "Paper: 3DGStream: On-the-Fly Training of 3D Gaussians for Efficient Streaming of Photo-Realistic Free-Viewpoint Videos\n\nSection: Neural Transformation Cache\n\nContent:\nThe multi-resolution hash encoding addresses all our requirements for the NTC: • Compactness: Hashing effectively reduces the storage space needed for encoding the whole scene.\n• Efficiency: Hash table lookup operates in O(1), and is highly compatible with modern GPUs.\n• Adaptivity: Hash collisions occur in hash tables at finer resolutions, allowing regions with larger gradients-representing dynamic regions in our context-to drive the optimization. • Priors: The combination of linear interpolation and the voxel-grid structure ensures the local smoothness of transformations. Additionally, the multi-resolution approach adeptly merges global and local information. Furthermore, to enhance the NTC's performance with minimal overhead, we utilize a shallow fully-fused MLP[38]. This maps the hash encoding to a 7-dimensional output: the first three dimensions indicate the translation of the 3DG; the remaining dimensions represent the rotation of the 3DG using quaternions. Given multi-resolution hash encoding coupled with MLP, our NTC is formalized as:"
+  },
+  "boundary": "Current index existence and controlled selection only. No E1 production acquisition/read/extraction, no model response, no numerical column or scene/emerging-content eligibility proof. Existing failed/unknown cases remain unchanged."
+}

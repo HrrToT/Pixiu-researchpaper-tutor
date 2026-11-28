@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-20",
+  "actualSourceCase": "E1-v5",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "cachedActualIndexSha256": "74fdb8b3d3ad2a511ba2ffa10fce08b40d60399c088462c2862e3697b3233cae",
+  "oldActualQueryIdentitiesMatched": 3,
+  "actualAnchorTextAndHashesMatched": true,
+  "retrievals": [
+    {
+      "oldActualCallId": "8e278fdb8fc17ce1ccbb8c8611692512",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        31,
+        38,
+        21,
+        54,
+        58
+      ],
+      "newChunks": [
+        31,
+        37,
+        38,
+        21,
+        54
+      ],
+      "limit": 5
+    },
+    {
+      "oldActualCallId": "80824fe9fef816e4566e1d6c252ce8e4",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        17,
+        3,
+        42,
+        5,
+        30
+      ],
+      "newChunks": [
+        17,
+        3,
+        42,
+        5,
+        30
+      ],
+      "limit": 5
+    },
+    {
+      "oldActualCallId": "3ddb733a6471897d1671d12bd59ac88f",
+      "queryIdentityMatched": true,
+      "oldChunks": [
+        5,
+        38,
+        17,
+        34,
+        3
+      ],
+      "newChunks": [
+        5,
+        37,
+        38,
+        17,
+        34
+      ],
+      "limit": 5
+    }
+  ],
+  "newSource": {
+    "sourceId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf-v8ab3d478dfd1644f-chunk-37",
+    "workId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98.pdf",
+    "versionId": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+    "contentHash": "d171cdee84d6cc63c044d9959079ee5759cfe50b5bbf952649e204ff8b45baea",
+    "materialContentHash": "f99b7454e361807e9ddf188e1f6c89b278df665c60776e4da5b5862aef1c6b98",
+    "location": {
+      "page": 8,
+      "chunk": 37,
+      "section": "Evaluations"
+    },
+    "obligationIds": [
+      "experiment_deliverable",
+      "data_availability",
+      "ob_2"
+    ]
+  },
+  "sourceTextLiteralMembership": "We utilize distinct approaches to model the transformations of 3DGs from the first to the second frame within the flame salmon video of the N3DV dataset to show the effectiveness of NTC.",
+  "controlledReadSourceCount": 11,
+  "unchangedReadLimit": 12,
+  "priorReadBeforeAnchor": true,
+  "literalEvidenceVerification": {
+    "literal": "passed",
+    "semantic": "unchecked"
+  },
+  "boundary": "Controlled replay of actual cached index, old query identities/hits and real graph read-selection code. Reader returns the original cached chunk in memory; no new production read/model/extraction/scientific verdict. Membership sentence was missing from E1-v5 acquired/read sources and is now available for a new owned literal citation. It is not dataset download/availability proof or complete-plan acceptance; historical partial and old unknowns unchanged.",
+  "sourceCommit": "c57869b8"
+}

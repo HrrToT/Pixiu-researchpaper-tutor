@@ -1,0 +1,118 @@
+{
+  "case": "D2-BASELINE-COMPRESSION development replay",
+  "independentHoldoutCredit": false,
+  "originalRunSha256": "cba9536334c116f13d3a33537874bcff3ece3f6219ba17cf59c90fc6201edb52",
+  "originalRunId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "originalOutcome": "partial",
+  "maxTokens": 100000,
+  "maxModelCalls": 18,
+  "spentBeforeForecast": {
+    "tokens": 67245,
+    "calls": 15
+  },
+  "acceptedClaims": 9,
+  "hardRejectedClaims": 2,
+  "remainingCalls": 3,
+  "counterFixtureInputTokens": 7900,
+  "newProviderCalls": 1,
+  "newGenerations": 0,
+  "publications": 0,
+  "ledgerWrites": 0,
+  "policies": {
+    "legacy": {
+      "interceptedRequests": [
+        {
+          "kind": "verify_answer_coverage",
+          "promptBytes": 28217,
+          "outputAllowanceAtCallBoundary": 3500
+        }
+      ],
+      "repairLimit": {
+        "kind": "repairPromptBytes",
+        "limit": 0,
+        "used": 1
+      },
+      "forecast": null
+    },
+    "measured_fixture": {
+      "interceptedRequests": [
+        {
+          "kind": "count",
+          "promptBytes": 27755,
+          "outputAllowanceAtCallBoundary": 3500
+        },
+        {
+          "kind": "repair_claims",
+          "promptBytes": 15205,
+          "outputAllowanceAtCallBoundary": 3000
+        }
+      ],
+      "repairLimit": null,
+      "forecast": {
+        "inputDigest": "9fe3aea668479a42d9d4b0bcbc4aaa2f1a1e293aa515419166419e5e9f10a4a9",
+        "tokens": 12424
+      },
+      "firstRepairByteAllowance": 15211
+    },
+    "counter_unavailable": {
+      "interceptedRequests": [
+        {
+          "kind": "count",
+          "promptBytes": 27755,
+          "outputAllowanceAtCallBoundary": 3500
+        },
+        {
+          "kind": "verify_answer_coverage",
+          "promptBytes": 28217,
+          "outputAllowanceAtCallBoundary": 3500
+        }
+      ],
+      "repairLimit": {
+        "kind": "repairPromptBytes",
+        "limit": 0,
+        "used": 1
+      },
+      "forecast": {
+        "inputDigest": "9fe3aea668479a42d9d4b0bcbc4aaa2f1a1e293aa515419166419e5e9f10a4a9",
+        "tokens": null
+      }
+    }
+  },
+  "boundary": "Production routing replay up to the first generation; one real input-token count and zero generations. Final semantic recheck, whole-answer audit and publication were not executed.",
+  "networkRequestType": "input_token_count_only",
+  "actualCountedInput": {
+    "inputTokens": 7956,
+    "policy": {
+      "interceptedRequests": [
+        {
+          "kind": "count",
+          "promptBytes": 27755,
+          "outputAllowanceAtCallBoundary": 3500
+        },
+        {
+          "kind": "repair_claims",
+          "promptBytes": 15087,
+          "outputAllowanceAtCallBoundary": 3000
+        }
+      ],
+      "repairLimit": null,
+      "forecast": {
+        "inputDigest": "9fe3aea668479a42d9d4b0bcbc4aaa2f1a1e293aa515419166419e5e9f10a4a9",
+        "tokens": 12480
+      }
+    },
+    "providerCountingRequests": 1,
+    "providerGenerationRequests": 0,
+    "productionWrites": 0,
+    "sourceArtifacts": [
+      {
+        "path": "tmp/d2-counted-repair-audit-real-count-20261128/intent.json",
+        "sha256": "2f313a42da75772a13fa6caded5e67c0e715984b0dde495c268fcf1ab39b8ee7"
+      },
+      {
+        "path": "tmp/d2-counted-repair-audit-real-count-20261128/result.json",
+        "sha256": "52fb8d2d9e7ae245d5b6b9cd466401f8dd91fa0ca76d48475d85c1cecf071622"
+      }
+    ]
+  }
+}

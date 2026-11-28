@@ -1,0 +1,20 @@
+{
+  "papers": [
+    {
+      "arxivVersion": "2106.09685v2",
+      "url": "https://arxiv.org/pdf/2106.09685v2",
+      "automaticRetry": false,
+      "httpStatus": 200,
+      "bytes": 1609513,
+      "sha256": "e9a0d3128767db616085dc0f4e6e455e672e89af823e8ed1282793682787395a",
+      "path": "tmp\\pdfs\\h4-lora-versions-review-20261112\\2106.09685v2.pdf",
+      "complete": true
+    }
+  ],
+  "modelCalls": 0,
+  "applicationCacheWrites": 0,
+  "materialImports": 0,
+  "proxy": "current system proxy",
+  "pdfGets": 1,
+  "boundary": "Evaluator-only public exact-revision PDFs; no source alteration or automatic retry."
+}

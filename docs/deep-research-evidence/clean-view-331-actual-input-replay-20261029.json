@@ -1,0 +1,106 @@
+{
+  "providerCalls": 0,
+  "oldVerificationPromptsByteIdentical": 3,
+  "permittedReportedInferenceIds": [
+    "c1"
+  ],
+  "repairPromptBytes": 23752,
+  "mandatoryTableRowsPresent": [
+    8,
+    10
+  ],
+  "tableCellValuesChanged": false,
+  "mockRepairResponse": "[]",
+  "contentAcceptance": false,
+  "independentCredit": 0,
+  "legacyProfile8PromptByteIdentical": true,
+  "cleanTargetView": [
+    {
+      "claim": {
+        "claimId": "c1",
+        "kind": "reported",
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ]
+      },
+      "check": {
+        "claimId": "c1",
+        "reason": "answer_incomplete",
+        "missingQuestionIds": [
+          "Q3",
+          "Q4",
+          "Q5"
+        ]
+      }
+    },
+    {
+      "claim": {
+        "claimId": "c2",
+        "kind": "inference",
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3"
+        ]
+      },
+      "check": {
+        "claimId": "c2",
+        "reason": "semantic_unresolved",
+        "detail": "E1 only mentions MipNeRF360 dataset and qualitative 'comparable visual quality', but does not mention Tank and Temple or specific metrics; thus the assertion limiting comparability to both datasets and metrics lacks support.",
+        "missingQuestionIds": [
+          "Q1",
+          "Q2"
+        ]
+      }
+    }
+  ],
+  "oldModelSelectionsHidden": true,
+  "originalClaimRecordsUnchanged": true,
+  "newSourcePermissionsSubsetOfOriginalCandidatePool": true,
+  "requiredQuotesAndContextExact": [
+    "E3",
+    "E5"
+  ],
+  "newVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E9"
+  ],
+  "oldVisibleIds": [
+    "E3",
+    "E5",
+    "E1",
+    "E2",
+    "E4",
+    "E6",
+    "E7",
+    "E9"
+  ],
+  "preservation": {
+    "before": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "after": {
+      "ledgerRows": 7465,
+      "ledgerSha256": "9138a4c5c9e9397c9dce6b78007d07dc1c2f7955dd637bef1d794f0c50b97bbc",
+      "payloadSha256": "a4559eea0b66b511bed93f21a1cba7e6a39068464469aacbcd30fde6895797ad"
+    },
+    "exactProductionPreservation": true,
+    "providerSubmissions": 4,
+    "productionPublish": false,
+    "fullWorkflowReplay": false,
+    "independentCredit": 0
+  },
+  "rawReceipts": "tmp\\component-clean-view-331-offline-20261029\\receipt",
+  "promptSha256": "9bd1511fedef65b3fdf6779187a3cb87d3a3c1f60be14875defcf88f65b99f71",
+  "limitation": "Offline input fitting with archived verifier responses and empty repair fixture; no real-model quality approval."
+}

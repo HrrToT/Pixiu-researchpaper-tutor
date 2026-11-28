@@ -1,0 +1,44 @@
+{
+  "case": "E1-v43",
+  "promptVersion": "dr-v2.20261023.253",
+  "errorCode": "invalid_workflow_blueprint_response",
+  "blueprintErrors": [
+    "workflow.fields",
+    "workflow.order",
+    "workflow.baselineMode",
+    "workflow.replicationMode",
+    "workflow.baseline_initialization",
+    "workflow.componentInitializations",
+    "workflow.checkpointSelection",
+    "workflow.records",
+    "blueprint.output_capacity"
+  ],
+  "rawWorkflowKeys": [
+    "steps",
+    "prepare_data",
+    "acquire_baseline",
+    "initialize_components",
+    "pair_groups",
+    "apply_interventions",
+    "recover",
+    "evaluate",
+    "record"
+  ],
+  "valueBytes": 8348,
+  "inputBytes": 27753,
+  "diagnosticOnlyUnwrappedErrors": [
+    "workflow.creation: parameters 必须是列表",
+    "workflow.creation.unavailable_input",
+    "workflow.states.shape",
+    "workflow.states.operation_rule"
+  ],
+  "diagnosticUnwrapPersistedToRun": false,
+  "scientificConcerns": [
+    "Existing Frame 0 checkpoint is asserted available without availability verification.",
+    "Dynamic K shapes do not use the typed dimension contract.",
+    "shared appliesTo is not an actual paired group ID."
+  ],
+  "nextAction": "Use an unambiguous private workflow output contract and inspect initializer compatibility; do not silently unwrap or approve the current response.",
+  "providerCallsAddedByDiagnosis": 0,
+  "independentCredit": 0
+}

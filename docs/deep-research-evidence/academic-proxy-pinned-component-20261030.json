@@ -1,0 +1,17 @@
+{
+  "seconds": 2.595,
+  "httpStatus": 200,
+  "bytes": 2968,
+  "targetPublicIpPinned": true,
+  "originalHostTlsVerification": true,
+  "bodySha256": "fbb84d563d6696efba0b9576055e390f0349a148e4c81f2765a23f49adb345c4",
+  "entryIds": [
+    "http://arxiv.org/abs/2403.17888v3"
+  ],
+  "attempts": 1,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "applicationProxyEnabled": false,
+  "sourceSha256": "ab54ebcb785c1acd103a63d32b87bb1e9e07447ef8bb816ec728b696786a24a5",
+  "boundary": "Standalone public metadata GET through explicit operator proxy with CONNECT pinned public IP and original-host TLS. Component not integrated into application; no full research acceptance."
+}

@@ -1,0 +1,58 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "scope": "Offline production review request construction for the archived nine initial ordinary factual claims.",
+  "archive": "tmp/openai-d2-scoped-wording-fresh-20261129/run.json",
+  "archiveSha256": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+  "versions": [
+    3,
+    4
+  ],
+  "factualTargets": 9,
+  "inputLimitBytesPerRequest": 32000,
+  "previous": {
+    "batchTargetCounts": [
+      4,
+      4,
+      1
+    ],
+    "batchBytes": [
+      23712,
+      20461,
+      18404
+    ],
+    "totalBytes": 62577,
+    "totalOutputTokenCeilings": 9024
+  },
+  "candidate": {
+    "batchTargetCounts": [
+      5,
+      4
+    ],
+    "batchBytes": [
+      25823,
+      27904
+    ],
+    "totalBytes": 53727,
+    "totalOutputTokenCeilings": 8000
+  },
+  "factualTransportRequestsSavedInReplay": 1,
+  "savedInputBytes": 8850,
+  "additionalCoverageOrScopeAuditRequestsRemoved": 0,
+  "repairReviewMaximumTargets": 3,
+  "counterfactualRepairAdmission": {
+    "generationCallsUsed": 15,
+    "originalGenerationCallsUsed": 16,
+    "tokensKeptAtRecordedAmount": 76162,
+    "tokenCountFixture": 8494,
+    "admittedRepairInputBytes": 5700,
+    "requiredRepairInputBytes": 8804,
+    "repairDispatched": false,
+    "artifact": "tmp/d2-one-saved-call-replay-20261129/summary.json",
+    "artifactSha256": "c2fde9c3cb941070ad5de6156993837b732a77df2e8b4d58f0b0d233b29ef041"
+  },
+  "modelCalls": 0,
+  "targetedTestsPassed": 847,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "published": false
+}

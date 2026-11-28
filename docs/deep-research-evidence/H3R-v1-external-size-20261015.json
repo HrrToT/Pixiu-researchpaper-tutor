@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-15",
+  "caseId": "H3R",
+  "attempt": 1,
+  "runId": "dr_run_e32ca497473c58dc96a18d2b9e587c3f",
+  "promptVersion": "dr-v2.20261015.72",
+  "machineStatus": "completed",
+  "machineOutcome": "complete",
+  "qualityAccepted": false,
+  "reviewer": "Primary Codex; frozen first-run criteria and original PDF physical pages 2/5 reviewed before diagnostic changes.",
+  "scores": {
+    "目标回应": 3,
+    "证据支持": 4,
+    "条件完整": 4,
+    "综合价值": 2,
+    "可执行性": null,
+    "可读性": 3
+  },
+  "criteria": [
+    {
+      "requirement": "Actual external discovery fixed to v4",
+      "met": true
+    },
+    {
+      "requirement": "Actual fulltext or explicit acquisition limitation",
+      "met": "Explicit abstract-only limitation, no actual fulltext"
+    },
+    {
+      "requirement": "Probability distribution and sampled Gaussian centers",
+      "met": true
+    },
+    {
+      "requirement": "Fulltext-level opacity/depth-bucket probability and gradient path when available",
+      "met": false
+    },
+    {
+      "requirement": "No invented unbiased/global-optimal-gradient claims",
+      "met": true
+    }
+  ],
+  "budget": {
+    "profile": "standard",
+    "modelCalls": 9,
+    "maxModelCalls": 18,
+    "tokens": 20579,
+    "maxTokens": 100000,
+    "externalSearches": 1,
+    "fulltextFetches": 1,
+    "elapsedSeconds": 149.0,
+    "cost": null
+  },
+  "fulltextCallStatus": "failed",
+  "fulltextError": {
+    "message": "学术来源超过大小限制"
+  },
+  "configuredPdfLimitBytes": 8388608,
+  "referencePdfBytes": 11520262,
+  "referencePdfSha256": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+  "materialsUsedByEngine": [],
+  "actualAccessLevels": [
+    "abstract"
+  ],
+  "findings": [
+    "One real arXiv discovery returned 2312.12337v4; no local task paper was used.",
+    "The real fulltext attempt failed because the response exceeded the 8 MiB policy. The reference v4 PDF is 11520262 bytes.",
+    "The report correctly says only the abstract was acquired. Its completion status is not a fulltext-path acceptance.",
+    "The explanation repeats differentiable reparameterization without the depth-bucket/opacity coupling or beginner-level gradient mechanism.",
+    "The raw abstract supports the quoted claims; no local PDF was substituted into the research run. The original PDF was used only for reviewer criteria/source checking.",
+    "First-run independent quality review failed. Subsequent resource-policy diagnosis retires H3R; preserve this first result and replace the independent case."
+  ],
+  "rawResultPath": "tmp/dr-acceptance-receipts/H3R-v1.result.json",
+  "rawResultSha256": "bcd4ac444637214f9c37acec4764c061e04c12fb4b47c5e1e0a7032a3d67becb",
+  "rawPayloadPath": "tmp/dr-acceptance-receipts/H3R-v1.payload.json",
+  "rawCallsPath": "tmp/dr-acceptance-receipts/H3R-v1.calls.json",
+  "independence": "First result reviewed before diagnostic reuse; now retired development case.",
+  "costBoundary": "Settled 20579 provider tokens; monetary cost not supplied. The one failed fulltext tool attempt is distinct from successful model calls."
+}

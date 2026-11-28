@@ -1,0 +1,84 @@
+{
+  "sourceCommit": "aad4f8deb40029ebf59862a3e3ba84ad9b5c1451",
+  "modelCalls": 0,
+  "productionCheckerExercised": true,
+  "archivedPayloadUnchanged": true,
+  "scientificContentAccepted": false,
+  "results": [
+    {
+      "claimId": "c1",
+      "results": [
+        {
+          "mode": "legacy",
+          "status": "failed",
+          "errors": [
+            "diagnostic_source_not_bound"
+          ],
+          "reasonSha256": "468a8774e00e0b507194e37f724eb278cb723cc9cba5e0b365748f13fc480e8b",
+          "responseSha256": "bf4497bda43c114ed2afa692b1a850f0193880501c5f4d6420d49af2831903e4"
+        },
+        {
+          "mode": "new_explicit",
+          "status": "failed",
+          "errors": [
+            "diagnostic_source_not_bound"
+          ],
+          "reasonSha256": "468a8774e00e0b507194e37f724eb278cb723cc9cba5e0b365748f13fc480e8b",
+          "responseSha256": "bf4497bda43c114ed2afa692b1a850f0193880501c5f4d6420d49af2831903e4"
+        },
+        {
+          "mode": "new_reference",
+          "status": "passed",
+          "errors": [],
+          "reasonSha256": "468a8774e00e0b507194e37f724eb278cb723cc9cba5e0b365748f13fc480e8b",
+          "responseSha256": "e6089d038b9aa267c6714713d3bcbdb0fe6b8021ff2fd860001239f704d7a112"
+        }
+      ]
+    },
+    {
+      "claimId": "c2",
+      "results": [
+        {
+          "mode": "legacy",
+          "status": "failed",
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ],
+          "reasonSha256": "6194b342282ddb30f960ddbd745da0759b230e9011ac1114aee28f5373033d9a",
+          "responseSha256": "709303b49462e45bfcf2c1c5821e81c3ef1e238c63e17923b063603a69966567"
+        },
+        {
+          "mode": "new_explicit",
+          "status": "failed",
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ],
+          "reasonSha256": "6194b342282ddb30f960ddbd745da0759b230e9011ac1114aee28f5373033d9a",
+          "responseSha256": "709303b49462e45bfcf2c1c5821e81c3ef1e238c63e17923b063603a69966567"
+        },
+        {
+          "mode": "new_reference",
+          "status": "failed",
+          "errors": [
+            "new_diagnostic_numbers_not_bound"
+          ],
+          "reasonSha256": "6194b342282ddb30f960ddbd745da0759b230e9011ac1114aee28f5373033d9a",
+          "responseSha256": "550046a62cc1c6d1831c5990fb08f5cd81ccfe8c47616091e37dcf7c1b711a87"
+        }
+      ]
+    }
+  ],
+  "boundary": "Reference-mode fixture removes only the explicit excerpt from existing source-bound segments; it preserves selected evidence ID/path, every statement and the actual model semantic decision. This is a new representation test, not an upgrade of old results or an independent scientific endorsement. Explicit bad excerpts stay rejected; the unbound plain formula stays rejected.",
+  "crossTargetVisibleSourceControls": [
+    {
+      "claimId": "c1",
+      "foreignSource": "E2",
+      "rejected": true
+    },
+    {
+      "claimId": "c2",
+      "foreignSource": "E1",
+      "rejected": true
+    }
+  ]
+}

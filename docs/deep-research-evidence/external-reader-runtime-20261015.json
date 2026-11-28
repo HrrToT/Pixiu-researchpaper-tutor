@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-15",
+  "backendCommit": "070ab1a",
+  "frontendCommit": "12b642e",
+  "javaProcessId": 38916,
+  "runtimeJar": "tmp/external-reader-java-target/backend-java-0.0.1-SNAPSHOT.jar",
+  "database": "Existing backend-java/target/stage0-data/academic_db",
+  "sourceRead": {
+    "runId": "dr_run_255bbc03aa215e978efacb35f64ecdac",
+    "sourceId": "src_4d357e653a5f49a7c860f27aa33eafcdb1d4ca308140549eed81bd1a18f192dd",
+    "version": "arxiv:2312.12337v4",
+    "bytes": 11520262,
+    "pdfSha256": "606933b1f086ad92b5863b1b8d21a8af565bfb02b71ac47fb8c8f850d987f5b5",
+    "readOnly": true
+  },
+  "taskSnapshots": [
+    {
+      "taskId": "dr-acceptance-h3r-2026-10-14",
+      "unchangedFromPreRestartReceipt": true,
+      "revision": 19,
+      "paperIds": []
+    },
+    {
+      "taskId": "dr-acceptance-h5r-2026-10-15",
+      "unchangedFromPreRestartReceipt": true,
+      "revision": 27,
+      "paperIds": [
+        "e9895f20dbad6b11d95974f66319dbfef68ffe3235592e5d158822f3b43c3b1e.pdf"
+      ]
+    }
+  ],
+  "ledger": {
+    "calls": 2710,
+    "oldPrefixHash": "95b4b3647f2191facf77fb0fa8d61dea00ddf23d5acffc2349a02d1021b66f07",
+    "paused": [
+      "dr_run_5fa0e60b76805679a8e65938c744d2b8",
+      "dr_run_7c32c52acf4a5091b893d9bc99826ada",
+      "dr_run_86b3f181a5475e99aacca3dbf4370567",
+      "dr_run_8ed7e93fd422535aae4a8ee2e8d693bc",
+      "dr_run_a6a0e2a787e954a3b59ff2a30b2251be",
+      "dr_run_e3521b1781825273b384a26a5edb8cdc",
+      "dr_run_ed10cc3347be552288079a9a588fddf5"
+    ],
+    "active": []
+  },
+  "priorLedgerRowsPreserved": 2664,
+  "restartAuditBoundary": "The original whole-workspace hash polling helper was terminated after service readiness. No whole-store before/after equality is claimed; the two saved pre-restart case workspaces and all prior ledger rows were independently checked.",
+  "tests": {
+    "java": 43,
+    "frontendVitest": 479,
+    "frontendFiles": 65,
+    "focused": 30,
+    "typecheck": "passed",
+    "build": "passed"
+  },
+  "browserProof": "external-reader-page5-20261015.png",
+  "modelCallsDuringReaderChecks": 0
+}

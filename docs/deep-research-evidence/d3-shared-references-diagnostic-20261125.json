@@ -1,0 +1,52 @@
+{
+  "sourceReceiptSha256": "e7aad0efc94401e95c94ff7432109af89a1826a86bebe5eea0ff5de451681eab",
+  "rawStateCount": 14,
+  "interventionReferencesAreSelected": true,
+  "createdStates": 8,
+  "missingFactorControlCreators": [
+    "S_clone_enabled",
+    "S_split_enabled"
+  ],
+  "measurementOutputsDeclaredAsStates": [
+    "S_peak_memory_bytes",
+    "S_quality_lpips",
+    "S_quality_psnr",
+    "S_quality_ssim"
+  ],
+  "rawAssetsUsedAsStateReads": [
+    {
+      "stepId": "STEP_prepare_common",
+      "inputIds": [
+        "INPUT_scene",
+        "INPUT_split_index"
+      ]
+    },
+    {
+      "stepId": "STEP_fit_arm",
+      "inputIds": [
+        "INPUT_scene",
+        "INPUT_split_index"
+      ]
+    },
+    {
+      "stepId": "STEP_measure_quality",
+      "inputIds": [
+        "INPUT_scene",
+        "INPUT_split_index"
+      ]
+    }
+  ],
+  "additionalCanonicalDiagnosticIssues": {
+    "plan.fixed_state_update": 8,
+    "plan.future_state": 17,
+    "plan.incomplete_resource_accounting": 1,
+    "plan.measurement_coverage": 1,
+    "plan.measurement_mutation": 1,
+    "plan.measurement_reference": 1,
+    "plan.measurement_state_unavailable": 12,
+    "plan.state_source": 6
+  },
+  "diagnosticPlaceholdersEverEnteredRuntime": false,
+  "newModelCalls": 0,
+  "scientificAcceptance": false
+}

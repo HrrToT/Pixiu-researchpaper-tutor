@@ -1,0 +1,70 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "recordedRun": "dr_run_32b17e84964d5d39a1aae0aebfc54239",
+  "baselineEvidence": "openai-d2-current-candidate-real-20261128.json",
+  "firstPlanResponseSha256": "4ab7d94234dbbdded98a99cc16c1d2351108a1251743f04487a9284fe4c0293a",
+  "sameInitialPromptAcrossOfflineReplays": true,
+  "before": {
+    "profile": 1,
+    "plannerCallsInReplay": 2,
+    "validated": true,
+    "obligationsPerInitialRawItem": [
+      3,
+      1
+    ]
+  },
+  "after": {
+    "profile": 5,
+    "plannerCallsInReplay": 1,
+    "validated": true,
+    "obligationsPerRegroupedItem": [
+      2,
+      1,
+      1
+    ]
+  },
+  "regroupedItems": [
+    {
+      "fromItemId": "i1",
+      "toItemId": "i1_split_2",
+      "obligationIds": [
+        "o3"
+      ]
+    }
+  ],
+  "rawObligationsExactlyPreserved": true,
+  "sameNormalizedMaterialScopesAndCriterionIds": true,
+  "normalizedCriterionIds": {
+    "o1": [
+      "c1",
+      "c2"
+    ],
+    "o2": [
+      "c3",
+      "c4"
+    ],
+    "o3": [
+      "human_aspect_1"
+    ],
+    "requested_numeric_example": [
+      "matched_example"
+    ],
+    "o4": [
+      "c7"
+    ]
+  },
+  "historicalCorrectionUsageAvoidedByReplay": {
+    "input_tokens": 3111,
+    "output_tokens": 1209,
+    "total_tokens": 4320
+  },
+  "historicalJointReadiness": {
+    "calls": 3,
+    "totalTokens": 12246,
+    "returnedCriterionVerdicts": 6,
+    "readyCriterionVerdicts": 0
+  },
+  "providerCallsThisTurn": 0,
+  "downstreamResearchReexecuted": false,
+  "scientificAcceptance": false
+}

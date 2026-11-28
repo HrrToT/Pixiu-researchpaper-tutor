@@ -1,0 +1,26 @@
+{
+  "scope": "Offline verification execution environment diagnosis",
+  "affectedRun": "comparison-presentation-full-20261116",
+  "sourceCommit": "5fcc9da41160768b2022e43cf0bc96cbea68cdb7",
+  "terminalState": "test child terminated after confirmed environment hang; original evidence retained",
+  "blockedTest": "test_real_dispatch_and_route_read_only_do_not_call_actions_or_legacy",
+  "minimalDiagnostic": {
+    "command": "import asyncio,faulthandler; faulthandler.dump_traceback_later(10,exit=True); asyncio.run(asyncio.sleep(0))",
+    "restrictedExit": 1,
+    "restrictedStack": [
+      "socket.accept",
+      "socket._fallback_socketpair",
+      "asyncio.proactor_events._make_self_pipe",
+      "asyncio.windows_events.ProactorEventLoop",
+      "asyncio.run"
+    ],
+    "normalWindowsExit": 0,
+    "normalWindowsOutput": "asyncio event loop ok"
+  },
+  "sourceChanged": false,
+  "testAssertionsChanged": false,
+  "testsSkipped": false,
+  "replacementRun": "comparison-presentation-full-native-20261116",
+  "replacementReason": "Execute same full suite in confirmed functioning environment, not retry a model request",
+  "newModelCalls": 0
+}

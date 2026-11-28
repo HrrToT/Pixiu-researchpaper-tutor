@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-21",
+  "sourceCase": "E1-v8",
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "rawPlanningCompleteJson": true,
+  "finishReason": "stop",
+  "allReferencesWereSupplied": true,
+  "compactOriginalBytes": 2595,
+  "basisLimit": 2500,
+  "allocatedCompleteGenerationEnvelopeBytes": 23987,
+  "naivelyAcceptingObjectWouldUseBytes": 24082,
+  "unchangedGenerationInputCap": 24000,
+  "candidateTupleBytes": 2486,
+  "tupleExactRoundtrip": true,
+  "candidateIsImplemented": false,
+  "candidateIsScientificApproval": false,
+  "retainedScientificProblems": [
+    "unknown released-checkpoint fallback",
+    "incomplete network/state layout",
+    "original target method/scene/window eligibility still needs full independent review"
+  ],
+  "boundary": "Diagnostic encoding feasibility only. Do not upgrade failed E1-v8, truncate fields, enlarge input budget, resend its settled planning request or infer executable content. A future versioned tuple needs implementation, explicit decoder framing and original complete evidence capacity tests.",
+  "allOtherPlanningShapeAndReferenceChecksPassed": true
+}

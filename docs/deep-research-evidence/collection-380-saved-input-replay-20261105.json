@@ -1,0 +1,106 @@
+{
+  "sourceCase": "X4L-v11",
+  "sourceSha256": "3ecc477466b07c293c0ab20a0b33957b24a6b6a1edfc9f60b52a54a2be22be84",
+  "variants": [
+    {
+      "variant": "original",
+      "claim": {
+        "claimId": "c1",
+        "text": "2DGS把3D体积坍缩成一组在空间中定位的二维定向平面高斯盘。这些盘虽然本身是二维的，但每个盘在三维空间中有位置和朝向，因此整体能表示三维场景。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1"
+        ],
+        "detailLevel": "concise",
+        "tableBindings": []
+      },
+      "legacyResult": {
+        "candidates": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "1e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ]
+      },
+      "candidateResult": {
+        "candidates": [
+          {
+            "claimId": "c1",
+            "text": "2DGS把3D体积坍缩成一组在空间中定位的二维定向平面高斯盘。这些盘虽然本身是二维的，但每个盘在三维空间中有位置和朝向，因此整体能表示三维场景。",
+            "kind": "reported",
+            "evidenceRefs": [
+              "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847"
+            ],
+            "conditions": {},
+            "obligationIds": [
+              "ob_1"
+            ],
+            "detailLevel": "concise",
+            "tableBindings": []
+          }
+        ],
+        "rejected": []
+      }
+    },
+    {
+      "variant": "revision",
+      "claim": {
+        "claimId": "c1",
+        "kind": "reported",
+        "text": "2DGS将三维体积坍缩为一组在空间中定位的二维定向平面高斯盘；每个盘虽为二维，但具有三维位置和朝向，整体可表示三维场景。",
+        "evidenceRefs": [
+          "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847"
+        ],
+        "conditions": {},
+        "detailLevel": "fulltext",
+        "obligationIds": [
+          "ob_1"
+        ]
+      },
+      "legacyResult": {
+        "candidates": [],
+        "rejected": [
+          {
+            "claimId": "c1",
+            "reason": "numeric_mismatch",
+            "missingReportedNumbers": [
+              "1e0"
+            ],
+            "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+          }
+        ]
+      },
+      "candidateResult": {
+        "candidates": [
+          {
+            "claimId": "c1",
+            "kind": "reported",
+            "text": "2DGS将三维体积坍缩为一组在空间中定位的二维定向平面高斯盘；每个盘虽为二维，但具有三维位置和朝向，整体可表示三维场景。",
+            "evidenceRefs": [
+              "ev_f580f957d245818427832337512def14fad37c1adb4212595347250a67597847"
+            ],
+            "conditions": {},
+            "detailLevel": "fulltext",
+            "obligationIds": [
+              "ob_1"
+            ]
+          }
+        ],
+        "rejected": []
+      }
+    }
+  ],
+  "sourceAndClaimUnchanged": true,
+  "providerCalls": 0,
+  "semanticAcceptance": false,
+  "independentCredit": 0
+}

@@ -1,0 +1,277 @@
+"""Acquire bounded academic sources through the same durable call ledger."""
+from __future__ import annotations
+
+import base64
+import hashlib
+import os
+import re
+from pathlib import Path
+
+from services.deep_research.contracts import DeepResearchError, digest
+from services.deep_research.tools import ExternalAcademicAdapter
+from services.deep_research_academic import AcademicPolicy, AcademicSourceClient
+from services.deep_research.source_revisions import work_id
+
+
+def capabilities():
+    enabled = os.environ.get("DEEP_RESEARCH_V2_ENABLED", "false").lower() == "true"
+    external = enabled and os.environ.get("DEEP_RESEARCH_EXTERNAL_ENABLED", "false").lower() == "true"
+    return {"engineVersion": "deep-research-v2", "enabled": enabled,
+            "externalAcademic": external,
+            "fulltext": external and os.environ.get("DEEP_RESEARCH_FULLTEXT_ENABLED", "false").lower() == "true",
+            "budgetProfiles": ["standard", "extended"]}
+
+
+class AcademicAcquisition:
+    def __init__(self, repo, complete_call, *, client_factory=None, fallback_search=None,
+                 direct_pinned_fallback=False):
+        self.repo = repo
+        self.complete_call = complete_call
+        self.client_factory = client_factory or self._client
+        self.fallback_search = fallback_search
+        self.direct_pinned_fallback = direct_pinned_fallback
+
+    def _client(self, record):
+        from core.config import settings
+        flags = capabilities()
+        return AcademicSourceClient(AcademicPolicy(enabled=flags["externalAcademic"],
+            mode=record["sourcePolicy"]["mode"], allow_fulltext=flags["fulltext"],
+            max_pdf_bytes=settings.deep_research_max_pdf_bytes),
+            proxy_url=settings.deep_research_http_proxy,
+            cache_dir=os.environ.get("DEEP_RESEARCH_SOURCE_DIR", "data/deep_research_sources"))
+
+    def __call__(self, run_id, targets):
+        record = self.repo.require_run(run_id)
+        if record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
+            return []
+        client = self.client_factory(record)
+        fallback_search = None if record.get("openaiResearchModels") else self.fallback_search
+        allow_fallback = ((self.direct_pinned_fallback or fallback_search)
+                          and client.policy.enabled and client.policy.allow_fulltext)
+        diagnostics=type(record.get('externalDiagnosticsContractVersion')) is int and record['externalDiagnosticsContractVersion']==1
+        adapter = ExternalAcademicAdapter(client, self.repo.reserve_call, self.complete_call,
+            **({'transport_diagnostics':True} if diagnostics else {}))
+        sources, materials, by_source = [], {}, {}
+        for target in targets[:4]:
+            # Queries contain public topics from the plan, never entire document text.
+            query = str(target.get("query", "")).strip()[:700]
+            identities = []
+            if type(record.get('exactDiscoveryContractVersion')) is int and record['exactDiscoveryContractVersion'] in (1,2):
+                from services.deep_research_academic import checked_arxiv_id
+                for identity in target.get('requiredSources', []):
+                    if isinstance(identity, str) and identity.startswith('arxiv:'):
+                        identities.append(checked_arxiv_id(identity[6:]))
+                missing = target.get('missingSource')
+                if isinstance(missing, str) and missing.startswith('arxiv:'):
+                    identities = [checked_arxiv_id(missing[6:])]
+                identities = list(dict.fromkeys(identities))
+                from services.deep_research.source_revisions import enabled as revision_constraints_enabled, bind as bind_revisions
+                if revision_constraints_enabled(record):
+                    from services.deep_research.request_context import effective_question
+                    identities=[value[6:] for value in bind_revisions(['arxiv:'+value for value in identities],effective_question(record),default=not record.get('materials'))]
+            if not query and not identities:
+                continue
+            # Source identity and reading question serve different purposes.
+            # Editing the question cannot turn a pinned paper into topic search.
+            candidates = (adapter.lookup(run_id, identities, limit=max(3, len(identities)))
+                          if identities else adapter.discover(run_id, query, limit=3))
+            if allow_fallback and adapter.discovery_outcomes[-1] != 'not_dispatched':
+                request_ids = identities or client.discovery_request(query, 3).get('id_list', '').split(',')
+                request_ids = [identity for identity in request_ids if identity]
+                if request_ids and self.direct_pinned_fallback:
+                    found = {candidate['arxivId'] for candidate in candidates}
+                    # Exact, already validated revisions can go straight to the
+                    # canonical PDF when the metadata host misses them.
+                    candidates = [*candidates, *(
+                        {'arxivId': identity, 'workId': 'arxiv:' + work_id(identity),
+                         'versionId': 'arxiv:' + identity, 'title': 'arXiv:' + identity,
+                         'url': 'https://arxiv.org/abs/' + identity, 'discoveryProvider': 'pinned_arxiv_pdf'}
+                        for identity in request_ids if work_id(identity) != identity and identity not in found)]
+                elif not request_ids and not candidates and fallback_search:
+                    version = record.get('searchCandidateResolutionContractVersion')
+                    if type(version) is int and version == 1:
+                        from services.deep_research.request_context import effective_question
+                        from services.deep_research.source_revisions import explicit_revisions
+
+                        candidates = adapter.discover_via_deepseek(run_id, fallback_search, query,
+                                                                   resolve_revisions=True)
+                        pins = explicit_revisions(effective_question(record))
+                        candidates = _resolve_search_candidates(adapter, run_id, candidates, pins,
+                                                                client.policy.max_results)
+                    else:
+                        candidates = adapter.discover_via_deepseek(run_id, fallback_search, query)
+            for candidate in candidates:
+                identity = candidate.get("versionId")
+                if not identity:
+                    continue
+                if identity not in materials:
+                    fulltext = (adapter.fetch_fulltext(run_id, candidate["arxivId"]) or {}) if client.policy.allow_fulltext else {}
+                    needs_pdf = bool(candidate.get('discoveryProvider'))
+                    if needs_pdf and not fulltext:
+                        continue
+                    if (needs_pdf or record.get('exactDiscoveryContractVersion') == 2) and fulltext and any(
+                            fulltext.get(key) != candidate.get(key) for key in ('workId', 'versionId', 'arxivId')):
+                        raise DeepResearchError('external_version_mismatch','取得的全文与所选论文版本不一致，未替换指定版本。')
+                    # Cache acquisition, not the passages selected for one question.
+                    materials[identity] = {**candidate, **fulltext, "url": candidate.get("url", ""),
+                                           "discoveredAt": candidate.get('retrievedAt', fulltext.get('retrievedAt'))}
+                material = materials[identity]
+                pages = material.get("pages") or [{"text": material.get("abstract", "")}]
+                question = str(target.get('question') or '')
+                # A Chinese question can contain only the English paper name.
+                # Always retain the translated discovery terms as well: a title
+                # match alone does not locate the requested method passage.
+                reading_query = question + ' ' + query
+                from services.deep_research.external_sections import enabled as section_reading,select as select_sections,passages as section_passages
+                structured=section_reading(record) and material.get('accessLevel')=='fulltext'
+                if structured:
+                    terms=_reading_terms(reading_query)
+                    label,separator,_=str(material.get('title','')).partition(':')
+                    if separator and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*',label.strip()):
+                        terms-=_reading_terms(label)
+                    seen={s.get('location',{}).get('page') for s in record.get('state',{}).get('sources',[])
+                          if s.get('versionId')==identity and target['obligationId'] in s.get('obligationIds',[])}
+                    from services.deep_research.external_explanation import MARKER, asks_split_merge
+                    follow_merge = (record.get(MARKER) == 3 and record['sourcePolicy']['mode'] == 'external_only'
+                                    and asks_split_merge(question))
+                    selected_pages=select_sections(pages,reading_query,terms,seen=seen,
+                        follow_merge_reference=follow_merge,
+                        **({'contract_version':min(3,record['externalReadingContractVersion'])} if record.get('externalReadingContractVersion') in (2,3,4,5) else {}))
+                else:selected_pages=[(page,None) for page in _select_pages(pages, reading_query, title=material.get('title', ''))]
+                for page,parts in selected_pages:
+                    text = page.get("text", "")
+                    # Keep manageable passages and exact offsets within the original page.
+                    chunks=(section_passages(page,parts,_page_passages) if structured else
+                            ((offset,passage,None,None) for offset,passage in _page_passages(text)))
+                    for offset, passage,section,role in chunks:
+                        source_id = "src_" + digest({"version": identity, "hash": material["contentHash"],
+                                                     "page": page.get("page"), "offset": offset,
+                                                     "endOffset": offset + len(passage)})
+                        if source_id in by_source:
+                            existing = by_source[source_id]
+                            existing['obligationIds'] = list(dict.fromkeys(
+                                existing['obligationIds'] + [target['obligationId']]))
+                            continue
+                        source = {**{key: value for key, value in material.items()
+                                           if key not in {"pages", "text", "abstract"}},
+                            "sourceId": source_id, "sourceKind": "arxiv", "sourceType": "academic_paper",
+                            "ownerMaterialId": material["workId"], "text": passage,
+                            "location": {"page": page["page"], "offset": offset} if page.get("page") else {"section": "摘要", "offset": offset},
+                            "obligationIds": [target["obligationId"]]}
+                        if structured:
+                            source['location'].update(section=section,sectionRole=role)
+                        sources.append(source)
+                        by_source[source_id] = source
+        if not sources and adapter.discovery_outcomes and all(
+                outcome == 'failed' for outcome in adapter.discovery_outcomes):
+            raise DeepResearchError('external_discovery_unavailable', '外部文献获取失败')
+        return sources
+
+
+def _resolve_search_candidates(adapter, run_id, candidates, pins, max_results):
+    """Only an exact arXiv metadata ID can resolve an unversioned web result."""
+    exact = {candidate['versionId']: candidate for candidate in candidates if candidate.get('versionId')
+             and candidate['versionId'] in pins.get(candidate['workId'], [candidate['versionId']])}
+    exact_works = {candidate['workId'] for candidate in exact.values()}
+    pending = [candidate['unresolvedArxivWork'] for candidate in candidates if 'unresolvedArxivWork' in candidate]
+    remaining = {work: [revision[6:] for revision in pins.get('arxiv:' + work, []) if revision not in exact]
+                 for work in pending}
+    pending = [work for work in remaining if remaining[work] or 'arxiv:' + work not in exact_works]
+    if not pending:
+        return list(exact.values())
+    lookup_ids = [identity for work in pending for identity in (remaining[work] or [work])]
+    if len(lookup_ids) > max_results:
+        return list(exact.values())
+    metadata = adapter.lookup(run_id, lookup_ids, limit=max(len(lookup_ids), min(3, max_results)))
+    resolutions = {}
+    for row in metadata:
+        identity = row['arxivId']
+        work = work_id(identity)
+        if (work in pending and work != identity and row['versionId'] == 'arxiv:' + identity
+                and row['workId'] == 'arxiv:' + work
+                and row['versionId'] in pins.get(row['workId'], [row['versionId']])):
+            resolutions.setdefault(work, {})[identity] = {**row, 'discoveryProvider': 'deepseek_search'}
+    for work in pending:
+        versions = resolutions.get(work, {})
+        required = remaining[work]
+        if required:
+            exact.update((versions[revision]['versionId'], versions[revision])
+                         for revision in required if revision in versions)
+        elif len(versions) == 1:
+            chosen, = versions.values()
+            exact[chosen['versionId']] = chosen
+    return list(exact.values())
+
+
+def _page_passages(text):
+    """Use exact page slices, preferring complete sentences over fixed cuts.
+
+    Keep the existing 6000-character page envelope and the extractor's
+    3000-character passage cap. No normalization or invented punctuation.
+    """
+    limit, offset = min(len(text), 6000), 0
+    boundaries = [match.end() for match in re.finditer(r'(?<=[.!?。！？])\s+|\n[ \t]*\n', text[:limit])]
+    while offset < limit:
+        end = min(offset + 2000, limit)
+        if end < limit:
+            following = next((point for point in boundaries if end <= point <= min(offset + 3000, limit)), None)
+            if following is not None:
+                end = following
+            else:
+                # A long sentence still keeps whole words where possible.
+                spaces = list(re.finditer(r'\s+', text[max(offset, end - 200):end]))
+                if spaces:
+                    end = max(offset, end - 200) + spaces[-1].end()
+        yield offset, text[offset:end]
+        offset = end
+
+
+def _reading_terms(query):
+    # Discovery identifiers locate a paper, not a passage inside it. Counting
+    # 'arxiv' rewards bibliography pages and masks translated mechanism terms.
+    topic = re.sub(r'https?://\S+|\b10\.\d{4,9}/\S+', ' ', query.lower())
+    stop = {'arxiv', 'doi', 'preprint', 'www', 'http', 'https', 'org',
+            'the', 'and', 'for', 'with', 'from', 'this', 'that', 'what',
+            'which', 'how', 'does', 'are', 'its', 'all'}
+    return set(re.findall(r'[a-z]{3,}', topic)) - stop
+
+
+def _select_pages(pages, query, *, title=''):
+    words = _reading_terms(query)
+    # A one-word paper identifier before ':' locates the work, not its method.
+    # It often repeats in page headers and can otherwise displace the passage
+    # explaining the requested operation. Keep substantive multiword titles.
+    label, separator, _ = str(title).partition(':')
+    if separator and re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]*', label.strip()):
+        topic_words = words - _reading_terms(label)
+        if topic_words:
+            words = topic_words
+    def rank(pair):
+        text = pair[1].get('text', '').lower()
+        counts = [text.count(word) for word in words]
+        # Distinct requested concepts outrank repetition of a single keyword.
+        return (-sum(count > 0 for count in counts), -sum(min(count, 3) for count in counts), pair[0])
+    ranked = sorted(((i, page) for i, page in enumerate(pages) if page.get('text', '').strip()), key=rank)
+    return [page for _, page in ranked[:3]]
+
+
+def export_saved_source(repo, run_id, source_id):
+    """Export only already acquired content; this action never fetches a URL."""
+    record = repo.require_run(run_id)
+    source = next((s for s in record.get("state", {}).get("sources", [])
+                   if s.get("sourceId") == source_id and s.get("sourceKind") == "arxiv"), None)
+    if source is None or record.get("sourcePolicy", {}).get("mode") not in {"academic_external", "external_only"}:
+        raise DeepResearchError("source_missing", "该来源未在此研究中取得")
+    result = {key: source.get(key) for key in ("sourceId", "workId", "versionId", "arxivId", "title", "url", "contentHash")}
+    result["accessLevel"] = "metadata"
+    if source.get("accessLevel") == "abstract":
+        result["abstract"] = source.get("text", "")[:10000]
+    content_hash = source.get("contentHash", "")
+    if source.get("accessLevel") == "fulltext" and re.fullmatch(r"[a-f0-9]{64}", content_hash):
+        path = Path(os.environ.get("DEEP_RESEARCH_SOURCE_DIR", "data/deep_research_sources")) / (content_hash + ".pdf")
+        from core.config import settings
+        if path.is_file() and path.stat().st_size <= settings.deep_research_max_pdf_bytes:
+            body = path.read_bytes()
+            if body.startswith(b"%PDF-") and hashlib.sha256(body).hexdigest() == content_hash:
+                result.update(accessLevel="fulltext", pdfBase64=base64.b64encode(body).decode("ascii"))
+    return result

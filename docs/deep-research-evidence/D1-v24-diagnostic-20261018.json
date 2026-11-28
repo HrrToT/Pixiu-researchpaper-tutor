@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-18",
+  "case": "D1-v24",
+  "runId": "dr_run_d59ed5d543ca5249ba52bce06aae03c8",
+  "sourceCommit": "4c68f300",
+  "promptVersion": "dr-v2.20261018.166",
+  "status": "completed",
+  "machineOutcome": "inconclusive",
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "modelCalls": 7,
+  "settledTokens": 30278,
+  "privateDraftingReturned": false,
+  "elapsedSeconds": 77.448,
+  "cost": null,
+  "actualSynthesisFingerprintMatched": true,
+  "actualSynthesisOptions": {
+    "max_tokens": 8192,
+    "temperature": 0.2,
+    "thinking": {
+      "type": "enabled"
+    },
+    "reasoning_effort": "low",
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "findings": [
+    "The initial draft uses main-table observations but omits the required Ours label; that numerical claim is rejected before semantic checking.",
+    "Its second claim still asserts an exclusive setting and author-wide untested conditions; the existing absence guard rejects it.",
+    "The one repair response has stop finishReason but an empty raw body, normalized as invalid_json; no revision is published and no automatic retry occurs.",
+    "factualDraftingAudit is empty. Drafting guidance was appended but draftingBasis was absent from the explicit JSON claim-field list; generation organization has not been demonstrated.",
+    "No verify/verify_repair model call occurs in this case, so it cannot validate the new live scope-strength audit. Content fails."
+  ],
+  "scores": {
+    "goalResponse": 3,
+    "evidenceSupport": 3,
+    "conditions": 2,
+    "synthesisValue": 2,
+    "executability": null,
+    "readability": 3
+  },
+  "draft": {
+    "sections": [
+      {
+        "title": "判断",
+        "claimIds": [
+          "c1"
+        ]
+      },
+      {
+        "title": "适用条件",
+        "claimIds": [
+          "c2"
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "claimId": "c1",
+        "text": "作者报告在Mip-NeRF 360和Tank and Temple数据集上，LightGaussian压缩模型与原始3D-GS相比，PSNR、SSIM、LPIPS指标数值接近（如Mip-NeRF 360上PSNR 27.13 vs 27.21，SSIM 0.806 vs 0.815），且视觉质量相当，表明压缩后图像质量接近原始3DGS。",
+        "kind": "reported",
+        "evidenceRefs": [
+          "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+          "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+          "ev_c95167a132259e9a1523f477c8a49434fa01eda5c668f4c1922082dbf9ea1190"
+        ],
+        "conditions": {},
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3",
+          "ob_4"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": [
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.13"
+          },
+          {
+            "evidenceId": "ev_ffe2afc10303963ace5068705474a2c111bd99e53c60afe414460f77471fc747",
+            "rowNumber": 10,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.806"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "PSNR",
+            "value": "27.21"
+          },
+          {
+            "evidenceId": "ev_ab9685875c28c1ea14d0b937d46acbe69e99bdfb53a13d0b0c5c698de8fcb2fd",
+            "rowNumber": 8,
+            "groupIndex": 0,
+            "metric": "SSIM",
+            "value": "0.815"
+          }
+        ]
+      },
+      {
+        "claimId": "c2",
+        "text": "该接近性仅在论文报告的特定压缩设置（高斯剪枝率66%、球谐阶数降至2，SSIM从0.927降至0.926）和上述基准数据集上成立；未验证更极端压缩、其他数据集或不同评估条件下的质量保持。",
+        "kind": "inference",
+        "evidenceRefs": [
+          "ev_7f7bfdc77abba589cde39fc5eb483fe9c7a9352e618f9cdcecd7de5d34324fa8"
+        ],
+        "conditions": {
+          "context": "高斯剪枝率66%，球谐阶数2"
+        },
+        "obligationIds": [
+          "ob_1",
+          "ob_2",
+          "ob_3",
+          "ob_4"
+        ],
+        "detailLevel": "fulltext",
+        "tableBindings": []
+      }
+    ]
+  },
+  "repairDraft": [],
+  "initialVerification": {
+    "accepted": [],
+    "rejected": [
+      {
+        "claimId": "c1",
+        "reason": "table_condition_not_displayed",
+        "requiredTableDisplay": [
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "Ours"
+          },
+          {
+            "group": "Mip-NeRF 360 Datasets",
+            "method": "3D-GS [16]"
+          }
+        ],
+        "detail": "保留表格数值时，同条正文或条件必须显示原表的数据组和方法身份。请核对requiredTableDisplay；保留星号、变体及分组层级，末尾参考文献序号可省略。不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ]
+  },
+  "repairChecks": null,
+  "report": "本次尚未形成通过核验的结论。\n\n<details>\n<summary>还有 4 项未完成</summary>\n\n- 区分作者报告的结果、成立条件和未验证范围。：最终回答尚未完整回应这一问题\n- 区分作者报告的结果、成立条件和未验证范围。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。：最终回答尚未完整回应这一问题\n- 只依据LightGaussian，核查压缩后图像质量接近原始3DGS这一说法。：最终回答尚未完整回应这一问题\n\n</details>",
+  "rawFiles": [
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v24.json",
+      "sha256": "8b896cbe5f9b2c57bee417fe9cdaf3c163ad1a6584b071019e64b3aa1c3cc657"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v24.payload.json",
+      "sha256": "59451f6c8ae970e2e204514f2d9f7bcf357e9247f52d0a2d3e77c4276dae923a"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v24.calls.json",
+      "sha256": "724c64aaa67982300005fc35e884ba0975c1de323ced0f29e4d78d7eddfc0792"
+    },
+    {
+      "path": "tmp/dr-acceptance-receipts/D1-v24.result.json",
+      "sha256": "48b317286c4b7d72e1b0d0be45f5cf0a1eba3fbd47e7f889c9e1cf36347d23e7"
+    }
+  ],
+  "boundary": "One explicit submission after a concrete generation-profile change, all calls settled. Failed content is not retried unchanged or upgraded. No independent credit."
+}

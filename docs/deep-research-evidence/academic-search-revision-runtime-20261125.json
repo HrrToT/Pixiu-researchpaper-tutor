@@ -1,0 +1,26 @@
+{
+  "workId": "2403.17888",
+  "resolvedArxivRevision": "2403.17888v3",
+  "searchResponseFixture": true,
+  "realArxivRequests": [
+    {
+      "host": "export.arxiv.org",
+      "path": "/api/query?start=0&max_results=3&id_list=2403.17888",
+      "bytes": 2964,
+      "sha256": "04d72d4443fe52754b35114e43b0b6c99293845c62804585a104ab852383cef4"
+    },
+    {
+      "host": "arxiv.org",
+      "path": "/pdf/2403.17888v3",
+      "bytes": 24830200,
+      "sha256": "f3091d687bef0e79ac774743e31678c3deed91c35df7d2b75ae392de5ff8f0c7"
+    }
+  ],
+  "pageLocatedSources": 9,
+  "secondAcquisitionSentNoRequests": true,
+  "isolatedLedger": true,
+  "productionLedgerWrites": 0,
+  "deepSeekRequests": 0,
+  "modelCalls": 0,
+  "scientificAcceptanceEstablished": false
+}

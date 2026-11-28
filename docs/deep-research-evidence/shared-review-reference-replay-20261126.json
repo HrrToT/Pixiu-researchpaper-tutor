@@ -1,0 +1,15 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL-v20",
+  "baseline": "derived-pairing-and-table-coordinate-v2-real-20261126.json",
+  "mode": "offline projection of saved provider responses",
+  "newProviderCalls": 0,
+  "sameBatchChecksAndEvidenceAliases": true,
+  "truncatedResponseStillRejected": true,
+  "batches": [
+    {"requestedChecks": 10, "returnedCompleteChecks": 10, "finishReason": "stop", "inputBytesBefore": 22618, "inputBytesAfter": 22398, "responseBytesBefore": 4346, "responseBytesAfter": 2323},
+    {"requestedChecks": 8, "returnedCompleteChecks": 27, "finishReason": "length", "inputBytesBefore": 31977, "inputBytesAfter": 31769, "responseBytesBefore": 3486, "responseBytesAfter": 2214},
+    {"requestedChecks": 9, "returnedCompleteChecks": 9, "finishReason": "stop", "inputBytesBefore": 31806, "inputBytesAfter": 31729, "responseBytesBefore": 10769, "responseBytesAfter": 3271}
+  ],
+  "responseByteBasis": "Minified UTF-8 JSON. The middle batch is a projection of eight in-scope check objects only, with coherence and issues placeholders. It does not salvage the truncated verdict. Reference projections passed the scoped response schema.",
+  "boundary": "Actual provider token usage and scientific acceptance for the new revision remain unmeasured."
+}

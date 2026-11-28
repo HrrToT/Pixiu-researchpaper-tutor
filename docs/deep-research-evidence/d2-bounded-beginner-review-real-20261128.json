@@ -1,0 +1,49 @@
+{
+  "runId": "dr_d2_bounded_beginner_review_20261128",
+  "verifiedClaimsReused": [
+    "cmp_0_0",
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_7_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_1",
+    "cmp_6_0"
+  ],
+  "freshTarget": "cmp_conclusion_2",
+  "maxNewCalls": 2,
+  "candidate": "c9ec1472f4a4126f3f2bb0294bcd25fc978b114a",
+  "startingTokens": 79730,
+  "oldAlternateTokens": 9257,
+  "unchangedOriginalPrompt": true,
+  "authorityWrites": 0,
+  "successfulCalls": [
+    {
+      "node": "verify",
+      "tokens": 5234,
+      "reservedTokens": 20156
+    },
+    {
+      "node": "verify_answer_coverage",
+      "tokens": 9871,
+      "reservedTokens": 13433
+    }
+  ],
+  "newTokens": 15105,
+  "branchTotalTokens": 94835,
+  "acceptedClaims": 11,
+  "unchangedOtherAcceptedClaims": 10,
+  "beginnerLeadSemanticallyAccepted": true,
+  "coherent": true,
+  "remainingAnswerGap": "向初学者比较原始表示与压缩后部署的取舍",
+  "publishedOutcome": "partial",
+  "isolatedPublicationOnly": true,
+  "rawSha256": {
+    "intent.json": "49beee5387f96c7387765dded836a7675c1bc2850541ded2187dc1e17f70e3e9",
+    "run.json": "966b280ec59a7d4ceef4c4b07385c51a10f310aa4fae02972f92185fd29e0785",
+    "calls.json": "d7877fd0d1c901d4002233754a2aab18bdd83f953ea4fa9278bbfff902cbae47",
+    "publish-return.json": "2b690b45d50e8d03322c45d31aa82becc7dad3d01948c6b7842495aeb3444602"
+  }
+}

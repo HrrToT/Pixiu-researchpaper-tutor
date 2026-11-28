@@ -1,0 +1,60 @@
+{
+  "scope": "DR1 and DR5 offline publication, task isolation, source provenance and rollback checks",
+  "java": {
+    "sourceCommit": "e2c9c1ac9",
+    "jdkMajor": 21,
+    "mavenOffline": true,
+    "workingCopy": "tracked backend-java and contracts archived into an isolated directory",
+    "database": "H2 in-memory",
+    "passed": 71,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": {
+      "TaskResearchArtifactOwnershipTest": 4,
+      "TaskResearchV2ControllerTest": 50,
+      "TaskWorkspaceControllerTest": 6,
+      "ResearchSourceExportJsonTest": 3,
+      "ResearchSourcePdfTest": 2,
+      "ResearchSourceProcessingTest": 3,
+      "TaskResearchReadProjectionTest": 3
+    },
+    "covered": [
+      "Duplicate publication and background publication sync",
+      "Foreign-run access rejection and stale revision handling",
+      "Per-evidence page locations when a published artifact is reopened",
+      "External material import idempotency and source artifact ownership",
+      "Read projection, source section extraction and private PDF/source export"
+    ],
+    "reports": "tmp/java-research-candidate-20261126/backend-java/target/surefire-reports"
+  },
+  "pythonPreviousFullRun": {
+    "reference": "d2-device-memory-host-full-20261126.json",
+    "sourceCommit": "ea63993b9",
+    "verifiedJUnitSubset": {
+      "test_deep_research_rollout_rollback": 8,
+      "test_deep_research_process_exit": 1,
+      "test_deep_research_fault_acceptance_20261112": 5
+    },
+    "failuresErrorsOrSkips": 0
+  },
+  "modelCalls": 0,
+  "currentJavaFullSuite": {
+    "sourceCommit": "01d093964f60a3e127cd05b0d7f640b689ab80f4",
+    "command": "mvn -o -B test",
+    "jdkMajor": 21,
+    "database": "H2 in-memory",
+    "suites": 18,
+    "passed": 171,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "sourceArchiveSha256": "8bffbcab482425cb92381f8735127c720e644c2e44d89728e0fe7f22f9fcba4d",
+    "mavenLogSha256": "d3107357f2c13825efc568253e6418f11c5189abd2fc2e508d7fa7fbe1caed3d",
+    "localReports": "tmp/java-workbench-full-20261126/backend-java/target/surefire-reports"
+  },
+  "productionWrites": 0,
+  "providerAvailableAtCheck": false,
+  "scientificAcceptance": false,
+  "boundary": "The Java test processes did not use production task data. The rollback counts come from the previous fully verified Python commit. These checks do not establish a live deployment or the independent content gates."
+}

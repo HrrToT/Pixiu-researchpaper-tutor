@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "inputCase": "D1-v21",
+  "inputRunId": "dr_run_fec491a6694558cfbaf7f9194066e7bc",
+  "legacyFinalCoverageRequestFingerprintMatched": true,
+  "legacyArgsDigest": "a48c73698dd2b7915e063b7fd65e729610ab3d40b45634943a42b95138335820",
+  "oldCriteriaCount": 2,
+  "newCriteria": [
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "核查压缩后图像质量接近原始3DGS这一说法",
+      "responseType": "explanation"
+    },
+    {
+      "criterionId": "human_aspect_1",
+      "requirement": "作者报告的结果",
+      "responseType": "explanation"
+    },
+    {
+      "criterionId": "human_aspect_2",
+      "requirement": "成立条件",
+      "responseType": "limitation"
+    },
+    {
+      "criterionId": "human_aspect_3",
+      "requirement": "未验证范围",
+      "responseType": "limitation"
+    }
+  ],
+  "oldCompoundVerdictCannotCloseNewDimensions": true,
+  "newAuditStatusWithOldResponse": "invalid_response",
+  "newGapsWithOldResponse": [
+    {
+      "obligationId": "ob_2",
+      "question": "区分作者报告的结果、成立条件和未验证范围。",
+      "missingEvidence": "回答完整性尚未核验",
+      "stage": "answer",
+      "missingAspects": [
+        "作者报告的结果",
+        "成立条件",
+        "未验证范围"
+      ],
+      "aspectEvidenceRefs": [],
+      "auditStatus": "invalid_response"
+    }
+  ],
+  "oldMachineCoverageRemainsReadableAndUnchanged": true,
+  "oldPromptBytes": 23426,
+  "newPromptBytes": 23918,
+  "oldOutputTokens": 3500,
+  "newOutputTokens": 3500,
+  "inputCapUnchanged": 24000,
+  "outputCapUnchanged": 8192,
+  "totalRunBudgetUnchanged": true,
+  "providerCalls": 0,
+  "productionWrites": 0,
+  "originalRecordUnchanged": true,
+  "boundary": "Exact old production coverage request replay and copied-plan dimension contract checked against the old aggregate response. No new semantic judgement or content success; the old incomplete answer is not rewritten."
+}

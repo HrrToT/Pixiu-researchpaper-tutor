@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-26",
+  "sourceCommit": "d0416bdc",
+  "caseId": "D1",
+  "attempt": 29,
+  "runId": "dr_run_69cbb1557d965e06a0b0f57d7adc0f78",
+  "promptVersion": "dr-v2.20261026.302",
+  "answerPointIntentContractVersion": 1,
+  "status": "completed",
+  "outcome": "partial",
+  "modelCalls": 11,
+  "settledTokens": 52008,
+  "elapsedSeconds": 162,
+  "providerCost": null,
+  "newUnknowns": 0,
+  "oldLedgerRows": 7217,
+  "ledgerRowsAfter": 7239,
+  "oldLedgerPrefixAndAllPriorRunPayloadsPreserved": true,
+  "protectedTasksPreserved": 4,
+  "initialClaimsHaveEmptyPublicConditions": true,
+  "retainedClaims": 1,
+  "quotes": [
+    {
+      "claimId": "c1",
+      "evidenceId": "ev_9df9fe102817b6e00a7d723bf6dd19597e5355e696f461f12f7d771e022e9c1e",
+      "quoteInStoredSourceContext": true
+    },
+    {
+      "claimId": "c1",
+      "evidenceId": "ev_09162a2cdace564e9becb7fcf6e393baea8606ddd7c16ca73c1538ae875b4c1d",
+      "quoteInStoredSourceContext": true
+    }
+  ],
+  "contentAccepted": false,
+  "independentCredit": 0,
+  "findings": [
+    "Initial public conditions no longer contain E aliases.",
+    "Revised c2 retains requested conditions/unverified-scope intent but asserts unsupported exclusive necessary settings.",
+    "Independent factual/scope review rejects c2; final report retains only c1 and remains partial."
+  ],
+  "boundary": "One fixed development run, no automatic retries. These observed outputs do not establish a general quality or efficiency improvement over D1-v28; different drafts and evidence selections confound that comparison. Physical PDF-page validation and independent acceptance not claimed."
+}

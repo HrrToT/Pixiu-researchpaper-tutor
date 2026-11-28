@@ -1,0 +1,154 @@
+{
+  "case": "H2-LOCAL-FEATURES",
+  "qualification": "offline_local_pdf_to_readiness_input",
+  "independentCredit": 0,
+  "caseDefinitionDigest": "4d8ffdb1fa573880d9ec6a2c903ae1536b03a42990f3b1f14263ed1a3bc01c62",
+  "baseline": {
+    "receipt": "deep-research-evidence/local-features-h2-configured-development-20261127.json",
+    "verifiedTablePackets": 0
+  },
+  "replay": {
+    "readinessTableUnitIds": [
+      "G3",
+      "G4",
+      "G5",
+      "G6"
+    ],
+    "readinessUnits": [
+      {
+        "unit": "G1",
+        "requirement": "怎样取得训练监督",
+        "requiredSourceCount": 2
+      },
+      {
+        "unit": "G2",
+        "requirement": "怎样产生关键点和描述子",
+        "requiredSourceCount": 2
+      },
+      {
+        "unit": "G3",
+        "requirement": "各提取一条可引用的原文定量结果，并保留其对应评测条件。",
+        "requiredSourceCount": 2
+      },
+      {
+        "unit": "G4",
+        "requirement": "说明能否把两篇论文的 HPatches 数字直接用于排序",
+        "requiredSourceCount": 2
+      },
+      {
+        "unit": "G5",
+        "requirement": "D2-Net 论文内部与 SuperPoint 的比较能支持什么",
+        "requiredSourceCount": 2
+      },
+      {
+        "unit": "G6",
+        "requirement": "并给出同条件复核建议",
+        "requiredSourceCount": 2
+      }
+    ],
+    "readinessBudgetModelCallsAlreadyUsed": 2,
+    "readinessBudgetTokensAlreadyUsed": 3554,
+    "readinessPreparedOnly": true,
+    "sourceId": "src_ee6ef7f9aef89c4681cba5d747b6f1e6b3388544da461dfaeccee9f109f65e28",
+    "location": {
+      "page": 7,
+      "pageIndex": 6,
+      "pageResolution": "exact",
+      "section": "Table 3",
+      "table": "pdf-page-7-table-3",
+      "tableColumnMappingUnverified": false,
+      "thresholdColumnsVerified": true
+    },
+    "owners": [
+      "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732.pdf",
+      "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1.pdf"
+    ],
+    "sourceObligations": [
+      "o2",
+      "o3"
+    ],
+    "retrievedSources": 21,
+    "readSources": 12,
+    "totalExtractedEvidence": 62,
+    "tableEvidence": [
+      {
+        "quote": "Table caption: Table 3. HPatches Homography Estimation. SuperPoint out-\nTable row 1: Method | Homography Estimation / ϵ=1 | Homography Estimation / ϵ=3 | Homography Estimation / ϵ=5\nTable row 2: SuperPoint | 0.310 | 0.684 | 0.829\nTable row 3: SIFT | 0.424 | 0.676 | 0.759\nTable row 4: ORB | 0.150 | 0.395 | 0.538",
+        "tableData": {
+          "groups": [
+            [
+              "Homography Estimation",
+              [
+                "ϵ=1",
+                "ϵ=3",
+                "ϵ=5"
+              ]
+            ]
+          ],
+          "rows": [
+            [
+              2,
+              "SuperPoint",
+              [
+                "0.310",
+                "0.684",
+                "0.829"
+              ]
+            ],
+            [
+              3,
+              "SIFT",
+              [
+                "0.424",
+                "0.676",
+                "0.759"
+              ]
+            ],
+            [
+              4,
+              "ORB",
+              [
+                "0.150",
+                "0.395",
+                "0.538"
+              ]
+            ]
+          ]
+        },
+        "evidenceId": "ev_98d56503af374e159d8ba66bd350da05fadfb414fea4b7fe8050a9027bb9f050",
+        "literal": "passed"
+      }
+    ],
+    "readPagesByTitle": {
+      "SuperPoint: Self-Supervised Interest Point Detection and Description": [
+        1,
+        3,
+        6,
+        7
+      ],
+      "D2-Net: A Trainable CNN for Joint Detection and Description of Local Features": [
+        2,
+        4,
+        5,
+        6,
+        9,
+        10
+      ]
+    },
+    "served": {
+      "33bb4a1059926fedcc3b00c106eed1d569dca91b3619a0cf44371a2ba3112732.pdf": 1,
+      "8a904cefe3c96825ee6f1d02f93cd79bda5dc27cb28681ad753fa02fd1e36fe1.pdf": 1
+    },
+    "providerCalls": 0,
+    "limitations": [
+      "Model assessment and final report generation were neither invoked nor verified.",
+      "Local lexical fallback and isolated PDF download were exercised; no live indexing backend was used."
+    ]
+  },
+  "rawArtifact": {
+    "name": "h2-threshold-table-offline-replay-20261127.json",
+    "sha256": "f8f756207854dfb301880150a6f2834d6ba88f3de87ad2ba3245561bd0012ad2"
+  },
+  "sourceSpelling": ".684",
+  "structuredValue": "0.684",
+  "localRegressionPassed": 165
+}

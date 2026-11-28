@@ -1,0 +1,100 @@
+{
+  "sourceReviewRun": "dr_d3_bound_facts_audit_20261127",
+  "isolatedRepairRun": "dr_d3_scientific_repair_20261127",
+  "sourceCommit": "29d0e7189709f6634bad64be07d24c6f467a009c",
+  "sourceProposalBindingDigest": "8c2adba266e73aed4a00a19ae3680bced0bdf32c32d781d3d2db218e28c32fd2",
+  "revisedProposalBindingDigest": "bd178fcde8df6993c6860581dd10616e366233180c83d1bcc958341bc0655e42",
+  "repairState": "awaiting_scientific_review",
+  "actualCalls": 1,
+  "actualNewTokens": 11801,
+  "usage": {
+    "total_tokens": 11801,
+    "input_tokens": 8837,
+    "output_tokens": 2964,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 8834
+  },
+  "originalSpentTokens": 55939,
+  "remainingBudgetTokens": 32260,
+  "changedPaths": [
+    "/data/evaluationSplit",
+    "/data/inputs/0/description",
+    "/data/inputs/0/preparation",
+    "/steps/0/operation/action",
+    "/steps/1/operation/action",
+    "/steps/2/operation/action",
+    "/data/splitPrecheck",
+    "/steps/3/operation/action",
+    "/states/4/representation",
+    "/steps/8/operation/action",
+    "/steps/9/operation/action",
+    "/metrics/1/procedure",
+    "/estimand",
+    "/analysis/decisionRule",
+    "/states/8/meaning",
+    "/states/8/representation",
+    "/states/1/meaning",
+    "/analysis/limitations"
+  ],
+  "retainedControls": {
+    "groups": true,
+    "factors": true,
+    "budgets": true,
+    "sourceFacts": true,
+    "pairing": true,
+    "seeds": true,
+    "trainingSplit": true
+  },
+  "requiredAssetsStillPending": true,
+  "calibrationPlan": "锁定的测试图像及相机仅用于相机配准预检和最终质量测量，不参与场景 SfM、场景参数拟合、模型选择或调参。优先使用供应方提供的逐图内外参：仅用训练图像对应的供应方相机中心和训练专用 SfM 相机中心拟合一个三维相似变换，并将其应用于测试相机中心和方向；内参随图像缩放相应调整。若无法取得可配准的完整相机数据，可改用冻结训练 SfM 点云和测试图像做逐图 pose-only 2D–3D 定位：固定训练点云及其坐标系，仅估计测试相机位姿，使用供应方内参；禁止更新训练相机、点云或高斯参数。两种方法均须通过共享准备中的配准验收，否则停止。",
+  "stoppedFitPolicy": "PSNR 先取负值，显存保持原值；对比负值表示该操作或交互降低相应损失。分别报告主效应和差中之差及不确定性，不以单个主效应推断交互；区间跨零视为方向不确定，不宣称无效。任何臂 OOM、不足步数或完整窗口设备监控无效，该块全部对比标为不可估计并报告失败组、完成步数、可用的失败窗口采样峰及读取缺失原因；截断峰值不作为完整测量，不使用幸存臂估计完整四臂对比。",
+  "scientificReviewPreflight": {
+    "state": "not_started_capacity",
+    "hardIssues": [],
+    "inputBytes": 34831,
+    "inputLimit": 32000,
+    "diagnosticBatchBytesAtWiderWindow": [
+      33245,
+      40248,
+      38836
+    ],
+    "widerWindowOnlySimulated": true,
+    "calls": 0
+  },
+  "scientificApproval": false,
+  "authoritativeWrites": 0,
+  "sha256": {
+    "intent.json": "01e1d47265cc2f569f1211b7b7bdd8658988e7d8281fe2178096ece63137d11f",
+    "run.json": "3100ccdf961bc76a70a4d0c03b586ff063b3f9ecf330c2a1796f10246edbb60e",
+    "calls.json": "2d8703cf226d0bdeaa2b5e9d3d6e621c8859a9f7af7ebc63b8e57ca8737636b9"
+  },
+  "offlineReviewPartitionPrototype": {
+    "batches": [
+      {
+        "checks": 7,
+        "inputBytes": 15608
+      },
+      {
+        "checks": 6,
+        "inputBytes": 31826
+      },
+      {
+        "checks": 2,
+        "inputBytes": 31943
+      },
+      {
+        "checks": 4,
+        "inputBytes": 31928
+      },
+      {
+        "checks": 3,
+        "inputBytes": 31976
+      }
+    ],
+    "allCheckIdsRetained": 22,
+    "detailedProposalPreservedInNonFactReview": true,
+    "developmentOnly": true,
+    "wouldUseMoreReviewCalls": true,
+    "providerCalls": 0
+  }
+}

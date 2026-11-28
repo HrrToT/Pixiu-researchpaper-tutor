@@ -1,0 +1,18 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v47",
+  "payloadSha256": "4d1ea9a12eeeb85168622038c0475bfe3f18f132f90cfe96d7f4ef35044f3325",
+  "originalAuditInputBytesRequired": 12830,
+  "originalAvailableAuditBytes": 11780,
+  "reservedMinimumTokens": 17354,
+  "counterfactualBeforeLastRepairTokens": 78438,
+  "omittedLastRepairActualTokens": 5258,
+  "totalBudgetUnchanged": 100000,
+  "nextOptionalRepairFits": false,
+  "mockAuditAdmitted": true,
+  "mockPromptBytes": 14555,
+  "mockOutputAllowance": 5852,
+  "fixedObligationsUnchanged": 6,
+  "citedRowsUnchanged": 7,
+  "providerCalls": 0,
+  "scientificApproval": false
+}

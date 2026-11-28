@@ -1,0 +1,59 @@
+{
+  "case": "D2-BASELINE-COMPRESSION-v49",
+  "status": "completed",
+  "outcome": "inconclusive",
+  "runId": "dr_run_1fe6e49739e55251bbff13de83fa86cb",
+  "sourceCommit": "22365e7f514ad19c838cdd1dd106105240a490ff",
+  "paidCalls": 17,
+  "tokens": 79924,
+  "elapsedSeconds": 131.0,
+  "externalSearches": 0,
+  "protocolNoteEvidenceAliases": [
+    "E16"
+  ],
+  "pairOptionsByTarget": {
+    "joint_ob-2-1_matched_example": 10
+  },
+  "compiledClaims": 11,
+  "verifiedClaims": 4,
+  "exampleIndividuallyVerified": true,
+  "exampleTableBindings": 10,
+  "finalRejections": {
+    "numeric_mismatch": 1,
+    "missing_table_bindings": 1,
+    "semantic_unresolved": 3,
+    "comparison_benchmark_example_scope": 2
+  },
+  "answerCoverageStatus": "checked",
+  "coverageVerdicts": {
+    "ob-1-1": "partial",
+    "ob-1-2": "partial",
+    "ob-2-1": "partial",
+    "ob-2-2": "missing",
+    "answer_scope": "missing"
+  },
+  "reportVersionId": "report_dr_run_1fe6e49739e55251bbff13de83fa86cb_v1",
+  "workspaceArtifactOrigins": [
+    "latest",
+    "machine"
+  ],
+  "originalServiceAndHistoryVerified": true,
+  "automaticRetry": false,
+  "scientificContentAccepted": false,
+  "receiptSha256": {
+    ".payload.json": "0824623893889cf948e5721d1fe5a3f6f8252ecbd8026021c9a7b92592d39286",
+    ".calls.json": "4f260386bb49b0bcf834cf79d2e24e7b8d1a21b60db415034fd26748b34e7dec",
+    ".result.json": "17472206829e13a860b0de731031a457cce08cea94b631faa4d1f7837cdb535a",
+    ".execution.json": "99e8c181ef2e3257ff67f7b7e1ea9a61b07d0587e9498f2f780b2fd0929efdec",
+    ".restore.log": "0a1795d4cbe3e70da783d961f477fdfa28cb670d1e852a4884544f88673a4a24"
+  },
+  "crossPaperObservedSettings": 1,
+  "crossPaperBoundaryReviewErrors": [
+    "diagnostic_statement_not_in_reason",
+    "diagnostic_source_not_bound",
+    "new_diagnostic_numbers_not_bound"
+  ],
+  "compressionMechanismRejectedForCitedScope": true,
+  "testFirstDeploymentAdviceAccepted": false,
+  "wholeReportAccepted": false
+}
