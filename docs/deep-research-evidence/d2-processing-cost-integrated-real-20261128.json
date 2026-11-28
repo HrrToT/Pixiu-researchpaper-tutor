@@ -1,0 +1,117 @@
+{
+  "candidate": "8a3906b772fc9de2e5949a96349ff8b1d5ce5024",
+  "fixture": "D2-BASELINE-COMPRESSION",
+  "split": "development",
+  "independentHoldoutCredit": 0,
+  "outcome": "complete",
+  "runId": "dr_d2_processing_cost_terminal_audit_20261128",
+  "reuse": {
+    "priorRunId": "dr_d2_grouped_term_insertions_20261128",
+    "unchangedVerifiedClaims": 10,
+    "unchangedCitationsAndWording": true,
+    "updatedClaimId": "cmp_3_0",
+    "doesNotRepresentFreshFullGraphRun": true
+  },
+  "sizeDiagnosis": {
+    "requiredAuditUtf8Bytes": 32279,
+    "legacyExtendedUtf8Bytes": 32000,
+    "countedFallbackLimitUtf8Bytes": 36000,
+    "previousReviewOutcome": "inconclusive",
+    "previousWholeAnswerGenerationRequests": 0,
+    "finalCountedInputTokens": 9355
+  },
+  "providerAttempts": [
+    {
+      "directory": "openai-d2-processing-cost-p2-only-20261128",
+      "node": "synthesize",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 7293,
+        "input_tokens": 6625,
+        "output_tokens": 668,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 6622
+      },
+      "rawArtifactSha256": {
+        "intent.json": "49ac2dc05af4b934aca5c848f5f377b7a21f056479c9cd5f01258cda0f0b67f4",
+        "calls.json": "02ae722affb5a67588edfb88212412e78ad05c10206cb2bad4dd4d64208399f3",
+        "response.json": "1315db70e39b992191035a2346083c31ec39452c2fcfe6f14b3f63b11cffc184"
+      }
+    },
+    {
+      "directory": "openai-d2-processing-cost-reviewed-final-20261128",
+      "node": "verify",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 3835,
+        "input_tokens": 3692,
+        "output_tokens": 143,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 3689
+      },
+      "rawArtifactSha256": {
+        "intent.json": "8703d37dedd484cd05573bd3e8fd62f3264defd32ef2069bbb8d2b63b6a2ed04",
+        "calls.json": "ab5ba432fcf5c9dbc8cef57e2df25c6f048d9d4881f5ea819d699a06ced193c0",
+        "cost-verification.json": "ded0b8ff2db21ba66fe3a4da7515d44ce9b8c5206d72264251ffc2f795be1301",
+        "run.json": "60f1c2a1c6a2f1ec09f8993021a67356f3dcc0a3d1718600542b33c827638fff"
+      }
+    },
+    {
+      "directory": "openai-d2-processing-cost-terminal-audit-20261128",
+      "node": "verify_answer_coverage",
+      "model": "gpt-6.1-terra",
+      "usage": {
+        "total_tokens": 10221,
+        "input_tokens": 9355,
+        "output_tokens": 866,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9352
+      },
+      "rawArtifactSha256": {
+        "intent.json": "49b0c245ded8b7ecfe4e040e68aaf0a226ba639ea6082b3f123f751c3f90cd01",
+        "calls.json": "8da2de43c251b5c41f0a91e8259186e711af2a05b5daa52475cb849204b06c2e",
+        "run.json": "0b879b7293f74ce9bf54b80e6927acf8bcfde5e21ca64e335c3e19bcd556de4b",
+        "report.md": "ebb9ef8dba20196937d5273db352b9a5a380a4707df67c468db94413cfa3160c",
+        "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+        "publish-return.json": "987b6c8526fdf9f571a059ebad74aeacc186a234c1df91e9c03816927cde7eab",
+        "citation-physical-check.json": "06a6edb69e00f1b62e8778fa458102741658e7b38701447c643ae47819e460ba"
+      }
+    }
+  ],
+  "totalMeasuredGenerationTokens": 21349,
+  "countEndpointRequestsForFinalAudit": 1,
+  "extraGenerationRetries": 0,
+  "coverage": {
+    "status": "checked",
+    "coveredIds": [
+      "obl-1",
+      "obl-2",
+      "obl-3",
+      "requested_numeric_example",
+      "answer_scope"
+    ],
+    "claimCount": 11,
+    "coherent": true,
+    "gaps": []
+  },
+  "manualSourceChecks": {
+    "requiredCriteriaReview": [
+      "结论先于四维双栏比较，LightGaussian 的操作建立在高斯表示与已有模型之上。",
+      "剪枝与恢复、SH 降阶与教师监督、码本与向量量化均有实际过程，术语说明保留。",
+      "原论文训练开销与额外压缩处理分别表述。两项 5,000 对应不同处理，未推算总耗时或总算力。",
+      "同表数值锚定 Mip-NeRF 360 汇总，包含 FPS、存储与三项画质指标。无 Room 消融混用。",
+      "标星基线同平台重训。跨论文缺场景、分辨率与计时对齐证据。存储大小与峰值显存分开。",
+      "显存约束建议要求按同条件实测并设画质前提，引用可追到对应论文和页码。"
+    ],
+    "normalizedLiteralReferenceOccurrences": 33,
+    "physicalTableReferenceOccurrences": 3,
+    "physicalTable": "LightGaussian v6 p6 Table 1. Both Mip-NeRF 360 and Tanks and Temples row pairs checked against PDF text and the A6000 starred-baseline footnote, with only the former printed as numeric example.",
+    "costPages": [
+      5,
+      6,
+      7
+    ],
+    "scientificReviewScope": "Manual cross-check of the published development report against the six frozen criteria. No independent holdout credit."
+  },
+  "regressionTestsPassed": 166
+}
