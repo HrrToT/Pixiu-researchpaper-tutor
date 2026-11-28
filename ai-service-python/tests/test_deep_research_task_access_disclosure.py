@@ -70,6 +70,20 @@ def test_pinned_method_citation_uses_access_label_on_the_same_accepted_claim(cas
                                         request_only_obligations=['o'], pinned_method_plan=plan if enabled else [])) == (case != 'valid')
 
 
+@pytest.mark.parametrize('consolidated', [False, True])
+def test_pinned_method_access_guidance_is_sent_with_either_audit_prompt(consolidated):
+    call = Mock(return_value={'content': '[]'})
+    audit_final_answer(
+        'r', QUESTION, PLAN, CLAIMS, EVIDENCE, call, json.loads, task_sources=True,
+        request_contract=3, binding_catalog=True, scoped_catalog=True,
+        consolidated_instructions=consolidated, pinned_method_access=True,
+    )
+    prompt = call.call_args.args[2]
+    assert 'Available answer bindings by check:' in prompt
+    assert 'bind text and sourceAccessSummary on the same accepted claim' in prompt
+    assert 'the check catalog permits both fields' in prompt
+
+
 @pytest.mark.parametrize('request_contract',[False,3])
 def test_task_label_is_shared_by_report_summary_count_and_coverage_without_mutation(request_contract):
     original=deepcopy((CLAIMS,EVIDENCE));metadata=answer_display_metadata(CLAIMS,EVIDENCE,task_sources=True)

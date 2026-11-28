@@ -269,10 +269,6 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True,
                                                     pinned_method_access=pinned_method_access) if task_sources else {}
                     prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
-                    if pinned_method_access:
-                        prompt += ('\nFor an access-and-pinned-method-citation check, bind the same accepted '
-                                   'claim’s text and sourceAccessSummary when it cites the specified method passage. '
-                                   'The label can answer access even when the prose does not repeat it.')
                 else:
                     prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
             if coherence:
@@ -286,6 +282,10 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                          'and the full question as usual. Empty cells are unresolved, not proof of absence in a paper. '
                          'The server supplies the table format; layout alone cannot establish factual support or coverage. '
                          'Bind scientific verdicts to accepted claim text/conditions, not to layout metadata.')
+        if pinned_method_access and task_sources and binding_catalog and scoped_catalog:
+            prompt += ('\nFor a check asking for both the access level and a method citation from a specified version, '
+                       'bind text and sourceAccessSummary on the same accepted claim if it cites that method passage '
+                       'and the check catalog permits both fields. The label can answer access without repeating it in the prose.')
         template = prompt
         try:
             output_tokens = coverage_output_tokens(audit_plan, claims)
