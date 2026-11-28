@@ -80,8 +80,8 @@ _EVALUATION_COUNTS = re.compile(
     r'(?P<count>' + '|'.join(_WORDS) + r'|both)\s+(?=datasets?\b|configurations?\b)', re.I)
 _THOUSANDS_OF_ITERATIONS = re.compile(
     r'(?<![A-Za-z0-9_.,$€£+\-])(?P<count>[1-9][0-9]{0,5}(?:\.[0-9]{1,3})?)k'
-    r'(?=(?:\s*(?:,\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+)'
-    r'[1-9][0-9]{0,5}(?:\.[0-9]{1,3})?k)*\s+iterations?\b)', re.I)
+    r'(?=(?:\s*(?:,\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+|[、，和与或]\s*)'
+    r'[1-9][0-9]{0,5}(?:\.[0-9]{1,3})?k)*(?:\s+iterations?\b|\s*(?:次\s*)?迭代))', re.I)
 _CHINESE_COUNTS = re.compile(r'(?<![A-Za-z0-9_第零一二两三四五六七八九十百千万亿点.])'
     r'(?P<sign>[负正+＋\-−])?\s*(?P<word>[零一二两三四五六七八九十]{1,3})\s*'
     r'(?P<count_unit>个|维|次|帧|层|组|张|条|篇|种|项)')

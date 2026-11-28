@@ -222,6 +222,24 @@ def test_compact_iteration_counts_keep_the_reported_magnitude(quote, missing):
         checker.assert_called_once()
 
 
+@pytest.mark.parametrize('text,missing', [
+    ('原始拟合使用7K和30K迭代两种配置。', []),
+    ('原始拟合使用7K、30K次迭代。', []),
+    ('原始拟合使用7K和31K迭代。', ['31e3']),
+])
+def test_chinese_compact_iteration_counts_bind_to_reported_english_counts(text, missing):
+    claim, evidence = setup(text, 'We report results for two configurations, 7K and 30K iterations for ours.')
+    checker = Mock(return_value=[{'claimId': 'c', 'status': 'passed'}])
+    result = verify_claims([claim], [evidence], checker, quantity_spelling_version=25)
+    if missing:
+        assert result['rejected'][0]['reason'] == 'numeric_mismatch'
+        assert result['rejected'][0]['missingReportedNumbers'] == missing
+        checker.assert_not_called()
+    else:
+        assert result['accepted']
+        checker.assert_called_once()
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
