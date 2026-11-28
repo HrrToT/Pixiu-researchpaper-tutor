@@ -1348,6 +1348,16 @@ def test_paired_advice_binds_explicit_in_scope_name_references_and_shortens_exac
     denied, bound = pairwise_memory_choices(
         point, ['P1', 'P2'], evidence, sources, allowed_candidate_refs=['E2', 'E3'])
     assert not bound and denied['evidenceRefs'] == ['E3']
+    swapped = {**point, 'memoryCandidates': [
+        {'name': left, 'evidenceRef': 'E2'}, {'name': right, 'evidenceRef': 'E1'}]}
+    versioned, bound = pairwise_memory_choices(swapped, ['P1', 'P2'], evidence, sources,
+        allowed_candidate_refs=['E1', 'E2', 'E3'], rebind_exact_titles=True)
+    assert bound and versioned == compiled
+    unbound = {**swapped, 'memoryCandidates': [
+        {'name': '3D Gaussian Splatting', 'evidenceRef': 'E2'}, {'name': right, 'evidenceRef': 'E1'}]}
+    _, bound = pairwise_memory_choices(unbound, ['P1', 'P2'], evidence, sources,
+        allowed_candidate_refs=['E1', 'E2', 'E3'], rebind_exact_titles=True)
+    assert not bound
 
 
 @pytest.mark.parametrize('exhausted',['calls','time'])

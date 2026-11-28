@@ -232,10 +232,12 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 try:
                     if choice_papers := stage.get('memoryChoiceTargets', {}).get(row['targetId']):
                         from services.deep_research.general_advice import pairwise_memory_choices
+                        deployment_version = record.get('comparisonBeginnerDeploymentGuidanceVersion')
                         candidate_refs = (stage['allowedEvidenceByTarget'][row['targetId']]
-                                          if record.get('comparisonBeginnerDeploymentGuidanceVersion') == 4 else None)
+                                          if deployment_version in (4, 5) else None)
                         point, bound = pairwise_memory_choices(
-                            point, choice_papers, evidence_by_id, snapshot['sources'], allowed_candidate_refs=candidate_refs)
+                            point, choice_papers, evidence_by_id, snapshot['sources'],
+                            allowed_candidate_refs=candidate_refs, rebind_exact_titles=deployment_version == 5)
                         if not bound:
                             choice_errors.append(row['targetId'])
                     if row['targetId'] in stage.get('beginnerGlossTargets', []):

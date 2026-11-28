@@ -296,7 +296,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         memory_choices = {t['targetId']: t['sources'] for t in all_targets
                           if t['targetId'] in target_ids and len(t.get('sources', [])) == 2
                           and t.get('decisionMode') == 'measure_both_before_recommending_either'
-                          and scope == 'joint' and record.get('comparisonBeginnerDeploymentGuidanceVersion') in (3, 4)}
+                          and scope == 'joint' and record.get('comparisonBeginnerDeploymentGuidanceVersion') in (3, 4, 5)}
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,

@@ -10,6 +10,15 @@ from services.deep_research.verification import make_evidence, verify_claims
 from test_deep_research_comparison_layout import fixture as layout_fixture, QUESTION
 
 
+def test_memory_advice_accepts_prospective_budget_condition_without_predicting_method():
+    from services.deep_research.general_advice import device_memory_test_first
+
+    text = '先在相同场景和设备上实测两者的峰值显存；若只有一者满足显存上限，优先考虑该方案。'
+    assert device_memory_test_first(text)
+    assert not device_memory_test_first(text + '不过优先考虑 LightGaussian。')
+    assert not device_memory_test_first(text.replace('该方案', 'LightGaussian'))
+
+
 @pytest.mark.parametrize('editor', ['plain', 'joint_scope', 'merge'])
 def test_editor_preserves_verified_cell_display_before_enforcing_presentation_limit(editor):
     from services.deep_research.answer_constraints import compact_answer

@@ -14,7 +14,8 @@ BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT = (
 ) + DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
-def pairwise_memory_choices(point, paper_aliases, evidence, sources, *, allowed_candidate_refs=None):
+def pairwise_memory_choices(point, paper_aliases, evidence, sources, *, allowed_candidate_refs=None,
+                            rebind_exact_titles=False):
     """Add prospective choice branches for two distinctly cited paper methods."""
     candidates = point.get('memoryCandidates')
     draft = {key: value for key, value in point.items() if key != 'memoryCandidates'}
@@ -28,6 +29,16 @@ def pairwise_memory_choices(point, paper_aliases, evidence, sources, *, allowed_
 
     names, papers = [], set()
     allowed = refs if allowed_candidate_refs is None else allowed_candidate_refs
+    if rebind_exact_titles and all(isinstance(c, dict) and set(c) == {'name', 'evidenceRef'}
+                                  and isinstance(c['name'], str) and isinstance(c['evidenceRef'], str)
+                                  and c['evidenceRef'] in allowed for c in candidates):
+        titles = {title.casefold(): paper for paper in paper_aliases
+                  if isinstance(title := sources.get(paper, {}).get('title'), str) and title}
+        by_owner = {evidence.get(c['evidenceRef'], {}).get('source'): c['evidenceRef'] for c in candidates
+                    if evidence.get(c['evidenceRef'], {}).get('accessLevel') == 'fulltext'}
+        if (len(titles) == 2 and '' not in titles and set(by_owner) == set(paper_aliases)
+                and {c['name'].casefold() for c in candidates} == set(titles)):
+            candidates = [{**c, 'evidenceRef': by_owner[titles[c['name'].casefold()]]} for c in candidates]
     for candidate in candidates:
         if not isinstance(candidate, dict) or set(candidate) != {'name', 'evidenceRef'}:
             return draft, False
@@ -38,7 +49,7 @@ def pairwise_memory_choices(point, paper_aliases, evidence, sources, *, allowed_
         paper = row.get('source')
         if row.get('accessLevel') != 'fulltext' or paper not in paper_aliases or paper in papers:
             return draft, False
-        title = sources.get(paper, {}).get('title', '')
+        title = sources.get(paper, {}).get('title') or ''
         if allowed_candidate_refs is not None and len(name) > 45 and name.casefold() == title.casefold():
             name = re.split(r':|\s+for\s+', title, maxsplit=1, flags=re.I)[0].strip()
         if (not re.fullmatch(r'[\w][\w .+()-]{1,44}', name) or name != name.strip()
@@ -267,6 +278,9 @@ _STATEMENT_BREAKS = re.compile(r'[。；;\n]|(?<=[.!?])\s+')
 _MEASURED_CHOICE_RULE = re.compile(
     r'(?:根据|依据|按)(?:上述|实际)?(?:实测|测量|测试)(?:结果|值)(?:来)?选择(?:峰值)?显存(?:占用)?更(?:低|少)的(?:方法|方案)'
     r'(?=[。；;！？.!?，,\n]|$)')
+_ONLY_MEASURED_OPTION = re.compile(
+    r'(?:若|如果)只有(?:一者|一种方法|一种方案)满足(?:峰值)?显存上限[，,]\s*'
+    r'优先(?:考虑|选择)该方案(?=[。；;！？.!?\n]|$)')
 
 
 def _device_memory_supported(claim, audit, own, *, direct=False):
@@ -326,7 +340,7 @@ def device_memory_test_first(text):
         return False
     # A generic criterion for a future measurement does not pick a winner.
     # Scan the rest independently so added named preferences still fail.
-    text = _MEASURED_CHOICE_RULE.sub('。', text)
+    text = _ONLY_MEASURED_OPTION.sub('。', _MEASURED_CHOICE_RULE.sub('。', text))
     for clause in re.split(r'[。；;.!?\n]|但是|然而|不过|(?<![不])但|\b(?:but|however)\b', text, flags=re.I):
         for match in _PREFERENCE_OR_BENEFIT.finditer(clause):
             prefix = clause[max(0, match.start() - 36):match.start()]
