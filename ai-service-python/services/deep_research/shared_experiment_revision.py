@@ -425,7 +425,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                 if design_data is not None:
                     design_policy = ('Paper facts are checked and read-only. Keep sourceFacts exactly.\n'
                                      + ATTRIBUTION_SCIENCE_INSTRUCTIONS)
-                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11):
+                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11, 12):
                         design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
                                           'Use unresolved only for open design decisions.\n')
                     if compact_version in (5, 6):

@@ -675,6 +675,12 @@ def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     assert 'exact training backward sample or window and aggregation' in current
     assert 'Separate it from screen-space gating and optimizer descent' in current
     assert 'exact training backward sample or window and aggregation' not in revision
+    next_version = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 12})
+    assert 'RGB-to-SH initialization matching renderer offsets and basis signs' in next_version
+    assert 'gradient zeroing before every backward' in next_version
+    assert 'Define parent/child gradients across topology edits' in next_version
+    assert 'sampled peaks are observed only' in next_version
+    assert 'within-level effects' in next_version and 'signed world-position loss gradient' in next_version
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
