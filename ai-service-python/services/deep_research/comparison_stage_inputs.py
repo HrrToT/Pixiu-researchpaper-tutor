@@ -292,6 +292,10 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             target for target in all_targets
             if target['role'] == 'paper_cell' and target['targetId'] in target_ids])
             if record.get('comparisonBeginnerMechanismGuidanceVersion') in (3, 4, 5) else [])
+        memory_choices = {t['targetId']: t['sources'] for t in all_targets
+                          if t['targetId'] in target_ids and len(t.get('sources', [])) == 2
+                          and t.get('decisionMode') == 'measure_both_before_recommending_either'
+                          and scope == 'joint' and record.get('comparisonBeginnerDeploymentGuidanceVersion') == 3}
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,
@@ -307,6 +311,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                  **({'paperSettingStatements': True} if setting_statements else {}),
                  **({'speedExplanationProse': True} if prose_explanation else {}),
                  **({'beginnerGlossTargets': glossary_targets} if glossary_targets else {}),
+                 **({'memoryChoiceTargets': memory_choices} if memory_choices else {}),
                  **({'partialBeginnerGlosses': True}
                     if glossary_targets and record.get('comparisonBeginnerMechanismGuidanceVersion') in (4, 5) else {}),
                  'scientificApproval': False}

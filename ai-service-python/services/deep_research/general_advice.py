@@ -14,6 +14,51 @@ BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT = (
 ) + DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
+def pairwise_memory_choices(point, paper_aliases, evidence, sources):
+    """Add prospective choice branches for two distinctly cited paper methods."""
+    candidates = point.get('memoryCandidates')
+    draft = {key: value for key, value in point.items() if key != 'memoryCandidates'}
+    body = draft.get('body')
+    prose = body.get('prose') if isinstance(body, dict) and set(body) == {'prose'} else None
+    refs = draft.get('evidenceRefs')
+    if (not eligible(draft) or not isinstance(prose, dict) or not isinstance(prose.get('text'), str)
+            or not isinstance(refs, list) or not isinstance(candidates, list) or len(candidates) != 2):
+        return draft, False
+
+    names, papers = [], set()
+    for candidate in candidates:
+        if not isinstance(candidate, dict) or set(candidate) != {'name', 'evidenceRef'}:
+            return draft, False
+        ref, name = candidate['evidenceRef'], candidate['name']
+        if not isinstance(ref, str) or ref not in refs or not isinstance(name, str):
+            return draft, False
+        if (not re.fullmatch(r'[\w][\w .+()-]{1,44}', name) or name != name.strip()
+                or re.fullmatch(r'[EPVGQS]\d+|\d+', name)):
+            return draft, False
+        row = evidence.get(ref, {})
+        paper = row.get('source')
+        if row.get('accessLevel') != 'fulltext' or paper not in paper_aliases or paper in papers:
+            return draft, False
+        title = sources.get(paper, {}).get('title', '')
+        context = ' '.join(f"{row.get('quote', '')} {title}".split()).casefold()
+        if not re.search(r'(?<!\w)' + re.escape(name.casefold()) + r'(?!\w)', context):
+            return draft, False
+        names.append(name)
+        papers.add(paper)
+    if len({name.casefold() for name in names}) != 2:
+        return draft, False
+
+    first, second = names
+    procedure = ('' if device_memory_test_first(prose['text'])
+                 else '先在同一硬件、场景和渲染设置下实测两种方法的峰值显存与画质。')
+    branches = (f'若只有 {first} 的峰值显存和画质均达标，选 {first}。'
+                f'若只有 {second} 同时达标，选 {second}。'
+                '若两者均达标，按任务最看重的实测画质或帧率选择。'
+                '若两者均未达标，调整设置后重测。')
+    text = prose['text'].rstrip() + '\n' + procedure + branches
+    return {**draft, 'body': {'prose': {**prose, 'text': text}}}, True
+
+
 def eligible(claim):
     # This only selects a reviewer. The reviewer must reject scientific
     # interventions disguised as untyped advice; no label grants acceptance.

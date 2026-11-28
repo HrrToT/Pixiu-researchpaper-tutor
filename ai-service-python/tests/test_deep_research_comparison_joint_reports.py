@@ -362,6 +362,10 @@ def test_memory_advice_prompt_requests_cited_reasoning_before_measured_choice():
     assert 'Cite actual observations that inform' in current
     assert 'body={"deviceMemoryAdvice":"measure_then_choose"}' in old
     assert 'body={"deviceMemoryAdvice":"measure_then_choose"}' not in current
+    structured = render({**r, 'comparisonBeginnerDeploymentGuidanceVersion': 3}, question,
+                        plan, {}, None, 3, source_scope=('joint',))
+    assert 'point.memoryCandidates' in structured
+    assert 'point.memoryCandidates' not in current
     target = next(t for t in targets(plan) if t.get('deliverable') == 'conditional_advice')
     point = {'kind': 'proposal', 'evidenceRefs': target['evidenceIds'][:1], 'cellRefs': [],
              'body': {'prose': {'text': '同一硬件和场景先实测两种方法的峰值显存，画质达标后再选择。', 'conditions': {}}}}

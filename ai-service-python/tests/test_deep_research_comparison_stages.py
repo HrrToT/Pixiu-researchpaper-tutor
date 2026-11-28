@@ -1257,6 +1257,42 @@ def test_beginner_gloss_batch_keeps_valid_definitions_when_one_adds_a_number():
     assert point == saved
 
 
+@pytest.mark.parametrize('failure', [None, 'same_paper', 'uncited', 'unseen_name', 'abstract'])
+def test_two_paper_memory_plan_has_named_post_measurement_branches(failure):
+    from services.deep_research.general_advice import pairwise_memory_choices
+    from services.deep_research.comparison_wire import resolve_point
+
+    sources = {'P1': {'title': 'Method Alpha'}, 'P2': {'title': 'Method Beta'}}
+    evidence = {'E1': {'source': 'P1', 'quote': 'Method Alpha uses feature A.', 'accessLevel': 'fulltext'},
+                'E2': {'source': 'P2', 'quote': 'Method Beta uses feature B.', 'accessLevel': 'fulltext'}}
+    point = {'kind': 'proposal', 'evidenceRefs': ['E1', 'E2'], 'cellRefs': [],
+             'body': {'prose': {'text': '模型文件大小无法说明渲染时的峰值显存。', 'conditions': {}}},
+             'memoryCandidates': [{'name': 'Method Alpha', 'evidenceRef': 'E1'},
+                                  {'name': 'Method Beta', 'evidenceRef': 'E2'}]}
+    if failure == 'same_paper':
+        evidence['E2']['source'] = 'P1'
+    elif failure == 'uncited':
+        point['evidenceRefs'] = ['E1']
+    elif failure == 'unseen_name':
+        point['memoryCandidates'][1]['name'] = 'Method Other'
+    elif failure == 'abstract':
+        evidence['E2']['accessLevel'] = 'abstract'
+    saved = deepcopy(point)
+    draft, bound = pairwise_memory_choices(point, ['P1', 'P2'], evidence, sources)
+    assert point == saved and 'memoryCandidates' not in draft
+    if failure:
+        assert not bound and draft['body'] == point['body']
+        return
+    target = {'deliverable': 'conditional_advice', 'evidenceIds': ['E1', 'E2'],
+              'decisionMode': 'measure_both_before_recommending_either'}
+    compiled = resolve_point(draft, target, {})
+    text = compiled['body']['prose']['text']
+    assert bound and compiled['evidenceRefs'] == ['E1', 'E2']
+    assert '若只有 Method Alpha 的峰值显存和画质均达标，选 Method Alpha' in text
+    assert '若只有 Method Beta 同时达标，选 Method Beta' in text
+    assert '若两者均达标' in text and '若两者均未达标' in text
+
+
 @pytest.mark.parametrize('exhausted',['calls','time'])
 def test_exhausted_dispatch_budget_does_not_send_the_next_stage(exhausted):
     r,snapshot=prepared()

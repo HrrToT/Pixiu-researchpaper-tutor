@@ -147,6 +147,7 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         raise DeepResearchError('invalid_comparison_stage_state', '比较阶段状态或输入身份已改变。')
     answers = []
     evidence_owners = {row['evidenceId']: row['source'] for row in snapshot.get('rows', [])}
+    evidence_by_id = {row['evidenceId']: row for row in snapshot.get('rows', [])}
     for stage in snapshot['stages']:
         if digest({k:v for k,v in stage.items() if k != 'inputDigest'}) != stage.get('inputDigest'):
             raise DeepResearchError('invalid_comparison_stage_input', '比较阶段输入已改变。')
@@ -222,12 +223,18 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         entry['status'] = 'compiled_unverified'
         admitted = []
         gloss_errors = []
+        choice_errors = []
         for row in payload['answers']:
             point = row.get('point')
             reason = None
             if isinstance(point,dict):
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
+                    if choice_papers := stage.get('memoryChoiceTargets', {}).get(row['targetId']):
+                        from services.deep_research.general_advice import pairwise_memory_choices
+                        point, bound = pairwise_memory_choices(point, choice_papers, evidence_by_id, snapshot['sources'])
+                        if not bound:
+                            choice_errors.append(row['targetId'])
                     if row['targetId'] in stage.get('beginnerGlossTargets', []):
                         point, gloss_error = bind_beginner_glosses(
                             point, isolate_invalid=stage.get('partialBeginnerGlosses') is True)
@@ -273,6 +280,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         entry['isolatedTargets'] = isolated
         if gloss_errors:
             entry['beginnerGlossErrors'] = gloss_errors
+        if choice_errors:
+            entry['unboundMemoryChoiceTargets'] = choice_errors
         checkpoint(deepcopy(saved))
         answers.extend(admitted)
     return {'content':json.dumps({'answers':answers},ensure_ascii=False),'finishReason':'stop'}
