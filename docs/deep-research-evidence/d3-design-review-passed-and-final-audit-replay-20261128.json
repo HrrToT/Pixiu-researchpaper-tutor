@@ -1,0 +1,119 @@
+{
+  "caseId": "D3-DENSIFICATION-FACTORIAL",
+  "candidate": "b569bad8ac5688c6908195da619e630fb556426d",
+  "runId": "dr_d3_design_stable_pointers_20261128",
+  "priorRunId": "dr_d3_execution_v9_shared_fit_20261128",
+  "fixCommit": "0644b4383cc2797b3ba7bd449894105b618ed35c",
+  "reusedFactChecks": 8,
+  "scientificChecksPassed": 25,
+  "additionalGenerations": 3,
+  "additionalTokens": 32067,
+  "carriedTokens": 44976,
+  "cumulativeTokens": 77043,
+  "additionalSeconds": 70.95,
+  "modelCallsByNode": {
+    "review_experiment_shared": 2,
+    "verify_answer_coverage": 1
+  },
+  "externalSearches": 0,
+  "productionWrites": 0,
+  "independentCredit": 0,
+  "wholeAnswerAudit": "invalid_response_before_fix",
+  "published": false,
+  "remainingContent": "State explicitly that the cited method passages do not establish paper optimizer-state handling for parent and child Gaussians.",
+  "offlineAuditReplay": {
+    "oldStatus": "invalid_response",
+    "oldDiagnosticErrors": [
+      "experiment_deliverable"
+    ],
+    "newStatus": "checked",
+    "newDiagnosticErrors": [],
+    "survivingGaps": [
+      {
+        "obligationId": "experiment_deliverable",
+        "missingAspects": [
+          "回应原问题明确要求的解释、比较和原论文事实；拟议设置不能替代用户要求的原始数据。给出有边界的假设与明确分组。"
+        ]
+      },
+      {
+        "obligationId": "operations",
+        "missingAspects": [
+          "报告论文中与克隆、分裂及操作前后父子高斯和优化器状态有关的实际描述，并标明原文未说明之处。"
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "missingAspects": [
+          "只依据当前原始3DGS v1论文，设计一个可执行的2×2对照实验，研究训练阶段小高斯克隆与大高斯分裂各自以及交互如何影响新视角重建质量和训练峰值显存。四组分别开关这两项操作。请说明假设、操作前后父子高斯与优化器状态、从同一检查点和随机种子配对开始、训练与测试拆分、同优化步预算和不透明度处理、执行顺序、指标与显存计量、主效应和交互判断，以及某组资源不足时如何处理。区分论文已有消融与拟议方案，未执行，不用外部资料。"
+        ]
+      }
+    ],
+    "repairEligible": true,
+    "complete": false,
+    "rawCallsUnchanged": true,
+    "newProviderCalls": 0
+  },
+  "repairPreflight": {
+    "1": {
+      "status": "not_started_capacity",
+      "inputBytes": 63711,
+      "suppliedEvidenceAliases": [
+        "E5",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E6",
+        "E7",
+        "E9",
+        "E13"
+      ],
+      "preserveSourceFacts": null,
+      "reachedDispatch": false
+    },
+    "2": {
+      "status": "invocation_failed",
+      "inputBytes": 30330,
+      "suppliedEvidenceAliases": [
+        "E5",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E6",
+        "E7",
+        "E9",
+        "E13"
+      ],
+      "preserveSourceFacts": true,
+      "reachedDispatch": true
+    }
+  },
+  "repairBudgetReplay": {
+    "rejectedBeforeProvider": true,
+    "budgetStop": {
+      "kind": "modelCalls",
+      "limit": 18,
+      "used": 6
+    },
+    "inputBytes": 30330,
+    "carriedTokens": 77043,
+    "modelCalls": 0
+  },
+  "regression": {
+    "passed": 405,
+    "failed": 0
+  },
+  "rawArtifacts": {
+    "tmp/openai-d3-design-stable-pointers-20261128/intent.json": "ec8b326e741ffb930b7b538c76aa6596af5797c513ed06f0fbce9bf0a3a35552",
+    "tmp/openai-d3-design-stable-pointers-20261128/calls.json": "0be1e4b7e1c06450debffac07857e79b8c81da59d708f040e6d486726fda7357",
+    "tmp/openai-d3-design-stable-pointers-20261128/run.json": "97fc364aac1d317657cf1676888b2c7e25811b0fcdea76644816903150581a7c",
+    "tmp/openai-d3-design-stable-pointers-20261128/result.json": "07eacda247be874c1a01e3b1637f02d0072d611471fdccd155bb35b3299c0400",
+    "tmp/openai-d3-design-stable-pointers-20261128/provider.jsonl": "a23c2734862b5c0b9da54b9bb7bf9202847262dc82ba8bf28e18d3e3afb394a8",
+    "tmp/openai-d3-design-stable-pointers-20261128/compiled-roles-audit-replay.json": "8279c913bd46f6d2522deee9214c1b0519d2e56b7a250401d501d4e0be666494",
+    "tmp/openai-d3-design-stable-pointers-20261128/compiled-roles-audit-checkpoint.json": "b300681317195f7d266b2ed09dfea641c8f8d4a58fdcbcc59fe2e7ec4772f7bf",
+    "tmp/openai-d3-design-stable-pointers-20261128/compact-repair-preflight.json": "2e43d253a8a9284f3301996ae738fa1aff89b6354e54c0fc70bdc5cc6a850114",
+    "tmp/openai-d3-design-stable-pointers-20261128/scoped-repair-budget-replay.json": "09bc7dbd11478b2636df2a68fdaf18d1c05074f522ec87f637ac7143e441ef72",
+    "tmp/d3-compiled-role-regression-20261128.xml": "cef3a8eb3b4bc15feba9c962716946225b9f4f6e144ae99f8abb584cf4febcfd"
+  }
+}
