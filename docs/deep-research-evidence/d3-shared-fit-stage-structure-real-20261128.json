@@ -1,0 +1,106 @@
+{
+  "candidate": "c71227189aaf73f0783785e629bbc255d0d40802",
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "split": "development",
+  "independentCredit": 0,
+  "runId": "dr_d3_intrinsics_id_direction_20261128",
+  "reusedPlanningAndEvidenceRunId": "dr_d3_densification_regeneration_20261128",
+  "budget": {
+    "maxModelCalls": 18,
+    "maxTokens": 100000,
+    "maxWallClockSeconds": 360,
+    "carriedPlanningCalls": 5,
+    "carriedPlanningTokens": 17377,
+    "branchTimeNote": "Elapsed seconds reported separately for the isolated regeneration; earlier planning time is not included."
+  },
+  "actualNewCalls": 1,
+  "newProviderUsage": {
+    "total_tokens": 12273,
+    "input_tokens": 7317,
+    "output_tokens": 4956,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 7314
+  },
+  "branchTokensIncludingCarriedPlanning": 29650,
+  "regenerationElapsedSeconds": 59.89,
+  "terminalReason": "invalid_shared_experiment_response",
+  "structuralIssues": [
+    {
+      "code": "plan.fit_memory_capture",
+      "path": "/metrics/1/fitMemoryCaptures"
+    }
+  ],
+  "scientificReviewSent": false,
+  "finalAnswerAuditSent": false,
+  "published": false,
+  "diagnosis": {
+    "stepId": "s2",
+    "declaredKind": "prepare",
+    "captureState": "pm",
+    "metricId": "m",
+    "expectedContract": "Whole-training peak must bind a shared fit step with an independent single budget; prepare steps cannot count as fit windows.",
+    "independentSourceCrossCheck": "Original 3DGS v1 physical page 5 states that the copied Gaussian moves along the positional gradient. The model wording subtracted a gradient while invoking the source."
+  },
+  "zeroModelReplay": {
+    "originalInputBytes": 31939,
+    "updatedInputBytes": 31975,
+    "unchangedEvidenceIds": [
+      "E1",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E16",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6",
+      "E7",
+      "E8",
+      "E9"
+    ],
+    "oldInputDigest": "29b4f2af35727d7cddaa767620dc39eaf988230b2e129ba55cbdf54adadf1a43",
+    "newInputDigest": "1b739e1c9b36d40408f879551547c3595e68ce7aace1f8c00b1463e59e7bac1a",
+    "rawProviderResponseIssues": [
+      {
+        "code": "plan.fit_memory_capture",
+        "path": "/metrics/1/fitMemoryCaptures"
+      }
+    ],
+    "localCorrectedFixtureCompiled": true,
+    "negativeCaptureTestsPassed": true,
+    "fixtureSharedBudgetTotalSeconds": 86400,
+    "fixtureSharedPreparationSeconds": 28800,
+    "fixtureSharedFitSeconds": 57600,
+    "fixtureDistinctSharedAndArmCaptures": [
+      {
+        "stepId": "s2",
+        "recordStateId": "pm"
+      },
+      {
+        "stepId": "s9",
+        "recordStateId": "fm"
+      }
+    ],
+    "reviewFixtureHardIssues": [],
+    "reviewFixtureBatchBytes": [
+      15359,
+      31738,
+      31957
+    ],
+    "providerCallsDuringReplay": 0,
+    "scientificApproval": false,
+    "candidate": "dba1c744689a0a8f2987d084f769b6538fc32d49",
+    "testsPassed": 225,
+    "fixtureBoundary": "Human-constructed structural fixture; the original response remains invalid. The fixture passed structural and literal prechecks only."
+  },
+  "rawArtifactSha256": {
+    "intent.json": "4da44ed27090a1666df51ca10a576ede05362a4889bdfa62ee15ef1a4517a58d",
+    "provider.jsonl": "0bb732a77c70e1ae4582ef4970c4348592efdec89080e43515a7279491461838",
+    "calls.json": "7fa59cf8849868e1eb71b1aca430482f486e404ecfc0a7f0194c25c85e87f387",
+    "run.json": "22e59e5fb1d8ef59249f2c6e9a0b0f4eda807bba9e70d9c74daf78a80f0501d2",
+    "result.json": "1f737480ff2c0f7623fc7435f5ee83dbfad9196e82717dc98176d45b73b32879",
+    "shared-fit-offline-replay.json": "c2792746085ea9798320b10051f867f0a7c18c0af97b591b58194810bd883398"
+  }
+}
