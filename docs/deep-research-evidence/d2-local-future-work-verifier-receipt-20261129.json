@@ -1,0 +1,53 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "candidateCommit": "a8a315b4a50f5b4bf62edbeae9fa2763415b5252",
+  "artifacts": {
+    "tmp/d2-targeted-future-work-live-20261129/run.json": "6cb46b5f3627f0ed28b23e66dd4d94975ff6e4752d427b5ce68755f09b133ef9",
+    "tmp/d2-local-future-work-offline-20261129/run.json": "c356a728d153141273409ca68d66ca2f5e550f641b1322e2abbaf4a4f1faf592",
+    "tmp/d2-local-future-work-verification-20261129/run.json": "b1884623f5db1b278592402266255961c432159b1e78e7a483ed2b43a60be9f6",
+    "tmp/d2-local-future-work-verification-20261129/calls.json": "5a076baa4b4a35604964ae1a9893b38f4fd5d9aea03e7f41493409ab9aa1248d",
+    "tmp/d2-local-future-work-verification-20261129/result.json": "f794a212b89f90db1ff53d926c6e94d24af15c427f0f8000c81c61073fca4877"
+  },
+  "localCandidate": {
+    "draftGenerationCalls": 0,
+    "changedClaimIds": [
+      "cmp_1_0"
+    ],
+    "unchangedCitationPages": [
+      2,
+      4,
+      11
+    ],
+    "rehearsedIndependentVerificationAndFinalAuditRouting": true
+  },
+  "independentVerification": {
+    "claimIdsAccepted": [
+      "cmp_1_0"
+    ],
+    "generationCalls": 1,
+    "usage": {
+      "total_tokens": 3299,
+      "input_tokens": 3210,
+      "output_tokens": 89,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 3207
+    },
+    "promptBytes": 14652
+  },
+  "remaining": {
+    "rejectedIds": [
+      "cmp_4_0"
+    ],
+    "reason": "ambiguous baseline row within the public paper table",
+    "finalAnswerAuditDispatched": false,
+    "callsUsed": 17,
+    "callLimit": 18,
+    "tokensUsed": 79461,
+    "tokenLimit": 100000
+  },
+  "targetedOfflineTestsPassed": 889,
+  "externalSearches": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "published": false
+}
