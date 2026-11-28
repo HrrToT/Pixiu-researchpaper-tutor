@@ -653,7 +653,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'other works, including what they report or whether their text is available.\n'
                 'If you cannot support the assigned point from its own evidence, return point=null.\n'
                 'Put the supported result first and keep measured conditions with it.')
-            if type(wording_version) is int and wording_version in (1, 2):
+            if type(wording_version) is int and wording_version in (1, 2, 3):
                 assignment_policy = (
                     'Answer only the assigned dimension of the named paper. Put the result first. '
                     'If unsupported, return point=null. Keep the exact technical property; for easily reversed terms '
@@ -703,6 +703,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'and rendering observations qualitatively in these cells. Keep exact quantities '
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
+                if wording_version == 3:
+                    policy += ('For quality trends name the matched dataset and baseline. If metric directions differ '
+                               'by metric, dataset or baseline, say so; do not summarize them as a uniform gain or loss.\n')
         example_owner = benchmark_example_owner(record, plan)
         literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         if example_owner:

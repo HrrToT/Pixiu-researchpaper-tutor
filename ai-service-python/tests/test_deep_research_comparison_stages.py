@@ -798,6 +798,14 @@ def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
         assert 'Do not repeat benchmark metric values' in stage['prompt'].replace('\n', '')
     assert limit in packet(snapshot['stages'][-1])['requestContext']['question']
     assert 'numericExample' not in packet(snapshot['stages'][-1])['requestContext']
+    scoped = {**r, 'comparisonPaperWordingContractVersion': 3}
+    updated = prepare(scoped, p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    for old, new in zip(snapshot['stages'][:-1], updated['stages'][:-1], strict=True):
+        assert 'For quality trends name the matched dataset and baseline.' in new['prompt']
+        assert 'do not summarize them as a uniform gain or loss' in new['prompt']
+        assert 'uniform gain or loss' not in old['prompt']
+        assert packet(new) == packet(old)
+    assert updated['stages'][-1] == snapshot['stages'][-1]
 
 
 def test_paper_wording_preserves_properties_and_protocol_exceptions_without_changing_joint_input():
