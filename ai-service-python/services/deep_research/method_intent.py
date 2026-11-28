@@ -28,8 +28,11 @@ def query_intents(query, *, supervision=False, compression_operations=False):
         found.insert(0, 'training_supervision')
     if compression_operations:
         from services.deep_research.mechanism_sources import compression_mapping_requested
-        if compression_mapping_requested(query, include_operations=compression_operations == 3):
+        compression = compression_mapping_requested(query, include_operations=compression_operations in (3, 4))
+        if compression:
             found.append('compression_mapping')
+        if compression_operations == 4 and (compression or re.search(r'蒸馏|\bdistillation\b', query, re.I)):
+            found.append('distillation_operation')
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
             found.append('measurement:'+metric.lower())
@@ -59,6 +62,9 @@ def query_intent(query, *, operational=False):
 
 
 def operation_score(body, section, intent, *, operational=False):
+    if operational and intent == 'distillation_operation':
+        from services.deep_research.mechanism_sources import distillation_operation_score
+        return distillation_operation_score(body, section)
     if operational and intent == 'compression_mapping':
         from services.deep_research.mechanism_sources import compression_mapping_score
         return compression_mapping_score(body, section)

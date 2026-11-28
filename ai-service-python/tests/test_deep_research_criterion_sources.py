@@ -226,6 +226,57 @@ def test_compression_mapping_retains_literal_operation_in_owned_read_and_draft(r
     assert all('foreign' not in b['evidenceIds'] for b in bundles)
 
 
+def test_distillation_operation_survives_source_selection_reading_and_draft_allocation():
+    from services.deep_research.reading_priority import select_read_sources
+    from services.deep_research.source_passages import extract
+    from services.deep_research.synthesis_evidence import order_premises
+    from services.deep_research.verification import make_evidence
+
+    question = '说明论文的压缩机制。'
+    goal = {**obligation(), 'question': question, 'requiredSources': ['p'],
+            'comparisonRole': {'kind': 'per_paper', 'requestExcerpt': '压缩机制'},
+            'completionCriteria': [{'criterionId': 'compression', 'requirement': question,
+                                    'responseType': 'explanation'}]}
+    owner = {'pdfId': 'p', 'workId': 'p', 'ownerMaterialId': 'p', 'versionId': 'v1',
+             'contentHash': 'h', 'accessLevel': 'fulltext', 'obligationIds': ['o']}
+    top = {**owner, 'sourceId': 'overview', 'text': 'We propose compression with knowledge distillation.',
+           'location': {'page': 1}}
+    mapping = {**top, 'sourceId': 'mapping', 'location': {'page': 4},
+               'text': 'We quantize appearance features and map them to the closest codes in the codebook.'}
+    detail = {**top, 'sourceId': 'detail', 'location': {'page': 5},
+              'text': 'We compress the appearance representation. The teacher model supplies rendered pixel values. '
+                      'The student model learns to match these values under pixel supervision. '
+                      'We create pseudo views by perturbing the camera position.'}
+    candidates = [top, mapping, {**detail, 'sourceId': 'foreign', 'pdfId': 'q', 'workId': 'q',
+                                  'ownerMaterialId': 'q'}, detail]
+    selected = include_pdf_criteria([top], candidates, [question], 'p', 'h', 3, compression_operations=4)
+    assert [row['sourceId'] for row in selected] == ['overview', 'mapping', 'detail']
+    assert 'distillation_operation' not in query_intents(question, compression_operations=3)
+
+    read = select_read_sources(selected, {'o': goal}, 3, mechanism_overviews=True, compression_operations=4)
+    assert read[0]['sourceId'] == 'detail'
+    plan = [{'obligations': [goal]}]
+    record = {'runId': 'r', 'adaptiveExtractionContractVersion': 3, 'comparisonMechanismReadContractVersion': 4,
+              'state': {'plan': plan, 'readResults': [
+                  {**row, 'pages': [{'page': row['location']['page'], 'text': row['text']}]} for row in read
+              ]}}
+
+    def update(_, mutate, **kwargs):
+        nonlocal record
+        record = mutate(record)
+        return record
+
+    extract(record, make_evidence, lambda *_: True, update)
+    literal = record['state']['evidence']
+    both, = (row for row in literal if 'teacher model' in row['quote'] and 'pseudo views' in row['quote'])
+    assert both['quote'] in detail['text'] and both['verification']['literal'] == 'passed'
+    assert both['sourceId'] == 'detail' and both['location']['page'] == 5
+    _, bundles = order_premises(literal, plan, compression_operations=4)
+    selected = {tuple(row['evidenceIds']) for row in bundles}
+    mapping_id, = (row['evidenceId'] for row in literal if row['sourceId'] == 'mapping')
+    assert selected >= {(both['evidenceId'],), (mapping_id,)}
+
+
 EQUATION='Equation: d = F(g(x), g(t) + X(i)), X(i) = N(0, 1) * beta * dt * (1 - i/tau).'
 TEXT='We add noise to the encoded time. The noise decays during training. Our method improves image quality.\n'+EQUATION
 

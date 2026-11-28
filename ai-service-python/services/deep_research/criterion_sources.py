@@ -88,7 +88,7 @@ def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limi
             continue
         detail=ranked[0]
         index = next((i for i, row in enumerate(selected) if row['sourceId'] == detail['sourceId']), None)
-        if intent == 'compression_mapping':
+        if intent in ('compression_mapping', 'distillation_operation'):
             # Keep the literal operation from being evicted by later generic
             # processing-cost or benchmark context selection.
             detail = {**detail, 'retrievalMode': 'pdf_compression_operation'}
@@ -99,7 +99,7 @@ def include_pdf_criteria(indexed,candidates,questions,owned_id,content_hash,limi
                     continue
                 selected.pop(removable[-1])
             selected.append(detail)
-        elif intent == 'compression_mapping':
+        elif intent in ('compression_mapping', 'distillation_operation'):
             selected[index] = {**selected[index], 'retrievalMode': 'pdf_compression_operation'}
         protected.add(detail['sourceId'])
     return selected

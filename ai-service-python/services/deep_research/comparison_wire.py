@@ -659,7 +659,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                            'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
             mechanism_version = record.get('comparisonMechanismReadContractVersion')
-            if mechanism_version in (2, 3):
+            if mechanism_version in (2, 3, 4):
                 from services.deep_research.mechanism_sources import compression_mapping_requested
                 from services.deep_research.processing_cost_sources import requested as processing_cost_requested
 
@@ -669,9 +669,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                'what the paper quantifies. Distinguish it from added processing and keep any unknown '
                                'extra cost scoped to the cited evidence. ')
                     policy += ('Say those quotations cannot quantify the cost, and keep the documented work. '
-                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version == 3
+                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version in (3, 4)
                                else 'Do not treat it as zero or leave documented work blank.\n')
-                if any(compression_mapping_requested(dimension, include_operations=mechanism_version == 3)
+                if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4))
                        for dimension in dimensions):
                     policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
                                'Explain any source-reported feature-to-code mapping without claiming an index file '
@@ -789,6 +789,15 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            "For a training or compression step, say what guides it and why it matters when the cited "
                            "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
                            "Stay in the existing comparison cell and cite the passage for the explanation.\n")
+                if record.get('comparisonMechanismReadContractVersion') == 4:
+                    from services.deep_research.mechanism_sources import distillation_operation_score
+                    for paper in data['papers']:
+                        ids = [t['targetId'] for t in paper['targets'] if t['targetId'] in mechanism_targets]
+                        if ids and any(distillation_operation_score(e['quote'], e.get('section', ''))
+                                       for e in paper['evidence']):
+                            policy += (f"For {', '.join(ids)}, explain what the compact model learns to match "
+                                       "during distillation. If the passage explains how extra training views are "
+                                       "constructed or used, include that step with its citation.\n")
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + short_policy + body_guidance + figure_policy
                 + (paper_boundary_policy if scoped_joint else '')

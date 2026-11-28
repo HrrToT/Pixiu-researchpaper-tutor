@@ -196,6 +196,20 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             keep_whole = _keep_local_method_passage(record, source, location, body) or (
                 keep_benchmark_protocol and owned_protocol(source, location, body, record.get('materials', ())))
             ranges = [(0, len(body))] if keep_whole else list(spans(body))
+            if record.get('comparisonMechanismReadContractVersion') == 4 and source['accessLevel'] == 'fulltext':
+                from services.deep_research.criterion_sources import criterion_targets
+                from services.deep_research.mechanism_sources import distillation_operation_score
+
+                if any(intent == 'distillation_operation' for _, _, intent in criterion_targets(
+                        {oid: obligations[oid] for oid in eligible}, compression_operations=4)):
+                    section = location.get('section') or ''
+                    score = distillation_operation_score(body, section)
+                    if score and not any(distillation_operation_score(body[a:b], section) == score for a, b in ranges):
+                        combined = [(a, b) for (a, _), (_, b) in zip(ranges, ranges[1:])
+                                    if len(body[a:b].encode('utf8')) <= MAX_PASSAGE_BYTES
+                                    and distillation_operation_score(body[a:b], section) == score]
+                        if combined:
+                            ranges.append(min(combined, key=lambda span: span[1] - span[0]))
             if source['sourceId'] in continuations:
                 original_span = protocol.continuation_range(body)
                 if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):

@@ -165,11 +165,28 @@ def compression_mapping_score(text, section):
     return 0
 
 
+def distillation_operation_score(text, section):
+    """Rank the teacher-to-student signal and the construction of training views."""
+    if re.search(r'related work|background|bibliography|references|^table\b', section.strip(), re.I):
+        return 0
+    text = ' '.join(text.split())
+    learner = r'(?:models?|networks?|classifiers?)\b'
+    teacher_student = re.search(rf'\bteacher {learner}.{{0,200}}\bstudent {learner}'
+                                rf'|\bstudent {learner}.{{0,200}}\bteacher {learner}', text, re.I)
+    signal = re.search(r'\b(?:supervis\w*|loss|match\w*|differences?)\b', text, re.I)
+    if not (teacher_student and signal):
+        return 0
+    synthesized_views = re.search(r'\b(?:pseudo[\s‐‑–-]*views?|novel views?)\b|\btpseudo\b', text, re.I)
+    camera_change = re.search(r'\b(?:camera (?:pose|position|rotation|translation)|perturb\w*|jitter\w*)\b', text, re.I)
+    return 3 + 2 * bool(synthesized_views and camera_change)
+
+
 def comparison_overviews(sources, obligations, extracted, *, compression_operations=False):
     from services.deep_research.obligation_binding import eligible_obligation_ids
 
     active = {oid: obligation for oid, obligation in obligations.items() if comparison_mechanism(obligation)}
     best = {}
+    distillation = {}
     for source in sources:
         identity = (source.get('workId'), source.get('versionId'))
         if (source.get('accessLevel') != 'fulltext' or source.get('tableData') or not all(identity)
@@ -181,14 +198,24 @@ def comparison_overviews(sources, obligations, extracted, *, compression_operati
         section = source.get('location', {}).get('section', '')
         score = overview_score(text, section)
         if compression_operations and any(
-            compression_mapping_requested(c['requirement'], include_operations=compression_operations == 3)
+            compression_mapping_requested(c['requirement'], include_operations=compression_operations in (3, 4))
             for oid in eligible_obligation_ids(source, active)
             for c in active[oid].get('completionCriteria', [])
         ):
             score += 100 * compression_mapping_score(text, section)
         if score > best.get(identity, (0, None))[0]:
             best[identity] = (score, source)
-    return [source for _, source in best.values()]
+        if compression_operations == 4:
+            from services.deep_research.method_intent import query_intents
+            if any('distillation_operation' in query_intents(question, compression_operations=4)
+                   for oid in eligible_obligation_ids(source, active)
+                   for question in [active[oid]['question'],
+                                    *(c['requirement'] for c in active[oid].get('completionCriteria', []))]):
+                detail = distillation_operation_score(text, section)
+                if detail > distillation.get(identity, (0, None))[0]:
+                    distillation[identity] = (detail, source)
+    selected = {source['sourceId']: source for _, source in (*distillation.values(), *best.values())}
+    return list(selected.values())
 
 
 def prefer_sources(indexed,candidates,record,query,owned_id,limit):

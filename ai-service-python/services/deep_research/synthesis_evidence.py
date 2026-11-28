@@ -102,10 +102,11 @@ def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_loc
         criterion_id = (view.get('completionCriteria') or [{}])[0].get('criterionId', 'whole_obligation')
         for source in view.get('requiredSources') or works:
             supervision = intent == 'training_supervision'
-            if (oid, criterion_id, source) in ready_keys and not (supervision or intent == 'compression_mapping'):
+            literal_operation = supervision or intent in ('compression_mapping', 'distillation_operation')
+            if (oid, criterion_id, source) in ready_keys and not literal_operation:
                 continue
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]
-            if supervision or intent == 'compression_mapping':
+            if literal_operation:
                 def literal_operation_score(row):
                     if oid not in row.get('obligationIds', ()) or row.get('accessLevel') != 'fulltext' or row.get('tableData'):
                         return 0
