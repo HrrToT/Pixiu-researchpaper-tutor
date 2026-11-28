@@ -10,7 +10,8 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                         comparison_evaluation_protocol=False, comparison_deployment_memory=False,
                         comparison_memory_criteria=False, named_table_grouped_rows=False, local_pdf_methods=False,
                         threshold_benchmarks=None, named_benchmark_protocol=False, supervision=False,
-                        figure_counts=False, compression_operations=False, experiment_densification=False):
+                        figure_counts=False, compression_operations=False, experiment_densification=False,
+                        runtime_tradeoff=False):
     """Retain owned source identities and exact predecessor bundles.
 
     Storage ID order is not relevance order. Rank retrieved text by each
@@ -36,6 +37,15 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     else:
         ordered.sort(key=lambda s:(s['sourceId'],s.get('contentHash')) in extracted)
     preferred = []
+    if runtime_tradeoff and limit > 1:
+        from services.deep_research.runtime_evidence import rate_values, tradeoff_requested, tradeoff_roles
+        timing_obligations = {oid: o for oid, o in obligations.items() if tradeoff_requested(o.get('question', ''))}
+        tradeoffs = [s for s in ordered if s.get('accessLevel') == 'fulltext' and not s.get('tableData')
+                     and set(s.get('obligationIds', ())).intersection(eligible_obligation_ids(s, timing_obligations))
+                     and (s['sourceId'], s.get('contentHash')) not in extracted and rate_values(s.get('text', ''))
+                     and any(tradeoff_roles(s.get('text', '')))]
+        if tradeoffs:
+            preferred.append(max(tradeoffs, key=lambda s: sum(tradeoff_roles(s['text']))))
     if mechanism_overviews and limit >= 3:
         from services.deep_research.selection import balanced_sample
         definitions = [source for source in ordered

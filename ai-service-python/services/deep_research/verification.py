@@ -43,7 +43,7 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
 
 def quantity_spelling_for_record(record):
     version = record.get('quantitySpellingContractVersion', 0)
-    if version in (26, 27) and record.get('state', {}).get('outputKind', record.get('outputKind')) != 'claim_verification':
+    if version in (26, 27, 28) and record.get('state', {}).get('outputKind', record.get('outputKind')) != 'claim_verification':
         return 23
     return version
 
@@ -77,11 +77,11 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
                                                    gaussian_figure_split=explicit_quantity_phrases == 24,
                                                    thousands_of_iterations=explicit_quantity_phrases == 25)
         if explicit_quantity_phrases >= 20:
-            text, dimensions = split_dimension_series(text, pdf_word_spacing=explicit_quantity_phrases == 27)
+            text, dimensions = split_dimension_series(text, pdf_word_spacing=explicit_quantity_phrases in (27, 28))
         if explicit_quantity_phrases >= 21:
             text = normalize_interpolation_kernel_labels(text)
     typed_counts = set()
-    if explicit_quantity_phrases in (26, 27):
+    if explicit_quantity_phrases in (26, 27, 28):
         text, typed_counts = stepwise_quantity_view(text)
     return dimensions | typed_counts | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
@@ -158,7 +158,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 27 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 28 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3
@@ -243,9 +243,9 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     if re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:v\d+)?', identity, re.I):
                         pattern = r'(?<![A-Za-z0-9_])' + re.escape(identity) + r'(?![A-Za-z0-9_.])'
                         claim_text = re.sub(pattern, '', claim_text, flags=re.I)
-                if spelling == 27:
+                if spelling >= 27:
                     from services.deep_research.source_labels import without_cited_edition
-                    claim_text = without_cited_edition(claim_text, item.get('sourceTitle', ''))
+                    claim_text = without_cited_edition(claim_text, item.get('sourceTitle', ''), titled_prefix=spelling == 28)
             source_texts = [item['quote'] for item in support]
             if spelling >= 23 and any(_MIP_NERF_360.search(text) for text in source_texts):
                 # PDF body text commonly joins this benchmark's name. Match

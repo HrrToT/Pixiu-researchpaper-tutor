@@ -849,6 +849,8 @@ def make_read_node(
                 table_navigation = {o['obligationId']: o for item in record.get('readNavigationPlan', [])
                                     for o in item.get('obligations', []) if o['obligationId'] not in obligations}
             selected=select_read_sources(available,obligations,read_limit,extracted=extracted,
+                **({'runtime_tradeoff':True} if record.get('quantitySpellingContractVersion') == 28
+                   and record.get('state', {}).get('outputKind') == 'claim_verification' else {}),
                 **({'supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
                 **({'figure_counts': True} if record.get('comparisonFigureCountSynthesisVersion') in (1, 2) else {}),
                 **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8, 9) else {}),
@@ -1379,7 +1381,9 @@ def make_synthesize_node(
             literal_candidates = candidates
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
                 **({'direct_quantities_and_stages':True} if output_kind == 'claim_verification'
-                   and record.get('quantitySpellingContractVersion') == 27 else {}),
+                   and record.get('quantitySpellingContractVersion') in (27, 28) else {}),
+                **({'absolute_runtime':True} if output_kind == 'claim_verification'
+                   and record.get('quantitySpellingContractVersion') == 28 else {}),
                 **({'comparison_supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
@@ -1818,6 +1822,9 @@ space with unsupported global absence or incidental iteration/performance values
         if any(bundle.get('navigationRole') == 'reported_speed' for bundle in premise_bundles):
             prompt += ('\nFor reported speed, cite the exact quote containing the ratio. Cite the '
                        'matching protocol quotes for conditions. Nearby context is navigation.')
+        if any(bundle.get('navigationRole') == 'reported_runtime' for bundle in premise_bundles):
+            prompt += ('\nCite explicit rate quotes for each requested variant and the timing device. '
+                       'Cite the stated configuration change and affected metric or class.')
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}

@@ -47,6 +47,28 @@ def test_changed_bytes_never_reach_parser(monkeypatch):
     parse.assert_not_called()
 
 
+def test_runtime_tradeoff_continuation_keeps_owned_pdf_coordinates_and_read_limit(monkeypatch):
+    local, get, parse, _ = fixture(monkeypatch)
+    record = local.repo.require_run.return_value
+    record.update(quantitySpellingContractVersion=27, state={'outputKind': 'claim_verification'})
+    query = 'accelerated version accuracy tradeoff'
+    opening = (query + '. ') * 65
+    tail = ('Larger bins yield faster inference at 105 Hz. The decrease in performance '
+            'was mainly due to the small-object classes.')
+    text = opening + 'Background. ' * 130 + tail
+    parse.return_value = [{'page': 2, 'text': opening}, {'page': 7, 'text': text}]
+    baseline = local(query, 'p', limit=2)
+    assert not any(tail in r['text'] for r in baseline)
+    record['quantitySpellingContractVersion'] = 28
+    selected = local(query, 'p', limit=2)
+    assert len(selected) == 2
+    lead = selected[0]
+    assert lead['location']['page'] == 7 and tail in lead['text']
+    assert text[lead['location']['offset']:].startswith(lead['text'])
+    assert lead['contentHash'] == record['materials'][0]['contentHash']
+    assert get.call_count == parse.call_count == 1
+
+
 def test_comparison_retrieves_complete_representation_definition_for_matching_goal(monkeypatch):
     local, _, parse, _ = fixture(monkeypatch)
     query = 'Gaussian model representation and compression'

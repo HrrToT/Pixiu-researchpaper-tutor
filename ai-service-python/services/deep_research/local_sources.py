@@ -172,6 +172,9 @@ class LocalTaskRetriever:
         from services.deep_research.mechanism_sources import include_pdf_representation, representation_read_requested
         if limit >= 2 and representation_read_requested(record, query, pdf_id):
             found = include_pdf_representation(found, pages, material, min(limit, 5))
+        if _read_runtime_tradeoff(record, query):
+            from services.deep_research.runtime_evidence import include_pdf_tradeoff
+            found = include_pdf_tradeoff(found, passages, min(limit, 5))
         return self._stamp_identity(
             self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages,
                                                pages=pages, material=material), pdf_id)
@@ -347,7 +350,8 @@ class LocalTaskRetriever:
             benchmarks = self._threshold_benchmarks(record, query)
             missing = missing_measurements(indexed,query)
             representation = representation_read_requested(record, query, pdf_id)
-            if limit < 2 or not (missing or benchmarks or representation):
+            runtime_tradeoff = _read_runtime_tradeoff(record, query)
+            if limit < 2 or not (missing or benchmarks or representation or runtime_tradeoff):
                 return indexed
             key = (pdf_id,material['contentHash'])
             failure = self._measurement_read_failures.get(key) if key not in self.pages else None
@@ -373,7 +377,7 @@ class LocalTaskRetriever:
                 if not (missing or benchmarks):
                     return indexed
                 return [{**row,**({'pdfMeasurementRead':failure} if i == 0 else {})} for i,row in enumerate(indexed)]
-            if not (missing or benchmarks):
+            if not (missing or benchmarks or runtime_tradeoff):
                 return include_pdf_representation(indexed, self.pages[key], material, limit)
             passages = self._pdf_passages(pdf_id,material,self.pages[key],record=record)
             # An original PDF has a document hash/version, not an index version.
@@ -387,6 +391,9 @@ class LocalTaskRetriever:
                     include_metric_definition=record.get('comparisonNamedBenchmarkProtocolVersion') == 2)
             if representation:
                 found = include_pdf_representation(found, self.pages[key], material, limit)
+            if runtime_tradeoff:
+                from services.deep_research.runtime_evidence import include_pdf_tradeoff
+                found = include_pdf_tradeoff(found, passages, limit)
             missing = missing_measurements(found,query)
             note = {'status':'searched','pagesRead':len(self.pages[key]),
                     'unmatchedMeasurements':sorted((str(n),u) for n,u in missing)}
@@ -431,6 +438,13 @@ class LocalTaskRetriever:
                         **({'include_threshold_tables':True} if record.get('comparisonThresholdTablePdfFallbackVersion') == 1 else {}),
                     )
             return material, self.pages[key]
+
+
+def _read_runtime_tradeoff(record, query):
+    from services.deep_research.runtime_evidence import tradeoff_requested
+    from services.deep_research.verification import quantity_spelling_for_record
+
+    return quantity_spelling_for_record(record) == 28 and tradeoff_requested(query)
 
 
 def _requested_metrics(query):

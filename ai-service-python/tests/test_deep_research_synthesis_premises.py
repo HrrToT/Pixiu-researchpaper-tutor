@@ -68,6 +68,27 @@ def test_known_cited_conference_edition_does_not_supply_experiment_numbers(text,
     assert not precheck_claims([claim(text)], [row], quantity_spelling_version=26)['candidates']
 
 
+def test_absolute_runtime_navigation_chooses_explicit_rates_and_measured_hardware():
+    plan = [{'obligations': [
+        {'obligationId': 'speed', 'question': '常规版和加速版速度及测速设备？'},
+        {'obligationId': 'tradeoff', 'question': '加速版牺牲了什么精度？'},
+    ]}]
+    rows = [
+        evidence('table-row', 'Proposed method 62 81.4 72.5'),
+        evidence('other-pipeline', 'The speedup from the reference pipeline, which runs at 42.4 Hz, is substantial.'),
+        evidence('generic-hardware', 'Runtime can vary on embedded devices compared with desktop GPUs.'),
+        evidence('baseline', 'Our default setup enables inference at 62 Hz.'),
+        evidence('faster', 'Larger bins are faster and reach 105 Hz. The decrease in performance was mainly due to small objects.'),
+        evidence('hardware', 'All runtimes are measured on a desktop with an Intel CPU and an NVIDIA GPU.'),
+    ]
+    for row in rows:
+        row['obligationIds'] = ['speed', 'tradeoff']
+    _, bundles = order_premises(rows, plan, direct_quantities_and_stages=True, absolute_runtime=True)
+    direct = {b['navigationRole']: b['evidenceIds'] for b in bundles if 'navigationRole' in b}
+    assert direct['reported_runtime'] == ['baseline', 'faster', 'hardware']
+    assert direct['runtime_tradeoff'] == ['faster']
+
+
 def test_spatial_labels_match_existing_english_labels_but_real_dimensions_and_counts_stay_checked():
     source=[evidence('e','Our 3D Gaussian model uses a canonical space.')]
     valid=claim('三维高斯模型使用共享空间。')

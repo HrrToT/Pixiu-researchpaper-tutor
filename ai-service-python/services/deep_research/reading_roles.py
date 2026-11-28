@@ -30,7 +30,7 @@ _SPEED_REQUEST = re.compile(r'提速|加速倍数|快(?:了)?(?:多少|几)倍|\
 _SPEED_RATIO = re.compile(
     r'(?<![\d.])\d+(?:\.\d+)?\s*(?:×|x|times)\s*(?:faster\s+than|as fast as)|'
     r'(?:提速|加速|快)\s*(?:约)?\s*\d+(?:\.\d+)?\s*倍', re.I)
-_TIMING = re.compile(r'\b(?:running time|inference time|runtime|latency|processing time|timing)\b|推理耗时|运行时间', re.I)
+_TIMING = re.compile(r'\b(?:running times?|inference times?|runtimes?|latency|processing times?|timing)\b|推理耗时|运行时间', re.I)
 _HARDWARE = re.compile(r'\b(?:GPU|CPU|RTX|NVIDIA|A100|H100|V100)\b|显卡|处理器', re.I)
 _IMAGE_SIZE = re.compile(r'\d{2,5}\s*[×x]\s*\d{2,5}', re.I)
 _INPUT_RESOLUTION = re.compile(r'\b(?:resolution|images?\s+(?:are\s+)?resized)\b|分辨率', re.I)
@@ -41,10 +41,15 @@ _NEXT_STAGE = re.compile(r'\b(?:second stage|stage two|second step|then)\b|第�
 _COMPUTE_REQUEST = re.compile(r'省计算|减少计算|降低计算|计算冗余|\b(?:save|reduce)\s+(?:the\s+)?comput\w*', re.I)
 _REDUCED_INPUTS = re.compile(r'\b(?:process|attend to|operate on)\s+(?:fewer|reduced)\s+(?:tokens|features)\b|'
                             r'在更少的(?:特征|特征单元|词元)上计算', re.I)
+_AVOIDED_COMPUTE = re.compile(
+    r'\b(?:skip|avoid|eliminate)\s+(?:the\s+)?(?:expensive|costly)\s+'
+    r'(?:3D\s+convolutions?|operations?|processing)\b|省去昂贵的(?:三维卷积|计算)', re.I)
 
 
-def direct_quantity_and_stage_bundles(rows, obligations):
+def direct_quantity_and_stage_bundles(rows, obligations, *, absolute_runtime=False):
     """Retrieve self-contained citable passages for speed and stage requests."""
+    from services.deep_research.runtime_evidence import faster_variant, rate_requested, rate_values, tradeoff_requested, tradeoff_roles
+
     bundles = []
     for oid, obligation in obligations.items():
         criteria = obligation.get('completionCriteria') or [{'requirement': obligation['question']}]
@@ -52,7 +57,8 @@ def direct_quantity_and_stage_bundles(rows, obligations):
         speed = next((c for c in criteria if _SPEED_REQUEST.search(c.get('requirement', ''))), None)
         stages = next((c for c in criteria if _STAGE_REQUEST.search(c.get('requirement', ''))), None)
         compute = next((c for c in criteria if _COMPUTE_REQUEST.search(c.get('requirement', ''))), None)
-        if speed is None and stages is None and compute is None and not _SPEED_REQUEST.search(query):
+        runtime = absolute_runtime and rate_requested(query)
+        if speed is None and stages is None and compute is None and not runtime and not _SPEED_REQUEST.search(query):
             continue
         own = [e for e in rows if e.get('accessLevel') == 'fulltext'
                and e.get('sourceWorkId') and e.get('sourceVersionId') and e.get('contentHash')
@@ -64,7 +70,8 @@ def direct_quantity_and_stage_bundles(rows, obligations):
                     'ownerMaterialId': e.get('ownerMaterialId')}, obligations)]
         for request, role, matches in (
                 (stages, 'explicit_stages', lambda text: _FIRST_STAGE.search(text) and _NEXT_STAGE.search(text)),
-                (compute, 'reduced_compute_inputs', _REDUCED_INPUTS.search)):
+                (compute, 'reduced_compute_inputs',
+                 lambda text: _REDUCED_INPUTS.search(text) or (absolute_runtime and _AVOIDED_COMPUTE.search(text)))):
             if request is None:
                 continue
             direct = [e for e in own if matches(e['quote'])]
@@ -73,6 +80,26 @@ def direct_quantity_and_stage_bundles(rows, obligations):
                 bundles.append({'obligationId': oid, 'criterionId': request.get('criterionId', 'whole_obligation'),
                                 'requirement': request['requirement'], 'source': lead['sourceVersionId'],
                                 'navigationRole': role, 'evidenceIds': [lead['evidenceId']]})
+        if runtime and tradeoff_requested(query):
+            tradeoffs = [next((e for e in own if tradeoff_roles(e['quote'])[i]), None) for i in range(2)]
+            available = [e for e in tradeoffs if e]
+            if available:
+                bundles.append({'obligationId': oid, 'criterionId': 'whole_obligation', 'requirement': query,
+                                'source': available[0]['sourceVersionId'], 'navigationRole': 'runtime_tradeoff',
+                                'evidenceIds': list(dict.fromkeys(e['evidenceId'] for e in available
+                                                                 if _same_version(e, available[0])))})
+        if runtime and re.search(r'速度|测速|帧率|吞吐|\b(?:speed|runtime|throughput|latency)\b', query, re.I):
+            rates = [e for e in own if not e.get('tableData') and rate_values(e['quote'])]
+            faster = next((e for e in rates if faster_variant(e['quote'])), None)
+            baselines = [e for e in rates if not faster_variant(e['quote'])
+                         and re.search(r'\b(?:running at|inference at|operates at|runs at)\b|运行速度', e['quote'], re.I)
+                         and not re.search(r'\bspeedup\s+from\b', e['quote'], re.I)
+                         and (not faster or rate_values(e['quote']) - rate_values(faster['quote']))]
+            baseline = max(baselines, key=lambda e: bool(re.search(r'\b(?:enables|achieves?)\s+inference\s+at\b',
+                                                                    e['quote'], re.I)), default=None)
+            direct = [e for e in (baseline, faster) if e]
+            if direct:
+                bundles.append(_runtime_bundle(oid, query, direct, own))
         if speed is None and not _SPEED_REQUEST.search(query):
             continue
         ratios = [e for e in own if _SPEED_RATIO.search(e['quote'])]
@@ -101,6 +128,24 @@ def direct_quantity_and_stage_bundles(rows, obligations):
                         'source': ratio['sourceVersionId'], 'navigationRole': 'reported_speed',
                         'evidenceIds': evidence_ids})
     return bundles
+
+
+def _same_version(left, right):
+    return all(left[key] == right[key] for key in ('sourceWorkId', 'sourceVersionId', 'contentHash'))
+
+
+def _runtime_bundle(oid, query, rates, rows):
+    first = rates[0]
+    ids = [e['evidenceId'] for e in rates if _same_version(e, first)]
+    devices = [e for e in rows if _same_version(e, first)
+               and _TIMING.search(e['quote']) and _HARDWARE.search(e['quote'])
+               and not _TRAINING_TIME.search(e['quote'])]
+    device = max(devices, key=lambda e: bool(re.search(
+        r'\b(?:measured|timed|evaluated)\s+on\b', e['quote'], re.I)), default=None)
+    if device and device['evidenceId'] not in ids:
+        ids.append(device['evidenceId'])
+    return {'obligationId': oid, 'criterionId': 'whole_obligation', 'requirement': query,
+            'source': first['sourceVersionId'], 'navigationRole': 'reported_runtime', 'evidenceIds': ids}
 
 
 def _text(source):

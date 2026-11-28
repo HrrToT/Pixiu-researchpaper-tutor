@@ -13,12 +13,18 @@ def source_display_title(*candidates):
                 values[0] if values else '')
 
 
-def without_cited_edition(text, source_title):
+def without_cited_edition(text, source_title, *, titled_prefix=False):
     """Mask known venue-year editions only in an explicit citation form."""
     if not isinstance(source_title, str):
         return text
-    for label in _VENUE_YEAR.findall(source_title):
+    for match in _VENUE_YEAR.finditer(source_title):
+        label = match[0]
         words = r'\s+'.join(map(re.escape, label.split()))
+        title = source_title[:match.start()].strip()
+        if titled_prefix and title:
+            quoted_title = r'\s+'.join(map(re.escape, title.split()))
+            prefix = r'^(\s*《' + quoted_title + r'》\s*)' + words + r'(?=\s*[:：])'
+            text = re.sub(prefix, r'\1', text, flags=re.I)
         text = re.sub(r'(?<![A-Za-z0-9_])' + words + r'(?=\s*(?:会议)?版|\s+edition\b)',
                       ' ', text, flags=re.I)
     return text

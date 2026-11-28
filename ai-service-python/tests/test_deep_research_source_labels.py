@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from services.deep_research.facade import ResearchFacade
 from services.deep_research.graph import make_acquire_node
 from services.deep_research.repository import DeepResearchRepository
-from services.deep_research.source_labels import source_display_title
+from services.deep_research.source_labels import source_display_title, without_cited_edition
 
 
 def test_hash_title_falls_back_to_original_filename_without_replacing_real_titles():
@@ -13,6 +13,15 @@ def test_hash_title_falls_back_to_original_filename_without_replacing_real_title
     assert source_display_title('Research method', 'upload.pdf') == 'Research method'
     assert source_display_title(opaque) == opaque  # No invented title when no readable label exists.
     assert source_display_title(None, '') == ''
+
+
+def test_titled_conference_prefix_requires_the_exact_title_and_edition():
+    title = 'Example Paper CVPR 2019'
+    text = '《Example Paper》CVPR 2019：使用了2019个样本。'
+    assert without_cited_edition(text, title, titled_prefix=True) == '《Example Paper》：使用了2019个样本。'
+    assert without_cited_edition(text, title) == text
+    for wrong in (text.replace('Example Paper', 'Another Paper'), text.replace('CVPR 2019', 'CVPR 2020')):
+        assert without_cited_edition(wrong, title, titled_prefix=True) == wrong
 
 
 def test_snapshot_and_retrieved_source_keep_readable_label_and_original_identity(tmp_path):

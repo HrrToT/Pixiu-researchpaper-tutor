@@ -56,7 +56,7 @@ def test_task_only_default_route_uses_bilingual_rules_after_intent_resolution(tm
             'sourcePolicy': {'mode': 'task_only'}, 'materialSnapshot': ['paper'],
             'outputKind': 'general', 'deferStart': True,
         }, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 27
+        assert run['quantitySpellingContractVersion'] == 28
         run_id = run['runId']
         verify = facade._get_verify_claims(run_id)
         repo.update_run(run_id, lambda row: {**row, 'state': {**row.get('state', {}), 'outputKind': resolved_kind}})
