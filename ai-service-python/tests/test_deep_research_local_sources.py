@@ -463,3 +463,28 @@ def test_named_baseline_configuration_requires_owned_same_version_table_rows():
         {'evidenceIds': ['heading', 'body']},
     ]
     assert not baseline_configuration_bundles([heading, body], '比较两篇论文的配置。', tables)
+
+
+def test_named_baseline_links_the_literal_split_to_its_accuracy_header():
+    from services.deep_research import experiment_protocol_sources as protocol
+
+    material = {'materialId': 'paper', 'contentHash': 'hash', 'title': 'DoRA: Weight Decomposition'}
+    record = {'question': '以DoRA论文的LLaMA-7B常识推理设置为依据设计实验。', 'materials': [material],
+              'state': {'outputKind': 'experiment_design'}, protocol.BASELINE_CONFIG_MARKER: 2}
+    split = ('The commonsense reasoning tasks comprise 8 sub-tasks, each with a predefined training and testing set. '
+             'We follow the original setting, merge the training data and conduct evaluations on the individual testing dataset for each task.')
+    header = ('Table 1. Accuracy comparison of LLaMA 7B/13B on eight commonsense reasoning datasets.\n'
+              'Model PEFT Method BoolQ PIQA SIQA HellaSwag WinoGrande ARC-e ARC-c OBQA Avg.')
+    other_table = header.replace('Table 1.', 'Table 4.')
+    pages = [{'page': 5, 'text': split + ' Results are in Table 1.'},
+             {'page': 6, 'text': header + '\n7B example row'},{'page': 8, 'text': other_table}]
+    model = protocol.baseline_evaluation_requested(record, 'commonsense reasoning dataset splits', 'paper')
+    assert model == 'LLaMA-7B'
+    assert not protocol.baseline_evaluation_requested(record, 'commonsense reasoning dataset splits', 'other')
+    assert not protocol.baseline_evaluation_requested(record, 'training memory', 'paper')
+    rows = protocol.baseline_evaluation_passages(pages, material, model)
+    assert [row['text'] for row in rows] == [split, header]
+    assert [row['location']['page'] for row in rows] == [5, 6]
+    assert not protocol.baseline_evaluation_passages(pages, material, 'LLaMA-70B')
+    retained = protocol.retain_baseline_evaluation([{'sourceId':'lead'}, {'sourceId':'optional'}], rows, 3)
+    assert retained == [{'sourceId':'lead'}, *rows]

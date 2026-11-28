@@ -6,7 +6,7 @@ from services.deep_research.obligation_binding import eligible_obligation_ids
 
 
 def select_read_sources(sources, obligations, limit, *, extracted=(),priority_version=6,illustrative_context=False,method_context=False,substantive=False,mixed_script_terms=False,measurement_tables=False,processing_cost=False,table_navigation_obligations=None, protocol_note=False, mechanism_overviews=False,
-                        benchmark_human=None, named_table_question=None, experiment_protocol=False,
+                        benchmark_human=None, named_table_question=None, experiment_protocol=False, baseline_evaluation=False,
                         comparison_evaluation_protocol=False, comparison_deployment_memory=False,
                         comparison_memory_criteria=False, named_table_grouped_rows=False, local_pdf_methods=False,
                         threshold_benchmarks=None, named_benchmark_protocol=False, supervision=False,
@@ -109,7 +109,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     if experiment_protocol:
         from services.deep_research.experiment_protocol_sources import preferred_reads
         preferred = [*preferred_reads(ordered, obligations, limit, extracted,
-                                      densification=experiment_densification), *preferred]
+                                      densification=experiment_densification, baseline_evaluation=baseline_evaluation), *preferred]
     if comparison_evaluation_protocol:
         from services.deep_research.comparison_joint_reports import preferred_evaluation_reads
         preferred = [*preferred_evaluation_reads(ordered, obligations, limit, extracted), *preferred]

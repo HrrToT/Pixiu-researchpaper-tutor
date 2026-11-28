@@ -853,6 +853,7 @@ def make_read_node(
                 **({'figure_counts': True} if record.get('comparisonFigureCountSynthesisVersion') in (1, 2) else {}),
                 **({'local_pdf_methods': True} if record.get('localSectionContextContractVersion') in (5, 6, 7, 8, 9) else {}),
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
+                **({'baseline_evaluation': True} if record.get(protocol.BASELINE_CONFIG_MARKER) == 2 else {}),
                 **({'experiment_densification': True} if protocol.densification_enabled(record) else {}),
                 **({'comparison_evaluation_protocol': True} if evaluation_protocols_enabled(record)
                    and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
@@ -1350,8 +1351,10 @@ def make_synthesize_node(
             obligations = {o['obligationId']: o for item in brief_state.get('plan', []) for o in item['obligations']}
             protocol_bundles = protocol.premise_bundles(candidates, obligations,
                                                        densification=protocol.densification_enabled(record))
-            if record.get(protocol.BASELINE_CONFIG_MARKER) == 1:
+            if record.get(protocol.BASELINE_CONFIG_MARKER) in (1, 2):
                 protocol_bundles.extend(protocol.baseline_configuration_bundles(candidates, question, paper_titles))
+            if record.get(protocol.BASELINE_CONFIG_MARKER) == 2:
+                protocol_bundles.extend(protocol.baseline_evaluation_bundles(candidates, question, paper_titles))
             protocol_ids = {eid for bundle in protocol_bundles for eid in bundle['evidenceIds']}
             protocol_rows = {row['evidenceId']: row for row in candidates if row['evidenceId'] in protocol_ids}
         requested_table, requested_table_evidence = None, set()

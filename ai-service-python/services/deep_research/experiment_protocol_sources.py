@@ -1,5 +1,6 @@
 """Bounded navigation to literal experiment prerequisites in an owned PDF."""
 
+import hashlib
 import re
 
 from services.deep_research.obligation_binding import eligible_obligation_ids
@@ -44,6 +45,18 @@ _MODEL_SIZE = re.compile(r'\b[A-Za-z][A-Za-z0-9._-]*[- ]\d+(?:\.\d+)?B\b', re.I 
 _CONFIG_CAPTION = re.compile(r'\bTable\s+\d+[.:]\s*Hyperparameter\b', re.I)
 _CONFIG_FIELDS = re.compile(r'\b(?:Optimizer|Learning Rate|LR)\b', re.I)
 _TRAINING_BUDGET_FIELDS = re.compile(r'\b(?:Epochs?|Batch Size|Warmup Steps?)\b', re.I)
+BASELINE_SPLIT = 'baseline_training_and_test_split'
+BASELINE_TASKS = 'baseline_tasks_and_metric'
+_COMMONSENSE = re.compile(r'常识推理|\bcommonsense\s+reasoning\b', re.I)
+_BASELINE_SPLIT = re.compile(
+    r'The commonsense reasoning tasks comprise\s+\d+\s+sub-?tasks,\s*'
+    r'each with a predefined training and testing set\..{0,400}?'
+    r'evaluations? on the individual testing dataset\s+for each task\.', re.I | re.S,
+)
+_RESULT_TABLE = re.compile(
+    r'Table\s+(\d+)[.:]\s+Accuracy comparison[^\n]{0,200}\bcommonsense reasoning datasets\.'
+    r'.{0,400}?\n[ \t]*Model\s+PEFT Method[^\n]+', re.I | re.S,
+)
 
 
 def enabled(record):
@@ -164,8 +177,16 @@ def include_passages(rows, passages, requested, limit):
     return selected
 
 
-def preferred_reads(sources, obligations, limit, extracted, *, densification=False):
+def preferred_reads(sources, obligations, limit, extracted, *, densification=False, baseline_evaluation=False):
     selected = {}
+    if baseline_evaluation:
+        for part in (BASELINE_SPLIT, BASELINE_TASKS):
+            source = next((row for row in sources if row.get('accessLevel') == 'fulltext'
+                           and row.get('location', {}).get('baselineEvaluationPart') == part
+                           and (row['sourceId'], row.get('contentHash')) not in extracted
+                           and eligible_obligation_ids(row, obligations)), None)
+            if source:
+                selected[source['sourceId']] = source
     roles_with_preference = []
     for role in ((DENSIFICATION, INITIALIZATION, OPACITY, MEMBERSHIP) if densification else (OPACITY, MEMBERSHIP)):
         eligible = {oid: row for oid, row in obligations.items() if role in roles(row, densification=densification)}
@@ -196,18 +217,26 @@ def premise_bundles(candidates, obligations, *, densification=False):
     return bundles
 
 
-def baseline_configuration_bundles(candidates, question, paper_titles):
-    """Retain a named baseline's caption and data, bound to the same owned page."""
+def _named_baseline(question, paper_titles):
     anchor = _NAMED_BASELINE.search(question)
     if not anchor or not (model := _MODEL_SIZE.search(anchor[2])):
-        return []
+        return None
     owner_name = anchor[1].casefold()
     owners = [owner for owner, title in paper_titles.items()
               if title and (title.casefold() == owner_name or title.casefold().startswith(owner_name + ':'))]
     if len(owners) != 1:
+        return None
+    return owners[0], model[0], anchor[2]
+
+
+def baseline_configuration_bundles(candidates, question, paper_titles):
+    """Retain a named baseline's caption and data, bound to the same owned page."""
+    baseline = _named_baseline(question, paper_titles)
+    if not baseline:
         return []
-    model_name = re.compile(r'(?<![\w-])' + re.escape(model[0]) + r'(?![\w-])', re.I)
-    rows = [row for row in candidates if row.get('ownerMaterialId') == owners[0]
+    owner, model, _ = baseline
+    model_name = re.compile(r'(?<![\w-])' + re.escape(model) + r'(?![\w-])', re.I)
+    rows = [row for row in candidates if row.get('ownerMaterialId') == owner
             and row.get('accessLevel') == 'fulltext'
             and row.get('verification', {}).get('literal') == 'passed'
             and row.get('sourceVersionId') and row.get('sourceContext')
@@ -223,3 +252,77 @@ def baseline_configuration_bundles(candidates, question, paper_titles):
         if values:
             return [{'evidenceIds': list(dict.fromkeys((caption['evidenceId'], values['evidenceId'])))}]
     return []
+
+
+def baseline_evaluation_requested(record, query, material_id):
+    if (record.get(BASELINE_CONFIG_MARKER) != 2 or record.get('state', {}).get('outputKind') != 'experiment_design'
+            or not _COMMONSENSE.search(query)):
+        return None
+    from services.deep_research.request_context import effective_question
+    baseline = _named_baseline(effective_question(record),
+        {row['materialId']:row.get('title') for row in record.get('materials', [])})
+    if not baseline or baseline[0] != material_id or not _COMMONSENSE.search(baseline[2]):
+        return None
+    return baseline[1]
+
+
+def baseline_evaluation_passages(pages, material, model):
+    """Keep the paper's split statement and the header of the linked accuracy table."""
+    splits = [(page, match) for page in pages for match in _BASELINE_SPLIT.finditer(page['text'])]
+    if len(splits) != 1:
+        return []
+    page, split = splits[0]
+    after = page['text'][split.end():split.end()+1000]
+    table = re.search(r'\bTable\s+(\d+)\b', after)
+    if not table:
+        return []
+    model_name = re.compile(r'\b' + re.escape(model).replace(r'\-', r'[-\s]*') + r'\b', re.I)
+    tables = [(body, match) for body in pages for match in _RESULT_TABLE.finditer(body['text'])
+              if match[1] == table[1] and model_name.search(match[0])]
+    if len(tables) != 1:
+        return []
+    entries = [(page, split, BASELINE_SPLIT), (*tables[0], BASELINE_TASKS)]
+    material_id, content_hash = material['materialId'], material['contentHash']
+    out = []
+    for body, match, part in entries:
+        location = {'page':body['page'], 'pageIndex':body['page']-1, 'pageResolution':'exact',
+                    'offset':match.start(), 'baselineEvaluationPart':part}
+        identity = hashlib.sha256(f'{material_id}:{content_hash}:{location}'.encode()).hexdigest()
+        out.append({'sourceId':'src_'+identity, 'pdfId':material_id, 'text':match[0],
+                    'location':location, 'contentHash':content_hash,
+                    'versionId':material.get('versionId') or content_hash,
+                    'title':material.get('title', material_id), 'accessLevel':'fulltext'})
+    return out
+
+
+def baseline_evaluation_bundles(candidates, question, paper_titles):
+    baseline = _named_baseline(question, paper_titles)
+    if not baseline or not _COMMONSENSE.search(baseline[2]):
+        return []
+    rows = {part: [row for row in candidates if row.get('ownerMaterialId') == baseline[0]
+                   and row.get('accessLevel') == 'fulltext'
+                   and row.get('verification', {}).get('literal') == 'passed'
+                   and row.get('location', {}).get('baselineEvaluationPart') == part]
+            for part in (BASELINE_SPLIT, BASELINE_TASKS)}
+    for split in rows[BASELINE_SPLIT]:
+        table = next((row for row in rows[BASELINE_TASKS]
+                      if row.get('sourceVersionId') == split.get('sourceVersionId')
+                      and row.get('contentHash') == split.get('contentHash')), None)
+        if table:
+            return [{'evidenceIds':[split['evidenceId'],table['evidenceId']]}]
+    return []
+
+
+def retain_baseline_evaluation(rows, additions, limit):
+    if not additions or limit < 3:
+        return rows
+    ids = {row['sourceId'] for row in additions}
+    existing = [row for row in rows if row['sourceId'] not in ids]
+    protected = [row for i, row in enumerate(existing) if i == 0 or row.get('tableData')]
+    if len(protected) + len(additions) > limit:
+        return rows
+    available = limit - len(additions)
+    while len(existing) > available:
+        index = next(i for i in reversed(range(len(existing))) if existing[i] not in protected)
+        existing.pop(index)
+    return [*existing, *additions]

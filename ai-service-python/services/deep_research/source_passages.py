@@ -195,6 +195,11 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             # operations under one literal citation, including its final step.
             keep_whole = _keep_local_method_passage(record, source, location, body) or (
                 keep_benchmark_protocol and owned_protocol(source, location, body, record.get('materials', ())))
+            if (record.get(protocol.BASELINE_CONFIG_MARKER) == 2 and source['accessLevel'] == 'fulltext'
+                    and source.get('ownerMaterialId') == source.get('workId')
+                    and location.get('baselineEvaluationPart') in (protocol.BASELINE_SPLIT, protocol.BASELINE_TASKS)
+                    and body == source.get('text') and len(body.encode('utf8')) <= MAX_PASSAGE_BYTES):
+                keep_whole = True
             ranges = [(0, len(body))] if keep_whole else list(spans(body))
             if record.get('comparisonMechanismReadContractVersion') in (4, 5, 6) and source['accessLevel'] == 'fulltext':
                 from services.deep_research.criterion_sources import criterion_targets

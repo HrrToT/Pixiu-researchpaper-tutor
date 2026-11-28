@@ -173,18 +173,21 @@ class LocalTaskRetriever:
         if limit >= 2 and representation_read_requested(record, query, pdf_id):
             found = include_pdf_representation(found, pages, material, min(limit, 5))
         return self._stamp_identity(
-            self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages), pdf_id)
+            self._experiment_protocol_passages(found, query, pdf_id, min(limit, 5), passages=passages,
+                                               pages=pages, material=material), pdf_id)
 
-    def _experiment_protocol_passages(self, rows, query, pdf_id, limit, *, passages=None):
+    def _experiment_protocol_passages(self, rows, query, pdf_id, limit, *, passages=None, pages=None, material=None):
         from services.deep_research import experiment_protocol_sources as protocol
 
         record = self.repo.require_run(self.run_id)
         if limit < 2 or not protocol.enabled(record):
             return rows
         roles = protocol.query_roles(record, query, pdf_id)
-        if not roles or all(protocol.has_passage(rows, role) for role in roles):
+        missing_roles = any(not protocol.has_passage(rows, role) for role in roles)
+        baseline = protocol.baseline_evaluation_requested(record, query, pdf_id) if limit >= 3 else None
+        if not missing_roles and not baseline:
             return rows
-        if passages is None:
+        if (missing_roles and passages is None) or (baseline and pages is None):
             try:
                 material, pages = self.load_pages(pdf_id)
             except DeepResearchError as error:
@@ -194,10 +197,16 @@ class LocalTaskRetriever:
                 return rows
             except (requests.RequestException, subprocess.TimeoutExpired):
                 return rows
-            passages = self._pdf_passages(pdf_id, material, pages, record=record)
+            if missing_roles and passages is None:
+                passages = self._pdf_passages(pdf_id, material, pages, record=record)
         if not self.validate(self.run_id, pdf_id):
             raise DeepResearchError('scope_revoked', '论文范围已变更')
-        return protocol.include_passages(rows, passages, roles, limit)
+        if missing_roles:
+            rows = protocol.include_passages(rows, passages, roles, limit)
+        if baseline:
+            rows = protocol.retain_baseline_evaluation(
+                rows, protocol.baseline_evaluation_passages(pages, material, baseline), limit)
+        return rows
 
     @staticmethod
     def _threshold_benchmarks(record, query):
