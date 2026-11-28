@@ -68,6 +68,9 @@ def test_cited_passage_scope_needs_located_text_and_excludes_whole_paper_claims(
 
 @pytest.mark.parametrize('text,located,allowed', [
     ('作者提出可探索点云压缩，但这些引文未给出具体压缩操作。', True, True),
+    ('引文未给出额外压缩操作。', True, True),
+    ('引文未给出额外压缩操作。', False, False),
+    ('引文显示整篇论文未给出额外压缩操作。', True, False),
     ('该示例引文未说明这些运行是否使用相同硬件。', True, True),
     ('该示例引文未说明这些运行是否使用相同硬件。', False, False),
     ('该示例引文未说明这些运行是否使用相同硬件，所以整篇论文未报告配置。', True, False),

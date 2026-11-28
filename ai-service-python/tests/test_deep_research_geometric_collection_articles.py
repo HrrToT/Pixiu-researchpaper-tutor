@@ -57,6 +57,15 @@ def test_later_sentence_about_compression_does_not_make_a_representation_set_cou
     assert rejection['reason'] == 'numeric_mismatch'
 
 
+def test_representation_gloss_preserves_the_object_without_creating_a_group_count():
+    text = '该方法用一组可优化的三维高斯（表示带属性区域的基本单元）表示场景。'
+    claim, evidence = pair(text, 'Our scene representation consists of 3D Gaussians.')
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=25)['rejected'] == []
+    counted = {**claim, 'text': text.replace('用一组', '用两组')}
+    rejection, = precheck_claims([counted], [evidence], quantity_spelling_version=25)['rejected']
+    assert rejection['missingReportedNumbers'] == ['2e0']
+
+
 @pytest.mark.parametrize('text',[
     '本实验用一组3D高斯作为对照。','本实验采用一组3D高斯作为对照。',
     '本实验只用一组3D高斯表示场景。','本实验用唯一一组3D高斯表示场景。',

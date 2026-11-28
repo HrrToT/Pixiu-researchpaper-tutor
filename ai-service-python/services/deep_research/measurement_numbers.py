@@ -170,7 +170,8 @@ def without_collection_articles(text, *, geometric=False):
         shape=geometry.match(suffix) if geometry is not None else None
         representation_use=(type(geometric) is int and geometric==2 and shape is not None
             and re.search(r'(?:使用|采用|(?<![采使])用)\s*$',prefix)
-            and re.match(r'\s*(?:表示|建模|近似|重建)(?:场景|物体|表面|几何|环境|空间)',suffix[shape.end():]))
+            and re.match(r'\s*(?:（[^（）\r\n。]{1,90}）|\([^()\r\n.]{1,90}\))?\s*'
+                         r'(?:表示|建模|近似|重建)(?:场景|物体|表面|几何|环境|空间)',suffix[shape.end():]))
         contrast_scope = re.split(r'[。！？!?\r\n]', suffix, maxsplit=1)[0] if shape else suffix
         if (match['word'] == '一' and not match['sign'] and match['count_unit'] == '组'
                 and (_COLLECTION_INTRO.search(prefix) and _IMAGE_COLLECTION.match(suffix)

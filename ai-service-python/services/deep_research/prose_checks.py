@@ -12,7 +12,7 @@ _SCOPED = re.compile(r'当前取得|本次检索|所读片段|选定片段|所�
     r'|\b(?:selected|retrieved) (?:passages|evidence)\b', re.I)
 _CITED_PASSAGE_SUBJECT = re.compile(r'^\s*所引(?:的)?(?:论文|原文)?(?:的)?(?:段落|片段)(?:中|内)?\s*$')
 _SPECIFIC_QUOTATION_SUBJECT = re.compile(
-    r'\s*(?:但|而|不过)?\s*(?:这些引文|该示例(?:的)?引文|所引(?:的)?(?:引文|段落|片段))'
+    r'\s*(?:但|而|不过)?\s*(?:(?:这些)?引文|该示例(?:的)?引文|所引(?:的)?(?:引文|段落|片段))'
     r'(?:中|内)?\s*'
 )
 _CURRENT_EVIDENCE_SUBJECT = re.compile(
