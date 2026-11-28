@@ -1083,7 +1083,7 @@ D2 标准预算旧回执中，跨论文帧率的四个评测设置观察分别�
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
-| H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
+| H1 新论文单篇 | GSC 首次报告的内容核对未通过。UnsuperPoint v1 首次从空隔离任务运行，计算式和 3 处正文引用核对正确，最终稿遗漏 8×8 小格条件和二维联合分布边界，未通过独立验收。 [GSC 执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) · [UnsuperPoint 首次执行](deep-research-evidence/unsuperpoint-h1-first-frozen-20261128.json) | 保留本次判定。在开发回放验证带数字证据的修订和限制性结论保留后，使用新冻结题评估。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | DuoAttention 同题开发复测通过内容及隔离工作区交付。新留出的 DMC v1 从空任务取得指定全文，科学机制与原文引用通过首次核验，来源标注的独立检查错误地保留一个缺口。DMC 的新版真实终审覆盖全部义务，沿用该审核回执通过完整发布与隔离工作区交付。 [DuoAttention 开发验收](deep-research-evidence/duoattention-h3-development-complete-and-handoff-20261128.json) · [DMC 首次执行与审核回放](deep-research-evidence/dmc-h3-first-and-pinned-access-replay-20261128.json) · [DMC 开发复测](deep-research-evidence/dmc-h3-real-audit-publication-and-handoff-20261128.json) | 保留两次独立首次结果。独立全链路验收仍需新的冻结题。 |
 | H4 冲突或版本差异 | LoRA 的未确认调用保持冻结。KIVI 首次执行未发布报告，QuaRot 保存部分报告。AWQ v7 报告的 12 个数值与版本标签经人工复核正确，共同结论曾扩展设置范围。新版回放拦下超范围结论，保留 12 个单元格和两版在指定设置下的排序。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [QuaRot 实测](deep-research-evidence/quarot-version-h4-first-real-20261126.json) · [AWQ 设置范围回放](deep-research-evidence/awq-requested-common-setting-offline-replay-20261128.json) | 验证真实报告的最终科学核验与交付。独立验收需要新的冻结题，AWQ 回放按开发证据计。 |
@@ -1095,6 +1095,8 @@ D6 补充验证使用本轮真实 D2 代理故障留下的运行库和检查点�
 暂停时仍在途的调用现在也会阻止新一轮执行。状态读取和恢复入口使用同一查询，更新执行轮次前在数据库事务内再核验一次。调用结果迟到但已确认后，仍可由用户主动恢复。运行中断、迟到回执、恢复和端到端检查共 116 项通过，路由回执及状态读取另有 21 项通过。
 
 真实 Java 权限接口与 Python 恢复流程已在隔离的 H2 和 SQLite 上联测。旧默认配置下，移除材料返回成功，但立即强制结束 Java 后，重启读回了旧的材料列表。修复将默认 H2 写入延迟设为 0。重新打包后，材料移除响应约 78 毫秒即强制结束 Java，重启后来源仍不可见。加回相同材料后，来源恢复可见，状态未知的调用仍阻止继续执行。Java 定向回归 59 项通过，未调用模型。现用部署仍须在切换时核对实际 JDBC 配置和授权行为。 [隔离材料权限验收](deep-research-evidence/d6-java-scope-durability-20261128.json)
+
+H1 UnsuperPoint v1 使用冻结的任务内材料，首次运行 10 次生成共 41,388 Token、图运行计时 69 秒，无外部检索。第 6 页包含 8×8 小格的引文已经取得，但修订追加该数值时沿用了不含数值的原引用，因此事实核验拒绝了改动。另一条修订把首稿中二维联合分布的限制改成局部区域限制。最终审核接受了退回的正文，应用标记为完整，独立评审依照冻结标准判为未通过。 [冻结题目与原文](DEEP_RESEARCH_UNSUPERPOINT_EXPLANATION_HOLDOUT_20261128.json) · [首次运行判定](deep-research-evidence/unsuperpoint-h1-first-frozen-20261128.json)
 
 各真实案例仍按六项适用维度分别达到 4 分，关键结论逐条核对原文、数值、单位和条件，记录实际用量、外部调用与可得费用。现有成果的保存、编辑、找回与跨论文跳转已分别复验。完整真实报告的生成与补查仍开放。GitHub PR #1 仍为草稿，现用服务没有切换。 [原设计](DEEP_RESEARCH_DESIGN_20261012.md#19-验收案例指标与证据) · [独立案例索引](DEEP_RESEARCH_NEXT_HOLDOUTS_20261112.json)
 

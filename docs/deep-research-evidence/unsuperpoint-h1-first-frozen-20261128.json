@@ -1,0 +1,110 @@
+{
+  "case": "H1-UNSUPERPOINT",
+  "attempt": 1,
+  "definitionHash": "bf43970999919ab3772b5c1766374407ee96b71ba43f8b2849a12861f11793df",
+  "sourceCommit": "8e38d5debed8abb8a8f3286b0f00f9e2c29278c4",
+  "runId": "dr_run_6ac235840b285eaeb890bdb7e6c8d5c3",
+  "materialSha256": "9818081ac5da89d4f66e395a2e0b9a76050bea9107ab22882123cb7d6ab5009c",
+  "applicationResult": {
+    "status": "completed",
+    "outcome": "complete",
+    "published": false,
+    "acceptedClaims": 2,
+    "claimTextCharacters": 245
+  },
+  "independentReview": {
+    "passed": false,
+    "independentCredit": 0,
+    "scores": {
+      "目标回应": 3,
+      "证据支持": 4,
+      "条件完整": 3,
+      "综合价值": 4,
+      "可执行性": null,
+      "可读性": 3
+    },
+    "requirements": {
+      "boundaryMechanism": "partial_missing_8_by_8_scope",
+      "calculation": "partial_formula_correct_but_reference_sequence_not_explained_for_beginner",
+      "scopeLimit": "partial_no_explicit_joint_distribution_limit",
+      "citationsAndLength": "pass"
+    },
+    "rubricAnchorClarification": "Equation (13) on physical page 7 is the uniformity loss. The frozen anchor also mentions equation (14), which is the next section’s descriptor loss. No scoring rule or frozen input was changed."
+  },
+  "diagnostic": {
+    "dimensionEvidenceRetrievedButNotBoundToRepairedClaim": {
+      "id": "ev_3e68fb507191c083c036fbf2bc1a3789373e469081cee3b88f466545ae096309",
+      "page": 6,
+      "physicalMatch": true,
+      "materialHashMatch": true
+    },
+    "repairNumericRejection": {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "dimensions:8x8"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：8×8。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    "originalJointLimitLostInRepair": true,
+    "finalCoverageAcceptedAfterWeakerRewrite": true
+  },
+  "citations": {
+    "shown": [
+      {
+        "id": "ev_a0d6d1b24742e05cb1b9c88fa22a865f716d9924eadca523a533a8e60f9ebf86",
+        "page": 6,
+        "physicalMatch": true,
+        "materialHashMatch": true
+      },
+      {
+        "id": "ev_34425f3ee44a4c3c832aced53c9f15a554a0793ec958560efc9c24a24bdd0016",
+        "page": 7,
+        "physicalMatch": true,
+        "materialHashMatch": true
+      },
+      {
+        "id": "ev_5b3fca2a75cba7375a7c1a37c20c5e79312c7dec73c386c7fe28e577e569534c",
+        "page": 7,
+        "physicalMatch": true,
+        "materialHashMatch": true
+      }
+    ],
+    "storedAndPhysicalMatches": 40,
+    "storedCount": 40
+  },
+  "usage": {
+    "generationCalls": 10,
+    "reportedTokens": 41388,
+    "tokensByModel": {
+      "gpt-6-luna": 7396,
+      "gpt-6.1-terra": 33992
+    },
+    "inputCountRequests": 0,
+    "graphSeconds": 69.0,
+    "externalSearches": 0,
+    "productionWrites": 0
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-unsuperpoint-first-20261128/intent.json",
+      "sha256": "37d336d14bdae4ac330cffecec6f49e090691c409ed72599aac63cac36d69be2"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-first-20261128/run.json",
+      "sha256": "1c40f45696aa683a1c4e7a9b34ada80407bc906659386f3e940a93a53e524069"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-first-20261128/calls.json",
+      "sha256": "8b3874a40e187f280ae6685bb697ab7751782bb2ae1788b184d85da37d1de966"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-first-20261128/result.json",
+      "sha256": "ac70bcce915dfd69703474c5a5c4a8495c22606957847ecd76ab2415a9448e3b"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-first-20261128/provider.jsonl",
+      "sha256": "e181cf2f2b8c3dbd9cb9cc7b9a04b4ec6ee73f5a13f3b3439ddbbdabc2af5567"
+    }
+  ]
+}
