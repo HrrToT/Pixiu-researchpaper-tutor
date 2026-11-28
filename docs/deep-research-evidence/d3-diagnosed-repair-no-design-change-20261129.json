@@ -1,0 +1,185 @@
+{
+  "case": "D3-DENSIFICATION-FACTORIAL",
+  "kind": "targeted_repair_with_no_executable_design_change",
+  "sourceCommit": "316e045ca284d02670fd818e944050ef0c5caac3",
+  "runId": "dr_d3_locked_fact_design_repair_20261129",
+  "sourceRunId": "dr_d3_prep_window_review_20261129",
+  "originalReviewDigest": "f4481454166f30d63bee2378fff7a556e5143f0212e55a6a059b2d4b29ecdf0b",
+  "usage": {
+    "additionalGenerations": 3,
+    "additionalInputCountRequests": 2,
+    "additionalTotalTokens": 26275,
+    "totalRunGenerations": 11,
+    "totalRunTokens": 71042,
+    "continuationSeconds": 53.2,
+    "previousFactBatchReused": true,
+    "perNode": {
+      "repair_experiment_shared": 6949,
+      "review_experiment_shared": 19326
+    }
+  },
+  "revision": {
+    "savedResponseDigest": "c90def153bfe14578738473ec734652dc7f7c82114458559fbb43094a3d582e2",
+    "changedFields": [
+      "unresolved"
+    ],
+    "unresolved": [
+      "Before acceptance testing or training, specify Adam learning rates, betas, epsilon and schedules, and the renderer and SH progression conventions, or identify and pin a runnable implementation that fixes them."
+    ]
+  },
+  "scientificReReview": {
+    "status": "checked",
+    "verdictCounts": {
+      "passed": 18,
+      "unresolved": 2,
+      "failed": 2
+    },
+    "nonpassingChecks": [
+      {
+        "checkId": "section_2",
+        "status": "unresolved",
+        "planBindings": [
+          "/states/9/representation",
+          "/states/10/representation",
+          "/states/4/meaning",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/steps/9/operation/action",
+          "/data/inputs/2/preparation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E2",
+            "field": "after"
+          }
+        ],
+        "reason": "Parameter encodings and initialization are largely specified, but the runnable implementation is not yet identified or pinned. Adam settings, renderer and SH progression remain unspecified prerequisites, so the training state transitions cannot yet be reproduced."
+      },
+      {
+        "checkId": "section_5",
+        "status": "unresolved",
+        "planBindings": [
+          "/budgets/0/cap",
+          "/budgets/0/stopRule",
+          "/budgets/1/cap",
+          "/budgets/2/cap",
+          "/budgets/2/stopRule",
+          "/budgets/3/cap",
+          "/steps/3/operation/action",
+          "/steps/9/operation/action",
+          "/steps/2/operation/action"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E11",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E3",
+            "field": "quote"
+          }
+        ],
+        "reason": "Equal successful-step budgets, the uninterrupted shared preparation cap and failure stops are specified. However, Adam learning rates, betas, epsilon and schedules, as well as renderer and SH conventions, must still be specified or fixed by an identified pinned implementation."
+      },
+      {
+        "checkId": "requirement_0_0",
+        "status": "failed",
+        "planBindings": [
+          "/hypothesis",
+          "/groups/0/levels",
+          "/groups/1/levels",
+          "/groups/2/levels",
+          "/groups/3/levels",
+          "/factors/0/onOperation/action",
+          "/factors/1/onOperation/action",
+          "/analysis/limitations"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E1",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E12",
+            "field": "quote"
+          }
+        ],
+        "reason": "The hypotheses, four cells, and parent/child treatments are explicit. However, the requested distinction from the paper's existing ablations is not supplied: a statement that the cited passages do not establish a factorial ablation does not describe the paper's actual ablations."
+      },
+      {
+        "checkId": "requirement_0_1",
+        "status": "failed",
+        "planBindings": [
+          "/data/splitPrecheck",
+          "/data/inputs/1/preparation",
+          "/data/inputs/2/preparation",
+          "/steps/1/operation/action",
+          "/steps/2/operation/action",
+          "/pairing/identityChecks",
+          "/budgets/1/cap",
+          "/budgets/2/cap",
+          "/steps/9/operation/action",
+          "/unresolved/0"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E2",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E7",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E11",
+            "field": "quote"
+          }
+        ],
+        "reason": "Acquisition and split readiness checks, paired checkpoints, and step budgets are concrete. But Adam rates, betas, epsilon and schedules, renderer conventions and SH progression remain unspecified, with no identified pinned implementation; the proposal itself requires resolving these before acceptance testing or training."
+      }
+    ]
+  },
+  "originalAblationEvidence": {
+    "sourcePdfSha256": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "physicalPage": 10,
+    "figure": "Figure 8",
+    "evidenceId": "ev_afcfa602e20709413011f01cf06fda317a01b5511f6e21480ddf08ae4361490b",
+    "literalMatch": true,
+    "includedInOriginalDraftGeneration": false
+  },
+  "unchangedDesignReplay": {
+    "paidReviewRunSha256": "a2ac1f19f791be8e24cf2dec70118f21ac6c0d728e38f468b99e4c6989ce8d77",
+    "paidRepairRunSha256": "f3648ecbc21471f6aaad9c226fa80049e62c3d9206f812b009c5a89b396ef99b",
+    "archivedResponseDigest": "c90def153bfe14578738473ec734652dc7f7c82114458559fbb43094a3d582e2",
+    "updatedRepairBytes": 28176,
+    "savedStatus": "unchanged_design",
+    "originalResponsePreserved": true,
+    "replayEvents": [
+      {
+        "node": "repair_experiment_shared",
+        "archivedResponseOnly": true,
+        "promptBytes": 27557
+      }
+    ],
+    "repeatedReadDidNotDispatch": true,
+    "newProviderCalls": 0,
+    "scientificApproval": false
+  },
+  "targetedTestsPassed": 321,
+  "finalAnswerAuditPerformed": false,
+  "publicationPerformed": false,
+  "independentHoldoutCredit": 0,
+  "productionWrites": 0,
+  "rawArtifactSha256": {
+    "tmp/d3-unchanged-design-repair-replay-20261129.json": "1a37cd1aa00d2d86e0935def8e859eb503131b12b389709e0a9bb106ae80762a",
+    "tmp/openai-d3-locked-fact-design-repair-20261129/intent.json": "34a129502db5c9130c57b8686271aea8f05307c0536b8d0f0b464b27ffb60c28",
+    "tmp/openai-d3-locked-fact-design-repair-20261129/run.json": "f3648ecbc21471f6aaad9c226fa80049e62c3d9206f812b009c5a89b396ef99b",
+    "tmp/openai-d3-locked-fact-design-repair-20261129/result.json": "bacfaaf71736d5d6cc4459664f7c049114c92f6cbd1ddf19a098ff6f7dea34bb",
+    "tmp/openai-d3-locked-fact-design-repair-20261129/calls.json": "be03ba8e6dde5fa7055efcbae6d15e10ae1ee74937d00ff253f905189050f2e6",
+    "tmp/openai-d3-locked-fact-design-repair-20261129/provider.jsonl": "86d7638764a85d4fc7fba21c7ea860f42456e1589a824c643e55f2ed3bdbec6d"
+  }
+}
