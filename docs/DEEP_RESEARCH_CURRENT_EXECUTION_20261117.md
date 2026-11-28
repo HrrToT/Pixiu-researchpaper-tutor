@@ -1022,7 +1022,7 @@ OpenAI 科学审核的原子预留优先按字节上界。仅当上界导致 Tok
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | Quest、InfLLM、RetrievalAttention 已取得指定版本全文，各报告仍有内容遗漏。当前候选重放这三例和 PagedAttention、SnapKV，五例的必要证据包全部进入综合请求，并保留原报告已接受的引文。请求均在 24,000 字节内。 [真实执行记录](deep-research-evidence/research-finalization-real-batch-20261126.json) · [五例回放](deep-research-evidence/external-explanation-synthesis-replay-20261126.json) | 保留原有独立结果。用新的留出题确认真实报告完整回答机制和条件，同时通过来源与全文验收。 |
-| H4 冲突或版本差异 | LoRA 的未确认调用保持冻结。KIVI 首次执行未发布报告，QuaRot 保存部分报告。AWQ v7 发布完整报告，人工确认 12 个数值与版本标签正确。共同结论扩展了用户指定范围，科学验收仍未通过。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [QuaRot 实测](deep-research-evidence/quarot-version-h4-first-real-20261126.json) · [AWQ v7 实测](deep-research-evidence/excerpts-revision-allocation-native-real-20261126.json) | 验证共同结论严格限定题目要求的设置与证据。独立验收需要新的冻结题，AWQ 复测按开发证据计。 |
+| H4 冲突或版本差异 | LoRA 的未确认调用保持冻结。KIVI 首次执行未发布报告，QuaRot 保存部分报告。AWQ v7 报告的 12 个数值与版本标签经人工复核正确，共同结论曾扩展设置范围。新版回放拦下超范围结论，保留 12 个单元格和两版在指定设置下的排序。 [KIVI 实测](deep-research-evidence/kivi-version-h4-first-real-20261126.json) · [QuaRot 实测](deep-research-evidence/quarot-version-h4-first-real-20261126.json) · [AWQ 设置范围回放](deep-research-evidence/awq-requested-common-setting-offline-replay-20261128.json) | 验证真实报告的最终科学核验与交付。独立验收需要新的冻结题，AWQ 回放按开发证据计。 |
 | H5 新实验切入点 | [H5-DORA-FACTORIAL 定义](DEEP_RESEARCH_DORA_FACTORIAL_HOLDOUT_20261112.json)首次回复未通过方案约束，未发布。 | 修复方案中的状态、配对、预算及测量逻辑，再验收新四组方案。 |
 | H6 外部失败或预算耗尽 | 5 条冻结故障链在最新候选源码上再次通过，覆盖 503、全文超限、搜索预算、私网地址及重定向。连同 DeepSeek Search、外部故障和未知请求恢复共 31 项通过。 [首次验收](deep-research-evidence/h6-fault-chain-first-20261112.json) · [当前版本复验](deep-research-evidence/research-release-fault-regression-20261125.json) | 已有工程验收证据。外部真实获取和真实费用在相应真实案例计入。 |
 
@@ -1202,6 +1202,8 @@ AWQ-v5 原始草稿的 12 个数值在各自引用的原表行中均有唯一匹
 
 - **D3-v15** 用时 108 秒、6 次模型调用。规划通过，方案生成请求为 30,332 字节，成功返回草稿。克隆步骤读取、配对声明引用了没有创建的 `shared_scene_meta`，导致五项结构错误。离线在共同的准备步骤中显式创建场景和图像状态后，保存的草稿通过结构编译，尚待科学审核。
 - **AWQ-v7** 用时 336 秒、10 次模型调用。生成输入同时保留两版证据，应用保存完整报告。逐项核对确认两版两个模型的 12 个数值正确，版本标签一致，计数 276 字符。共同结论扩展为 0.1%–1%，也未明确指出用户指定的 1% 结果仍高于完整 FP16。本次通过了数值与版本绑定的开发验证，科学内容整体尚未通过，也不计入独立留出验收。
+
+用 AWQ-v7 原始报告回放新版核验入口。旧规则把三条草稿全部交给语义核验。新版依照题目指定的 1% 设置，拒绝把两版共同结论扩展到表注的 0.1%–1%。两版第 3 页表 1 的 12 个数值、原引文及差异原因未知的说明均保留。程序根据原表单元格说明两版各模型的 WikiText 困惑度排序均为完整 FP16、按激活保留 1% FP16、RTN，由低到高。离线报告候选计 275 字符。74 项定向回归通过。回放用模拟语义回调观测进入核验的论断，无新增模型调用、工作区写入或独立验收通过。 [指定设置范围回放](deep-research-evidence/awq-requested-common-setting-offline-replay-20261128.json)
 
 候选恢复后并入外部补查的隔离提交。新输入在同一来源版本内优先装入与查询直接相关的存放、分工和合并原文。103 项定向测试和五份真实回执的输入回放已通过，新集成版本仍待全量回归与真实外部补查。 [集成前回放](deep-research-evidence/external-explanation-synthesis-replay-20261126.json)
 
