@@ -1,0 +1,63 @@
+{
+  "providerCalls": 0,
+  "sourceRun": "dr_run_6701dc1d5aab5a758fba641d19bde7c3",
+  "historicalSuccessfulStageReplies": 33,
+  "largestStageOutputTokens": 600,
+  "oldLast": {
+    "node": "synthesize",
+    "usedBefore": 67294,
+    "reserved": 41403,
+    "actual": 6760,
+    "admitted": false,
+    "error": {
+      "kind": "modelCalls",
+      "limit": 18,
+      "used": 8
+    }
+  },
+  "newTail": [
+    {
+      "node": "synthesize",
+      "usedBefore": 67294,
+      "reserved": 29019,
+      "actual": 6760,
+      "admitted": true,
+      "usedReservePool": false
+    },
+    {
+      "node": "verify",
+      "usedBefore": 74054,
+      "reserved": 17956,
+      "actual": 3094,
+      "admitted": true,
+      "usedReservePool": false
+    },
+    {
+      "node": "verify",
+      "usedBefore": 77148,
+      "reserved": 20156,
+      "actual": 5234,
+      "admitted": true,
+      "usedReservePool": false
+    },
+    {
+      "node": "verify_advice",
+      "usedBefore": 82382,
+      "reserved": 12959,
+      "actual": 2597,
+      "admitted": true,
+      "usedReservePool": false
+    },
+    {
+      "node": "verify_answer_coverage",
+      "usedBefore": 84979,
+      "reserved": 13479,
+      "actual": 9760,
+      "admitted": true,
+      "usedReservePool": false
+    }
+  ],
+  "newTokens": 94739,
+  "newCalls": 18,
+  "measures": "Replays observed reservations and actual usage, without model execution or scientific acceptance"
+}
