@@ -92,3 +92,34 @@ def test_scoped_navigation_cannot_reassign_a_cell_to_another_source_version():
              'layout':[{'claimIds':['c'],'source':'P1','axisTitle':'成本'}]}
     with pytest.raises(ValueError,match='sources'):
         required_premises([claim],ev,{'c':claim['evidenceRefs']},req,comparison_context=context)
+
+
+@pytest.mark.parametrize('change', [None, 'abstract', 'unchecked', 'not_cited', 'not_allowed'])
+def test_local_representation_repair_retains_cited_parameter_definition(change):
+    claim, evidence, requirements = fixture()
+    claim.update(text='优化各高斯的位置、不透明度和颜色。', evidenceRefs=['a0', 'a1'])
+    evidence[0].update(quote='The 3D representation uses 3D Gaussians and optimizes position, α and view dependent color.',
+                       location={'section': 'Method'})
+    evidence[1].update(quote='The optimized properties include 3D position, opacity α, and anisotropic covariance.',
+                       location={'section': 'Introduction'})
+    evidence = [*evidence[:2]]
+    requirements[0].update(question='比较表示方式和训练成本', requiredSources=['a-v1'])
+    context = {'sources': {'P1': {'workId': 'a', 'versionId': 'a-v1'}},
+               'layout': [{'claimIds': ['c'], 'source': 'P1', 'axisTitle': '表示与压缩机制'}]}
+    allowed = {'c': ['a0', 'a1']}
+    if change == 'abstract':
+        evidence[1]['accessLevel'] = 'abstract'
+    elif change == 'unchecked':
+        evidence[1]['verification']['literal'] = 'unchecked'
+    elif change == 'not_cited':
+        claim['evidenceRefs'] = ['a0']
+    elif change == 'not_allowed':
+        allowed['c'] = ['a0']
+    before = deepcopy((claim, evidence, allowed))
+    old, _ = required_premises([claim], evidence, allowed, requirements, comparison_context=context)
+    revised, audit = required_premises([claim], evidence, allowed, requirements, comparison_context=context,
+                                       local_parameter_definitions=True)
+    assert old == {'a0'}
+    assert revised == ({'a0', 'a1'} if change is None else old)
+    assert set(audit['targets'][0]['requiredEvidenceIds']) == revised
+    assert (claim, evidence, allowed) == before

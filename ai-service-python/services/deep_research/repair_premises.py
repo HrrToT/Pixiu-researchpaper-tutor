@@ -1,6 +1,8 @@
 """Navigate rejected-draft evidence without granting factual support or access."""
+import re
 from collections import Counter
 from copy import deepcopy
+
 from services.deep_research.reading_roles import premise_bundles, quality
 from services.deep_research.obligation_binding import eligible_obligation_ids
 
@@ -27,7 +29,11 @@ def comparison_scope(claim, context, evidence):
     return {'workId': pair[0], 'versionId': pair[1], 'dimension': dimension}
 
 
-def required_premises(originals, evidence, allowed, requirements, *, verified_target_ids=(), comparison_context=None):
+_OPACITY_DEFINITION = re.compile(r'\bopacity\s*\(?\s*[α𝛼]|\bopacity\s+alpha\b', re.I)
+
+
+def required_premises(originals, evidence, allowed, requirements, *, verified_target_ids=(), comparison_context=None,
+                      local_parameter_definitions=False):
     counts=Counter(e.get('evidenceId') for e in evidence)
     selected=[];seen=set();audit=[];preferred=[]
     for claim in originals:
@@ -79,6 +85,13 @@ def required_premises(originals, evidence, allowed, requirements, *, verified_ta
                 pair=(e['sourceWorkId'],e['sourceVersionId'])
                 if pair not in anchored:anchors.append(e);anchored.add(pair)
             chosen=anchors
+            if local_parameter_definitions and scope is not None and re.search(r'不透明度|\bopacity\b',
+                    claim.get('text', ''), re.I):
+                definitions = [e for e in candidates if e['evidenceId'] in old and e.get('accessLevel') == 'fulltext'
+                               and (e['sourceWorkId'], e['sourceVersionId']) == (scope['workId'], scope['versionId'])
+                               and _OPACITY_DEFINITION.search(e.get('quote', ''))]
+                if definitions and not any(e in chosen for e in definitions):
+                    chosen.append(min(definitions, key=lambda e: len(e['quote'])))
         refs=list(dict.fromkeys(e['evidenceId'] for e in chosen))
         preferred.extend(eid for eid in preferred_refs if eid not in preferred)
         audit.append({'claimId':cid,'mode':mode,'originalEvidenceIds':list(old),

@@ -550,7 +550,7 @@ class ResearchFacade:
             "revisionTableDifferingRowsVersion": 1,
             "revisionTableChangeLabelsVersion": 1,
             "singleBenchmarkCriteriaVersion": 2,
-            "comparisonRepairBatchEnvelopeVersion": 3,
+            "comparisonRepairBatchEnvelopeVersion": 4,
             "boundCompositeTableCellsVersion": 2,
             "factualDecisionContractVersion": 2,
             "factualEnvelopeContractVersion": 2,

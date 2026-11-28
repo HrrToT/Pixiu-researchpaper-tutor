@@ -58,7 +58,7 @@ def test_new_profile_is_consistent_and_does_not_rewrite_legacy_run(tmp_path):
         assert first['processExplanationVocabularyVersion']==1
         assert first['namedBenchmarkNavigationVersion']==1
         assert first['singleBenchmarkCriteriaVersion']==2
-        assert first['comparisonRepairBatchEnvelopeVersion']==3
+        assert first['comparisonRepairBatchEnvelopeVersion']==4
         assert first['boundCompositeTableCellsVersion']==2
         with pytest.raises(ValueError, match='Immutable run field'):
             repo.update_run(first['runId'], lambda row: {**row, 'processExplanationVocabularyVersion': 0})

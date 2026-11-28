@@ -16,7 +16,7 @@ from services.deep_research.repair_scope import repair_evidence_scope
 
 
 def _prepare_repair(report, verification, evidence, question, *, max_prompt_bytes=24000,
-                    comparison_priority_evidence=(),
+                    comparison_priority_evidence=(), local_parameter_definitions=False,
                     metric_domains=None, draft_context=(), prior_revisions=(), comparison_authoring=False, benchmark_example=None,
                     fact_redraft=False, requirement_context=(), source_aware_redraft=False,comparison_reasoning=False,
                     question_priority=False,concise_factual=False,factual_scope=False,declared_table_refs=False,comparison_methodology=False,experimental_intent=False,compact_source_repair=False,shared_experiment_schema=False,experiment_evidence_context=None,experimental_edits=False,experimental_diagnostics=False,experimental_nested_tables=False,experimental_representation=False,experimental_coverage=False,citation_presentation_version=0,configuration_consistency_version=0,repair_evidence_packet_version=0,answer_intents=None,scope_expression=False,table_identity_context=False,claim_check=False,required_scope_ids=(),compact_layout=False,ordinary_advice=False,task_sources=False,request_semantics=False,preserve_answers=False,target_goals=False,objective_framing=False,process_explanations=False,factual_prompt_version=0,verified_target_ids=(),authored_body=False,verbatim_repair=False,consolidated_instructions=False,verified_text_edits=False,integrated_text_edits=False,text_edit_context=None,scope_citation_presentation=False,compact_repair_policy=False):
@@ -725,6 +725,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
     if factual_prompt_version in (2,3):
         from services.deep_research.repair_premises import required_premises
         required,premise_audit=required_premises(list(originals.values()),selected,allowed,active_requirements,verified_target_ids=verified_target_ids,
+            local_parameter_definitions=local_parameter_definitions,
             **({'comparison_context':report.get('comparisonCells')} if compact_repair_policy == 2 else {}))
     # Coverage hints are candidates, not citations the original assertion used.
     # Keep them first among optional rows without forcing every broad hint into
@@ -997,7 +998,7 @@ def factual_redraft_eligible(report):
 
 def repair_rejected(report, verification, evidence, question, invoke, parse, *, comparison_prioritize_cells=False,
                     comparison_split_to_fit=False, comparison_preflight_to_fit=False,
-                    comparison_priority_evidence=(),
+                    comparison_priority_evidence=(), local_parameter_definitions=False,
                     max_prompt_bytes=24000, metric_domains=None, batch_state=None, checkpoint=None,
                     current_budget=None, invoke_request=None, fact_redraft=False, requirement_context=(),
                     released_finalization=False, comparison_authoring=False, benchmark_example=None,
@@ -1144,6 +1145,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
         identity = digest({'inputDigest': identity, 'comparisonSplitToFit': True})
     if comparison_preflight_to_fit:
         identity = digest({'inputDigest': identity, 'comparisonPreflightToFit': True})
+    if local_parameter_definitions:
+        identity = digest({'inputDigest': identity, 'comparisonLocalParameterDefinitions': 1})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)
@@ -1158,6 +1161,7 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
         return _prepare_repair(report, subset, evidence, question,
             **({'comparison_authoring':comparison_authoring} if comparison_authoring else {}),
             **({'comparison_priority_evidence': comparison_priority_evidence} if comparison_priority_evidence else {}),
+            local_parameter_definitions=local_parameter_definitions,
             **({'benchmark_example':benchmark_example} if benchmark_example is not None else {}),
             **({'compact_repair_policy':compact_repair_policy} if compact_repair_policy else {}),
             **({'scope_citation_presentation':True} if scope_citation_presentation else {}),
