@@ -3,7 +3,7 @@
   "frozenAt": "2026-11-28",
   "frozenTimestamp": "2026-11-28T12:36:10.103676+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_not_executed",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
   "materials": {
     "pointpillars_cvpr2019": {
@@ -87,5 +87,6 @@
   },
   "caseDefinitionHashes": {
     "H1-POINTPILLARS": "1007aaedc2c629ba802a8f14974cb7de65829d966c1c1115383eadb9823443c3"
-  }
+  },
+  "firstExecutionReceipt": "deep-research-evidence/pointpillars-h1-first-frozen-20261128.json"
 }

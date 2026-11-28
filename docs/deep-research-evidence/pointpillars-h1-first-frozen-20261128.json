@@ -1,0 +1,180 @@
+{
+  "case": "H1-POINTPILLARS",
+  "attempt": 1,
+  "definitionHash": "1007aaedc2c629ba802a8f14974cb7de65829d966c1c1115383eadb9823443c3",
+  "sourceCommit": "b21e7df842533db50c556030f600954b84bd927d",
+  "runId": "dr_run_4d3c02dc76b5512a98c2cd103ff3e55e",
+  "materialSha256": "b1c4b0cb1bba246637ac63ecc93919d3f298cc816e8eab129eb9c6d5c4606a2c",
+  "applicationResult": {
+    "status": "completed",
+    "outcome": "partial",
+    "verifiedClaimIds": [
+      "c1"
+    ],
+    "workspaceDeliveryExercised": false,
+    "automaticRetry": false
+  },
+  "independentReview": {
+    "passed": false,
+    "independentCredit": 0,
+    "coverage": {
+      "pseudimage_conversion": "partial",
+      "remaining-request": "partial",
+      "speed_and_hardware": "missing",
+      "acceleration_tradeoff": "missing",
+      "answer_scope": "partial"
+    },
+    "reason": "The final report retained a high-level encoding summary but omitted the two rates, hardware and the accelerated configuration and class-specific accuracy trade-off."
+  },
+  "diagnostic": {
+    "retainedClaimCitations": [
+      {
+        "id": "ev_1499de25b0b03492d2980c08411205e3a7cf7c62d5c3cd8044471864b64a1bc1",
+        "page": 3,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": false
+      },
+      {
+        "id": "ev_3550937c463be1004c0237038001da086019e0c8950c58161a0d99a6ba259be5",
+        "page": 3,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_b6c0939ec789e453812ccfad90b4bee93409ec093521ed6083a8b1bdac54c2e6",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_b3214244ba341f2fd065a2ce48973cafc0853c133318029aad7e2773c42abe0f",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    ],
+    "speedDraftCitations": [
+      {
+        "id": "ev_85afc058c2afd949ebe5c3c3e86a759496eacb3379552f38e684a95ea0fcae5e",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_25e1e25b50e8d38cf6c9e1c36cd331584992992161a07ad8c16b43cdc00b0fcf",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_926f52a7a4dfa32dfe45b6204ed1293133228ab8888202c74f27032292444725",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    ],
+    "directEvidence": {
+      "standardExplicitRate": {
+        "id": "ev_3550937c463be1004c0237038001da086019e0c8950c58161a0d99a6ba259be5",
+        "page": 3,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "acceleratedRate": {
+        "id": "ev_926f52a7a4dfa32dfe45b6204ed1293133228ab8888202c74f27032292444725",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "speedTableHeader": {
+        "id": "ev_b85753b7d4a9505e22ca6ca02f62ea2b83da17e3eea0c508411295611a3885b3",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "runtimeHardware": {
+        "id": "ev_25e1e25b50e8d38cf6c9e1c36cd331584992992161a07ad8c16b43cdc00b0fcf",
+        "page": 7,
+        "suppliedToSynthesis": true,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "scatterAndAvoidance": {
+        "id": "ev_96ae6ab0f3a5940e2bec13e70a6933e6bb0c7dd9b85200a92c8caaf68b231e95",
+        "page": 4,
+        "suppliedToSynthesis": false,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    },
+    "missingAcquisition": {
+      "page": 7,
+      "largerPillarBinsAndClassSpecificTradeoff": "In official PDF, absent from read results and evidence.",
+      "readOffsetsOnPhysicalPage": [0, 1500],
+      "lastReadBoundary": "The second slice ends during the paragraph introducing 105 Hz, before the paragraph gives the change in grid size and affected classes."
+    },
+    "initialRejection": {
+      "claimId": "c2",
+      "reason": "semantic_unresolved",
+      "detail": "证据报告105Hz且精度损失有限。\n测速设备为Intel i7 CPU和1080Ti GPU的桌面机。\n表中PointPillars一行有62，但所给摘录缺少列标题，不能确认其单位及其对应常规版速度。\n因此，常规版62Hz这一部分仍有歧义。"
+    },
+    "rejectedRevisions": [
+      {
+        "claimId": "c1",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "2019e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：2019。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      },
+      {
+        "claimId": "c2",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+      }
+    ],
+    "synthesisInputBytes": 23918
+  },
+  "usage": {
+    "stages": [
+      "resolve_brief",
+      "plan",
+      "assess_relevance",
+      "assess_relevance",
+      "synthesize",
+      "verify",
+      "verify",
+      "verify_answer_coverage",
+      "repair_claims"
+    ],
+    "providerGenerationCalls": 9,
+    "totalTokens": 42108,
+    "tokensByModel": {
+      "gpt-6-luna": 13712,
+      "gpt-6.1-terra": 28396
+    },
+    "graphSeconds": 80.0,
+    "externalSearches": 0,
+    "productionWrites": 0
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-pointpillars-first-20261128/intent.json",
+      "sha256": "33d444cd2a8881e67f3f500cea6309931af11dc0e19cd92d0dc96c1313f0f2cc"
+    },
+    {
+      "path": "tmp/openai-h1-pointpillars-first-20261128/run.json",
+      "sha256": "09c20f17b89cf87682937f06e9a1fb90b442492a2ac972af242eb004e08a398e"
+    },
+    {
+      "path": "tmp/openai-h1-pointpillars-first-20261128/calls.json",
+      "sha256": "d4f3086afd77c432991c731965971b5134652c30fab6bfd1307639af5d7e2110"
+    },
+    {
+      "path": "tmp/openai-h1-pointpillars-first-20261128/result.json",
+      "sha256": "c6fa0d878c54bcbf9fb1754ef0d3684bd166dc76a674c9755ff2bdb99b893aad"
+    },
+    {
+      "path": "tmp/openai-h1-pointpillars-first-20261128/provider.jsonl",
+      "sha256": "7e9282730cb7fe2f64a125b6ac2499678088137878db6b537fb1596bb1e6f812"
+    }
+  ]
+}
