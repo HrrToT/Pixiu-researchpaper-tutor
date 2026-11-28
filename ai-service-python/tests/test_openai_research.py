@@ -248,28 +248,32 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
         facade.shutdown()
 
 
-@pytest.mark.parametrize("tokens,count,ordinary_calls,wide,expected_sends", [
-    (20000, 8900, None, False, ["/responses"]),
-    (79000, 8900, None, False, ["/responses/input_tokens", "/responses"]),
-    (79000, 24000, None, False, ["/responses/input_tokens"]),
-    (79000, 8900, 7, False, ["/responses/input_tokens", "/responses"]),
-    (79000, 8900, 13, False, []),
-    (20000, 9300, None, True, ["/responses/input_tokens", "/responses"]),
-    (20000, None, None, True, ["/responses/input_tokens"]),
-    (92000, 9300, None, True, ["/responses/input_tokens"]),
-    (98000, 9300, None, True, []),
+@pytest.mark.parametrize("tokens,count,ordinary_calls,window_version,expected_sends", [
+    (20000, 8900, None, 0, ["/responses"]),
+    (79000, 8900, None, 0, ["/responses/input_tokens", "/responses"]),
+    (79000, 24000, None, 0, ["/responses/input_tokens"]),
+    (79000, 8900, 7, 0, ["/responses/input_tokens", "/responses"]),
+    (79000, 8900, 13, 0, []),
+    (20000, 9300, None, 1, ["/responses/input_tokens", "/responses"]),
+    (20000, None, None, 1, ["/responses/input_tokens"]),
+    (92000, 9300, None, 1, ["/responses/input_tokens"]),
+    (98000, 9300, None, 1, []),
+    (20000, 9800, None, 2, []),
+    (20000, 9800, None, 3, ["/responses/input_tokens", "/responses"]),
+    (92000, 9800, None, 3, ["/responses/input_tokens"]),
 ])
 def test_scientific_review_counts_when_required_for_admission(
-        tmp_path, monkeypatch, tokens, count, ordinary_calls, wide, expected_sends):
+        tmp_path, monkeypatch, tokens, count, ordinary_calls, window_version, expected_sends):
     from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
+    from services.deep_research.planning_transport import overhead_bytes
     from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE
     from services.deep_research.tools import TrackedLLMInvoker
     from test_deep_research_shared_experiment_review import ready
 
     record, _, _ = ready()
     record.update(openaiResearchModels=["main", "routine"], countedExperimentReviewContractVersion=1)
-    if wide:
-        record.update(countedExperimentReviewWindowVersion=1, sharedExperimentScopedReviewPacketVersion=7,
+    if window_version:
+        record.update(countedExperimentReviewWindowVersion=window_version, sharedExperimentScopedReviewPacketVersion=7,
                       sharedExperimentReviewReferenceVersion=4)
     record["budget"].update(tokens=tokens, maxTokens=100000, normalTokens=0)
     if ordinary_calls is not None:
@@ -283,7 +287,7 @@ def test_scientific_review_counts_when_required_for_admission(
     bound = ScopedModelClient(repo, lambda *_: True, Mock()).for_run(record["runId"])
     invoker = TrackedLLMInvoker(bound, repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
                                 call_history_fn=repo.list_calls, verification_max_input_bytes=32000,
-                                experiment_max_input_bytes=32000 if wide else None)
+                                experiment_max_input_bytes=32000 if window_version else None)
     sends = []
     def post(url, **kwargs):
         path = url.removeprefix("https://api.openai.com/v1")
@@ -305,11 +309,18 @@ def test_scientific_review_counts_when_required_for_admission(
     monkeypatch.setattr("llm.client.requests.post", post)
     def send():
         options = {"max_tokens": 4096}
-        if wide:
+        if window_version:
             options[CHECK_IDS_OPTION] = ["section_0"]
-        return invoker(record["runId"], NODE, "Review the JSON proposal. " + "x" * (32000 if wide else 22000),
+        size = 35500 if window_version >= 2 else 33000 if window_version else 24000
+        prompt = "Review the JSON proposal. "
+        padding = size - overhead_bytes(repo.require_run(record["runId"]), NODE, options) - len(prompt)
+        return invoker(record["runId"], NODE, prompt + "x" * padding,
                        options, use_reserve=True)
-    if count is None:
+    if window_version == 2:
+        with pytest.raises(ValueError, match="exceeds max 35000 bytes"):
+            send()
+        assert not repo.list_calls(record["runId"])
+    elif count is None:
         with pytest.raises(DeepResearchError) as failure:
             send()
         assert failure.value.code == "shared_experiment_review_count_unavailable"

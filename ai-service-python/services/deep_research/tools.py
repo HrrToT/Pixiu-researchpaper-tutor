@@ -481,12 +481,12 @@ class TrackedLLMInvoker:
         science_check_ids = (extra_body or {}).get(science.CHECK_IDS_OPTION)
         counted_science_window = (
             node == science.NODE and admission_bytes > science.MAX_INPUT and max_byte_length == science.MAX_INPUT
-            and structured and use_reserve and science.counted_window_enabled(transport_record)
+            and structured and use_reserve and (science_limit := science.counted_window_limit(transport_record))
             and science_check_ids and all(not check.startswith('fact_') for check in science_check_ids)
             and self.supports_counted_experiment_review(transport_record)
         )
         if counted_science_window:
-            max_byte_length = science.COUNTED_MAX_INPUT
+            max_byte_length = science_limit
             args_digest = digest({**request_identity,
                                   science.COUNTED_WINDOW_MARKER: transport_record[science.COUNTED_WINDOW_MARKER]})
         if admission_bytes > max_byte_length:

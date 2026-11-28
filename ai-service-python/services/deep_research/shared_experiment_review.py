@@ -13,6 +13,7 @@ from services.deep_research.shared_experiment_plan import validate_bound, _objec
 NODE = 'review_experiment_shared'
 MAX_INPUT = 32000
 COUNTED_MAX_INPUT = 35000
+COUNTED_REPACK_MAX_INPUT = 36000
 COUNTED_WINDOW_MARKER = 'countedExperimentReviewWindowVersion'
 OUTPUT_TOKENS = 4096
 MAX_CHECKS_PER_REVIEW = 10
@@ -203,11 +204,13 @@ def _group_bindings(record):
     return type(version) is int and version == 1 and record.get(REFERENCE_MARKER) == 4
 
 
-def counted_window_enabled(record):
-    return (isinstance(record, dict) and type(record.get(COUNTED_WINDOW_MARKER)) is int
-            and record[COUNTED_WINDOW_MARKER] in (1, 2) and record.get('openaiResearchModels')
+def counted_window_limit(record):
+    if (isinstance(record, dict) and type(record.get(COUNTED_WINDOW_MARKER)) is int
+            and record[COUNTED_WINDOW_MARKER] in (1, 2, 3) and record.get('openaiResearchModels')
             and record.get('countedExperimentReviewContractVersion') == 1
-            and record.get(SCOPED_PACKET_MARKER) == 7 and record.get(REFERENCE_MARKER) == 4)
+            and record.get(SCOPED_PACKET_MARKER) == 7 and record.get(REFERENCE_MARKER) == 4):
+        return COUNTED_REPACK_MAX_INPUT if record[COUNTED_WINDOW_MARKER] == 3 else COUNTED_MAX_INPUT
+    return None
 
 
 def _generation(record):
@@ -596,8 +599,10 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
                         and (not batches or cost(limited) < cost(batches))):
                     batches = limited
-            counted_window = counted_window_enabled(record)
-            if counted_window and not batches and record[COUNTED_WINDOW_MARKER] == 2 and size > MAX_INPUT:
+            counted_limit = counted_window_limit(record)
+            counted_fallback = (counted_limit and not batches
+                                and record[COUNTED_WINDOW_MARKER] in (2, 3) and size > MAX_INPUT)
+            if counted_fallback:
                 batches = partition_bounded_review(
                     record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
@@ -607,11 +612,13 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if any(part['inputBytes'] > MAX_INPUT and
                        any(check.startswith('fact_') for check in part['checkIds']) for part in batches):
                     batches = []
-            elif counted_window and len(batches) > 3:
+            if (counted_limit and len(batches) > 3
+                    and (not counted_fallback or counted_limit > COUNTED_MAX_INPUT)):
                 wider = partition_bounded_review(
                     record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
-                    COUNTED_MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
+                    counted_limit, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
+                    required_design_evidence_only=bool(counted_fallback),
                 )
                 previous_scope = {check: set(part['suppliedEvidenceAliases'])
                                   for part in batches for check in part['checkIds']}
@@ -1002,7 +1009,7 @@ def _initial_batch_budget_stop(record, built, *, can_count_input=False):
 def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains=(), can_count_input=False):
     from services.deep_research.planning_transport import dispatch_options
     built = build(record,input_data,aliases,required_domains=required_domains)
-    limit = COUNTED_MAX_INPUT if counted_window_enabled(record) and built.get('batches') else MAX_INPUT
+    limit = (counted_window_limit(record) or MAX_INPUT) if built.get('batches') else MAX_INPUT
     saved = deepcopy(record.get('state',{}).get(review_slot(record)))
     if saved is None:
         saved = {**built,'version':1,'status':'pending'}
