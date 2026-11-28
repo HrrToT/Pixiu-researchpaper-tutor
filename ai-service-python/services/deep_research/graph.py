@@ -2597,6 +2597,7 @@ def make_verify_node(
             result = (verify_claims_fn(candidates, supporting_evidence, semantic) if candidates
                       else {'accepted': [], 'rejected': []})
             return {**result, 'rejected': [*result.get('rejected', []), *refused]}
+        scoped_text_repair = record.get('verifiedTextRepairContractVersion') == 3
         repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
             verification_result = saved['initialVerification']
@@ -2653,6 +2654,7 @@ def make_verify_node(
                    and type(record.get('repairInstructionsContractVersion')) is int
                    and record['repairInstructionsContractVersion']==5 else {}),
                 audit=answer_coverage if answer_coverage.get('status') == 'checked' else {'gaps': []},
+                prefer_bound_claims=scoped_text_repair,
                 **({'defer_invalid_diagnostics':True} if type(record.get('diagnosticRepairRoutingContractVersion')) is int
                    and record['diagnosticRepairRoutingContractVersion']==1 else {}),
                 **({'defer_invalid_reviews':True} if type(record.get('perClaimReviewFailureContractVersion')) is int
@@ -2827,12 +2829,12 @@ def make_verify_node(
                         **({'comparison_priority_evidence':comparison_priority_evidence}
                            if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and record['verifiedTextRepairContractVersion'] in (1,2)
+                           and record['verifiedTextRepairContractVersion'] in (1,2,3)
                            and not comparison_authoring_enabled(record) else {}),
                         **({'integrated_text_edits':True,'text_edit_context':{
                             'outputKind':saved.get('outputKind'),'presentationVersion':record['reportPresentationContractVersion']}}
                            if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and record['verifiedTextRepairContractVersion']==2
+                           and record['verifiedTextRepairContractVersion'] in (2,3)
                            and not comparison_authoring_enabled(record)
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
@@ -2968,6 +2970,9 @@ def make_verify_node(
                             **({'fixed_scope_first':True,'invoke_fixed':lambda prompt:invoke_compaction(prompt,direct=True,fixed=True)}
                                 if fixed_scope_compaction(record,effective_question(record),saved.get('outputKind','')) else {}),
                             **({'explicit_edit_scope':True} if explicit_compaction_scope(record,effective_question(record),saved.get('outputKind','')) else {}))
+                    if scoped_text_repair:
+                        from services.deep_research.verified_text_repair import bind_adjacent_dimensions
+                        revised = bind_adjacent_dimensions(revised, verification_result.get('accepted', []), evidence)
                     repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                         'repairDraft': revised}}, expected_revision=None)
                 if revised:

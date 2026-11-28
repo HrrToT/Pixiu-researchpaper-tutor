@@ -19,6 +19,24 @@ def _camera_claims():
     ]
 
 
+def test_scoped_repair_preserves_a_covered_claim_used_as_review_context():
+    calculation = _claim('calculation', ['compute'], 'Predict and sort the two coordinates.')
+    limit = _claim('limit', ['scope'], 'Uniform marginals do not establish a uniform joint distribution.')
+    claims = [calculation, limit]
+    bindings = [{'claimId': claim['claimId']} for claim in claims]
+    audit = {'status': 'checked', 'requestCoverageContractVersion': 5,
+             'gaps': [{'obligationId': 'compute', 'question': 'How is the loss computed?'},
+                      {'obligationId': 'answer_scope', 'question': 'Explain loss and scope.', 'wholeQuestion': True}],
+             'verdicts': [{'obligationId': oid, 'bindings': bindings} for oid in ('compute', 'answer_scope')]}
+    verified = {'accepted': claims, 'rejected': []}
+    old = prepare_coverage_repair({'claims': claims}, verified, audit, prioritize_specific=True)
+    assert old['accepted'] == []
+    scoped = prepare_coverage_repair({'claims': claims}, verified, audit,
+                                    prioritize_specific=True, prefer_bound_claims=True)
+    assert scoped['accepted'] == [limit]
+    assert [row['claimId'] for row in scoped['rejected']] == ['calculation']
+
+
 def test_beginner_gap_repairs_only_the_measured_lead():
     claims = [_claim('lead', ['example'], 'Matched measurements.'),
               _claim('boundary', ['scope'], 'No direct cross-paper ranking.'),

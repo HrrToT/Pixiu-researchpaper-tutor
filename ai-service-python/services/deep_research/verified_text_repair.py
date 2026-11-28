@@ -1,4 +1,5 @@
 """Coverage-only text edits preserve verified identities, never approval."""
+from collections import Counter
 from copy import deepcopy
 import json
 import re
@@ -121,6 +122,68 @@ def materialize(rows,originals):
         candidate={k:deepcopy(v) for k,v in old.items() if k not in ('verification','reviewDiagnosticAudit')}
         candidate['text']=row['text'];result.append(candidate);seen.add(cid)
     return result
+
+
+def bind_adjacent_dimensions(revised, verified, evidence):
+    """Expose a uniquely located dimensional quote to normal factual review."""
+    from services.deep_research.measurement_numbers import split_dimension_series
+
+    originals = {claim['claimId']: claim for claim in verified}
+    counts = Counter(row['evidenceId'] for row in evidence)
+    located = {row['evidenceId']: row for row in evidence
+               if counts[row['evidenceId']] == 1 and _passage_identity(row) is not None}
+    result = []
+    for claim in revised:
+        original = originals.get(claim['claimId'])
+        refs = claim.get('evidenceRefs', [])
+        if (not original or claim.get('kind') != 'reported' or claim.get('tableBindings')
+                or refs != original.get('evidenceRefs', [])):
+            result.append(claim)
+            continue
+        _, added = split_dimension_series(claim['text'])
+        _, prior = split_dimension_series(original['text'])
+        anchors = [located[ref] for ref in refs if ref in located]
+        for anchor in anchors:
+            prior.update(split_dimension_series(anchor['quote'])[1])
+        missing = added - prior
+        if not missing:
+            result.append(claim)
+            continue
+        obligations = set(original.get('obligationIds', []))
+        candidates = [row for ref, row in located.items()
+                      if ref not in refs and obligations.intersection(row.get('obligationIds') or [])
+                      and missing <= split_dimension_series(row['quote'])[1]
+                      and any(_adjacent_in_context(anchor, row) for anchor in anchors)]
+        result.append({**claim, 'evidenceRefs': [*refs, candidates[0]['evidenceId']]} if len(candidates) == 1 else claim)
+    return result
+
+
+def _passage_identity(row):
+    location = row.get('location') or {}
+    identity = tuple(row.get(key) for key in ('sourceWorkId', 'sourceVersionId', 'contentHash', 'sourceId'))
+    page, start, quote = location.get('page'), row.get('sourceQuoteStart'), row.get('quote')
+    if (row.get('accessLevel') != 'fulltext' or row.get('verification', {}).get('literal') != 'passed'
+            or row.get('tableData') or location.get('pageResolution') != 'exact'
+            or type(page) is not int or page < 1 or type(start) is not int or start < 0
+            or not isinstance(quote, str) or not quote.strip()
+            or not all(isinstance(field, str) and field for field in identity)):
+        return None
+    return (*identity, page)
+
+
+def _adjacent_in_context(anchor, candidate):
+    if _passage_identity(anchor) != _passage_identity(candidate):
+        return False
+    anchor_start, candidate_start = anchor['sourceQuoteStart'], candidate['sourceQuoteStart']
+    if not (candidate_start + len(candidate['quote']) == anchor_start
+            or anchor_start + len(anchor['quote']) == candidate_start):
+        return False
+    context_start, context = anchor.get('sourceContextStart'), anchor.get('sourceContext')
+    if type(context_start) is not int or not isinstance(context, str):
+        return False
+    return all((offset := row['sourceQuoteStart'] - context_start) >= 0
+               and context[offset:offset + len(row['quote'])] == row['quote']
+               for row in (anchor, candidate))
 
 
 def integrated_prompt(question,length_contract,requirements,originals,checks,questions,source_registry,permissions_marker,evidence_marker,plan):

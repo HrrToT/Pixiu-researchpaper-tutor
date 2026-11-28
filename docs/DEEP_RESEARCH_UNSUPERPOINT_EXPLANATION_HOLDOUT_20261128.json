@@ -3,7 +3,7 @@
   "frozenAt": "2026-11-28",
   "frozenTimestamp": "2026-11-28T10:52:45.404815+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "executed_once_content_not_accepted",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
   "independentCredit": 0,
   "materials": {
     "unsuperpoint_v1": {
@@ -76,5 +76,6 @@
   "caseDefinitionHashes": {
     "H1-UNSUPERPOINT": "bf43970999919ab3772b5c1766374407ee96b71ba43f8b2849a12861f11793df"
   },
-  "firstExecutionReceipt": "deep-research-evidence/unsuperpoint-h1-first-frozen-20261128.json"
+  "firstExecutionReceipt": "deep-research-evidence/unsuperpoint-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/unsuperpoint-h1-scoped-repair-20261128.json"
 }

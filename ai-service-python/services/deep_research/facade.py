@@ -299,6 +299,7 @@ class ResearchFacade:
             r'(?<!\d)2\s*[xX×*]\s*2(?!\d)', str(request.get('question', ''))) else 0
         from services.deep_research.named_table_scope import requested_number
         output_kind = request.get('outputKind')
+        source_policy = request.get('sourcePolicy', {'mode': 'task_only'})
         named_table_verification = (output_kind == 'claim_verification' and bool(materials)
                                     and requested_number(str(request.get('question') or '')) is not None)
         payload = {
@@ -511,7 +512,9 @@ class ResearchFacade:
                 if self._comparison_cells_version == 1 else 1,
             "reviewTargetStructureContractVersion": 2,
             "reviewRevisionRowCountVersion": 1,
-            "verifiedTextRepairContractVersion": 2,
+            "verifiedTextRepairContractVersion": (
+                3 if output_kind == 'claim_verification' and len(materials) == 1
+                and isinstance(source_policy, dict) and source_policy.get('mode', 'task_only') == 'task_only' else 2),
             "sourceGapClosureContractVersion": 1,
             "comparisonMatchedExampleGapClosureVersion": 2,
             "extractionScheduleContractVersion": 1,
@@ -629,7 +632,7 @@ class ResearchFacade:
             "experimentPlanContractVersion": 1,
             "retrievalVersion": "task-pdf-context-continuity.4",
             "focusPaperIds": request.get("focusPaperIds", []),
-            "sourcePolicy": request.get("sourcePolicy", {"mode": "task_only"}),
+            "sourcePolicy": source_policy,
             "budgetProfile": budget_profile,
             "budget": {**budget_limits, 'finalizationBudgetVersion': 1, 'releasedReserveTokens': 0,
                        'explorationAllocationVersion': 1},

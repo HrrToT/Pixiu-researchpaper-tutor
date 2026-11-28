@@ -18,6 +18,66 @@ def prepare(enabled=True):
     return _prepare_repair(report,verification,ev,'Explain the operation.',verified_text_edits=enabled,**opts)
 
 
+def _adjacent_dimension_fixture():
+    dimension = 'The region spans 8×8 pixels. '
+    observed = 'Predictions can cluster near region boundaries.'
+    common = {'sourceWorkId': 'paper', 'sourceVersionId': 'v1', 'contentHash': 'digest',
+              'sourceId': 'passage', 'accessLevel': 'fulltext', 'obligationIds': ['method'],
+              'location': {'page': 6, 'pageResolution': 'exact'}, 'verification': {'literal': 'passed'},
+              'sourceContext': dimension + observed, 'sourceContextStart': 20}
+    anchor = {**common, 'evidenceId': 'anchor', 'sourceQuoteStart': 20 + len(dimension), 'quote': observed}
+    adjacent = {**common, 'evidenceId': 'adjacent', 'sourceQuoteStart': 20, 'quote': dimension}
+    original = {'claimId': 'c', 'kind': 'reported', 'text': '预测点靠近小格边界。',
+                'evidenceRefs': ['anchor'], 'obligationIds': ['method'], 'detailLevel': 'fulltext'}
+    revised = {**original, 'text': '预测点靠近8×8小格边界。'}
+    return original, revised, anchor, adjacent
+
+
+def test_adjacent_numeric_source_reaches_semantic_review_without_approving_the_edit():
+    from services.deep_research.verification import precheck_claims, verify_claims
+    from services.deep_research.verified_text_repair import bind_adjacent_dimensions
+
+    original, revised, anchor, adjacent = _adjacent_dimension_fixture()
+    evidence = [anchor, adjacent]
+    assert precheck_claims([revised], evidence, quantity_spelling_version=23)['rejected'][0]['reason'] == 'numeric_mismatch'
+    amended, = bind_adjacent_dimensions([revised], [original], evidence)
+    assert amended == {**revised, 'evidenceRefs': ['anchor', 'adjacent']}
+    assert revised['evidenceRefs'] == ['anchor']
+    observed = []
+
+    def review(claims, _evidence):
+        observed.extend(claims)
+        return []
+
+    assert verify_claims([amended], evidence, review, quantity_spelling_version=23)['accepted'] == []
+    assert [claim['claimId'] for claim in observed] == ['c']
+
+
+@pytest.mark.parametrize('change', [
+    {'sourceId': 'another-passage'},
+    {'sourceVersionId': 'v2'},
+    {'contentHash': 'wrong-hash'},
+    {'location': {'page': 7, 'pageResolution': 'exact'}},
+    {'sourceQuoteStart': 21},
+    {'verification': {'literal': 'unchecked'}},
+    {'quote': 'The region spans 8×9 pixels. '},
+    {'obligationIds': ['another-requirement']},
+])
+def test_dimensions_are_not_bound_to_unrelated_or_unproven_quotes(change):
+    from services.deep_research.verified_text_repair import bind_adjacent_dimensions
+
+    original, revised, anchor, adjacent = _adjacent_dimension_fixture()
+    assert bind_adjacent_dimensions([revised], [original], [anchor, {**adjacent, **change}]) == [revised]
+
+
+def test_ambiguous_adjacent_dimensions_are_not_bound():
+    from services.deep_research.verified_text_repair import bind_adjacent_dimensions
+
+    original, revised, anchor, adjacent = _adjacent_dimension_fixture()
+    duplicate = {**adjacent, 'evidenceId': 'other'}
+    assert bind_adjacent_dimensions([revised], [original], [anchor, adjacent, duplicate]) == [revised]
+
+
 def test_term_insertions_keep_every_original_word_and_citation_with_one_owned_packet():
     from services.deep_research.verified_text_repair import prepare_term_insertions, term_insertions
 
