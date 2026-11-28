@@ -417,6 +417,7 @@ class DeepResearchRepository:
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
                                      'sharedExperimentDensificationExecutionVersion',
+                                     'sharedExperimentEmptyWireFieldsVersion',
                                      'sharedExperimentReviewPlannedPrerequisitesVersion',
                                      'sharedExperimentReviewCitedPassageScopeVersion',
                                      'sharedExperimentReviewIndexedStatesVersion',

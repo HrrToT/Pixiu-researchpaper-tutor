@@ -839,6 +839,39 @@ def test_single_json_fence_is_removed_for_validation_only():
     assert invoke.call_count == 1
 
 
+@pytest.mark.parametrize('variant', ['known_empty', 'legacy', 'nonempty', 'unknown'])
+def test_profile8_only_discards_known_empty_wire_placeholders(variant):
+    canonical = typed_input_proposal()
+    canonical['version'] = 3
+    for budget in canonical['budgets']:
+        budget['allocation'] = 'single'
+    for metric in canonical['metrics']:
+        metric['fitMemoryCaptures'] = []
+    draft = asset_catalog_draft(canonical)
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['groups'] = []
+    draft['extra'] = '' if variant != 'nonempty' else 'Scientific condition'
+    draft['analysis']['unused' if variant != 'unknown' else 'otherField'] = ''
+    record, data, aliases = context()
+    record[MARKER] = 8
+    if variant != 'legacy':
+        record['sharedExperimentEmptyWireFieldsVersion'] = 1
+    current, states, checkpoint = harness(record)
+    reply = response(draft)
+    invoke = Mock(return_value=reply)
+    if variant == 'known_empty':
+        saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+        assert saved['discardedEmptyWireFields'] == ['/extra', '/analysis/unused']
+        assert saved['boundProposal']['proposal'] == canonical
+        assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == saved
+    else:
+        with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+            prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert states[-1]['response'] == reply
+    invoke.assert_called_once()
+
+
 @pytest.mark.parametrize('kind', ['duplicate', 'foreign_text', 'invalid_plan'])
 def test_fenced_response_still_requires_strict_input_and_plan_validation(kind):
     r, data, aliases = context()

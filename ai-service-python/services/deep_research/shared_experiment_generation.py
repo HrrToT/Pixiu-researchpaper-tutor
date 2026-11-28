@@ -632,6 +632,8 @@ def build(record, input_data, aliases, *, required_domains=()):
             output_policy[SHARED_PREFIT_WINDOW_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(CLONE_SCOPE_MARKER) == 1:
         output_policy[CLONE_SCOPE_MARKER] = 1
+    if record.get(MARKER) == 8 and record.get('sharedExperimentEmptyWireFieldsVersion') == 1:
+        output_policy['sharedExperimentEmptyWireFieldsVersion'] = 1
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
             'requiredDomains': sorted(set(required_domains)), 'inputBytes': len(prompt.encode('utf-8')) + overhead,
             'promptBytes': len(prompt.encode('utf-8')), 'transportOverheadBytes': overhead,
@@ -657,7 +659,19 @@ def _parse(content):
     return json.loads(content, object_pairs_hook=pairs, parse_constant=invalid_constant)
 
 
-def _validate_response(response, profile, built):
+def _discard_empty_wire_fields(value):
+    """Drop only the two known empty placeholder strings from this wire format."""
+    removed = []
+    if not isinstance(value, dict):
+        return removed
+    for row, key, path in ((value, 'extra', '/extra'), (value.get('analysis'), 'unused', '/analysis/unused')):
+        if isinstance(row, dict) and row.get(key) == '':
+            del row[key]
+            removed.append(path)
+    return removed
+
+
+def _validate_response(response, profile, built, *, discarded_fields=None):
     if not isinstance(response, dict):
         raise ValueError('Response object required')
     content = response.get('rawContent', response.get('content', ''))
@@ -673,6 +687,10 @@ def _validate_response(response, profile, built):
             return None, [{'code': 'plan.response_transport_capacity', 'path': '/'}]
         raise ValueError('Response capacity')
     value = _parse(content)
+    if profile == 8 and built.get('sharedExperimentEmptyWireFieldsVersion') == 1:
+        discarded = _discard_empty_wire_fields(value)
+        if discarded_fields is not None:
+            discarded_fields.extend(discarded)
     evidence_ids, domains = built['allowedEvidenceIds'], built['requiredDomains']
     if profile in (3, 4, 5, 6, 7, 8):
         from services.deep_research.shared_experiment_references import compile_plan
@@ -741,8 +759,9 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'invalid_response':
         raise DeepResearchError('invalid_shared_experiment_response', '共享方案未通过检查；原始响应已保存，不自动重试。')
     response = saved['response']
+    discarded_fields = []
     try:
-        value, issues = _validate_response(response, record[MARKER], built)
+        value, issues = _validate_response(response, record[MARKER], built, discarded_fields=discarded_fields)
         bound = (None if issues else bind_for_review(value, built['allowedEvidenceIds'],
                   context_digest=built['contextDigest'], required_domains=built['requiredDomains'],
                   count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1,
@@ -754,9 +773,12 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         checkpoint(deepcopy(saved))
         raise DeepResearchError('invalid_shared_experiment_response', '共享方案未通过检查；原始响应已保存，不自动重试。')
     if saved['status'] == 'awaiting_scientific_review':
-        if saved.get('boundProposal') != bound or not validate_bound(bound, expected_digest=saved['bindingDigest']):
+        if (saved.get('boundProposal') != bound or not validate_bound(bound, expected_digest=saved['bindingDigest'])
+                or saved.get('discardedEmptyWireFields', []) != discarded_fields):
             raise DeepResearchError('invalid_shared_experiment_state', '共享方案或核验绑定已改变。')
     else:
+        if discarded_fields:
+            saved['discardedEmptyWireFields'] = discarded_fields
         saved.update(status='awaiting_scientific_review', boundProposal=bound, bindingDigest=bound['bindingDigest'])
         checkpoint(deepcopy(saved))
     return saved
