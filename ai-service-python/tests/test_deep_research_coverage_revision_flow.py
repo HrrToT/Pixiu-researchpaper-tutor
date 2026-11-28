@@ -185,3 +185,21 @@ def test_comparison_release_reconciles_only_stale_dependency_gaps(failure):
     result = remaining_retrieval_gaps(gaps, audit, claims, evidence, plan=plan, comparison_draft=draft,
                                      reconcile_comparison_dependencies=True)
     assert result == (gaps if failure else [])
+
+
+def test_verified_sibling_clears_its_dependency_gap_without_unblocking_downstream():
+    from services.deep_research.dependencies import UNFINISHED_DEPENDENCY
+    from services.deep_research.final_coverage import _remove_reviewed_comparison_dependency_gaps
+
+    def item(identity, dependencies, *obligations):
+        return {'itemId': identity, 'dependencies': dependencies,
+                'obligations': [{'obligationId': oid, 'requiredSources': ['paper']} for oid in obligations]}
+
+    plan = [item('fetch', [], 'source'), item('compare', ['fetch'], 'speed', 'advice'),
+            item('followup', ['compare'], 'experiment')]
+    gaps = [{'obligationId': oid, 'checked': False, 'missingEvidence': UNFINISHED_DEPENDENCY}
+            for oid in ('speed', 'advice', 'experiment')]
+    audited_sources = {oid: {'paper'} for oid in ('source', 'speed', 'experiment')}
+
+    assert _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources) == gaps[1:]
+    assert _remove_reviewed_comparison_dependency_gaps(gaps, plan, {**audited_sources, 'advice': {'paper'}}) == []

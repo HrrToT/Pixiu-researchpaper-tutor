@@ -611,11 +611,14 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
     blocking = {gap.get('obligationId') for gap in gaps
                 if isinstance(gap, dict) and not pending_dependency(gap)}
     supported = {}
+    eligible = {}
     for item in plan:
         obligations = item.get('obligations', [])
-        if obligations and all(o['obligationId'] not in blocking and o.get('requiredSources')
-                               and set(o['requiredSources']).issubset(audited_sources.get(o['obligationId'], ()))
-                               for o in obligations):
+        checked = {o['obligationId'] for o in obligations
+                   if o['obligationId'] not in blocking and o.get('requiredSources')
+                   and set(o['requiredSources']).issubset(audited_sources.get(o['obligationId'], ()))}
+        eligible[item['itemId']] = checked
+        if obligations and len(checked) == len(obligations):
             supported[item['itemId']] = item
 
     resolved = set()
@@ -625,8 +628,11 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
         if not ready:
             break
         resolved.update(ready)
-    resolved_dependents = {o['obligationId'] for key in resolved for o in supported[key]['obligations']
-                           if supported[key].get('dependencies')}
+    # A verified obligation can clear its own stale dependency gap even if
+    # another obligation in the same item still blocks downstream work.
+    resolved_dependents = {oid for item in plan
+                           if item.get('dependencies') and set(item['dependencies']).issubset(resolved)
+                           for oid in eligible[item['itemId']]}
     return [gap for gap in gaps
             if not (pending_dependency(gap) and gap.get('obligationId') in resolved_dependents)]
 
