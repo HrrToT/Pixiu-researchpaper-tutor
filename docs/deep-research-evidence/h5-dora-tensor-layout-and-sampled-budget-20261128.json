@@ -1,0 +1,422 @@
+{
+  "candidate": "58095971c2151231c6d44ab7f9564a11dd2df6ad",
+  "isolatedOperationReferenceDecoderCommit": "ff301ce24f339e3dea20b29b63df48b1834a306b",
+  "case": "H5-DORA-FACTORIAL development retest",
+  "independentHoldoutCredit": false,
+  "generation": {
+    "intent": {
+      "candidate": "58095971c2151231c6d44ab7f9564a11dd2df6ad",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "carriedRoutineTokens": 18834,
+      "carriedRoutineCalls": 5,
+      "carriedRoutineSeconds": 53,
+      "inputBytes": 31984,
+      "generationInputDigest": "d4b53b6927c4a4265bb192950866c8b55e51d458c750e03858502a3720a62c01",
+      "requiredDomains": [
+        "memory",
+        "quality"
+      ],
+      "maxNewCalls": 1,
+      "maxTotalTokens": 100000,
+      "maxWallSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "generationStatus": "awaiting_scientific_review",
+      "reviewPreparedOffline": true,
+      "reviewBatchBytes": [
+        15076,
+        32369,
+        31771
+      ],
+      "hardIssues": [],
+      "reviewInputDigest": "c7e0574d18741e46edf1d9a41d639d940a3998981fe82353141541c28da1d892",
+      "elapsedSeconds": 50.47,
+      "newCalls": 1,
+      "cumulativeTokens": 31232,
+      "localPublication": false,
+      "publishedToWorkspace": false
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-generation-20261128/intent.json",
+        "sha256": "d143eedbee2f92df1c8125ea7d69c9158ec8519595c874a0be9ebd0f875040a1"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-generation-20261128/run.json",
+        "sha256": "dfbf85bdf5dc49e51f20f602d3471ffd0ea15b9a6353c6089529bdd38e393e4c"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-generation-20261128/calls.json",
+        "sha256": "a10d099005c9a6c754d5c2e1fe334bd600b0d0ad9a21fbf83e2b8debf06f6409"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-generation-20261128/result.json",
+        "sha256": "942629dac91459ff1d0b88df0530902d6bcd97084201ab45768f09eb2fb84da1"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-generation-20261128/provider.jsonl",
+        "sha256": "37ddbb58ecd6a252ccce268fc953dc0ca00e0293e3afffd50c42ebb49a5205d5"
+      }
+    ],
+    "usage": [
+      {
+        "input_tokens": 8145,
+        "output_tokens": 4253,
+        "total_tokens": 12398,
+        "estimated": false,
+        "cached_input_tokens": 1462,
+        "cache_write_input_tokens": 6680
+      }
+    ]
+  },
+  "initialReview": {
+    "intent": {
+      "commit": "58095971c2151231c6d44ab7f9564a11dd2df6ad",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "sourceArtifactsSha256": {
+        "run.json": "dfbf85bdf5dc49e51f20f602d3471ffd0ea15b9a6353c6089529bdd38e393e4c",
+        "calls.json": "a10d099005c9a6c754d5c2e1fe334bd600b0d0ad9a21fbf83e2b8debf06f6409",
+        "result.json": "942629dac91459ff1d0b88df0530902d6bcd97084201ab45768f09eb2fb84da1"
+      },
+      "scope": "isolated continuation of accepted generation checkpoint",
+      "carriedActiveSeconds": 104,
+      "carriedTokens": 31232,
+      "carriedCalls": 6,
+      "reviewBatchBytes": [
+        15076,
+        32369,
+        31771
+      ],
+      "reviewInputDigest": "c7e0574d18741e46edf1d9a41d639d940a3998981fe82353141541c28da1d892",
+      "maxNewCalls": 5,
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "stopped_design_failure",
+      "scientificComplete": false,
+      "newCalls": 2,
+      "newTokens": 14973,
+      "cumulativeTokens": 46205,
+      "elapsedNewSeconds": 26.98,
+      "productionWrites": 0
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-review-20261128/intent.json",
+        "sha256": "a7fa8bcdf0ee0e5268c9e993a0000214647245fd07fb6bddacdfac315ccc68e2"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-review-20261128/run.json",
+        "sha256": "10fa53276f79503a564866d4e459ee015e05f8c690a6b81d9db32a9ed0ad1d41"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-review-20261128/calls.json",
+        "sha256": "7cbd0edb97624aa000d3dc403bbc88bc67a714b8f0a5d21f655d7efffbb745f9"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-review-20261128/result.json",
+        "sha256": "976b5212feca3d4db277f1dceb99503c7cfddaf8ae8255fe977e1c06bfe93868"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-review-20261128/provider.jsonl",
+        "sha256": "b507dcde1abce3c1485c774c8f0ae40084308437033c4e8eb9ff3531c0b3ef8b"
+      }
+    ],
+    "usage": [
+      {
+        "input_tokens": 3939,
+        "output_tokens": 488,
+        "total_tokens": 4427,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 3936
+      },
+      {
+        "input_tokens": 9303,
+        "output_tokens": 1243,
+        "total_tokens": 10546,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9300
+      }
+    ]
+  },
+  "targetedRepair": {
+    "intent": {
+      "commit": "58095971c2151231c6d44ab7f9564a11dd2df6ad",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "carriedActiveSeconds": 131,
+      "carriedTokens": 46205,
+      "carriedCalls": 8,
+      "maxNewCalls": 1,
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "inputBytes": 29241,
+      "inputDigest": "c58e334d267efc7258746406280e57609c40c928d9cc2fdb633ae2d0b010e124",
+      "reviewInputDigest": "c7e0574d18741e46edf1d9a41d639d940a3998981fe82353141541c28da1d892",
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "repairStatus": "awaiting_scientific_review",
+      "reviewInputDigest": "1937623f6831fe23d9d12ba5e3d3b3da315802eb481f9ebb2267522a3d754a94",
+      "reviewBatchBytes": [
+        15076,
+        32740,
+        32142
+      ],
+      "reviewHardIssues": [],
+      "newCalls": 1,
+      "newTokens": 9087,
+      "cumulativeTokens": 55292,
+      "elapsedNewSeconds": 14.73,
+      "productionWrites": 0,
+      "published": false
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-repair-20261128/intent.json",
+        "sha256": "32ca82136310ac5fdf51abc3b79ada2def68e81e83594515d738fa845884123d"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repair-20261128/run.json",
+        "sha256": "c39c7cf746cd11c8a90dccf7ba1b7a4d08cea1ebeb896fd8204d98f0bc6eeceb"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repair-20261128/calls.json",
+        "sha256": "ad37b13f5523cd6473848ce80108746b9b6b47588277ac37e3bf8bd19bacdcd9"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repair-20261128/result.json",
+        "sha256": "61c8dec22e1b13729f57ed44641da1b587a9ee26ce51f3b109fb536aefb1887f"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repair-20261128/provider.jsonl",
+        "sha256": "4d917557ca4a420285454e53a0e454443c49ab594813a8ebf916a26a557b62b3"
+      }
+    ],
+    "usage": [
+      {
+        "input_tokens": 8654,
+        "output_tokens": 433,
+        "total_tokens": 9087,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 8651
+      }
+    ]
+  },
+  "revisedDesignReview": {
+    "intent": {
+      "commit": "58095971c2151231c6d44ab7f9564a11dd2df6ad",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "sourceArtifactsSha256": {
+        "run.json": "c39c7cf746cd11c8a90dccf7ba1b7a4d08cea1ebeb896fd8204d98f0bc6eeceb",
+        "calls.json": "ad37b13f5523cd6473848ce80108746b9b6b47588277ac37e3bf8bd19bacdcd9",
+        "result.json": "61c8dec22e1b13729f57ed44641da1b587a9ee26ce51f3b109fb536aefb1887f"
+      },
+      "scope": "isolated continuation of accepted generation checkpoint",
+      "carriedActiveSeconds": 146,
+      "carriedTokens": 55292,
+      "carriedCalls": 9,
+      "reviewBatchBytes": [
+        15076,
+        32740,
+        32142
+      ],
+      "reviewInputDigest": "1937623f6831fe23d9d12ba5e3d3b3da315802eb481f9ebb2267522a3d754a94",
+      "maxNewCalls": 5,
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "invalid_response",
+      "scientificComplete": false,
+      "newCalls": 1,
+      "newTokens": 10530,
+      "cumulativeTokens": 65822,
+      "elapsedNewSeconds": 27.81,
+      "productionWrites": 0
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-review-20261128/intent.json",
+        "sha256": "cdd9def1b26034c965685b31d01adeac4a270e7d533571185643466021af27fe"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-review-20261128/run.json",
+        "sha256": "068914eea18cd12fd3408838c8a3d673cecdb50f0c564c66adacb21f99c08983"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-review-20261128/calls.json",
+        "sha256": "1a38e3fd6247a911ad41b86f58fc06ec679a792b5d762ef4baadaf923583d882"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-review-20261128/result.json",
+        "sha256": "322cacf688d8d847ffa703cc1262862782c5e9f8b2236e30c041aebd68677429"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-review-20261128/provider.jsonl",
+        "sha256": "8adf7fffd8db5fc70b2fbeb9fa9f79b95334ad13aae7d73409ba07befb2cd300"
+      }
+    ],
+    "usage": [
+      {
+        "input_tokens": 9412,
+        "output_tokens": 1118,
+        "total_tokens": 10530,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9409
+      }
+    ]
+  },
+  "bindingReplay": {
+    "archivedRunSha256": "068914eea18cd12fd3408838c8a3d673cecdb50f0c564c66adacb21f99c08983",
+    "providerCalls": 0,
+    "passedCheckedIds": [
+      "fact_0",
+      "fact_1",
+      "fact_2",
+      "fact_3",
+      "fact_4",
+      "fact_5",
+      "section_0",
+      "section_1",
+      "section_2",
+      "section_3",
+      "section_4",
+      "section_5",
+      "section_6",
+      "section_7"
+    ],
+    "uncheckedIds": [
+      "requirement_0_0",
+      "requirement_0_1",
+      "requirement_0_2",
+      "requirement_0_3"
+    ],
+    "priorInputDigest": "1937623f6831fe23d9d12ba5e3d3b3da315802eb481f9ebb2267522a3d754a94",
+    "newInputDigest": "eeadadcdecc687580cfe1473bda485aeee93ce181b14fa51bc06050f46e82fb7",
+    "sameReviewRequests": true,
+    "published": false,
+    "artifact": {
+      "path": "tmp/h5-layout-operation-binding-replay-20261128.json",
+      "sha256": "f819c604c1022912a374ab628d428ca8e49e71fe3ee7ed8c6ffaa92146e720bf"
+    },
+    "regressionPassed": 410
+  },
+  "numericLayoutControl": {
+    "storedShape": [
+      2,
+      3
+    ],
+    "mathShape": [
+      3,
+      2
+    ],
+    "storedRowsEqualMathColumns": true,
+    "initialForwardEqualsBase": true,
+    "detachAndFullShareForwardValue": true,
+    "updatedDenominatorDiffersFromInitial": true,
+    "gradientMaxDifference": 0.4795045424644035,
+    "maximumFiniteDifferenceError": 3.325429376310751e-10,
+    "providerCalls": 0,
+    "trainingExecuted": false,
+    "artifact": {
+      "path": "tmp/h5-dora-layout-numeric-control-20261128.json",
+      "sha256": "f09ca6c03a7f691258bc6717ae521912feede4b04f748f0edc0d490e511675b9"
+    }
+  },
+  "finalScientificCriteriaReceipt": {
+    "intent": {
+      "commit": "ff301ce24f339e3dea20b29b63df48b1834a306b",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "carriedActiveSeconds": 174,
+      "carriedTokens": 65822,
+      "carriedCalls": 10,
+      "scope": "isolated continuation of two verified raw batches",
+      "maxNewCalls": 4,
+      "remainingReviewIds": [
+        "requirement_0_0",
+        "requirement_0_1",
+        "requirement_0_2",
+        "requirement_0_3"
+      ],
+      "reviewInputDigest": "eeadadcdecc687580cfe1473bda485aeee93ce181b14fa51bc06050f46e82fb7",
+      "settledPrefixDigest": "8caf1703fc915a0b8ee7947cc04eed4f20ac91f9232f21a95d7ef5c37637ad80",
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "invalid_response",
+      "scientificComplete": false,
+      "newCalls": 1,
+      "newTokens": 10242,
+      "cumulativeTokens": 76064,
+      "elapsedNewSeconds": 26.34,
+      "productionWrites": 0
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-final-20261128/intent.json",
+        "sha256": "d51753f304ddc98c8707e5161dbeec4bd0163a3dbafb2798747a7047251f2bb7"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-final-20261128/run.json",
+        "sha256": "0412cb6007072480e5c850b79d769eb3229c72ead3a226921f1337f72e638d91"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-final-20261128/calls.json",
+        "sha256": "6241cd28794686aad89bfecb62ad3751450808ba3e506237ebe0596fe3ae44cb"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-final-20261128/result.json",
+        "sha256": "9db9cf5f51ce6f4714122e1adcb0d60cf427e39233757bc284e3270d3299fb19"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-repaired-final-20261128/provider.jsonl",
+        "sha256": "4a278638330803a3be91e8822c65c18d5aa5b324480412f303e325d0f003cf62"
+      }
+    ],
+    "usage": [
+      {
+        "input_tokens": 9317,
+        "output_tokens": 925,
+        "total_tokens": 10242,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9314
+      }
+    ],
+    "sentPriorFactOrDesignBatchesAgain": false,
+    "archivedSchemaRejected": "9 valid quote bindings exceeded eight in the human-only packet"
+  },
+  "finalScientificOfflineReplay": {
+    "archiveSha256": "0412cb6007072480e5c850b79d769eb3229c72ead3a226921f1337f72e638d91",
+    "oldInputDigest": "eeadadcdecc687580cfe1473bda485aeee93ce181b14fa51bc06050f46e82fb7",
+    "newInputDigest": "f62b4599707faffa18fb2f60fd11c9091ddc951b58b1a79e041e5fb38bf7a1c0",
+    "sameHumanPromptAndEvidence": true,
+    "sameFactAndDesignRequests": true,
+    "scientificCompleteOffline": true,
+    "checksPassed": 18,
+    "providerCalls": 0,
+    "finalReportAuditExecuted": false,
+    "published": false,
+    "artifact": {
+      "path": "tmp/h5-layout-human-evidence-cap-replay-20261128.json",
+      "sha256": "8229cb3acdf8100187500680db701d06386ddaef72ade37e2431cb2ae64201d1"
+    },
+    "commit": "fbfabd904eff0a20c5ca84df129348baea5fc498",
+    "regressionPassed": 151
+  }
+}
