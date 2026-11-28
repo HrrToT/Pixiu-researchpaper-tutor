@@ -169,12 +169,13 @@ def without_collection_articles(text, *, geometric=False):
         representation_use=(type(geometric) is int and geometric==2 and shape is not None
             and re.search(r'(?:使用|采用|(?<![采使])用)\s*$',prefix)
             and re.match(r'\s*(?:表示|建模|近似|重建)(?:场景|物体|表面|几何|环境|空间)',suffix[shape.end():]))
+        contrast_scope = re.split(r'[。！？!?\r\n]', suffix, maxsplit=1)[0] if shape else suffix
         if (match['word'] == '一' and not match['sign'] and match['count_unit'] == '组'
                 and (_COLLECTION_INTRO.search(prefix) and _IMAGE_COLLECTION.match(suffix)
                      or geometry is not None and _GEOMETRIC_COLLECTION_INTRO.search(prefix) and shape
                      or representation_use)
                 and not _CARDINAL_CONTEXT.search(prefix)
-                and not re.search(r'(?:而非|而不是|不是)', suffix)):
+                and not re.search(r'(?:而非|而不是|不是)', contrast_scope)):
             positions.add(match.start('word'))
     return ''.join(char for i, char in enumerate(text) if i not in positions)
 

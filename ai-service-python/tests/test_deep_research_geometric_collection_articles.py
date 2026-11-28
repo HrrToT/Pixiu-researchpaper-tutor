@@ -47,6 +47,16 @@ def test_representation_use_is_an_indefinite_geometry_set_and_still_requires_sem
     semantic.assert_called_once()
 
 
+def test_later_sentence_about_compression_does_not_make_a_representation_set_counted():
+    text = '将场景表示为一组各向异性的三维高斯。点云压缩是未来方向，不是此处已报告的流程。'
+    claim, evidence = pair(text, 'We optimize anisotropic 3D Gaussians. Point cloud compression is future work.')
+    assert precheck_claims([claim], [evidence], quantity_spelling_version=25)['rejected'] == []
+
+    counted = {**claim, 'text': text + '实验只使用一组。'}
+    rejection, = precheck_claims([counted], [evidence], quantity_spelling_version=25)['rejected']
+    assert rejection['reason'] == 'numeric_mismatch'
+
+
 @pytest.mark.parametrize('text',[
     '本实验用一组3D高斯作为对照。','本实验采用一组3D高斯作为对照。',
     '本实验只用一组3D高斯表示场景。','本实验用唯一一组3D高斯表示场景。',
