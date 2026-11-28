@@ -360,6 +360,40 @@ class TrackedLLMInvoker:
         from services.deep_research.comparison_audit_envelope import enabled
         return enabled(record) and self._supports_audit_counting(record, "countedComparisonAuditContractVersion")
 
+    def count_repair_audit_reservation(self, run_id, prompt, output_tokens):
+        """Count the fallback audit's input without reserving or generating a reply."""
+        from llm.provider import LLMRequest
+        from services.deep_research.comparison_audit_envelope import COUNTED_INPUT_BYTES, larger_counted_window
+        from services.deep_research.contracts import UnresolvedUnknownError
+        from services.deep_research.finalization_pool import comparison_repair_can_use_release
+        from services.deep_research.planning_transport import INPUT_RESERVATION_MARGIN, options_for_record
+        from services.deep_research.structured_output import enabled as native_json, messages_for_record
+
+        record = self._run_record(run_id) if self._run_record else None
+        if (not record or record.get('status') != STATUS_RUNNING
+                or record.get('comparisonRepairFlowContractVersion') != 3
+                or not native_json(record) or not self.supports_counted_comparison_audit(record)
+                or not comparison_repair_can_use_release(record)):
+            return None
+        node = 'verify_answer_coverage'
+        limit = COUNTED_INPUT_BYTES if larger_counted_window(record) else self.prompt_byte_limit(run_id, node)
+        if len(prompt.encode('utf-8')) > limit:
+            return None
+        unknown = [call['callId'] for call in self._call_history(run_id) if call.get('status') == 'unknown']
+        if unknown:
+            raise UnresolvedUnknownError(run_id, unknown)
+        options = {'max_tokens': output_tokens, 'temperature': 0.0}
+        if self._request_options:
+            options = self._request_options(node, options)
+        options = options_for_record(record, node, options)
+        request = LLMRequest(prompt=prompt, messages=messages_for_record(record, node, prompt),
+                             extra_body=options, timeout_seconds=options.get('timeout_seconds'))
+        client = self._client.for_node(node) if callable(getattr(type(self._client), 'for_node', None)) else self._client
+        count = client.count_audit_input(request)
+        if type(count) is not int or count <= 0:
+            return None
+        return count + INPUT_RESERVATION_MARGIN + options['max_tokens']
+
     def supports_counted_experiment_review(self, record):
         from services.deep_research.shared_experiment_generation import enabled
         return enabled(record) and self._supports_audit_counting(record, "countedExperimentReviewContractVersion")

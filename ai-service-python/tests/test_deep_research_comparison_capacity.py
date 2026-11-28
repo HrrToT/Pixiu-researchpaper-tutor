@@ -193,6 +193,86 @@ def test_named_condition_repair_keeps_the_previously_checked_comparison():
     _assert_previously_checked_comparison_survives(11)
 
 
+@pytest.mark.parametrize(('input_count', 'permitted'), [(7900, True), (None, True), (7900, False)])
+def test_tight_comparison_counts_only_the_retained_audit_before_repair(monkeypatch, input_count, permitted):
+    from unittest.mock import Mock
+    from services.deep_research.contracts import DeepResearchError
+    from services.deep_research.graph import make_verify_node
+    from services.deep_research.runtime import research_model_options
+    from services.deep_research.tools import TrackedLLMInvoker
+
+    record = populated_factual_record()
+    record.update(status='running', comparisonPlanningContractVersion=6,
+                  comparisonAuthoringContractVersion=16, comparisonAuditEnvelopeContractVersion=21,
+                  comparisonRepairFlowContractVersion=3, answerCoherenceContractVersion=2,
+                  countedComparisonAuditContractVersion=1, structuredOutputContractVersion=14,
+                  openaiResearchModels=['test-review-model', 'test-routine-model'])
+    record['budget'].update(maxTokens=100000, tokens=67245, reserveTokens=50000,
+                            normalTokens=36905, releasedReserveTokens=19660,
+                            maxModelCalls=18, modelCalls=10, reserveModelCalls=5,
+                            reservedModelCalls=5, finalizationBudgetVersion=1)
+    original_budget = deepcopy(record['budget'])
+    calls = []
+    unmodified_claims = deepcopy(record['state']['reportBody']['claims'])
+
+    class CountOnly:
+        def count_audit_input(self, request):
+            assert request.prompt == 'complete existing answer with all cited evidence'
+            assert request.extra_body['max_tokens'] == 3500
+            calls.append('count')
+            return input_count
+
+        def invoke_counted_audit(self, request):
+            raise AssertionError('A forecast must not generate')
+
+    def update(_, mutate, **kwargs):
+        nonlocal record
+        record = mutate(deepcopy(record))
+        return deepcopy(record)
+
+    def audit(*args, **kwargs):
+        assert args[3] == unmodified_claims[1:]
+        assert kwargs['budget']['maxTokens'] == original_budget['maxTokens']
+        if kwargs.get('measure_reservation'):
+            if counter := kwargs.get('reservation_counter'):
+                measured = counter('complete existing answer with all cited evidence', 3500)
+                return measured if measured is not None else 30000
+            return 30000
+        calls.append('whole_answer')
+        return {'status': 'checked', 'verdicts': [], 'gaps': []}
+
+    def repair(*args, **kwargs):
+        calls.append('repair')
+        assert (kwargs['max_prompt_bytes'] > 0) is (input_count is not None)
+        assert kwargs['current_budget']()['tokens'] == original_budget['tokens']
+        return []
+
+    def verify(claims, evidence, semantic):
+        return {'accepted': claims[1:], 'rejected': [
+            {'claimId': claims[0]['claimId'], 'reason': 'numeric_mismatch'}]}
+
+    forbid_model = Mock(side_effect=AssertionError('The forecast must not reserve a generation'))
+    invoker = TrackedLLMInvoker(CountOnly(), forbid_model, forbid_model,
+                               run_record_fn=lambda _: record, call_history_fn=lambda _: [],
+                               request_options=research_model_options)
+    monkeypatch.setattr('services.deep_research.final_coverage.audit_final_answer', audit)
+    monkeypatch.setattr('services.deep_research.repair.repair_rejected', repair)
+    node = make_verify_node(verify, None, update, llm_invoke=invoker,
+                            scope_validator=lambda _, owner: permitted and owner in {'left', 'right', 'other'})
+    if not permitted:
+        with pytest.raises(DeepResearchError) as error:
+            node({'run_id': 'r'})
+        assert error.value.code == 'scope_revoked' and not calls
+        forbid_model.assert_not_called()
+        return
+    node({'run_id': 'r'})
+    node({'run_id': 'r'})
+    assert calls == ['count', 'repair', 'whole_answer']
+    assert record['state']['verifiedReport']['verifiedClaims'] == unmodified_claims[1:]
+    assert record['budget'] == original_budget
+    forbid_model.assert_not_called()
+
+
 @pytest.mark.parametrize('phase', ['initial', 'deferred', 'repaired'])
 @pytest.mark.parametrize('mutate_evidence', [False, True])
 @pytest.mark.parametrize('audit_version', [18, 19])

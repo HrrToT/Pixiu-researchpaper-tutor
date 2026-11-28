@@ -480,7 +480,7 @@ def test_server_selects_and_freezes_joint_report_policy(tmp_path):
             'comparisonJointReportsContractVersion':0},start_async=False)
         assert r['comparisonJointReportsContractVersion']==16
         assert r['comparisonBenchmarkSpeedScopeContractVersion'] == 7
-        assert r['comparisonRepairFlowContractVersion'] == 2
+        assert r['comparisonRepairFlowContractVersion'] == 3
         assert r['comparisonStageAbstentionContractVersion'] == 1
         assert r['comparisonPaperWordingContractVersion'] == 2
         r=repo.update_run(r['runId'],lambda r:{**r,'state':{**r.get('state',{}),'outputKind':'paper_comparison'}})

@@ -2414,6 +2414,7 @@ def make_verify_node(
     semantic_check_fn: Callable[[list, list], list] | None,
     repo_update: Callable[[str, Callable, dict | None], dict],
     llm_invoke: Callable[..., dict] | None = None,
+    *, scope_validator=None,
 ) -> Callable[[GraphState], dict]:
     """Verify claims against evidence with literal and semantic checks. Semantic uses reserve."""
     
@@ -2767,15 +2768,51 @@ def make_verify_node(
                     repair_input_options={'released_finalization':True} if released_finalization else {}
                     from services.deep_research.comparison_capacity import reserve_repair_release_audit
                     audit_reservation = 0
+                    audit_forecast_claims = None
                     if comparison_audit_args.get('fit_compact_comparison_budget'):
                         if reserve_repair_release_audit(record, answer_coverage):
                             # Size the complete draft as a forecast for the next
                             # audit. Its claims are never sent or approved here.
-                            audit_reservation = audit_accepted(repair_report.get('claims', []),
-                                                              current, measure_reservation=True)
+                            audit_forecast_claims = repair_report.get('claims', [])
                         elif answer_coverage.get('status') == 'deferred_factual_repair':
-                            audit_reservation = audit_accepted(verification_result.get('accepted', []),
-                                                              current, measure_reservation=True)
+                            audit_forecast_claims = verification_result.get('accepted', [])
+                    if audit_forecast_claims:
+                        audit_reservation = audit_accepted(audit_forecast_claims, current, measure_reservation=True)
+                    if (audit_reservation and released_finalization
+                            and answer_coverage.get('status') == 'deferred_factual_repair'
+                            and record.get('comparisonRepairFlowContractVersion') == 3
+                            and scope_validator is not None
+                            and comparison_audit_args.get('counted_comparison_audit')):
+                        from services.deep_research.contracts import digest
+                        from services.deep_research.repair_budget import repair_batch_output_limit, repair_prompt_byte_limit
+
+                        budget = current['budget']
+                        output = repair_batch_output_limit(1)
+                        reduced = {**budget, 'maxTokens': max(0, budget['maxTokens'] - audit_reservation)}
+                        if (repair_prompt_byte_limit(budget, output, released_finalization=True) > 0
+                                and repair_prompt_byte_limit(reduced, output, released_finalization=True) == 0):
+                            def count_fallback_audit(prompt, output_tokens):
+                                identity = digest([prompt, output_tokens])
+                                prior = current['state'].get('repairAuditReservationCount')
+                                if prior is not None:
+                                    return prior['tokens'] if prior['inputDigest'] == identity else None
+                                cited = {ref for claim in audit_forecast_claims for ref in claim.get('evidenceRefs', ())}
+                                owners = {row.get('ownerMaterialId') or row.get('sourceWorkId')
+                                          for row in evidence if row['evidenceId'] in cited}
+                                validate_materials = getattr(scope_validator, 'validate_materials', None)
+                                permitted = owners and None not in owners and (
+                                    validate_materials(run_id, sorted(owners)) if callable(validate_materials)
+                                    else all(scope_validator(run_id, owner) for owner in owners))
+                                if not permitted:
+                                    raise DeepResearchError('scope_revoked', '整答审核计数前无法确认材料权限。')
+                                count = llm_invoke.count_repair_audit_reservation(run_id, prompt, output_tokens)
+                                repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                                    'repairAuditReservationCount': {'inputDigest': identity, 'tokens': count}}},
+                                    expected_revision=None)
+                                return count
+
+                            audit_reservation = audit_accepted(audit_forecast_claims, current, measure_reservation=True,
+                                                              reservation_counter=count_fallback_audit)
 
                     def budget_for_repair(snapshot):
                         budget = snapshot.get('budget', {})
@@ -3512,7 +3549,8 @@ def build_deep_research_graph(
     workflow.add_node('advance_frontier', lambda state: advance_frontier(state, repo_update))
     workflow.add_edge('advance_frontier', 'acquire')
     workflow.add_node("synthesize", bounded(make_synthesize_node(llm_invoke, repo_update,scope_validator=scope_validator)))
-    workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update, llm_invoke=llm_invoke))
+    workflow.add_node("verify", make_verify_node(verify_claims_fn, semantic_check_fn, repo_update,
+                                                llm_invoke=llm_invoke, scope_validator=scope_validator))
     workflow.add_node("publish", make_publish_node(repo_publish, repo_update,scope_validator=scope_validator))
     
     # Set entry point

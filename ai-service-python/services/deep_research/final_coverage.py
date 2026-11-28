@@ -49,7 +49,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
                        requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False,
                        counted_comparison_audit=False, counted_experiment_audit=False,
-                       larger_counted_comparison_window=False, pinned_method_access=False, compiled_experiment_roles=()):
+                       larger_counted_comparison_window=False, pinned_method_access=False, compiled_experiment_roles=(),
+                       reservation_counter=None):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -364,7 +365,13 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 required_ids = {ref for claim in wire_claims for ref in claim.get('evidenceRefs', [])}
                 required_rows = [row for row in rows if row['evidenceId'] in required_ids]
                 from services.deep_research.repair_budget import FRAMING_TOKENS
-                return len(render(required_rows).encode('utf-8')) + min(attempts) + FRAMING_TOKENS
+                counted_prompt = render(required_rows)
+                estimate = len(counted_prompt.encode('utf-8')) + min(attempts) + FRAMING_TOKENS
+                if reservation_counter is not None:
+                    measured = reservation_counter(counted_prompt, MIN_COVERAGE_OUTPUT_TOKENS)
+                    if type(measured) is int and measured > 0:
+                        return min(estimate, measured)
+                return estimate
             previous_limit = -1
             counted = False
             windows = [DEFAULT_COVERAGE_INPUT_BYTES]
