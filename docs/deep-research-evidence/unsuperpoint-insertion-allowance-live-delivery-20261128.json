@@ -1,0 +1,107 @@
+{
+  "case": "H1-UNSUPERPOINT",
+  "independentCredit": 0,
+  "runId": "dr_unsuperpoint_insertion_allowance_20261128",
+  "sourceCommit": "1a7e6bdfe564f7feeab6c4dcb3c1c71b5b92ae2b",
+  "originalOutcomeUnchanged": "independent_content_not_accepted",
+  "developmentReport": {
+    "status": "completed",
+    "outcome": "complete",
+    "bodyClaimCharacters": 256,
+    "insertionAllowance": 53,
+    "actualInsertedCharacters": 26,
+    "exactOriginalTargetTextPreserved": true,
+    "exactLimitClaimTextPreserved": true,
+    "observedBoundaryPeakDecreasePreserved": true,
+    "uniformReferenceSequenceExplained": true,
+    "remainingIndependentRubricGap": "The revised body still does not specify the 8×8 cell size.",
+    "freshFactualAndWholeAnswerAudits": "passed",
+    "citations": [
+      {
+        "id": "ev_a0d6d1b24742e05cb1b9c88fa22a865f716d9924eadca523a533a8e60f9ebf86",
+        "page": 6,
+        "physicalTextVerified": true
+      },
+      {
+        "id": "ev_34425f3ee44a4c3c832aced53c9f15a554a0793ec958560efc9c24a24bdd0016",
+        "page": 7,
+        "physicalTextVerified": true
+      },
+      {
+        "id": "ev_5b3fca2a75cba7375a7c1a37c20c5e79312c7dec73c386c7fe28e577e569534c",
+        "page": 7,
+        "physicalTextVerified": true
+      }
+    ]
+  },
+  "usage": {
+    "stages": [
+      "repair_claims",
+      "verify_repair",
+      "verify_answer_coverage"
+    ],
+    "newCalls": 3,
+    "newTokens": 13082,
+    "carriedTokens": 27378,
+    "totalTokens": 40460,
+    "graphSeconds": 66.08,
+    "externalSearches": 0,
+    "productionWrites": 0,
+    "automaticRetry": false
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-unsuperpoint-insertion-allowance-live-20261128/run.json",
+      "sha256": "1aaa785bb69997a088489820ebf4f74ba5e21eb735a6c285d0be645a363fe24d"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-insertion-allowance-live-20261128/calls.json",
+      "sha256": "437c44c17c97f2abb7e4ef7871f6fc23aa7ec26fc0c2361052b90b99b2ce5327"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-insertion-allowance-live-20261128/intent.json",
+      "sha256": "5a76526f2af514413e903efcb701b72274bde4a0559ab07a02ef8ca4a56bfd1e"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-insertion-allowance-live-20261128/provider.json",
+      "sha256": "fc629a6812b705ab115e008dd70896eb25b796a24f3165bc1dde514c67b96436"
+    },
+    {
+      "path": "tmp/openai-h1-unsuperpoint-insertion-allowance-live-20261128/publish-outcome.json",
+      "sha256": "8fb183924e85f8fbf960fc907ed8736efb5b65667333107add99b9344261dfaf"
+    },
+    {
+      "path": "tmp/publication-integration-h1-insertion-allowance-20261128/receipt.json",
+      "sha256": "d0ebadf65eb0eb5895221c95522b72a04ab75eb705fbd3966fccb879b662a084"
+    },
+    {
+      "path": "tmp/run-h1-unsuperpoint-workspace-delivery-20261128.py",
+      "sha256": "1ee90082f3ea3089a322e93715ac1d9e31ddb0445213bcff03c694ffec654c61"
+    }
+  ],
+  "isolatedWorkspaceDelivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "78f063999fca6c8ae285e27d0f4049243390346df57811b6bc7c6354cb26b316",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Exact saved development report; scientific holdout credit remains zero.",
+    "originalRunId": "dr_unsuperpoint_insertion_allowance_20261128",
+    "replayRunId": "dr_run_955350b8ea5f541c84b73d4e3e97974b",
+    "sourceArtifactSha256": "1aaa785bb69997a088489820ebf4f74ba5e21eb735a6c285d0be645a363fe24d",
+    "reportOutcome": "complete",
+    "reportClaims": 2,
+    "reportedCitationPages": {
+      "ev_5b3fca2a75cba7375a7c1a37c20c5e79312c7dec73c386c7fe28e577e569534c": 7,
+      "ev_34425f3ee44a4c3c832aced53c9f15a554a0793ec958560efc9c24a24bdd0016": 7,
+      "ev_a0d6d1b24742e05cb1b9c88fa22a865f716d9924eadca523a533a8e60f9ebf86": 6
+    },
+    "duplicateDeliverySuppressed": true,
+    "exactPaperHash": true,
+    "crossTaskReadDenied": true,
+    "restartedAndReadAgain": true,
+    "editAndOriginalBothPreserved": true,
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonStopped": true
+  }
+}
