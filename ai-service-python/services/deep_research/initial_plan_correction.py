@@ -7,6 +7,7 @@ from copy import deepcopy
 KEY='initialPlanCorrectionContractVersion'
 SPAN_KEY='initialPlanExcerptSpanVersion'
 AUDIT='initialPlanFormatCorrection'
+_SEPARATORS = str.maketrans({character: ',' for character in ',，;；'})
 
 
 def enabled(record):
@@ -30,6 +31,22 @@ def _unique_list_span(question, quote):
     return next(iter(spans)) if len(spans) == 1 else None
 
 
+def _restore_separator_quote(row, path, question):
+    quote = row.get('requestExcerpt')
+    if not isinstance(quote, str) or quote in question or len(quote.strip()) < 4:
+        return None
+    normalized = question.translate(_SEPARATORS)
+    needle = quote.translate(_SEPARATORS)
+    left = normalized.find(needle)
+    if left < 0 or normalized.find(needle, left + 1) >= 0:
+        return None
+    end = left + len(quote)
+    literal = question[left:end]
+    row['requestExcerpt'] = literal
+    return {'path': [*path, 'requestExcerpt'], 'original': quote,
+            'expanded': literal, 'expandedSpan': [left, end], 'kind': 'literal_separator_restoration'}
+
+
 def finish(repo_update,run_id,status):
     def update(record):
         state=record.get('state') or {};audit=state.get(AUDIT)
@@ -39,11 +56,11 @@ def finish(repo_update,run_id,status):
 
 
 def normalize_request_excerpts(record,plan,question):
-    """Expand a unique short user quote with adjacent original context.
+    """Restore literal separators and expand a unique short user quote.
 
-    The requested minimum remains eight characters after normalization. Only
-    exact, unambiguous four-to-seven-character quotes qualify; scientific
-    questions, criteria, source identities and original responses never change.
+    Separator restoration uses one unambiguous original span. Short excerpts
+    still need an exact four-to-seven-character anchor before expansion.
+    Scientific questions, criteria, source identities and raw responses are unchanged.
     This is source-location normalization, not evidence or semantic approval.
     """
     if not enabled(record) or not isinstance(question,str) or len(question.strip())<8:return plan,[]
@@ -52,9 +69,16 @@ def normalize_request_excerpts(record,plan,question):
         if not isinstance(item,dict) or not isinstance(item.get('obligations'),list):continue
         for j,o in enumerate(item['obligations']):
             if not isinstance(o,dict):continue
+            if record.get(SPAN_KEY) == 2:
+                prefix = [i, 'obligations', j]
+                if change := _restore_separator_quote(o, prefix, question):
+                    changes.append(change)
+                role = o.get('comparisonRole')
+                if isinstance(role, dict) and (change := _restore_separator_quote(role, [*prefix, 'comparisonRole'], question)):
+                    changes.append(change)
             quote=o.get('requestExcerpt')
             if not isinstance(quote,str) or quote!=quote.strip():continue
-            if record.get(SPAN_KEY) == 1 and quote not in question:
+            if record.get(SPAN_KEY) in (1, 2) and quote not in question:
                 span = _unique_list_span(question, quote)
                 if span is not None:
                     left, end = span

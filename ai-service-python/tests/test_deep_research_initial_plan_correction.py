@@ -135,6 +135,38 @@ def test_unique_noncontiguous_list_excerpt_uses_the_literal_source_span_once():
     assert normalize_request_excerpts(record,value,same_start) == (value,[])
 
 
+def test_separator_restoration_keeps_a_valid_plan_without_another_model_request():
+    question = '请用一组对照数字作例子，不列全部数据集。'
+    value = plan()
+    row = value[0]['obligations'][0]
+    row['requestExcerpt'] = '用一组对照数字作例子；不列全部数据集'
+    saved_row = deepcopy(row)
+    r = {**run_record(), 'question': question, 'initialPlanExcerptSpanVersion': 2}
+    result, saved, invoke = execute([response(value)], r)
+    assert result['plan_ids'] == ['i'] and invoke.call_count == 1
+    restored = saved['state']['plan'][0]['obligations'][0]
+    assert restored == {**saved_row, 'requestExcerpt': '用一组对照数字作例子，不列全部数据集'}
+    assert row == saved_row
+
+
+def test_separator_restoration_preserves_nested_roles_without_accepting_changed_words():
+    quote = '只比较基线；不要估算显存'
+    value = plan()
+    row = value[0]['obligations'][0]
+    row.update(requestExcerpt=quote, comparisonRole={'requestExcerpt': quote, 'kind': 'joint'})
+    question = '请只比较基线，不要估算显存。'
+    r = {**run_record(), 'initialPlanExcerptSpanVersion': 2}
+    result, changes = normalize_request_excerpts(r,value,question)
+    assert len(changes) == 2
+    for change in changes:
+        assert question[slice(*change['expandedSpan'])] == change['expanded']
+    proposed = result[0]['obligations'][0]
+    assert proposed['requestExcerpt'] == proposed['comparisonRole']['requestExcerpt'] == '只比较基线，不要估算显存'
+    for invalid in (question * 2, '请只比较基线，要估算显存。', '请只比较基线。不要估算显存。'):
+        assert normalize_request_excerpts(r,value,invalid) == (value,[])
+    assert normalize_request_excerpts({**r, 'initialPlanExcerptSpanVersion': 1},value,question) == (value,[])
+
+
 @pytest.mark.parametrize('mutation',['cycle','unknown_dependency','invented_excerpt','extra_field','criteria_count','source_type'])
 def test_corrected_output_cannot_skip_existing_plan_gates(mutation):
     value=plan();o=value[0]['obligations'][0]

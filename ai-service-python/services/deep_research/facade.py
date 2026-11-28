@@ -333,7 +333,7 @@ class ResearchFacade:
                 shared_experiment_profile,
                 5 if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else 1),
             "initialPlanCorrectionContractVersion": 1,
-            "initialPlanExcerptSpanVersion": 1,
+            "initialPlanExcerptSpanVersion": 2,
             "initialPlanInstructionsContractVersion": 3,
             "initialPlanModelContractVersion": 1,
             "verbatimRepairContractVersion": 1,
