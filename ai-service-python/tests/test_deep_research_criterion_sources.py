@@ -277,6 +277,29 @@ def test_distillation_operation_survives_source_selection_reading_and_draft_allo
     assert selected >= {(both['evidenceId'],), (mapping_id,)}
 
 
+def test_compression_cost_keeps_recovery_and_codebook_work_as_distinct_premises():
+    from services.deep_research.synthesis_evidence import order_premises
+
+    question = '说明压缩相关额外处理成本，并区分其适用环节。'
+    goal = {**obligation(), 'question': question, 'requiredSources': ['p'],
+            'completionCriteria': [{'criterionId': 'cost', 'requirement': question,
+                                    'responseType': 'explanation'}]}
+    owner = {'pdfId': 'p', 'workId': 'p', 'sourceWorkId': 'p', 'ownerMaterialId': 'p',
+             'versionId': 'v1', 'contentHash': 'h', 'accessLevel': 'fulltext', 'obligationIds': ['o']}
+    overview = {**owner, 'sourceId': 'overview', 'text': 'We report compression on this task.'}
+    recovery = {**owner, 'sourceId': 'recovery', 'text': 'We fine-tune for 5,000 steps during Gaussian Co-adaptation.'}
+    codebook = {**owner, 'sourceId': 'codebook', 'text': 'We fine-tune the codebook for 5,000 iterations while fixing the mapping.'}
+    foreign = {**codebook, 'sourceId': 'foreign', 'pdfId': 'q', 'contentHash': 'elsewhere'}
+    candidates = [overview, recovery, foreign, codebook]
+    selected = include_pdf_criteria([overview], candidates, [question], 'p', 'h', 3, compression_operations=5)
+    assert {row['sourceId'] for row in selected} == {'overview', 'recovery', 'codebook'}
+    assert include_pdf_criteria([overview], candidates, [question], 'p', 'h', 3, compression_operations=4) == [overview]
+    evidence = [{**row, 'evidenceId': row['sourceId'], 'sourceVersionId': row['versionId'],
+                 'quote': row['text'], 'verification': {'literal': 'passed'}} for row in selected]
+    _, bundles = order_premises(evidence, [{'obligations': [goal]}], compression_operations=5)
+    assert {tuple(row['evidenceIds']) for row in bundles} >= {('recovery',), ('codebook',)}
+
+
 EQUATION='Equation: d = F(g(x), g(t) + X(i)), X(i) = N(0, 1) * beta * dt * (1 - i/tau).'
 TEXT='We add noise to the encoded time. The noise decays during training. Our method improves image quality.\n'+EQUATION
 

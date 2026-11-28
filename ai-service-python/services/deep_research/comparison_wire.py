@@ -659,7 +659,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                            'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
             mechanism_version = record.get('comparisonMechanismReadContractVersion')
-            if mechanism_version in (2, 3, 4):
+            if mechanism_version in (2, 3, 4, 5):
                 from services.deep_research.mechanism_sources import compression_mapping_requested
                 from services.deep_research.processing_cost_sources import requested as processing_cost_requested
 
@@ -669,9 +669,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                'what the paper quantifies. Distinguish it from added processing and keep any unknown '
                                'extra cost scoped to the cited evidence. ')
                     policy += ('Say those quotations cannot quantify the cost, and keep the documented work. '
-                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version in (3, 4)
+                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version in (3, 4, 5)
                                else 'Do not treat it as zero or leave documented work blank.\n')
-                if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4))
+                    if mechanism_version == 5:
+                        policy += ('In the cost cell, tie each reported iteration count or duration to the operation it measures. '
+                                   'When the cited method describes additional operations without comparable costs, '
+                                   'name those operations and state what the excerpts cannot quantify. '
+                                   'Do not sum partial counts into total compression cost.\n')
+                if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4, 5))
                        for dimension in dimensions):
                     policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
                                'Explain any source-reported feature-to-code mapping without claiming an index file '
@@ -793,7 +798,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
                                "Say what it means in this paper before using it to explain the method. "
                                "Keep the definition in the cell, and use only the cited evidence.\n")
-                if record.get('comparisonMechanismReadContractVersion') == 4:
+                if record.get('comparisonMechanismReadContractVersion') in (4, 5):
                     from services.deep_research.mechanism_sources import distillation_operation_score
                     for paper in data['papers']:
                         ids = [t['targetId'] for t in paper['targets'] if t['targetId'] in mechanism_targets]

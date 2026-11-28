@@ -196,7 +196,7 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             keep_whole = _keep_local_method_passage(record, source, location, body) or (
                 keep_benchmark_protocol and owned_protocol(source, location, body, record.get('materials', ())))
             ranges = [(0, len(body))] if keep_whole else list(spans(body))
-            if record.get('comparisonMechanismReadContractVersion') == 4 and source['accessLevel'] == 'fulltext':
+            if record.get('comparisonMechanismReadContractVersion') in (4, 5) and source['accessLevel'] == 'fulltext':
                 from services.deep_research.criterion_sources import criterion_targets
                 from services.deep_research.mechanism_sources import distillation_operation_score
 

@@ -82,6 +82,23 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
         from services.deep_research.mechanism_sources import comparison_overviews
         preferred.extend(comparison_overviews(
             ordered, obligations, extracted, compression_operations=compression_operations)[:limit // 3])
+    if compression_operations == 5 and processing_cost and limit >= 3:
+        from services.deep_research.criterion_sources import criterion_targets
+        from services.deep_research.processing_cost_sources import codebook_training_score, recovery_training_score
+
+        cost_goals = {oid for oid, _, intent in criterion_targets(obligations, compression_operations=5)
+                      if intent in ('codebook_training_cost', 'recovery_training_cost')}
+        best = {}
+        for source in ordered:
+            if (source.get('accessLevel') != 'fulltext' or source.get('ownerMaterialId') != source.get('workId')
+                    or source.get('tableData') or (source['sourceId'], source.get('contentHash')) in extracted
+                    or not cost_goals.intersection(source.get('obligationIds', ()))):
+                continue
+            section = source.get('location', {}).get('section') or ''
+            for score in (codebook_training_score, recovery_training_score):
+                if score(source.get('text', ''), section):
+                    best.setdefault((source['workId'], source.get('versionId'), score), source)
+        preferred.extend(list(best.values())[:limit // 3])
     if benchmark_human:
         from services.deep_research.named_benchmark_navigation import preferred_benchmark_reads
         preferred.extend(preferred_benchmark_reads(ordered, obligations, benchmark_human, limit, extracted))

@@ -28,11 +28,15 @@ def query_intents(query, *, supervision=False, compression_operations=False):
         found.insert(0, 'training_supervision')
     if compression_operations:
         from services.deep_research.mechanism_sources import compression_mapping_requested
-        compression = compression_mapping_requested(query, include_operations=compression_operations in (3, 4))
+        compression = compression_mapping_requested(query, include_operations=compression_operations in (3, 4, 5))
         if compression:
             found.append('compression_mapping')
-        if compression_operations == 4 and (compression or re.search(r'蒸馏|\bdistillation\b', query, re.I)):
+        if compression_operations in (4, 5) and (compression or re.search(r'蒸馏|\bdistillation\b', query, re.I)):
             found.append('distillation_operation')
+        if compression_operations == 5:
+            from services.deep_research.processing_cost_sources import requested
+            if requested(query) and re.search(r'压缩|量化|码本|\b(?:compress\w*|quantiz\w*|codebooks?)\b', query, re.I):
+                found.extend(('codebook_training_cost', 'recovery_training_cost'))
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):
             found.append('measurement:'+metric.lower())
@@ -62,6 +66,10 @@ def query_intent(query, *, operational=False):
 
 
 def operation_score(body, section, intent, *, operational=False):
+    if operational and intent in ('codebook_training_cost', 'recovery_training_cost'):
+        from services.deep_research.processing_cost_sources import codebook_training_score, recovery_training_score
+        score = codebook_training_score if intent == 'codebook_training_cost' else recovery_training_score
+        return score(body, section)
     if operational and intent == 'distillation_operation':
         from services.deep_research.mechanism_sources import distillation_operation_score
         return distillation_operation_score(body, section)

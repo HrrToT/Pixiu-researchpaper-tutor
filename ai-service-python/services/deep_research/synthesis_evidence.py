@@ -102,7 +102,8 @@ def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_loc
         criterion_id = (view.get('completionCriteria') or [{}])[0].get('criterionId', 'whole_obligation')
         for source in view.get('requiredSources') or works:
             supervision = intent == 'training_supervision'
-            literal_operation = supervision or intent in ('compression_mapping', 'distillation_operation')
+            literal_operation = supervision or intent in ('compression_mapping', 'distillation_operation',
+                                                           'codebook_training_cost', 'recovery_training_cost')
             if (oid, criterion_id, source) in ready_keys and not literal_operation:
                 continue
             own=[e for e in rows if source in {e.get('sourceWorkId'),e.get('sourceVersionId'),e.get('ownerMaterialId')}]

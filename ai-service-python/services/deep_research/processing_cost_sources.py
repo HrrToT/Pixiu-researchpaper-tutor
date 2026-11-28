@@ -41,6 +41,25 @@ def score(row):
     return 4*bool(_AMOUNT.search(body))+2*bool(re.search(r'implementation|experimental settings|training details|实现|设置',str(section),re.I))+1
 
 
+def codebook_training_score(text, section):
+    if _EXCLUDED.search(section):
+        return 0
+    text = ' '.join(text.split())
+    return 5 * bool(re.search(
+        r'\b(?:fine[ -]?tun\w*|optimi[sz]\w*|train\w*)[^.!?]{0,55}\bcodebook\b[^.!?]{0,90}'
+        r'\b\d[\d,]*\s*(?:iterations?|steps?|epochs?|seconds?|minutes?|hours?)\b', text, re.I))
+
+
+def recovery_training_score(text, section):
+    if _EXCLUDED.search(section):
+        return 0
+    text = ' '.join(text.split())
+    amount = _AMOUNT.pattern
+    operation = r'\b(?:co[ -]?adaptation|pruning recovery)\b'
+    return 5 * bool(re.search(rf'{operation}[^.!?]{{0,120}}(?:{amount})'
+                              rf'|(?:{amount})[^.!?]{{0,120}}{operation}', text, re.I))
+
+
 def _pdf_exact(row,owner,content_hash):
     if (not isinstance(row,dict) or not isinstance(content_hash,str) or not content_hash
             or row.get('pdfId')!=owner or row.get('contentHash')!=content_hash
