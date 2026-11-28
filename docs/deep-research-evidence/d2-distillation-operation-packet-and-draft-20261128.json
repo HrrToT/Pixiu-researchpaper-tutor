@@ -1,0 +1,47 @@
+{
+  "baseRun": "dr_run_6e65839c70c559ab8c58372a93e74f27",
+  "mode": "Real frozen PDF retrieval with literal extraction and production synthesis request preflight",
+  "materialSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+  "sourcePage": 5,
+  "sourceOffset": 1424,
+  "oldRetrievalIncludedOperationalSource": false,
+  "newRetrievalIncludedOperationalSource": true,
+  "sameRetrievalSlotCount": true,
+  "quoteSha256": "670996cc04325fc4ed1d025562e50ca89477d1c9f172c0508e34ec8b2a6609a3",
+  "literalEvidenceId": "ev_5c30b0a5fa2e9ff0494f80ced9e99bb277d9178414f76703c77452cf9b4495e8",
+  "literalVerification": "passed",
+  "requiredEvidenceWhitelisted": true,
+  "oldStageInputBytes": 23981,
+  "newStageInputBytes": 23983,
+  "inputTargetsIdentical": true,
+  "allRequiredBundlesRetained": true,
+  "newStagePromptSha256": "a9af3aa29f85bd962411a892e6b19db4a361c21ac6fad8b54aac6e6145d23bac",
+  "providerCalls": 0,
+  "draftGenerated": false,
+  "isolatedStageRun": {
+    "candidate": "3e1535506285ebdf1d30323e1d8ff120657e2b0d",
+    "calls": 1,
+    "usage": {
+      "total_tokens": 7248,
+      "input_tokens": 6650,
+      "output_tokens": 598,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 6647
+    },
+    "reservedTokens": 29007,
+    "finishReason": "stop",
+    "allStageTargetsReturned": true,
+    "claimEvidencePermissionsPreserved": true,
+    "distillationPassageCited": true,
+    "verifiedOutputExcerpt": "通过蒸馏让低阶模型匹配高阶模型的预测像素强度。蒸馏还在训练相机位置周围按高斯分布采样，生成额外视角用于监督。",
+    "localSourceCheck": "Matched the teacher/student prediction signal and camera sampling to the same original page.",
+    "semanticModelReviewRun": false,
+    "wholeAnswerAuditRun": false,
+    "published": false,
+    "rawArtifactSha256": {
+      "intent.json": "0a576d8661951779711805af1a0248adfb483d7f98995192a6d1111f92be541e",
+      "response.json": "8f9ec80d5f347a397e341e10783eaa46c67ee5a591be145f806e06151084d190",
+      "calls.json": "d1590e0b9f0f6bd32133374f6444b19434dd4b5103eb895132746fbb738fc515"
+    }
+  }
+}
