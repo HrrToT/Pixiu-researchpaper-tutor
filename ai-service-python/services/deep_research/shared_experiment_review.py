@@ -273,7 +273,9 @@ def targets(record):
                for i, (name, paths, text) in enumerate(SECTIONS)]
     if proposal.get('version') == 3:
         for target in result:
-            if target['kind'] == 'budgets':
+            if target['kind'] == 'data' and record.get(EXPLICIT_SEMANTICS_MARKER) == 4:
+                target['pathPrefixes'].append('/steps')
+            elif target['kind'] == 'budgets':
                 target['requirement'] += (' Shared preparation uses one continuous wall-clock cap. Check the '
                                           'specified action for an exhausted cap before cloning incomplete state.')
             elif target['kind'] == 'measurement':
@@ -566,6 +568,11 @@ def build(record, input_data, aliases, *, required_domains=()):
             data['requirements'] = [item for item in data['requirements'] if item['obligationId'] in human_ids]
             data['sectionChecks'] = [[check, text, paths] for (check, _, paths), text in
                                      zip(data['sectionChecks'], COMPACT_SECTIONS, strict=True)]
+            if record.get(EXPLICIT_SEMANTICS_MARKER) == 4:
+                data['sectionChecks'][1][1] += (
+                    ' Check input templates, target encoding and loss masks when applicable, '
+                    'or a pinned, verifiable training pipeline.'
+                )
             if record.get(PLANNED_PREREQUISITES_MARKER) == 1:
                 data['sectionChecks'][5][1] = (
                     'Check optimizer, rates, schedule, amounts and stops. Match causal fit budgets; distinguish '
@@ -642,7 +649,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
                     state_ids = ', '.join(state['id'] for state in states)
                     policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
-        if record.get(EXPLICIT_SEMANTICS_MARKER) in (1, 2, 3) and view['proposal'].get('analysis', {}).get('contrasts'):
+        if record.get(EXPLICIT_SEMANTICS_MARKER) in (1, 2, 3, 4) and view['proposal'].get('analysis', {}).get('contrasts'):
             arm_order = ','.join(GROUPS)
             policy = f'Contrast weight order is [{arm_order}] (bits A,B), independent of groups list order.\n' + policy
         if record.get(DELIVERABLE_SCOPE_MARKER) == 1 and view.get('humanChecks'):

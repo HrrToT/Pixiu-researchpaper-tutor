@@ -23,6 +23,10 @@ EVALUATION_PROTOCOL_GUIDANCE = (
     'Check split IDs and content. For task scoring, specify inputs, answer boundaries and scoring, '
     'or pin and validate an executable evaluator.\n'
 )
+TRAINING_PROTOCOL_GUIDANCE = (
+    'Check split IDs/content. Define train templates, target encoding, loss masks and eval scoring, '
+    'or pin and test a runnable pipeline.\n'
+)
 GROUPS = ('00', '10', '01', '11')
 CONTRASTS = {
     'A': [-0.5, 0.5, -0.5, 0.5],
