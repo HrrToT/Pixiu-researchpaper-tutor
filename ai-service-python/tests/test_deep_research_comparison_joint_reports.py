@@ -33,6 +33,23 @@ def test_owned_speed_retrieval_prefers_direct_report_over_reference_timing():
         record, 'compression mechanism', 'p1', 'h1', 2) == [setting, unrelated]
 
 
+def test_numeric_example_read_keeps_owned_table_and_retraining_note_together():
+    from services.deep_research.comparison_joint_reports import preferred_numeric_example_read
+
+    shared = {'workId': 'p', 'ownerMaterialId': 'p', 'versionId': 'v', 'contentHash': 'h',
+              'accessLevel': 'fulltext', 'obligationIds': ['example']}
+    table = {**shared, 'sourceId': 'table', 'text': 'Table row 1: Baseline∗ | 40\nTable row 2: Ours | 50',
+             'tableData': {'groups': [['Group A', ['FPS']]], 'rows': [[1, 'Baseline∗', ['40']], [2, 'Ours', ['50']]]}}
+    note = {**shared, 'sourceId': 'note', 'text': 'We retrain Baseline using the original code on our platform, marked by ∗.'}
+    mismatch = {**note, 'sourceId': 'mismatch', 'versionId': 'old'}
+    goals = {'example': {'requiredSources': ['p'], 'comparisonRole': {
+        'kind': 'joint', 'requestExcerpt': '数字只选一组来源和口径明确的基线对照作例子'}}}
+    assert preferred_numeric_example_read([table, mismatch, note], goals, ()) == [table, note]
+    assert preferred_numeric_example_read([table, mismatch, note], goals, {('table', 'h')}) == [note]
+    assert preferred_numeric_example_read([table, mismatch], goals, ()) == [table]
+    assert preferred_numeric_example_read([table, note], {}, ()) == []
+
+
 @pytest.mark.parametrize('variant', ['misplaced', 'already_joint', 'single_source', 'ambiguous'])
 def test_places_only_a_unique_two_paper_speed_criterion_in_joint_scope(variant):
     from services.deep_research.comparison_joint_reports import place_cross_paper_speed_criterion

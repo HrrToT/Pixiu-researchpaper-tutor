@@ -522,14 +522,14 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                             validated, question, include_speed_boundary=record['singleBenchmarkCriteriaVersion'] == 2)
                         validated = validate_plan(validated)
                         requirement_changes.extend(single_example_changes)
-                if record.get('comparisonEvaluationProtocolVersion') in (5, 6, 7, 8, 9, 10):
+                if record.get('comparisonEvaluationProtocolVersion') in (5, 6, 7, 8, 9, 10, 11):
                     from services.deep_research.comparison_joint_reports import place_cross_paper_speed_criterion
                     validated, speed_changes = place_cross_paper_speed_criterion(validated, question)
                     if speed_changes:
                         validated = validate_plan(validated)
                         validate_completion_criteria(validated, required=criteria_required)
                         requirement_changes.extend(speed_changes)
-                if record.get('comparisonEvaluationProtocolVersion') in (9, 10):
+                if record.get('comparisonEvaluationProtocolVersion') in (9, 10, 11):
                     from services.deep_research.comparison_joint_reports import place_cross_paper_memory_advice
                     validated, memory_changes = place_cross_paper_memory_advice(validated, question)
                     if memory_changes:
@@ -537,7 +537,7 @@ Return a JSON ARRAY of plan items, NOT an object with items field."""
                         validate_completion_criteria(validated, required=criteria_required)
                         validate_comparison_plan(validated, question)
                         requirement_changes.extend(memory_changes)
-                if record.get('comparisonEvaluationProtocolVersion') in (4, 5, 6, 7, 8, 9, 10):
+                if record.get('comparisonEvaluationProtocolVersion') in (4, 5, 6, 7, 8, 9, 10, 11):
                     from services.deep_research.comparison_joint_reports import preserve_requested_memory_advice
                     validated, advice_changes = preserve_requested_memory_advice(validated, question)
                     if advice_changes:
@@ -865,12 +865,13 @@ def make_read_node(
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'baseline_evaluation': True} if record.get(protocol.BASELINE_CONFIG_MARKER) == 2 else {}),
                 **({'experiment_densification': True} if protocol.densification_enabled(record) else {}),
-                **({'comparison_evaluation_protocol': 2 if record.get('comparisonEvaluationProtocolVersion') == 10 else True}
+                **({'comparison_evaluation_protocol': {10: 2, 11: 3}.get(
+                        record.get('comparisonEvaluationProtocolVersion'), True)}
                    if evaluation_protocols_enabled(record)
                    and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
                 **({'comparison_deployment_memory': True} if deployment_memory_context_enabled(record)
                    and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
-                **({'comparison_memory_criteria': True} if record.get('comparisonEvaluationProtocolVersion') in (4, 5, 6, 7, 8, 9, 10) else {}),
+                **({'comparison_memory_criteria': True} if record.get('comparisonEvaluationProtocolVersion') in (4, 5, 6, 7, 8, 9, 10, 11) else {}),
                 **({'benchmark_human':human_text(record)} if benchmark_navigation(record) else {}),
                 **({'threshold_benchmarks':human_text(record)} if record.get('comparisonThresholdTablePdfFallbackVersion') == 1 else {}),
                 **({'named_benchmark_protocol':True} if record.get('comparisonNamedBenchmarkProtocolVersion') in (1, 2) else {}),

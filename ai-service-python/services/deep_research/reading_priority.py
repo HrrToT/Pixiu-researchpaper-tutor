@@ -123,7 +123,7 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
     if comparison_evaluation_protocol:
         from services.deep_research.comparison_joint_reports import preferred_evaluation_reads
         preferred = [*preferred_evaluation_reads(ordered, obligations, limit, extracted,
-            direct_results=comparison_evaluation_protocol == 2), *preferred]
+            direct_results=comparison_evaluation_protocol in (2, 3)), *preferred]
     if comparison_deployment_memory:
         from services.deep_research.comparison_joint_reports import preferred_deployment_memory_reads
         preferred = [*preferred_deployment_memory_reads(ordered, obligations, limit, extracted,
@@ -170,6 +170,9 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                     candidates.append(source)
             figures = balanced_sample(candidates, lambda source: (source['workId'], source.get('versionId')), limit // 4)
         preferred = [*tables, *protocols, *figures, *preferred]
+    if comparison_evaluation_protocol == 3 and limit >= 3:
+        from services.deep_research.comparison_joint_reports import preferred_numeric_example_read
+        preferred = [*preferred_numeric_example_read(ordered, obligations, extracted), *preferred]
     ordered = [*preferred, *ordered]
     selected=[];used=set()
     for source in ordered:

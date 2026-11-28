@@ -116,12 +116,12 @@ def paper_figure_count_evidence(record, question, targets, requirements, rows):
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
 
 
 def _evaluation_protocol_score(text):
@@ -144,7 +144,7 @@ def speed_comparison_protocol_rank(row):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8, 9, 10) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8, 9, 10, 11) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -220,6 +220,51 @@ def has_single_numeric_example(roles):
     """Route an explicitly quoted one-example limit to its joint target."""
     return any(role['kind'] == 'joint' and _SINGLE_NUMERIC_EXAMPLE.search(role['requestExcerpt'])
                for role in roles.values())
+
+
+def preferred_numeric_example_read(rows, obligations, extracted):
+    """Prioritize a candidate table and its unambiguous retraining note."""
+    from services.deep_research.measurement_table_navigation import benchmark_metric
+    from services.deep_research.obligation_binding import eligible_obligation_ids
+    from services.deep_research.table_evidence import visible_table_packet
+    from services.deep_research.table_note_index import has_protocol_note, matched_protocols
+
+    goals = {oid: row for oid, row in obligations.items()
+             if (role := row.get('comparisonRole')) and has_single_numeric_example({oid: role})}
+    if not goals:
+        return []
+    eligible, table_scores = {}, {}
+    for row in rows:
+        if (row.get('accessLevel') != 'fulltext' or row.get('ownerMaterialId') != row.get('workId')
+                or not row.get('versionId') or not row.get('contentHash')
+                or not eligible_obligation_ids(row, goals)):
+            continue
+        packet = visible_table_packet(row.get('tableData'), row.get('text', ''))
+        if packet and len({method for _, method, _ in packet['rows']}) >= 2:
+            score = sum(benchmark_metric(metric) for _, metrics in packet['groups'] for metric in metrics)
+            if score:
+                table_scores[row['sourceId']] = score
+                eligible[row['sourceId']] = row
+        elif has_protocol_note(row.get('text')):
+            eligible[row['sourceId']] = row
+    if not table_scores:
+        return []
+    candidates = [{**row, 'evidenceId': eid, 'quote': row['text']} for eid, row in eligible.items()]
+    protocols = matched_protocols(candidates, {eid: (row['workId'], row['versionId'])
+                                               for eid, row in eligible.items()})
+    ranked = []
+    for eid, score in table_scores.items():
+        table = eligible[eid]
+        match = protocols.get(eid)
+        note = eligible[match['noteEvidenceId']] if match else None
+        if note and note.get('contentHash') != table['contentHash']:
+            note = None
+        unread = [row for row in (table, note)
+                  if row and (row['sourceId'], row['contentHash']) not in extracted]
+        if unread:
+            ranked.append((bool(note), score, unread))
+    best = max(ranked, key=lambda item: item[:2], default=None)
+    return best[2] if best else []
 
 
 def joint_numeric_example(roles, question):
@@ -767,7 +812,7 @@ def rendered_speed_rank(text, *, direct_results=False):
 
 def retain_owned_speed_result(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep one explicitly reported rendering result for the selected PDF."""
-    if (record.get('comparisonEvaluationProtocolVersion') != 10 or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (10, 11) or not content_hash
             or not _SPEED.search(query) or not 2 <= limit or len(rows) > limit):
         return rows
 
