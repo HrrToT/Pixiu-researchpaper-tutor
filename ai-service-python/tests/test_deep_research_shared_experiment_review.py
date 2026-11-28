@@ -58,6 +58,24 @@ def test_lifecycle_array_binding_proves_absence_without_approving_a_check():
         _binding_findings(*args, references=True, state_arrays=True)
 
 
+def test_verified_pairing_lists_do_not_replace_a_substantive_plan_binding():
+    from services.deep_research.shared_experiment_review import _binding_findings
+
+    plan = {'pairing': {'sharedStateIds': ['raw'], 'cloneStepIds': ['copy'],
+                        'identityChecks': 'Verify the checkpoint hash before cloning.'}}
+    check = {'checkId': 'pairing', 'status': 'passed', 'planBindings': ['/pairing/sharedStateIds'],
+             'evidenceBindings': []}
+    targets = {'pairing': {'kind': 'pairing', 'pathPrefixes': ['/pairing']}}
+    args = ({'checks': [check], 'issues': []}, plan, targets, {}, {})
+    with pytest.raises(ValueError, match='scalar'):
+        _binding_findings(*args, references=True, state_arrays=True)
+    assert _binding_findings(*args, references=True, state_arrays=True, pairing_arrays=True)[0] == [
+        'missing_target_binding',
+    ]
+    check['planBindings'].append('/pairing/identityChecks')
+    assert _binding_findings(*args, references=True, state_arrays=True, pairing_arrays=True) == ([], {})
+
+
 @pytest.mark.parametrize('pointer,expected', [
     ('/steps/@fit/operation/action', '/steps/1/operation/action'),
     ('/states/@checkpoint/representation', '/states/0/representation'),
@@ -94,11 +112,30 @@ def test_versioned_metric_ids_preserve_the_original_review_response():
     reply = {'rawContent': json.dumps(result), 'finishReason': 'stop'}
     args = (reply, ['section_6'], Draft202012Validator({'type': 'object'}))
     assert _decode_batch(*args, named_plan=plan) == result
-    decoded = _decode_batch(*args, named_plan=plan, named_metrics=True)
+    decoded = _decode_batch(*args, named_plan=plan, named_id_version=3)
     assert decoded['checks'][0]['planBindings'] == ['/metrics/1/procedure']
     assert json.loads(reply['rawContent']) == result
     with pytest.raises(ValueError, match='unknown ID or lacks a field'):
-        _decode_batch(*args, named_plan={'metrics': [{'id': 'not_psnr'}]}, named_metrics=True)
+        _decode_batch(*args, named_plan={'metrics': [{'id': 'not_psnr'}]}, named_id_version=3)
+
+
+@pytest.mark.parametrize('pointer,expected', [
+    ('/factors/@A/onOperation/action', '/factors/0/onOperation/action'),
+    ('/budgets/@prep/stopRule', '/budgets/1/stopRule'),
+    ('/groups/@00/levels', '/groups/0/levels'),
+    ('/data/inputs/@images/preparation', '/data/inputs/0/preparation'),
+])
+def test_named_plan_collections_resolve_only_under_the_new_review_contract(pointer, expected):
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch
+
+    plan = {'factors': [{'id': 'A'}], 'budgets': [{'id': 'fit'}, {'id': 'prep'}],
+            'groups': [{'id': '00'}], 'data': {'inputs': [{'id': 'images'}]}}
+    payload = {'checks': [{'checkId': 'section_0', 'planBindings': [pointer]}], 'coherent': True, 'issues': []}
+    args = ({'content': json.dumps(payload), 'finishReason': 'stop'}, ['section_0'],
+            Draft202012Validator({'type': 'object'}))
+    assert _decode_batch(*args, named_plan=plan, named_id_version=3) == payload
+    assert _decode_batch(*args, named_plan=plan, named_id_version=4)['checks'][0]['planBindings'] == [expected]
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate

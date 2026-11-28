@@ -2,6 +2,7 @@
 from copy import deepcopy
 
 from services.deep_research.contracts import DeepResearchError,digest
+from services.deep_research.metric_scope import SHARED_SCOPE_MARKER
 
 
 def _save(update,rid,key):
@@ -21,11 +22,19 @@ def synthesize(record,rows,aliases,sources,tables,bundles,update,invoke):
     wire_bundles=[{**b,'evidenceIds':[reverse.get(e,e) for e in b['evidenceIds']]} for b in bundles]
     required={e for b in wire_bundles for e in b['evidenceIds']}
     requirements=synthesis_obligations(record['state'].get('plan',[]))
+    domains = set()
+    for metric in record['state'].get('metricDomains') or []:
+        if isinstance(metric, dict):
+            metric = metric.get('domain')
+        elif record.get(SHARED_SCOPE_MARKER) != 1:
+            continue
+        if isinstance(metric, str) and metric in {'quality', 'storage', 'speed', 'memory'}:
+            domains.add(metric)
     def data_for(selected):
         tids={row['tableDataRef'] for row in selected if row.get('tableDataRef')}
         return {'question':effective_question(record),'requirements':requirements,'sources':sources,
                 'evidence':selected,'tables':{k:v for k,v in tables.items() if k in tids}}
-    def render(selected):return instructions(record)+input_text(data_for(selected))
+    def render(selected):return instructions(record, required_domains=domains)+input_text(data_for(selected))
     # Preserve complete selected contexts; optional quotes cannot displace a
     # necessary context merely because they are shorter without it.
     _,selected,missing=fit_premises(rows,render,wire_bundles,max_bytes=MAX_INPUT-overhead_bytes(record,NODE),
@@ -33,8 +42,7 @@ def synthesize(record,rows,aliases,sources,tables,bundles,update,invoke):
     if missing or not selected:
         return {'error_code':'synthesis_evidence_capacity'}
     selected_aliases={row['evidenceId']:aliases[row['evidenceId']] for row in selected}
-    domains=[m['domain'] for m in record['state'].get('metricDomains',[]) if isinstance(m,dict) and m.get('domain') in {'quality','storage','speed','memory'}]
-    snapshot={'data':data_for(selected),'aliases':selected_aliases,'requiredDomains':sorted(set(domains))}
+    snapshot={'data':data_for(selected),'aliases':selected_aliases,'requiredDomains':sorted(domains)}
     prior=record['state'].get('sharedExperimentInput')
     if prior is not None and digest(prior)!=digest(snapshot):
         raise DeepResearchError('invalid_shared_experiment_input','已保存共享方案材料或目标已改变，不能重发。')

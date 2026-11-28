@@ -8,9 +8,14 @@ completeness audit remains required.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List
 
+SHARED_SCOPE_MARKER = "sharedExperimentMetricScopeVersion"
 _CANONICAL_ORDER: tuple = ("quality", "speed", "storage")
+_SHARED_ORDER = (*_CANONICAL_ORDER, "memory")
+_DEVICE_MEMORY = re.compile(r'显存|\b(?:VRAM|(?:GPU|device) memory)\b', re.I)
+_PERSISTENT_STORAGE = re.compile(r'磁盘|存储|文件大小|模型体积|\b(?:disk|storage|checkpoint size|file size)\b', re.I)
 
 _PROTOCOL_REQUIREMENTS: Dict[str, str] = {
     "quality": (
@@ -27,6 +32,10 @@ _PROTOCOL_REQUIREMENTS: Dict[str, str] = {
         "List the included files or model representation, and state the "
         "accounting boundaries and units used for the storage measurement."
     ),
+    "memory": (
+        "Specify device and allocator, peak allocated or reserved memory, the complete "
+        "measurement interval, synchronization, and how incomplete or OOM runs are recorded."
+    ),
 }
 
 
@@ -35,49 +44,31 @@ def _all_domains() -> List[str]:
     return list(_CANONICAL_ORDER)
 
 
-def grounded_metric_domains(raw: Any, question: Any) -> List[str]:
-    """Validate *raw* against *question* and return domains in canonical order.
+def grounded_metric_domains(raw: Any, question: Any, *, shared_scope=False) -> List[str]:
+    """Ground each selected domain in a literal excerpt from the question."""
+    order = _SHARED_ORDER if shared_scope else _CANONICAL_ORDER
+    fallback = [] if shared_scope else _all_domains()
+    if not isinstance(question, str) or not question or not isinstance(raw, list) or not raw:
+        return fallback
 
-    Returns all three domains whenever any entry is malformed, the domain
-    is unknown or duplicated, or the excerpt is not an exact substring of
-    *question*.  Inputs are never mutated.
-    """
-    # question must be a non-empty string
-    if not isinstance(question, str) or not question:
-        return _all_domains()
-
-    # raw must be a non-empty list
-    if not isinstance(raw, list) or len(raw) == 0:
-        return _all_domains()
-
-    seen: set = set()
-
+    seen = set()
     for entry in raw:
         if not isinstance(entry, dict):
-            return _all_domains()
-
+            return fallback
         domain = entry.get("domain")
         excerpt = entry.get("requestExcerpt")
-
-        # domain must be a known allowed string
-        if not isinstance(domain, str) or domain not in _CANONICAL_ORDER:
-            return _all_domains()
-
-        # duplicate domain → fallback
-        if domain in seen:
-            return _all_domains()
-
-        # excerpt must be a non-blank string
-        if not isinstance(excerpt, str) or not excerpt.strip():
-            return _all_domains()
-
-        # exact (case-sensitive, no normalisation) substring check
-        if excerpt not in question:
-            return _all_domains()
-
+        if not isinstance(domain, str) or domain not in order:
+            return fallback
+        if not isinstance(excerpt, str) or not excerpt.strip() or excerpt not in question:
+            return fallback
+        if (shared_scope and domain == "storage" and _DEVICE_MEMORY.search(excerpt)
+                and not _PERSISTENT_STORAGE.search(excerpt)):
+            domain = "memory"
+        if domain in seen and not shared_scope:
+            return fallback
         seen.add(domain)
 
-    return [d for d in _CANONICAL_ORDER if d in seen]
+    return [domain for domain in order if domain in seen]
 
 
 def metric_protocol_requirements(domains: Any = None) -> Dict[str, str]:
@@ -93,13 +84,13 @@ def metric_protocol_requirements(domains: Any = None) -> Dict[str, str]:
         seen: set = set()
         valid = True
         for d in domains:
-            if not isinstance(d, str) or d not in _CANONICAL_ORDER or d in seen:
+            if not isinstance(d, str) or d not in _SHARED_ORDER or d in seen:
                 valid = False
                 break
             seen.add(d)
         if not valid or not seen:
             selected = list(_CANONICAL_ORDER)
         else:
-            selected = [d for d in _CANONICAL_ORDER if d in seen]
+            selected = [d for d in _SHARED_ORDER if d in seen]
 
     return {d: _PROTOCOL_REQUIREMENTS[d] for d in selected}

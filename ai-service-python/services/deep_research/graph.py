@@ -148,6 +148,13 @@ def make_resolve_brief_node(
         record = repo_update(run_id, lambda r: {**r, "stage": "resolve_brief"}, expected_revision=None)
         question = effective_question(record)
         materials = record.get("materials", [])
+        from services.deep_research.metric_scope import SHARED_SCOPE_MARKER, grounded_metric_domains
+        shared_metric_scope = record.get(SHARED_SCOPE_MARKER) == 1
+        metric_kinds = "quality|speed|storage|memory" if shared_metric_scope else "quality|speed|storage"
+        memory_scope_rule = (
+            "\n  Use memory for training or inference device memory and VRAM. "
+            "Use storage for persisted files, model size or checkpoints." if shared_metric_scope else ""
+        )
         
         prompt = f"""Analyze this research question and determine the output kind.
 Question: {question}
@@ -162,10 +169,10 @@ Return JSON with:
 - assumptions: list of inferred conditions
 - clarification: string if ambiguous, empty if clear
 - constraints: any explicit limitations
-- measurementScope: for experiment_design, list of {{domain: quality|speed|storage, requestExcerpt: exact words from Question}}
+- measurementScope: for experiment_design, list of {{domain: {metric_kinds}, requestExcerpt: exact words from Question}}
   for EVERY measurement domain explicitly requested. Never infer these from paper titles.
   Use [] when the measurement target is unspecified. Quality-only experiments do not
-  require speed or storage protocols; include those domains when the user asks for them.
+  require speed or storage protocols; include those domains when the user asks for them.{memory_scope_rule}
 
 Clarify only consequential ambiguity about the research target or permitted materials.
 An experiment-design request is a proposed, unexecuted plan: unknown numeric settings can be
@@ -197,11 +204,11 @@ preferences or for facts that can be read from the selected papers. Never widen 
         clarification = parsed.get("clarification", "")
         
         brief_id = f"brief_{run_id}"
-        from services.deep_research.metric_scope import grounded_metric_domains
         update_payload = {
             "briefId": brief_id,
             "outputKind": output_kind,
-            "metricDomains": grounded_metric_domains(parsed.get('measurementScope'), question),
+            "metricDomains": grounded_metric_domains(parsed.get('measurementScope'), question,
+                                                      shared_scope=shared_metric_scope),
             "assumptions": parsed.get("assumptions", []),
             "constraints": parsed.get("constraints", ""),
             "title": parsed.get("title", "")[:40] if isinstance(parsed.get("title"), str) else "",

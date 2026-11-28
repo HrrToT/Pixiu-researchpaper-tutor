@@ -55,6 +55,43 @@ def updater(record):
     return update
 
 
+@pytest.mark.parametrize('shared_scope', [False, True])
+def test_grounded_brief_metrics_reach_the_shared_proposal_binding(monkeypatch, shared_scope):
+    from services.deep_research.graph import make_resolve_brief_node
+    from services.deep_research.metric_scope import SHARED_SCOPE_MARKER
+    from services.deep_research.shared_experiment_generation import MARKER, build
+    from services.deep_research.shared_experiment_pipeline import synthesize
+    from services.deep_research.shared_experiment_plan import validate
+    from test_deep_research_shared_experiment_generation import context
+    from test_deep_research_shared_experiment_plan import proposal
+
+    record, data, aliases = context()
+    record.update(question='设计实验比较图像质量和训练峰值显存。', status='running')
+    record[MARKER] = 8
+    if shared_scope:
+        record[SHARED_SCOPE_MARKER] = 1
+    update = updater(record)
+    scope = [{'domain': 'quality', 'requestExcerpt': '图像质量'},
+             {'domain': 'storage', 'requestExcerpt': '训练峰值显存'}]
+    invoke_brief = Mock(return_value={'content': json.dumps({'outputKind': 'experiment_design', 'measurementScope': scope})})
+    make_resolve_brief_node(invoke_brief, update)({'run_id': record['runId']})
+    captured = []
+
+    def generation_prepare(current, inputs, bindings, *, required_domains, **kwargs):
+        captured.append(build(current, inputs, bindings, required_domains=required_domains))
+        return None
+
+    monkeypatch.setattr('services.deep_research.shared_experiment_generation.prepare', generation_prepare)
+    synthesize(record, data['evidence'], aliases, data['sources'], data['tables'], [], update, Mock())
+    built, = captured
+    expected = ['memory', 'quality'] if shared_scope else []
+    assert record['state']['sharedExperimentInput']['requiredDomains'] == expected
+    assert built['requiredDomains'] == expected
+    assert ('Required metrics: memory, quality.' in built['request']['prompt']) is shared_scope
+    issues = validate(proposal(), ['E1'], required_domains=built['requiredDomains'])
+    assert any(issue['code'] == 'plan.missing_measurement_domain' for issue in issues) is shared_scope
+
+
 @pytest.mark.parametrize('compact', [False, True])
 def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated(compact):
     from services.deep_research.shared_experiment_answer_packet import MARKER

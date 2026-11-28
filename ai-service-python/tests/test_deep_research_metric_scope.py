@@ -43,6 +43,22 @@ class TestGroundedScope:
         assert grounded_metric_domains(raw, Q) == ["speed"]
 
 
+def test_shared_scope_keeps_device_memory_and_persistent_storage_distinct():
+    question = "比较任务效果、训练峰值显存与模型文件大小。"
+    raw = [
+        {"domain": "quality", "requestExcerpt": "任务效果"},
+        {"domain": "storage", "requestExcerpt": "训练峰值显存"},
+        {"domain": "storage", "requestExcerpt": "模型文件大小"},
+    ]
+    assert grounded_metric_domains(raw, question, shared_scope=True) == ["quality", "storage", "memory"]
+    memory_only = [{"domain": "memory", "requestExcerpt": "训练峰值显存"}]
+    assert grounded_metric_domains(memory_only, question, shared_scope=True) == ["memory"]
+    assert grounded_metric_domains(memory_only, "只比较图像质量", shared_scope=True) == []
+    protocol = metric_protocol_requirements(["memory"])
+    assert list(protocol) == ["memory"]
+    assert "complete measurement interval" in protocol["memory"]
+
+
 # ── grounded_metric_domains: exact-substring, no normalisation ───────
 
 

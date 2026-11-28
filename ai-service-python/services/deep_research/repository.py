@@ -363,6 +363,7 @@ class DeepResearchRepository:
                                      'sharedExperimentReviewReferenceVersion',
                                      'sharedExperimentScopedReviewPacketVersion',
                                      'sharedExperimentMemoryReportVersion',
+                                     'sharedExperimentMetricScopeVersion',
                                      'sharedExperimentReportProvenanceVersion',
                                      'sharedExperimentTestSamplingVersion',
                                      'sharedExperimentProtocolEvidenceVersion',

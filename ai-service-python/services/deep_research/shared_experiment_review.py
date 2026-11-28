@@ -445,12 +445,13 @@ def reviewed_prefix_findings(record, input_data, aliases, saved, *, include_sour
                 return {}
             part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']),
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
-                                 named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                 named_id_version=record.get(INDEXED_STATES_MARKER))
             problems, passed = _binding_findings(
                 part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
                 contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                 state_arrays=record.get(REFERENCE_MARKER) == 4,
+                pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
                 group_levels=_group_bindings(record),
                 seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                 fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1,
@@ -572,7 +573,12 @@ def build(record, input_data, aliases, *, required_domains=()):
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view, policy=instructions):
         if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
-            if record.get(INDEXED_STATES_MARKER) == 3:
+            if record.get(INDEXED_STATES_MARKER) == 4:
+                policy = ('Use exact IDs in /steps, /states, /metrics, /factors, /budgets, /groups and /data/inputs, '
+                          'e.g. /budgets/@ID/cap. Exact pairing ID lists are allowed. '
+                          'Use zero-based indices for other lists.\n'
+                          + policy.replace('Use zero-based scalar paths', 'Use exact scalar paths'))
+            elif record.get(INDEXED_STATES_MARKER) == 3:
                 policy = ('Use exact IDs for steps, states and metrics, e.g. /metrics/@METRIC_ID/procedure. '
                           'Use zero-based indices for other lists.\n'
                           + policy.replace('Use zero-based scalar paths', 'Use exact scalar paths'))
@@ -828,7 +834,7 @@ def _resolved_plan_binding(path, proposal):
     return {'path': path, 'text': text}
 
 
-def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_plan=None, named_metrics=False):
+def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_plan=None, named_id_version=2):
     if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
         raise ValueError('Incomplete review')
     content = answer.get('rawContent', answer.get('content', ''))
@@ -851,29 +857,36 @@ def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_p
     if named_plan is not None:
         # Convert exact immutable IDs before scope and literal validation.
         # Numeric paths and the stored provider response retain their identity.
-        collections = ('steps', 'states', 'metrics') if named_metrics else ('steps', 'states')
-        indices = {key: {row['id']: i for i, row in enumerate(named_plan.get(key, []))}
-                   for key in collections}
+        keys = ['steps', 'states']
+        if named_id_version in (3, 4):
+            keys.append('metrics')
+        if named_id_version == 4:
+            keys.extend(('factors', 'budgets', 'groups'))
+        collections = {f'/{key}': named_plan.get(key, []) for key in keys}
+        if named_id_version == 4:
+            collections['/data/inputs'] = named_plan.get('data', {}).get('inputs', [])
+        indices = {prefix: {row['id']: i for i, row in enumerate(rows)} for prefix, rows in collections.items()}
         for row in [*part['checks'], *part['issues']]:
             for i, path in enumerate(row['planBindings']):
-                parts = path.split('/', 3)
-                if len(parts) < 3 or parts[0] or parts[1] not in indices or not parts[2].startswith('@'):
+                prefix, marker, rest = path.partition('/@')
+                if not marker or prefix not in indices:
                     continue
-                key, alias = parts[1:3]
-                if len(parts) != 4 or not parts[3] or alias[1:] not in indices[key]:
-                    raise ValueError(f'Review pointer uses an unknown ID or lacks a field in {key}')
-                row['planBindings'][i] = f'/{key}/{indices[key][alias[1:]]}/{parts[3]}'
+                alias, _, field = rest.partition('/')
+                if not field or alias not in indices[prefix]:
+                    raise ValueError(f'Review pointer uses an unknown ID or lacks a field in {prefix}')
+                row['planBindings'][i] = f'{prefix}/{indices[prefix][alias]}/{field}'
     return part
 
 
-def _state_array_path(path):
+def _state_array_path(path, pairing_arrays=False):
     import re
 
-    return re.fullmatch(r'/steps/(?:0|[1-9][0-9]*)/(?:reads|creates|updates)', path) is not None
+    return (re.fullmatch(r'/steps/(?:0|[1-9][0-9]*)/(?:reads|creates|updates)', path) is not None
+            or pairing_arrays and path in ('/pairing/sharedStateIds', '/pairing/cloneStepIds'))
 
 
 def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False, group_levels=False,
-                            seed_array=False, fit_capture_array=False):
+                            seed_array=False, fit_capture_array=False, pairing_arrays=False):
     import re
 
     bindings = []
@@ -912,7 +925,7 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
                 raise ValueError('Review memory pointer must name declared fit captures')
             bindings.extend(_resolved_plan_binding(f'{path}/{index}/{field}', proposal)
                             for index in range(len(captures)) for field in fields)
-        elif state_arrays and _state_array_path(path):
+        elif state_arrays and _state_array_path(path, pairing_arrays):
             value = _pointer(proposal, path)
             if not isinstance(value, list) or any(not isinstance(state, str) or not state for state in value):
                 raise ValueError('Review state path must name a list of state IDs')
@@ -924,13 +937,13 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
 
 def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references,
                       contrast_arrays=False, state_arrays=False, group_levels=False, seed_array=False,
-                      fit_capture_array=False):
+                      fit_capture_array=False, pairing_arrays=False):
     problems = []
     checks = value['checks']
     passed = {}
 
     def literal(binding):
-        if references and state_arrays and _state_array_path(binding['path']):
+        if references and state_arrays and _state_array_path(binding['path'], pairing_arrays):
             return binding['text'] == json.dumps(_pointer(proposal, binding['path']), ensure_ascii=False)
         return _plan_binding(binding, proposal)
 
@@ -939,11 +952,11 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
         bindings = check['planBindings']
         if references:
             bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays, group_levels,
-                                              seed_array, fit_capture_array)
+                                              seed_array, fit_capture_array, pairing_arrays)
         for binding in bindings:
             if not literal(binding): problems.append('invalid_plan_binding')
         if check['status'] == 'passed':
-            if not bindings or not any(_substantive(b) and not (state_arrays and _state_array_path(b['path']))
+            if not bindings or not any(_substantive(b) and not (state_arrays and _state_array_path(b['path'], pairing_arrays))
                                       and not (fit_capture_array and '/fitMemoryCaptures/' in b['path'])
                                       and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
                                           for prefix in target['pathPrefixes']) for b in bindings):
@@ -967,7 +980,7 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
                 passed[fact_id].append({**binding, 'text': excerpt})
     for issue in value['issues']:
         bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays,
-                                            group_levels, seed_array, fit_capture_array)
+                                            group_levels, seed_array, fit_capture_array, pairing_arrays)
                     if references else issue['planBindings'])
         if any(not literal(b) for b in bindings): problems.append('invalid_issue_binding')
     return problems, passed
@@ -1000,8 +1013,8 @@ def assess(record, input_data, aliases, response):
                                 if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
-                                 named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                 named_id_version=record.get(INDEXED_STATES_MARKER))
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
             value['checks'].extend(part['checks'])
@@ -1015,6 +1028,7 @@ def assess(record, input_data, aliases, response):
                                              references=reference_review_enabled(record),
                                              contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                                              state_arrays=record.get(REFERENCE_MARKER) == 4,
+                                             pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
                                              group_levels=_group_bindings(record),
                                              seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                                              fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
@@ -1117,13 +1131,14 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                      context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
                                      named_plan=proposal if check_bindings_before_next
-                                     and record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
-                                     named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
+                                     and record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                     named_id_version=record.get(INDEXED_STATES_MARKER))
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
                                                          contrast_arrays=built.get(REFERENCE_MARKER) in (3, 4),
                                                          state_arrays=built.get(REFERENCE_MARKER) == 4,
+                                                         pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
                                                          group_levels=_group_bindings(record),
                                                          seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                                                          fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
