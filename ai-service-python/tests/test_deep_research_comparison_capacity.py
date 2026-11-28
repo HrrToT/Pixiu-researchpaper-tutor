@@ -139,6 +139,54 @@ def test_exhausted_repair_audit_keeps_the_previously_checked_comparison():
     _assert_previously_checked_comparison_survives(6)
 
 
+def test_local_future_work_repair_still_rechecks_the_claim_and_whole_answer():
+    from unittest.mock import Mock, patch
+    from services.deep_research.graph import make_verify_node
+
+    record = populated_factual_record()
+    record['comparisonLocalFutureWorkRepairVersion'] = 1
+    record['state']['reportBody']['comparisonCells'] = {
+        key: record['state']['comparisonCellDraft'][key] for key in ('layout', 'sources')}
+    claim = record['state']['reportBody']['claims'][0]
+    cid = claim['claimId']
+    claim['body']['prose']['text'] = '论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。'
+    row = next(row for row in record['state']['evidence'] if row['evidenceId'] in claim['evidenceRefs'])
+    row.update(accessLevel='fulltext', quote='It would be interesting to see how compression could be adapted.')
+    events = []
+
+    def update(_, mutate, **kwargs):
+        nonlocal record
+        record = mutate(deepcopy(record))
+        return deepcopy(record)
+
+    def verify(targets, evidence, semantic):
+        if not events:
+            events.append('initial')
+            return {'accepted': [c for c in targets if c['claimId'] != cid],
+                    'rejected': [{'claimId': cid, 'reason': 'absence_not_established'}]}
+        events.append('independent')
+        target, = targets
+        assert target['text'] == '论文将点云压缩列为未来可探索的方向。'
+        assert target['evidenceRefs'] == claim['evidenceRefs']
+        return {'accepted': [], 'rejected': [{'claimId': cid, 'reason': 'semantic_unresolved'}]}
+
+    def audit(*args, **kwargs):
+        events.append('whole')
+        assert not any(c['claimId'] == cid for c in args[3])
+        return {'status': 'checked', 'gaps': [{'obligationId': 'required'}]}
+
+    invoke = Mock(side_effect=AssertionError('Local repair must not dispatch generation'))
+    with patch('services.deep_research.final_coverage.audit_final_answer', side_effect=audit):
+        run = make_verify_node(verify, None, update, llm_invoke=invoke)
+        run({'run_id': 'r'})
+        run({'run_id': 'r'})
+    assert events == ['initial', 'independent', 'whole']
+    assert record['state']['repairStatus'] == 'local_candidate'
+    assert record['state']['localFutureWorkRepair'] == [
+        {'claimId': cid, 'removedSuffix': '，而非此处已实施的压缩步骤', 'scientificApproval': False}]
+    invoke.assert_not_called()
+
+
 @pytest.mark.parametrize('when', ['deferred', 'checked_with_gaps'])
 def test_audit_reservation_restricts_optional_repair_budget(monkeypatch, when):
     from unittest.mock import Mock

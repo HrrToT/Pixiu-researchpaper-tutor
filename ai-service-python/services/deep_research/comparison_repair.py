@@ -2,6 +2,53 @@
 import json
 
 
+def local_future_work_repair(report, rejected, evidence):
+    """Rebuild a narrowly scoped unverified candidate using an exact suffix deletion."""
+    from services.deep_research.authored_body import decode
+    from services.deep_research.prose_checks import without_unsupported_implementation_tail
+    from services.deep_research.repair_premises import comparison_scope
+
+    if not rejected or not report.get('comparisonCells'):
+        return None
+    by_id = {row['evidenceId']: row for row in evidence}
+    originals = {claim['claimId']: claim for claim in report.get('claims', [])}
+    seen = set()
+    candidates = []
+    audit = []
+    for issue in rejected:
+        cid = issue['claimId']
+        claim = originals.get(cid)
+        if (cid in seen or claim is None or issue.get('reason') != 'absence_not_established'
+                or issue.get('additionalChecks')):
+            return None
+        if 'body' in claim:
+            try:
+                claim = decode(claim)
+            except ValueError:
+                return None
+        if claim.get('scopeExpression') or claim.get('tableBindings'):
+            return None
+        seen.add(cid)
+        refs = claim.get('evidenceRefs', [])
+        if not refs or any(ref not in by_id or by_id[ref].get('accessLevel') != 'fulltext'
+                           or by_id[ref].get('verification', {}).get('literal') != 'passed' for ref in refs):
+            return None
+        try:
+            scope = comparison_scope(claim, report['comparisonCells'], evidence)
+        except ValueError:
+            return None
+        if scope is None:
+            return None
+        result = without_unsupported_implementation_tail(claim, [by_id[ref] for ref in refs])
+        if result is None:
+            return None
+        revised, removed = result
+        revised.pop('verification', None)
+        candidates.append(revised)
+        audit.append({'claimId': cid, 'removedSuffix': removed, 'scientificApproval': False})
+    return candidates, audit
+
+
 def admit_source_batches(groups, prepare):
     """Keep exact evidence packets for up to three independent requests."""
     from services.deep_research.contracts import BudgetExhaustedError

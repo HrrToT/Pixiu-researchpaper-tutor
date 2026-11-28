@@ -2756,6 +2756,20 @@ def make_verify_node(
                 return response
             try:
                 revised = saved.get('repairDraft')
+                if (type(record.get('comparisonLocalFutureWorkRepairVersion')) is int
+                        and record['comparisonLocalFutureWorkRepairVersion'] == 1
+                        and not saved.get('repairBatchState')
+                        and (revised is None or 'localFutureWorkRepair' in saved)):
+                    from services.deep_research.comparison_repair import local_future_work_repair
+                    local = local_future_work_repair(repair_report, repair_targets['rejected'], evidence)
+                    if 'localFutureWorkRepair' in saved:
+                        if local != (revised, saved['localFutureWorkRepair']):
+                            raise DeepResearchError('invalid_repair_plan', '本地修订候选或原引文已变更。')
+                    elif local is not None:
+                        revised, changes = local
+                        repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
+                            'repairDraft': revised, 'repairStatus': 'local_candidate',
+                            'localFutureWorkRepair': changes}}, expected_revision=None)
                 if revised is None:
                     from services.deep_research.repair_budget import repair_prompt_byte_limit
                     current = repo_update(run_id, lambda r: r, expected_revision=None)

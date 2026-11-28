@@ -97,16 +97,50 @@ _NONASSERTIVE_ABSENCE = re.compile(
     r'[^，,；;。.!?]*$|\b(?:if|whether|cannot conclude|cannot claim|cannot say|does not imply)\b[^,;.!?]*$',re.I)
 
 
+_IMPLEMENTATION_CONTRAST = (
+    r'(?:而非|而不是|并非)(?:此处|文中|论文中)?'
+    r'(?:已经|已)(?:实施|执行|完成|采用)(?:的)?'
+)
 _FUTURE_WORK_EXCLUSIVITY = re.compile(
     r'(?:论文|原文|作者|文中)(?:中|里)?(?:仅|只)(?:是)?(?:建议|提出|讨论)(?:进一步)?(?:探索|研究|尝试)'
-    r'|(?:未来|后续)[^。！？；;.!?]{0,55}(?:而非|而不是|并非)(?:此处|文中|论文中)?'
-    r'(?:已经|已)(?:实施|执行|完成|采用)(?:的)?',
+    r'|(?:未来|后续)[^。！？；;.!?]{0,55}' + _IMPLEMENTATION_CONTRAST,
+)
+_REMOVABLE_IMPLEMENTATION_TAIL = re.compile(
+    r'(?:，|,\s*)(?P<removed>' + _IMPLEMENTATION_CONTRAST
+    + r'[^。！？；;.!?，,\n]{1,32})(?P<end>。\s*)$'
+)
+_AFFIRMATIVE_FUTURE_WORK = re.compile(
+    r'(?:列为|作为|视为)(?:一个)?(?:未来|后续)(?:可|值得)?(?:探索|研究|尝试)的方向$'
+)
+_SOURCE_FUTURE_WORK = re.compile(
+    r'\b(?:future\s+work|it\s+would\s+be\s+(?:interesting|useful|promising)\s+to\s+(?:see|explore|investigate))\b'
+    r'|(?:未来|后续)(?:值得|可|可以|将)(?:探索|尝试|研究)', re.I
 )
 _EXPLICIT_IMPLEMENTATION_BOUNDARY = re.compile(
     r'(?:未|没有)(?:曾|实际)?(?:实施|执行|采用|实现)'
     r'|\b(?:not|never)\s+(?:yet\s+)?(?:implement|deploy|adopt|apply|applie)\w*\b'
     r'|\b(?:only|solely)\s+(?:suggest|propos|discuss)\w*\s+(?:explor|investigat)\w*\b', re.I,
 )
+
+
+def without_unsupported_implementation_tail(claim, support):
+    """Remove only a separable, unsupported contrast after an affirmative future-work statement."""
+    text = claim.get('text')
+    if (claim.get('kind') != 'reported' or not isinstance(text, str)
+            or not absence_not_established(claim, support, scope_version=10)
+            or not any(_SOURCE_FUTURE_WORK.search(row.get('quote', '')) for row in support)
+            or any(_EXPLICIT_IMPLEMENTATION_BOUNDARY.search(row.get('quote', '')) for row in support)):
+        return None
+    match = _REMOVABLE_IMPLEMENTATION_TAIL.search(text)
+    if not match:
+        return None
+    prefix = text[:match.start()]
+    if not _AFFIRMATIVE_FUTURE_WORK.search(prefix):
+        return None
+    repaired = {**claim, 'text': prefix + match['end']}
+    if absence_not_established(repaired, support, scope_version=10):
+        return None
+    return repaired, text[match.start():match.start('end')]
 
 
 def absence_not_established(claim, support, *, scope_version=0, cited_passage_scope=False):

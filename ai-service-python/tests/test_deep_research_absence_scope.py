@@ -113,6 +113,32 @@ def test_explicit_implementation_boundary_still_requires_semantic_review():
     assert not result['accepted']
 
 
+@pytest.mark.parametrize(('text', 'quote', 'should_edit'), [
+    ('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。',
+     'It would be interesting to see how compression could be adapted.', True),
+    ('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。',
+     'Future work includes compression. Compression was not implemented.', False),
+    ('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。',
+     'We report a reconstruction method.', False),
+    ('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。仍需核对。评测细节未披露。',
+     'Future work includes compression.', False),
+    ('不能据此认为论文仅建议探索点云压缩。', 'Future work includes compression.', False),
+])
+def test_local_future_work_edit_preserves_affirmative_claim_and_source(text, quote, should_edit):
+    from services.deep_research.prose_checks import without_unsupported_implementation_tail
+
+    claim, evidence = fixture(text)
+    claim['kind'] = 'reported'
+    evidence['quote'] = quote
+    edit = without_unsupported_implementation_tail(claim, [evidence])
+    assert bool(edit) is should_edit
+    if edit:
+        revised, removed = edit
+        assert revised == {**claim, 'text': '论文将点云压缩列为未来可探索的方向。'}
+        assert removed == '，而非此处已实施的压缩步骤'
+        assert claim['text'] == text
+
+
 @pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 2])
 def test_server_scope_version_is_frozen_and_applies_to_both_verification_passes(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
