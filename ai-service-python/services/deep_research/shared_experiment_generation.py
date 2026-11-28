@@ -347,7 +347,7 @@ def instructions(record, *, required_domains=()):
                             'Shared opacity/cull schedule, fit after last reset. Label proposals. '
                             'Peak from load to final sync; sampled peaks are observed only. ',
                         )
-                if record.get('sharedExperimentDensificationExecutionVersion') in (13, 14):
+                if record.get('sharedExperimentDensificationExecutionVersion') in (13, 14, 15):
                     execution = (
                         'Wire <20KB; actions ≤1600 chars. Share projection/support/blend, SH basis/view/bands, '
                         'RGB-to-SH offsets/signs, position derivatives, zero-grad each backward, optimizer/tests. '
@@ -359,6 +359,12 @@ def instructions(record, *, required_domains=()):
                         'Pose matching: save training SfM descriptors linked to 3D points; use held-out images only at eval. '
                         'One prep wall-time cap includes shared prefit. Load one arm at a time; peak includes copy/load through '
                         'final sync, then release. Sampled peaks are observed only. Label proposals. '
+                    )
+                if record.get('sharedExperimentDensificationExecutionVersion') == 15:
+                    execution = execution.replace(
+                        'RGB-to-SH offsets/signs, position derivatives, zero-grad each backward, optimizer/tests. ',
+                        'RGB-to-SH offsets/signs, position derivatives, zero-grad each backward and numerical tests. '
+                        'Set numeric LR per trainable group and schedule. For Adam specify betas and epsilon. ',
                     )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
@@ -468,7 +474,7 @@ def instructions(record, *, required_domains=()):
                 'Specify layout, shapes, axes, initial values, computations, controls and open prerequisites.',
                 'Map stored and math layouts both ways. Give shapes, axes, initial values, controls and prerequisites.',
             )
-        if version == 8 and record.get('sharedExperimentDensificationExecutionVersion') == 14:
+        if version == 8 and record.get('sharedExperimentDensificationExecutionVersion') in (14, 15):
             prompt = prompt.replace(
                 'Use "shared_preparation_total" for consecutive shared prepare steps before cloning. '
                 'Each references one cumulative native wall-clock cap and stop rule without reset. Use null if unbudgeted.',
@@ -622,7 +628,7 @@ def build(record, input_data, aliases, *, required_domains=()):
         output_policy[EVALUATION_PREPARATION_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(OPERATION_CAPACITY_MARKER) == 1:
         output_policy[OPERATION_CAPACITY_MARKER] = 1
-        if record.get('sharedExperimentDensificationExecutionVersion') == 14:
+        if record.get('sharedExperimentDensificationExecutionVersion') in (14, 15):
             output_policy[SHARED_PREFIT_WINDOW_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(CLONE_SCOPE_MARKER) == 1:
         output_policy[CLONE_SCOPE_MARKER] = 1

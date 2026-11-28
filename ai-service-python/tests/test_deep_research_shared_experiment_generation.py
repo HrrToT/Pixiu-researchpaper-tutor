@@ -749,6 +749,11 @@ def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     assert 'RGB-to-SH offsets/signs' in latest and 'zero-grad each backward' in latest
     assert 'within-level effects' in latest and 'signed world-position loss gradient' in latest
     assert 'save training SfM descriptors' not in next_version
+    previous = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 14})
+    current = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 15})
+    assert 'numeric LR per trainable group and schedule' in current
+    assert 'For Adam specify betas and epsilon' in current
+    assert 'numeric LR per trainable group' not in previous
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
