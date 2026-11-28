@@ -30,6 +30,23 @@ def comparison_scope(claim, context, evidence):
 
 
 _OPACITY_DEFINITION = re.compile(r'\bopacity\s*\(?\s*[α𝛼]|\bopacity\s+alpha\b', re.I)
+_OPACITY_TERM = re.compile(r'不透明度|\bopacity\b', re.I)
+_INVERTED_OPACITY = re.compile(
+    r'(?<!不)透明度\s*(?:[（(]\s*)?(?:[α𝛼]|\bopacity\b)'
+    r'|(?:[α𝛼]|\bopacity\b)\s*(?:[（(=：:]\s*|为\s*|是\s*)透明度'
+    r'|(?:位置|尺度|协方差|球谐系数)\s*[、，,和与]\s*透明度\s*[、，,和与]\s*(?:位置|尺度|协方差|球谐系数)',
+    re.I,
+)
+_OPACITY_COMPLEMENT_PREFIX = re.compile(r'(?<![\w.])1\s*[-−–]\s*$')
+
+
+def preserves_opacity_binding(text, evidence_refs, definition_refs):
+    """Check only the named parameter; the complete claim still needs independent review."""
+    inverted = any(not (match[0].startswith(('α', '𝛼'))
+                        and _OPACITY_COMPLEMENT_PREFIX.search(text[:match.start()]))
+                   for match in _INVERTED_OPACITY.finditer(text))
+    return (not inverted
+            and (not _OPACITY_TERM.search(text) or bool(set(evidence_refs).intersection(definition_refs))))
 
 
 def required_premises(originals, evidence, allowed, requirements, *, verified_target_ids=(), comparison_context=None,
@@ -38,6 +55,7 @@ def required_premises(originals, evidence, allowed, requirements, *, verified_ta
     selected=[];seen=set();audit=[];preferred=[]
     for claim in originals:
         cid=claim['claimId'];old=claim.get('evidenceRefs',[])
+        definitions = []
         own_obligations={o['obligationId']:o for o in requirements
             if o.get('obligationId') in claim.get('obligationIds',[])}
         if cid in verified_target_ids or not own_obligations:
@@ -85,8 +103,7 @@ def required_premises(originals, evidence, allowed, requirements, *, verified_ta
                 pair=(e['sourceWorkId'],e['sourceVersionId'])
                 if pair not in anchored:anchors.append(e);anchored.add(pair)
             chosen=anchors
-            if local_parameter_definitions and scope is not None and re.search(r'不透明度|\bopacity\b',
-                    claim.get('text', ''), re.I):
+            if local_parameter_definitions and scope is not None and _OPACITY_TERM.search(claim.get('text', '')):
                 definitions = [e for e in candidates if e['evidenceId'] in old and e.get('accessLevel') == 'fulltext'
                                and (e['sourceWorkId'], e['sourceVersionId']) == (scope['workId'], scope['versionId'])
                                and _OPACITY_DEFINITION.search(e.get('quote', ''))]
@@ -95,7 +112,9 @@ def required_premises(originals, evidence, allowed, requirements, *, verified_ta
         refs=list(dict.fromkeys(e['evidenceId'] for e in chosen))
         preferred.extend(eid for eid in preferred_refs if eid not in preferred)
         audit.append({'claimId':cid,'mode':mode,'originalEvidenceIds':list(old),
-            'requiredEvidenceIds':refs,'preferredEvidenceIds':preferred_refs,'navigationBundles':bundles,'verification':'unchecked'})
+            'requiredEvidenceIds':refs,'preferredEvidenceIds':preferred_refs,'navigationBundles':bundles,'verification':'unchecked',
+            **({'opacityDefinitionEvidenceIds':[e['evidenceId'] for e in definitions if e['evidenceId'] in refs]}
+               if local_parameter_definitions == 2 and definitions else {})})
         for e in chosen:
             if e['evidenceId'] not in seen:selected.append(e['evidenceId']);seen.add(e['evidenceId'])
     return set(selected),{'version':1,'targets':audit,'preferredEvidenceIds':preferred,'verification':'unchecked_navigation'}

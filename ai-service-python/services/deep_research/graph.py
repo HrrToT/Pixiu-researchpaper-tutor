@@ -2838,7 +2838,7 @@ def make_verify_node(
                                          and compact_repair and unified_repair_eligible else False)
                     comparison_batch_envelope = (bool(comparison_repair)
                                                  and type(record.get('comparisonRepairBatchEnvelopeVersion')) is int
-                                                 and record['comparisonRepairBatchEnvelopeVersion'] in (1, 2, 3, 4))
+                                                 and record['comparisonRepairBatchEnvelopeVersion'] in (1, 2, 3, 4, 5))
                     if compact_repair:
                         from services.deep_research.repair_budget import repair_batch_output_limit
                         target_count=sum(c.get('claimId') in {r['claimId'] for r in repair_targets.get('rejected',[])}
@@ -2889,11 +2889,11 @@ def make_verify_node(
                         **({'comparison_authoring':comparison_repair} if comparison_repair else {}),
                         **({'comparison_prioritize_cells':True} if comparison_batch_envelope else {}),
                         **({'comparison_split_to_fit':True} if comparison_batch_envelope
-                           and record['comparisonRepairBatchEnvelopeVersion'] in (2, 3, 4) else {}),
+                           and record['comparisonRepairBatchEnvelopeVersion'] in (2, 3, 4, 5) else {}),
                         **({'comparison_preflight_to_fit':True} if comparison_batch_envelope
-                           and record['comparisonRepairBatchEnvelopeVersion'] in (3, 4) else {}),
-                        **({'local_parameter_definitions':True} if comparison_batch_envelope
-                           and record['comparisonRepairBatchEnvelopeVersion'] == 4 else {}),
+                           and record['comparisonRepairBatchEnvelopeVersion'] in (3, 4, 5) else {}),
+                        **({'local_parameter_definitions': 2 if record['comparisonRepairBatchEnvelopeVersion'] == 5 else True}
+                           if comparison_batch_envelope and record['comparisonRepairBatchEnvelopeVersion'] in (4, 5) else {}),
                         **({'comparison_priority_evidence':comparison_priority_evidence}
                            if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int

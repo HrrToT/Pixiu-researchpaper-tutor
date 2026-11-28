@@ -669,6 +669,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
         source_identities = {short_ids[e['evidenceId']]: (e.get('sourceWorkId'), e.get('sourceVersionId'))
                              for e in selected}
 
+    opacity_definitions = {}
     def render(selected_rows):
         visible_ids = {row['evidenceId'] for row in selected_rows}
         permissions = {key: [short_ids[ref] for ref in values
@@ -712,6 +713,12 @@ If a supported revision is not possible, omit that target rather than bypass sco
             owners={short_ids[e['evidenceId']]:(e.get('sourceWorkId'),e.get('sourceVersionId')) for e in selected}
             literal_ids={short_ids[e['evidenceId']] for e in selected if e.get('verification',{}).get('literal')=='passed'}
             result+='\nTable-note candidates (unverified navigation):\n'+json.dumps(note_index(selected_rows,owners,literal_ids=literal_ids,permissions=permissions),ensure_ascii=False,separators=(',',':'))
+        visible_definitions = {cid: [short_ids[ref] for ref in refs if short_ids[ref] in visible_ids]
+                               for cid, refs in opacity_definitions.items()}
+        if any(visible_definitions.values()):
+            result += ('\nFor these targets, opacity (α) means 不透明度. If kept, cite a defining E ID: '
+                       + json.dumps({cid: refs for cid, refs in visible_definitions.items() if refs},
+                                    ensure_ascii=False, separators=(',', ':')))
         return result
     if max_prompt_bytes <= 0:
         raise BudgetExhaustedError('repairPromptBytes', max_prompt_bytes, 1)
@@ -727,6 +734,8 @@ If a supported revision is not possible, omit that target rather than bypass sco
         required,premise_audit=required_premises(list(originals.values()),selected,allowed,active_requirements,verified_target_ids=verified_target_ids,
             local_parameter_definitions=local_parameter_definitions,
             **({'comparison_context':report.get('comparisonCells')} if compact_repair_policy == 2 else {}))
+        opacity_definitions = {target['claimId']: target['opacityDefinitionEvidenceIds']
+                               for target in premise_audit['targets'] if target.get('opacityDefinitionEvidenceIds')}
     # Coverage hints are candidates, not citations the original assertion used.
     # Keep them first among optional rows without forcing every broad hint into
     # every batch. Full original citations and their contexts remain mandatory;
@@ -785,6 +794,7 @@ If a supported revision is not possible, omit that target rather than bypass sco
             **({'verifiedTextRepairContractVersion':2 if integrated_text_edits else 1,
                 **({'verifiedTextEditPlan':text_edit_plan} if integrated_text_edits else {})} if focused else {}),
             **({'repairPremiseAudit':premise_audit} if premise_audit is not None else {}),
+            **({'opacityDefinitionRefs':opacity_definitions} if opacity_definitions else {}),
             **({'comparisonAuthoringContractVersion':int(comparison_authoring), 'comparisonDisplayEvidence': [
                 {k: deepcopy(e[k]) for k in ('evidenceId','quote','tableData','sourceWorkId','sourceVersionId') if k in e}
                 for e in selected if e['evidenceId'] in visible]} if comparison_authoring else {}),
@@ -915,6 +925,11 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         new_refs = row.get('evidenceRefs', [])
         if not isinstance(new_refs, list) or any(ref not in allowed.get(key, []) for ref in new_refs):
             continue
+        definition_refs = prepared.get('opacityDefinitionRefs', {}).get(key)
+        if definition_refs:
+            from services.deep_research.repair_premises import preserves_opacity_binding
+            if not isinstance(transition_text, str) or not preserves_opacity_binding(transition_text, new_refs, definition_refs):
+                continue
         if key in prepared.get('requiredScopeIds',[]) and not isinstance(row.get('scopeExpression'),dict):
             if scope_audit is not None:scope_audit.append({'claimId':key,'error':'scope_role_downgrade'})
             continue
@@ -1146,7 +1161,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if comparison_preflight_to_fit:
         identity = digest({'inputDigest': identity, 'comparisonPreflightToFit': True})
     if local_parameter_definitions:
-        identity = digest({'inputDigest': identity, 'comparisonLocalParameterDefinitions': 1})
+        identity = digest({'inputDigest': identity, 'comparisonLocalParameterDefinitions':
+                           2 if local_parameter_definitions == 2 else 1})
 
     def prepare(ids, results=(), byte_limit=None):
         ids = set(ids)

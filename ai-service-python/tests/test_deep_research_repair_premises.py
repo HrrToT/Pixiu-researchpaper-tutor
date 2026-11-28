@@ -122,4 +122,24 @@ def test_local_representation_repair_retains_cited_parameter_definition(change):
     assert old == {'a0'}
     assert revised == ({'a0', 'a1'} if change is None else old)
     assert set(audit['targets'][0]['requiredEvidenceIds']) == revised
+    bound, bound_audit = required_premises([claim], evidence, allowed, requirements, comparison_context=context,
+                                           local_parameter_definitions=2)
+    assert bound == revised
+    assert bound_audit['targets'][0].get('opacityDefinitionEvidenceIds', []) == (['a1'] if change is None else [])
     assert (claim, evidence, allowed) == before
+
+
+@pytest.mark.parametrize(('text', 'refs', 'expected'), [
+    ('优化位置、透明度、协方差。', ['def'], False),
+    ('透明度（opacity）用于合成。', ['def'], False),
+    ('α是透明度。', ['def'], False),
+    ('优化位置、不透明度、协方差。', ['other'], False),
+    ('优化位置、不透明度、协方差。', ['def'], True),
+    ('增加不透明度会降低透明度。', ['def'], True),
+    ('不透明度为α，1 − α是透明度。', ['def'], True),
+    ('查看视角覆盖如何影响渲染。', ['other'], True),
+])
+def test_opacity_repair_checks_only_the_bound_parameter(text, refs, expected):
+    from services.deep_research.repair_premises import preserves_opacity_binding
+
+    assert preserves_opacity_binding(text, refs, ['def']) is expected
