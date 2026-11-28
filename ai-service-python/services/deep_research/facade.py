@@ -424,7 +424,7 @@ class ResearchFacade:
             **({"sharedExperimentReviewIndexedStatesVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewContextFieldVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewSeedBindingsVersion": 1} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentCompactScienceRevisionVersion": 3} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentCompactScienceRevisionVersion": 4} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentRevisionDigestSchemaVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,

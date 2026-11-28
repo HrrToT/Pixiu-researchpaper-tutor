@@ -193,6 +193,38 @@ def test_replacements_cannot_change_authority_or_silently_fill_science(mutation)
     with pytest.raises((ValueError,KeyError)):apply(base,reply(v))
 
 
+def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_facts():
+    from services.deep_research.shared_experiment_revision import _apply_scoped, _design_only_context
+
+    row = {'evidenceId': 'E1', 'quote': 'Reported result.',
+           'sourceContext': {'before': 'First condition.', 'after': 'Second condition.', 'truncated': False}}
+    data = {'evidence': [row]}
+    verdict = {'checks': [
+        {'checkId': 'fact_0', 'status': 'passed', 'planBindings': ['/sourceFacts/0/text']},
+        {'checkId': 'section_0', 'status': 'failed', 'planBindings': ['/data'],
+         'evidenceBindings': [{'evidenceId': 'E1', 'field': 'after'}]},
+    ], 'issues': []}
+    reviewed = {'status': 'checked', 'assessment': {'valid': True, 'complete': False, 'verdict': verdict}}
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]})['evidence'] == [
+        {**row, 'sourceContext': {'after': 'Second condition.', 'truncated': True}},
+    ]
+    assert row['sourceContext']['before'] == 'First condition.'
+    verdict['checks'][1]['planBindings'].append('/sourceFacts/0/evidenceRefs')
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None
+    verdict['checks'][1]['planBindings'].pop()
+    verdict['checks'][0]['status'] = 'failed'
+    assert _design_only_context(data, reviewed, {'sourceFacts': [{}]}) is None
+
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    saved = {'preserveSourceFacts': True, 'response': edit_response(record)}
+    assert not _apply_scoped(base, saved)['scientificApproval']
+    changed = json.loads(saved['response']['content'])
+    changed['edits'].append({'path': '/sourceFacts/0/text', 'value': 'A different source statement.'})
+    with pytest.raises(ValueError, match='cannot change checked source facts'):
+        _apply_scoped(base, {**saved, 'response': reply(changed)})
+
+
 def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
     r,data,aliases=ready()
     def save(v):r['state']['sharedExperimentReview']=deepcopy(v)

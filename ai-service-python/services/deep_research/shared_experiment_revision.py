@@ -181,6 +181,8 @@ def _input_digest(base, saved):
         scope['suppliedEvidenceAliases'] = saved.get('suppliedEvidenceAliases')
     if 'allowedFactEditPaths' in saved:
         scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
+    if saved.get('preserveSourceFacts') is True:
+        scope['preserveSourceFacts'] = True
     if saved.get(EVALUATION_PREPARATION_MARKER) == 1:
         scope[EVALUATION_PREPARATION_MARKER] = 1
     return digest({'base':base['bindingDigest'], 'request':saved.get('request'), **scope})
@@ -206,11 +208,42 @@ def view(record):
 def _apply_scoped(base, saved):
     bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'),
                   evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1)
+    if (saved.get('preserveSourceFacts') is True
+            and bound['proposal']['sourceFacts'] != base['boundProposal']['proposal']['sourceFacts']):
+        raise ValueError('A design-only repair cannot change checked source facts')
     if bound['proposal'].get('version') == 3:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
             raise ValueError('Repair cited evidence outside its input')
     return bound
+
+
+def _design_only_context(data, reviewed, proposal):
+    """Keep all quotations and the side excerpts used by unresolved checks."""
+    assessment = reviewed.get('assessment', {})
+    if reviewed.get('status') != 'checked' or not assessment.get('valid') or assessment.get('complete'):
+        return None
+    verdict = assessment['verdict']
+    expected = {f'fact_{index}' for index in range(len(proposal['sourceFacts']))}
+    facts = {row['checkId']: row['status'] for row in verdict['checks'] if row['checkId'].startswith('fact_')}
+    if not expected or facts != dict.fromkeys(expected, 'passed'):
+        return None
+    findings = [row for row in verdict['checks'] if row['status'] != 'passed'] + verdict['issues']
+    if any(path == '/sourceFacts' or path.startswith('/sourceFacts/')
+           for row in findings for path in row['planBindings']):
+        return None
+    references = {(ref['evidenceId'], ref['field']) for row in findings for ref in row.get('evidenceBindings', [])}
+    evidence = []
+    for row in data['evidence']:
+        quote = {key: value for key, value in row.items() if key != 'sourceContext'}
+        context = dict(row.get('sourceContext') or {})
+        kept = {field: context[field] for field in ('before', 'after')
+                if (row['evidenceId'], field) in references and field in context}
+        if kept:
+            quote['sourceContext'] = {**kept, 'truncated': context.get('truncated', False)
+                                      or bool({'before', 'after'}.intersection(context) - kept.keys())}
+        evidence.append(quote)
+    return {**data, 'evidence': evidence}
 
 
 def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
@@ -312,10 +345,10 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     'candidateEvidenceRefs lists alternative reference sets that pass literal prechecks. '
                     'Verify each complete fact against the quoted text before choosing a set. '
                     'Rephrasing alone does not resolve a citation error.\n' + instructions)
-    def measure(data, *, policy=None):
+    def measure(data, *, policy=None, output_tokens=6144):
         context = {key:value for key,value in data.items() if not fact_only or key != 'requirements'}
         prompt=(instructions if policy is None else policy)+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
-        req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':6144,'timeout_seconds':90})
+        req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':output_tokens,'timeout_seconds':90})
         return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
     supply = {}
     if proposal.get('version') == 3:
@@ -326,7 +359,8 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         req, size, supplied = fit_accounted_evidence(record,input_data,aliases,proposal,measure,32000,
                                                      feedback_refs=feedback_refs)
         compact_version = record.get(COMPACT_SCIENCE_MARKER)
-        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3):
+        preserve_facts = False
+        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4):
             compact_data = {**input_data, 'evidence': [
                 {key: value for key, value in row.items() if key not in {
                     'resultRoleHintOnly', 'sourceContextRequired', 'contextOmitted', 'obligations',
@@ -335,7 +369,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             ]}
             policy = {
                 1: COMPACT_SCIENCE_INSTRUCTIONS, 2: SCOPED_SCIENCE_INSTRUCTIONS,
-                3: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
+                3: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 4: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
             }[compact_version]
             compact_req, compact_size, compact_supplied = fit_accounted_evidence(
                 record, compact_data, aliases, proposal,
@@ -344,7 +378,20 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             )
             if compact_size < size:
                 req, size, supplied = compact_req, compact_size, compact_supplied
+            if size > 32000 and compact_version == 4:
+                design_data = _design_only_context(compact_data, reviewed, proposal)
+                if design_data is not None:
+                    design_policy = ('Paper facts are checked and read-only. Keep sourceFacts exactly.\n'
+                                     + ATTRIBUTION_SCIENCE_INSTRUCTIONS)
+                    fitted = fit_accounted_evidence(record, design_data, aliases, proposal,
+                        lambda data: measure(data, policy=design_policy, output_tokens=4096),
+                        32000, feedback_refs=feedback_refs, required_only=True)
+                    if fitted[1] <= 32000:
+                        req, size, supplied = fitted
+                        preserve_facts = True
         supply = {'suppliedEvidenceAliases':supplied}
+        if preserve_facts:
+            supply['preserveSourceFacts'] = True
     else:
         req, size = measure(input_data)
     if fact_only:
