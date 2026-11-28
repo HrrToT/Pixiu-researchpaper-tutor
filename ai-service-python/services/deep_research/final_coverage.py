@@ -639,7 +639,7 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
                              comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False,
-                             display_metadata=None, reconcile_conditional_advice=False):
+                             display_metadata=None, reconcile_conditional_advice=False, reconcile_deployment_review=False):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -707,6 +707,9 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
             exact_covered[oid] = exact_works
     if reconcile_conditional_advice and exact_origins:
         _add_reviewed_advice_sources(exact_covered, comparison_draft, audit, claims, accepted, exact_origins)
+    if reconcile_deployment_review and exact_origins:
+        resolved_joint.update(_reviewed_deployment_gap_keys(
+            comparison_draft, audit, claims, evidence, joint_coverage, exact_covered, exact_origins))
     remaining = [gap for gap in gaps if not isinstance(gap, dict)
                  or ((gap.get('obligationId'), gap.get('sourceWorkId'), gap.get('missingEvidence')) not in resolved_joint
                      and gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set()))]
@@ -729,3 +732,33 @@ def _add_reviewed_advice_sources(exact_covered, draft, audit, claims, factual_cl
             if oid in claim.get('obligationIds', []):
                 exact_covered[oid].update(exact_origins[ref] for ref in claim.get('evidenceRefs', [])
                                           if ref in factual_refs and ref in exact_origins)
+
+
+def _reviewed_deployment_gap_keys(draft, audit, claims, evidence, coverage, exact_covered, exact_origins):
+    """Resolve only a joint retrieval gap matched by an accepted deployment receipt."""
+    from services.deep_research.general_advice import deployment_review_refs
+
+    supported = {}
+    by_id = {c['claimId']: c for c in claims}
+    for goal in draft.get('jointGoals', []):
+        oid = goal['obligationId']
+        if oid not in exact_covered or [d['kind'] for d in draft.get('jointDeliverables', {}).get(oid, [])] != ['conditional_advice']:
+            continue
+        works = {draft['sources'][alias]['workId'] for alias in goal['sourceAliases'] if alias in draft['sources']}
+        rows = [v for v in audit.get('verdicts', []) if v.get('obligationId') == oid]
+        if len(works) != 2 or len(rows) != 1 or rows[0].get('status') != 'covered':
+            continue
+        for binding in rows[0].get('bindings', []):
+            claim = by_id.get(binding.get('claimId'), {})
+            if oid not in claim.get('obligationIds', []):
+                continue
+            refs = deployment_review_refs(claim, evidence)
+            sources = {exact_origins[ref] for ref in refs if ref in exact_origins}
+            if sources == works:
+                supported[oid] = works
+                exact_covered[oid].update(works)
+                break
+    return {(row['obligationId'], row['sourceWorkId'], row['missingEvidence']) for row in coverage
+            if row.get('sourceWorkId') in supported.get(row.get('obligationId'), ())
+            and row.get('supportKind') == 'joint' and row.get('state') == 'unchecked'
+            and row.get('checked') is True and row.get('missingEvidence')}

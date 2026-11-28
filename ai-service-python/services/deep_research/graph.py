@@ -3257,11 +3257,13 @@ def make_publish_node(
                     display_metadata=display_metadata if pinned_method_access else None,
                     **({'comparison_draft':brief_state.get('comparisonCellDraft'), 'joint_coverage':brief_state.get('coverage', [])}
                        if cell_enabled(record) and type(record.get('comparisonMatchedExampleGapClosureVersion')) is int
-                       and record['comparisonMatchedExampleGapClosureVersion'] in (1, 2, 3) else {}),
+                       and record['comparisonMatchedExampleGapClosureVersion'] in (1, 2, 3, 4) else {}),
                     reconcile_comparison_dependencies=(cell_enabled(record)
-                        and record.get('comparisonMatchedExampleGapClosureVersion') in (2, 3)),
+                        and record.get('comparisonMatchedExampleGapClosureVersion') in (2, 3, 4)),
                     reconcile_conditional_advice=(cell_enabled(record)
-                        and record.get('comparisonMatchedExampleGapClosureVersion') == 3),
+                        and record.get('comparisonMatchedExampleGapClosureVersion') in (3, 4)),
+                    reconcile_deployment_review=(cell_enabled(record)
+                        and record.get('comparisonMatchedExampleGapClosureVersion') == 4),
                     **({'versioned_sources':True} if type(record.get('sourceGapClosureContractVersion')) is int and record['sourceGapClosureContractVersion']==1 else {})),
                 *audit.get('gaps', [])]
         
@@ -3288,7 +3290,9 @@ def make_publish_node(
                                       presentation_version=presentation_version)
             visible, folded = publication_notices(claims, presentation_version=presentation_version,
                 **({'output_kind': output_kind} if presentation_version in (3, 4) else {}))
-            return {**display_fields, 'outputKind': output_kind, 'claims': claims, 'sections': sections,
+            public_claims = [{key: value for key, value in claim.items() if key != 'deploymentReview'}
+                             for claim in claims]
+            return {**display_fields, 'outputKind': output_kind, 'claims': public_claims, 'sections': sections,
                     'evidence': brief_state.get('evidence', []), 'limitations': visible + repair_notice,
                     **({'verificationNotice': folded} if 'presentationVersion' in display_fields else {})}
 

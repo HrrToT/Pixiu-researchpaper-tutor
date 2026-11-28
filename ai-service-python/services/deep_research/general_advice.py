@@ -106,6 +106,46 @@ def is_fixed_deployment_preflight(claim):
             and claim.get('conditions', {}) == {} and claim.get('tableBindings', []) == [])
 
 
+def _deployment_binding(claim, refs, evidence):
+    from services.deep_research.contracts import digest
+
+    own = set(claim.get('evidenceRefs', []))
+    if (not isinstance(refs, list) or not refs or not all(isinstance(ref, str) and ref in own for ref in refs)
+            or len(refs) != len(set(refs))):
+        return None
+    rows = [row for row in evidence if row.get('evidenceId') in refs]
+    if (len(rows) != len(refs) or {row['evidenceId'] for row in rows} != set(refs)
+            or any(row.get('accessLevel') != 'fulltext' or row.get('verification', {}).get('literal') != 'passed'
+                   or not isinstance(row.get('quote'), str) or not row['quote'].strip() for row in rows)):
+        return None
+    fields = ('claimId', 'kind', 'text', 'conditions', 'obligationIds', 'evidenceRefs', 'tableBindings')
+    source_fields = ('evidenceId', 'sourceWorkId', 'sourceVersionId', 'contentHash', 'quote', 'location')
+    return digest({'claim': {key: claim.get(key) for key in fields},
+                   'premises': sorted(({key: row.get(key) for key in source_fields} for row in rows),
+                                      key=lambda row: row['evidenceId'])})
+
+
+def deployment_review_receipt(claim, verdict, evidence):
+    """Persist only exact full-text premises of a passed test-first advice review."""
+    audit = verdict.get('adviceAudit', {})
+    if (not eligible(claim) or verdict.get('status') != 'passed' or not isinstance(audit, dict)
+            or audit.get('purpose') != 'other_nonexperimental' or audit.get('deviceMemory') != {'mode': 'test_first'}
+            or validate(claim, verdict, evidence, device_memory=True, direct_device_memory=True)):
+        return None
+    refs = sorted({row['evidenceId'] for row in audit['premises'] if row['path'] == ['quote']})
+    binding = _deployment_binding(claim, refs, evidence)
+    return {'version': 1, 'evidenceIds': refs, 'bindingDigest': binding} if binding else None
+
+
+def deployment_review_refs(claim, evidence):
+    receipt = claim.get('deploymentReview')
+    if (not isinstance(receipt, dict) or receipt.get('version') != 1
+            or claim.get('verification') != 'proposal' or not eligible(claim)):
+        return []
+    binding = _deployment_binding(claim, receipt.get('evidenceIds'), evidence)
+    return receipt['evidenceIds'] if binding and binding == receipt.get('bindingDigest') else []
+
+
 def prompt(claims_text, question, evidence_marker, *, device_memory=False, deployment_preflight=False,
            preflight_ids=(), recheck_ids=()):
     preflight_rule = '''For the designated deployment preflight, review a FUTURE device check, not a reported result.

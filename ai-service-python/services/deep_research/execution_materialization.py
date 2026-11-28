@@ -60,6 +60,8 @@ def verification_claim_view(claim):
     prose is never shortened. Stored and published claims remain untouched.
     """
     result = deepcopy(claim)
+    if isinstance(result, dict):
+        result.pop('deploymentReview', None)
     if (not isinstance(result, dict) or result.get('designContractVersion') != 2
             or result.get('kind') not in {'proposal', 'suggestion', 'hypothesis'}
             or not isinstance(result.get('text'), str)):

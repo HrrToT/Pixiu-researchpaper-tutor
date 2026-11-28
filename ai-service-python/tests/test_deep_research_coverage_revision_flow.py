@@ -247,3 +247,44 @@ def test_reviewed_advice_uses_only_independent_facts_to_resolve_scheduling_gap(f
     result = remaining_retrieval_gaps([gap], audit, claims, evidence, **opts,
                                       reconcile_conditional_advice=True)
     assert result == ([gap] if failure else [])
+
+
+@pytest.mark.parametrize('failure', [None, 'edited_advice', 'edited_quote', 'missing_paper', 'ordinary_gap', 'stale_audit'])
+def test_exact_deployment_review_only_closes_matching_joint_gap(failure):
+    from services.deep_research.comparison_presentation import audit_digest, metadata
+    from services.deep_research.final_coverage import remaining_retrieval_gaps
+    from services.deep_research.verification import verify_claims
+
+    evidence = [{**EVIDENCE[0], 'sourceVersionId': 'v1'},
+                {**EVIDENCE[0], 'evidenceId': 'b', 'sourceWorkId': 'other', 'sourceVersionId': 'v2'}]
+    draft = {'sources': {'P1': {'workId': 'paper', 'versionId': 'v1'},
+                         'P2': {'workId': 'other', 'versionId': 'v2'}},
+             'layoutVersion': 3, 'shortProseVersion': 1, 'layout': [],
+             'jointGoals': [{'obligationId': 'advice', 'sourceAliases': ['P1', 'P2']}],
+             'jointDeliverables': {'advice': [{'kind': 'conditional_advice'}]}}
+    plan = [{'itemId': 'choose', 'obligations': [{'obligationId': 'advice', 'requiredSources': ['paper', 'other']}]}]
+    candidate = {'claimId': 'a', 'text': '先实测两种方法的峰值显存和画质，实测达标才选择。',
+                 'kind': 'proposal', 'evidenceRefs': ['e', 'b'], 'obligationIds': ['advice']}
+    reviewed_ids = ['e'] if failure == 'missing_paper' else ['e', 'b']
+    raw = {'claimId': 'a', 'status': 'passed', 'adviceAudit': {'purpose': 'other_nonexperimental',
+           'targetPath': ['text'], 'appropriate': True, 'deviceMemory': {'mode': 'test_first'},
+           'premises': [{'evidenceId': ref, 'path': ['quote']} for ref in reviewed_ids]}}
+    advice, = verify_claims([candidate], evidence, lambda *_: [raw], record_deployment_review=True)['accepted']
+    assert advice['deploymentReview']['evidenceIds'] == sorted(reviewed_ids)
+    if failure == 'edited_advice':
+        advice['text'] += ' 只看训练设置。'
+    elif failure == 'edited_quote':
+        evidence[0]['quote'] += ' Changed after review.'
+    gap = {'obligationId': 'advice', 'sourceWorkId': 'paper', 'checked': True, 'missingEvidence': '读取联合证据不足'}
+    coverage = {**gap, 'supportKind': 'regular' if failure == 'ordinary_gap' else 'joint', 'state': 'unchecked'}
+    audit = {'status': 'checked', 'gaps': [], 'answerCoherence': {'coherent': True},
+             'comparisonPresentationDigest': audit_digest(metadata(draft), [advice]),
+             'verdicts': [{'obligationId': 'advice', 'status': 'covered',
+                           'bindings': [{'claimId': 'a', 'excerpt': advice['text']}]}]}
+    if failure == 'stale_audit':
+        audit['comparisonPresentationDigest'] = 'obsolete'
+    opts = dict(plan=plan, comparison_draft=draft, joint_coverage=[coverage],
+                reconcile_comparison_dependencies=True, reconcile_conditional_advice=True)
+    assert remaining_retrieval_gaps([gap], audit, [advice], evidence, **opts) == [gap]
+    assert remaining_retrieval_gaps([gap], audit, [advice], evidence, **opts,
+                                    reconcile_deployment_review=True) == ([gap] if failure else [])

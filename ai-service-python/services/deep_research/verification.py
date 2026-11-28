@@ -438,7 +438,8 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
                   complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
                   comparison_embedded_measurements=False, bound_composite_cells=False,
-                  bind_composite_revisions=False, named_revision_table=None, named_revision_question=None) -> dict:
+                  bind_composite_revisions=False, named_revision_table=None, named_revision_question=None,
+                  record_deployment_review=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -485,6 +486,11 @@ def verify_claims(claims: list[dict], evidence: list[dict],
     accepted = []
     for claim in candidates:
         if verdicts.get(claim["claimId"], {}).get("status") == "passed":
+            claim.pop('deploymentReview', None)
+            if record_deployment_review and claim["kind"] in ('proposal', 'suggestion'):
+                from services.deep_research.general_advice import deployment_review_receipt
+                if receipt := deployment_review_receipt(claim, verdicts[claim['claimId']], evidence):
+                    claim['deploymentReview'] = receipt
             accepted.append({**claim, "verification": "proposal" if claim["kind"] in proposals else "semantic_passed",
                              **({'assetAvailability': verdicts[claim['claimId']].get('assetAvailability')}
                                 if requires_existing_asset(claim) else {})})

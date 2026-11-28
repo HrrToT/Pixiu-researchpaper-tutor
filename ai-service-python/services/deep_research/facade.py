@@ -516,7 +516,7 @@ class ResearchFacade:
             "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": 5 if single_task_paper and output_kind == 'claim_verification' else 2,
             "sourceGapClosureContractVersion": 1,
-            "comparisonMatchedExampleGapClosureVersion": 3,
+            "comparisonMatchedExampleGapClosureVersion": 4,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 4,
@@ -1669,6 +1669,7 @@ class ResearchFacade:
                                            if spelling in (26, 27, 28) else spelling),
                 feedback_version=feedback,table_references_version=table_references,
                 review_context_version=context_version,
+                record_deployment_review=record.get('comparisonMatchedExampleGapClosureVersion') == 4,
                 bound_composite_cells=(type(record.get('boundCompositeTableCellsVersion')) is int
                                        and record['boundCompositeTableCellsVersion'] in (1, 2)),
                 bind_composite_revisions=(type(record.get('boundCompositeTableCellsVersion')) is int
