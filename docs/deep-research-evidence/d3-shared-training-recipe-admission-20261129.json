@@ -73,5 +73,19 @@
     "modelCalls": 0,
     "scientificApproval": false
   },
-  "targetedTestsPassed": 315
+  "targetedTestsPassed": 315,
+  "offlineBaselineRegression": {
+    "commit": "6755ade0d",
+    "modules": 510,
+    "collected": 10755,
+    "passed": 10747,
+    "skipped": 8,
+    "failures": 0,
+    "errors": 0,
+    "warnings": 1,
+    "wallSeconds": 427.3,
+    "liveProviderTestsExcluded": true,
+    "junit": "tmp/research-offline-shared-recipe-loopback-20261129/junit.xml",
+    "junitSha256": "1fe80c402fd8b9e15b529de0d2c6e6582e2c24bfc88e0b3594703dc152eeeb90"
+  }
 }
