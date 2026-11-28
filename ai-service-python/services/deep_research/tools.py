@@ -524,12 +524,15 @@ class TrackedLLMInvoker:
                 unknown = [call["callId"] for call in calls if call.get("status") == "unknown"]
                 if unknown:
                     raise UnresolvedUnknownError(run_id, unknown)
+                budget = transport_record["budget"]
+                used_calls = budget["modelCalls"] + budget.get("reservedModelCalls", 0)
+                if used_calls >= budget["maxModelCalls"]:
+                    raise BudgetExhaustedError("modelCalls", budget["maxModelCalls"], used_calls)
                 limit = (max_byte_length if counted_science_window else
-                         coverage_prompt_byte_limit(transport_record["budget"], max_output, max_input_bytes=max_byte_length))
+                         coverage_prompt_byte_limit(budget, max_output, max_input_bytes=max_byte_length))
                 if limit <= 0 or transport_record.get("status") != STATUS_RUNNING:
                     raise BudgetExhaustedError("coveragePromptBytes", limit, prompt_byte_length)
                 if counted_science_window:
-                    budget = transport_record["budget"]
                     minimum = budget["tokens"] + 1 + INPUT_RESERVATION_MARGIN + max_output
                     if minimum > budget["maxTokens"]:
                         raise BudgetExhaustedError("tokens", budget["maxTokens"], minimum)

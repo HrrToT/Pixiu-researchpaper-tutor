@@ -157,12 +157,13 @@ def test_openai_run_does_not_dispatch_deepseek_search(tmp_path):
     deepseek_search.assert_not_called()
 
 
-@pytest.mark.parametrize("count, expected_failure", [
-    (8923, None), (23000, "budget_exhausted"), (True, "budget_exhausted"), (None, "budget_exhausted"),
-    (8923, "scope_revoked"),
+@pytest.mark.parametrize("count, expected_failure, no_call_slots", [
+    (8923, None, False), (23000, "budget_exhausted", False), (True, "budget_exhausted", False),
+    (None, "budget_exhausted", False), (8923, "scope_revoked", False),
+    (8923, "budget_exhausted", True),
 ])
 def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_generation(
-        tmp_path, monkeypatch, count, expected_failure):
+        tmp_path, monkeypatch, count, expected_failure, no_call_slots):
     from services.deep_research.contracts import DeepResearchError
     from services.deep_research.tools import TrackedLLMInvoker
     from test_deep_research_comparison_audit_envelope import value
@@ -181,7 +182,8 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
             repo.update_run(run_id, lambda row: {**row, "countedComparisonAuditContractVersion": 0})
         repo.begin_execution(run_id)
         repo.update_run(run_id, lambda row: {
-            **row, "budget": {**row["budget"], "tokens": 79730, "normalTokens": 49000},
+            **row, "budget": {**row["budget"], "tokens": 79730, "normalTokens": 49000,
+                             **({"modelCalls": 13, "reservedModelCalls": 5} if no_call_slots else {})},
             "state": {**row["state"], "outputKind": "paper_comparison"},
         })
         scope = Mock()
@@ -220,7 +222,9 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
             with pytest.raises(DeepResearchError) as error:
                 send()
             assert error.value.code == expected_failure
-            assert len(calls) == (0 if expected_failure == "scope_revoked" else 1)
+            assert len(calls) == (0 if expected_failure == "scope_revoked" or no_call_slots else 1)
+            if no_call_slots:
+                assert error.value.details == {"kind": "modelCalls", "limit": 18, "used": 18}
             assert not repo.list_calls(run_id)
             return
 
