@@ -1,0 +1,15 @@
+{
+  "runs": 500,
+  "runHits": 0,
+  "indexFields": 19825,
+  "sourceOrBodyIndexHits": 0,
+  "bibliographyMentions": 0,
+  "cacheHits": 0,
+  "case": "H1-EFFICIENT-LOFTR",
+  "definitionHash": "0f5ba62cf2b29f40e450dd539175bdb5ee925cc5180ec681b0b262d5d408f764",
+  "tasksChecked": 195,
+  "taskHits": 0,
+  "priorRepositoryOrReceiptHits": 0,
+  "modelCalls": 0,
+  "productionWrites": 0
+}
