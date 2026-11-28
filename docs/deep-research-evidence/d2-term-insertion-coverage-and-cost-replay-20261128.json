@@ -1,0 +1,56 @@
+{
+  "candidate": "1ef527f3e97b7e42057813f889968f99d91985f9",
+  "runId": "dr_d2_grouped_term_insertions_20261128",
+  "isolated": true,
+  "previousAttempts": {
+    "wholeCellRepair": {
+      "providerTokens": 4075,
+      "callLedgerSha256": "1116aed97c9015025ff63f7a0310f56b82dd7df9e879a920c12644ba6c4eac42",
+      "published": false
+    },
+    "firstInsertionRun": {
+      "providerTokens": 872,
+      "callLedgerSha256": "e71c53b33c1285c28af1c40d693f1f4526379af9cf7b4222076485be9c1feabe",
+      "published": false
+    }
+  },
+  "outcome": "partial",
+  "providerTokensByNode": {
+    "repair_claims": 1762,
+    "verify_repair": 5441,
+    "verify_answer_coverage": 9703
+  },
+  "allCitationsConditionsAndOriginalWordingKept": true,
+  "unaffectedClaims": 9,
+  "approvedTermEdits": [
+    "cmp_0_0",
+    "cmp_1_0"
+  ],
+  "coherencePassed": true,
+  "remainingCriterion": [
+    "crit-1b"
+  ],
+  "additionalCostPacketReplay": {
+    "baseRun": "dr_run_6e65839c70c559ab8c58372a93e74f27",
+    "sourceMaterialSha256": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "providerCalls": 0,
+    "selectedPdfPages": [
+      6,
+      7
+    ],
+    "stageInputBytes": 22870,
+    "allFrozenPremiseBundlesRetained": true,
+    "costEvidenceAliases": {
+      "E2": "codebook",
+      "E12": "recovery"
+    }
+  },
+  "rawArtifactSha256": {
+    "intent.json": "21f55b37547b76961ec3b2e6d047e45a944a5a09a8665a0acd0f080f1a52ef51",
+    "verify-return.json": "50f0500e16c0d0768c87df6a781f802f6637bb274a53f8d7fe2e4305c3066e74",
+    "publish-return.json": "11098c5534f11b0d46e9dac3e0b66644f4c745590d00e621782bbbf1e47fef87",
+    "calls.json": "68aa3859f25c0c6dba3837ba2a7d779195489470276f3b1a92de03486a62db98",
+    "run.json": "d4325ec92bb32acefc2c55ecfdd4dc8b571ae86df077df2c69e70b2b7b39e230",
+    "report.md": "a37f8d2d837d9bac21332dd971952677a42acbb28cf5b65313da242160093126"
+  }
+}
