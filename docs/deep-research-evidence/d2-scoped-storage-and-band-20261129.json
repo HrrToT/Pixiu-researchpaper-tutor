@@ -1,0 +1,300 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_d2_scoped_storage_and_harmonic_band_wording",
+  "sourceCommit": "1d8212fe9ee14da9aadfe3164e795d70ed62f703",
+  "caseDefinitionSha256": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "materialHashes": [
+    "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634",
+    "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11"
+  ],
+  "sourcePolicy": {
+    "mode": "task_only"
+  },
+  "runId": "dr_run_dd0ab944b5675bc0b61ade6f1c26361f",
+  "status": "completed",
+  "outcome": "partial",
+  "contracts": {
+    "comparisonPaperWordingContractVersion": 4,
+    "comparisonBeginnerDeploymentGuidanceVersion": 5,
+    "comparisonMatchedExampleGapClosureVersion": 5,
+    "comparisonEvaluationProtocolVersion": 11,
+    "comparisonCrossPaperBoundaryContractVersion": 9
+  },
+  "archivedPromptReplay": {
+    "providerCalls": 0,
+    "retainedReconstructedBundles": 10,
+    "jointPromptUnchanged": true,
+    "stageBytes": {
+      "P1": 23872,
+      "P2": 23956,
+      "joint": 23963
+    },
+    "artifact": {
+      "path": "tmp/openai-d2-matched-read-and-cost-fresh-20261128/storage-and-band-prompt-replay-20261129.json",
+      "sha256": "9c3cc70609a6a4265912c4c239b5e38980325aac7561fa6ca5bde05506704f14"
+    }
+  },
+  "targetedRegression": {
+    "passed": 265,
+    "warnings": [
+      "Existing PyPDF2 deprecation warning"
+    ]
+  },
+  "usage": {
+    "requests": 15,
+    "totalTokens": 78628,
+    "graphSeconds": 146.0,
+    "requestsByModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 10
+    },
+    "totalTokensByModel": {
+      "gpt-6-luna": 18089,
+      "gpt-6.1-terra": 60539
+    },
+    "budget": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360
+    },
+    "externalSearches": 0,
+    "externalFulltextFetches": 0,
+    "automaticRetry": false
+  },
+  "physicalPdfCheck": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 8,
+    "literalCitationOccurrences": {
+      "true": 27
+    },
+    "sourceTableCells": {
+      "true": 10
+    }
+  },
+  "evidenceReview": {
+    "matchedExample": {
+      "claimId": "cmp_conclusion_2",
+      "sourcePage": 6,
+      "dataset": "Mip-NeRF 360",
+      "baselineRow": "3D-GS∗[16]",
+      "comparedRow": "Ours",
+      "sourceUnitsAndCells": [
+        [
+          "3D-GS∗[16]",
+          "FPS↑",
+          "144"
+        ],
+        [
+          "3D-GS∗[16]",
+          "Size↓",
+          "782MB"
+        ],
+        [
+          "3D-GS∗[16]",
+          "PSNR↑",
+          "27.40"
+        ],
+        [
+          "3D-GS∗[16]",
+          "SSIM↑",
+          "0.813"
+        ],
+        [
+          "3D-GS∗[16]",
+          "LPIPS↓",
+          "0.217"
+        ],
+        [
+          "Ours",
+          "FPS↑",
+          "237"
+        ],
+        [
+          "Ours",
+          "Size↓",
+          "45MB"
+        ],
+        [
+          "Ours",
+          "PSNR↑",
+          "27.13"
+        ],
+        [
+          "Ours",
+          "SSIM↑",
+          "0.806"
+        ],
+        [
+          "Ours",
+          "LPIPS↓",
+          "0.237"
+        ]
+      ],
+      "scope": "The original table compares the two rows in the same group. The accompanying page-six prose identifies the starred baseline as retrained on an NVIDIA A6000.",
+      "auditStatus": "covered",
+      "auditBindings": [
+        {
+          "claimId": "cmp_conclusion_2",
+          "field": "text"
+        },
+        {
+          "claimId": "cmp_conclusion_2",
+          "field": "conditions"
+        },
+        {
+          "claimId": "cmp_6_0",
+          "field": "text"
+        }
+      ],
+      "publicationStillRecordsReadinessGap": true,
+      "remainingGapCause": "The extra qualitative speed binding uses another evidence ID for PDF page text, and spans two datasets. It does not satisfy the same structured table evidence requirement."
+    },
+    "deploymentAdvice": {
+      "claimId": "cmp_conclusion_1",
+      "kind": "proposal",
+      "scope": "Proposes measuring peak VRAM on matched scenes/settings and using measured constraints. It does not infer measured VRAM from file size."
+    },
+    "qualityRejectionCrossCheck": {
+      "dataset": "Tank and Temple Datasets",
+      "metric": "PSNR",
+      "unstarred3DGS": "23.14",
+      "retrained3DGS": "23.66",
+      "LightGaussian": "23.44",
+      "scope": "The sign of the PSNR difference changes with the baseline variant. This separate quality claim was rejected."
+    },
+    "coherence": true
+  },
+  "rejectedClaims": [
+    {
+      "claimId": "cmp_1_0",
+      "reason": "semantic_unresolved",
+      "detail": "摘录将点云压缩作为未来可探索方向。\n但这些摘录不足以证实这里没有实施点云压缩步骤。"
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "semantic_unresolved",
+      "detail": "摘录建议探索点云压缩以进一步减少内存消耗。\n但这些摘录不足以支持论文“仅”建议探索压缩的排他性表述。"
+    },
+    {
+      "claimId": "cmp_4_0",
+      "reason": "semantic_unresolved",
+      "detail": "Tanks and Temples 的画质比较取决于未标星或标星的 3D-GS 基线：PSNR 分别支持和不支持所述方向。\n标星结果是论文在自身平台重新训练所得。\n目标未明确指定基线，因此整体比较存在歧义。"
+    }
+  ],
+  "remainingGaps": [
+    {
+      "obligationId": "obl1",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "分别说明两篇论文中的表示与压缩机制，以及压缩或部署所需的额外处理成本。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：分别概述两篇论文实际采用或报告的表示与压缩机制。；说明两篇论文报告的相关额外处理操作及其成本；若未报告，明确证据边界。"
+    },
+    {
+      "obligationId": "obl1",
+      "sourceWorkId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "question": "分别说明两篇论文中的表示与压缩机制，以及压缩或部署所需的额外处理成本。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：分别概述两篇论文实际采用或报告的表示与压缩机制。；说明两篇论文报告的相关额外处理操作及其成本；若未报告，明确证据边界。"
+    },
+    {
+      "obligationId": "obl4",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "基于论文证据提出显存受限时有条件的选择建议。",
+      "checked": false,
+      "missingEvidence": "联合前提尚未就绪：给出以显存受限为前提、并由论文报告的取舍条件所支持的选择建议；区分证据与推断。"
+    },
+    {
+      "obligationId": "obl4",
+      "sourceWorkId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "question": "基于论文证据提出显存受限时有条件的选择建议。",
+      "checked": false,
+      "missingEvidence": "联合前提尚未就绪：给出以显存受限为前提、并由论文报告的取舍条件所支持的选择建议；区分证据与推断。"
+    },
+    {
+      "obligationId": "requested_numeric_example",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。",
+      "checked": false,
+      "missingEvidence": "联合前提尚未就绪：给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。"
+    },
+    {
+      "obligationId": "obl1",
+      "question": "分别说明两篇论文中的表示与压缩机制，以及压缩或部署所需的额外处理成本。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "分别概述两篇论文实际采用或报告的表示与压缩机制。",
+        "说明两篇论文报告的相关额外处理操作及其成本；若未报告，明确证据边界。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "c1",
+          "c2"
+        ],
+        "aspectIds": [
+          "criterion:c1",
+          "criterion:c2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "比较原始表示与压缩后部署的取舍"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "比较原始表示与压缩后部署的取舍",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "delivery": {
+    "verifiedFreshCompleteReport": false,
+    "reason": "Fresh report was partial; the complete-delivery probe was not run."
+  },
+  "artifacts": {
+    "intent.json": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/intent.json",
+      "sha256": "3263fed0c7a6910728cefdeb26d48858eeb749d9587bf020ceaf7af82b9a2186"
+    },
+    "run.json": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/run.json",
+      "sha256": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca"
+    },
+    "result.json": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/result.json",
+      "sha256": "3e2ad2156365e068f18b2c783e82f980a0819de2da3258bbd592c62e0c428a44"
+    },
+    "calls.json": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/calls.json",
+      "sha256": "e9316a78bf257acb552eefd635b3962981ea2d1330bce8440ea46078191edb98"
+    },
+    "provider.jsonl": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/provider.jsonl",
+      "sha256": "2556bcd411f8892003adf6779b7298220d2c657ffa3f0a91433fa1139ea155ef"
+    },
+    "independent-pdf-check.json": {
+      "path": "tmp/openai-d2-scoped-wording-fresh-20261129/independent-pdf-check.json",
+      "sha256": "399acb1b8f141d2b9575354ecaa074600c7579e8f576ec0f4a9c148f90397dac"
+    }
+  },
+  "offlinePreflight": {
+    "path": "tmp/openai-d2-scoped-wording-fresh-preflight-v2-20261129/intent.json",
+    "sha256": "3263fed0c7a6910728cefdeb26d48858eeb749d9587bf020ceaf7af82b9a2186"
+  },
+  "acceptanceScope": "Fixed development case D2 only. No independent H2 or rollout credit."
+}
