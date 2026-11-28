@@ -741,6 +741,14 @@ def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     assert 'Define parent/child gradients across topology edits' in next_version
     assert 'sampled peaks are observed only' in next_version
     assert 'within-level effects' in next_version and 'signed world-position loss gradient' in next_version
+    latest = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 13})
+    assert 'save training SfM descriptors linked to 3D points' in latest
+    assert 'held-out images only at eval' in latest
+    assert 'prep wall-time cap includes shared prefit' in latest
+    assert 'Load one arm at a time; peak includes copy/load through final sync' in latest
+    assert 'RGB-to-SH offsets/signs' in latest and 'zero-grad each backward' in latest
+    assert 'within-level effects' in latest and 'signed world-position loss gradient' in latest
+    assert 'save training SfM descriptors' not in next_version
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
