@@ -396,7 +396,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                                                      feedback_refs=feedback_refs)
         compact_version = record.get(COMPACT_SCIENCE_MARKER)
         preserve_facts = False
-        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4, 5):
+        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4, 5, 6):
             compact_data = {**input_data, 'evidence': [
                 {key: value for key, value in row.items() if key not in {
                     'resultRoleHintOnly', 'sourceContextRequired', 'contextOmitted', 'obligations',
@@ -406,7 +406,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             policy = {
                 1: COMPACT_SCIENCE_INSTRUCTIONS, 2: SCOPED_SCIENCE_INSTRUCTIONS,
                 3: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 4: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
-                5: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
+                5: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 6: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
             }[compact_version]
             compact_req, compact_size, compact_supplied = fit_accounted_evidence(
                 record, compact_data, aliases, proposal,
@@ -415,9 +415,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             )
             if compact_size < size:
                 req, size, supplied = compact_req, compact_size, compact_supplied
-            if size > 32000 and compact_version in (4, 5):
+            if size > 32000 and compact_version in (4, 5, 6):
                 verified_prefix = None
-                if compact_version == 5 and reviewed.get('verifiedPrefixFindings'):
+                if compact_version in (5, 6) and reviewed.get('verifiedPrefixFindings'):
                     from services.deep_research.shared_experiment_review import reviewed_prefix_findings
                     verified_prefix = reviewed_prefix_findings(
                         prior, input_data, aliases, reviewed, include_source_fact_status=True)
@@ -428,7 +428,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11):
                         design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
                                           'Use unresolved only for open design decisions.\n')
-                    if compact_version == 5:
+                    if compact_version in (5, 6):
                         # Each redundant excerpt is a literal prefix of the same
                         # requirement; the question and all criteria stay intact.
                         design_data['requirements'] = [
@@ -440,6 +440,13 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                         if verified_prefix:
                             design_policy = ('Unchecked IDs have no verdict; retain their requirements.\n'
                                              + design_policy)
+                    if compact_version == 6:
+                        design_policy = design_policy.replace(
+                            'Define reproducible steps, stops, state links and held-out isolation. For unclear paper details,\n'
+                            'state what evidence cannot establish. Aliases only in evidenceRefs. Invent no assets or results.\n',
+                            'Make the smallest text changes. Actions ≤1600 chars. Keep factor operations and their step copies '
+                            'identical. Scope paper claims to cited evidence. Invent no assets or results.\n',
+                        )
                     fitted = fit_accounted_evidence(record, design_data, aliases, proposal,
                         lambda data: measure(data, policy=design_policy, output_tokens=4096),
                         32000, feedback_refs=feedback_refs, required_only=True)
