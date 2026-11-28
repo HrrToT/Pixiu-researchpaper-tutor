@@ -1234,7 +1234,7 @@ def test_readonly_ledger_lookup_requires_exact_native_request_identity():
     assert recorded_response(r,prompt,options,[row]) is None
 
 
-def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False, short_answer=False):
+def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False, short_answer=False, bounded_stage=False):
     from services.deep_research.repository import DeepResearchRepository
     from services.deep_research.verification import make_evidence
     r,p,_,_,_=fixture()
@@ -1252,6 +1252,8 @@ def graph_fixture(tmp_path, *, authoring=None, stage_abstention=False, short_ans
         r['comparisonAuthoringContractVersion'] = authoring
     if stage_abstention:
         r['comparisonStageAbstentionContractVersion'] = 1
+    if bounded_stage:
+        r['comparisonStageOutputBudgetContractVersion'] = 1
     if short_answer:
         r.update(shortComparisonLayoutContractVersion=1,
                  question='200字以内比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。说明可比性和选择建议。')
@@ -1423,16 +1425,22 @@ def test_actual_isolated_graph_keeps_three_stages_on_reopen_and_withholds_unveri
     assert not payload['claims'] and payload['outcome'] != 'complete'
 
 
-def test_real_ledger_recovers_a_received_stage_after_checkpoint_write_interruption(tmp_path):
+@pytest.mark.parametrize(('bounded', 'expected_cap'), [(False, 16384), (True, 4000)])
+def test_real_ledger_recovers_a_received_stage_after_checkpoint_write_interruption(tmp_path, bounded, expected_cap):
     from services.deep_research.graph import make_synthesize_node
     from services.deep_research.tools import TrackedLLMInvoker
     from services.deep_research.runtime import research_model_options
     from llm.provider import LLMResult,LLMUsage
-    r,repo=graph_fixture(tmp_path);requests=[];interrupt=[True]
+    r,repo=graph_fixture(tmp_path, authoring=16, bounded_stage=bounded);requests=[];interrupt=[True]
     class Client:
         def invoke(self,request):
-            requests.append(request.prompt);reply=graph_response(request.prompt)
-            return LLMResult(provider='fixture',model='fixture',content=reply['content'],
+            assert request.extra_body['max_tokens'] == expected_cap
+            requests.append(request.prompt)
+            stages = repo.require_run(r['runId'])['state']['comparisonStageInput']['stages']
+            stage, = (row for row in stages if row['prompt'] == request.prompt)
+            content = ('{"answers":[]}' if stage['stageId'] == 'joint'
+                       else graph_response(request.prompt)['content'])
+            return LLMResult(provider='fixture',model='fixture',content=content,
                              usage=LLMUsage(8,4,12),finish_reason='stop')
     tracked=TrackedLLMInvoker(Client(),repo.reserve_call,repo.complete_call,max_input_tokens=32000,
         run_record_fn=repo.require_run,call_history_fn=repo.list_calls,request_options=research_model_options)
@@ -1446,8 +1454,10 @@ def test_real_ledger_recovers_a_received_stage_after_checkpoint_write_interrupti
         make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
     assert len(requests)==1 and repo.list_calls(r['runId'])[0]['status']=='succeeded'
     result=make_synthesize_node(tracked,update,scope_validator=lambda *_:True)({'run_id':r['runId']})
-    assert 'report_version_id' in result and len(requests)==2
-    assert len(repo.list_calls(r['runId']))==2 and all(c['status']=='succeeded' for c in repo.list_calls(r['runId']))
+    stages = repo.require_run(r['runId'])['state']['comparisonStageInput']['stages']
+    calls = repo.list_calls(r['runId'])
+    assert 'report_version_id' in result and len(requests) == len(calls) == len(stages)
+    assert all(c['status']=='succeeded' for c in calls)
 
 
 def test_scope_revocation_between_real_graph_stages_refuses_the_next_send(tmp_path):

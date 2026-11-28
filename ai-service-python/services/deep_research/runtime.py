@@ -29,7 +29,11 @@ def research_model_options(node, options):
     from services.deep_research.experiment_template import REASONING_OPTION as EXPERIMENT_OPTION
     from services.deep_research.experiment_envelope import DIRECT_PLAN_OPTION
     from services.deep_research.coverage_binding_correction import OPTION as BINDING_OPTION
+    from services.deep_research.comparison_stage_generation import BOUNDED_STAGE_OPTION, BOUNDED_STAGE_TOKENS
     options = dict(options)
+    bounded_stage = options.pop(BOUNDED_STAGE_OPTION, False)
+    if type(bounded_stage) is not bool or bounded_stage and node != 'synthesize':
+        raise ValueError('Invalid comparison stage output profile')
     direct_review = options.pop(DIRECT_REVIEW_OPTION, False)
     if type(direct_review) is not bool:
         raise ValueError('Invalid direct comparison review profile')
@@ -134,7 +138,8 @@ def research_model_options(node, options):
         # timed out before any body; independent verification still gates every
         # published claim. Keep the output cap rather than truncate the design.
         return {**options, 'thinking': {'type': 'disabled'}, 'reasoning_effort': 'none',
-                'max_tokens': 16384, 'response_format': {'type': 'json_object'}}
+                'max_tokens': BOUNDED_STAGE_TOKENS if bounded_stage else 16384,
+                'response_format': {'type': 'json_object'}}
     if node == 'repair_claims':
         # The observed low-reasoning repair exhausted 8192 output tokens with
         # an empty body. Return the bounded edit directly; independent checks

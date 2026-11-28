@@ -15,6 +15,10 @@ from services.deep_research.comparison_wire import COMPARISON_POINT_KINDS, TABLE
 from services.deep_research.comparison_cross_paper_boundary import compile_point as compile_paper_boundary
 
 
+BOUNDED_STAGE_OPTION = '_bounded_comparison_stage_output'
+BOUNDED_STAGE_TOKENS = 4000
+
+
 def bind_stage_point(point, pairs, *, setting_references=False, protocol_settings_only=False):
     """Compile explicit choices without changing the journaled provider response."""
     body = point.get('body')
@@ -111,6 +115,9 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         record = current()
         options = {'max_tokens':4000,'temperature':0.2,
                    **request_options(record,effective_question(record),'paper_comparison')}
+        if (record.get('comparisonStageOutputBudgetContractVersion') == 1
+                and check_kind and 1 <= len(stage['targetIds']) <= 4):
+            options[BOUNDED_STAGE_OPTION] = True
         if (isinstance(entry,dict) and entry.get('inputDigest') == stage['inputDigest']
                 and entry.get('status') in {'invoking','invocation_stopped'} and recover is not None):
             known = recover(stage['prompt'],options)

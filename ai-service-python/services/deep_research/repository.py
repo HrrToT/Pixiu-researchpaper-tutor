@@ -408,6 +408,7 @@ class DeepResearchRepository:
                                      'comparisonBeginnerLeadContractVersion',
                                      'comparisonBeginnerDeploymentGuidanceVersion',
                                      'comparisonBeginnerMechanismGuidanceVersion',
+                                     'comparisonStageOutputBudgetContractVersion',
                                      'comparisonBeginnerReviewOutputVersion',
                                      'namedTablePdfFallbackVersion',
                                      'namedTableIndexedPageVersion',
