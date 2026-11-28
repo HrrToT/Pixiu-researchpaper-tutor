@@ -445,7 +445,7 @@ class ResearchFacade:
             **({"sharedExperimentReviewFitCaptureBindingsVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentCompactScienceRevisionVersion": 8} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentRevisionDigestSchemaVersion": 3} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentProtocolPrecheckVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentProtocolPrecheckVersion": 2} if shared_experiment_profile == 8 else {}),
             "sharedExperimentHttpObservationContractVersion": self._shared_experiment_http_observation_version,
             "reportingOwnershipContractVersion": 1,
             "draftValidationContractVersion": 1,

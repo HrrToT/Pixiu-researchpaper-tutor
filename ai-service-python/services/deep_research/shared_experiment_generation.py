@@ -366,6 +366,18 @@ def instructions(record, *, required_domains=()):
                         'RGB-to-SH offsets/signs, position derivatives, zero-grad each backward and numerical tests. '
                         'Set numeric LR per trainable group and schedule. For Adam specify betas and epsilon. ',
                     )
+                from services.deep_research.shared_experiment_protocol_checks import fit_recipe_requested
+                if fit_recipe_requested(record):
+                    execution = execution.replace(
+                        'Share projection/support/blend, SH basis/view/bands, RGB-to-SH offsets/signs, position derivatives, '
+                        'zero-grad each backward and numerical tests. Set numeric LR per trainable group and schedule. '
+                        'For Adam specify betas and epsilon. Reuse shared fit in each arm. Type parameters; '
+                        'pin intrinsics, camera/RNG, clone checks/IDs. ',
+                        'Every fit reads fixed persisted shared prep state. Choice params: fit_recipe_state, '
+                        'training_loss, renderer_convention, sh_convention (exact rules); or fit_implementation_pin '
+                        '(40/64 hex), fit_entrypoint, fit_config. Pin derivatives/tests, group LR schedules, '
+                        'Adam betas/epsilon, intrinsics, camera/RNG, clone checks/IDs. Zero gradients each backward. ',
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

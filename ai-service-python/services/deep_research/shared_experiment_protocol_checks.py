@@ -3,6 +3,10 @@
 import re
 
 MARKER = 'sharedExperimentProtocolPrecheckVersion'
+_RECIPE_FIELDS = ('training_loss', 'renderer_convention', 'sh_convention')
+_PIN_FIELDS = ('fit_implementation_pin', 'fit_entrypoint', 'fit_config')
+RECIPE_PARAMETER_NAMES = frozenset(('fit_recipe_state', *_RECIPE_FIELDS, *_PIN_FIELDS))
+_CONTENT_PIN = re.compile(r'(?:[0-9a-f]{40}|[0-9a-f]{64})', re.I)
 
 _MODULO = re.compile(r'\bi\s*(?:mod\s*|%\s*)(\d{1,3})\s*={1,2}\s*(\d{1,3})\b', re.I)
 _COUNT = re.compile(
@@ -23,7 +27,16 @@ _QUOTED_OR_REJECTED = re.compile(r'\b(?:not|never|incorrect\w*|wrong\w*|mislead\
 
 
 def enabled(record):
-    return type(record.get(MARKER)) is int and record[MARKER] == 1
+    return type(record.get(MARKER)) is int and record[MARKER] in (1, 2)
+
+
+def fit_recipe_requested(record):
+    if type(record.get(MARKER)) is not int or record[MARKER] != 2:
+        return False
+    from services.deep_research.experiment_protocol_sources import DENSIFICATION, roles
+    return any(DENSIFICATION in roles(obligation, densification=True)
+               for item in record.get('state', {}).get('plan', [])
+               for obligation in item['obligations'])
 
 
 def _split_issue(data):
@@ -56,12 +69,74 @@ def _split_issue(data):
     return None
 
 
-def detect(proposal):
-    """Flag literal assertions in known forms. Ambiguous text still needs review."""
+def _choice_parameters(step):
+    """Duplicate parameter names cannot establish an unambiguous recipe."""
+    parameters = step['operation']['parameters']
+    names = [row['name'] for row in parameters]
+    if len(names) != len(set(names)):
+        return {}
+    return {row['name']: row['value'].strip() for row in parameters
+            if row['type'] == 'choice' and isinstance(row['value'], str) and row['value'].strip()}
+
+
+def _recipe_candidates(proposal, fits):
+    common_reads = set.intersection(*(set(step['reads']) for step in fits))
+    states = {row['id']: row for row in proposal['states']}
+    for index, step in enumerate(proposal['steps']):
+        if (step['kind'], step['scope'], step['dataUse']) != ('prepare', 'shared', 'training'):
+            continue
+        candidates = [states[sid] for sid in step['creates'] if sid in common_reads
+                      and states[sid]['fixed'] and states[sid]['persisted']
+                      and states[sid]['scope'] == 'shared'
+                      and states[sid]['source'] == {'kind': 'step', 'id': step['id']}]
+        if candidates:
+            yield index, step, candidates
+
+
+def existing_recipe_slots(proposal):
+    """Find shared states which can carry the recipe without rewiring either fit."""
+    fits = [step for step in proposal['steps'] if step['kind'] == 'fit' and step['dataUse'] == 'training']
+    return [{
+        'parameterPath': f'/steps/{index}/operation/parameters',
+        'stepId': step['id'],
+        'existingOperation': step['operation'],
+        'stateChoices': [{k: state[k] for k in ('id', 'meaning', 'representation')} for state in candidates],
+    } for index, step, candidates in _recipe_candidates(proposal, fits)] if fits else []
+
+
+def _fit_recipe_issue(proposal):
+    fits = [step for step in proposal['steps'] if step['kind'] == 'fit' and step['dataUse'] == 'training']
+    if not fits:
+        return None
+    for _, step, candidates in _recipe_candidates(proposal, fits):
+        fields = _choice_parameters(step)
+        recipe = fields.get('fit_recipe_state')
+        if recipe not in {row['id'] for row in candidates}:
+            continue
+        if all(key in fields for key in _RECIPE_FIELDS):
+            return None
+        if (all(key in fields for key in _PIN_FIELDS)
+                and _CONTENT_PIN.fullmatch(fields['fit_implementation_pin'])):
+            return None
+    return {
+        'path': '/steps', 'reason': 'shared_training_recipe_missing',
+        'trainingFitStepIds': [step['id'] for step in fits],
+        'explicitChoiceParameters': list(_RECIPE_FIELDS),
+        'pinnedImplementationChoiceParameters': list(_PIN_FIELDS),
+        'binding': 'Create a fixed persisted shared state in training prep. Set fit_recipe_state to its ID; every training fit reads it.',
+    }
+
+
+def detect(proposal, *, require_fit_recipe=False):
+    """Flag explicit contradictions and missing execution bindings before scientific review."""
     data = proposal['data']
     split = _split_issue(data)
     issues = [split] if split else []
     unit = ' '.join(data['independentUnit'].split())
     if _ARM_UNIT.search(unit) and not _QUOTED_OR_REJECTED.search(unit):
         issues.append({'path': '/data/independentUnit', 'reason': 'paired_arm_is_not_independent_replicate'})
+    if require_fit_recipe:
+        recipe = _fit_recipe_issue(proposal)
+        if recipe:
+            issues.append(recipe)
     return issues

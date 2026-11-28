@@ -862,7 +862,8 @@ def _prechecks(record, aliases, input_data):
     from services.deep_research import shared_experiment_protocol_checks as protocol
     issues = _fact_prechecks(record, aliases, input_data)
     if protocol.enabled(record):
-        issues.extend(protocol.detect(_generation(record)['boundProposal']['proposal']))
+        issues.extend(protocol.detect(_generation(record)['boundProposal']['proposal'],
+                                      require_fit_recipe=protocol.fit_recipe_requested(record)))
     return issues
 
 

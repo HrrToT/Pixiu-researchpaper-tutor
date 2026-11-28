@@ -1137,6 +1137,62 @@ def test_protocol_checks_recognize_direct_chinese_assertions():
         'split_holdout_count_mismatch', 'paired_arm_is_not_independent_replicate']
 
 
+@pytest.mark.parametrize('variant', ['missing', 'explicit', 'pinned', 'floating', 'unread', 'mutable', 'duplicate'])
+def test_training_fits_read_one_locked_recipe(variant):
+    from services.deep_research.shared_experiment_protocol_checks import detect
+
+    def choice(name, value):
+        return {'name': name, 'type': 'choice', 'value': value}
+
+    parameters = [choice('fit_recipe_state', 'recipe')]
+    if variant in ('pinned', 'floating'):
+        parameters.extend([choice('fit_implementation_pin', 'a' * 40 if variant == 'pinned' else 'main'),
+                           choice('fit_entrypoint', 'train.py'), choice('fit_config', 'treatment-paired.json')])
+    elif variant != 'missing':
+        parameters.extend([choice('training_loss', 'Mean absolute per-pixel RGB error'),
+                           choice('renderer_convention', 'Projection and ordered alpha-composition rule'),
+                           choice('sh_convention', 'Fixed real basis and viewing-direction convention')])
+    if variant == 'duplicate':
+        parameters.append(choice('training_loss', 'Mean squared RGB error'))
+    p = proposal()
+    p['states'] = [{'id': 'recipe', 'fixed': variant != 'mutable', 'persisted': True, 'scope': 'shared',
+                    'source': {'kind': 'step', 'id': 'prep'}}]
+    p['steps'] = [
+        {'id': 'prep', 'kind': 'prepare', 'scope': 'shared', 'dataUse': 'training', 'creates': ['recipe'],
+         'operation': {'parameters': parameters}},
+        {'id': 'prefit', 'kind': 'fit', 'scope': 'shared', 'dataUse': 'training', 'reads': ['recipe']},
+        {'id': 'arm_fit', 'kind': 'fit', 'scope': 'arm', 'dataUse': 'training',
+         'reads': [] if variant == 'unread' else ['recipe']},
+    ]
+    assert detect(p) == []
+    issues = detect(p, require_fit_recipe=True)
+    if variant in ('explicit', 'pinned'):
+        assert issues == []
+    else:
+        issue, = issues
+        assert issue['reason'] == 'shared_training_recipe_missing'
+        assert issue['trainingFitStepIds'] == ['prefit', 'arm_fit']
+
+
+def test_densification_recipe_requirement_is_frozen_and_reaches_local_review():
+    from services.deep_research.design_drafting import synthesis_obligations
+    from services.deep_research.shared_experiment_protocol_checks import MARKER, fit_recipe_requested
+
+    record, data, aliases = context()
+    record[MARKER] = 2
+    record['state']['plan'][0]['obligations'][0]['searchQuery'] = 'Gaussian densification clone and split'
+    data['requirements'] = synthesis_obligations(record['state']['plan'])
+    generate(record, data, aliases, invoke=Mock(return_value=generation_response()),
+             checkpoint=lambda value: record['state'].__setitem__('sharedExperimentGeneration', value))
+    assert fit_recipe_requested(record)
+    assert not fit_recipe_requested({**record, MARKER: 1})
+    invoke = Mock()
+    result = prepare(record, data, aliases, invoke=invoke, checkpoint=Mock())
+    assert result['status'] == 'not_started_precheck'
+    assert {issue['reason'] for issue in result['hardIssues']} == {'shared_training_recipe_missing'}
+    invoke.assert_not_called()
+
+
 def test_unknown_review_is_preserved_and_not_automatically_repeated():
     r,data,aliases=ready(); sent=Mock(side_effect=UnknownCallError('original'))
     def checkpoint(v): r['state']['sharedExperimentReview']=deepcopy(v)
