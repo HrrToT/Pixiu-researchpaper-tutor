@@ -139,7 +139,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     comparison_embedded_measurements=False, bound_composite_cells=False,
                     bind_composite_revisions=False, named_revision_table=None, numeric_context=None,
                     cited_passage_scope=False, named_revision_question=None, test_image_sampling=False,
-                    dataset_scene_membership=False) -> dict:
+                    dataset_scene_membership=False, comparison_baseline_scope=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -157,6 +157,10 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     by_id = {item["evidenceId"]: item for item in evidence}
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
+    baseline_tables = []
+    if comparison_baseline_scope:
+        from services.deep_research.comparison_baseline_scope import ambiguous_rows, index
+        baseline_tables = index(evidence)
     candidates, rejected, seen = [], [], set()
     spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 28 else 0
     word_counts = spelling >= 1
@@ -173,6 +177,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     for claim in claims:
         claim_id = claim.get("claimId")
         reason = ""
+        baseline_rows = []
         unsupported_numbers = set()
         binding_reason = None
         if not claim_id or claim_id in seen:
@@ -213,6 +218,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             from services.deep_research.condition_identity import unsupported_device_condition
             if unsupported_device_condition(claim, support):
                 reason = reason or 'uncited_device_condition'
+            if baseline_tables and not reason:
+                text = claim.get('text', '') + '\n' + _condition_values_text(claim.get('conditions') or {})
+                baseline_rows = ambiguous_rows(text, support, baseline_tables)
+                if baseline_rows:
+                    reason = 'ambiguous_comparison_baseline'
         if kind == "reported":
             if any(item.get("accessLevel") == "abstract" for item in support) and claim.get("detailLevel") != "abstract":
                 reason = reason or "abstract_only"
@@ -409,6 +419,10 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 diagnostic = {'detail': '把共同结论限定在问题指定的设置。原表题注给出的参数范围不能替代指定列。'}
             elif reason == 'result_purpose_not_established':
                 diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
+            elif reason == 'ambiguous_comparison_baseline':
+                diagnostic = {'baselineRows': baseline_rows,
+                    'detail': '同一原表有多个同名基线。逐个指标和数据集核对方向，写清未标星或带原标记的行。'
+                              '若两行结论不同，分别说明。引用原表，说明重训时另引原文注释。'}
             elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7,8,9,10):
                 diagnostic = {'detail':'本条引用没有明确建立作者或论文缺少这些验证。'
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
@@ -442,7 +456,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
                   comparison_embedded_measurements=False, bound_composite_cells=False,
                   bind_composite_revisions=False, named_revision_table=None, named_revision_question=None,
-                  record_deployment_review=False) -> dict:
+                  record_deployment_review=False, comparison_baseline_scope=False) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -463,6 +477,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         **({'named_revision_table':named_revision_table} if named_revision_table else {}),
         **({'named_revision_question':named_revision_question} if named_revision_question else {}),
         **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
+        **({'comparison_baseline_scope':True} if comparison_baseline_scope else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']
     proposals = {"suggestion", "proposal", "hypothesis"}

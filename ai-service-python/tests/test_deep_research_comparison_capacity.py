@@ -59,9 +59,10 @@ def populated_factual_record():
 
 
 @pytest.mark.parametrize('defect',['legacy','unresolved_cell','empty_cell','semantic_only','proposal'])
-def test_initial_audit_deferral_requires_populated_factual_cells_and_an_actionable_hard_error(defect):
+@pytest.mark.parametrize('reason', ['numeric_mismatch', 'ambiguous_comparison_baseline'])
+def test_initial_audit_deferral_requires_populated_factual_cells_and_an_actionable_hard_error(defect, reason):
     from services.deep_research.comparison_capacity import defer_initial_audit
-    r=populated_factual_record();v={'rejected':[{'claimId':'cmp_0_0','reason':'numeric_mismatch'}]}
+    r=populated_factual_record();v={'rejected':[{'claimId':'cmp_0_0','reason':reason}]}
     assert defer_initial_audit(r,v)
     if defect=='legacy':r['comparisonReviewBatchContractVersion']=1
     if defect=='unresolved_cell':r['state']['comparisonCellDraft']['layout'][0]['unresolved']=True

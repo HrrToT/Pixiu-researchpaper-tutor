@@ -241,26 +241,20 @@ def _unmarked_method(label):
 
 def baseline_variants(catalog):
     """Expose exact alternative row identities without benchmark values."""
+    from services.deep_research.comparison_baseline_scope import variant_groups
     from services.deep_research.measurement_table_navigation import benchmark_metric
 
     result = []
     for table in catalog:
         if not any(benchmark_metric(metric) for _, metrics in table['groups'] for metric in metrics):
             continue
-        methods = {}
-        for number, label, _ in table['rows']:
-            # Bibliography labels can be spaced differently beside a marker.
-            method = _unmarked_method(re.sub(r'\s*\[\d+\]\s*$', '', label)).casefold()
-            methods.setdefault(method, []).append((number, label))
         protocol = table.get('matchedProtocol') or {}
         variants = []
-        for rows in methods.values():
-            if len(rows) < 2 or not any(re.search(r'[*∗⋆†‡]', label) for _, label in rows):
-                continue
+        for rows in variant_groups(table['rows']):
             variants.append([
                 {'row': label, **({'retrainingNote': protocol['noteEvidenceId']}
                                   if number == protocol.get('rowNumber') else {})}
-                for number, label in rows
+                for number, label, _ in rows
             ])
         if variants:
             result.append({'table': table['evidenceId'], 'source': table['source'], 'alternatives': variants})
@@ -681,7 +675,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'other works, including what they report or whether their text is available.\n'
                 'If you cannot support the assigned point from its own evidence, return point=null.\n'
                 'Put the supported result first and keep measured conditions with it.')
-            if type(wording_version) is int and wording_version in (1, 2, 3, 4, 5):
+            if type(wording_version) is int and wording_version in (1, 2, 3, 4, 5, 6):
                 assignment_policy = (
                     'Answer only the assigned dimension of the named paper. Put the result first. '
                     'If unsupported, return point=null. Keep the exact technical property; for easily reversed terms '
@@ -718,7 +712,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                    'When the cited method describes additional operations without comparable costs, '
                                    'name those operations and state what the excerpts cannot quantify. '
                                    'Do not sum partial counts into total compression cost.\n')
-                    if wording_version in (4, 5):
+                    if wording_version in (4, 5, 6):
                         policy += ('For spherical harmonics, keep the number of bands separate from the highest degree. '
                                    'A band schedule is not a timing or cost measurement.\n')
                 if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4, 5, 6))
@@ -734,13 +728,13 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'and rendering observations qualitatively in these cells. Keep exact quantities '
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
-                if wording_version in (3, 4, 5):
+                if wording_version in (3, 4, 5, 6):
                     policy += ('For quality trends name the matched dataset and baseline. If metric directions differ '
                                'by metric, dataset or baseline, say so; do not summarize them as a uniform gain or loss.\n')
-                if wording_version in (4, 5):
+                if wording_version in (4, 5, 6):
                     policy += ('For storage trends also name the matched dataset and baseline. '
                                'A smaller file than one baseline does not establish a ranking against other rows.\n')
-                if wording_version == 5:
+                if wording_version in (5, 6):
                     variants = baseline_variants(catalog)
                     for target in (target for paper in data['papers'] for target in paper['targets']):
                         allowed = set(target['evidenceIds'])

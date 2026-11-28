@@ -398,7 +398,7 @@ class ResearchFacade:
             **({'comparisonLocalFutureWorkRepairVersion': 1}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
-            **({'comparisonPaperWordingContractVersion': 5}
+            **({'comparisonPaperWordingContractVersion': 6}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1
@@ -1683,6 +1683,8 @@ class ResearchFacade:
                 **({'named_revision_table':named_revision_table} if named_revision_table else {}),
                 **({'named_revision_question':named_revision_question} if named_revision_question else {}),
                 **({'comparison_context':context} if context is not None else {}),
+                **({'comparison_baseline_scope':True} if record.get('comparisonPaperWordingContractVersion') == 6
+                   and record.get('state', {}).get('outputKind') == 'paper_comparison' else {}),
                 **({'bound_duration_spelling':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (4,5,6)
                    and type(record.get('comparisonReviewBatchContractVersion')) is int

@@ -134,6 +134,6 @@ def defer_initial_audit(record, verification):
         return False
     # These existing hard checks provide actionable local repair targets;
     # this predicate grants no factual or whole-answer approval.
-    reasons={'numeric_mismatch','absence_not_established',
+    reasons={'numeric_mismatch','absence_not_established','ambiguous_comparison_baseline',
              'comparison_cell_source_mismatch','comparison_cell_goal_mismatch'}
     return any(row.get('reason') in reasons for row in verification.get('rejected',[]))
