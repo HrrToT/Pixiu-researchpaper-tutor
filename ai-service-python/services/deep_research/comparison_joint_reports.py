@@ -727,7 +727,7 @@ def benchmark_binding_error(claim, draft):
     return None
 
 
-def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missing):
+def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missing, *, scoped_companions=False):
     """A verified same-table example can replace an inconclusive joint search."""
     from services.deep_research.comparison_presentation import audit_digest, metadata
     from services.deep_research.table_bindings import validate_table_bindings
@@ -750,9 +750,26 @@ def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missin
         return set()
     decisions = [row for row in audit.get('verdicts', []) if row.get('obligationId') == oid]
     if (len(decisions) != 1 or decisions[0].get('status') != 'covered'
-            or {item.get('claimId') for item in decisions[0].get('bindings', [])} != {cid}
             or audit.get('comparisonPresentationDigest') != audit_digest(metadata(draft), claims)):
         return set()
+    decision, = decisions
+    bound_ids = {item.get('claimId') for item in decision.get('bindings', [])}
+    if bound_ids != {cid}:
+        criteria = decision.get('criteria', [])
+        if not scoped_companions or cid not in bound_ids or len(criteria) != 1:
+            return set()
+        criterion, = criteria
+        verified_fields = {item.get('field') for item in criterion.get('bindings', []) if item.get('claimId') == cid}
+        if criterion.get('status') != 'covered' or not {'text', 'conditions'} <= verified_fields:
+            return set()
+        # Supporting qualitative observations can cite the same benchmark.
+        # They cannot substitute for the selected, independently verified pair.
+        table_id, = {item['evidenceId'] for item in claim['tableBindings']}
+        companion_ids = {row.get('claimId') for row in claims if row.get('kind') == 'reported'
+                         and row.get('verification') == 'semantic_passed' and not row.get('tableBindings')
+                         and table_id in row.get('evidenceRefs', [])}
+        if not bound_ids - {cid} <= companion_ids:
+            return set()
     refs = claim.get('evidenceRefs', [])
     support = [row for row in evidence if row['evidenceId'] in refs
                and row.get('accessLevel') == 'fulltext' and row.get('verification', {}).get('literal') == 'passed']

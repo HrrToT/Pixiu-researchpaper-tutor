@@ -364,6 +364,38 @@ def test_verified_same_table_example_closes_only_the_joint_readiness_gap(change)
     assert (gaps, coverage, audit, claim, ev) == originals
 
 
+@pytest.mark.parametrize('variant', ['same_table', 'unrelated', 'unverified', 'missing_fields', 'extra_example'])
+def test_verified_table_example_can_have_a_verified_qualitative_companion(variant):
+    from services.deep_research.comparison_joint_reports import resolved_benchmark_gap_keys
+
+    _, draft, claim, ev, _ = compiled()
+    draft['benchmarkExampleClaimId'] = claim['claimId']
+    draft['jointDeliverables'] = {'example': [{'kind': 'matched_example', 'requirement': '给出同表对照'}]}
+    claim['verification'] = 'semantic_passed'
+    companion = {'claimId': 'context', 'kind': 'reported', 'verification': 'semantic_passed',
+                 'text': '两种方法在同一表里比较。', 'evidenceRefs': [ev['evidenceId']]}
+    if variant == 'unrelated':
+        companion['evidenceRefs'] = ['unrelated_table']
+    elif variant == 'unverified':
+        companion['verification'] = 'unchecked'
+    elif variant == 'extra_example':
+        companion['tableBindings'] = claim['tableBindings'][:1]
+    bindings = [{'claimId': claim['claimId'], 'field': 'text'}, {'claimId': claim['claimId'], 'field': 'conditions'},
+                {'claimId': 'context', 'field': 'text'}]
+    criteria = [{'criterionId': 'matched_example', 'status': 'covered',
+                 'bindings': bindings[:1] if variant == 'missing_fields' else bindings}]
+    claims = [claim, companion]
+    audit = {'status': 'checked', 'verdicts': [{'obligationId': 'example', 'status': 'covered',
+              'bindings': bindings, 'criteria': criteria}],
+             'comparisonPresentationDigest': audit_digest(metadata(draft), claims)}
+    coverage = [{'obligationId': 'example', 'sourceWorkId': 'right', 'supportKind': 'joint',
+                 'state': 'unchecked', 'missingEvidence': 'Previous joint readiness gap.'}]
+    assert resolved_benchmark_gap_keys(draft, audit, claims, [ev], coverage, set()) == set()
+    assert resolved_benchmark_gap_keys(draft, audit, claims, [ev], coverage, set(),
+        scoped_companions=True) == ({('example', 'right', 'Previous joint readiness gap.')}
+                                   if variant == 'same_table' else set())
+
+
 def test_historical_compiler_still_refuses_reported_joint_and_prompt_is_unchanged():
     cp,payload,_,_=fixture(False);draft=compile_cells(payload,cp,max_claims=5)
     assert not draft['report']['claims'] and draft['errors']

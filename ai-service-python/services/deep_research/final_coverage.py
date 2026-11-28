@@ -639,7 +639,8 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
                              comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False,
-                             display_metadata=None, reconcile_conditional_advice=False, reconcile_deployment_review=False):
+                             display_metadata=None, reconcile_conditional_advice=False, reconcile_deployment_review=False,
+                             reconcile_scoped_example_companions=False):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -672,7 +673,8 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     resolved_joint = set()
     if comparison_draft:
         from services.deep_research.comparison_joint_reports import resolved_benchmark_gap_keys
-        resolved_joint = resolved_benchmark_gap_keys(comparison_draft, audit, claims, evidence, joint_coverage, missing)
+        resolved_joint = resolved_benchmark_gap_keys(comparison_draft, audit, claims, evidence, joint_coverage, missing,
+            scoped_companions=reconcile_scoped_example_companions)
     accepted = {c.get('claimId'): c for c in claims
                 if c.get('verification') == 'semantic_passed' and c.get('kind') in {'reported', 'inference'}}
     origins = {e.get('evidenceId'): _closure_source_ids(e,versioned_sources) for e in evidence
