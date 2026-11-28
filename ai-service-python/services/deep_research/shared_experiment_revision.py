@@ -391,6 +391,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                 if design_data is not None:
                     design_policy = ('Paper facts are checked and read-only. Keep sourceFacts exactly.\n'
                                      + ATTRIBUTION_SCIENCE_INSTRUCTIONS)
+                    if record.get('sharedExperimentDensificationExecutionVersion') == 8:
+                        design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
+                                          'Use unresolved only for open design decisions.\n')
                     fitted = fit_accounted_evidence(record, design_data, aliases, proposal,
                         lambda data: measure(data, policy=design_policy, output_tokens=4096),
                         32000, feedback_refs=feedback_refs, required_only=True)

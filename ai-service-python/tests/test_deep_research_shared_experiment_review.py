@@ -219,6 +219,37 @@ def test_revision_review_sends_only_open_packets_and_reloads_same_response(monke
     assert invoke.call_count == 1
 
 
+def test_later_review_packet_budget_stop_preserves_settled_prefix(monkeypatch):
+    from services.deep_research import shared_experiment_review as review
+    from services.deep_research.contracts import BudgetExhaustedError
+
+    record, data, aliases = ready()
+    record[review.SCOPED_PACKET_MARKER] = 3
+    batches = [{'inputBytes': 100, 'checkIds': [check],
+                'request': {'prompt': check, 'extra': {'max_tokens': 100}}}
+               for check in ('section_0', 'section_1')]
+    built = {'request': batches[0]['request'], 'inputBytes': 100, 'hardIssues': [],
+             'targets': [], 'batches': batches}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: built)
+    settled = reply({'check': 'settled fixture'})
+    invoke = Mock(side_effect=[settled, BudgetExhaustedError('tokens', 100000, 103084)])
+    slot = review.review_slot(record)
+
+    def checkpoint(saved):
+        record['state'][slot] = deepcopy(saved)
+
+    for expected_calls in (2, 2):
+        with pytest.raises(BudgetExhaustedError) as error:
+            prepare(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+        assert error.value.details == {'kind': 'tokens', 'limit': 100000, 'used': 103084}
+        assert invoke.call_count == expected_calls
+    saved = record['state'][slot]
+    assert saved['status'] == 'stopped_budget'
+    assert review._settled_review_prefix(saved) == ((batches[0], settled),)
+    saved['batchResponses'][0]['content'] += ' '
+    assert review._settled_review_prefix(saved) == ()
+
+
 @pytest.mark.parametrize(('check_key', 'instruction'), [
     ('factChecks', '[checkId,factId,textPointer,optionalContextHints]'),
     ('sectionChecks', '[checkId,criterion,planPathPrefixes]'),

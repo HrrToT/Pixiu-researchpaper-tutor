@@ -279,6 +279,16 @@ def instructions(record):
                         'Keep shared opacity and world/view oversize culling; label uncited thresholds proposed. '
                         'Measure training peak from model load to final sync. '
                     )
+                if record.get('sharedExperimentDensificationExecutionVersion') == 8:
+                    execution = (
+                        'Use intrinsics at image scale; rescale once. Fix camera/RNG, clone checks and IDs. '
+                        'Define RGB→SH, basis, view and bands. Specify one executable pretrain/arm fit rule: '
+                        'projection, visibility, blend, full position derivatives through covariance/SH, optimizer and tests. '
+                        'Gate by mean visible view-space gradient magnitude (units, zero count), then size. '
+                        'Define signed clone direction separately from the descent update. '
+                        'Keep common opacity/world/view culling, label proposed settings. '
+                        'Fit after the last opacity reset before testing. Measure peak from model load to final sync. '
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

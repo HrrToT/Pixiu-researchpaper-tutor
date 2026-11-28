@@ -322,8 +322,15 @@ def descriptor(record, check_ids=None):
 
 
 def _settled_review_prefix(saved):
-    """Identify the exact settled prefix before the first invalid packet."""
+    """Identify a settled prefix before an invalid or unsent packet."""
     batches = saved.get('batches')
+    if saved.get('status') == 'stopped_budget':
+        responses = saved.get('batchResponses')
+        if (isinstance(batches, list) and isinstance(responses, list)
+                and 0 < len(responses) < len(batches)
+                and digest(responses) == saved.get('batchResponsesDigest')):
+            return tuple(zip(batches[:len(responses)], responses, strict=True))
+        return ()
     responses = saved.get('response')
     rejected = saved.get('stoppedAfterInvalidBatch')
     assessment = saved.get('assessment')
@@ -1014,6 +1021,9 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'not_started_budget':
         stop = saved['budgetStop']
         raise BudgetExhaustedError(stop.get('kind', 'tokens'), stop['limit'], stop['spent'] + stop['reservation'])
+    if saved['status'] == 'stopped_budget':
+        stop = saved['budgetStop']
+        raise BudgetExhaustedError(stop['kind'], stop['limit'], stop['used'])
     if saved['status'] == 'not_started_precheck': return saved
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')
@@ -1077,6 +1087,10 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                     raise DeepResearchError('invalid_shared_experiment_review_state', '审核批次与请求范围不一致。')
             try:
                 responses.append(invoke(NODE,req['prompt'],dispatch_options(record,NODE,req['extra'])))
+            except BudgetExhaustedError as error:
+                saved.update(status='stopped_budget', budgetStop=deepcopy(error.details))
+                checkpoint(deepcopy(saved))
+                raise
             except DeepResearchError as error:
                 saved['status'] = ('not_started_count' if error.code == 'shared_experiment_review_count_unavailable'
                                    else 'invocation_failed')
