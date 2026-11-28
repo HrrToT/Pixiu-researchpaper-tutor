@@ -240,6 +240,21 @@ def test_chinese_compact_iteration_counts_bind_to_reported_english_counts(text, 
         checker.assert_called_once()
 
 
+def test_iteration_reference_does_not_add_a_third_measured_quantity():
+    from services.deep_research.verification import precheck_claims
+
+    quote = 'We fine-tune the model for 5,000 steps. We fine-tune the codebook for 5,000 iterations.'
+    text = '模型微调5,000步；码本微调5,000次迭代。这两项计数相加不能代表总成本。'
+    claim, evidence = setup(text, quote)
+    assert not precheck_claims([claim], [evidence], quantity_spelling_version=25)['rejected']
+    missing_count = {**claim, 'text': text.replace('；码本微调5,000次迭代', '')}
+    rejection, = precheck_claims([missing_count], [evidence], quantity_spelling_version=25)['rejected']
+    assert rejection['missingReportedNumbers'] == ['2e0']
+    changed_measurement = {**claim, 'text': text.replace('5,000步', '6,000步')}
+    rejection, = precheck_claims([changed_measurement], [evidence], quantity_spelling_version=25)['rejected']
+    assert rejection['missingReportedNumbers'] == ['6e3']
+
+
 @pytest.mark.parametrize('replacement', [None, True, '3', 0, 1, 2, 8, 16])
 def test_spelling_policy_is_server_owned_frozen_and_used_by_facade(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()
