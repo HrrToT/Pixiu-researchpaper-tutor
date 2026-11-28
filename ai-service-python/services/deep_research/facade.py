@@ -319,7 +319,7 @@ class ResearchFacade:
                and self._comparison_cells_version == 1 else {}),
             **({"countedExperimentReviewContractVersion": 1}
                if self._openai_research_models else {}),
-            **({"countedExperimentReviewWindowVersion": 3}
+            **({"countedExperimentReviewWindowVersion": 4}
                if self._openai_research_models and shared_experiment_profile == 8 else {}),
             **({"countedExperimentAnswerContractVersion": 1}
                if self._openai_research_models and shared_experiment_profile == 8 else {}),

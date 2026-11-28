@@ -261,6 +261,7 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
     (20000, 9800, None, 2, []),
     (20000, 9800, None, 3, ["/responses/input_tokens", "/responses"]),
     (92000, 9800, None, 3, ["/responses/input_tokens"]),
+    (20000, 9800, None, 4, ["/responses/input_tokens", "/responses"]),
 ])
 def test_scientific_review_counts_when_required_for_admission(
         tmp_path, monkeypatch, tokens, count, ordinary_calls, window_version, expected_sends):
@@ -322,7 +323,7 @@ def assert_experiment_input_count(
         options = {"max_tokens": 4096}
         if window_version:
             options[CHECK_IDS_OPTION] = ["section_0"]
-        size = {0: 24000, 1: 33000, 2: 35500, 3: 35500}[window_version]
+        size = {0: 24000, 1: 33000, 2: 35500, 3: 35500, 4: 35500}[window_version]
         if repair_audit_version:
             size = 30330
         prompt = "Check the JSON proposal. "

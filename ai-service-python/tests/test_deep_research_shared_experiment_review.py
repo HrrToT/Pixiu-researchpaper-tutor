@@ -885,6 +885,44 @@ def test_existing_number_precheck_stops_before_independent_model_request():
     assert assess(r,data,aliases,reply(verdict(r,data)))['scientificApproval'] is False
 
 
+@pytest.mark.parametrize('fact_bytes', [18000, 32100])
+def test_counted_review_recovers_empty_fallback_without_expanding_fact_packets(monkeypatch, fact_bytes):
+    from services.deep_research import shared_experiment_review as review, shared_experiment_review_input as packets
+
+    record, data, aliases = ready()
+    generation = record['state']['sharedExperimentGeneration']
+    generation['boundProposal']['proposal']['version'] = 3
+    record.update({
+        review.COMPACT_REVIEW_MARKER: 2, review.COUNTED_WINDOW_MARKER: 3,
+        review.SCOPED_PACKET_MARKER: 7, review.REFERENCE_MARKER: 4,
+        'openaiResearchModels': ['main', 'routine'], 'countedExperimentReviewContractVersion': 1,
+    })
+    monkeypatch.setattr(review, '_generation', lambda *_: generation)
+    monkeypatch.setattr(review, 'prepare_generation', Mock())
+    monkeypatch.setattr(review, '_prechecks', lambda *_: [])
+    monkeypatch.setattr(packets, 'fit_accounted_evidence', lambda *a, **kw: ({}, 39933, list(aliases)))
+
+    def partition(record, packet, aliases, proposal, build_request, limit, max_checks, **options):
+        if limit < review.COUNTED_REPACK_MAX_INPUT:
+            return []
+        assert options['required_design_evidence_only']
+        return [
+            {'request': {}, 'inputBytes': size, 'checkIds': [entry[0] for entry in packet[key]],
+             'suppliedEvidenceAliases': list(aliases)}
+            for key, size in [('factChecks', fact_bytes), ('sectionChecks', 35600), ('humanChecks', 35800)]
+        ]
+
+    monkeypatch.setattr(packets, 'partition_bounded_review', partition)
+    assert not review.build(record, data, aliases).get('batches')
+    built = review.build({**record, review.COUNTED_WINDOW_MARKER: 4}, data, aliases)
+    if fact_bytes > review.MAX_INPUT:
+        assert not built.get('batches')
+    else:
+        assert built['inputBytes'] == 35800
+        checked = [check for part in built['batches'] for check in part['checkIds']]
+        assert sorted(checked) == sorted(target['checkId'] for target in built['targets'])
+
+
 @pytest.mark.parametrize(('origin', 'formula', 'reason'), [
     ('', 'floor', 'split_index_origin_missing'),
     ('Use zero-based indices. ', 'floor', 'split_holdout_count_mismatch'),

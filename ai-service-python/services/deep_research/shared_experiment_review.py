@@ -206,10 +206,10 @@ def _group_bindings(record):
 
 def counted_window_limit(record):
     if (isinstance(record, dict) and type(record.get(COUNTED_WINDOW_MARKER)) is int
-            and record[COUNTED_WINDOW_MARKER] in (1, 2, 3) and record.get('openaiResearchModels')
+            and record[COUNTED_WINDOW_MARKER] in (1, 2, 3, 4) and record.get('openaiResearchModels')
             and record.get('countedExperimentReviewContractVersion') == 1
             and record.get(SCOPED_PACKET_MARKER) == 7 and record.get(REFERENCE_MARKER) == 4):
-        return COUNTED_REPACK_MAX_INPUT if record[COUNTED_WINDOW_MARKER] == 3 else COUNTED_MAX_INPUT
+        return COUNTED_REPACK_MAX_INPUT if record[COUNTED_WINDOW_MARKER] in (3, 4) else COUNTED_MAX_INPUT
     return None
 
 
@@ -621,19 +621,24 @@ def build(record, input_data, aliases, *, required_domains=()):
                     batches = limited
             counted_limit = counted_window_limit(record)
             counted_fallback = (counted_limit and not batches
-                                and record[COUNTED_WINDOW_MARKER] in (2, 3) and size > MAX_INPUT)
+                                and record[COUNTED_WINDOW_MARKER] in (2, 3, 4) and size > MAX_INPUT)
             if counted_fallback:
-                batches = partition_bounded_review(
-                    record, data, aliases, bound['proposal'],
-                    lambda view: measure(view, _scoped_packet_policy(record, view)),
-                    COUNTED_MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
-                    required_design_evidence_only=True,
-                )
+                windows = ((COUNTED_MAX_INPUT, counted_limit)
+                           if record[COUNTED_WINDOW_MARKER] == 4 else (COUNTED_MAX_INPUT,))
+                for window in windows:
+                    batches = partition_bounded_review(
+                        record, data, aliases, bound['proposal'],
+                        lambda view: measure(view, _scoped_packet_policy(record, view)),
+                        window, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
+                        required_design_evidence_only=True,
+                    )
+                    if batches:
+                        break
                 if any(part['inputBytes'] > MAX_INPUT and
                        any(check.startswith('fact_') for check in part['checkIds']) for part in batches):
                     batches = []
             if (counted_limit and len(batches) > 3
-                    and (not counted_fallback or counted_limit > COUNTED_MAX_INPUT)):
+                    and (not counted_fallback or window < counted_limit)):
                 wider = partition_bounded_review(
                     record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),
