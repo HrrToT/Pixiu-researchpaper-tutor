@@ -1,0 +1,108 @@
+{
+  "case": "H3-DUOATTENTION",
+  "evaluation": "development recheck on the exact frozen source receipts, followed by isolated workspace delivery",
+  "independentCredit": 0,
+  "candidate": "fc31efcb03694d03e733816915929b9079f58097",
+  "originalHoldoutRunId": "dr_run_620ae62cb4135e648578181af97c670d",
+  "originalHoldoutOutcome": "partial",
+  "developmentRunId": "dr_duoattention_head_identification_development_20261128",
+  "sourceVersion": "2410.10819v1",
+  "retainedRoutineCalls": 5,
+  "retainedRoutineTokens": 15602,
+  "newGenerationsByStage": {
+    "synthesize": 1,
+    "synthesize_audience": 1,
+    "verify": 2,
+    "verify_answer_coverage": 1
+  },
+  "newProviderTokens": 23763,
+  "cumulativeTokens": 39365,
+  "newStageSeconds": 31.04,
+  "reusedSettledFactCheckCount": 1,
+  "scopeDecision": "The first stage limited semantic verification to one call; the continuation allowed the remaining single fact packet and single coverage audit without resending a settled request.",
+  "newExternalSearches": 0,
+  "newFulltextFetches": 0,
+  "status": "completed",
+  "outcome": "complete",
+  "visibleAnswerCharacters": 186,
+  "reportedClaims": [
+    {
+      "claimId": "C1",
+      "text": "取得的是 arXiv:2410.10819v1 正文，依据方法图2：给每个头一个门值，用它混合全注意力与只看开头和近期内容的注意力输出；固定模型，调整门值，使输出接近全注意力结果并鼓励门值降低。部署时门值高于阈值的判为检索头，其余为流式头。"
+    },
+    {
+      "claimId": "C2",
+      "text": "正文解码部分：检索头缓存所有过去词元的键和值；流式头只缓存注意力汇点和近期词元的键和值，缓存大小固定。"
+    }
+  ],
+  "wholeAnswerCoverage": {
+    "head-identification": "covered",
+    "cache-content": "covered",
+    "access-and-version": "covered",
+    "answer_scope": "covered"
+  },
+  "literalCitationsByPhysicalPage": {
+    "5": 1,
+    "3": 1,
+    "4": 3,
+    "6": 1
+  },
+  "isolatedPythonReadback": {
+    "publicationId": "dr_pub_4bd6eada91504492a0b087201354a423",
+    "stableReadbackAcrossConnections": true,
+    "payloadMatchesResult": true,
+    "publicationPayloadSha256": "42f46d9442705414ab7881b0b7d42cb8d0f2c6d5da8d5fd046b132426fa1f8a8",
+    "outbox": [
+      [
+        "publication",
+        0
+      ]
+    ],
+    "workspaceDispatchVerified": false
+  },
+  "isolatedJavaDelivery": {
+    "modelCalls": 0,
+    "productionWrites": 0,
+    "jarSha256": "73c31e38dcc9dd18082a63e6ec333ca0f8f37d35651d2061d26d2ce078a0d3c3",
+    "workerBoundary": "Actual HTTP routes/repository/publication dispatcher; graph worker replaced by a completed no-op Future",
+    "contentBoundary": "Replayed exact provider-generated and scientifically reviewed H3 report",
+    "originalRunId": "dr_duoattention_head_identification_development_20261128",
+    "sourceArtifactSha256": "bae5d583f31a4343ba56b5e0efe57dd71ec293ad91c7abd1046c5b2adbae4314",
+    "expectedPdfSha256": "0c121d19e509201937378f711e236ce1453728670e8184c81b237702eea825b2",
+    "newReplayRunId": "dr_run_5e1acf02ad0956c8bb22570f91abc82b",
+    "confirmedExternalPdf": true,
+    "artifactCount": 2,
+    "assistantMessageCount": 1,
+    "citedPages": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "crossTaskFileDenied": true,
+    "unknownSourceDenied": true,
+    "duplicateDispatchDidNotAddArtifact": true,
+    "javaRestartPersistenceVerified": true,
+    "reportBodySha256": "712ce458e1ad35a6e613a56868d32c4fac83f6c94405f0667f5bd1c43fca5b89",
+    "exitCode": 0,
+    "javaStopped": true,
+    "pythonHttpStopped": true,
+    "blockedRequests": []
+  },
+  "rawArtifacts": {
+    "tmp/openai-h3-duoattention-mechanism-20261128/intent.json": "29d5b8856a895bc56e7a46f306fca954534377b80a8d3af46ac230102936e355",
+    "tmp/openai-h3-duoattention-mechanism-20261128/run.json": "8345ad0ed6b46a0609336a90ef1ac503f54b428341b372686845985a5847d8b1",
+    "tmp/openai-h3-duoattention-mechanism-20261128/calls.json": "47f01d23e00c5348e6979f49c74f7dfd6e9499fd2b28d05610556cc9f8ff5735",
+    "tmp/openai-h3-duoattention-mechanism-20261128/limited-run-stop.json": "e9f3e8bb1e560dc01003e80d13d3c4fe4fefcd0bc6979b863b877f3b4b854518",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/intent.json": "c1a995fe712ff7756c7c9d931fbc4d9f29b70c1afc146cea71f795d79148ce9b",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/result.json": "b861db009b76087e6fc3084a0a5e77099b6a5c8ff4f512c6ec33264a966c4ee6",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/run.json": "bae5d583f31a4343ba56b5e0efe57dd71ec293ad91c7abd1046c5b2adbae4314",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/calls.json": "68c73dd07b8c70ec7d78b4926c6dfa7608265abb501d5b99973ef663e25ea033",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/citation-audit.json": "1d03a937fd3b575fa990851eaffa687e51992c2a00693695563c26f22c0985a9",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/rendered-development-report.md": "87674a05e0ea16cfe0f1b00cdfec977e9dd5d23efb8bbf880cba393b5866d630",
+    "tmp/openai-h3-duoattention-mechanism-review-20261128/local-readback.json": "f275aca8cfb66d92ad36a9b3022f2195a5e561786957d883fb520456e1548769",
+    "tmp/publication-integration-h3-duoattention-mechanism-20261128/receipt.json": "1076a7445790e609c2fcfd1c317e3657f7d87dfd04002d9683b83df02bf61213",
+    "tmp/publication-integration-h3-duoattention-mechanism-20261128/task-first-read.json": "06cfcbdb7b05526085cfeee017d3fa89f66c59431d265968d5a885ccfdc8614a",
+    "tmp/publication-integration-h3-duoattention-mechanism-20261128/report-first-read.json": "33bc8e65508931c86b08bd22db66e1866f10863b5e9bbb673ae4d3dd667e29b9"
+  }
+}
