@@ -92,6 +92,64 @@ def test_grounded_brief_metrics_reach_the_shared_proposal_binding(monkeypatch, s
     assert any(issue['code'] == 'plan.missing_measurement_domain' for issue in issues) is shared_scope
 
 
+def test_existing_densification_ablation_reaches_generation_as_owned_literal_evidence(monkeypatch):
+    from services.deep_research import experiment_protocol_sources as protocol
+    from services.deep_research import shared_experiment_generation as generation
+    from services.deep_research.graph import make_synthesize_node
+    from test_deep_research_shared_experiment_generation import context
+
+    record, _, _ = context()
+    record.update({generation.MARKER: 8, protocol.MARKER: 1, protocol.DENSIFICATION_MARKER: 2})
+    record['question'] = '设计高斯克隆和分裂的2×2实验，区分原论文消融和拟议方案。'
+    record['materials'] = [{'materialId': 'owned', 'versionId': 'v1', 'contentHash': 'hash'}]
+    query = 'Gaussian densification clone split ablation'
+    obligation = record['state']['plan'][0]['obligations'][0]
+    obligation.update(question='区分原论文已有消融与拟议方案', searchQuery=query, requiredSources=['owned'])
+    fixture = record['state']['evidence'][0]
+    method = ('We next evaluate our two densification methods, more specifically the clone and split '
+              'strategy described in Sec. 5. We disable each method separately and optimize using the '
+              'rest of the method unchanged.')
+    caption = 'Fig. 8. Ablation of densification strategy for the two cases "clone" and "split".'
+    def evidence(eid, quote, page, **extra):
+        return {**fixture, 'evidenceId': eid, 'quote': quote, 'sourceContext': 'Prefix. ' + quote,
+                'ownerMaterialId': 'owned', 'location': {'page': page, 'pageResolution': 'exact'},
+                'verification': {'literal': 'passed'}, **extra}
+
+    method_row = evidence('method', method, 9)
+    caption_row = evidence('caption', caption, 10)
+    wrong_version = evidence('wrong', caption, 10, sourceVersionId='v2')
+    obligations = {obligation['obligationId']: obligation}
+    assert protocol.EXISTING_ABLATION in protocol.query_roles(record, query, 'owned')
+    assert protocol.EXISTING_ABLATION not in protocol.query_roles(record, query, 'other')
+    assert protocol.EXISTING_ABLATION not in protocol.query_roles(
+        {**record, protocol.DENSIFICATION_MARKER: 1}, query, 'owned')
+    assert protocol.ablation_bundles([method_row, wrong_version], obligations, record['materials']) == [
+        {'evidenceIds': ['method'], 'literalQuotesSufficient': True}]
+    assert not protocol.ablation_bundles([caption_row], obligations, record['materials'])
+    record['state']['evidence'] = [method_row, caption_row, fixture]
+
+    def intercept(current, inputs, aliases, *, required_domains, **kwargs):
+        built = generation.build(current, inputs, aliases, required_domains=required_domains)
+        assert 'cite the paper’s reported procedure' in built['request']['prompt']
+        compact = deepcopy(inputs)
+        for row in compact['evidence']:
+            if aliases[row['evidenceId']] in {'method', 'caption'}:
+                row.update(sourceContext={}, contextOmitted=True)
+                row.pop('sourceContextRequired', None)
+        generation.build(current, compact, aliases, required_domains=required_domains)
+        next(row for row in compact['evidence'] if aliases[row['evidenceId']] == fixture['evidenceId']).update(
+            sourceContext={}, contextOmitted=True)
+        with pytest.raises(ValueError, match='original content changed'):
+            generation.build(current, compact, aliases, required_domains=required_domains)
+        return None
+
+    monkeypatch.setattr(generation, 'prepare', intercept)
+    invoke = Mock(side_effect=AssertionError('No provider dispatch'))
+    make_synthesize_node(invoke, updater(record))({'run_id': record['runId']})
+    assert set(record['state']['sharedExperimentMaterialAllocation']['requiredEvidenceIds']) >= {'method', 'caption'}
+    invoke.assert_not_called()
+
+
 @pytest.mark.parametrize('compact', [False, True])
 def test_existing_fixed_request_final_audit_is_bound_cached_and_revalidated(compact):
     from services.deep_research.shared_experiment_answer_packet import MARKER

@@ -433,7 +433,7 @@ class ResearchFacade:
             **({"sharedExperimentTestSamplingVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentBaselineConfigVersion": 2} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentDensificationEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentDensificationEvidenceVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDensificationExecutionVersion": 14} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewPlannedPrerequisitesVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewCitedPassageScopeVersion": 1} if shared_experiment_profile == 8 else {}),

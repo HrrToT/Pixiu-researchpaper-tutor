@@ -12,6 +12,7 @@ OPACITY = 'opacity_schedule'
 MEMBERSHIP = 'dataset_membership'
 OPACITY_CONTINUATION = 'opacity_schedule_continuation'
 DENSIFICATION = 'gaussian_densification_operations'
+EXISTING_ABLATION = 'gaussian_densification_existing_ablation'
 INITIALIZATION = 'gaussian_covariance_initialization'
 
 _OPACITY_REQUEST = re.compile(r'\bopacity\b|不透明度', re.I)
@@ -32,6 +33,14 @@ _SCENE_LIST = re.compile(
 _GAUSSIAN = re.compile(r'\bgaussians?\b|高斯', re.I)
 _CLONE = re.compile(r'\bclon\w*\b|克隆', re.I)
 _SPLIT = re.compile(r'\bsplit\w*\b|分裂', re.I)
+_ABLATION = re.compile(r'\bablat\w*\b|消融', re.I)
+_ABLATION_METHOD = re.compile(
+    r'\bdensification methods\b.{0,160}?\bclone\s+and\s+split\b.{0,130}?'
+    r'\bdisable each method separately\b.{0,100}?\brest of\s+the method unchanged\.',
+    re.I | re.S)
+_ABLATION_CAPTION = re.compile(
+    r'\bAblation of densification strategy\b.{0,110}?["“]clone["”]\s+and\s+["“]split["”]',
+    re.I | re.S)
 _INITIALIZATION_REQUEST = re.compile(r'\binitiali[sz]\w*\b|初始化|初值|共同起点', re.I)
 _COVARIANCE_INITIALIZATION = re.compile(r'\binitial covariance matrix\b.{0,130}\bisotropic Gaussian\b', re.I)
 _DENSIFICATION_PASSAGE = re.compile(
@@ -65,10 +74,19 @@ def enabled(record):
 
 def densification_enabled(record):
     version = record.get(DENSIFICATION_MARKER)
-    return type(version) is int and version == 1
+    return type(version) is int and version in (1, 2)
 
 
-def roles(obligation, *, densification=False):
+def ablation_requested(record):
+    version = record.get(DENSIFICATION_MARKER)
+    if type(version) is not int or version != 2:
+        return False
+    from services.deep_research.request_context import effective_question
+    question = effective_question(record)
+    return all(pattern.search(question) for pattern in (_GAUSSIAN, _CLONE, _SPLIT, _ABLATION))
+
+
+def roles(obligation, *, densification=False, existing_ablation=False):
     if obligation.get('dataPrerequisiteContractVersion') == 1:
         return (MEMBERSHIP,)
     text = obligation.get('searchQuery') or obligation.get('question', '')
@@ -78,21 +96,26 @@ def roles(obligation, *, densification=False):
             result = (*result, DENSIFICATION)
         if _INITIALIZATION_REQUEST.search(text):
             result = (*result, INITIALIZATION)
+    if existing_ablation and (_ABLATION.search(text) or _ABLATION.search(obligation.get('question', ''))):
+        result = (*result, EXISTING_ABLATION)
     return result
 
 
 def query_roles(record, query, material_id):
+    existing_ablation = ablation_requested(record)
     return tuple(dict.fromkeys(
         role for item in record['state'].get('plan', []) for obligation in item['obligations']
         if query in (obligation.get('searchQuery'), obligation.get('question'))
         and (not obligation.get('requiredSources') or material_id in obligation['requiredSources'])
-        for role in roles(obligation, densification=densification_enabled(record))
+        for role in roles(obligation, densification=densification_enabled(record), existing_ablation=existing_ablation)
     ))
 
 
 def matches(text, role):
     if role == DENSIFICATION:
         return densification_range(text) is not None
+    if role == EXISTING_ABLATION:
+        return ablation_range(text) is not None
     body = ' '.join(text.split())
     if role == INITIALIZATION:
         return bool(_COVARIANCE_INITIALIZATION.search(body))
@@ -139,6 +162,11 @@ def densification_range(text):
     return match.span() if match else None
 
 
+def ablation_range(text):
+    match = _ABLATION_METHOD.search(text)
+    return match.span() if match else None
+
+
 def has_passage(rows, role):
     owned = [row for row in rows if row.get('accessLevel') == 'fulltext']
     return any(matches(row['text'], role) and (role != OPACITY
@@ -177,7 +205,8 @@ def include_passages(rows, passages, requested, limit):
     return selected
 
 
-def preferred_reads(sources, obligations, limit, extracted, *, densification=False, baseline_evaluation=False):
+def preferred_reads(sources, obligations, limit, extracted, *, densification=False, baseline_evaluation=False,
+                    existing_ablation=False):
     selected = {}
     if baseline_evaluation:
         for part in (BASELINE_SPLIT, BASELINE_TASKS):
@@ -188,8 +217,12 @@ def preferred_reads(sources, obligations, limit, extracted, *, densification=Fal
             if source:
                 selected[source['sourceId']] = source
     roles_with_preference = []
-    for role in ((DENSIFICATION, INITIALIZATION, OPACITY, MEMBERSHIP) if densification else (OPACITY, MEMBERSHIP)):
-        eligible = {oid: row for oid, row in obligations.items() if role in roles(row, densification=densification)}
+    order = (DENSIFICATION, INITIALIZATION, OPACITY, MEMBERSHIP) if densification else (OPACITY, MEMBERSHIP)
+    if existing_ablation:
+        order = (*order, EXISTING_ABLATION)
+    for role in order:
+        eligible = {oid: row for oid, row in obligations.items()
+                    if role in roles(row, densification=densification, existing_ablation=existing_ablation)}
         source = next((row for row in sources if row.get('accessLevel') == 'fulltext'
                        and (row['sourceId'], row.get('contentHash')) not in extracted
                        and eligible_obligation_ids(row, eligible) and matches(row['text'], role)), None)
@@ -200,6 +233,7 @@ def preferred_reads(sources, obligations, limit, extracted, *, densification=Fal
             if adjacent and (adjacent['sourceId'], adjacent.get('contentHash')) not in extracted:
                 selected[adjacent['sourceId']] = adjacent
     extra = int(DENSIFICATION in roles_with_preference and INITIALIZATION in roles_with_preference)
+    extra += int(EXISTING_ABLATION in roles_with_preference)
     return list(selected.values())[:limit // 3 + extra]
 
 
@@ -214,6 +248,39 @@ def premise_bundles(candidates, obligations, *, densification=False):
         if row:
             adjacent = companion(row, eligible, 'quote') if role == OPACITY else None
             bundles.append({'evidenceIds': [row['evidenceId'], *([adjacent['evidenceId']] if adjacent else [])]})
+    return bundles
+
+
+def ablation_bundles(candidates, obligations, materials):
+    """Keep the literal ablation procedure and its same-version caption when available."""
+    ids = {oid for oid, row in obligations.items() if EXISTING_ABLATION in roles(row, existing_ablation=True)}
+    owned = {(m.get('materialId'), m.get('versionId') or m.get('contentHash'), m.get('contentHash'))
+             for m in materials if m.get('materialId') and m.get('contentHash')}
+    def identity(row):
+        return row.get('ownerMaterialId'), row.get('sourceVersionId'), row.get('contentHash')
+
+    rows = [row for row in candidates if identity(row) in owned
+            and row.get('sourceWorkId') and row.get('accessLevel') == 'fulltext'
+            and row.get('verification', {}).get('literal') == 'passed'
+            and row.get('location', {}).get('pageResolution') == 'exact'
+            and type(row['location'].get('page')) is int
+            and ids.intersection(row.get('obligationIds', []))]
+    bundles = []
+    seen = set()
+    for method in rows:
+        key = identity(method)
+        if key in seen or not matches(method['quote'], EXISTING_ABLATION):
+            continue
+        seen.add(key)
+        page = method['location']['page']
+        caption = next((row for row in rows if identity(row) == key
+                        and row['sourceWorkId'] == method['sourceWorkId']
+                        and row['location']['page'] in (page, page + 1)
+                        and _ABLATION_CAPTION.search(row['quote'])), None)
+        bundle_ids = [method['evidenceId']]
+        if caption and caption['evidenceId'] != method['evidenceId']:
+            bundle_ids.append(caption['evidenceId'])
+        bundles.append({'evidenceIds': bundle_ids, 'literalQuotesSufficient': True})
     return bundles
 
 

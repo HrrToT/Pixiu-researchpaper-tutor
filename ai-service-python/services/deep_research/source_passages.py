@@ -131,6 +131,7 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
     from services.deep_research import experiment_protocol_sources as protocol
     continuations = protocol.continuation_spans(sources) if protocol.enabled(record) else set()
     densification = protocol.densification_enabled(record)
+    existing_ablation = protocol.ablation_requested(record)
     keep_benchmark_protocol = record.get('comparisonNamedBenchmarkProtocolVersion') in (1, 2)
     if keep_benchmark_protocol:
         from services.deep_research.pdf_benchmark_protocol import owned_protocol
@@ -222,6 +223,12 @@ def _extract(record, make_evidence, validate, update, *, recheck_scope=False):
             if densification and source['accessLevel'] == 'fulltext' and any(
                     protocol.DENSIFICATION in protocol.roles(obligations[oid], densification=True) for oid in eligible):
                 original_span = protocol.densification_range(body)
+                if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):
+                    ranges.append(original_span)
+            if existing_ablation and source['accessLevel'] == 'fulltext' and any(
+                    protocol.EXISTING_ABLATION in protocol.roles(obligations[oid], existing_ablation=True)
+                    for oid in eligible):
+                original_span = protocol.ablation_range(body)
                 if original_span and not any(a <= original_span[0] and original_span[1] <= b for a, b in ranges):
                     ranges.append(original_span)
             packet = visible_table_packet(source.get('tableData'), body)

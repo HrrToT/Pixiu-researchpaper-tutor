@@ -865,6 +865,7 @@ def make_read_node(
                 **({'experiment_protocol': True} if protocol.enabled(record) else {}),
                 **({'baseline_evaluation': True} if record.get(protocol.BASELINE_CONFIG_MARKER) == 2 else {}),
                 **({'experiment_densification': True} if protocol.densification_enabled(record) else {}),
+                **({'experiment_existing_ablation': True} if protocol.ablation_requested(record) else {}),
                 **({'comparison_evaluation_protocol': {10: 2, 11: 3}.get(
                         record.get('comparisonEvaluationProtocolVersion'), True)}
                    if evaluation_protocols_enabled(record)
@@ -1363,6 +1364,8 @@ def make_synthesize_node(
             obligations = {o['obligationId']: o for item in brief_state.get('plan', []) for o in item['obligations']}
             protocol_bundles = protocol.premise_bundles(candidates, obligations,
                                                        densification=protocol.densification_enabled(record))
+            if protocol.ablation_requested(record):
+                protocol_bundles.extend(protocol.ablation_bundles(candidates, obligations, record.get('materials', [])))
             if record.get(protocol.BASELINE_CONFIG_MARKER) in (1, 2):
                 protocol_bundles.extend(protocol.baseline_configuration_bundles(candidates, question, paper_titles))
             if record.get(protocol.BASELINE_CONFIG_MARKER) == 2:

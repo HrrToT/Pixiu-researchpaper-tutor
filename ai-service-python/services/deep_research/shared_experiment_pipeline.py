@@ -36,9 +36,13 @@ def synthesize(record,rows,aliases,sources,tables,bundles,update,invoke):
                 'evidence':selected,'tables':{k:v for k,v in tables.items() if k in tids}}
     def render(selected):return instructions(record, required_domains=domains)+input_text(data_for(selected))
     # Preserve complete selected contexts; optional quotes cannot displace a
-    # necessary context merely because they are shorter without it.
+    # necessary context. Self-contained literal bundles can omit surrounding
+    # text unless another required bundle depends on the same row.
+    quote_only={e for b in wire_bundles if b.get('literalQuotesSufficient') for e in b['evidenceIds']}
+    quote_only.difference_update(e for b in wire_bundles if not b.get('literalQuotesSufficient') for e in b['evidenceIds'])
     _,selected,missing=fit_premises(rows,render,wire_bundles,max_bytes=MAX_INPUT-overhead_bytes(record,NODE),
-                                    required_contexts={row['evidenceId']:row.get('sourceContext',{}) for row in rows})
+                                    required_contexts={row['evidenceId']:row.get('sourceContext',{}) for row in rows
+                                                       if row['evidenceId'] not in quote_only})
     if missing or not selected:
         return {'error_code':'synthesis_evidence_capacity'}
     selected_aliases={row['evidenceId']:aliases[row['evidenceId']] for row in selected}
