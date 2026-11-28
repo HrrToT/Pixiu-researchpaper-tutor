@@ -235,14 +235,19 @@ def _generation(record):
             or g.get('scientificApproval') is not False or not isinstance(g.get('boundProposal'), dict)
             or not validate_bound(g['boundProposal'], expected_digest=g.get('bindingDigest'))):
         raise DeepResearchError('invalid_shared_experiment_review_state', '共享实验方案尚未就绪或绑定已改变。')
-    if 'sharedExperimentRevision' in record.get('state',{}):
+    if review_slot(record) == 'sharedExperimentRevisionReview':
         from services.deep_research.shared_experiment_revision import view
         return view(record)
     return g
 
 
 def review_slot(record):
-    return 'sharedExperimentRevisionReview' if 'sharedExperimentRevision' in record.get('state',{}) else 'sharedExperimentReview'
+    state = record.get('state', {})
+    revision = state.get('sharedExperimentRevision')
+    if (isinstance(revision, dict) and revision.get('status') == 'unchanged_design'
+            or 'sharedExperimentRevision' not in state):
+        return 'sharedExperimentReview'
+    return 'sharedExperimentRevisionReview'
 
 
 def _supporting_investigations(record, plan):

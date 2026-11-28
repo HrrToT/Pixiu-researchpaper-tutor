@@ -368,6 +368,27 @@ def test_design_repair_may_omit_quotes_only_for_unchanged_verified_facts():
         _apply_scoped(base, {**scoped, 'response': reply(edit)})
 
 
+def test_scoped_review_rejects_repair_that_only_adds_unresolved_prerequisites():
+    from services.deep_research.shared_experiment_revision import (
+        REQUIRE_DESIGN_EDIT, UnchangedDesign, _apply_scoped, _input_digest,
+    )
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    draft = base['boundProposal']['proposal']
+    response = {'baseDigest': base['bindingDigest'], 'edits': [],
+                'unresolved': [*draft['unresolved'], 'Specify a reproducible optimization schedule.']}
+    saved = {'preserveSourceFacts': True, 'response': reply(response)}
+    assert _apply_scoped(base, saved)['proposal']['unresolved'] == response['unresolved']
+    scoped = {**saved, REQUIRE_DESIGN_EDIT: True}
+    assert _input_digest(base, scoped) != _input_digest(base, saved)
+    with pytest.raises(UnchangedDesign, match='only restates'):
+        _apply_scoped(base, scoped)
+    response['edits'] = [{'path': '/steps/0/operation/action', 'value': 'Apply the proposed fixed schedule.'}]
+    repaired = _apply_scoped(base, {**scoped, 'response': reply(response)})
+    assert repaired['proposal']['steps'][0]['operation']['action'] == 'Apply the proposed fixed schedule.'
+    assert not repaired['scientificApproval']
+
+
 def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
     r,data,aliases=ready()
     def save(v):r['state']['sharedExperimentReview']=deepcopy(v)
