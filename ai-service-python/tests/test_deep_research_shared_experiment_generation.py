@@ -606,6 +606,27 @@ def test_generation_distinguishes_held_out_list_from_training_state():
     assert 'create them in evaluation_prepare, separate from training outputs' not in previous
 
 
+def test_densification_draft_shares_fit_rules_within_the_schema_limits():
+    from services.deep_research import experiment_protocol_sources as protocol
+    from services.deep_research.shared_experiment_generation import instructions
+
+    record = {
+        MARKER: 8, protocol.MARKER: 1, protocol.DENSIFICATION_MARKER: 1,
+        'sharedExperimentDensificationExecutionVersion': 9,
+        'state': {'plan': [{'obligations': [
+            {'question': '设计四组实验比较小高斯克隆与大高斯分裂'}
+        ]}]},
+    }
+    prompt = instructions(record)
+    assert 'each action at most 1600 characters' in prompt
+    assert 'wire JSON under 20 KB' in prompt
+    assert 'arm fit references that rule' in prompt
+    assert 'fit after last reset' in prompt
+    previous = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 8})
+    assert 'arm fit references that rule' not in previous
+    assert 'Fit after the last opacity reset before testing.' in previous
+
+
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
     r, data, aliases = context()
     r[MARKER] = 2

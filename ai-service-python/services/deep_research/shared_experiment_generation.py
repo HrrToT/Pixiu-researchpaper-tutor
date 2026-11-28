@@ -289,6 +289,15 @@ def instructions(record):
                         'Keep common opacity/world/view culling, label proposed settings. '
                         'Fit after the last opacity reset before testing. Measure peak from model load to final sync. '
                     )
+                if record.get('sharedExperimentDensificationExecutionVersion') == 9:
+                    execution = (
+                        'Keep wire JSON under 20 KB and each action at most 1600 characters. No duplicate prose. '
+                        'Put common projection/support/blend, SH encoding/basis/view/bands, '
+                        'full position derivatives, optimizer and tests in shared fit; arm fit references that rule. Use typed parameters. '
+                        'Fix intrinsics once, camera/RNG, clone checks/IDs. Arm fit defines visible view-space gradient mean '
+                        '(units, zero count), then size gate. Separate signed clone direction from descent. '
+                        'State one common opacity/culling schedule with fit after last reset. Label proposals. Peak: load to final sync. '
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '
