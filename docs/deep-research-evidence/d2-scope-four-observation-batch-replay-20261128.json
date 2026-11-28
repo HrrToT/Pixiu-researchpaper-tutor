@@ -1,0 +1,61 @@
+{
+  "sourceRunSha256": "cba9536334c116f13d3a33537874bcff3ece3f6219ba17cf59c90fc6201edb52",
+  "claimId": "cmp_conclusion_0",
+  "oldBatches": [
+    {
+      "targets": 3,
+      "inputBytes": 16563,
+      "maxInputBytes": 32000
+    },
+    {
+      "targets": 1,
+      "inputBytes": 16132,
+      "maxInputBytes": 32000
+    }
+  ],
+  "newBatches": [
+    {
+      "targets": 4,
+      "inputBytes": 16857,
+      "maxInputBytes": 32000
+    }
+  ],
+  "remainingIndependentEntailmentBatches": 1,
+  "independentSettingChecks": 4,
+  "providerCalls": 0,
+  "syntheticSchedulingVerdictsOnly": true,
+  "scientificApproval": false,
+  "commit": "cafbf5b3dc8a62198174e834de31d4dc99a3a8ed",
+  "case": "D2-BASELINE-COMPRESSION",
+  "originalRunId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "actualOldCalls": [
+    {
+      "targets": [
+        "O1",
+        "O2",
+        "O3"
+      ],
+      "settledTokens": 3987,
+      "reservedTokens": 21587
+    },
+    {
+      "targets": [
+        "O1"
+      ],
+      "settledTokens": 3755,
+      "reservedTokens": 21156
+    }
+  ],
+  "regressionPassed": 224,
+  "independentHoldoutCredit": false,
+  "artifact": {
+    "path": "tmp/d2-scope-four-observation-batch-replay-20261128.json",
+    "sha256": "6fb051c36d453098d93cb28b79f57667866b8776a881b14831660a531e9de8b4"
+  },
+  "exactSavedLedgerSha256": "0556e4860514005d50ebe14a6082e687e4cb45f8b590a220b60d26e52ff63bd4",
+  "limitations": [
+    "This replay measures only request grouping and capacity. The new packet was not sent.",
+    "Each observation still needs its independent bound verdict. The positive-proposition entailment request remains separate.",
+    "The original partial report and the later budget-exhausted continuation are unchanged."
+  ]
+}
