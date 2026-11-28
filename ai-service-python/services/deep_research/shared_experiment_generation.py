@@ -257,6 +257,17 @@ def instructions(record):
                     if record.get('sharedExperimentDensificationExecutionVersion') == 5:
                         execution += ('Define signed g; clone moves along reported +g. State training intrinsics '
                                       'provenance and deterministic new Gaussian IDs. ')
+                if record.get('sharedExperimentDensificationExecutionVersion') == 6:
+                    execution = (
+                        'Specify camera/RNG schedules and checkpoint RNG before cloning. Define clone checks, '
+                        'train intrinsics, RGB aggregation and new IDs. Give RGB→SH formula, basis, view direction '
+                        'and band schedule. Define projection, '
+                        'support, visibility, blending and numerical tests. Use specified shared and arm optimizer '
+                        'rules. Specify visibility denominator, empty case, threshold units and cross-view scale. '
+                        'Map gradients to a common frame; clone along the reported signed positional gradient +g. '
+                        'Gate on gradient then size. '
+                        'Label proposed settings. '
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

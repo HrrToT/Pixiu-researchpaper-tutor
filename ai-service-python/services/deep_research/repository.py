@@ -403,6 +403,7 @@ class DeepResearchRepository:
                                      'sharedExperimentReviewIndexedStatesVersion',
                                      'sharedExperimentReviewContextFieldVersion',
                                      'sharedExperimentReviewSeedBindingsVersion',
+                                     'sharedExperimentReviewFitCaptureBindingsVersion',
                                      'sharedExperimentCompactScienceRevisionVersion',
                                      'sharedExperimentRevisionDigestSchemaVersion',
                                      'comparisonBeginnerLeadContractVersion',

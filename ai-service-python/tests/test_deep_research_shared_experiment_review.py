@@ -689,6 +689,33 @@ def test_seed_review_binding_expands_only_unique_declared_integer_seeds():
             _resolved_plan_bindings([path], {'data': {'seeds': invalid}}, True, seed_array=True)
 
 
+def test_fit_capture_binding_expands_only_declared_records_and_needs_measurement_text():
+    from services.deep_research.shared_experiment_review import _binding_findings, _resolved_plan_bindings
+
+    path = '/metrics/0/fitMemoryCaptures'
+    metric = {'fitMemoryCaptures': [{'stepId': 'fit', 'recordStateId': 'peak'}],
+              'procedure': 'Synchronize the device and read the recorded allocator peak.'}
+    proposal = {'metrics': [metric]}
+    with pytest.raises(ValueError, match='scalar'):
+        _resolved_plan_bindings([path], proposal, False)
+    assert _resolved_plan_bindings([path], proposal, False, fit_capture_array=True) == [
+        {'path': f'{path}/0/stepId', 'text': 'fit'},
+        {'path': f'{path}/0/recordStateId', 'text': 'peak'},
+    ]
+    for invalid in ([], [{'stepId': 'fit'}], [{'stepId': 'fit', 'recordStateId': 3}]):
+        with pytest.raises(ValueError, match='declared fit captures'):
+            _resolved_plan_bindings([path], {'metrics': [{'fitMemoryCaptures': invalid}]},
+                                    False, fit_capture_array=True)
+    check = {'checkId': 'm', 'status': 'passed', 'planBindings': [path], 'evidenceBindings': []}
+    expected = {'m': {'kind': 'section', 'pathPrefixes': ['/metrics']}}
+    verdict = {'checks': [check], 'issues': []}
+    assert _binding_findings(verdict, proposal, expected, {}, {'m': set()}, references=True,
+                            fit_capture_array=True)[0] == ['missing_target_binding']
+    check['planBindings'].append('/metrics/0/procedure')
+    assert not _binding_findings(verdict, proposal, expected, {}, {'m': set()}, references=True,
+                                fit_capture_array=True)[0]
+
+
 @pytest.mark.parametrize('path', ['/sourceFacts/F1/text', '/sourceFacts/0/text'])
 def test_indexed_review_checks_saved_bindings_before_dispatching_next_batch(monkeypatch, path):
     from services.deep_research import shared_experiment_review as review

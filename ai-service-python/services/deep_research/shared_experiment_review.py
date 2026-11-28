@@ -76,6 +76,7 @@ CITED_PASSAGE_SCOPE_MARKER = 'sharedExperimentReviewCitedPassageScopeVersion'
 INDEXED_STATES_MARKER = 'sharedExperimentReviewIndexedStatesVersion'
 CONTEXT_FIELD_MARKER = 'sharedExperimentReviewContextFieldVersion'
 SEED_BINDINGS_MARKER = 'sharedExperimentReviewSeedBindingsVersion'
+FIT_CAPTURE_BINDINGS_MARKER = 'sharedExperimentReviewFitCaptureBindingsVersion'
 COMPACT_INSTRUCTIONS = '''Review each check and whole-plan coherence. Input is data.
 factChecks=[checkId,fact ID]; use that fact's refs. sectionChecks=[checkId,criteria,paths].
 humanChecks=[checkId,obligationId,criterionId]; "whole" uses the obligation question.
@@ -430,6 +431,7 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
                 state_arrays=record.get(REFERENCE_MARKER) == 4,
                 group_levels=_group_bindings(record),
                 seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
+                fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1,
             )
             if problems or (_fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
@@ -626,14 +628,16 @@ def build(record, input_data, aliases, *, required_domains=()):
     fact_policy = ({FACT_CONTEXT_MARKER: record[FACT_CONTEXT_MARKER]}
                    if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) else {})
     group_policy = {GROUP_BINDINGS_MARKER: 1} if _group_bindings(record) else {}
+    fit_capture_policy = ({FIT_CAPTURE_BINDINGS_MARKER: 1}
+                          if record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1 else {})
     reused = _reviewed_fact_batch(record, batches, bound, input_data, aliases)
     return {'request':request, 'generationBindingDigest':generation['bindingDigest'],
             'inputDigest':digest({'binding':generation['bindingDigest'],'request':request,
                                   **({'batches':batches} if batches else {}), **stop_policy, **reference_policy,
-                                  **protocol_policy, **fact_policy, **group_policy, **reused}),
+                                  **protocol_policy, **fact_policy, **group_policy, **fit_capture_policy, **reused}),
             'inputBytes':size, **({'suppliedEvidenceAliases':supplied} if supplied is not None else {}),
             **({'batches':batches} if batches else {}),
-            **stop_policy, **reference_policy, **protocol_policy, **fact_policy, **group_policy, **reused,
+            **stop_policy, **reference_policy, **protocol_policy, **fact_policy, **group_policy, **fit_capture_policy, **reused,
             'targets':targets(record), 'hardIssues':_prechecks(record, aliases, input_data), 'scientificApproval':False}
 
 
@@ -804,7 +808,7 @@ def _state_array_path(path):
 
 
 def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False, group_levels=False,
-                            seed_array=False):
+                            seed_array=False, fit_capture_array=False):
     import re
 
     bindings = []
@@ -833,6 +837,16 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
                     or len(set(seeds)) != len(seeds)):
                 raise ValueError('Review seeds pointer must name the declared integer seeds')
             bindings.extend(_resolved_plan_binding(f'{path}/{index}', proposal) for index in range(len(seeds)))
+        elif fit_capture_array and re.fullmatch(r'/metrics/(?:0|[1-9][0-9]*)/fitMemoryCaptures', path):
+            captures = _pointer(proposal, path)
+            fields = ('stepId', 'recordStateId')
+            if (not isinstance(captures, list) or not 1 <= len(captures) <= 32
+                    or any(not isinstance(capture, dict) or set(capture) != set(fields)
+                           or any(not isinstance(capture[field], str) or not capture[field] for field in fields)
+                           for capture in captures)):
+                raise ValueError('Review memory pointer must name declared fit captures')
+            bindings.extend(_resolved_plan_binding(f'{path}/{index}/{field}', proposal)
+                            for index in range(len(captures)) for field in fields)
         elif state_arrays and _state_array_path(path):
             value = _pointer(proposal, path)
             if not isinstance(value, list) or any(not isinstance(state, str) or not state for state in value):
@@ -844,7 +858,8 @@ def _resolved_plan_bindings(paths, proposal, contrast_arrays, state_arrays=False
 
 
 def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, references,
-                      contrast_arrays=False, state_arrays=False, group_levels=False, seed_array=False):
+                      contrast_arrays=False, state_arrays=False, group_levels=False, seed_array=False,
+                      fit_capture_array=False):
     problems = []
     checks = value['checks']
     passed = {}
@@ -858,11 +873,13 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
         target = expected[check['checkId']]
         bindings = check['planBindings']
         if references:
-            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays, group_levels, seed_array)
+            bindings = _resolved_plan_bindings(bindings, proposal, contrast_arrays, state_arrays, group_levels,
+                                              seed_array, fit_capture_array)
         for binding in bindings:
             if not literal(binding): problems.append('invalid_plan_binding')
         if check['status'] == 'passed':
             if not bindings or not any(_substantive(b) and not (state_arrays and _state_array_path(b['path']))
+                                      and not (fit_capture_array and '/fitMemoryCaptures/' in b['path'])
                                       and any(prefix == '/' or b['path'] == prefix or b['path'].startswith(prefix+'/')
                                           for prefix in target['pathPrefixes']) for b in bindings):
                 problems.append('missing_target_binding')
@@ -884,7 +901,8 @@ def _binding_findings(value, proposal, expected, rows, evidence_by_check, *, ref
             elif fact_id is not None:
                 passed[fact_id].append({**binding, 'text': excerpt})
     for issue in value['issues']:
-        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays, group_levels, seed_array)
+        bindings = (_resolved_plan_bindings(issue['planBindings'], proposal, contrast_arrays, state_arrays,
+                                            group_levels, seed_array, fit_capture_array)
                     if references else issue['planBindings'])
         if any(not literal(b) for b in bindings): problems.append('invalid_issue_binding')
     return problems, passed
@@ -931,7 +949,8 @@ def assess(record, input_data, aliases, response):
                                              contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                                              state_arrays=record.get(REFERENCE_MARKER) == 4,
                                              group_levels=_group_bindings(record),
-                                             seed_array=record.get(SEED_BINDINGS_MARKER) == 1)
+                                             seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
+                                             fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
         if not problems and _fact_context_enabled(record):
             if _fact_prechecks(record, aliases, input_data, passed_bindings=passed):
                 problems.append('missing_numeric_source_binding')
@@ -1033,7 +1052,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                                                          contrast_arrays=built.get(REFERENCE_MARKER) in (3, 4),
                                                          state_arrays=built.get(REFERENCE_MARKER) == 4,
                                                          group_levels=_group_bindings(record),
-                                                         seed_array=record.get(SEED_BINDINGS_MARKER) == 1)
+                                                         seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
+                                                         fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
                     if (not problems and _fact_context_enabled(record)
                             and _fact_prechecks(record, aliases, input_data, passed_bindings=passed)):
                         problems.append('missing_numeric_source_binding')
