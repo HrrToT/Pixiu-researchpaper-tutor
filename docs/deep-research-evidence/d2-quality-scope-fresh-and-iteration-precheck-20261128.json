@@ -90,6 +90,20 @@
     "tmp/openai-d2-quality-scope-fresh-20261128/calls.json": "e7b7fe6a22632aadf54212f59754b993da21d438bef8d6207869ceb4377955a9",
     "tmp/openai-d2-quality-scope-fresh-20261128/provider.jsonl": "83014638919aa4cba9ab923cf93369aebfd62a342e97170e6898359fd1b83e42",
     "tmp/openai-d2-quality-scope-fresh-20261128/independent-pdf-check.json": "8304b7fac5b05f0b5061a148998c4508aa3fd71c4caff7708b421c65b25105e6",
-    "tmp/openai-d2-quality-scope-fresh-20261128/compact-iterations-replay.json": "c24b33a4e75aa40a36242a9821745448b53ad83f64675885e893ff4815d1d585"
+    "tmp/openai-d2-quality-scope-fresh-20261128/compact-iterations-replay.json": "c24b33a4e75aa40a36242a9821745448b53ad83f64675885e893ff4815d1d585",
+    "tmp/openai-d2-compact-iteration-review-20261128/intent.json": "c1ab4399e66734412ea2b58c011c52b6279acd4b49f9cc7aabcfb3769270f544",
+    "tmp/openai-d2-compact-iteration-review-20261128/run.json": "87319cefb183f13ac7288811923432e8ce08a256b1a5024c97268d52d62a0ba8",
+    "tmp/openai-d2-compact-iteration-review-20261128/calls.json": "426585a2f7c9ae5ab2b7584e8ba33a7264f6108791ef63cb501ef9a1cc6aa7cd",
+    "tmp/openai-d2-compact-iteration-review-20261128/verify-return.json": "29776034015fe272b2a666c0ac5b4c316656d049d1dd8f2016a54f56a06f152c"
+  },
+  "scopedSemanticReview": {
+    "verifiedClaim": "cmp_2_0",
+    "candidateCommit": "60e5aad69464853081dc044a47b793633b633b52",
+    "reviewRequestDigest": "98a02e20956fc27f8a2148c99e4f480db698303b07dd55c7ade10fcfb60bb82b",
+    "newModelCalls": 1,
+    "newTokens": 3809,
+    "cumulativeBranchTokens": 79256,
+    "workspacePublished": false,
+    "wholeAnswerAudited": false
   }
 }
