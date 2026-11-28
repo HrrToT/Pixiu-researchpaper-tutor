@@ -1,0 +1,36 @@
+{
+  "sourceRun": "dr_d3_execution_v7_20261128",
+  "sourceRunSha256": "afb448cfe15fd0d4b0e1aad6a088c626247c2d8f5a88a8adf8ec0e7599ac6cd2",
+  "oldBatchBytes": [
+    19603,
+    34688,
+    33303,
+    34957,
+    33687
+  ],
+  "newBatchBytes": [
+    19603,
+    35004,
+    35722
+  ],
+  "oldDesignInputBytes": 136635,
+  "newDesignInputBytes": 70726,
+  "checksPreserved": 25,
+  "exactCheckProposalAndEvidence": true,
+  "exactFactPacketAndReceipt": true,
+  "providerCalls": 0,
+  "sourceBudgetTokens": 100000,
+  "candidate": "83f5620e86589ad39aaa9c3f4eb69d09ab4a210f",
+  "regression": {
+    "passed": 409,
+    "failed": 0
+  },
+  "additionalGenerationCalls": 0,
+  "additionalProviderCountCalls": 0,
+  "standardBudgetRetest": "pending",
+  "previousScientificOutcomePreserved": true,
+  "rawArtifacts": {
+    "tmp/d3-counted-repack-replay-20261128.json": "d1e6a19b6cf60ddb04656adb9ccb50c1d5a361b9b609fd0e3701bb0e9afcbfa4",
+    "tmp/d3-counted-repack-regression-20261128.xml": "182c7d109ca2dfe8b53f9ac877dc9ff3c886824aceafa850f8045cf9efe45004"
+  }
+}
