@@ -404,6 +404,7 @@ class DeepResearchRepository:
                                      'sharedExperimentReviewPackingVersion',
                                      'sharedExperimentReviewGroupBindingsVersion',
                                      'sharedExperimentExplicitSemanticsVersion',
+                                     'sharedExperimentReviewDeliverableScopeVersion',
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
                                      'sharedExperimentDensificationExecutionVersion',

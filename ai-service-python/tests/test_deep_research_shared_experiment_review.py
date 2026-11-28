@@ -171,6 +171,35 @@ def ready(value=None):
     return r,data,aliases
 
 
+def test_review_preserves_explicit_request_and_does_not_promote_research_leads():
+    from services.deep_research.experiment_deliverable import ensure_experiment_deliverable
+    from services.deep_research.shared_experiment_review import DELIVERABLE_SCOPE_MARKER
+
+    record, _, _ = ready()
+    question = 'Design a paired experiment and report the original paper’s test set size.'
+    record['question'] = question
+    plan = record['state']['plan']
+    plan[0]['obligations'][0]['question'] = 'Find all intermediate split sizes and tuning settings.'
+    record['state']['plan'] = ensure_experiment_deliverable(plan, question, ['owned'])
+    old = [target for target in targets(record) if target['kind'] == 'human_requirement']
+    assert any(target['obligationId'] == 'G1' for target in old)
+
+    record[DELIVERABLE_SCOPE_MARKER] = 1
+    checks = [target for target in targets(record) if target['kind'] == 'human_requirement']
+    assert [target['criterionId'] for target in checks] == [
+        'requested_scope', 'configuration', 'execution_analysis', 'limits',
+    ]
+    assert record['state']['plan'][0]['obligations'][0]['question'] == question
+
+    # A bad support label or a damaged primary contract cannot waive a check.
+    lead = record['state']['plan'][0]['obligations'][1]
+    lead['requestExcerpt'] = 'Invented request scope for the historical split sizes.'
+    assert any(target.get('obligationId') == 'G1' for target in targets(record))
+    lead['requestExcerpt'] = question
+    record['state']['plan'][0]['obligations'][0]['completionCriteria'].pop()
+    assert any(target.get('obligationId') == 'G1' for target in targets(record))
+
+
 @pytest.mark.parametrize('packet_version', [1, 2, 3, 4])
 def test_scoped_review_stops_before_sending_if_a_later_packet_cannot_fit(monkeypatch, packet_version):
     from services.deep_research import shared_experiment_review as review

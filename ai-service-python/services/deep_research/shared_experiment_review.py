@@ -74,6 +74,11 @@ SCOPED_PACKET_VERSIONS = (1, 2, 3, 4, 5, 6, 7)
 PACKING_MARKER = 'sharedExperimentReviewPackingVersion'
 GROUP_BINDINGS_MARKER = 'sharedExperimentReviewGroupBindingsVersion'
 PLANNED_PREREQUISITES_MARKER = 'sharedExperimentReviewPlannedPrerequisitesVersion'
+DELIVERABLE_SCOPE_MARKER = 'sharedExperimentReviewDeliverableScopeVersion'
+DELIVERABLE_SCOPE_GUIDANCE = (
+    'Use the original question to judge required paper details. For unreported settings used as a basis, '
+    'bind the cited limit and the proposed verification before use. Explicitly requested original facts still need evidence.\n'
+)
 CITED_PASSAGE_SCOPE_MARKER = 'sharedExperimentReviewCitedPassageScopeVersion'
 INDEXED_STATES_MARKER = 'sharedExperimentReviewIndexedStatesVersion'
 CONTEXT_FIELD_MARKER = 'sharedExperimentReviewContextFieldVersion'
@@ -239,6 +244,24 @@ def review_slot(record):
     return 'sharedExperimentRevisionReview' if 'sharedExperimentRevision' in record.get('state',{}) else 'sharedExperimentReview'
 
 
+def _supporting_investigations(record, plan):
+    if record.get(DELIVERABLE_SCOPE_MARKER) != 1:
+        return set()
+    from services.deep_research.experiment_deliverable import CRITERION_ROLES
+    from services.deep_research.obligation_purpose import normalize_obligation_purposes
+    from services.deep_research.request_context import effective_question
+
+    question = effective_question(record)
+    normalized = normalize_obligation_purposes(plan, question)
+    obligations = [row for item in normalized for row in item['obligations']]
+    if not any(row.get('deliverableContractVersion') == 1 and row.get('question') == question
+               and row['purpose'] == 'answer_requirement'
+               and {criterion['criterionId'] for criterion in row.get('completionCriteria', [])}
+               == CRITERION_ROLES.keys() for row in obligations):
+        return set()
+    return {row['obligationId'] for row in obligations if row['purpose'] == 'supporting_research'}
+
+
 def targets(record):
     proposal = _generation(record)['boundProposal']['proposal']
     result = [{'checkId':f'fact_{i}', 'kind':'source_fact', 'factId':fact['id'],
@@ -260,7 +283,11 @@ def targets(record):
             if target['kind'] == 'initialization':
                 target['requirement'] += ' Match each consumed artifact to the step that actually produces it.'
     from services.deep_research.design_drafting import synthesis_obligations
-    for i, obligation in enumerate(synthesis_obligations(record['state'].get('plan', []))):
+    plan = record['state'].get('plan', [])
+    investigations = _supporting_investigations(record, plan)
+    for i, obligation in enumerate(synthesis_obligations(plan)):
+        if obligation['obligationId'] in investigations:
+            continue
         criteria = obligation.get('completionCriteria') or [{'criterionId':'whole', 'requirement':obligation['question']}]
         for j, criterion in enumerate(criteria):
             result.append({'checkId':f'requirement_{i}_{j}', 'kind':'human_requirement',
@@ -614,6 +641,8 @@ def build(record, input_data, aliases, *, required_domains=()):
         if record.get(EXPLICIT_SEMANTICS_MARKER) == 1 and view['proposal'].get('analysis', {}).get('contrasts'):
             arm_order = ','.join(GROUPS)
             policy = f'Contrast weight order is [{arm_order}] (bits A,B), independent of groups list order.\n' + policy
+        if record.get(DELIVERABLE_SCOPE_MARKER) == 1 and view.get('humanChecks'):
+            policy = DELIVERABLE_SCOPE_GUIDANCE + policy
         prompt = policy + input_text(view)
         options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
         if reference_policy:

@@ -420,6 +420,7 @@ class ResearchFacade:
             **({"sharedExperimentReviewPackingVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewGroupBindingsVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentExplicitSemanticsVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentReviewDeliverableScopeVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentMemoryReportVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentMetricScopeVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReportProvenanceVersion": 1} if shared_experiment_profile == 8 else {}),
