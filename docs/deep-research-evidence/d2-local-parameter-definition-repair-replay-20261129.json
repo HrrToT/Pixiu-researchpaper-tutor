@@ -1,0 +1,47 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "comparison_repair_local_parameter_definition_input_replay",
+  "baseCommit": "d7dd688a8acc689dd3828ea2b05e1beed55272ac",
+  "repairBatchEnvelopeVersionsCompared": [
+    3,
+    4
+  ],
+  "sourceRunId": "dr_run_dd0ab944b5675bc0b61ade6f1c26361f",
+  "requestTargets": [
+    "cmp_1_0",
+    "cmp_3_0"
+  ],
+  "beforeBytes": 12432,
+  "afterBytes": 12396,
+  "sameOutputTokenCap": 4096,
+  "displayedDefinition": {
+    "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+    "sourceVersionId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11",
+    "page": 2,
+    "evidenceId": "ev_8eb53d60614740fe402f6a503364ea351e788417bc182491d0a42ff17d7f5b33",
+    "term": "opacity"
+  },
+  "otherRetainedPassages": [
+    {
+      "page": 4,
+      "role": "view-dependent color representation"
+    },
+    {
+      "page": 8,
+      "role": "spherical harmonic band schedule"
+    }
+  ],
+  "countFixture": 8494,
+  "rawFixtureResponsesOnly": true,
+  "targetedTestsPassed": 180,
+  "providerCalls": 0,
+  "newSemanticAcceptance": false,
+  "productionWrites": 0,
+  "artifacts": {
+    "tmp/openai-d2-scoped-wording-fresh-20261129/run.json": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "tmp/d2-targeted-future-work-prompt-inspection-20261129/repair-prompt.txt": "dcd10899864191d0cde1f706b5bd0ac39f4235034bbc08b0f7079666227c1e91",
+    "tmp/d2-targeted-future-work-prompt-inspection-20261129/summary.json": "99f96d2d99e2d4a0292a2b0b706f3182a1c4069e0aa62684229feea24c2c3afd",
+    "tmp/d2-local-definitions-repair-preflight-20261129/repair-prompt.txt": "8b31ae33f8e2c83c4bb64e17a5b662940f0ab01f3e86d66a0cc289decb901a8d",
+    "tmp/d2-local-definitions-repair-preflight-20261129/summary.json": "430c283562eac8ad159a18b050b8f1dd88ca933a49806873b4d181f7c8006839"
+  }
+}
