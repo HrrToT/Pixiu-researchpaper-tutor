@@ -396,7 +396,7 @@ class ResearchFacade:
             "comparisonCrossPaperBoundaryContractVersion": 9 if self._comparison_cells_version == 1 else 0,
             "comparisonRepairFlowContractVersion": 3 if self._comparison_cells_version == 1 else 0,
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
-            **({'comparisonPaperWordingContractVersion': 3}
+            **({'comparisonPaperWordingContractVersion': 4}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1

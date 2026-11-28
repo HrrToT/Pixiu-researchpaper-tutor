@@ -200,7 +200,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     wording_version = record.get('comparisonPaperWordingContractVersion')
     original_evidence = ({reverse[row['evidenceId']]: row for row in record.get('state', {}).get('evidence', [])
                           if row['evidenceId'] in reverse}
-                         if type(wording_version) is int and wording_version in (2, 3) else {})
+                         if type(wording_version) is int and wording_version in (2, 3, 4) else {})
     def build_stage(scope, members):
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]

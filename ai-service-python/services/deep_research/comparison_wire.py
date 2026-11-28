@@ -653,7 +653,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 'other works, including what they report or whether their text is available.\n'
                 'If you cannot support the assigned point from its own evidence, return point=null.\n'
                 'Put the supported result first and keep measured conditions with it.')
-            if type(wording_version) is int and wording_version in (1, 2, 3):
+            if type(wording_version) is int and wording_version in (1, 2, 3, 4):
                 assignment_policy = (
                     'Answer only the assigned dimension of the named paper. Put the result first. '
                     'If unsupported, return point=null. Keep the exact technical property; for easily reversed terms '
@@ -690,6 +690,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                    'When the cited method describes additional operations without comparable costs, '
                                    'name those operations and state what the excerpts cannot quantify. '
                                    'Do not sum partial counts into total compression cost.\n')
+                    if wording_version == 4:
+                        policy += ('For spherical harmonics, keep the number of bands separate from the highest degree. '
+                                   'A band schedule is not a timing or cost measurement.\n')
                 if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4, 5, 6))
                        for dimension in dimensions):
                     policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
@@ -703,9 +706,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'and rendering observations qualitatively in these cells. Keep exact quantities '
                            'only if needed to explain a method step, condition or processing cost. Do not repeat '
                            'benchmark metric values or inventories here.\n')
-                if wording_version == 3:
+                if wording_version in (3, 4):
                     policy += ('For quality trends name the matched dataset and baseline. If metric directions differ '
                                'by metric, dataset or baseline, say so; do not summarize them as a uniform gain or loss.\n')
+                if wording_version == 4:
+                    policy += ('For storage trends also name the matched dataset and baseline. '
+                               'A smaller file than one baseline does not establish a ranking against other rows.\n')
         example_owner = benchmark_example_owner(record, plan)
         literal_targets = version in (7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         if example_owner:

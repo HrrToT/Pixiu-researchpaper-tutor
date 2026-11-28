@@ -806,6 +806,13 @@ def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
         assert 'uniform gain or loss' not in old['prompt']
         assert packet(new) == packet(old)
     assert updated['stages'][-1] == snapshot['stages'][-1]
+    current = prepare({**scoped, 'comparisonPaperWordingContractVersion': 4},
+                      p['requirements'], p['sources'], rows, {}, bundles, aliases)
+    assert current['stages'][-1] == updated['stages'][-1]
+    for old, new in zip(updated['stages'][:-1], current['stages'][:-1], strict=True):
+        assert 'For storage trends also name the matched dataset and baseline.' in new['prompt']
+        assert 'For storage trends also name the matched dataset and baseline.' not in old['prompt']
+        assert packet(new) == packet(old)
 
 
 def test_paper_wording_preserves_properties_and_protocol_exceptions_without_changing_joint_input():

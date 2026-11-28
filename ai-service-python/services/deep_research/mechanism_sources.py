@@ -100,7 +100,7 @@ def representation_read_requested(record, query, pdf_id):
     from services.deep_research.criterion_sources import acquisition_questions
 
     version = record.get('comparisonPaperWordingContractVersion')
-    return (type(version) is int and version in (2, 3)
+    return (type(version) is int and version in (2, 3, 4)
             and any(representation_requested(question)
                     for question in acquisition_questions(record, query, pdf_id)))
 
