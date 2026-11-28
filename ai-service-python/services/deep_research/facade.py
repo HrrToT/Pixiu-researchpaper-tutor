@@ -404,7 +404,7 @@ class ResearchFacade:
             "experimentSharedPlanContractVersion": shared_experiment_profile,
             **({"experimentArmCloneLayoutVersion": 2 if shared_experiment_profile == 8 else 1}
                if shared_experiment_profile in (6, 7, 8) else {}),
-            **({"sharedExperimentRevisionPathsVersion": 3} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentRevisionPathsVersion": 4} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentCompactReviewVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentFactContextVersion": 5} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentFactBoundaryVersion": 1} if shared_experiment_profile == 8 else {}),

@@ -588,6 +588,31 @@ def test_fact_only_repair_preserves_other_fields_and_unresolved_items():
         apply(base, reply({**change, 'unresolved': ['New unrelated prerequisite']}), allowed_paths=allowed)
 
 
+def test_scoped_fact_repair_keeps_uncited_unchanged_facts_and_rejects_cross_fact_citations():
+    from unittest.mock import patch
+    from services.deep_research.shared_experiment_revision import _apply_scoped
+
+    original = {'version': 3, 'sourceFacts': [
+        {'id': 'f1', 'text': 'First original text.', 'evidenceRefs': ['E1']},
+        {'id': 'f2', 'text': 'Second original text.', 'evidenceRefs': ['E2']},
+        {'id': 'locked', 'text': 'Unchanged fact.', 'evidenceRefs': ['E3']},
+    ]}
+    base = {'boundProposal': {'proposal': original}}
+    saved = {'response': {}, 'allowedFactEditPaths': ['/sourceFacts/0/text', '/sourceFacts/1/text'],
+             'suppliedEvidenceAliases': ['E1', 'E2'], 'factRepairEvidenceAliases': {'f1': ['E1'], 'f2': ['E2']}}
+    repaired = deepcopy(base['boundProposal'])
+    repaired['proposal']['sourceFacts'][0]['text'] = 'Corrected text.'
+    with patch('services.deep_research.shared_experiment_revision.apply', return_value=repaired):
+        assert _apply_scoped(base, saved) == repaired
+        repaired['proposal']['sourceFacts'][0]['evidenceRefs'] = ['E2']
+        with pytest.raises(ValueError, match='outside the diagnosed fact input'):
+            _apply_scoped(base, saved)
+        repaired['proposal']['sourceFacts'][0]['evidenceRefs'] = ['E1']
+        repaired['proposal']['sourceFacts'][2]['text'] = 'Out of scope.'
+        with pytest.raises(ValueError, match='modified a source fact outside'):
+            _apply_scoped(base, saved)
+
+
 def test_fact_reference_candidates_stay_within_the_original_source_version():
     from services.deep_research.shared_experiment_revision import fact_reference_candidates
 

@@ -206,6 +206,8 @@ def _input_digest(base, saved):
         scope['suppliedEvidenceAliases'] = saved.get('suppliedEvidenceAliases')
     if 'allowedFactEditPaths' in saved:
         scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
+    if 'factRepairEvidenceAliases' in saved:
+        scope['factRepairEvidenceAliases'] = saved['factRepairEvidenceAliases']
     if saved.get('preserveSourceFacts') is True:
         scope['preserveSourceFacts'] = True
     if saved.get('omitLockedFactEvidence') is True:
@@ -251,7 +253,16 @@ def _apply_scoped(base, saved):
             bound['proposal'][key] == original
             for key, original in base['boundProposal']['proposal'].items() if key != 'unresolved'):
         raise UnchangedDesign('The revision only restates unresolved prerequisites')
-    if bound['proposal'].get('version') == 3 and not omit_fact_evidence:
+    if 'factRepairEvidenceAliases' in saved:
+        scopes = saved['factRepairEvidenceAliases']
+        original = base['boundProposal']['proposal']['sourceFacts']
+        for before, after in zip(original, bound['proposal']['sourceFacts'], strict=True):
+            if after['id'] not in scopes:
+                if after != before:
+                    raise ValueError('Repair modified a source fact outside its input')
+            elif not set(after['evidenceRefs']) <= set(scopes[after['id']]):
+                raise ValueError('Repair cited evidence outside the diagnosed fact input')
+    elif bound['proposal'].get('version') == 3 and not omit_fact_evidence:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
             raise ValueError('Repair cited evidence outside its input')
@@ -355,10 +366,10 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     evaluation_prepare = record.get(EVALUATION_PREPARATION_MARKER) == 1
     instructions = INSTRUCTIONS
     paths = {}
-    if record.get(PATH_MARKER) in (1, 2, 3) and proposal.get('version') == 3:
+    if record.get(PATH_MARKER) in (1, 2, 3, 4) and proposal.get('version') == 3:
         paths = fact_edit_paths(proposal, feedback.get('hardIssues', []))
         instructions = PATH_INSTRUCTIONS + instructions
-    fact_only = record.get(PATH_MARKER) in (2, 3) and bool(paths) and all(
+    fact_only = record.get(PATH_MARKER) in (2, 3, 4) and bool(paths) and all(
         'factId' in issue for issue in feedback.get('hardIssues', []))
     if not fact_only and record.get(PREREQUISITE_PLACEMENT_MARKER) in (1, 2):
         instructions = instructions.replace(
@@ -403,7 +414,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         fields.pop('proposal')
         fields['sourceFacts'] = [fact for fact in proposal['sourceFacts'] if fact['id'] in paths]
         fields['unresolved'] = proposal['unresolved']
-        if record.get(PATH_MARKER) == 3:
+        if record.get(PATH_MARKER) in (3, 4):
             reference_candidates = fact_reference_candidates(record, aliases, fields['sourceFacts'], feedback['hardIssues'])
             if reference_candidates:
                 fields['candidateEvidenceRefs'] = reference_candidates
@@ -424,7 +435,25 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':output_tokens,'timeout_seconds':90})
         return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
     supply = {}
-    if proposal.get('version') == 3:
+    if fact_only and record.get(PATH_MARKER) == 4:
+        scopes = {
+            fact['id']: sorted(set(fact['evidenceRefs']) | {
+                ref for refs in reference_candidates.get(fact['id'], []) for ref in refs
+            }) for fact in fields['sourceFacts']
+        }
+        needed = {ref for refs in scopes.values() for ref in refs}
+        rows = [row for row in input_data['evidence'] if row['evidenceId'] in needed]
+        if {row['evidenceId'] for row in rows} != needed:
+            raise ValueError('Missing evidence for diagnosed fact repair')
+        sources = {row['source'] for row in rows}
+        tables = {row.get('tableDataRef') for row in rows}
+        scoped = {**input_data, 'evidence': rows,
+                  'sources': {key: value for key, value in input_data['sources'].items() if key in sources},
+                  'tables': {key: value for key, value in input_data['tables'].items() if key in tables}}
+        req, size = measure(scoped, output_tokens=min(6144, 1536 + 512 * len(scopes)))
+        supply = {'suppliedEvidenceAliases': [row['evidenceId'] for row in rows],
+                  'factRepairEvidenceAliases': scopes}
+    elif proposal.get('version') == 3:
         from services.deep_research.shared_experiment_review_input import fit_accounted_evidence
         decisions = feedback.get('scientificReview', {}).get('verdict', {}).get('checks', [])
         feedback_refs = {binding['evidenceId'] for decision in decisions for binding in decision['evidenceBindings']}
