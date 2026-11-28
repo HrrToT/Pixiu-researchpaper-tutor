@@ -137,6 +137,25 @@ def test_named_plan_collections_resolve_only_under_the_new_review_contract(point
     assert _decode_batch(*args, named_plan=plan, named_id_version=3) == payload
     assert _decode_batch(*args, named_plan=plan, named_id_version=4)['checks'][0]['planBindings'] == [expected]
 
+
+@pytest.mark.parametrize('pointer,expected', [
+    ('/steps/fit/operation/action', '/steps/1/operation/action'),
+    ('/steps/0/operation/action', '/steps/0/operation/action'),
+    ('/steps/unknown/operation/action', '/steps/unknown/operation/action'),
+    ('/groups/00/levels', '/groups/00/levels'),
+    ('/groups/@00/levels', '/groups/0/levels'),
+])
+def test_bare_review_ids_resolve_only_when_exact_and_not_numeric(pointer, expected):
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch
+
+    plan = {'steps': [{'id': 'setup'}, {'id': 'fit'}], 'groups': [{'id': '00'}]}
+    answer = {'checks': [{'checkId': 'section_0', 'planBindings': [pointer]}], 'coherent': True, 'issues': []}
+    args = ({'content': json.dumps(answer), 'finishReason': 'stop'}, ['section_0'],
+            Draft202012Validator({'type': 'object'}))
+    assert _decode_batch(*args, named_plan=plan, named_id_version=5)['checks'][0]['planBindings'] == [expected]
+
+
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate
 from services.deep_research.shared_experiment_review import targets, prepare, assess, descriptor, NODE, _pointer

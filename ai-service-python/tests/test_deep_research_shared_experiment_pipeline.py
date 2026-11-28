@@ -373,6 +373,57 @@ def test_only_verified_early_findings_allow_one_repair_after_invalid_packet(monk
         compile_candidate(r, data, aliases)
 
 
+@pytest.mark.parametrize('design_failed', [False, True])
+def test_verified_design_failure_defers_only_the_original_human_batches(monkeypatch, design_failed):
+    from services.deep_research import shared_experiment_review as review
+
+    record, data, aliases = ready()
+    record.update({review.SCOPED_PACKET_MARKER: 7, review.REFERENCE_MARKER: 2, review.EARLY_DESIGN_REPAIR_MARKER: 1})
+    target_rows = review.targets(record)
+    responses = {row['checkId']: row for row in verdict(record, data)['checks']}
+    groups = [[], [], []]
+    failed_id = next(row['checkId'] for row in target_rows if row['kind'] == 'budgets')
+    for target in target_rows:
+        row = responses[target['checkId']]
+        row['planBindings'] = [binding['path'] for binding in row['planBindings']]
+        row['evidenceBindings'] = [{k:v for k,v in binding.items() if k != 'text'}
+                                   for binding in row['evidenceBindings']]
+        if design_failed and row['checkId'] == failed_id:
+            row['status'] = 'failed'
+        group = 0 if target['kind'] == 'source_fact' else 2 if target['kind'] == 'human_requirement' else 1
+        groups[group].append(row)
+    batches = []
+    for group in groups:
+        ids = [row['checkId'] for row in group]
+        batches.append({'checkIds': ids, 'suppliedEvidenceAliases': list(aliases), 'inputBytes': 100,
+                        'request': {'prompt': 'fixture', 'extra': {review.CHECK_IDS_OPTION: ids, 'max_tokens': 1024}}})
+    build = {'batches': batches, 'inputBytes': 100, 'hardIssues': [], 'targets': target_rows,
+             'generationBindingDigest': record['state']['sharedExperimentGeneration']['bindingDigest'],
+             review.STOP_INVALID_BATCH_MARKER: 1, review.REFERENCE_MARKER: 2,
+             review.EARLY_DESIGN_REPAIR_MARKER: 1}
+    monkeypatch.setattr(review, 'build', lambda *args, **kwargs: build)
+    invoke = Mock(side_effect=[reply({'checks': group, 'coherent': True, 'issues': []}) for group in groups])
+    def checkpoint(value):
+        record['state']['sharedExperimentReview'] = deepcopy(value)
+
+    result = science(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    assert invoke.call_count == (2 if design_failed else 3)
+    if not design_failed:
+        assert result['status'] != 'stopped_design_failure'
+        assert len(result['batchResponses']) == 3
+        return
+    assert result['status'] == 'stopped_design_failure'
+    prefix = result['verifiedPrefixFindings']
+    assert [row['checkId'] for row in prefix['checks']] == [failed_id]
+    assert prefix['uncheckedIds'] == batches[2]['checkIds']
+    assert not result['assessment']['scientificApproval']
+    assert science(record, data, aliases, invoke=invoke, checkpoint=checkpoint) == result
+    assert invoke.call_count == 2
+    record['state']['sharedExperimentReview']['batchResponses'][1]['content'] += ' '
+    with pytest.raises(DeepResearchError, match='早停设计审核'):
+        science(record, data, aliases, invoke=invoke, checkpoint=checkpoint)
+
+
 def test_failed_fact_paths_address_decoded_proposal_fields():
     from services.deep_research.shared_experiment_revision import fact_edit_paths
     from services.deep_research.shared_experiment_review import _pointer

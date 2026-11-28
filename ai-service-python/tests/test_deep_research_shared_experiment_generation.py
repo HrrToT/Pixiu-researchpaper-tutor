@@ -679,6 +679,15 @@ def test_generation_distinguishes_held_out_list_from_training_state():
     assert 'create them in evaluation_prepare, separate from training outputs' not in previous
 
 
+def test_latest_design_requires_nonempty_splits_and_explicit_tensor_layout():
+    from services.deep_research.shared_experiment_generation import EXECUTION_READINESS_MARKER, instructions
+
+    record = {MARKER: 8, EXECUTION_READINESS_MARKER: 1}
+    prompt = instructions(record)
+    assert 'Stop for empty or overlapping splits' in prompt
+    assert 'Specify layout, shapes, axes, initial values' in prompt
+
+
 def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     from services.deep_research import experiment_protocol_sources as protocol
     from services.deep_research.shared_experiment_generation import instructions

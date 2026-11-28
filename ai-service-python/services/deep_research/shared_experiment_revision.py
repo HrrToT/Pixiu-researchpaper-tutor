@@ -276,7 +276,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     def no_action(*args,**kwargs): raise AssertionError('Repair requires a saved, diagnosed failure')
     base=original_generation(prior,input_data,aliases,invoke=no_action,checkpoint=no_action,required_domains=required_domains)
     status = prior['state'].get('sharedExperimentReview', {}).get('status')
-    eligible_prefix = status == 'invalid_response' and record.get(SCOPED_PACKET_MARKER) == 7
+    eligible_prefix = status in ('invalid_response', 'stopped_design_failure') and record.get(SCOPED_PACKET_MARKER) == 7
     if status not in ('checked', 'not_started_precheck') and not eligible_prefix:
         raise DeepResearchError('shared_experiment_revision_not_eligible','没有已确认的科学或正文缺口，不能自动修订。')
     reviewed=science(prior,input_data,aliases,invoke=no_action,checkpoint=no_action,required_domains=required_domains)

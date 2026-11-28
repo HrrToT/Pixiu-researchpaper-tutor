@@ -66,6 +66,7 @@ Input:
 '''
 COMPACT_REVIEW_MARKER = 'sharedExperimentCompactReviewVersion'
 STOP_INVALID_BATCH_MARKER = 'sharedExperimentStopInvalidReviewBatchVersion'
+EARLY_DESIGN_REPAIR_MARKER = 'sharedExperimentEarlyDesignRepairVersion'
 REFERENCE_MARKER = 'sharedExperimentReviewReferenceVersion'
 FACT_CONTEXT_MARKER = 'sharedExperimentFactContextVersion'
 SCOPED_PACKET_MARKER = 'sharedExperimentScopedReviewPacketVersion'
@@ -336,7 +337,7 @@ def descriptor(record, check_ids=None):
 def _settled_review_prefix(saved):
     """Identify a settled prefix before an invalid or unsent packet."""
     batches = saved.get('batches')
-    if saved.get('status') == 'stopped_budget':
+    if saved.get('status') in ('stopped_budget', 'stopped_design_failure'):
         responses = saved.get('batchResponses')
         if (isinstance(batches, list) and isinstance(responses, list)
                 and 0 < len(responses) < len(batches)
@@ -445,13 +446,13 @@ def reviewed_prefix_findings(record, input_data, aliases, saved, *, include_sour
                 return {}
             part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']),
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4, 5) else None,
                                  named_id_version=record.get(INDEXED_STATES_MARKER))
             problems, passed = _binding_findings(
                 part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
                 contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                 state_arrays=record.get(REFERENCE_MARKER) == 4,
-                pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
+                pairing_arrays=record.get(INDEXED_STATES_MARKER) in (4, 5),
                 group_levels=_group_bindings(record),
                 seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                 fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1,
@@ -475,6 +476,23 @@ def reviewed_prefix_findings(record, input_data, aliases, saved, *, include_sour
     if include_source_fact_status:
         result['passedSourceFacts'] = sorted(passed_source_facts)
     return result
+
+
+def _design_failure_before_human_reviews(record, input_data, aliases, saved):
+    if (saved.get(EARLY_DESIGN_REPAIR_MARKER) != 1 or record.get(EARLY_DESIGN_REPAIR_MARKER) != 1
+            or review_slot(record) != 'sharedExperimentReview'
+            or saved.get('response') != saved.get('batchResponses')
+            or digest(saved.get('response')) != saved.get('responseDigest')):
+        return {}
+    prefix = reviewed_prefix_findings(record, input_data, aliases, saved, include_source_fact_status=True)
+    if not prefix or not any(row['status'] == 'failed' for row in prefix['checks']):
+        return {}
+    review_targets = targets(record)
+    facts = {target['checkId'] for target in review_targets if target['kind'] == 'source_fact'}
+    human = {target['checkId'] for target in review_targets if target['kind'] == 'human_requirement'}
+    if set(prefix['passedSourceFacts']) == facts and set(prefix['uncheckedIds']) <= human:
+        return prefix
+    return {}
 
 
 def build(record, input_data, aliases, *, required_domains=()):
@@ -573,7 +591,7 @@ def build(record, input_data, aliases, *, required_domains=()):
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view, policy=instructions):
         if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
-            if record.get(INDEXED_STATES_MARKER) == 4:
+            if record.get(INDEXED_STATES_MARKER) in (4, 5):
                 policy = ('Use exact IDs in /steps, /states, /metrics, /factors, /budgets, /groups and /data/inputs, '
                           'e.g. /budgets/@ID/cap. Exact pairing ID lists are allowed. '
                           'Use zero-based indices for other lists.\n'
@@ -678,6 +696,8 @@ def build(record, input_data, aliases, *, required_domains=()):
         supplied = None
     stop_policy = ({STOP_INVALID_BATCH_MARKER: 1}
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
+    if batches and record.get(EARLY_DESIGN_REPAIR_MARKER) == 1 and review_slot(record) == 'sharedExperimentReview':
+        stop_policy[EARLY_DESIGN_REPAIR_MARKER] = 1
     protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
     fact_policy = ({FACT_CONTEXT_MARKER: record[FACT_CONTEXT_MARKER]}
                    if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4, 5) else {})
@@ -858,20 +878,29 @@ def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_p
         # Convert exact immutable IDs before scope and literal validation.
         # Numeric paths and the stored provider response retain their identity.
         keys = ['steps', 'states']
-        if named_id_version in (3, 4):
+        if named_id_version in (3, 4, 5):
             keys.append('metrics')
-        if named_id_version == 4:
+        if named_id_version in (4, 5):
             keys.extend(('factors', 'budgets', 'groups'))
         collections = {f'/{key}': named_plan.get(key, []) for key in keys}
-        if named_id_version == 4:
+        if named_id_version in (4, 5):
             collections['/data/inputs'] = named_plan.get('data', {}).get('inputs', [])
         indices = {prefix: {row['id']: i for i, row in enumerate(rows)} for prefix, rows in collections.items()}
         for row in [*part['checks'], *part['issues']]:
             for i, path in enumerate(row['planBindings']):
                 prefix, marker, rest = path.partition('/@')
-                if not marker or prefix not in indices:
+                if not marker:
+                    if named_id_version != 5:
+                        continue
+                    prefix = next((key for key in indices if path.startswith(key + '/')), '')
+                    if not prefix:
+                        continue
+                    rest = path[len(prefix) + 1:]
+                if prefix not in indices:
                     continue
                 alias, _, field = rest.partition('/')
+                if not marker and (alias.isdecimal() or alias not in indices[prefix]):
+                    continue
                 if not field or alias not in indices[prefix]:
                     raise ValueError(f'Review pointer uses an unknown ID or lacks a field in {prefix}')
                 row['planBindings'][i] = f'{prefix}/{indices[prefix][alias]}/{field}'
@@ -1013,7 +1042,7 @@ def assess(record, input_data, aliases, response):
                                 if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3, 4, 5) else None,
                                  named_id_version=record.get(INDEXED_STATES_MARKER))
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
@@ -1028,7 +1057,7 @@ def assess(record, input_data, aliases, response):
                                              references=reference_review_enabled(record),
                                              contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
                                              state_arrays=record.get(REFERENCE_MARKER) == 4,
-                                             pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
+                                             pairing_arrays=record.get(INDEXED_STATES_MARKER) in (4, 5),
                                              group_levels=_group_bindings(record),
                                              seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                                              fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
@@ -1098,6 +1127,11 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     if saved['status'] == 'stopped_budget':
         stop = saved['budgetStop']
         raise BudgetExhaustedError(stop['kind'], stop['limit'], stop['used'])
+    if saved['status'] == 'stopped_design_failure':
+        prefix = _design_failure_before_human_reviews(record, input_data, aliases, saved)
+        if not prefix:
+            raise DeepResearchError('invalid_shared_experiment_review_state','早停设计审核的依据已改变。')
+        return {**saved, 'verifiedPrefixFindings': prefix}
     if saved['status'] == 'not_started_precheck': return saved
     if saved['status'] == 'invocation_failed':
         raise DeepResearchError('shared_experiment_review_stopped','此次审核调用未完成，不能自动重发。')
@@ -1131,14 +1165,14 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                      context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
                                      named_plan=proposal if check_bindings_before_next
-                                     and record.get(INDEXED_STATES_MARKER) in (2, 3, 4) else None,
+                                     and record.get(INDEXED_STATES_MARKER) in (2, 3, 4, 5) else None,
                                      named_id_version=record.get(INDEXED_STATES_MARKER))
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
                                                          contrast_arrays=built.get(REFERENCE_MARKER) in (3, 4),
                                                          state_arrays=built.get(REFERENCE_MARKER) == 4,
-                                                         pairing_arrays=record.get(INDEXED_STATES_MARKER) == 4,
+                                                         pairing_arrays=record.get(INDEXED_STATES_MARKER) in (4, 5),
                                                          group_levels=_group_bindings(record),
                                                          seed_array=record.get(SEED_BINDINGS_MARKER) == 1,
                                                          fit_capture_array=record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1)
@@ -1157,6 +1191,14 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         for index in range(len(responses), len(requests)):
             if stopped:
                 break
+            if built.get(EARLY_DESIGN_REPAIR_MARKER) == 1 and responses:
+                partial = {**saved, 'status': 'stopped_design_failure',
+                           'assessment': {'valid':False,'complete':False,'scientificApproval':False},
+                           'response':deepcopy(responses), 'responseDigest':digest(responses)}
+                prefix = _design_failure_before_human_reviews(record, input_data, aliases, partial)
+                if prefix:
+                    checkpoint(deepcopy(partial))
+                    return {**partial, 'verifiedPrefixFindings':prefix}
             req = requests[index]
             if reference_review_enabled(built):
                 expected_scope = (built['batches'][index]['checkIds'] if 'batches' in built
