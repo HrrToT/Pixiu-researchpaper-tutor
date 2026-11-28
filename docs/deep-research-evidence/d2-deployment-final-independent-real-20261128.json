@@ -1,0 +1,44 @@
+{
+  "runId": "dr_d2_deployment_final_independent_20261128",
+  "sourceRun": "dr_d2_deployment_advice_only_20261128",
+  "scope": "Independent final coverage and coherence check over the previously verified report.",
+  "model": "gpt-6.1-terra",
+  "usage": {
+    "total_tokens": 9760,
+    "input_tokens": 8955,
+    "output_tokens": 805,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 8952
+  },
+  "modelCalls": 1,
+  "reservedModelCalls": 1,
+  "externallyPublished": false,
+  "isolatedPublicationOutcome": "partial",
+  "singleLedgerEndToEndBudgetEstablished": false,
+  "coherent": true,
+  "claimIds": [
+    "cmp_0_0",
+    "cmp_1_0",
+    "cmp_2_0",
+    "cmp_3_0",
+    "cmp_4_0",
+    "cmp_5_0",
+    "cmp_6_0",
+    "cmp_7_0",
+    "cmp_conclusion_0",
+    "cmp_conclusion_2",
+    "cmp_conclusion_1"
+  ],
+  "remainingCoverageGap": {
+    "obligationId": "answer_scope",
+    "requestExcerpt": "向初学者比较原始表示与压缩后部署的取舍",
+    "missingAnswerElement": "对伪视角蒸馏等关键术语及其工作过程缺少初学者可理解的解释。"
+  },
+  "rawArtifactSha256": {
+    "intent.json": "229bc14076bab32c59ccf20db4489a806f91d80f6d27df604bbd71430ca9a2ad",
+    "run.json": "8b9705b9a187b798f1ceeb45c3a8fe801aff274e6d675256f186a195d376ccf3",
+    "calls.json": "4f9f3cbdacbecc2c638ce37814b3db9d66f73e7d42514b50dd64c6aa4125534c",
+    "verify-return.json": "fd890af16c645857f4d257b20d207c78b73e120a112008c65e8cc902a8acace4",
+    "publish-return.json": "f4cea12cc7211a1f011704ea9331c93df862c9462378f0eb9d90d35dc53bfafa"
+  }
+}
