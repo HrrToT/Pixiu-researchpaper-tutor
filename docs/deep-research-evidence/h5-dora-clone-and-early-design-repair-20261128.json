@@ -1,0 +1,155 @@
+{
+  "generationCandidate": "3ba4c5bcf",
+  "reviewCandidate": "78dfdbed3",
+  "initialLive": {
+    "failure": "DeepResearchError",
+    "code": "invalid_shared_experiment_response",
+    "elapsedSeconds": 46.95,
+    "newCalls": 1,
+    "cumulativeTokens": 30825,
+    "localPublication": false,
+    "publishedToWorkspace": false
+  },
+  "continuedLive": {
+    "claim_ids": [],
+    "report_version_id": "report_dr_h5_dora_clone_scope_20261128_shared_incomplete",
+    "elapsedSeconds": 25.97,
+    "newCalls": 2,
+    "cumulativeTokens": 44826,
+    "localPublication": false
+  },
+  "nextRepairPreflight": {
+    "status": "pending",
+    "inputBytes": 29264,
+    "providerCalls": 0
+  },
+  "offlineEarlyStop": {
+    "rawPacketsReplayed": 2,
+    "passedSourceFacts": [
+      "fact_0",
+      "fact_1",
+      "fact_2",
+      "fact_3",
+      "fact_4",
+      "fact_5"
+    ],
+    "failedDesignChecks": [
+      {
+        "checkId": "section_1",
+        "reason": "任务及资产未声称现已可用，并有身份和重叠检查；但未规定训练、验证和测试各非空的验收与停止条件，极小清单可产生空训练或验证划分。"
+      },
+      {
+        "checkId": "section_2",
+        "reason": "参数和配置有具体初始化，资产也有准备检查；但把输出通道范数与列范数混用，未定义权重矩阵布局、归一化轴及m形状，无法唯一实现论文参数化或核验初始有效权重。"
+      },
+      {
+        "checkId": "section_4",
+        "reason": "配对克隆和独立可变状态有检查，但公共初始化以输出通道范数定义m，臂状态却称列范数；未指定矩阵布局和轴，不能确认两者及论文初始化一致。"
+      }
+    ],
+    "uncheckedHumanChecks": [
+      "requirement_0_0",
+      "requirement_0_1",
+      "requirement_0_2",
+      "requirement_0_3",
+      "requirement_1_0",
+      "requirement_2_0",
+      "requirement_3_0",
+      "requirement_4_0",
+      "requirement_5_0",
+      "requirement_6_0",
+      "requirement_7_0"
+    ],
+    "humanBatchesDeferred": 2,
+    "scientificApproval": false,
+    "providerCalls": 0
+  },
+  "latestGenerationPreflight": {
+    "inputBytes": 31889,
+    "requiredDomains": [
+      "memory",
+      "quality"
+    ],
+    "evidence": 18
+  },
+  "independentHoldoutCredit": false,
+  "rawArtifacts": {
+    "tmp/openai-h5-dora-metric-scope-20261128/run.json": "f52d04a15740fc445add4a3fc6f2d1c5c56b3323fd9b425d1071cd09246cefb4",
+    "tmp/openai-h5-dora-metric-scope-20261128/calls.json": "0ba5fd10184b209c1344e7d0a59c8c679a77e6becadd37b8c43e3ef8f8511df7",
+    "tmp/openai-h5-dora-metric-scope-20261128/intent.json": "67aebdddb8ca4f94cc1784f89907c00c350c517cd2f082cc0b1b1fbed76bf26d",
+    "tmp/openai-h5-dora-metric-scope-20261128/result.json": "624655c928d5906441320b2583ffa0a9ee5aa6a2dba671365cec960d12a94147",
+    "tmp/openai-h5-dora-clone-scope-20261128/run.json": "179f9ddb4214b2777eb3c36357e5488ed7c62e7e031928dbd2cd7cb321c56271",
+    "tmp/openai-h5-dora-clone-scope-20261128/calls.json": "934666047fd1607b6c2794c8b24c6aec69a57e246f3310e918bb1ea1582898ca",
+    "tmp/openai-h5-dora-clone-scope-20261128/preflight.json": "b71b3a2231c6c12fcaa4fad5c4422cca7063d3d06f8da7fa1a325d993da6740d",
+    "tmp/openai-h5-dora-clone-scope-20261128/result.json": "cc2d32038eeedf0aac67c6ddf0648625fa674873e550d265ccdd20d0a56d5701",
+    "tmp/openai-h5-dora-early-repair-20261128/run.json": "b6f29aa690be4e90f56095e3a4bc69c6d8eba5bdee298a66566ad1eeff9cff87",
+    "tmp/openai-h5-dora-early-repair-20261128/calls.json": "14fa659519075e1e97fa984239222f7432f7e6e501d1a9869af212be14eaa830",
+    "tmp/openai-h5-dora-early-repair-20261128/result.json": "ec4f562012012f06c50cdd22ee2c600e802ff12b5dc952aef5cc09d57301bf20",
+    "tmp/openai-h5-dora-early-repair-20261128/preflight.json": "bb60615cb6a1986cff4f1a2fe2eeca27306990f00e7b4a8f72ff15222ec7d32d",
+    "tmp/openai-h5-dora-early-repair-20261128/provider.jsonl": "1cbcc0ceecbd32ce7a63e9d2a8d30364ab98817d5fa70b8fc4862135384b5218"
+  },
+  "actualEarlyRepairCandidate": "3bc2c8eb0",
+  "actualEarlyRepair": {
+    "claim_ids": [],
+    "report_version_id": "report_dr_h5_dora_early_repair_20261128_shared_incomplete",
+    "elapsedSeconds": 65.3,
+    "newCalls": 4,
+    "cumulativeTokens": 84059,
+    "localPublication": false
+  },
+  "actualEarlyRepairNewTokens": 39233,
+  "revisedScientificReview": {
+    "total": 25,
+    "passed": 20,
+    "remainingUserRequirements": [
+      {
+        "checkId": "requirement_0_0",
+        "status": "failed",
+        "reason": "四组和研究问题明确，但未给出原论文常识推理数据集、划分、数量、指标及训练设置；拟议事后查阅不能替代用户要求的原始事实。"
+      },
+      {
+        "checkId": "requirement_0_1",
+        "status": "unresolved",
+        "reason": "初始化、超参数和预算具体，数据身份、精确成员与数量尚未确定。方案规定从论文核验并取得资产及失败停止，但所选任务尚未指定，当前无法确认该配置可执行。"
+      },
+      {
+        "checkId": "requirement_1_0",
+        "status": "unresolved",
+        "reason": "尚未命名选定常识推理任务，亦无其实际清单或数量。获取、逐项计数、去重和身份核验有明确停止条件，但目前不能验证所选子集存在及成员。"
+      },
+      {
+        "checkId": "requirement_2_0",
+        "status": "failed",
+        "reason": "未提供DoRA常识推理实验各数据集的训练、验证、测试划分和样本量及原评估指标；拟议准确率与日后查核不能替代原论文事实。"
+      },
+      {
+        "checkId": "requirement_3_0",
+        "status": "failed",
+        "reason": "说明了原DoRA初始化及可训练参数的部分事实，但原常识推理实验训练预算和超参数未列出；具体配置被明确标为拟议，事后核查不能补足当前回答。"
+      }
+    ],
+    "factualBatchReused": true,
+    "scientificApproval": false
+  },
+  "baselineConfigurationReplay": {
+    "inputBytes": 31996,
+    "requiredDomains": [
+      "memory",
+      "quality"
+    ],
+    "evidenceCount": 18,
+    "baselinePage": 13,
+    "baselineAliases": [
+      "E1",
+      "E2"
+    ],
+    "baselineEvidenceIds": [
+      "ev_79cb6e62c10fcb597d7cbae6f1d2bc0716092ca41fdcc8d94c22692d8d7ba815",
+      "ev_b4021b9641125090cba46375ce913939854b12dabfff402864f0c8956ed734c8"
+    ],
+    "providerCalls": 0,
+    "independentHoldoutCredit": false,
+    "candidate": "1b5811e76416bf04bbdd72fbf1bec2bd203cb154"
+  },
+  "regressionTests": 515
+}
