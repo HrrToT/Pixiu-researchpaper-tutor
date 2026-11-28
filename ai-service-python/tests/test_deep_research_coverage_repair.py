@@ -44,6 +44,38 @@ def test_beginner_gap_repairs_only_the_measured_lead():
         assert unscoped['accepted'] == []
 
 
+def test_beginner_term_gap_repairs_only_mechanism_cells_that_use_the_terms():
+    claims = [_claim('lead', ['example'], '向量量化后的测试结果。'),
+              _claim('left', ['mechanism'], '球谐系数描述颜色。'),
+              _claim('right', ['mechanism'], '球谐系数、蒸馏和向量量化。'),
+              _claim('cost', ['cost'], '向量量化处理成本。')]
+    report = {'claims': claims, 'comparisonCells': {'layout': [
+        {'axisTitle': '表示与压缩机制', 'claimIds': ['left']},
+        {'axisTitle': '表示与压缩机制', 'claimIds': ['right']},
+        {'axisTitle': '额外处理成本', 'claimIds': ['cost']},
+    ]}}
+    excerpt = '向初学者比较原始表示与压缩后部署的取舍'
+    gap = {'obligationId': 'answer_scope', 'wholeQuestion': True, 'question': excerpt,
+           'missingRequestExcerpt': excerpt}
+    audit = {'status': 'checked', 'requestCoverageContractVersion': 5, 'gaps': [gap], 'diagnosticErrors': [],
+             'wholeQuestionDiagnostic': {'requestExcerpt': excerpt,
+                 'missingAnswerElement': '球谐系数、蒸馏和向量量化等核心术语缺少面向初学者的解释。'}}
+    verification = {'accepted': claims, 'rejected': []}
+    kwargs = dict(prioritize_specific=True, bound_comparison_targets=True, beginner_lead_claim_id='lead')
+    routed = prepare_coverage_repair(report, verification, audit, beginner_term_repair=True, **kwargs)
+    assert [row['claimId'] for row in routed['accepted']] == ['lead', 'cost']
+    left, right = routed['rejected']
+    assert left['claimId'] == 'left' and '球谐系数' in left['missingQuestions'][1]
+    assert '向量量化' not in left['missingQuestions'][1]
+    assert right['claimId'] == 'right' and '球谐系数、蒸馏、向量量化' in right['missingQuestions'][1]
+    assert not any('beginnerLeadRepair' in row for row in routed['rejected'])
+    assert prepare_coverage_repair(report, verification, audit, beginner_term_repair=True,
+                                   **{**kwargs, 'beginner_lead_claim_id': None}) == routed
+    assert prepare_coverage_repair(report, verification, audit, **kwargs)['rejected'][0]['claimId'] == 'lead'
+    invalid = {**audit, 'wholeQuestionDiagnostic': {**audit['wholeQuestionDiagnostic'], 'requestExcerpt': '其他问题'}}
+    assert prepare_coverage_repair(report, verification, invalid, beginner_term_repair=True, **kwargs)['rejected'][0]['claimId'] == 'lead'
+
+
 def test_merge_initial_conflicting_identity_stays_rejected():
     claim = _claim('c', ['o'], 'ambiguous')
     initial = {'accepted': [claim], 'rejected': [{'claimId': 'c', 'reason': 'failed'}]}

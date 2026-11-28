@@ -309,6 +309,11 @@ def test_beginner_mechanism_guidance_is_scoped_to_paper_cells_and_new_runs():
     assert marker not in historic and marker in authored
     assert 'what guides it and why it matters when the cited passage supports that explanation' in authored
     assert marker not in render(r, question, cp, {}, None, 4, source_scope=('joint',))
+    r['comparisonBeginnerMechanismGuidanceVersion'] = 2
+    plain = 'At first use, explain each essential technical term in ordinary Chinese beside it.'
+    assert plain not in authored
+    assert plain in render(r, question, cp, {}, None, 4, source_scope=('P1',))
+    assert plain not in render(r, question, cp, {}, None, 4, source_scope=('joint',))
     r['question'] = QUESTION
     assert render(r, QUESTION, cp, {}, None, 4, source_scope=('P1',)) == render(
         {**r, 'comparisonBeginnerMechanismGuidanceVersion': 0}, QUESTION, cp, {}, None, 4, source_scope=('P1',))

@@ -9,6 +9,7 @@ context (which accepted claims are being withheld for follow-up, and why).
 """
 
 import copy
+import re
 
 
 def _claim_id(claim):
@@ -62,14 +63,40 @@ def review_binding_only(audit, gap, *, invalid_process_reviews=False):
     return True
 
 
-def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False, bound_comparison_targets=False, beginner_lead_claim_id=None):
+def _beginner_terms_by_claim(report, audit, excerpt, accepted_by_id):
+    """Route literal term names to their comparison cells, never copy reviewer instructions."""
+    diagnostic = audit.get('wholeQuestionDiagnostic') or {}
+    if audit.get('diagnosticErrors') != [] or diagnostic.get('requestExcerpt') != excerpt:
+        return {}
+    missing = diagnostic.get('missingAnswerElement')
+    if not isinstance(missing, str):
+        return {}
+    match = re.fullmatch(r'([^。；！？]{1,60}?)等?(?:关键|核心|专业|技术)?(?:术语|概念)(?:[^。；！？]{0,35})(?:解释|说明)。?', missing)
+    if not match:
+        return {}
+    terms = list(dict.fromkeys(re.split(r'、|，|及|和|与', match.group(1))))
+    terms = [term.strip() for term in terms if re.fullmatch(r'[\u4e00-\u9fffA-Za-z0-9 -]{2,16}', term.strip())]
+    from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
+    matches = {}
+    for cell in report.get('comparisonCells', {}).get('layout', []):
+        label = cell.get('axisTitle', '')
+        if not (representation_requested(label) or compression_mapping_requested(label, include_operations=True)):
+            continue
+        for cid in cell.get('claimIds', []):
+            claim = accepted_by_id.get(cid)
+            if claim and (present := [term for term in terms if term in claim.get('text', '')]):
+                matches[cid] = present
+    return matches
+
+
+def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=False, defer_binding_errors=False, defer_invalid_reviews=False, defer_invalid_diagnostics=False,defer_invalid_process_reviews=False, bound_comparison_targets=False, beginner_lead_claim_id=None, beginner_term_repair=False):
     """Withhold accepted claims needed to close audit gaps.
 
     Returns a new verification-shaped dict whose ``accepted`` list drops the
     targeted claims and whose ``rejected`` list is the union of the original
     rejections plus one coverage row per targeted claim.
     """
-    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics,defer_invalid_process_reviews,bound_comparison_targets)):
+    if any(type(v) is not bool for v in (prioritize_specific,defer_binding_errors,defer_invalid_reviews,defer_invalid_diagnostics,defer_invalid_process_reviews,bound_comparison_targets,beginner_term_repair)):
         raise ValueError('Invalid coverage repair scheduling policy')
     report = report or {}
     verification = verification or {}
@@ -162,6 +189,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             questions.append('未核实的完整性诊断（仅供定位，须核对原问题与证据）：'
                 + json.dumps(gap['gapDetail'],ensure_ascii=False,sort_keys=True))
         gap_targets = set()
+        term_targets = {}
 
         for cid in bindings_by_obligation.get(obligation_id, []):
             if cid in accepted_by_id and cid in report_ids:
@@ -206,18 +234,26 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             # rewrite just because its verdict binds the rest of the answer.
             gap_targets = set(targets)
         elif (scoped and bound_comparison_targets and gap.get('wholeQuestion')
-                and beginner_lead_claim_id in accepted_report_ids and gap.get('missingRequestExcerpt')):
+                and gap.get('missingRequestExcerpt')):
             from services.deep_research.audience_rewrite import beginner_requested
             excerpt = gap['missingRequestExcerpt']
             if isinstance(excerpt, str) and beginner_requested({'question': excerpt}):
-                # Improve the explanation at the point where the reader sees
-                # the measured trade-off. Other covered claims stay accepted.
-                gap_targets = {beginner_lead_claim_id}
-                lead_repair_id = beginner_lead_claim_id
+                if beginner_term_repair:
+                    term_targets = _beginner_terms_by_claim(report, audit, excerpt, accepted_by_id)
+                if term_targets:
+                    gap_targets = term_targets.keys() & report_ids
+                elif beginner_lead_claim_id in accepted_report_ids:
+                    gap_targets = {beginner_lead_claim_id}
+                    lead_repair_id = beginner_lead_claim_id
 
         for cid in gap_targets:
             bucket = targets.setdefault(cid, [])
-            for missing_question in questions:
+            requested = questions
+            if cid in term_targets:
+                names = '、'.join(term_targets[cid])
+                requested = [excerpt, f'请在本比较单元中用简短通俗的话解释这些现有术语：{names}。'
+                             '保留原有操作、事实、数字和原文依据。']
+            for missing_question in requested:
                 if missing_question not in bucket:
                     bucket.append(missing_question)
 

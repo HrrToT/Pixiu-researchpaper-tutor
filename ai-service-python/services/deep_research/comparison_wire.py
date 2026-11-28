@@ -774,7 +774,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
 
             if requests_recheck(question):
                 body_guidance += '\n' + DRAFT_GUIDANCE + '\n'
-        if record.get('comparisonBeginnerMechanismGuidanceVersion') == 1 and data['papers']:
+        if record.get('comparisonBeginnerMechanismGuidanceVersion') in (1, 2) and data['papers']:
             from services.deep_research.audience_rewrite import beginner_requested
             from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
 
@@ -789,6 +789,10 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            "For a training or compression step, say what guides it and why it matters when the cited "
                            "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
                            "Stay in the existing comparison cell and cite the passage for the explanation.\n")
+                if record['comparisonBeginnerMechanismGuidanceVersion'] == 2:
+                    policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
+                               "Say what it means in this paper before using it to explain the method. "
+                               "Keep the definition in the cell, and use only the cited evidence.\n")
                 if record.get('comparisonMechanismReadContractVersion') == 4:
                     from services.deep_research.mechanism_sources import distillation_operation_score
                     for paper in data['papers']:
