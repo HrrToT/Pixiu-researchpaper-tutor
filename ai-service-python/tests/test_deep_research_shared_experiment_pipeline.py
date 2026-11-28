@@ -613,6 +613,28 @@ def test_scoped_fact_repair_keeps_uncited_unchanged_facts_and_rejects_cross_fact
             _apply_scoped(base, saved)
 
 
+def test_recipe_repair_cannot_modify_other_training_hyperparameters():
+    from unittest.mock import patch
+    from services.deep_research.shared_experiment_revision import _apply_scoped
+
+    original = {'sourceFacts': [], 'steps': [
+        {'operation': {'parameters': [{'name': 'steps', 'type': 'number', 'value': 1000}]}}
+    ]}
+    base = {'boundProposal': {'proposal': original}}
+    result = deepcopy(base['boundProposal'])
+    result['proposal']['steps'][0]['operation']['parameters'].extend([
+        {'name': 'fit_recipe_state', 'type': 'choice', 'value': 'recipe'},
+        {'name': 'training_loss', 'type': 'choice', 'value': 'MSE'},
+    ])
+    saved = {'response': {}, 'allowedRecipePaths': ['/steps/0/operation/parameters'], 'preserveSourceFacts': True}
+    with patch('services.deep_research.shared_experiment_revision.apply', return_value=result), patch(
+            'services.deep_research.shared_experiment_protocol_checks.detect', return_value=[]):
+        assert _apply_scoped(base, saved) == result
+        result['proposal']['steps'][0]['operation']['parameters'][0]['value'] = 10
+        with pytest.raises(ValueError, match='modified unrelated training parameters'):
+            _apply_scoped(base, saved)
+
+
 def test_fact_reference_candidates_stay_within_the_original_source_version():
     from services.deep_research.shared_experiment_revision import fact_reference_candidates
 

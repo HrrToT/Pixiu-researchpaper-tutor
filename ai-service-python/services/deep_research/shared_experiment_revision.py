@@ -208,6 +208,8 @@ def _input_digest(base, saved):
         scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
     if 'factRepairEvidenceAliases' in saved:
         scope['factRepairEvidenceAliases'] = saved['factRepairEvidenceAliases']
+    if 'allowedRecipePaths' in saved:
+        scope['allowedRecipePaths'] = saved['allowedRecipePaths']
     if saved.get('preserveSourceFacts') is True:
         scope['preserveSourceFacts'] = True
     if saved.get('omitLockedFactEvidence') is True:
@@ -242,7 +244,10 @@ def _apply_scoped(base, saved):
     omit_fact_evidence = saved.get('omitLockedFactEvidence') is True
     if omit_fact_evidence and saved.get('preserveSourceFacts') is not True:
         raise ValueError('Omitted fact quotations require locked source facts')
-    bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'),
+    allowed_paths = saved.get('allowedFactEditPaths')
+    if 'allowedRecipePaths' in saved:
+        allowed_paths = [*(allowed_paths or []), *saved['allowedRecipePaths']]
+    bound = apply(base, saved['response'], allowed_paths=allowed_paths,
                   evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1,
                   identical_unresolved_echo=saved.get(BOUND_DIGEST_MARKER) in (2, 3),
                   empty_action_parameters=saved.get(BOUND_DIGEST_MARKER) == 3)
@@ -253,6 +258,20 @@ def _apply_scoped(base, saved):
             bound['proposal'][key] == original
             for key, original in base['boundProposal']['proposal'].items() if key != 'unresolved'):
         raise UnchangedDesign('The revision only restates unresolved prerequisites')
+    if 'allowedRecipePaths' in saved:
+        from services.deep_research.shared_experiment_protocol_checks import RECIPE_PARAMETER_NAMES, detect
+        from services.deep_research.shared_experiment_review import _pointer
+        def other_parameters(rows):
+            return [row for row in rows if row['name'] not in RECIPE_PARAMETER_NAMES]
+
+        for path in saved['allowedRecipePaths']:
+            before = _pointer(base['boundProposal']['proposal'], path)
+            after = _pointer(bound['proposal'], path)
+            if other_parameters(before) != other_parameters(after):
+                raise ValueError('Recipe repair modified unrelated training parameters')
+        if any(issue['reason'] == 'shared_training_recipe_missing'
+               for issue in detect(bound['proposal'], require_fit_recipe=True)):
+            raise ValueError('Recipe repair did not establish a shared training recipe')
     if 'factRepairEvidenceAliases' in saved:
         scopes = saved['factRepairEvidenceAliases']
         original = base['boundProposal']['proposal']['sourceFacts']
@@ -262,7 +281,7 @@ def _apply_scoped(base, saved):
                     raise ValueError('Repair modified a source fact outside its input')
             elif not set(after['evidenceRefs']) <= set(scopes[after['id']]):
                 raise ValueError('Repair cited evidence outside the diagnosed fact input')
-    elif bound['proposal'].get('version') == 3 and not omit_fact_evidence:
+    elif bound['proposal'].get('version') == 3 and not omit_fact_evidence and 'allowedRecipePaths' not in saved:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
             raise ValueError('Repair cited evidence outside its input')
@@ -305,6 +324,25 @@ def _design_only_context(data, reviewed, proposal, *, for_final_answer=False, ve
                                       or bool({'before', 'after'}.intersection(context) - kept.keys())}
         evidence.append(quote)
     return {**data, 'evidence': evidence}
+
+
+def _fact_repair_context(input_data, facts, reference_candidates):
+    scopes = {
+        fact['id']: sorted(set(fact['evidenceRefs']) | {
+            ref for refs in reference_candidates.get(fact['id'], []) for ref in refs
+        }) for fact in facts
+    }
+    needed = {ref for refs in scopes.values() for ref in refs}
+    rows = [row for row in input_data['evidence'] if row['evidenceId'] in needed]
+    if {row['evidenceId'] for row in rows} != needed:
+        raise ValueError('Missing evidence for diagnosed fact repair')
+    sources = {row['source'] for row in rows}
+    tables = {row.get('tableDataRef') for row in rows}
+    context = {**input_data, 'evidence': rows,
+               'sources': {key: value for key, value in input_data['sources'].items() if key in sources},
+               'tables': {key: value for key, value in input_data['tables'].items() if key in tables}}
+    return context, {'suppliedEvidenceAliases': [row['evidenceId'] for row in rows],
+                     'factRepairEvidenceAliases': scopes}
 
 
 def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
@@ -369,8 +407,17 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     if record.get(PATH_MARKER) in (1, 2, 3, 4) and proposal.get('version') == 3:
         paths = fact_edit_paths(proposal, feedback.get('hardIssues', []))
         instructions = PATH_INSTRUCTIONS + instructions
+    hard_issues = feedback.get('hardIssues', [])
     fact_only = record.get(PATH_MARKER) in (2, 3, 4) and bool(paths) and all(
-        'factId' in issue for issue in feedback.get('hardIssues', []))
+        'factId' in issue for issue in hard_issues)
+    recipe_slots = []
+    if (record.get('sharedExperimentProtocolPrecheckVersion') == 2
+            and any(issue['reason'] == 'shared_training_recipe_missing' for issue in hard_issues)
+            and all(issue['reason'] == 'shared_training_recipe_missing'
+                    or record.get(PATH_MARKER) == 4 and issue.get('factId') in paths for issue in hard_issues)):
+        from services.deep_research.shared_experiment_protocol_checks import existing_recipe_slots
+        recipe_slots = existing_recipe_slots(proposal)
+    scoped_fact_edit = fact_only or bool(recipe_slots and paths)
     if not fact_only and record.get(PREREQUISITE_PLACEMENT_MARKER) in (1, 2):
         instructions = instructions.replace(
             'If unresolved prerequisites remain, list them honestly.',
@@ -406,7 +453,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     fields = {'proposal':proposal,'diagnosedFeedback':feedback}
     if paths:
         fields['factEditPaths'] = paths
-    if fact_only:
+    if scoped_fact_edit:
         instructions = FACT_INSTRUCTIONS
         if fact_boundary_enabled(record):
             instructions = instructions.replace('Narrow an unsupported assertion when necessary.',
@@ -435,24 +482,33 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':output_tokens,'timeout_seconds':90})
         return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
     supply = {}
-    if fact_only and record.get(PATH_MARKER) == 4:
-        scopes = {
-            fact['id']: sorted(set(fact['evidenceRefs']) | {
-                ref for refs in reference_candidates.get(fact['id'], []) for ref in refs
-            }) for fact in fields['sourceFacts']
-        }
-        needed = {ref for refs in scopes.values() for ref in refs}
-        rows = [row for row in input_data['evidence'] if row['evidenceId'] in needed]
-        if {row['evidenceId'] for row in rows} != needed:
-            raise ValueError('Missing evidence for diagnosed fact repair')
-        sources = {row['source'] for row in rows}
-        tables = {row.get('tableDataRef') for row in rows}
-        scoped = {**input_data, 'evidence': rows,
-                  'sources': {key: value for key, value in input_data['sources'].items() if key in sources},
-                  'tables': {key: value for key, value in input_data['tables'].items() if key in tables}}
-        req, size = measure(scoped, output_tokens=min(6144, 1536 + 512 * len(scopes)))
-        supply = {'suppliedEvidenceAliases': [row['evidenceId'] for row in rows],
-                  'factRepairEvidenceAliases': scopes}
+    scoped = input_data
+    if scoped_fact_edit and record.get(PATH_MARKER) == 4:
+        scoped, supply = _fact_repair_context(input_data, fields['sourceFacts'], reference_candidates)
+    if recipe_slots:
+        fields.pop('proposal', None)
+        fields.update(recipeSlots=recipe_slots, unresolved=proposal['unresolved'])
+        recipe_guidance = (
+            'Repair the shared training recipe of this proposed experiment. Retain existing parameters verbatim. '
+            'Replace one parameterPath with its full parameter array. New parameters use '
+            '{"name":"...","type":"choice","value":"..."}. Choose a listed state ID for fit_recipe_state; '
+            'give the training loss formula and reduction, projection/support/blending and SH convention. '
+            'Use explicit proposed rules; do not invent a released implementation or claim paper adoption. '
+            'Echo baseDigest and unresolved unchanged. Return only baseDigest, edits and unresolved.\n'
+        )
+        recipe_context = {'question': input_data['question']}
+        if scoped_fact_edit:
+            instructions = recipe_guidance + instructions.replace(
+                'Correct only the diagnosed paper facts with the supplied original evidence.',
+                'In the same edit object, also correct the diagnosed paper facts with their supplied evidence.')
+            recipe_context.update({key: scoped[key] for key in ('sources', 'tables', 'evidence')})
+        else:
+            instructions = recipe_guidance
+            supply.update(suppliedEvidenceAliases=[], preserveSourceFacts=True)
+        req, size = measure(recipe_context, output_tokens=4096 if scoped_fact_edit else 3072)
+        supply['allowedRecipePaths'] = [slot['parameterPath'] for slot in recipe_slots]
+    elif fact_only and record.get(PATH_MARKER) == 4:
+        req, size = measure(scoped, output_tokens=min(6144, 1536 + 512 * len(paths)))
     elif proposal.get('version') == 3:
         from services.deep_research.shared_experiment_review_input import fit_accounted_evidence
         decisions = feedback.get('scientificReview', {}).get('verdict', {}).get('checks', [])
@@ -573,7 +629,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             supply[REQUIRE_DESIGN_EDIT] = True
     else:
         req, size = measure(input_data)
-    if fact_only:
+    if scoped_fact_edit:
         supply['allowedFactEditPaths'] = [path for fact in paths.values() for path in fact.values()]
     built={'request':req,'baseBindingDigest':base['bindingDigest'],
            'inputBytes':size, **supply,

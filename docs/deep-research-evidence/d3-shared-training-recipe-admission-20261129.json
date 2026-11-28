@@ -1,0 +1,77 @@
+{
+  "scope": "Offline synthesis and scientific review admission using the stored real D3 response.",
+  "archivedRun": "tmp/openai-d3-ablation-fact-repair-20261129/run.json",
+  "archivedRunSha256": "d69ba0fc049c77982704f57f8b572eb8dd2abd0da863b7884b68179bf4f12ba2",
+  "inputBytes": {
+    "before": 31913,
+    "after": 31941,
+    "limit": 32000
+  },
+  "sameEvidenceAllocation": true,
+  "requiredEvidenceCount": 10,
+  "suppliedEvidenceCount": 12,
+  "hardIssuesBefore": [
+    {
+      "claimId": "shared_fact_4",
+      "reason": "absence_not_established",
+      "factId": "f5",
+      "evidenceRefs": [
+        "E6",
+        "E7"
+      ]
+    }
+  ],
+  "hardIssuesAfter": [
+    {
+      "claimId": "shared_fact_4",
+      "reason": "absence_not_established",
+      "factId": "f5",
+      "evidenceRefs": [
+        "E6",
+        "E7"
+      ]
+    },
+    {
+      "path": "/steps",
+      "reason": "shared_training_recipe_missing",
+      "trainingFitStepIds": [
+        "sfit",
+        "fit"
+      ],
+      "explicitChoiceParameters": [
+        "training_loss",
+        "renderer_convention",
+        "sh_convention"
+      ],
+      "pinnedImplementationChoiceParameters": [
+        "fit_implementation_pin",
+        "fit_entrypoint",
+        "fit_config"
+      ],
+      "binding": "Create a fixed persisted shared state in training prep. Set fit_recipe_state to its ID; every training fit reads it."
+    }
+  ],
+  "sameIssueOnRealFactRepairedProposal": true,
+  "modelCalls": 0,
+  "productionWrites": 0,
+  "scientificApproval": false,
+  "published": false,
+  "scopedRepairFixture": {
+    "mode": "Offline authored response; only existing training-recipe parameter arrays may change, plus diagnosed fact fields in the combined case.",
+    "priorGenericRepairBytes": 40577,
+    "recipeOnlyInputBytes": 4868,
+    "combinedRecipeAndFactInputBytes": 7345,
+    "recipeOnlyEvidenceAliases": [],
+    "combinedEvidenceAliases": [
+      "E6",
+      "E7"
+    ],
+    "preservedOtherFactsAndGroups": true,
+    "rejectedRemovalsOfUnrelatedParameters": true,
+    "rejectedIncompleteRecipe": true,
+    "remainingLocalHardIssues": 0,
+    "modelCalls": 0,
+    "scientificApproval": false
+  },
+  "targetedTestsPassed": 315
+}
