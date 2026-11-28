@@ -648,8 +648,13 @@ If a supported revision is not possible, omit that target rather than bypass sco
                 from services.deep_research.verified_text_budget import build as edit_plan
                 from services.deep_research.verified_text_repair import integrated_prompt
                 text_edit_plan=edit_plan(report,verification,evidence,question,originals,active_requirements,prior_revisions,text_edit_context)
-                if text_edit_plan['budget'] is not None and not text_edit_plan['budget']['editableTextCharacters']:
-                    raise BudgetExhaustedError('repairCharacters',text_edit_plan['budget']['totalCharacters'],text_edit_plan['budget']['reservedCharacters'])
+                budget = text_edit_plan['budget']
+                if budget is not None and not budget.get('insertionCharacters', budget['editableTextCharacters']):
+                    used = budget['reservedCharacters']
+                    if 'insertionCharacters' in budget:
+                        from services.deep_research.verified_text_budget import text_count
+                        used += text_count(list(originals.values()))
+                    raise BudgetExhaustedError('repairCharacters', budget['totalCharacters'], used)
                 template=integrated_prompt(question,length_contract,active_requirements,originals,packed_checks,question_dictionary,context,
                     permissions_marker,evidence_marker,text_edit_plan)
             if citation_presentation_version == 6:

@@ -513,7 +513,7 @@ class ResearchFacade:
             "reviewTargetStructureContractVersion": 2,
             "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": (
-                4 if output_kind == 'claim_verification' and len(materials) == 1
+                5 if output_kind == 'claim_verification' and len(materials) == 1
                 and isinstance(source_policy, dict) and source_policy.get('mode', 'task_only') == 'task_only' else 2),
             "sourceGapClosureContractVersion": 1,
             "comparisonMatchedExampleGapClosureVersion": 2,

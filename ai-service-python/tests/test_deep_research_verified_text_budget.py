@@ -63,6 +63,34 @@ def test_insertions_keep_verified_findings_and_are_counted_in_the_existing_budge
         _parse_repair_response(prepared, {'content':json.dumps(reply)}, json.loads, strict_response=True)
 
 
+def test_insertion_allowance_is_shown_after_subtracting_the_original_target():
+    report, verification, evidence, opts = inputs()
+    original = '已确认的观察。原有处理步骤。'
+    report['claims'][0]['text'] = original
+    context = {**CTX, 'insertionOnly': True, 'insertionBudgetVersion': 1}
+    prepared = _prepare_repair(report, verification, evidence, '解释过程，限100字。',
+        verified_text_edits=True, integrated_text_edits=True, text_edit_context=context, **opts)
+    budget = prepared['verifiedTextEditPlan']['budget']
+    allowance = budget['editableTextCharacters'] - text_count([report['claims'][0]])
+    assert allowance > 0 and budget['insertionCharacters'] == allowance
+    assert f'加起来最多 {allowance} 字符' in prepared['prompt']
+    reply = [{'claimId':'c','insertions':[{'after':'原有处理步骤。','text':'增'*allowance}]}]
+    parsed, = _parse_repair_response(prepared, {'content':json.dumps(reply)}, json.loads, strict_response=True)
+    assert parsed['text'] == original + '增'*allowance
+    reply[0]['insertions'][0]['text'] += '增'
+    with pytest.raises(DeepResearchError, match='超过共享字数预算'):
+        _parse_repair_response(prepared, {'content':json.dumps(reply)}, json.loads, strict_response=True)
+
+
+def test_frozen_insertions_without_room_are_not_sent():
+    report, verification, evidence, opts = inputs()
+    report['claims'][0]['text'] = '甲' * 100
+    context = {**CTX, 'insertionOnly': True, 'insertionBudgetVersion': 1}
+    with pytest.raises(BudgetExhaustedError, match='repairCharacters'):
+        _prepare_repair(report, verification, evidence, '解释过程，限100字。', verified_text_edits=True,
+            integrated_text_edits=True, text_edit_context=context, **opts)
+
+
 @pytest.mark.parametrize('edit', [
     {'text':'完整替换'},
     {'insertions':[{'after':'不存在的句子','text':'附注。'}]},

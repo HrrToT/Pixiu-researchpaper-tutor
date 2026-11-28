@@ -2598,7 +2598,7 @@ def make_verify_node(
                       else {'accepted': [], 'rejected': []})
             return {**result, 'rejected': [*result.get('rejected', []), *refused]}
         text_repair_version = record.get('verifiedTextRepairContractVersion')
-        scoped_text_repair = text_repair_version in (3, 4)
+        scoped_text_repair = text_repair_version in (3, 4, 5)
         repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
             verification_result = saved['initialVerification']
@@ -2819,7 +2819,7 @@ def make_verify_node(
                                for row in repair_targets.get('rejected', [])):
                             benchmark_example['introOnly'] = True
                     from services.deep_research.verified_text_repair import explanation_gaps
-                    insert_explanations = text_repair_version == 4 and explanation_gaps(answer_coverage)
+                    insert_explanations = text_repair_version in (4, 5) and explanation_gaps(answer_coverage)
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         **({'benchmark_example': benchmark_example} if benchmark_example is not None else {}),
@@ -2832,13 +2832,14 @@ def make_verify_node(
                         **({'comparison_priority_evidence':comparison_priority_evidence}
                            if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and text_repair_version in (1,2,3,4)
+                           and text_repair_version in (1,2,3,4,5)
                            and not comparison_authoring_enabled(record) else {}),
                         **({'integrated_text_edits':True,'text_edit_context':{
                             'outputKind':saved.get('outputKind'),'presentationVersion':record['reportPresentationContractVersion'],
-                            **({'insertionOnly':True} if insert_explanations else {})}}
+                            **({'insertionOnly':True} if insert_explanations else {}),
+                            **({'insertionBudgetVersion':1} if insert_explanations and text_repair_version == 5 else {})}}
                            if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and text_repair_version in (2,3,4)
+                           and text_repair_version in (2,3,4,5)
                            and not comparison_authoring_enabled(record)
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
