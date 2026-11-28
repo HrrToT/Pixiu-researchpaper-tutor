@@ -797,7 +797,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 body_guidance += ('Boundary observedSettings are protocol settings, e.g. hardware, dataset or '
                                   'resolution. Keep measured FPS, storage and quality values in the example only. '
                                   'Use notEstablished for comparisons the cited protocols cannot establish.\n')
-            if record.get('comparisonEvaluationProtocolVersion') in (8, 9):
+            if record.get('comparisonEvaluationProtocolVersion') in (8, 9, 10):
                 from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
                 if explicitly_requests_cross_paper_speed(question):
                     body_guidance += ('For a requested cross-paper FPS ranking limit, name the specific alignment '

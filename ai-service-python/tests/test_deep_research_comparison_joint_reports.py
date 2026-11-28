@@ -13,6 +13,26 @@ from services.deep_research.reporting import render_report
 from test_deep_research_comparison_intent import packets,obligation,QUESTION,record
 
 
+def test_owned_speed_retrieval_prefers_direct_report_over_reference_timing():
+    from services.deep_research.comparison_joint_reports import retain_owned_speed_result, rendered_speed_rank
+
+    row = {'pdfId': 'p1', 'contentHash': 'h1', 'accessLevel': 'fulltext',
+           'retrievalMode': 'pdf_lexical_fallback'}
+    setting = {**row, 'text': 'All results are reported running on an A6000 GPU.'}
+    unrelated = {**row, 'text': 'We optimize each Gaussian using camera views.'}
+    direct = {**row, 'text': 'Our method achieves real-time rendering of radiance fields.'}
+    foreign = {**direct, 'pdfId': 'p2'}
+    wrong_version = {**direct, 'contentHash': 'h2'}
+    record = {'comparisonEvaluationProtocolVersion': 10}
+    assert rendered_speed_rank(direct['text'], direct_results=True) == 3
+    assert retain_owned_speed_result([setting, unrelated], [foreign, wrong_version, direct],
+        record, 'rendering speed', 'p1', 'h1', 2) == [setting, direct]
+    assert retain_owned_speed_result([setting, unrelated], [foreign, wrong_version],
+        record, 'rendering speed', 'p1', 'h1', 2) == [setting, unrelated]
+    assert retain_owned_speed_result([setting, unrelated], [direct],
+        record, 'compression mechanism', 'p1', 'h1', 2) == [setting, unrelated]
+
+
 @pytest.mark.parametrize('variant', ['misplaced', 'already_joint', 'single_source', 'ambiguous'])
 def test_places_only_a_unique_two_paper_speed_criterion_in_joint_scope(variant):
     from services.deep_research.comparison_joint_reports import place_cross_paper_speed_criterion

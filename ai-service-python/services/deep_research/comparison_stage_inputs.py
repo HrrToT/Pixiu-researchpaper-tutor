@@ -146,9 +146,9 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         plan_options['preserve_mixed_speed_criteria'] = True
     if preserve_numeric_example(record):
         plan_options['classify_standalone_joint'] = True
-    if record.get('comparisonEvaluationProtocolVersion') in (8, 9):
+    if record.get('comparisonEvaluationProtocolVersion') in (8, 9, 10):
         plan_options['literal_memory_advice_scope'] = True
-    if record.get('comparisonEvaluationProtocolVersion') in (7, 8, 9):
+    if record.get('comparisonEvaluationProtocolVersion') in (7, 8, 9, 10):
         plan_options['standalone_memory_scope'] = True
     full_plan = plan_cells(requirements, sources, rows, **plan_options)
     all_targets = targets(full_plan)
@@ -211,7 +211,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             )
             examples = joint_numeric_example(full_plan['roles'], question)
             protocols = (comparison_protocol_priority(own, all_targets, reported_platform=evaluation_protocols_enabled(record),
-                         explicit_targets=record.get('comparisonEvaluationProtocolVersion') in (3, 4, 5, 6, 7, 8, 9))
+                         explicit_targets=record.get('comparisonEvaluationProtocolVersion') in (3, 4, 5, 6, 7, 8, 9, 10))
                          if version in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) else set())
             if deployment_memory_context_enabled(record):
                 protocols.update(deployment_memory_priority(own, all_targets))
@@ -234,7 +234,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                               *optional_pairs]
         if not include_joint and record.get('comparisonPdfPassageBoundaryVersion') == 2:
             from services.deep_research.comparison_joint_reports import preferred_speed_result
-            speed_result = preferred_speed_result(own, all_targets, scope)
+            speed_result = preferred_speed_result(own, all_targets, scope,
+                direct_results=record.get('comparisonEvaluationProtocolVersion') == 10)
             if speed_result:
                 optional_pairs.append(speed_result)
         if not include_joint and original_evidence:

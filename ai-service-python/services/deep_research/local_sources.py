@@ -252,8 +252,9 @@ class LocalTaskRetriever:
         from services.deep_research.named_table_scope import include_indexed_rows
         result=include_indexed_rows(result,candidates,record,pdf_id,limit)
         result=retain_local_protocol_note(result,candidates,record,query,limit)
-        from services.deep_research.comparison_joint_reports import retain_evaluation_protocol
-        return retain_evaluation_protocol(result,candidates,record,query,pdf_id,material.get('contentHash'),limit)
+        from services.deep_research.comparison_joint_reports import retain_evaluation_protocol, retain_owned_speed_result
+        result = retain_evaluation_protocol(result,candidates,record,query,pdf_id,material.get('contentHash'),limit)
+        return retain_owned_speed_result(result,candidates,record,query,pdf_id,material.get('contentHash'),limit)
 
 
     def _stamp_identity(self, rows, pdf_id):

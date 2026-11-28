@@ -122,7 +122,8 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
                                       densification=experiment_densification, baseline_evaluation=baseline_evaluation), *preferred]
     if comparison_evaluation_protocol:
         from services.deep_research.comparison_joint_reports import preferred_evaluation_reads
-        preferred = [*preferred_evaluation_reads(ordered, obligations, limit, extracted), *preferred]
+        preferred = [*preferred_evaluation_reads(ordered, obligations, limit, extracted,
+            direct_results=comparison_evaluation_protocol == 2), *preferred]
     if comparison_deployment_memory:
         from services.deep_research.comparison_joint_reports import preferred_deployment_memory_reads
         preferred = [*preferred_deployment_memory_reads(ordered, obligations, limit, extracted,

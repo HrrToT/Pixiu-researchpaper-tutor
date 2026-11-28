@@ -116,12 +116,12 @@ def paper_figure_count_evidence(record, question, targets, requirements, rows):
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8, 9))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8, 9, 10))
 
 
 def _evaluation_protocol_score(text):
@@ -144,7 +144,7 @@ def speed_comparison_protocol_rank(row):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8, 9) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8, 9, 10) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -166,29 +166,36 @@ def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_
     return [*rows[:replace], best, *rows[replace + 1:]] if replace is not None else rows
 
 
-def preferred_evaluation_reads(rows, obligations, limit, extracted):
+def preferred_evaluation_reads(rows, obligations, limit, extracted, *, direct_results=False):
     from services.deep_research.obligation_binding import eligible_obligation_ids
     from services.deep_research.reading_roles import quality
 
-    active = {}
+    active, speed_goals = {}, {}
     for oid, obligation in obligations.items():
         question = ' '.join([obligation.get('question', ''), obligation.get('searchQuery', ''),
                              *(criterion['requirement'] for criterion in obligation.get('completionCriteria', []))])
         if _SPEED.search(question) and _REQUESTED_PROTOCOL.search(question):
             active[oid] = obligation
-    if not active:
+        if direct_results and _SPEED.search(question):
+            speed_goals[oid] = obligation
+    if not active and not speed_goals:
         return []
-    found = {}
+    found, results = {}, {}
     for row in rows:
         if (row.get('accessLevel') != 'fulltext' or not row.get('versionId') or row.get('tableData')
                 or (row['sourceId'], row.get('contentHash')) in extracted
-                or not eligible_obligation_ids(row, active) or quality(row) != (True, True)):
+                or quality(row) != (True, True)):
             continue
         key = (row['workId'], row.get('versionId'))
-        score = _evaluation_protocol_score(row['text'])
-        if score > found.get(key, (0, None))[0]:
-            found[key] = (score, row)
-    return [row for _, row in list(found.values())[:limit // 3]]
+        if eligible_obligation_ids(row, active):
+            score = _evaluation_protocol_score(row['text'])
+            if score > found.get(key, (0, None))[0]:
+                found[key] = (score, row)
+        if (row.get('ownerMaterialId') == row['workId'] and eligible_obligation_ids(row, speed_goals)):
+            score = rendered_speed_rank(row['text'], direct_results=True)
+            if score > results.get(key, (0, None))[0]:
+                results[key] = (score, row)
+    return [row for _, row in [*list(results.values())[:limit // 3], *list(found.values())[:limit // 3]]]
 
 
 def preferred_deployment_memory_reads(rows, obligations, limit, extracted, *, completion_criteria=False):
@@ -736,24 +743,61 @@ def comparison_protocol_priority(rows, targets, *, reported_platform=False, expl
     return {eid for _, eid in prioritized.values()}
 
 
-def preferred_speed_result(rows, targets, source):
+_DIRECT_SPEED_RESULT = re.compile(
+    r'\b(?:our (?:method|approach|system)|we)\b[^.!?。]{0,65}'
+    r'\b(?:achieve[sd]?|render[sd]?|run[sd]?|reach(?:es|ed)?)\b[^.!?。]{0,50}'
+    r'\b(?:real[- ]time(?: rendering)?|[\d.]+\s*(?:fps|frames per second))\b',
+    re.I,
+)
+
+
+def rendered_speed_rank(text, *, direct_results=False):
+    from services.deep_research.quote_context import _sentence_cuts
+
+    prose = ' '.join(text.split())
+    if direct_results and _DIRECT_SPEED_RESULT.search(prose):
+        return 3
+    cuts = [0, *_sentence_cuts(prose), len(prose)]
+    for start, end in zip(cuts, cuts[1:]):
+        sentence = prose[start:end].strip()
+        if sentence and sentence[0].isalpha() and _SPEED.search(sentence) and _REPORTED_CONTRAST.search(sentence):
+            return 2
+    return 0
+
+
+def retain_owned_speed_result(rows, candidates, record, query, pdf_id, content_hash, limit):
+    """Keep one explicitly reported rendering result for the selected PDF."""
+    if (record.get('comparisonEvaluationProtocolVersion') != 10 or not content_hash
+            or not _SPEED.search(query) or not 2 <= limit or len(rows) > limit):
+        return rows
+
+    def rank(row):
+        if (row.get('pdfId') != pdf_id or row.get('contentHash') != content_hash
+                or row.get('accessLevel') != 'fulltext' or row.get('tableData') or row.get('tableDataRef')):
+            return 0
+        return rendered_speed_rank(row.get('text', ''), direct_results=True)
+
+    best = max(candidates, key=rank, default=None)
+    if best is None or rank(best) <= max(map(rank, rows), default=0):
+        return rows
+    if len(rows) < limit:
+        return [*rows, best]
+    replace = next((i for i in range(len(rows)-1, -1, -1) if not rows[i].get('tableData')
+                    and rows[i].get('retrievalMode') == 'pdf_lexical_fallback'
+                    and not _evaluation_protocol_score(rows[i].get('text', ''))), None)
+    return [*rows[:replace], best, *rows[replace+1:]] if replace is not None else rows
+
+
+def preferred_speed_result(rows, targets, source, *, direct_results=False):
     """Prefer a literal contrast before optional prose for a paper's speed row."""
     if not any(target['role'] == 'paper_cell' and target['source'] == source
                and _SPEED.search(target['question']) for target in targets):
         return ()
-    from services.deep_research.quote_context import _sentence_cuts
-
-    for row in rows:
-        if (row['source'] != source or row.get('accessLevel') != 'fulltext'
-                or row.get('tableData') or row.get('tableDataRef')):
-            continue
-        text = ' '.join(row['quote'].split())
-        cuts = [0, *_sentence_cuts(text), len(text)]
-        for start, end in zip(cuts, cuts[1:]):
-            sentence = text[start:end].strip()
-            if (sentence and sentence[0].isalpha() and _SPEED.search(sentence)
-                    and _REPORTED_CONTRAST.search(sentence)):
-                return (row['evidenceId'],)
+    matching = [row for row in rows if row['source'] == source and row.get('accessLevel') == 'fulltext'
+                and not (row.get('tableData') or row.get('tableDataRef'))]
+    best = max(matching, key=lambda r: rendered_speed_rank(r['quote'], direct_results=direct_results), default=None)
+    if best and rendered_speed_rank(best['quote'], direct_results=direct_results):
+        return (best['evidenceId'],)
     return ()
 
 
