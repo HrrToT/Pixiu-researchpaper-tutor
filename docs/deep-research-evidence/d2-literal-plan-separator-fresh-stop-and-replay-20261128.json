@@ -1,0 +1,50 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "sourceCommit": "e7430319848c00ba008557af682abd15fe23e668",
+  "failedRunId": "dr_run_64260370183953ff83bf30121c083f95",
+  "status": "failed",
+  "stage": "plan",
+  "outcome": "none",
+  "errorCode": "invalid_plan_response",
+  "retrievalStarted": false,
+  "modelCalls": 3,
+  "tokens": 7794,
+  "elapsedSeconds": 23.0,
+  "replay": {
+    "productionNode": "make_plan_node",
+    "originalPlanPromptSha256": "2d7e0f0a5a16a0b674167f8169adf04a5bf5f34a0290f177aba677425ffd0848",
+    "previousContractResponses": 2,
+    "updatedContractResponses": 1,
+    "newProviderCalls": 0,
+    "acceptedPlanIds": [
+      "item1",
+      "item2"
+    ],
+    "restoredExcerpt": {
+      "path": [
+        1,
+        "obligations",
+        0,
+        "requestExcerpt"
+      ],
+      "original": "数字只选一组来源和口径明确的基线对照作例子；不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名",
+      "expanded": "数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名",
+      "expandedSpan": [
+        93,
+        147
+      ],
+      "kind": "literal_separator_restoration"
+    }
+  },
+  "scope": "Planning only. No retrieval, synthesis, or report acceptance.",
+  "sha256": {
+    "tmp/openai-d2-deployment-release-fresh-20261128/intent.json": "d759a898ffc60845852bb75628987b23165350e7298f1c47f1dcf00562ab4a15",
+    "tmp/openai-d2-deployment-release-fresh-20261128/run.json": "6f1b5d1f467c8102b63a15f2e0c33277f32ac79778875aeea98a5751d158608f",
+    "tmp/openai-d2-deployment-release-fresh-20261128/calls.json": "7583f602ada0294022a7b5f9066b5905a0a8e1909823c1fb332ec65a9ff6f68c",
+    "tmp/openai-d2-deployment-release-fresh-20261128/result.json": "98ef86bbe22e86b5cab228a44260dfdf304ff1f98e62cda020bfdacef91e8fe2",
+    "tmp/openai-d2-deployment-release-fresh-20261128/provider.jsonl": "16451acbaf34d040115d24cba819e94481a3fc5e0280bb4c8685ce1e00641a18",
+    "tmp/d2-literal-separator-plan-replay-v2-20261128/summary.json": "00ccdc15348a8b683d17ab857804a3bff7ef0a5ca030cf7458e7a492683c2e8c",
+    "tmp/d2-literal-separator-plan-replay-v2-20261128/v1-run.json": "ea1f98f9bf9c93ec2d9d1bfb6caa7bd78132f0203442e1cbc347ca885cc9597b",
+    "tmp/d2-literal-separator-plan-replay-v2-20261128/v2-run.json": "4e00f362b9760465a3aee0db366c026060df7523da382f8d5b0e19c2582017e8"
+  }
+}
