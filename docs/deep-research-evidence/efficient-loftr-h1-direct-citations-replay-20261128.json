@@ -1,0 +1,126 @@
+{
+  "case": "H1-EFFICIENT-LOFTR",
+  "developmentReplay": true,
+  "independentCredit": 0,
+  "originalRunId": "dr_run_55902e52c85156c5bf7d0b9910799dea",
+  "originalOutcome": "partial",
+  "savedRunSha256": "073a7e8af98c9d953e488414039ba533a4c20d95eb9e2bbea7517b524af6b7be",
+  "definitionHash": "0f5ba62cf2b29f40e450dd539175bdb5ee925cc5180ec681b0b262d5d408f764",
+  "newProviderCalls": 0,
+  "publications": 0,
+  "scope": "Ran the production synthesis node up to provider dispatch with saved inputs, and hard prechecks without a semantic verdict.",
+  "directCitationBundles": [
+    {
+      "obligationId": "coarse-computation",
+      "criterionId": "human_aspect_1",
+      "requirement": "粗匹配为什么更省计算",
+      "source": "e58112a6987b39ab129b240693d74b4610e643258cfb6ecf8c824f1976061835",
+      "navigationRole": "reduced_compute_inputs",
+      "evidenceIds": [
+        "ev_7df9b9040e8e5640c681fc0d4a29666d810031c6ab6d7eb0ddad930b83c9d502"
+      ],
+      "pdfPages": [
+        4
+      ]
+    },
+    {
+      "obligationId": "fine-stages",
+      "criterionId": "human_aspect_1",
+      "requirement": "细匹配的两个阶段各做什么",
+      "source": "e58112a6987b39ab129b240693d74b4610e643258cfb6ecf8c824f1976061835",
+      "navigationRole": "explicit_stages",
+      "evidenceIds": [
+        "ev_42001047dccbaa3c48c45704d67d3bb5762cd19af64128b843b9bc79c4f04fe1"
+      ],
+      "pdfPages": [
+        5
+      ]
+    },
+    {
+      "obligationId": "speedup-conditions",
+      "criterionId": "speedup-scope-details",
+      "requirement": "依据会议版原文列明所报提速量级对应的版本、比较基线和测试条件；只报告原文支持的内容。",
+      "source": "e58112a6987b39ab129b240693d74b4610e643258cfb6ecf8c824f1976061835",
+      "navigationRole": "reported_speed",
+      "evidenceIds": [
+        "ev_253985bc0dadb0ecf1a8dacdc23c5f4767b1cf3fb851379725996debcd48dfa3",
+        "ev_108cf064a9887af945e7a3d11fa5a530977825782625e108b4a34c9d5c3ed072",
+        "ev_f124b0325caf87e77d693f757534374820bc71a42fd5a74876988a28c5e528e5"
+      ],
+      "pdfPages": [
+        1,
+        6,
+        6
+      ]
+    }
+  ],
+  "before": {
+    "inputBytes": 23842,
+    "suppliedEvidenceIds": [
+      "ev_797cd98c2895c2b15bbb518f9ad680e96396c5b289ed1d5d88d28b7dc9539692",
+      "ev_de974c9f23a7a683dd84a52498a275a069ccea7d307d3c709c77b1f3b6460207",
+      "ev_41274837443b2d15c40bb72be34ce570425c81b0c315964acb3a0e9c43160964",
+      "ev_3d892ff89258bce7f5eb7e1710886523ccb69eb80703c2ec852f6d720db05b93",
+      "ev_1f8dcbb3f9ec140d358ee47bea9a8b8334c7dc068163713cbfecfd4d1a25cb53",
+      "ev_42001047dccbaa3c48c45704d67d3bb5762cd19af64128b843b9bc79c4f04fe1",
+      "ev_592e8dcee7e6020cc9aafbd5bc18bf7093c5d26ea4218672f9ee8633d40939e5",
+      "ev_631ed2b6c7ac12cc38a7321546c76ef470be115ddc42079b0e94ad09c02a9e9d",
+      "ev_686942f98eb730155714e3fc56ccb6bfdef70dce0d006a277c34c842a3fe6f42",
+      "ev_b6de109ede253de7773c1ece0d5ffcb55db6257eaa0f81d0068a14ff06f79e35"
+    ]
+  },
+  "after": {
+    "inputBytes": 23794,
+    "suppliedEvidenceIds": [
+      "ev_7df9b9040e8e5640c681fc0d4a29666d810031c6ab6d7eb0ddad930b83c9d502",
+      "ev_42001047dccbaa3c48c45704d67d3bb5762cd19af64128b843b9bc79c4f04fe1",
+      "ev_253985bc0dadb0ecf1a8dacdc23c5f4767b1cf3fb851379725996debcd48dfa3",
+      "ev_108cf064a9887af945e7a3d11fa5a530977825782625e108b4a34c9d5c3ed072",
+      "ev_f124b0325caf87e77d693f757534374820bc71a42fd5a74876988a28c5e528e5",
+      "ev_797cd98c2895c2b15bbb518f9ad680e96396c5b289ed1d5d88d28b7dc9539692",
+      "ev_de974c9f23a7a683dd84a52498a275a069ccea7d307d3c709c77b1f3b6460207",
+      "ev_41274837443b2d15c40bb72be34ce570425c81b0c315964acb3a0e9c43160964",
+      "ev_592e8dcee7e6020cc9aafbd5bc18bf7093c5d26ea4218672f9ee8633d40939e5",
+      "ev_1f8dcbb3f9ec140d358ee47bea9a8b8334c7dc068163713cbfecfd4d1a25cb53"
+    ]
+  },
+  "afterIncompletePriorBundles": [
+    "fine-stages"
+  ],
+  "eligibleForSemanticReview": [
+    "saved_revision_with_known_edition",
+    "handwritten_speed_claim_with_direct_citations"
+  ],
+  "negativeChecks": [
+    {
+      "case": "wrong_speed_ratio",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "35e-1x"
+      ]
+    },
+    {
+      "case": "same_page_neighbor_only",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "25e-1x",
+        "309e1",
+        "dimensions:640x480"
+      ]
+    },
+    {
+      "case": "wrong_edition",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2025e0"
+      ]
+    },
+    {
+      "case": "edition_is_not_an_image_count",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "images:2024e0"
+      ]
+    }
+  ]
+}
