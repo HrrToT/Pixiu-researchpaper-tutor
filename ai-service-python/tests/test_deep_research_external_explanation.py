@@ -58,3 +58,21 @@ def test_external_layer_selection_prioritizes_literal_ranking_scope_for_the_requ
 
     plan[0]['obligations'][0]['question'] = '各层的缓存容量为何不同'
     assert prioritize(evidence, [background], [], plan, include_selection_unit=True) == ([background], [])
+
+
+def test_external_head_identification_keeps_penalty_and_threshold_together():
+    plan = [{'obligations': [{'obligationId': 'heads', 'question': '怎样识别两类注意力头？',
+                              'requiredSources': ['v2']}]}]
+    base = {'sourceVersionId': 'v2', 'verification': {'literal': 'passed'}}
+    penalty = {**base, 'evidenceId': 'penalty',
+               'quote': 'We use a regularization term to encourage sparsity in the gate values.'}
+    threshold = {**base, 'evidenceId': 'threshold',
+                 'quote': 'We binarize the attention policy for each head with a threshold to classify retrieval heads.'}
+    foreign = {**threshold, 'evidenceId': 'other', 'sourceVersionId': 'v1'}
+    unchecked = {**threshold, 'evidenceId': 'unchecked', 'verification': {'literal': 'unchecked'}}
+    rows = [foreign, unchecked, penalty, threshold]
+    assert prioritize(rows, [], [], plan) == ([], [])
+    assert prioritize(rows[:-1], [], [], plan, include_head_identification=True) == ([], [])
+    selected, bundles = prioritize(rows, [], [], plan, include_head_identification=True)
+    assert selected == [penalty, threshold]
+    assert bundles[0]['evidenceIds'] == ['penalty', 'threshold']

@@ -489,7 +489,7 @@ class ResearchFacade:
             "answerCoherenceContractVersion": 2,
             "synthesisEvidenceContractVersion": 6,
             "externalReadingContractVersion": 5,
-            "externalExplanationInputVersion": 6,
+            "externalExplanationInputVersion": 7,
             "externalDiagnosticsContractVersion": 1,
             "reviewReasonPartsContractVersion": 3 if output_kind == 'paper_comparison' else 2,
             "reviewSourceFieldReferenceContractVersion": 1,
