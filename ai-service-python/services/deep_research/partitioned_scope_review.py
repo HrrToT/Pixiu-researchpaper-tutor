@@ -268,11 +268,17 @@ Targets:
         from services.deep_research.review_diagnostics import bind as bind_diagnostic, parameter_options
         parameter_policy=getattr(checker,'_diagnostic_parameter_ids',False)
         parameter_policy=parameter_policy() if callable(parameter_policy) else parameter_policy
+        # The count of the compared papers comes from the visible citation
+        # packet and provides no evidence about experimental measurements.
+        cited_works = {row.get('sourceWorkId') for row in own}
+        cited_paper_pair = (parameter_policy == 6 and len(cited_works) == 2
+                            and all(row.get('sourceWorkId') and row.get('sourceVersionId')
+                                    and row.get('accessLevel') == 'fulltext' for row in own))
         # Operator inputs are typed propositions, not the original target prose.
         # Their unseen prose cannot authorize structural navigation exemptions.
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
-            review_evidence,reverse,
+            review_evidence,reverse,cited_paper_pair=cited_paper_pair,
             **parameter_options(parameter_policy)) for row in rows]
         invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
         if invalid:

@@ -235,6 +235,36 @@ def test_single_operator_forms_review_every_present_part(settings,boundaries):
     assert checker([claim],evidence)[0]['status']=='passed' and len(calls)==1
 
 
+@pytest.mark.parametrize(('policy', 'distinct_papers', 'extra', 'expected'), [
+    (6, True, '', 'passed'),
+    (5, True, '', 'failed'),
+    (6, False, '', 'failed'),
+    (6, True, '同口径测试包含2个额外视角。', 'failed'),
+])
+def test_comparison_scope_distinguishes_cited_paper_count_from_measurement(policy, distinct_papers, extra, expected):
+    from services.deep_research.partitioned_scope_review import review
+
+    claim, expression, record, evidence = inputs(settings=False)
+    evidence[0].update(sourceWorkId='p1', sourceVersionId='v1', accessLevel='fulltext')
+    evidence[1].update(sourceWorkId='p2' if distinct_papers else 'p1',
+                       sourceVersionId='v2', accessLevel='fulltext')
+    claim['evidenceRefs'] = [row['evidenceId'] for row in evidence]
+    reason = '引文不足以核对两篇论文对应测试的分辨率和计时口径是否对齐；同一论文内的比较不能补足跨论文条件。'
+
+    def respond(rows, _):
+        rows[0].update(reason=reason + extra, diagnosticFacts=[],
+                       premises=[{'evidenceId': key, 'path': ['quote']} for key in ('E1', 'E2')])
+
+    checker, _ = checker_for(claim, expression, record, evidence, modify=respond)
+    checker._review_diagnostic_bindings = True
+    checker._diagnostic_parameter_ids = policy
+    checker._focused_boundary_review = 6
+    outcome = review(checker, claim, expression, evidence, 'verify')
+    assert outcome['status'] == expected
+    if expected == 'failed':
+        assert outcome['reviewDiagnosticAudit']['errors'] == ['new_diagnostic_numbers_not_bound']
+
+
 @pytest.mark.parametrize('kind',['truncated','missing','extra_field','budget','unknown'])
 def test_invalid_or_unresolved_boundary_does_not_become_evidence_insufficiency(kind):
     claim,expression,record,evidence=inputs(settings=False);calls=[]

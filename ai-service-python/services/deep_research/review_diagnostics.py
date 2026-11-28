@@ -6,6 +6,7 @@ import re
 
 
 _MIP_NERF_360 = re.compile(r'(?<![A-Za-z0-9_])Mip-NeRF\s*360(?![A-Za-z0-9_%％×倍]|\.\d)', re.I)
+_CITED_PAPER_PAIR = re.compile(r'(?<![第零一二两三四五六七八九十百千万亿0-9.])两篇论文')
 
 
 class DiagnosticAudit(dict):
@@ -40,17 +41,17 @@ override a failed decision or any other audit; the server checks them independen
 
 def parameter_options(policy):
     return dict(
-        source_parameter_ids=policy is True or policy in (2, 3, 4, 5),
-        bound_benchmark_names=policy in (2, 3, 4, 5),
-        alignment_words=policy in (3, 4, 5),
-        explicit_condition_pairs=policy in (4, 5),
-        interpolation_kernel_labels=policy == 5,
+        source_parameter_ids=policy is True or policy in (2, 3, 4, 5, 6),
+        bound_benchmark_names=policy in (2, 3, 4, 5, 6),
+        alignment_words=policy in (3, 4, 5, 6),
+        explicit_condition_pairs=policy in (4, 5, 6),
+        interpolation_kernel_labels=policy in (5, 6),
     )
 
 
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
          revision_row_counts=False, bound_benchmark_names=False, alignment_words=False,
-         explicit_condition_pairs=False, interpolation_kernel_labels=False):
+         explicit_condition_pairs=False, interpolation_kernel_labels=False, cited_paper_pair=False):
     if type(target_structure) is not bool and not (type(target_structure) is int and target_structure == 2):
         raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
@@ -121,6 +122,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         from services.deep_research.review_target_structure import revision_row_count_view
         numeric_reason, references = revision_row_count_view(numeric_reason, table_notes, numbers)
         target_references.extend(references)
+    if cited_paper_pair:
+        numeric_reason = _CITED_PAPER_PAIR.sub('所引论文', numeric_reason)
     introduced = review_numbers(numeric_reason) - numbers(target)
     missing = introduced - covered_numbers
     if missing:
@@ -133,6 +136,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if bound_benchmark_names:audit['sourceParameterIdentityContractVersion']=3 if alignment_words else 2
     if explicit_condition_pairs:audit['sourceParameterIdentityContractVersion']=4
     if interpolation_kernel_labels:audit['sourceParameterIdentityContractVersion']=5
+    if cited_paper_pair:audit['sourceParameterIdentityContractVersion']=6
     if target_structure:
         audit.update(reviewTargetStructureContractVersion=2 if target_structure == 2 else 1,
                      targetStructureReferences=target_references)
