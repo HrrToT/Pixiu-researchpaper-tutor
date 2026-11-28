@@ -554,7 +554,11 @@ class TrackedLLMInvoker:
         try:
             call_record, reused = reserve(estimated_input)
         except BudgetExhaustedError as exc:
-            if (counted_science_window or node != "review_experiment_shared" or not use_reserve or not structured
+            from services.deep_research.shared_experiment_answer_packet import MARKER as FINAL_EXPERIMENT_AUDIT
+            eligible_repair = (node == "repair_experiment_shared" and
+                               transport_record.get(FINAL_EXPERIMENT_AUDIT) == 2)
+            if (counted_science_window or (node != science.NODE and not eligible_repair)
+                    or not use_reserve or not structured
                     or not self.supports_counted_experiment_review(transport_record)):
                 raise
             budget = self._run_record(run_id)["budget"]

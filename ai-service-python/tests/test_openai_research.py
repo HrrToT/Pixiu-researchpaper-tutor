@@ -264,6 +264,14 @@ def test_counted_comparison_audit_uses_the_same_context_and_reserves_before_gene
 ])
 def test_scientific_review_counts_when_required_for_admission(
         tmp_path, monkeypatch, tokens, count, ordinary_calls, window_version, expected_sends):
+    assert_experiment_input_count(
+        tmp_path, monkeypatch, tokens, count, ordinary_calls, window_version, expected_sends,
+    )
+
+
+def assert_experiment_input_count(
+        tmp_path, monkeypatch, tokens, count, ordinary_calls, window_version, expected_sends,
+        repair_audit_version=0):
     from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError
     from services.deep_research.planning_transport import overhead_bytes
     from services.deep_research.shared_experiment_review import CHECK_IDS_OPTION, NODE
@@ -272,6 +280,9 @@ def test_scientific_review_counts_when_required_for_admission(
 
     record, _, _ = ready()
     record.update(openaiResearchModels=["main", "routine"], countedExperimentReviewContractVersion=1)
+    node = "repair_experiment_shared" if repair_audit_version else NODE
+    if repair_audit_version:
+        record["sharedExperimentFinalAuditPacketVersion"] = repair_audit_version
     if window_version:
         record.update(countedExperimentReviewWindowVersion=window_version, sharedExperimentScopedReviewPacketVersion=7,
                       sharedExperimentReviewReferenceVersion=4)
@@ -287,7 +298,7 @@ def test_scientific_review_counts_when_required_for_admission(
     bound = ScopedModelClient(repo, lambda *_: True, Mock()).for_run(record["runId"])
     invoker = TrackedLLMInvoker(bound, repo.reserve_call, repo.complete_call, run_record_fn=repo.require_run,
                                 call_history_fn=repo.list_calls, verification_max_input_bytes=32000,
-                                experiment_max_input_bytes=32000 if window_version else None)
+                                experiment_max_input_bytes=32000 if window_version or repair_audit_version else None)
     sends = []
     def post(url, **kwargs):
         path = url.removeprefix("https://api.openai.com/v1")
@@ -311,10 +322,12 @@ def test_scientific_review_counts_when_required_for_admission(
         options = {"max_tokens": 4096}
         if window_version:
             options[CHECK_IDS_OPTION] = ["section_0"]
-        size = 35500 if window_version >= 2 else 33000 if window_version else 24000
-        prompt = "Review the JSON proposal. "
-        padding = size - overhead_bytes(repo.require_run(record["runId"]), NODE, options) - len(prompt)
-        return invoker(record["runId"], NODE, prompt + "x" * padding,
+        size = {0: 24000, 1: 33000, 2: 35500, 3: 35500}[window_version]
+        if repair_audit_version:
+            size = 30330
+        prompt = "Check the JSON proposal. "
+        padding = size - overhead_bytes(repo.require_run(record["runId"]), node, options) - len(prompt)
+        return invoker(record["runId"], node, prompt + "x" * padding,
                        options, use_reserve=True)
     if window_version == 2:
         with pytest.raises(ValueError, match="exceeds max 35000 bytes"):
@@ -338,3 +351,15 @@ def test_scientific_review_counts_when_required_for_admission(
         measured, generated = (payload for _, payload in sends)
         assert measured == {k:v for k,v in generated.items() if k not in {"store", "max_output_tokens"}}
         assert measured["text"]["format"]["type"] == "json_schema"
+
+
+@pytest.mark.parametrize('version,count,calls,sends', [
+    (1, 8900, 6, []),
+    (2, 8900, 6, ['/responses/input_tokens', '/responses']),
+    (2, 22000, 6, ['/responses/input_tokens']),
+    (2, 8900, 13, []),
+])
+def test_experiment_repair_counts_only_for_the_new_profile(tmp_path, monkeypatch, version, count, calls, sends):
+    assert_experiment_input_count(
+        tmp_path, monkeypatch, 77043, count, calls, 0, sends, repair_audit_version=version,
+    )
