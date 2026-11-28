@@ -243,7 +243,8 @@ def test_named_condition_repair_keeps_the_previously_checked_comparison():
 
 
 @pytest.mark.parametrize(('input_count', 'permitted'), [(7900, True), (None, True), (7900, False)])
-def test_tight_comparison_counts_only_the_retained_audit_before_repair(monkeypatch, input_count, permitted):
+@pytest.mark.parametrize('already_checked', [False, True])
+def test_tight_comparison_counts_the_required_audit_before_repair(monkeypatch, input_count, permitted, already_checked):
     from unittest.mock import Mock
     from services.deep_research.contracts import DeepResearchError
     from services.deep_research.graph import make_verify_node
@@ -280,15 +281,16 @@ def test_tight_comparison_counts_only_the_retained_audit_before_repair(monkeypat
         return deepcopy(record)
 
     def audit(*args, **kwargs):
-        assert args[3] == unmodified_claims[1:]
         assert kwargs['budget']['maxTokens'] == original_budget['maxTokens']
         if kwargs.get('measure_reservation'):
+            assert args[3] == (unmodified_claims if already_checked else unmodified_claims[1:])
             if counter := kwargs.get('reservation_counter'):
                 measured = counter('complete existing answer with all cited evidence', 3500)
                 return measured if measured is not None else 30000
             return 30000
+        assert args[3] == unmodified_claims[1:]
         calls.append('whole_answer')
-        return {'status': 'checked', 'verdicts': [], 'gaps': []}
+        return {'status': 'checked', 'verdicts': [], 'gaps': [{'obligationId': 'mechanism'}] if already_checked else []}
 
     def repair(*args, **kwargs):
         calls.append('repair')
@@ -298,7 +300,7 @@ def test_tight_comparison_counts_only_the_retained_audit_before_repair(monkeypat
 
     def verify(claims, evidence, semantic):
         return {'accepted': claims[1:], 'rejected': [
-            {'claimId': claims[0]['claimId'], 'reason': 'numeric_mismatch'}]}
+            {'claimId': claims[0]['claimId'], 'reason': 'semantic_unresolved' if already_checked else 'numeric_mismatch'}]}
 
     forbid_model = Mock(side_effect=AssertionError('The forecast must not reserve a generation'))
     invoker = TrackedLLMInvoker(CountOnly(), forbid_model, forbid_model,
@@ -311,12 +313,14 @@ def test_tight_comparison_counts_only_the_retained_audit_before_repair(monkeypat
     if not permitted:
         with pytest.raises(DeepResearchError) as error:
             node({'run_id': 'r'})
-        assert error.value.code == 'scope_revoked' and not calls
+        assert error.value.code == 'scope_revoked'
+        assert calls == (['whole_answer'] if already_checked else [])
         forbid_model.assert_not_called()
         return
     node({'run_id': 'r'})
     node({'run_id': 'r'})
-    assert calls == ['count', 'repair', 'whole_answer']
+    assert calls == (['whole_answer', 'count', 'repair'] if already_checked
+                     else ['count', 'repair', 'whole_answer'])
     assert record['state']['verifiedReport']['verifiedClaims'] == unmodified_claims[1:]
     assert record['budget'] == original_budget
     forbid_model.assert_not_called()

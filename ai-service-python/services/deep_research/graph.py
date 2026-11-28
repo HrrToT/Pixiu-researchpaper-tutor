@@ -2799,14 +2799,13 @@ def make_verify_node(
                     if comparison_audit_args.get('fit_compact_comparison_budget'):
                         if reserve_repair_release_audit(record, answer_coverage):
                             # Size the complete draft as a forecast for the next
-                            # audit. Its claims are never sent or approved here.
+                            # audit. Counting its input grants no factual approval.
                             audit_forecast_claims = repair_report.get('claims', [])
                         elif answer_coverage.get('status') == 'deferred_factual_repair':
                             audit_forecast_claims = verification_result.get('accepted', [])
                     if audit_forecast_claims:
                         audit_reservation = audit_accepted(audit_forecast_claims, current, measure_reservation=True)
                     if (audit_reservation and released_finalization
-                            and answer_coverage.get('status') == 'deferred_factual_repair'
                             and record.get('comparisonRepairFlowContractVersion') == 3
                             and scope_validator is not None
                             and comparison_audit_args.get('counted_comparison_audit')):
