@@ -271,6 +271,29 @@ def test_revision_accepts_one_identical_unresolved_echo_and_keeps_prerequisite()
             apply(base, reply(changed), identical_unresolved_echo=True)
 
 
+def test_revision_accepts_only_empty_parameter_wrapper_for_action_text():
+    record, _, _ = diagnosed()
+    base = record['state']['sharedExperimentGeneration']
+    steps = base['boundProposal']['proposal']['steps']
+    index = next(i for i, step in enumerate(steps) if isinstance(step.get('operation'), dict))
+    path = f'/steps/{index}/operation/action'
+    payload = json.loads(edit_response(record)['content'])
+    payload['edits'] = [{'path': path, 'value': 'Load and verify the frozen training input.', 'parameters': []}]
+    response = reply(payload)
+    with pytest.raises(ValueError, match='Replacement schema'):
+        apply(base, response)
+    result = apply(base, response, empty_action_parameters=True)['proposal']
+    assert result['steps'][index]['operation'] == {
+        **steps[index]['operation'], 'action': payload['edits'][0]['value'],
+    }
+    assert json.loads(response['content']) == payload
+    for change in ({'parameters': ['unexpected']}, {'path': '/analysis/decisionRule'}):
+        invalid = deepcopy(payload)
+        invalid['edits'][0].update(change)
+        with pytest.raises(ValueError, match='Replacement schema'):
+            apply(base, reply(invalid), empty_action_parameters=True)
+
+
 def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_facts():
     from services.deep_research.shared_experiment_revision import _apply_scoped, _design_only_context
 

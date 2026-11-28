@@ -638,7 +638,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
                     state_ids = ', '.join(state['id'] for state in states)
                     policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
-        if record.get(EXPLICIT_SEMANTICS_MARKER) == 1 and view['proposal'].get('analysis', {}).get('contrasts'):
+        if record.get(EXPLICIT_SEMANTICS_MARKER) in (1, 2) and view['proposal'].get('analysis', {}).get('contrasts'):
             arm_order = ','.join(GROUPS)
             policy = f'Contrast weight order is [{arm_order}] (bits A,B), independent of groups list order.\n' + policy
         if record.get(DELIVERABLE_SCOPE_MARKER) == 1 and view.get('humanChecks'):

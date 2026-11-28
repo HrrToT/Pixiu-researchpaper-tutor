@@ -19,6 +19,10 @@ NORMALIZATION_GUIDANCE = (
     'For an update normalized by a norm, name its complete argument before division, specify the axis, '
     'and identify what is detached if gradients change.\n'
 )
+EVALUATION_PROTOCOL_GUIDANCE = (
+    'Check split IDs and content. For task scoring, specify inputs, answer boundaries and scoring, '
+    'or pin and validate an executable evaluator.\n'
+)
 GROUPS = ('00', '10', '01', '11')
 CONTRASTS = {
     'A': [-0.5, 0.5, -0.5, 0.5],

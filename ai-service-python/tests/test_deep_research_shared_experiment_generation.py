@@ -53,12 +53,17 @@ def test_legacy_and_invalid_policy_do_not_select_new_transport(version):
 
 def test_explicit_norm_guidance_requires_a_new_frozen_policy():
     from services.deep_research.shared_experiment_generation import instructions
-    from services.deep_research.shared_experiment_plan import EXPLICIT_SEMANTICS_MARKER, NORMALIZATION_GUIDANCE
+    from services.deep_research.shared_experiment_plan import (
+        EVALUATION_PROTOCOL_GUIDANCE, EXPLICIT_SEMANTICS_MARKER, NORMALIZATION_GUIDANCE,
+    )
 
     record = {MARKER: 8}
     legacy = instructions(record)
     assert NORMALIZATION_GUIDANCE not in legacy
     assert instructions({**record, EXPLICIT_SEMANTICS_MARKER: 1}) == NORMALIZATION_GUIDANCE + legacy
+    assert instructions({**record, EXPLICIT_SEMANTICS_MARKER: 2}) == (
+        EVALUATION_PROTOCOL_GUIDANCE + NORMALIZATION_GUIDANCE + legacy
+    )
 
 
 def test_topology_guidance_is_bound_to_the_new_run_and_validates_the_same_plan():
