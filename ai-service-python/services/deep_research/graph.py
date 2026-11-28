@@ -1378,6 +1378,8 @@ def make_synthesize_node(
             external_explanation_rows = candidates if external_explanation.enabled(record, output_kind) else ()
             literal_candidates = candidates
             candidates,premise_bundles=order_premises(candidates,brief_state.get('plan',[]),
+                **({'direct_quantities_and_stages':True} if output_kind == 'claim_verification'
+                   and record.get('quantitySpellingContractVersion') == 27 else {}),
                 **({'comparison_supervision': True} if record.get('comparisonSupervisionPremisesVersion') == 1 else {}),
                 **({'limit':len(candidates)} if source_stages else {}),
                 **({'authored_rows':True} if type(record.get('comparisonJointReportsContractVersion')) is int
@@ -1813,6 +1815,9 @@ space with unsupported global absence or incidental iteration/performance values
                 prompt += READER_EVIDENCE_GAP_GUIDANCE
             if record['audienceFirstContractVersion'] == 4:
                 prompt += READER_OPERATION_GUIDANCE
+        if any(bundle.get('navigationRole') == 'reported_speed' for bundle in premise_bundles):
+            prompt += ('\nFor reported speed, cite the exact quote containing the ratio. Cite the '
+                       'matching protocol quotes for conditions. Nearby context is navigation.')
         template = prompt
         if premise_mode:
             reverse_aliases={eid:alias for alias,eid in evidence_aliases.items()}

@@ -569,7 +569,7 @@ class ResearchFacade:
             "compactionEditingContractVersion": 3,
             "fixedScopeEditorReasoningContractVersion": 1,
             "quantitySpellingContractVersion": (25 if output_kind == 'paper_comparison' else
-                                                26 if single_task_paper and output_kind in (None, 'general', 'claim_verification')
+                                                27 if single_task_paper and output_kind in (None, 'general', 'claim_verification')
                                                 else 23),
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
@@ -1555,7 +1555,7 @@ class ResearchFacade:
                 (row_count_record := self._repo.require_run(run_id)).get('reviewRevisionRowCountVersion') == 1
                 and revision_coverage_enabled(row_count_record)),
             diagnostic_stepwise_quantities=lambda: (
-                quantity_spelling_for_record(self._repo.require_run(run_id)) == 26),
+                quantity_spelling_for_record(self._repo.require_run(run_id)) in (26, 27)),
             diagnostic_parameter_ids=lambda: (
                 type(parameter_version := self._repo.require_run(run_id).get('reviewParameterIdentityContractVersion')) is int
                 and {1: True, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7}.get(parameter_version, False)),
@@ -1666,7 +1666,7 @@ class ResearchFacade:
             return verify_claims(
                 claims, evidence, semantic, absence_scope_version=version,
                 quantity_spelling_version=(quantity_spelling_for_record(self._repo.require_run(run_id))
-                                           if spelling == 26 else spelling),
+                                           if spelling in (26, 27) else spelling),
                 feedback_version=feedback,table_references_version=table_references,
                 review_context_version=context_version,
                 bound_composite_cells=(type(record.get('boundCompositeTableCellsVersion')) is int

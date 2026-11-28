@@ -24,6 +24,50 @@ def claim(text,refs=('e',),kind='reported'):
     return {'claimId':'c','text':text,'kind':kind,'evidenceRefs':list(refs),'conditions':{},'detailLevel':'fulltext'}
 
 
+def test_direct_speed_and_stage_evidence_uses_quotes_and_the_same_paper_version():
+    plan = [{'obligations': [
+        {'obligationId': 'speed', 'requiredSources': ['p'], 'question': '论文报告的提速量级和测试条件？'},
+        {'obligationId': 'stages', 'requiredSources': ['p'], 'question': '细化的两个阶段各做什么？'},
+        {'obligationId': 'compute', 'requiredSources': ['p'], 'question': '粗匹配为什么更省计算？'},
+    ]}]
+    rows = [
+        evidence('neighbor', 'Our method improves matching.', section='Abstract'),
+        evidence('training', 'Training time was two hours on NVIDIA V100 GPUs.', section='Experiments'),
+        evidence('other', 'Running time on an NVIDIA A100 GPU was measured on each scan.', section='Experiments'),
+        evidence('resolution', 'Images are resized to a resolution of 640 × 480.', section='Experiments'),
+        evidence('ratio', 'Our optimized model is 2.5×faster than the baseline.', section='Abstract'),
+        evidence('runtime', 'The running time was measured on a single NVIDIA RTX 3090.', section='Experiments'),
+        evidence('fine', 'In the first stage, match pixels locally and then refine the subpixel location.'),
+        evidence('coarse', 'We apply the same attention to process reduced tokens after merging neighbors.'),
+    ]
+    for row in rows:
+        row['obligationIds'] = ['speed', 'stages', 'compute']
+        row['location']['page'] = 6
+    rows[0]['sourceContext'] = rows[4]['quote']
+    rows[2]['sourceVersionId'] = 'older-p'
+    baseline, _ = order_premises(rows, plan, direct_quantities_and_stages=False)
+    selected, bundles = order_premises(rows, plan, direct_quantities_and_stages=True)
+    assert selected[:5] == rows[3:]
+    assert baseline != selected
+    assert bundles[0]['evidenceIds'] == ['ratio', 'runtime', 'resolution']
+    assert bundles[1]['evidenceIds'] == ['fine']
+    assert bundles[2]['evidenceIds'] == ['coarse']
+
+
+@pytest.mark.parametrize(('text', 'valid'), [
+    ('《示例论文》CVPR 2024版使用局部细化。', True),
+    ('《示例论文》CVPR 2025版使用局部细化。', False),
+    ('《示例论文》CVPR 2024版使用2024张图像。', False),
+    ('其实际速度是2024 FPS。', False),
+])
+def test_known_cited_conference_edition_does_not_supply_experiment_numbers(text, valid):
+    row = evidence('e', 'We use local refinement.')
+    row['sourceTitle'] = '示例论文 CVPR 2024'
+    admission = precheck_claims([claim(text)], [row], quantity_spelling_version=27)
+    assert bool(admission['candidates']) is valid
+    assert not precheck_claims([claim(text)], [row], quantity_spelling_version=26)['candidates']
+
+
 def test_spatial_labels_match_existing_english_labels_but_real_dimensions_and_counts_stay_checked():
     source=[evidence('e','Our 3D Gaussian model uses a canonical space.')]
     valid=claim('三维高斯模型使用共享空间。')

@@ -26,6 +26,81 @@ _BODY = {
 _STOP = {'the','and','for','with','from','this','that','what','which','how','why','are','does',
          'paper','arxiv','http','https','org','psnr','ssim','lpips','fps','f1','gpu','cpu','vram'}
 _REF_REQUEST = re.compile(r'参考文献|书目|\bbibliograph\w*|\b(?:references?|citations?)\s+(?:list|section)\b', re.I)
+_SPEED_REQUEST = re.compile(r'提速|加速倍数|快(?:了)?(?:多少|几)倍|\bspeed[ -]?ups?\b|\bhow much faster\b', re.I)
+_SPEED_RATIO = re.compile(
+    r'(?<![\d.])\d+(?:\.\d+)?\s*(?:×|x|times)\s*(?:faster\s+than|as fast as)|'
+    r'(?:提速|加速|快)\s*(?:约)?\s*\d+(?:\.\d+)?\s*倍', re.I)
+_TIMING = re.compile(r'\b(?:running time|inference time|runtime|latency|processing time|timing)\b|推理耗时|运行时间', re.I)
+_HARDWARE = re.compile(r'\b(?:GPU|CPU|RTX|NVIDIA|A100|H100|V100)\b|显卡|处理器', re.I)
+_IMAGE_SIZE = re.compile(r'\d{2,5}\s*[×x]\s*\d{2,5}', re.I)
+_INPUT_RESOLUTION = re.compile(r'\b(?:resolution|images?\s+(?:are\s+)?resized)\b|分辨率', re.I)
+_TRAINING_TIME = re.compile(r'\b(?:training time|training takes|time (?:for|to) train)\b|训练耗时', re.I)
+_STAGE_REQUEST = re.compile(r'两个阶段|两阶段|分两步|各(?:个)?阶段|\b(?:two[- ]stage|each stage)\b', re.I)
+_FIRST_STAGE = re.compile(r'\b(?:first stage|stage one|first step)\b|第一(?:阶段|步)', re.I)
+_NEXT_STAGE = re.compile(r'\b(?:second stage|stage two|second step|then)\b|第二(?:阶段|步)|随后', re.I)
+_COMPUTE_REQUEST = re.compile(r'省计算|减少计算|降低计算|计算冗余|\b(?:save|reduce)\s+(?:the\s+)?comput\w*', re.I)
+_REDUCED_INPUTS = re.compile(r'\b(?:process|attend to|operate on)\s+(?:fewer|reduced)\s+(?:tokens|features)\b|'
+                            r'在更少的(?:特征|特征单元|词元)上计算', re.I)
+
+
+def direct_quantity_and_stage_bundles(rows, obligations):
+    """Retrieve self-contained citable passages for speed and stage requests."""
+    bundles = []
+    for oid, obligation in obligations.items():
+        criteria = obligation.get('completionCriteria') or [{'requirement': obligation['question']}]
+        query = obligation.get('question', '')
+        speed = next((c for c in criteria if _SPEED_REQUEST.search(c.get('requirement', ''))), None)
+        stages = next((c for c in criteria if _STAGE_REQUEST.search(c.get('requirement', ''))), None)
+        compute = next((c for c in criteria if _COMPUTE_REQUEST.search(c.get('requirement', ''))), None)
+        if speed is None and stages is None and compute is None and not _SPEED_REQUEST.search(query):
+            continue
+        own = [e for e in rows if e.get('accessLevel') == 'fulltext'
+               and e.get('sourceWorkId') and e.get('sourceVersionId') and e.get('contentHash')
+               and e.get('verification', {}).get('literal') == 'passed'
+               and oid in e.get('obligationIds', ())
+               and quality({'text': e['quote'], 'location': e.get('location', {})}, query)[0]
+               and oid in eligible_obligation_ids(
+                   {'workId': e.get('sourceWorkId'), 'versionId': e.get('sourceVersionId'),
+                    'ownerMaterialId': e.get('ownerMaterialId')}, obligations)]
+        for request, role, matches in (
+                (stages, 'explicit_stages', lambda text: _FIRST_STAGE.search(text) and _NEXT_STAGE.search(text)),
+                (compute, 'reduced_compute_inputs', _REDUCED_INPUTS.search)):
+            if request is None:
+                continue
+            direct = [e for e in own if matches(e['quote'])]
+            if direct:
+                lead = min(direct, key=lambda e: len(e['quote']))
+                bundles.append({'obligationId': oid, 'criterionId': request.get('criterionId', 'whole_obligation'),
+                                'requirement': request['requirement'], 'source': lead['sourceVersionId'],
+                                'navigationRole': role, 'evidenceIds': [lead['evidenceId']]})
+        if speed is None and not _SPEED_REQUEST.search(query):
+            continue
+        ratios = [e for e in own if _SPEED_RATIO.search(e['quote'])]
+        if not ratios:
+            continue
+        ratio = max(ratios, key=lambda e: (
+            bool(re.search(r'\b(?:efficiency[ -]+)?optimi[sz]\w*\s+(?:model|method|variant)\b',
+                           e['quote'], re.I)),
+            bool(re.search(r'\b(?:our|proposed)\s+(?:\w+\s+){0,3}(?:model|method|approach|variant)\b',
+                           e['quote'], re.I)),
+            -len(e['quote'])))
+        same_version = [e for e in own if all(e.get(key) and e[key] == ratio.get(key)
+                        for key in ('sourceWorkId', 'sourceVersionId', 'contentHash'))]
+        timing = next((e for e in same_version if _TIMING.search(e['quote'])
+                       and _HARDWARE.search(e['quote']) and not _TRAINING_TIME.search(e['quote'])), None)
+        evidence_ids = [ratio['evidenceId']]
+        if timing:
+            evidence_ids.append(timing['evidenceId'])
+            page = timing.get('location', {}).get('page')
+            dimensions = next((e for e in same_version if page and e.get('location', {}).get('page') == page
+                               and _INPUT_RESOLUTION.search(e['quote']) and _IMAGE_SIZE.search(e['quote'])), None)
+            if dimensions and dimensions['evidenceId'] not in evidence_ids:
+                evidence_ids.append(dimensions['evidenceId'])
+        bundles.append({'obligationId': oid, 'criterionId': (speed or {}).get('criterionId', 'whole_obligation'),
+                        'requirement': (speed or {}).get('requirement', query),
+                        'source': ratio['sourceVersionId'], 'navigationRole': 'reported_speed',
+                        'evidenceIds': evidence_ids})
+    return bundles
 
 
 def _text(source):

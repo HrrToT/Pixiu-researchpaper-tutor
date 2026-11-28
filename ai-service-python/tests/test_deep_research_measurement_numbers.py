@@ -56,7 +56,7 @@ def test_task_only_default_route_uses_bilingual_rules_after_intent_resolution(tm
             'sourcePolicy': {'mode': 'task_only'}, 'materialSnapshot': ['paper'],
             'outputKind': 'general', 'deferStart': True,
         }, start_async=False)
-        assert run['quantitySpellingContractVersion'] == 26
+        assert run['quantitySpellingContractVersion'] == 27
         run_id = run['runId']
         verify = facade._get_verify_claims(run_id)
         repo.update_run(run_id, lambda row: {**row, 'state': {**row.get('state', {}), 'outputKind': resolved_kind}})
@@ -68,6 +68,18 @@ def test_task_only_default_route_uses_bilingual_rules_after_intent_resolution(tm
         assert bool(result['accepted']) is accepted
     finally:
         facade.shutdown()
+
+
+@pytest.mark.parametrize(('dimensions', 'valid'), [
+    ('640×480', True), ('480×640', False), ('640×360', False),
+])
+def test_pdf_fused_resolution_preserves_ordered_dimensions(dimensions, valid):
+    text = f'输入图像的分辨率为{dimensions}。'
+    _, evidence = check('Images are resized to 640×480for all methods.', text)
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text,
+             'evidenceRefs': [evidence['evidenceId']]}
+    assert not precheck_claims([claim], [evidence], quantity_spelling_version=26)['candidates']
+    assert bool(precheck_claims([claim], [evidence], quantity_spelling_version=27)['candidates']) is valid
 
 
 @pytest.mark.parametrize(('quote', 'text', 'wrong_text'), [

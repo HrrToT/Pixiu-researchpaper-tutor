@@ -69,6 +69,8 @@ _DIMENSION_SERIES = re.compile(r'(?<![A-Za-z0-9_.,+\-−×])' + _DIMENSION_VALUE
                                + _DIMENSION_SEPARATOR + r'))', re.I)
 _ATTACHED_RESOLUTION_ARTICLE = re.compile(
     r'\b(?P<prefix>(?:at|to|with)\s+)a(?=' + _DIMENSION_VALUES + r'\s+resolution\b)', re.I)
+_ATTACHED_RESOLUTION_PROSE = re.compile(
+    r'(?<![A-Za-z0-9_.,+\-−×])' + _DIMENSION_VALUES + r'(?=for\s+(?:all|each|the|both)\b)', re.I)
 _WORD_COUNTS = re.compile(r'(?<![A-Za-z0-9_])(?:(?P<sign>minus|negative|plus|positive|[-−+])\s*)?'
     r'(?P<word>zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
     r'[\s\-‐‑–]+(?:dimensions?|dimensional|components?|channels?|outputs?|views?|frames?|images?|'
@@ -391,9 +393,11 @@ def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gauss
     return _RANGE_SCALE.sub(expand_range_scale, text)
 
 
-def split_dimension_series(text):
+def split_dimension_series(text, *, pdf_word_spacing=False):
     """Keep the exact ordered dimensions together, including in PDF-extracted text."""
     text = _ATTACHED_RESOLUTION_ARTICLE.sub(r'\g<prefix>a ', text)
+    if pdf_word_spacing:
+        text = _ATTACHED_RESOLUTION_PROSE.sub(r'\g<0> ', text)
     dimensions = set()
 
     def collect(match):

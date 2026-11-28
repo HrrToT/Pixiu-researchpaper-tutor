@@ -57,7 +57,7 @@ def readiness_bundles(rows, obligations, coverage):
 
 
 def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_location=False,membership_intents=False,module_intents=False,condition_intents=False,
-                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False,comparison_supervision=False,compression_operations=False):
+                   definition_context=False,read_sources=(),operational_context=False,mechanism_overview=False,mechanism_components=False,section_targets=(),indexed_sections=False,external_method_context=False,request_roles=False,mixed_script_terms=False,procedure_targets=False,criterion_method_navigation=False,measurement_tables=False,comparison_operations=False,processing_cost=False,authored_rows=False,reviewed_coverage=(),comparison_mechanisms=False,comparison_supervision=False,compression_operations=False,direct_quantities_and_stages=False):
     if type(authored_rows) is not bool:raise ValueError('Invalid authored row navigation policy')
     if type(comparison_operations) is not bool:raise ValueError('Invalid comparison operation policy')
     if type(processing_cost) is not bool:raise ValueError('Invalid processing cost navigation policy')
@@ -71,6 +71,14 @@ def order_premises(evidence,plan,limit=20, *, read_retention=False,retention_loc
     ready_keys = {(bundle['obligationId'], bundle['criterionId'], bundle['source']) for bundle in bundles}
     seen = {eid for bundle in bundles for eid in bundle['evidenceIds']}
     chosen = [e for e in rows if e['evidenceId'] in seen]
+    if direct_quantities_and_stages:
+        from services.deep_research.reading_roles import direct_quantity_and_stage_bundles
+        direct_bundles = direct_quantity_and_stage_bundles(rows, obligations)
+        direct_ids = {eid for bundle in direct_bundles for eid in bundle['evidenceIds']}
+        chosen = [*(e for e in rows if e['evidenceId'] in direct_ids),
+                  *(e for e in chosen if e['evidenceId'] not in direct_ids)]
+        seen.update(direct_ids)
+        bundles[:0] = direct_bundles
     if request_roles:
         from services.deep_research.reading_roles import premise_bundles
         role_rows, role_bundles = premise_bundles(rows,obligations,mixed_script_terms=mixed_script_terms,processing_cost=processing_cost,
