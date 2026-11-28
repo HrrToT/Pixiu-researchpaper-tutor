@@ -1,0 +1,71 @@
+{
+  "d3Candidate": "a28ff3c93",
+  "d3Live": {
+    "claim_ids": [],
+    "report_version_id": "report_dr_d3_sh_initialization_20261128_shared_incomplete",
+    "elapsedSeconds": 141.09,
+    "newCalls": 4,
+    "cumulativeTokens": 50728,
+    "localPublication": false,
+    "publishedToWorkspace": false
+  },
+  "d3NewTokens": 33337,
+  "d3ArchivedFactPrecheck": [
+    {
+      "claimId": "shared_fact_6",
+      "reason": "absence_not_established",
+      "factId": "f7",
+      "evidenceRefs": [
+        "E14"
+      ]
+    }
+  ],
+  "d3RevisionState": "awaiting_scientific_review",
+  "d3OriginalRevisionReview": "invalid_response",
+  "d3ReplayedReview": {
+    "newCalls": 0,
+    "checked": 8,
+    "failures": [
+      {
+        "checkId": "section_2",
+        "reason": "测试位姿注册需要冻结训练 SfM 点及描述子，但 base 的持久表示只包含相机位姿、内参、稀疏点和颜色；训练步骤也未明确生成、关联和保存描述子，故注册输入不完整。"
+      },
+      {
+        "checkId": "section_5",
+        "reason": "训练臂同预算且有 OOM 停止规则，但共享准备上限只覆盖 s1、s2；s3 的共同预训练不计入该累计墙钟上限，不能保证训练准备有一个不中断的总上限。"
+      },
+      {
+        "checkId": "section_6",
+        "reason": "峰值窗口只指定 s3 和 s6，而 s5 在训练前深拷贝四臂状态；若副本驻留 GPU，这一拓扑建立和驻留开销未被完整训练峰值覆盖，也未规定逐臂单独加载与释放。"
+      }
+    ],
+    "originalDigest": "a5cfb1507598e6f0c04514703c339f44fff38befa1de476a81e0dfdcae7ec724",
+    "repackedBytes": 33835,
+    "scientificApproval": false
+  },
+  "h5HistoricalScope": [
+    "quality",
+    "storage"
+  ],
+  "h5ReplayedScope": [
+    "quality",
+    "memory"
+  ],
+  "h5SnapshotRequiredDomains": [],
+  "h5CurrentScopePreflightBytes": 31895,
+  "h5CurrentFullInputBytes": 33653,
+  "h5FrozenRequiredEvidenceRetained": 11,
+  "h5TotalEvidenceRetained": 18,
+  "h5NewCalls": 0,
+  "h5AcceptanceChanged": false,
+  "rawArtifacts": {
+    "tmp/openai-d3-sh-initialization-20261128/run.json": "dd04bc410c2a281c7326377610875bb8937871e635eeb473f113ac144e557ce8",
+    "tmp/openai-d3-sh-initialization-20261128/calls.json": "01f5e78380dfae2e1c3f0df4014f10a5c1fb4c3316d45405382c9294fa28671e",
+    "tmp/openai-d3-sh-initialization-20261128/intent.json": "c9d451380c14c9b7e4ff5818f628d60420c8a2ea60e5bf31612c6c143394fcf5",
+    "tmp/openai-d3-sh-initialization-20261128/result.json": "f3d7126826575287685b6ff8921578f82442e8a71af99b078dfd26285580885b",
+    "tmp/dr-acceptance-receipts/H5-DORA-FACTORIAL-v1.payload.json": "d35a35872c174c6c736f7d53bf2618ff70bc3dfa5a826c3f547fcb8d24e0570e",
+    "tmp/dr-acceptance-receipts/H5-DORA-FACTORIAL-v1.calls.json": "861cb2a068effc46679c301d96614efbe190b09dd85b1aa4fb753fa4111b39f3"
+  },
+  "engineeringCandidate": "5491f60129079f56ff859c7831d2b17cb24f951a",
+  "regressionTests": 481
+}
