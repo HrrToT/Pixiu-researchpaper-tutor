@@ -298,6 +298,12 @@ def test_compression_cost_keeps_recovery_and_codebook_work_as_distinct_premises(
                  'quote': row['text'], 'verification': {'literal': 'passed'}} for row in selected]
     _, bundles = order_premises(evidence, [{'obligations': [goal]}], compression_operations=5)
     assert {tuple(row['evidenceIds']) for row in bundles} >= {('recovery',), ('codebook',)}
+    planned_cost = 'Identify the additional processing costs each paper reports.'
+    assert include_pdf_criteria([overview], candidates, [planned_cost], 'p', 'h', 3,
+                                compression_operations=5) == [overview]
+    assert {row['sourceId'] for row in include_pdf_criteria(
+        [overview], candidates, [planned_cost], 'p', 'h', 3, compression_operations=6
+    )} == {'overview', 'recovery', 'codebook'}
 
 
 EQUATION='Equation: d = F(g(x), g(t) + X(i)), X(i) = N(0, 1) * beta * dt * (1 - i/tau).'

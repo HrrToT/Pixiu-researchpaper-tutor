@@ -198,14 +198,14 @@ def comparison_overviews(sources, obligations, extracted, *, compression_operati
         section = source.get('location', {}).get('section', '')
         score = overview_score(text, section)
         if compression_operations and any(
-            compression_mapping_requested(c['requirement'], include_operations=compression_operations in (3, 4, 5))
+            compression_mapping_requested(c['requirement'], include_operations=compression_operations in (3, 4, 5, 6))
             for oid in eligible_obligation_ids(source, active)
             for c in active[oid].get('completionCriteria', [])
         ):
             score += 100 * compression_mapping_score(text, section)
         if score > best.get(identity, (0, None))[0]:
             best[identity] = (score, source)
-        if compression_operations in (4, 5):
+        if compression_operations in (4, 5, 6):
             from services.deep_research.method_intent import query_intents
             if any('distillation_operation' in query_intents(question, compression_operations=4)
                    for oid in eligible_obligation_ids(source, active)

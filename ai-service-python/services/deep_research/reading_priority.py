@@ -82,11 +82,11 @@ def select_read_sources(sources, obligations, limit, *, extracted=(),priority_ve
         from services.deep_research.mechanism_sources import comparison_overviews
         preferred.extend(comparison_overviews(
             ordered, obligations, extracted, compression_operations=compression_operations)[:limit // 3])
-    if compression_operations == 5 and processing_cost and limit >= 3:
+    if compression_operations in (5, 6) and processing_cost and limit >= 3:
         from services.deep_research.criterion_sources import criterion_targets
         from services.deep_research.processing_cost_sources import codebook_training_score, recovery_training_score
 
-        cost_goals = {oid for oid, _, intent in criterion_targets(obligations, compression_operations=5)
+        cost_goals = {oid for oid, _, intent in criterion_targets(obligations, compression_operations=compression_operations)
                       if intent in ('codebook_training_cost', 'recovery_training_cost')}
         best = {}
         for source in ordered:

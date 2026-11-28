@@ -132,7 +132,10 @@ def targets(plan):
                 part_target = {**target, 'targetId': target['targetId'] + '_' + part['kind'],
                                'question': part['requirement'], 'deliverable': part['kind']}
                 from services.deep_research.general_advice import has_device_memory_measurement, requests_device_memory
-                if part['kind'] == 'conditional_advice' and requests_device_memory(part['requirement']):
+                device_memory = requests_device_memory(part['requirement']) or (
+                    plan.get('literalMemoryAdviceScope') is True
+                    and requests_device_memory(role['requestExcerpt']))
+                if part['kind'] == 'conditional_advice' and device_memory:
                     compare_deployment = plan.get('compareDeploymentMemory') is True
                     direct = plan.get('directDeviceMemory') is True or compare_deployment
                     measured = {}
@@ -659,7 +662,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                            'repeat settings and metrics from other dimensions. Preserve literal metric identity '
                            'where its definition is unclear; do not interpret an ambiguous metric as disk or GPU memory.\n')
             mechanism_version = record.get('comparisonMechanismReadContractVersion')
-            if mechanism_version in (2, 3, 4, 5):
+            if mechanism_version in (2, 3, 4, 5, 6):
                 from services.deep_research.mechanism_sources import compression_mapping_requested
                 from services.deep_research.processing_cost_sources import requested as processing_cost_requested
 
@@ -669,14 +672,14 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                'what the paper quantifies. Distinguish it from added processing and keep any unknown '
                                'extra cost scoped to the cited evidence. ')
                     policy += ('Say those quotations cannot quantify the cost, and keep the documented work. '
-                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version in (3, 4, 5)
+                               'Do not assert that a paper omitted a measurement.\n' if mechanism_version in (3, 4, 5, 6)
                                else 'Do not treat it as zero or leave documented work blank.\n')
-                    if mechanism_version == 5:
+                    if mechanism_version in (5, 6):
                         policy += ('In the cost cell, tie each reported iteration count or duration to the operation it measures. '
                                    'When the cited method describes additional operations without comparable costs, '
                                    'name those operations and state what the excerpts cannot quantify. '
                                    'Do not sum partial counts into total compression cost.\n')
-                if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4, 5))
+                if any(compression_mapping_requested(dimension, include_operations=mechanism_version in (3, 4, 5, 6))
                        for dimension in dimensions):
                     policy += ('For compression, cite the operation itself, not only an ablation or codebook size. '
                                'Explain any source-reported feature-to-code mapping without claiming an index file '
@@ -766,6 +769,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 body_guidance += ('Boundary observedSettings are protocol settings, e.g. hardware, dataset or '
                                   'resolution. Keep measured FPS, storage and quality values in the example only. '
                                   'Use notEstablished for comparisons the cited protocols cannot establish.\n')
+            if record.get('comparisonEvaluationProtocolVersion') == 8:
+                from services.deep_research.comparison_cross_paper_boundary import explicitly_requests_cross_paper_speed
+                if explicitly_requests_cross_paper_speed(question):
+                    body_guidance += ('For a requested cross-paper FPS ranking limit, name the specific alignment '
+                                      'conditions the citations cannot establish, such as scene, resolution or timing. '
+                                      'Do not just say full conditions may differ or claim they actually differ.\n')
         from services.deep_research.comparison_layout import requires_speed_explanation_prose
         stage_targets = [*data['jointTargets'], *(target for paper in data['papers'] for target in paper['targets'])]
         if requires_speed_explanation_prose(record, question, limit, stage_targets, paper_subjects):
@@ -798,7 +807,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
                                "Say what it means in this paper before using it to explain the method. "
                                "Keep the definition in the cell, and use only the cited evidence.\n")
-                if record.get('comparisonMechanismReadContractVersion') in (4, 5):
+                if record.get('comparisonMechanismReadContractVersion') in (4, 5, 6):
                     from services.deep_research.mechanism_sources import distillation_operation_score
                     for paper in data['papers']:
                         ids = [t['targetId'] for t in paper['targets'] if t['targetId'] in mechanism_targets]

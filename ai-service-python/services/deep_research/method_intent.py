@@ -28,14 +28,17 @@ def query_intents(query, *, supervision=False, compression_operations=False):
         found.insert(0, 'training_supervision')
     if compression_operations:
         from services.deep_research.mechanism_sources import compression_mapping_requested
-        compression = compression_mapping_requested(query, include_operations=compression_operations in (3, 4, 5))
+        compression = compression_mapping_requested(query, include_operations=compression_operations in (3, 4, 5, 6))
         if compression:
             found.append('compression_mapping')
-        if compression_operations in (4, 5) and (compression or re.search(r'蒸馏|\bdistillation\b', query, re.I)):
+        if compression_operations in (4, 5, 6) and (compression or re.search(r'蒸馏|\bdistillation\b', query, re.I)):
             found.append('distillation_operation')
-        if compression_operations == 5:
+        if compression_operations in (5, 6):
             from services.deep_research.processing_cost_sources import requested
-            if requested(query) and re.search(r'压缩|量化|码本|\b(?:compress\w*|quantiz\w*|codebooks?)\b', query, re.I):
+            related = re.search(r'压缩|量化|码本|\b(?:compress\w*|quantiz\w*|codebooks?)\b', query, re.I)
+            if compression_operations == 6 and not related:
+                related = re.search(r'额外处理|附加处理|\b(?:additional|extra) processing\b', query, re.I)
+            if requested(query) and related:
                 found.extend(('codebook_training_cost', 'recovery_training_cost'))
     for metric in ('FPS','PSNR','SSIM','LPIPS','latency'):
         if re.search(r'(?<![A-Za-z0-9_])'+metric+r'(?![A-Za-z0-9_])',query,re.I):

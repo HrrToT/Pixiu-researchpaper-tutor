@@ -167,6 +167,27 @@ def test_typed_memory_advice_compiles_a_method_neutral_measurement_rule():
         resolve_point({**point,'evidenceRefs':['foreign']}, target, {})
 
 
+@pytest.mark.parametrize('literal_scope', [False, True])
+def test_device_memory_scope_uses_literal_role_when_planner_drops_gpu_qualifier(literal_scope):
+    from services.deep_research.comparison_wire import resolve_point
+
+    plan = {'cells': [], 'roles': {'choice': {'kind': 'joint', 'sourceAliases': ['P1', 'P2'],
+        'question': 'Recommend a choice for memory-limited deployment.',
+        'requestExcerpt': '给出显存受限时的有条件选择建议'}},
+        'jointDeliverables': {'choice': [{'kind': 'conditional_advice',
+            'requirement': 'Recommend a choice for memory-limited deployment.'}]},
+        'evidence': {'E1': {'source': 'P1', 'quote': 'The stored model is small.', 'accessLevel': 'fulltext'}},
+        'structuredTestFirst': True, 'literalMemoryAdviceScope': literal_scope}
+    target, = targets(plan)
+    point = {'kind': 'proposal', 'body': {'deviceMemoryAdvice': 'measure_then_choose'},
+             'evidenceRefs': ['E1'], 'cellRefs': []}
+    if literal_scope:
+        assert resolve_point(point, target, {})['kind'] == 'proposal'
+    else:
+        with pytest.raises(ValueError, match='invalid_joint_device_memory_advice'):
+            resolve_point(point, target, {})
+
+
 def test_paired_example_requires_explicit_same_platform_marker_and_cited_note():
     from services.deep_research.comparison_wire import resolve_point
 
