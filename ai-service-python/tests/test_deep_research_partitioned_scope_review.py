@@ -28,10 +28,11 @@ def boundary_row(proposition):
             'premises':[{'evidenceId':'E1','path':['quote']}]}
 
 
-@pytest.mark.parametrize(('fits', 'fails', 'sizes'), [
-    (True, False, [3, 1]), (True, True, [3]), (False, False, [1, 1, 1, 1]),
+@pytest.mark.parametrize(('version', 'limit', 'fails', 'sizes'), [
+    (5, 48, False, [3, 1]), (5, 48, True, [3]), (5, 18, False, [1, 1, 1, 1]),
+    (6, 48, False, [4]), (6, 32, False, [3, 1]),
 ])
-def test_combined_comparison_observations_respect_fitted_batches(fits, fails, sizes):
+def test_combined_comparison_observations_respect_fitted_batches(version, limit, fails, sizes):
     from unittest.mock import Mock
     from services.deep_research.partitioned_scope_review import review
 
@@ -41,10 +42,10 @@ def test_combined_comparison_observations_respect_fitted_batches(fits, fails, si
         for value in ('66%', '67%', '68%', '69%')
     ]
     checker = BudgetedSemanticChecker(Mock(), 'r', isolate_factual_claims=True,
-        comparison_review_batches=True, scope_observation_assertions=5,
+        comparison_review_batches=True, comparison_initial_review_targets=4, scope_observation_assertions=version,
         short_circuit_scope_observations=True)
     checker._check_batch = Mock(side_effect=lambda batch, *args, **kw: {
-        'inputBytes': len(batch) * (10 if fits else 30), 'maxInputBytes': 32,
+        'inputBytes': len(batch) * 10, 'maxInputBytes': limit,
     })
     packets = []
 

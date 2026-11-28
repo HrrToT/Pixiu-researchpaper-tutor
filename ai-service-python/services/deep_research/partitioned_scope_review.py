@@ -14,7 +14,7 @@ def enabled(record):
 
 def assertions_enabled(record):
     version=record.get('scopeObservationContractVersion')
-    return (version if version>=2 else True) if type(version) is int and version in (1,2,3,4,5) else False
+    return (version if version>=2 else True) if type(version) is int and version in (1,2,3,4,5,6) else False
 
 
 def consistent_premises_enabled(record):
@@ -56,8 +56,8 @@ def review(checker, claim, expression, evidence, node):
     """
     policy = checker._scope_observation_assertions
     policy = policy() if callable(policy) else policy
-    atomic_comparison = type(policy) is int and policy in (3, 4, 5)
-    literal = type(policy) is int and policy in (2, 3, 4, 5)
+    atomic_comparison = type(policy) is int and policy in (3, 4, 5, 6)
+    literal = type(policy) is int and policy in (2, 3, 4, 5, 6)
     assertions = policy is True or literal
     observations = observation_claims(claim, expression, assertions=assertions,literal=literal)
     review_options = {'scope_observations': True} if atomic_comparison else {}
@@ -68,7 +68,7 @@ def review(checker, claim, expression, evidence, node):
         return [{**target, 'claimId': alias} for alias, target in zip(ids, targets)], ids
 
     def check_observations(targets):
-        if policy not in (4, 5):
+        if policy not in (4, 5, 6):
             return checker._check(targets, evidence, [], node, **review_options)
         # The reviewer copies short request-local IDs. Keep the full identity
         # for the parent assertion and every persisted observation audit.
@@ -89,10 +89,12 @@ def review(checker, claim, expression, evidence, node):
         batches = [[observation] for observation in observations]
         batch_policy = getattr(checker, '_comparison_review_batches', False)
         batch_policy = batch_policy() if callable(batch_policy) else batch_policy
-        if policy == 5 and batch_policy is True:
-            from services.deep_research.comparison_review_batches import groups
+        if policy in (5, 6) and batch_policy is True:
+            from services.deep_research.comparison_review_batches import MAX_TARGETS, groups
+            maximum = checker._comparison_target_limit(node) if policy == 6 else MAX_TARGETS
             batches = groups(observations, lambda targets: checker._check_batch(
-                wire_targets(targets)[0], evidence, [], node=node, _preview=True, **review_options))
+                wire_targets(targets)[0], evidence, [], node=node, _preview=True, **review_options),
+                max_targets=maximum)
         checked=[]
         for batch in batches:
             rows=check_observations(batch)
