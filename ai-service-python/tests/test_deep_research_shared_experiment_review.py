@@ -61,13 +61,30 @@ def test_named_review_binding_resolves_only_exact_proposal_ids(pointer, expected
     reply = {'content': json.dumps(result), 'finishReason': 'stop'}
     validator = Draft202012Validator({'type': 'object'})
     if expected is None:
-        with pytest.raises(ValueError, match='unknown step or state ID'):
+        with pytest.raises(ValueError, match='unknown ID or lacks a field'):
             _decode_batch(reply, ['section_0'], validator, named_plan=plan)
     else:
         checked = _decode_batch(reply, ['section_0'], validator, named_plan=plan)
         assert checked['checks'][0]['planBindings'] == [expected]
         assert checked['issues'][0]['planBindings'] == [expected]
     assert _decode_batch(reply, ['section_0'], validator) == result
+
+
+def test_versioned_metric_ids_preserve_the_original_review_response():
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch
+
+    plan = {'metrics': [{'id': 'fps'}, {'id': 'psnr', 'procedure': 'Measure held-out images.'}]}
+    result = {'checks': [{'checkId': 'section_6', 'planBindings': ['/metrics/@psnr/procedure']}],
+              'coherent': True, 'issues': []}
+    reply = {'rawContent': json.dumps(result), 'finishReason': 'stop'}
+    args = (reply, ['section_6'], Draft202012Validator({'type': 'object'}))
+    assert _decode_batch(*args, named_plan=plan) == result
+    decoded = _decode_batch(*args, named_plan=plan, named_metrics=True)
+    assert decoded['checks'][0]['planBindings'] == ['/metrics/1/procedure']
+    assert json.loads(reply['rawContent']) == result
+    with pytest.raises(ValueError, match='unknown ID or lacks a field'):
+        _decode_batch(*args, named_plan={'metrics': [{'id': 'not_psnr'}]}, named_metrics=True)
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate

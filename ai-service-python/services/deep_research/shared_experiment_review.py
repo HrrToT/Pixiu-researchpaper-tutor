@@ -435,7 +435,8 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
                 return {}
             part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']),
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) == 2 else None)
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
+                                 named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
             problems, passed = _binding_findings(
                 part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
                 contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
@@ -554,7 +555,11 @@ def build(record, input_data, aliases, *, required_domains=()):
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view, policy=instructions):
         if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
-            if record.get(INDEXED_STATES_MARKER) == 2:
+            if record.get(INDEXED_STATES_MARKER) == 3:
+                policy = ('Use exact IDs for steps, states and metrics, e.g. /metrics/@METRIC_ID/procedure. '
+                          'Use zero-based indices for other lists.\n'
+                          + policy.replace('Use zero-based scalar paths', 'Use exact scalar paths'))
+            elif record.get(INDEXED_STATES_MARKER) == 2:
                 policy = ('Use exact IDs from the JSON for steps/states, e.g. /steps/@STEP_ID/operation/action '
                           'or /states/@STATE_ID/representation. Use indices for other lists, '
                           'e.g. /pairing/sharedStateIds/0.\n'
@@ -800,7 +805,7 @@ def _resolved_plan_binding(path, proposal):
     return {'path': path, 'text': text}
 
 
-def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_plan=None):
+def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_plan=None, named_metrics=False):
     if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
         raise ValueError('Incomplete review')
     content = answer.get('rawContent', answer.get('content', ''))
@@ -823,8 +828,9 @@ def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_p
     if named_plan is not None:
         # Convert exact immutable IDs before scope and literal validation.
         # Numeric paths and the stored provider response retain their identity.
+        collections = ('steps', 'states', 'metrics') if named_metrics else ('steps', 'states')
         indices = {key: {row['id']: i for i, row in enumerate(named_plan.get(key, []))}
-                   for key in ('steps', 'states')}
+                   for key in collections}
         for row in [*part['checks'], *part['issues']]:
             for i, path in enumerate(row['planBindings']):
                 parts = path.split('/', 3)
@@ -832,7 +838,7 @@ def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_p
                     continue
                 key, alias = parts[1:3]
                 if len(parts) != 4 or not parts[3] or alias[1:] not in indices[key]:
-                    raise ValueError('Review pointer uses an unknown step or state ID')
+                    raise ValueError(f'Review pointer uses an unknown ID or lacks a field in {key}')
                 row['planBindings'][i] = f'/{key}/{indices[key][alias[1:]]}/{parts[3]}'
     return part
 
@@ -971,7 +977,8 @@ def assess(record, input_data, aliases, response):
                                 if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                  context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
-                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) == 2 else None)
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
+                                 named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
             value['checks'].extend(part['checks'])
@@ -1087,7 +1094,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 part = _decode_batch(answer, packet['checkIds'], packet_validator,
                                      context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
                                      named_plan=proposal if check_bindings_before_next
-                                     and record.get(INDEXED_STATES_MARKER) == 2 else None)
+                                     and record.get(INDEXED_STATES_MARKER) in (2, 3) else None,
+                                     named_metrics=record.get(INDEXED_STATES_MARKER) == 3)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,

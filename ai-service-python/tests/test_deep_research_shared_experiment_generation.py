@@ -671,6 +671,10 @@ def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     assert 'Describe within-level effects in the analysis decision rule' in revision
     assert 'arm fit references that rule' in revision
     assert 'fit after last reset' in revision
+    current = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 11})
+    assert 'exact training backward sample or window and aggregation' in current
+    assert 'Separate it from screen-space gating and optimizer descent' in current
+    assert 'exact training backward sample or window and aggregation' not in revision
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
