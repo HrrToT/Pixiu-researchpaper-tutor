@@ -1,0 +1,144 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "saved_future_work_scope_and_repair_admission_replay",
+  "replayBaseCommit": "ab02d25cf43fb31ccc6e937b301e6f75ec1501a5",
+  "absenceScopeVersionsCompared": [
+    9,
+    10
+  ],
+  "unmeasuredReplay": {
+    "sourceRunId": "dr_run_dd0ab944b5675bc0b61ade6f1c26361f",
+    "sourceRunSha256": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "newHardRejections": [
+      {
+        "claimId": "cmp_1_0",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。保留引用支持的操作、数值和未来研究建议。未来建议本身不能证明论文未实施相应操作；缺少成本数据时，只说明引文不足以量化什么。"
+      },
+      {
+        "claimId": "cmp_3_0",
+        "reason": "absence_not_established",
+        "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。保留引用支持的操作、数值和未来研究建议。未来建议本身不能证明论文未实施相应操作；缺少成本数据时，只说明引文不足以量化什么。"
+      }
+    ],
+    "oldRepairLimit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    },
+    "oldFirstCoverageStatus": "checked",
+    "newFirstCoverageStatus": "deferred_factual_repair",
+    "budgetAtFirstAudit": {
+      "maxModelCalls": 18,
+      "maxTokens": 100000,
+      "maxWallClockSeconds": 360,
+      "reserveModelCalls": 5,
+      "reserveTokens": 50000,
+      "maxExternalSearches": 6,
+      "maxFulltextFetches": 6,
+      "finalizationBudgetVersion": 1,
+      "releasedReserveTokens": 18396,
+      "explorationAllocationVersion": 1,
+      "modelCalls": 9,
+      "tokens": 69407,
+      "normalTokens": 37803,
+      "elapsedSeconds": 0,
+      "externalSearches": 0,
+      "fulltextFetches": 0,
+      "reservedModelCalls": 5,
+      "exhausted": "",
+      "profile": "standard"
+    },
+    "events": [
+      "initial_claim_checks",
+      {
+        "auditTokenReservation": 30684
+      },
+      "final_audit_fixture"
+    ],
+    "newRepairStatus": "skipped_budget",
+    "newRepairLimit": {
+      "kind": "repairPromptBytes",
+      "limit": 0,
+      "used": 1
+    },
+    "providerCalls": 0,
+    "originalVerifiedClaimsPreserved": 8,
+    "semanticAcceptanceOfRewrites": false
+  },
+  "countedReplayScenarios": [
+    {
+      "counterFixture": null,
+      "events": [
+        "initial_claim_checks",
+        {
+          "auditReservationTokens": 30684
+        },
+        {
+          "offlineCounterFixture": null,
+          "countedAuditPromptBytes": 28460,
+          "auditPromptSha256": "bbeb02f79fc76db396309feea41388e6d2c7a97d3dbd63f690000cd597eb1a4c"
+        },
+        {
+          "auditReservationTokens": 30684
+        },
+        "final_answer_audit_fixture"
+      ],
+      "repairStatus": "skipped_budget",
+      "repairLimit": {
+        "kind": "repairPromptBytes",
+        "limit": 0,
+        "used": 1
+      }
+    },
+    {
+      "counterFixture": 8494,
+      "events": [
+        "initial_claim_checks",
+        {
+          "auditReservationTokens": 30684
+        },
+        {
+          "offlineCounterFixture": 8494,
+          "countedAuditPromptBytes": 28460,
+          "auditPromptSha256": "bbeb02f79fc76db396309feea41388e6d2c7a97d3dbd63f690000cd597eb1a4c"
+        },
+        {
+          "auditReservationTokens": 13018
+        },
+        {
+          "repairPromptBytes": 12432,
+          "outputLimit": 4096,
+          "targetMentions": [
+            "cmp_1_0",
+            "cmp_3_0"
+          ],
+          "includesFutureWorkDiagnostic": true
+        },
+        {
+          "repairPromptBytes": 12447,
+          "outputLimit": 4096,
+          "targetMentions": [
+            "cmp_4_0"
+          ],
+          "includesFutureWorkDiagnostic": false
+        },
+        "final_answer_audit_fixture"
+      ],
+      "repairStatus": "response_received",
+      "repairLimit": null
+    }
+  ],
+  "fixtureBoundary": "The nonzero count is the original completed audit response input usage, injected as a fixture for the rebuilt audit input. No model count endpoint was called. Empty repair responses and the prior final audit were injected; the replay established request fitting and routing, not admission or correctness of a generated repair.",
+  "targetedRegression": {
+    "passed": 313
+  },
+  "providerCalls": 0,
+  "freshSemanticAcceptance": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-scoped-wording-fresh-20261129/run.json": "a1132530e82cb1b371744888a7c2d1c7e9daa170d98e3bdddcd82debf2750dca",
+    "tmp/d2-future-work-scope-repair-replay-20261129.json": "52ada39099f31fa885f59db51bc973b87bcecb79d8bca0756a3913089d714eb8",
+    "tmp/d2-future-work-counted-repair-replay-20261129.json": "cea20e1abdd32c474d992d010f1849c7a1a0dc1196ea9ba71682897188a60bdb"
+  }
+}
