@@ -3,11 +3,15 @@
 No second writer invents a different initialization/budget. Full answer audit,
 scope checks and publication integration remain mandatory after compilation.
 """
+import re
+
 from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.shared_experiment_review import prepare, _generation, review_slot
 
 
 MEMORY_REPORT_MARKER = 'sharedExperimentMemoryReportVersion'
+PROVENANCE_REPORT_MARKER = 'sharedExperimentReportProvenanceVersion'
+_OPTIMIZER = re.compile(r'优化器|(?<![A-Za-z])(?:optim[isz]ers?|adam)(?![A-Za-z])', re.IGNORECASE)
 
 
 def _cell(value):
@@ -35,6 +39,19 @@ def compiled_roles(proposal):
         'limits': analysis['limitations'],
     }
     return tuple(role for role, content in fields.items() if content)
+
+
+def optimizer_provenance(question, proposal):
+    """Describe the provenance of rendered intervention rules, not paper-wide absence."""
+    if not _OPTIMIZER.search(question) or not proposal['sourceFacts']:
+        return ''
+    if any(_OPTIMIZER.search(fact['text']) for fact in proposal['sourceFacts']):
+        return ''
+    if not any(_OPTIMIZER.search(factor[side]['action'])
+               for factor in proposal['factors'] for side in ('offOperation', 'onOperation')):
+        return ''
+    return ('**优化器状态的依据：** 仅凭所引论文片段，尚无法确认作者在这些操作前后如何处理优化器状态。'
+            '表中的优化器状态处置属于拟议实验设置。')
 
 
 def compile_candidate(record, input_data, aliases):
@@ -141,6 +158,10 @@ def compile_candidate(record, input_data, aliases):
             refs=' '.join('['+str(citations[e]['number'])+'](#research-evidence-'+citations[e]['evidenceId']+')'
                           for e in fact['evidenceRefs'])
             lines += ['- '+fact['text']+' '+refs]
+        if record.get(PROVENANCE_REPORT_MARKER) == 1:
+            from services.deep_research.request_context import effective_question
+            if note := optimizer_provenance(effective_question(record), p):
+                lines += ['', note]
     text = '\n'.join(lines)+'\n'
     result = {'version':1, 'markdown':text, 'citations':list(citations.values()),
               'generationBindingDigest':generation['bindingDigest'], 'reviewDigest':assessment['reviewDigest'],

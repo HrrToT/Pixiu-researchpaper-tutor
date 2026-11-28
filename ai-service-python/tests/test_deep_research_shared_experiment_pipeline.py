@@ -12,6 +12,22 @@ from services.deep_research.shared_experiment_pipeline import verify
 from test_deep_research_shared_experiment_review import ready,check,verdict,reply
 
 
+def test_optimizer_disclosure_separates_scientific_facts_from_the_proposed_rule():
+    from services.deep_research.shared_experiment_result import optimizer_provenance
+
+    question = '设计实验并说明父子高斯的优化器状态'
+    factor = {'offOperation': {'action': '保留Adam状态'}, 'onOperation': {'action': '初始化子状态'}}
+    proposal = {'sourceFacts': [{'text': '小高斯克隆后沿位置梯度移动'}], 'factors': [factor]}
+    note = optimizer_provenance(question, proposal)
+    assert '仅凭所引论文片段' in note
+    assert '表中的优化器状态处置属于拟议实验设置' in note
+    assert optimizer_provenance('设计一个实验', proposal) == ''
+    assert optimizer_provenance(question, {**proposal, 'sourceFacts': []}) == ''
+    assert optimizer_provenance(question, {**proposal, 'factors': []}) == ''
+    sourced = {**proposal, 'sourceFacts': [{'text': '论文规定继承 Adam 状态'}]}
+    assert optimizer_provenance(question, sourced) == ''
+
+
 def coverage(prompt,missing=False):
     from services.deep_research import shared_strings,nested_tables
     marker='Exact decision input fields (question, fixed checks, complete accepted claims and server metadata):\n'

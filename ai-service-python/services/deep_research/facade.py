@@ -416,6 +416,7 @@ class ResearchFacade:
             **({"sharedExperimentReviewPackingVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewGroupBindingsVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentMemoryReportVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentReportProvenanceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentProtocolEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDensificationEvidenceVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDensificationExecutionVersion": 9} if shared_experiment_profile == 8 else {}),
