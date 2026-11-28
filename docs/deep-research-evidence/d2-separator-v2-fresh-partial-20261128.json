@@ -1,0 +1,91 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_frozen_development_run",
+  "sourceCommit": "e3b1392484dd89e4470a2605e153b37b5284c9ac",
+  "runId": "dr_run_38b6ce0f72c05418b577e9763eadd33f",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "independentHoldoutCredit": 0,
+  "reusedStageReceipts": 0,
+  "externalLiteratureSearches": 0,
+  "productionWrites": 0,
+  "usage": {
+    "providerGenerationRequests": 17,
+    "budgetModelCalls": 12,
+    "tokens": 87309,
+    "seconds": 205.0,
+    "byModel": {
+      "gpt-6-luna": {
+        "requests": 6,
+        "tokens": 20005
+      },
+      "gpt-6.1-terra": {
+        "requests": 11,
+        "tokens": 67304
+      }
+    }
+  },
+  "planning": {
+    "passedWithCorrection": true,
+    "literalSeparatorRestoreUsed": false
+  },
+  "result": {
+    "status": "completed",
+    "outcome": "partial",
+    "verifiedClaims": 9,
+    "remainingCoverage": [
+      {
+        "obligationId": "o1",
+        "missingAspects": [
+          "分别概述两篇论文报告的表示与压缩机制，以及压缩机制涉及的处理流程。"
+        ]
+      },
+      {
+        "obligationId": "o2",
+        "missingAspects": [
+          "结合可核实的存储、画质、速度和处理成本证据，提出显存受限时明确附带条件的选择建议，并区分建议与论文结论。"
+        ]
+      },
+      {
+        "obligationId": "answer_scope",
+        "missingRequestExcerpt": "并给出显存受限时的有条件选择建议",
+        "missingAspects": [
+          "并给出显存受限时的有条件选择建议"
+        ]
+      }
+    ],
+    "claimRepairRejections": [
+      {
+        "claimId": "cmp_0_0",
+        "reason": "numeric_mismatch",
+        "missingReportedNumbers": [
+          "1e0"
+        ],
+        "detail": "本条引用原文未直接报告这些数值：1。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+      }
+    ],
+    "workspaceDeliveryExercised": false,
+    "citationChecks": {
+      "literal_page": 27,
+      "table_row_check_required": 1
+    }
+  },
+  "artifacts": {
+    "tmp/openai-d2-deployment-separator-fresh-20261128/intent.json": "013d36e48fbfc6e4510522a211fe6d74cf4ff17beb0ca9ed7dc7d8c7eece4db0",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/run.json": "d92e839a09f622365a21dd64b55119c8132c641cf242314ba9a5355b4a37c42a",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/result.json": "92fd077406a67a059675c223278adc859a868261db2b5f918197ba63db72f34e",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/calls.json": "c7967ccdfed1658d5233db3c2f8631f1b3a14da4ba3ce8b8cf54e13e2f4130c3",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/provider.jsonl": "682cc370f77514dd429e6f3081407653c545b6ed10192369c12cd221c0d857be",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/provider-counts.jsonl": "c9ecae1e7498ebeb60091210f897721a872dab347fed526ea4f6e59a0a948e03",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/report.md": "60fb6b68e8e8bb66975df6cd685bcda15ffd65bec092944c63e3f32621871003",
+    "tmp/openai-d2-deployment-separator-fresh-20261128/citation-physical-check.json": "dc850ff2556dcc10d0399dad5f5ac1840fb4c7d48646ee909c7a2f0e0d74e856"
+  },
+  "offlineNumericIsolation": {
+    "claimId": "cmp_0_0",
+    "oldRejection": "numeric_mismatch",
+    "removingOnlyShortVersionStillRejected": true,
+    "removingOnlyIndefiniteCollectionPassedOldPrecheck": true,
+    "cause": "A contrast phrase in a later sentence blocked the existing geometry-collection normalization.",
+    "updatedUnchangedClaimPassedNumericPrecheck": true,
+    "acceptedWithoutSemanticReview": false
+  }
+}
