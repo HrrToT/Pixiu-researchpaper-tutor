@@ -193,6 +193,31 @@ def test_replacements_cannot_change_authority_or_silently_fill_science(mutation)
     with pytest.raises((ValueError,KeyError)):apply(base,reply(v))
 
 
+def test_revision_accepts_one_identical_unresolved_echo_and_keeps_prerequisite():
+    from services.deep_research.shared_experiment_revision import BOUND_DIGEST_MARKER
+
+    record, data, aliases = diagnosed()
+    record[BOUND_DIGEST_MARKER] = 2
+    base = record['state']['sharedExperimentGeneration']
+    payload = json.loads(edit_response(record)['content'])
+    payload['unresolved'] = ['Image manifest still needs verification.']
+    payload['edits'].append({'path': '/unresolved', 'value': list(payload['unresolved'])})
+    response = reply(payload)
+    with pytest.raises(ValueError, match='Forbidden replacement'):
+        apply(base, response)
+    result = repair(record, data, aliases, invoke=Mock(return_value=response),
+                    checkpoint=lambda saved: record['state'].__setitem__('sharedExperimentRevision', saved))
+    assert result['status'] == 'awaiting_scientific_review'
+    assert result['response'] == response
+    assert view(record)['boundProposal']['proposal']['unresolved'] == payload['unresolved']
+    assert not result['scientificApproval']
+    for value in ([], ['A conflicting prerequisite.']):
+        changed = deepcopy(payload)
+        changed['edits'][-1]['value'] = value
+        with pytest.raises(ValueError, match='Forbidden replacement'):
+            apply(base, reply(changed), identical_unresolved_echo=True)
+
+
 def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_facts():
     from services.deep_research.shared_experiment_revision import _apply_scoped, _design_only_context
 

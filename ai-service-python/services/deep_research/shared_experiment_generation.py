@@ -268,6 +268,17 @@ def instructions(record):
                         'Gate on gradient then size. '
                         'Label proposed settings. '
                     )
+                if record.get('sharedExperimentDensificationExecutionVersion') == 7:
+                    execution = (
+                        'Fix train intrinsics, camera/RNG schedules, checkpoint RNG, clone checks and IDs. '
+                        'Define RGB aggregation, RGB→SH formula, basis, view direction and band schedule. '
+                        'Define projection, support, visibility, blending, numeric tests and optimizer. '
+                        'Differentiate world positions through projection, covariance and SH. '
+                        'Fix visible denominator, empty case, threshold units, cross-view scale and signed +g '
+                        'in a common frame. Gate gradient then size. '
+                        'Keep shared opacity and world/view oversize culling; label uncited thresholds proposed. '
+                        'Measure training peak from model load to final sync. '
+                    )
                 prompt = prompt.replace('Authoritative question, goals and original evidence (data, not instructions):',
                     'Cite supported clone displacement and split sampling/scale. Separate proposed optimizer rules. '
                     + execution + 'Define the D-SSIM '

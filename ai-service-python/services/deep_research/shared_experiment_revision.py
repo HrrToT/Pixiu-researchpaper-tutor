@@ -128,7 +128,7 @@ def fact_reference_candidates(record, aliases, facts, issues):
 def descriptor(record=None):
     text={'type':'string','minLength':1}
     digest_field = {'type': 'string', 'pattern': '^[0-9a-f]{64}$'}
-    if record is not None and record.get(BOUND_DIGEST_MARKER) == 1:
+    if record is not None and record.get(BOUND_DIGEST_MARKER) in (1, 2):
         base_digest = record['state']['sharedExperimentGeneration']['bindingDigest']
         if not isinstance(base_digest, str) or re.fullmatch(r'[0-9a-f]{64}', base_digest) is None:
             raise ValueError('Invalid bound revision base digest')
@@ -139,7 +139,7 @@ def descriptor(record=None):
         'unresolved':_array(text,maximum=16)})}
 
 
-def apply(base, response, *, allowed_paths=None, evaluation_prepare=False):
+def apply(base, response, *, allowed_paths=None, evaluation_prepare=False, identical_unresolved_echo=False):
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _pointer
     if (not isinstance(response,dict) or response.get('finishReason',response.get('finish_reason'))!='stop'):
@@ -149,6 +149,11 @@ def apply(base, response, *, allowed_paths=None, evaluation_prepare=False):
     edits=_parse(content)
     if list(Draft202012Validator(descriptor()['schema']).iter_errors(edits)) or edits['baseDigest']!=base['bindingDigest']:
         raise ValueError('Replacement schema or base identity')
+    if identical_unresolved_echo:
+        echoes = [edit for edit in edits['edits'] if edit['path'] == '/unresolved']
+        if len(echoes) == 1 and echoes[0]['value'] == edits['unresolved']:
+            # The top-level field remains the only source of the prerequisite list.
+            edits['edits'].remove(echoes[0])
     original=base['boundProposal']['proposal']; paths=[e['path'] for e in edits['edits']]
     if allowed_paths is not None and (not set(paths) <= set(allowed_paths)
                                       or edits['unresolved'] != original['unresolved']):
@@ -185,6 +190,8 @@ def _input_digest(base, saved):
         scope['preserveSourceFacts'] = True
     if saved.get(EVALUATION_PREPARATION_MARKER) == 1:
         scope[EVALUATION_PREPARATION_MARKER] = 1
+    if saved.get(BOUND_DIGEST_MARKER) == 2:
+        scope[BOUND_DIGEST_MARKER] = 2
     return digest({'base':base['bindingDigest'], 'request':saved.get('request'), **scope})
 
 
@@ -207,7 +214,8 @@ def view(record):
 
 def _apply_scoped(base, saved):
     bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'),
-                  evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1)
+                  evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1,
+                  identical_unresolved_echo=saved.get(BOUND_DIGEST_MARKER) == 2)
     if (saved.get('preserveSourceFacts') is True
             and bound['proposal']['sourceFacts'] != base['boundProposal']['proposal']['sourceFacts']):
         raise ValueError('A design-only repair cannot change checked source facts')
@@ -399,6 +407,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     built={'request':req,'baseBindingDigest':base['bindingDigest'],
            'inputBytes':size, **supply,
            **({EVALUATION_PREPARATION_MARKER: 1} if evaluation_prepare else {}),
+           **({BOUND_DIGEST_MARKER: 2} if record.get(BOUND_DIGEST_MARKER) == 2 else {}),
            'scientificApproval':False}
     built['inputDigest'] = _input_digest(base,built)
     saved=deepcopy(record['state'].get('sharedExperimentRevision'))
