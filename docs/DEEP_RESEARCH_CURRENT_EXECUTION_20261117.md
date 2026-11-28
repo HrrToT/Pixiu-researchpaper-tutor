@@ -1075,12 +1075,14 @@ D2 标准预算旧回执中，跨论文帧率的四个评测设置观察分别�
 
 D2 原始核验回放确认，运行到 67,245 Token、15 次生成时还有三次生成空间，但把整答审核输入字节数用作预留后，修订输入限额变成了零。新版仅在初稿事实修订因该估算被拦下时，对已通过事实核验的正文及其引文进行一次只计数请求。27,755 字节输入返回 7,956 Token，计入审核输出和封装余量后预留 12,480 Token，15,087 字节的修订请求进入待发送阶段。查不到计数时沿用原估算，材料权限撤销时不发计数请求。总预算保持 18 次生成和 100,000 Token。本轮没有生成、重新核验或发布，166 项定向测试通过。 [D2 预留回放与真实计数](deep-research-evidence/d2-counted-repair-audit-forecast-replay-20261128.json)
 
+随后在同一原始 15 次生成的账本前缀上开隔离续验，原运行已经发出的历史整答请求单独保留。续验新增修订、独立复核和整答审核各一次，共 16,847 Token。该分支共 18 次生成、84,092 Token、约 166 秒。9 条已核验论断保留，2 条修订通过事实核验；整答审核仍认为额外处理成本交代不足，隔离库保存部分报告。按调用摘要重建实际修订输入，曾支持详细成本回答的三段引文均可用，但修订只用了密度调整的引文，省略了具体设置和成本未单列的边界说明。未写入现用工作区。 [标准预算三步续验](deep-research-evidence/d2-counted-repair-three-stage-real-20261128.json)
+
 按原设计记录固定题适用范围。历史人工通过只覆盖所列的开发题和源码版本。完整回归、浏览器交互和隔离启动各保留自身的证据范围。
 
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 隔离复验复用 10 条已核验论断，发布完整报告。新版标准预算从头运行保存的部分报告通过跨论文 FPS 边界审核，保留同表数值、显存建议和 LightGaussian 两项处理成本。后续合批核验通过原始 3DGS 的处理成本与渲染速度，保留此前 9 条核验结果。 [隔离复验](deep-research-evidence/d2-processing-cost-integrated-real-20261128.json) · [从头运行及迭代数回放](deep-research-evidence/d2-bibliography-boundary-standard-real-20261128.json) · [两条事实续验](deep-research-evidence/d2-original-speed-cost-counted-fact-review-20261128.json) | 11 条候选已逐条核验，原续验累计用满 18 次调用，未发整答终审或发布。新版用真实计数确认修订输入可以进入请求阶段。标准预算下的完整从头运行和独立留出仍待验收。 [修订预留与实测计数](deep-research-evidence/d2-counted-repair-audit-forecast-replay-20261128.json) |
+| D2 两论文比较 | 隔离复验复用 10 条已核验论断，发布完整报告。新版标准预算从头运行保存的部分报告通过跨论文 FPS 边界审核。此后从事实核验检查点做的隔离续验，在预算内完成修订、独立复核与整答审核，保留 11 条已核验论断。 [隔离复验](deep-research-evidence/d2-processing-cost-integrated-real-20261128.json) · [标准预算三步续验](deep-research-evidence/d2-counted-repair-three-stage-real-20261128.json) | 整答审核仍指出额外处理成本不完整，续验保存部分报告。标准预算下的完整从头运行和独立留出仍待验收。 |
 | D3 四组实验 | 冻结开发题已通过 25 项科学检查与真实整答终审，累计 89,038 Token，9 个引文可逐字定位，保存完整报告并在隔离工作区验证交付和找回。 [同题开发验收](deep-research-evidence/d3-provenance-final-complete-and-delivery-20261128.json) | 空运行完成生成及原稿续验，两个科学缺口仍开放。修复后须验证一次完整运行，并以新冻结题完成 H5 独立验收。 [空运行回执](deep-research-evidence/d3-fresh-ordinal-and-scientific-scope-20261128.json) |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |

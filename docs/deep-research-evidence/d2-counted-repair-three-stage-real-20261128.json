@@ -1,0 +1,91 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_development_checkpoint_branch",
+  "independentHoldoutCredit": 0,
+  "sourceCommit": "73b6ed57e4f4cb69f1adf1739bb42249584bb34d",
+  "originalRunId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "isolatedRunId": "dr_d2_counted_repair_three_stage_20261128",
+  "originalDeferredAuditCallPreservedOutsideBranch": "80dc99a7056499fdc5ab9dd6fbe0ce5c",
+  "branchUsage": {
+    "carriedGenerations": 15,
+    "carriedTokens": 67245,
+    "newGenerations": 3,
+    "newGenerationTokens": 16847,
+    "generationTokensByStage": {
+      "repair_claims": 4385,
+      "verify_repair": 3289,
+      "verify_answer_coverage": 9173
+    },
+    "totalGenerations": 18,
+    "totalTokens": 84092,
+    "accountedSeconds": 166.338,
+    "providerCountingRequests": 1,
+    "reusedCount": 7956,
+    "finalAuditCount": 8220,
+    "externalLiteratureSearches": 0
+  },
+  "result": {
+    "status": "completed",
+    "outcome": "partial",
+    "unchangedPreviouslyVerifiedClaims": 9,
+    "revisedAndVerifiedClaimIds": [
+      "cmp_2_0",
+      "cmp_6_0"
+    ],
+    "verifiedClaims": 11,
+    "wholeAnswerAuditStatus": "checked",
+    "unmetObligationIds": [
+      "o1",
+      "answer_scope"
+    ],
+    "isolatedPublicationRecord": "dr_pub_ec35a9a259fe4fadb0b6fde830568fb6",
+    "deliveredToWorkspace": false,
+    "productionWrites": 0
+  },
+  "diagnostic": {
+    "identicalRepairRequestDigest": "ebd5eae0bad7528db46f7ff3af4e4368d4631beb6e8c79da43137af716363366",
+    "boundedCostCandidateSourceAliasesInRepairInput": {
+      "ev_16794082a489d9359b2eac7caf9b063c326408499e3729b3a4f3d474819ad547": "E8",
+      "ev_33e0dc2b642da4fcbda38f206dd96a28f873aeeb009abd3074b6d7bb8cd80587": "E14",
+      "ev_fdbde2fa9c3a15a634cda58cccc2898eff0c06d118012d32d4d60ac0bef3a3ba": "E1"
+    },
+    "usedCostClaimEvidenceIds": [
+      "ev_16794082a489d9359b2eac7caf9b063c326408499e3729b3a4f3d474819ad547"
+    ],
+    "meaning": "All three passages from a previously verified detailed cost candidate were allowed in the actual repair request. The returned claim retained only the density-adjustment operation, omitting the method settings and the boundary that the passages do not quantify the separate costs."
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/intent.json",
+      "sha256": "acbeb14c4c48c0a5384d013ce15c7be7e828af0be93d3afb1cb5d933f4b434e2"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/run.json",
+      "sha256": "1be9b68dfbabca4f27ecdf0f83ab47bd683b32107712348513f5f420637bc49a"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/calls.json",
+      "sha256": "12bbed5a79bbdeeab1303c11043ffb7539897cb6fd4cf855969f7f13f8e822eb"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/counts.json",
+      "sha256": "9b2bdd9c87ac3a761c25f8f77c26883e5e7dc85f0cde6ec1225bc9a4e675e091"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/summary.json",
+      "sha256": "765255adddff6d553f309d10e27aeb406051ff23c055e2eefb0ca5e2add5dafe"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-three-stage-20261128/publish-return.json",
+      "sha256": "c8ce4aa8dae1c4d35fe3aac6a5603cb280319648f3e33a076e62b027f1927926"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-wire-audit-20261128/repair-request.txt",
+      "sha256": "cffb3772d2b48c0d54d882a0c97fd409ddec3f3bf5d8f308b07ef18efa163824"
+    },
+    {
+      "path": "tmp/openai-d2-counted-repair-wire-audit-20261128/calls.json",
+      "sha256": "352c2822d025d3521356d3456b9d440980f597bc2719920c28abb8df66c3aed2"
+    }
+  ]
+}
