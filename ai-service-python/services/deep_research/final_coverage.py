@@ -49,7 +49,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
                        requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False,
                        counted_comparison_audit=False, counted_experiment_audit=False,
-                       larger_counted_comparison_window=False):
+                       larger_counted_comparison_window=False, pinned_method_access=False):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -121,7 +121,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
     audit_plan = normalize_obligation_purposes(plan, question)
     from services.deep_research.display_metadata import answer_display_metadata, display_metadata_digest
     from services.deep_research.access_disclosure import access_requirements
-    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators)
+    display_metadata = answer_display_metadata(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators,
+                                              **({'pinned_method_access':True} if pinned_method_access else {}))
     if binding_catalog:display_metadata={**display_metadata,'answerBindingCatalogVersion':1}
     identity = None
     if plan and question:
@@ -190,7 +191,8 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
             catalog=None
             if binding_catalog:
                 from services.deep_research.coverage_binding_catalog import build,build_scoped
-                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True,
+                                                pinned_method_access=pinned_method_access) if task_sources else {}
                 catalog=(build_scoped(claims,display_metadata,fixed_requirements,permissions) if scoped_catalog
                     else build(claims,display_metadata))
             if shared_experiment_packet:
@@ -264,8 +266,13 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 from services.deep_research.coverage_binding_catalog import build,GUIDANCE as binding_guidance
                 if scoped_catalog:
                     from services.deep_research.coverage_binding_catalog import build_scoped,SCOPED_GUIDANCE
-                    permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True) if task_sources else {}
+                    permissions=access_requirements(audit_plan,joint=request_semantics==2,citation_access=True,
+                                                    pinned_method_access=pinned_method_access) if task_sources else {}
                     prompt+='\n'+binding_guidance+'\n'+SCOPED_GUIDANCE+'\nAvailable answer bindings by check: '+json.dumps(build_scoped(claims,display_metadata,fixed_requirements,permissions),ensure_ascii=False,separators=(',',':'))
+                    if pinned_method_access:
+                        prompt += ('\nFor an access-and-pinned-method-citation check, bind the same accepted '
+                                   'claim’s text and sourceAccessSummary when it cites the specified method passage. '
+                                   'The label can answer access even when the prose does not repeat it.')
                 else:
                     prompt+='\n'+binding_guidance+'\nAvailable answer bindings: '+json.dumps(build(claims,display_metadata),ensure_ascii=False,separators=(',',':'))
             if coherence:
@@ -440,7 +447,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 verdicts = restore_coverage_evidence(verdicts, reverse_aliases)
                 rows = restore_visible_evidence(rows, reverse_aliases)
                 from services.deep_research.coverage_references import resolve_coverage_references
-                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan, **({"joint":True} if request_semantics==2 else {}), **({"citation_access":True} if binding_catalog else {}))} if task_sources else {}))
+                verdicts = resolve_coverage_references(verdicts, claims, rows, display_metadata=display_metadata, **({"access_requirements":access_requirements(audit_plan, **({"joint":True} if request_semantics==2 else {}), **({"citation_access":True} if binding_catalog else {}), pinned_method_access=pinned_method_access)} if task_sources else {}))
                 from services.deep_research.completion_criteria import completion_criteria_gaps, invalid_criterion_reviews
                 invalid_criteria = invalid_criterion_reviews(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
                 if invalid_criteria:
@@ -461,7 +468,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                 invalid_aspects = invalid_coverage_aspects(verdicts, claims, rows,
                     [question, *[o.get('question', '') for p in audit_plan for o in p.get('obligations', [])]],
                     request_only_obligations=([o['obligationId'] for o in fixed_requirements]
-                        if request_contract else [identity] if identity else []), display_metadata=display_metadata)
+                        if request_contract else [identity] if identity else []), display_metadata=display_metadata,
+                    **({'pinned_method_plan':audit_plan} if pinned_method_access else {}))
                 if invalid_aspects:
                     verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                         and v.get('obligationId') in invalid_aspects else v for v in verdicts]
@@ -548,7 +556,8 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
     audit={'status': status, **({'coverageLimitContractVersion':1} if literal_limits else {}), **({'coverageInstructionsContractVersion':3 if requested_endpoint else 2 if rendered_citation_links else 1} if consolidated_instructions else {}), **({'coverageInputContractVersion':1} if shared_decision_inputs else {}), 'verdicts': verdicts if isinstance(verdicts, list) else [],
             **({'coverageEvidenceTransportVersion':1} if shared_evidence_context else {}),
             'completionContractDigest': completion_contract_digest(plan, claims),
-            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators),
+            'displayMetadataDigest': display_metadata_digest(claims, evidence, **({"task_sources":True} if task_sources else {}), **({"request_semantics":2} if request_semantics==2 else {}),identification_locators=identification_locators,
+                                                              **({'pinned_method_access':True} if pinned_method_access else {})),
             'gaps': gaps, 'invalidAspectObligations': invalid_aspects,
             **({'requestCoverageContractVersion':request_contract if type(request_contract) is int and request_contract in (2,3,4,5) else 1} if request_contract else {}),
             'wholeQuestionId': identity, 'nonblockingResearch': nonblocking,

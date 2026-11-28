@@ -28,7 +28,7 @@ _HEAD_THRESHOLD = re.compile(
 
 
 def enabled(record, kind):
-    return (record.get(MARKER) in (1, 2, 3, 4, 5, 6, 7) and kind == 'direction_survey'
+    return (record.get(MARKER) in (1, 2, 3, 4, 5, 6, 7, 8) and kind == 'direction_survey'
             and record.get('sourcePolicy', {}).get('mode') == 'external_only')
 
 
@@ -142,13 +142,13 @@ with numbers. Bind exact table cells by source rowNumber, zero-based groupIndex,
 Invent no source, assumption, result or author omission. Scope conclusions to the specified revision.
 Access is derived from verified citations. Omit unrelated metrics, background and advice.
 """
-    if record.get(MARKER) in (2, 3, 4, 5, 6, 7) and asks_split_merge(question):
+    if record.get(MARKER) in (2, 3, 4, 5, 6, 7, 8) and asks_split_merge(question):
         output += ('For split computation, explain the evidenced selection rule for each branch and '
                    'how the branch results are combined. Distinguish implementation settings from the general method.\n')
-    if record.get(MARKER) in (5, 6, 7):
+    if record.get(MARKER) in (5, 6, 7, 8):
         output += ('For selection, state the evidenced unit to which ranking applies, separately from how its budget is set. '
                    'Cite the passage with that scope. Explain unfamiliar terms at first use; replace optional symbols with plain words.\n')
-    if record.get(MARKER) == 7 and asks_head_identification(question):
+    if record.get(MARKER) in (7, 8) and asks_head_identification(question):
         output += ('Separate head identification from inference. Cite the evidenced training objective, '
                    'including its constraint, the rule assigning head types, and each type’s cache contents.\n')
     if scope_enabled:

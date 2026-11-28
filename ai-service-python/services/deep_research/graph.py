@@ -1406,9 +1406,9 @@ def make_synthesize_node(
             if external_explanation_rows:
                 candidates, premise_bundles = external_explanation.prioritize(
                     external_explanation_rows, candidates, premise_bundles, brief_state.get('plan', []),
-                    include_selection_rule=record.get(external_explanation.MARKER) in (2, 3, 4, 5, 6, 7),
-                    include_selection_unit=record.get(external_explanation.MARKER) in (5, 6, 7),
-                    include_head_identification=record.get(external_explanation.MARKER) == 7)
+                    include_selection_rule=record.get(external_explanation.MARKER) in (2, 3, 4, 5, 6, 7, 8),
+                    include_selection_unit=record.get(external_explanation.MARKER) in (5, 6, 7, 8),
+                    include_head_identification=record.get(external_explanation.MARKER) in (7, 8))
         elif output_kind == 'paper_comparison':
             candidates = comparison_evidence_order(candidates, paper_titles)
         elif output_kind == 'experiment_design':
@@ -2555,6 +2555,9 @@ def make_verify_node(
                     **({'transformation_processes':True} if transformation_enabled(record) and request_coverage_enabled(record) else {}),
                     **({'claim_check':True} if claim_check_enabled(record) else {}),
                     **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
+                    **({'pinned_method_access':True} if record.get('externalExplanationInputVersion') == 8
+                       and saved.get('outputKind') == 'direction_survey'
+                       and record.get('sourcePolicy', {}).get('mode') == 'external_only' else {}),
                     **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}),
                     **({'shared_evidence_context':True} if type(record.get('coverageDiagnosticsContractVersion')) is int and record['coverageDiagnosticsContractVersion']==4 else {}),
                     **({'literal_limits':True} if literal_limits_enabled(record) and request_coverage_enabled(record) else {}),
@@ -3121,12 +3124,15 @@ def make_publish_node(
         audit = verified_report.get('answerCoverage', {})
         from services.deep_research.completion_criteria import revalidate_completion_audit
         from services.deep_research.display_metadata import answer_display_metadata
+        pinned_method_access = (record.get('externalExplanationInputVersion') == 8 and output_kind == 'direction_survey'
+                                and record.get('sourcePolicy', {}).get('mode') == 'external_only')
         audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit,
-            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True,identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))}
+            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True,identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}), **({'pinned_method_access':True} if pinned_method_access else {}))}
                if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
         from services.deep_research.display_metadata import revalidate_display_metadata
         audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []),
             identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
+            **({'pinned_method_access':True} if pinned_method_access else {}),
             **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
             **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
         if cell_enabled(record):

@@ -2,7 +2,8 @@
 from services.deep_research.answer_coverage import _bindings_supported, _known_claims_by_id
 
 
-def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=(), display_metadata=None):
+def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, request_only_obligations=(),
+                             display_metadata=None, pinned_method_plan=()):
     """A covered verdict requires explicit, grounded, individually covered aspects.
 
     This cannot prove that the model found every essential aspect. It prevents
@@ -19,6 +20,11 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
             continue
         evidence[eid] = row if eid not in evidence else None
     invalid = []
+    from services.deep_research.access_disclosure import cited_access_version, cited_access_bindings_supported
+    pinned = {(obligation['obligationId'], 'criterion:' + criterion['criterionId']): version
+              for item in pinned_method_plan for obligation in item.get('obligations', [])
+              for criterion in obligation.get('completionCriteria', [])
+              if (version := cited_access_version(criterion, obligation))}
     for verdict in verdicts:
         if not isinstance(verdict, dict) or verdict.get('status') != 'covered':
             continue
@@ -67,6 +73,16 @@ def invalid_coverage_aspects(verdicts, claims, evidence_rows, questions, *, requ
                 valid = valid and supported
                 continue
             from services.deep_research.display_metadata import display_binding_supported, request_access_aspect
+            obligation_id = verdict.get('obligationId')
+            version = pinned.get((obligation_id, identity)) if isinstance(obligation_id, str) and isinstance(identity, str) else None
+            if version and isinstance(aspect.get('bindings'), list) and any(
+                    isinstance(b, dict) and b.get('field') == 'sourceAccessSummary' for b in aspect['bindings']):
+                excerpt = basis.get('excerpt')
+                valid = (valid and basis.get('kind') == 'request' and isinstance(excerpt, str)
+                         and bool(excerpt.strip()) and any(excerpt in q for q in questions if isinstance(q, str))
+                         and cited_access_bindings_supported(aspect['bindings'], known, display_metadata, version))
+                metadata_only = False
+                continue
             if request_access_aspect(aspect) and any(
                     isinstance(b, dict) and b.get('field') == 'sourceAccessSummary'
                     for b in (aspect.get('bindings') if isinstance(aspect.get('bindings'), list) else [])):

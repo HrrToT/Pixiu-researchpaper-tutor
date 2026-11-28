@@ -28,6 +28,48 @@ def verdict(key='o'):
             'bindings':deepcopy(b)}]}
 
 
+@pytest.mark.parametrize('case', ['valid', 'old_policy', 'wrong_version', 'abstract', 'no_page', 'scientific'])
+def test_pinned_method_citation_uses_access_label_on_the_same_accepted_claim(case):
+    from services.deep_research.coverage_aspects import invalid_coverage_aspects
+    from services.deep_research.coverage_binding_catalog import build_scoped, expand_scoped
+
+    source = {**EVIDENCE[0], 'sourceKind': 'arxiv', 'sourceVersionId': 'arxiv:2403.09636v1',
+              'location': {'page': 3}, 'verification': {'literal': 'passed'}}
+    if case == 'wrong_version':
+        source['sourceVersionId'] = 'arxiv:2403.09636v2'
+    if case == 'abstract':
+        source['accessLevel'] = 'abstract'
+    if case == 'no_page':
+        source['location'] = {}
+    question = '说明方法，并核实可取得的材料范围及版本原文。'
+    criterion = {'criterionId': 'access', 'responseType': 'identification',
+                 'requirement': '注明实际取得的是摘要还是正文；引用 arXiv:2403.09636v1 的方法原文。若未取得正文，明确说明。'}
+    if case == 'scientific':
+        criterion['requirement'] += '解释为什么会减少模型开销。'
+    plan = [{'obligations': [{'obligationId': 'o', 'question': question,
+                             'requestExcerpt': '注明取得的是摘要还是正文，引用指定版本的方法原文',
+                             'requiredSources': ['arxiv:2403.09636v1'],
+                             'completionCriteria': [criterion]}]}]
+    enabled = case != 'old_policy'
+    metadata = answer_display_metadata(CLAIMS, [source], task_sources=True, pinned_method_access=enabled)
+    permissions = access_requirements(plan, joint=True, citation_access=True, pinned_method_access=enabled)
+    catalog = expand_scoped(build_scoped(CLAIMS, metadata, [{'obligationId': 'o',
+        'checks': [{'checkId': 'criterion:access', 'criterionId': 'access'}]}], permissions))
+    assert ('sourceAccessSummary' in catalog[0]['checks'][0]['claims'][0]['fields']) == (enabled and case != 'scientific')
+    bindings = [{'claimId': 'c', 'field': field} for field in ('text', 'sourceAccessSummary')]
+    reply = [{'obligationId': 'o', 'status': 'covered', 'bindings': deepcopy(bindings),
+              'criteria': [{'criterionId': 'access', 'responseType': 'identification',
+                            'status': 'covered', 'bindings': deepcopy(bindings)}],
+              'aspects': [{'aspectId': 'criterion:access', 'requirement': criterion['requirement'],
+                           'basis': {'kind': 'request', 'excerpt': question}, 'status': 'covered',
+                           'bindings': deepcopy(bindings)}]}]
+    resolved = resolve_coverage_references(reply, CLAIMS, [source], display_metadata=metadata, access_requirements=permissions)
+    assert bool(completion_criteria_gaps(plan, CLAIMS, resolved, display_metadata=metadata)) == (case != 'valid')
+    assert bool(answer_coverage_gaps(plan, CLAIMS, resolved, display_metadata=metadata)) == (case != 'valid')
+    assert bool(invalid_coverage_aspects(resolved, CLAIMS, [source], [question], display_metadata=metadata,
+                                        request_only_obligations=['o'], pinned_method_plan=plan if enabled else [])) == (case != 'valid')
+
+
 @pytest.mark.parametrize('request_contract',[False,3])
 def test_task_label_is_shared_by_report_summary_count_and_coverage_without_mutation(request_contract):
     original=deepcopy((CLAIMS,EVIDENCE));metadata=answer_display_metadata(CLAIMS,EVIDENCE,task_sources=True)

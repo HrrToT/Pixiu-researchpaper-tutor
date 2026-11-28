@@ -89,7 +89,8 @@ def completion_criteria_gaps(plan, claims, verdicts, *, display_metadata=None):
                 if (unknown or len(found) != 1 or found[0].get('status') != 'covered'
                         or found[0].get('responseType') != criterion['responseType']
                         or not _criterion_bindings(found[0].get('bindings'),known,criterion,obligation,display_metadata)
-                        or not _identification_objects_present(criterion, obligation, found[0]['bindings'],format_limits=isinstance(display_metadata,dict) and type(display_metadata.get('requestSemanticsContractVersion')) is int and display_metadata['requestSemanticsContractVersion']==2,section_locators=isinstance(display_metadata,dict) and type(display_metadata.get('identificationLocatorContractVersion')) is int and display_metadata['identificationLocatorContractVersion']==1)):
+                        or not (_pinned_method_binding(found[0]['bindings'], known, criterion, obligation, display_metadata)
+                            or _identification_objects_present(criterion, obligation, found[0]['bindings'],format_limits=isinstance(display_metadata,dict) and type(display_metadata.get('requestSemanticsContractVersion')) is int and display_metadata['requestSemanticsContractVersion']==2,section_locators=isinstance(display_metadata,dict) and type(display_metadata.get('identificationLocatorContractVersion')) is int and display_metadata['identificationLocatorContractVersion']==1))):
                     missing.append(criterion['requirement'])
             if missing:
                 result[identity] = missing
@@ -190,5 +191,13 @@ decision logic. Preserve brevity and do not invent extra user requirements.'''
 def _criterion_bindings(bindings,known,criterion,obligation,metadata):
     if _bindings_supported(bindings,known):return True
     from services.deep_research.access_disclosure import access_only,access_bindings_supported
-    return (criterion.get('responseType')=='identification' and access_only(obligation.get('question'))
+    return (_pinned_method_binding(bindings, known, criterion, obligation, metadata)
+        or criterion.get('responseType')=='identification' and access_only(obligation.get('question'))
         and access_bindings_supported(bindings,known,metadata,criterion.get('requirement')))
+
+
+def _pinned_method_binding(bindings, known, criterion, obligation, metadata):
+    if not isinstance(metadata, dict) or not metadata.get('pinnedMethodAccessRecords'):
+        return False
+    from services.deep_research.access_disclosure import cited_access_version, cited_access_bindings_supported
+    return cited_access_bindings_supported(bindings, known, metadata, cited_access_version(criterion, obligation))

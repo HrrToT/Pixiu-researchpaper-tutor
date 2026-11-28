@@ -62,8 +62,12 @@ def resolve_coverage_references(verdicts, claims, evidence_rows, *, display_meta
                 continue
             basis = aspect.get('basis')
             from services.deep_research.display_metadata import request_access_aspect
+            identity = aspect.get('aspectId')
+            criterion = identity.removeprefix('criterion:') if isinstance(identity, str) and identity.startswith('criterion:') else None
             bind(aspect.get('bindings'), metadata_aspect=isinstance(basis, dict)
-                 and (basis.get('kind') == 'source_metadata' or request_access_aspect(aspect)))
+                 and (basis.get('kind') == 'source_metadata' or request_access_aspect(aspect)
+                      or isinstance(display_metadata, dict) and 'pinnedMethodAccessRecords' in display_metadata
+                      and criterion in permitted.get('criteria', set())))
             if not isinstance(basis, dict) or basis.get('kind') != 'source' or 'field' not in basis:
                 continue
             if 'excerpt' in basis:

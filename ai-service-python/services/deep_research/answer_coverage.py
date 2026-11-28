@@ -129,6 +129,11 @@ def answer_coverage_gaps(plan, claims, verdicts, *, display_metadata=None):
         closed = len(matching) == 1 and (_verdict_closes_obligation(matching[0], known_claims)
             or matching[0].get('status')==_COVERED and bindings_supported(
                 matching[0].get('bindings'),known_claims,display_metadata,obligation.get('question')))
+        if (not closed and len(matching) == 1 and matching[0].get('status') == _COVERED
+                and isinstance(display_metadata, dict) and display_metadata.get('pinnedMethodAccessRecords')):
+            from services.deep_research.access_disclosure import cited_access_bindings_supported, cited_access_version
+            closed = any(cited_access_bindings_supported(matching[0].get('bindings'), known_claims, display_metadata,
+                         cited_access_version(criterion, obligation)) for criterion in obligation.get('completionCriteria', []))
         if not closed:
             gaps.append(
                 {
