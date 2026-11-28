@@ -25,6 +25,26 @@ _ENGLISH_UPSAMPLE_SCHEDULE = re.compile(
 _DISTRIBUTED_UPSAMPLE_SCHEDULE = re.compile(
     r'(?<![0-9.,+\-])(?P<first>\d+)\s*(?:和|与|及|、)\s*(?P<second>\d+)\s*(?:次)?迭代后\s*各上采样一次')
 _WORDS = dict(zip(('zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'), range(13)))
+_SMALL_CARDINAL = '|'.join(_WORDS)
+_FACTOR_OF = re.compile(
+    rf'\bfactor\s+of\s+(?P<sign>minus\s+|negative\s+|plus\s+|positive\s+|[-+−])?'
+    rf'(?P<count>{_SMALL_CARDINAL}|\d+(?:\.\d+)?)\b'
+    r'(?![.,]\d|\s+(?:hundred|thousand|million|billion|point|to|times)\b|[-–—]\s*\d)', re.I)
+_EN_COUNT_PREFIX = r'(?<![\w.,+\-−])(?P<sign>(?:minus|negative|plus|positive)\s+|[-+−])?'
+_ZH_COUNT_PREFIX = (r'(?<![\d.,+\-−负正第零一二两三四五六七八九十百千万亿点])'
+                    r'(?P<sign>[负正+\-−])?')
+_STEP_COUNT_EN = re.compile(
+    _EN_COUNT_PREFIX + rf'(?P<count>{_SMALL_CARDINAL}|\d+)\s+'
+    r'(?:(?:zoom[-‐‑\s]+in|refinement)\s+)?steps?\b', re.I)
+_STEP_COUNT_ZH = re.compile(
+    _ZH_COUNT_PREFIX +
+    r'(?P<count>\d+|[零一二两三四五六七八九十]+)\s*(?:个\s*)?(?:放大)?步(?!骤法)')
+_IMAGE_COUNT_EN = re.compile(
+    _EN_COUNT_PREFIX + rf'(?P<count>{_SMALL_CARDINAL}|both|\d+)\s+images?\b', re.I)
+_IMAGE_COUNT_ZH = re.compile(
+    _ZH_COUNT_PREFIX +
+    r'(?P<count>\d+|[零一二两三四五六七八九十]+)\s*张\s*(?:图像|图片|图(?!表|示))')
+_REUSED_NETWORK = re.compile(r'(?:使用|(?:沿|复|重)?用)\s*同\s*一\s*个\s*网络')
 _SINGLE_FORWARD_PASS = re.compile(r'\b(?:single|one)(?=[\s-]+forward[\s-]+pass\b)', re.I)
 _SH_BAND_AT_INTERVAL = re.compile(
     r'\b(?P<verb>introduc(?:e|es|ed|ing)\s+)one'
@@ -263,12 +283,56 @@ def number_display(identity):
     """Readable exact check detail; do not expand hostile/large exponents."""
     if identity.startswith('dimensions:'):
         return identity.removeprefix('dimensions:').replace('x', '×')
+    kind, separator, value = identity.partition(':')
+    if separator and kind in {'steps', 'images'}:
+        return number_display(value) + (' 步' if kind == 'steps' else ' 张图像')
     match = re.fullmatch(r'(-?\d+)e(-?\d+)([%x]?)', identity)
     if not match: return identity
     coefficient, exponent, unit = match.groups()
     if len(coefficient) <= 24 and len(exponent) <= 3 and -6 <= int(exponent) <= 8:
         return format(Decimal(coefficient + 'e' + exponent), 'f') + unit
     return identity
+
+
+def stepwise_quantity_view(text):
+    """Keep image and step counts distinct while comparing translated evidence."""
+    def cardinal(raw):
+        if raw.isdecimal():
+            return raw
+        if raw.lower() in _WORDS:
+            return str(_WORDS[raw.lower()])
+        value = _chinese_count(raw, expanded=True)
+        return str(value) if value is not None else None
+
+    def signed(count, sign):
+        negative = (sign or '').strip().lower() in {'负', '-', '−', 'minus', 'negative'}
+        return '-' + count if negative else count
+
+    # Leave the object words in the text when masking a referential article.
+    # Explicit bounds on the number of networks still require numeric evidence.
+    text = _REUSED_NETWORK.sub(
+        lambda m: m[0] if _CARDINAL_CONTEXT.search(text[:m.start()]) else m[0].replace('一', ''),
+        text)
+    text = _FACTOR_OF.sub(
+        lambda m: signed(cardinal(m['count']) or m['count'], m['sign']) + '×', text)
+    typed = set()
+
+    def extract_chinese_factor(match):
+        typed.update(measurement_numbers(match[0], chinese_factors=True))
+        return ' '
+
+    text = _CHINESE_FACTORS.sub(extract_chinese_factor, text)
+    for pattern, kind in ((_STEP_COUNT_EN, 'steps'), (_STEP_COUNT_ZH, 'steps'),
+                          (_IMAGE_COUNT_EN, 'images'), (_IMAGE_COUNT_ZH, 'images')):
+        def extract(match):
+            count = '2' if match['count'].lower() == 'both' else cardinal(match['count'])
+            if count is None:
+                return match[0]
+            typed.update(f'{kind}:{number}' for number in measurement_numbers(signed(count, match['sign'])))
+            return ' '
+
+        text = pattern.sub(extract, text)
+    return text, typed
 
 
 def normalize_explicit_quantity_phrases(text, *, shared_range_scale=False, gaussian_replacement_counts=False,

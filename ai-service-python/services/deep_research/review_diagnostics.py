@@ -59,7 +59,7 @@ def parameter_options(policy):
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
          revision_row_counts=False, bound_benchmark_names=False, alignment_words=False,
          explicit_condition_pairs=False, interpolation_kernel_labels=False, cited_paper_pair=False,
-         bound_citation_labels=False):
+         bound_citation_labels=False, stepwise_quantities=False):
     if type(target_structure) is not bool and not (type(target_structure) is int and target_structure == 2):
         raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
@@ -81,6 +81,14 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         from services.deep_research.review_parameter_numbers import scanner
         numbers=scanner(own, alignment_words=alignment_words, explicit_condition_pairs=explicit_condition_pairs,
                         interpolation_kernel_labels=interpolation_kernel_labels)
+    if stepwise_quantities:
+        from services.deep_research.measurement_numbers import stepwise_quantity_view
+        scan_numbers = numbers
+
+        def numbers(text):
+            text, typed_counts = stepwise_quantity_view(text)
+            return typed_counts | scan_numbers(text)
+
     review_numbers=numbers
     target_references=[]
     table_notes=[]
@@ -162,6 +170,8 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
                      targetStructureReferences=target_references)
     if revision_row_counts:
         audit['reviewRevisionRowCountVersion'] = 1
+    if stepwise_quantities:
+        audit['quantitySpellingContractVersion'] = 26
     result['reviewDiagnosticAudit'] = audit
     if errors:
         # Preserve the raw model response in the immutable call journal, not in

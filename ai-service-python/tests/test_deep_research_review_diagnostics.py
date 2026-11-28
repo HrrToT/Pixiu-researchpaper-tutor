@@ -64,6 +64,30 @@ def test_scientific_notation_number_binding_uses_exact_equivalent_spelling():
     assert bind(raw,claim,ev,{'E1':'own'})['reviewDiagnosticAudit']['errors']==[]
 
 
+@pytest.mark.parametrize(('statement', 'valid'), [
+    ('原文设置每步放大2倍、共4步。', True),
+    ('原文设置每步放大两倍、共四步。', True),
+    ('原文设置每步放大3倍、共4步。', False),
+    ('原文设置每步放大2倍、共2步。', False),
+    ('原文设置每步放大4倍、共2步。', False),
+])
+def test_translated_stepwise_diagnostic_uses_bound_excerpt(statement, valid):
+    claim = {**target(), 'text': '从粗到细重新匹配。'}
+    excerpt = 'a zoom-in factor of two at each step, with four zoom-in steps'
+    ev = evidence()
+    ev[0]['quote'] = f'Run on both images with {excerpt}.'
+    raw = {'status': 'passed', 'reason': statement,
+           'diagnosticFacts': [fact(statement, excerpt)]}
+    result = bind(raw, claim, ev, {'E1': 'own'}, source_parameter_ids=True,
+                  target_structure=True, stepwise_quantities=True)
+    assert result['reviewDiagnosticAudit']['newNumberCount'] == 2
+    assert (result['status'] == 'passed') is valid
+    if valid and '2倍' in statement:
+        assert bind(raw, claim, ev, {'E1': 'own'})['status'] == 'failed'
+    if not valid:
+        assert 'new_diagnostic_numbers_not_bound' in result['reviewDiagnosticAudit']['errors']
+
+
 @pytest.mark.parametrize('tail,valid', [
     ('所给引文未确认文献[16]的身份。', True),
     ('所给引文未确认文献[17]的身份。', False),

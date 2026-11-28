@@ -783,7 +783,7 @@ def _visible_numeric_context(input_data, by_id, aliases):
 
 
 def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
-    from services.deep_research.verification import precheck_claims
+    from services.deep_research.verification import precheck_claims, quantity_spelling_for_record
     proposal = _generation(record)['boundProposal']['proposal']
     facts = proposal['sourceFacts']
     evidence = record['state'].get('evidence',[])
@@ -793,7 +793,7 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
                'detailLevel':'abstract' if any(by_id[aliases[e]].get('accessLevel') == 'abstract' for e in f['evidenceRefs']) else 'fulltext'}
               for i,f in enumerate(facts)]
     policy = {'absence_scope_version': record.get('absenceScopeContractVersion', 0),
-              'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
+              'quantity_spelling_version': quantity_spelling_for_record(record),
               'table_references_version': record.get('tableReferencesContractVersion', 0),
               'cited_passage_scope': record.get(CITED_PASSAGE_SCOPE_MARKER) == 1,
               'dataset_scene_membership': record.get(FACT_CONTEXT_MARKER) == 5,

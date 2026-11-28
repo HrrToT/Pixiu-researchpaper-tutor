@@ -14,6 +14,62 @@ def check(quote, text, semantic=True):
     return verify_claims([claim], [evidence], verdict if semantic else None), evidence
 
 
+@pytest.mark.parametrize(('text', 'valid'), [
+    ('先用两张图估计，再用同一个网络细化。每步放大2倍，共四步。', True),
+    ('先用2张图像估计，每步放大两倍，共4步。', True),
+    ('每步放大3倍，共4步。', False),
+    ('每步放大4倍，共2步。', False),
+    ('每步放大2倍，共负四步。', False),
+    ('使用四张图像。', False),
+    ('共使用同一个网络。', False),
+    ('使用两个网络。', False),
+])
+def test_stepwise_translation_keeps_factor_step_and_image_counts_distinct(text, valid):
+    quote = ('Estimate the correspondence on both images and run the same network. '
+             'Use a zoom-in factor of two at each step, with four zoom-in steps.')
+    _, evidence = check(quote, text)
+    claim = {'claimId': 'c1', 'kind': 'reported', 'text': text,
+             'evidenceRefs': [evidence['evidenceId']]}
+    admission = precheck_claims([claim], [evidence], quantity_spelling_version=26)
+    assert bool(admission['candidates']) is valid
+    if valid:
+        assert precheck_claims([claim], [evidence], quantity_spelling_version=23)['rejected']
+        assert not verify_claims([claim], [evidence], quantity_spelling_version=26)['accepted']
+    else:
+        assert admission['rejected'][0]['reason'] == 'numeric_mismatch'
+
+
+@pytest.mark.parametrize(('resolved_kind', 'accepted'), [
+    ('claim_verification', True),
+    ('experiment_design', False),
+])
+def test_task_only_default_route_uses_bilingual_rules_after_intent_resolution(tmp_path, resolved_kind, accepted):
+    from services.deep_research.facade import ResearchFacade
+    from services.deep_research.repository import DeepResearchRepository
+
+    repo = DeepResearchRepository(tmp_path / 'research.sqlite3')
+    repo.initialize()
+    facade = ResearchFacade(repo, lambda **_: None, llm_client=object())
+    try:
+        run, _ = facade.create({
+            'workspaceTaskId': 'task', 'operationKey': 'key', 'question': '解释推理步骤',
+            'sourcePolicy': {'mode': 'task_only'}, 'materialSnapshot': ['paper'],
+            'outputKind': 'general', 'deferStart': True,
+        }, start_async=False)
+        assert run['quantitySpellingContractVersion'] == 26
+        run_id = run['runId']
+        verify = facade._get_verify_claims(run_id)
+        repo.update_run(run_id, lambda row: {**row, 'state': {**row.get('state', {}), 'outputKind': resolved_kind}})
+        text = '每步放大2倍，共4步。'
+        _, evidence = check('Use a factor of two, with four zoom-in steps.', text)
+        claim = {'claimId': 'c1', 'kind': 'reported', 'text': text,
+                 'evidenceRefs': [evidence['evidenceId']]}
+        result = verify([claim], [evidence], lambda *_: [{'claimId': 'c1', 'status': 'passed'}])
+        assert bool(result['accepted']) is accepted
+    finally:
+        facade.shutdown()
+
+
 @pytest.mark.parametrize(('quote', 'text', 'wrong_text'), [
     ('Evaluation on Mip-NeRF360 showed comparable metrics with 3D-GS.',
      '在 Mip-NeRF 360 数据集上，作者报告相近的画质指标。',

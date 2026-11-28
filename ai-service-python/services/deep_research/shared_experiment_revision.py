@@ -86,7 +86,7 @@ def fact_edit_paths(proposal, hard_issues):
 
 def fact_reference_candidates(record, aliases, facts, issues):
     """Suggest precheck-passing alternatives within the originally cited source versions."""
-    from services.deep_research.verification import precheck_claims
+    from services.deep_research.verification import precheck_claims, quantity_spelling_for_record
 
     evidence = record['state']['evidence']
     by_id = {row['evidenceId']: row for row in evidence}
@@ -118,7 +118,7 @@ def fact_reference_candidates(record, aliases, facts, issues):
                          'evidenceRefs':[item['evidenceId'] for item in support], 'detailLevel':'fulltext'}
                 result = precheck_claims([claim], support,
                     absence_scope_version=record.get('absenceScopeContractVersion',0),
-                    quantity_spelling_version=record.get('quantitySpellingContractVersion',0),
+                    quantity_spelling_version=quantity_spelling_for_record(record),
                     table_references_version=record.get('tableReferencesContractVersion',0))
                 if not result['rejected'] and revised not in candidates:
                     candidates.append(revised)

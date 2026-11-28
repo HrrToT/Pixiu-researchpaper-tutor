@@ -300,6 +300,8 @@ class ResearchFacade:
         from services.deep_research.named_table_scope import requested_number
         output_kind = request.get('outputKind')
         source_policy = request.get('sourcePolicy', {'mode': 'task_only'})
+        single_task_paper = (len(materials) == 1 and isinstance(source_policy, dict)
+                             and source_policy.get('mode', 'task_only') == 'task_only')
         named_table_verification = (output_kind == 'claim_verification' and bool(materials)
                                     and requested_number(str(request.get('question') or '')) is not None)
         payload = {
@@ -512,9 +514,7 @@ class ResearchFacade:
                 if self._comparison_cells_version == 1 else 1,
             "reviewTargetStructureContractVersion": 2,
             "reviewRevisionRowCountVersion": 1,
-            "verifiedTextRepairContractVersion": (
-                5 if output_kind == 'claim_verification' and len(materials) == 1
-                and isinstance(source_policy, dict) and source_policy.get('mode', 'task_only') == 'task_only' else 2),
+            "verifiedTextRepairContractVersion": 5 if single_task_paper and output_kind == 'claim_verification' else 2,
             "sourceGapClosureContractVersion": 1,
             "comparisonMatchedExampleGapClosureVersion": 2,
             "extractionScheduleContractVersion": 1,
@@ -568,7 +568,9 @@ class ResearchFacade:
             "compactionBudgetContractVersion": 2,
             "compactionEditingContractVersion": 3,
             "fixedScopeEditorReasoningContractVersion": 1,
-            "quantitySpellingContractVersion": 25 if output_kind == 'paper_comparison' else 23,
+            "quantitySpellingContractVersion": (25 if output_kind == 'paper_comparison' else
+                                                26 if single_task_paper and output_kind in (None, 'general', 'claim_verification')
+                                                else 23),
             "runtimeSemanticContractVersion": 1,
             "evidenceCoverageContractVersion": 3,
             "sourcePrecisionContractVersion": 8,
@@ -1482,6 +1484,7 @@ class ResearchFacade:
     def _build_semantic_checker(self, run_id, invoker, *, isolation=None):
         """Share policy wiring with the live-scope production subclass."""
         from services.deep_research.tools import BudgetedSemanticChecker
+        from services.deep_research.verification import quantity_spelling_for_record
         from services.deep_research.comparison_reasoning import enabled as comparison_enabled
         from services.deep_research.comparison_audit_envelope import revision_coverage_enabled
         from services.deep_research.audit_source_fields import enabled as audit_fields_enabled
@@ -1551,6 +1554,8 @@ class ResearchFacade:
             diagnostic_revision_row_counts=lambda: (
                 (row_count_record := self._repo.require_run(run_id)).get('reviewRevisionRowCountVersion') == 1
                 and revision_coverage_enabled(row_count_record)),
+            diagnostic_stepwise_quantities=lambda: (
+                quantity_spelling_for_record(self._repo.require_run(run_id)) == 26),
             diagnostic_parameter_ids=lambda: (
                 type(parameter_version := self._repo.require_run(run_id).get('reviewParameterIdentityContractVersion')) is int
                 and {1: True, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7}.get(parameter_version, False)),
@@ -1633,7 +1638,7 @@ class ResearchFacade:
         return coverage_gaps
     
     def _get_verify_claims(self, run_id=None) -> Callable[[list, list, Callable | None], dict]:
-        from services.deep_research.verification import verify_claims
+        from services.deep_research.verification import quantity_spelling_for_record, verify_claims
         if run_id is None:
             return verify_claims
         record = self._repo.require_run(run_id)
@@ -1659,7 +1664,9 @@ class ResearchFacade:
                 from services.deep_research.comparison_table_context import for_record
                 context=for_record(self._repo.require_run(run_id))
             return verify_claims(
-                claims, evidence, semantic, absence_scope_version=version, quantity_spelling_version=spelling,
+                claims, evidence, semantic, absence_scope_version=version,
+                quantity_spelling_version=(quantity_spelling_for_record(self._repo.require_run(run_id))
+                                           if spelling == 26 else spelling),
                 feedback_version=feedback,table_references_version=table_references,
                 review_context_version=context_version,
                 bound_composite_cells=(type(record.get('boundCompositeTableCellsVersion')) is int

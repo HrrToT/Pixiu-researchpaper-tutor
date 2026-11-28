@@ -41,6 +41,13 @@ def make_evidence(source: dict, quote: str, original: str, *, location: dict,
             "verification": {"literal": "passed", "semantic": "unchecked"}}
 
 
+def quantity_spelling_for_record(record):
+    version = record.get('quantitySpellingContractVersion', 0)
+    if version == 26 and record.get('state', {}).get('outputKind', record.get('outputKind')) != 'claim_verification':
+        return 23
+    return version
+
+
 def _measurement_numbers(text: str, *, word_counts=False, relative_references=False, artifact_references=False,
                          conceptual_articles=False, expanded_counts=False,dimensional_labels=False,
                          collection_articles=False,enumeration_labels=False,surface_dimensional_labels=False,
@@ -57,7 +64,7 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
     text = re.sub(r'(?<![A-Za-z])Table\s+\d+(?![A-Za-z0-9])|表\s*\d+', '', text, flags=re.I)
     from services.deep_research.measurement_numbers import (
         measurement_numbers, normalize_explicit_quantity_phrases,
-        normalize_interpolation_kernel_labels, split_dimension_series,
+        normalize_interpolation_kernel_labels, split_dimension_series, stepwise_quantity_view,
     )
     dimensions = set()
     if explicit_quantity_phrases:
@@ -73,7 +80,10 @@ def _measurement_numbers(text: str, *, word_counts=False, relative_references=Fa
             text, dimensions = split_dimension_series(text)
         if explicit_quantity_phrases >= 21:
             text = normalize_interpolation_kernel_labels(text)
-    return dimensions | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
+    typed_counts = set()
+    if explicit_quantity_phrases == 26:
+        text, typed_counts = stepwise_quantity_view(text)
+    return dimensions | typed_counts | measurement_numbers(text, word_counts=word_counts, relative_references=relative_references,
                                artifact_references=artifact_references, conceptual_articles=conceptual_articles,
                                expanded_counts=expanded_counts,chinese_factors=dimensional_labels,
                                collection_articles=collection_articles,
@@ -148,7 +158,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
     if len(by_id) != len(evidence):
         raise ValueError("Duplicate evidence identity")
     candidates, rejected, seen = [], [], set()
-    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 25 else 0
+    spelling = quantity_spelling_version if type(quantity_spelling_version) is int and 1 <= quantity_spelling_version <= 26 else 0
     word_counts = spelling >= 1
     relative_references = spelling >= 2
     artifact_references = spelling >= 3

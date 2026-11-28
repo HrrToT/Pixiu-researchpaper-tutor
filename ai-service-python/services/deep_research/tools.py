@@ -916,6 +916,7 @@ class BudgetedSemanticChecker:
         diagnostic_parameter_ids=False,
         diagnostic_target_structure=False,
         diagnostic_revision_row_counts=False,
+        diagnostic_stepwise_quantities=False,
         short_circuit_scope_observations=False,
         focused_boundary_review=False,
         workflow_representation_context=None,
@@ -953,6 +954,7 @@ class BudgetedSemanticChecker:
         self._diagnostic_parameter_ids = diagnostic_parameter_ids
         self._diagnostic_target_structure = diagnostic_target_structure
         self._diagnostic_revision_row_counts = diagnostic_revision_row_counts
+        self._diagnostic_stepwise_quantities = diagnostic_stepwise_quantities
         self._short_circuit_scope_observations = short_circuit_scope_observations
         self._focused_boundary_review = focused_boundary_review
         self._mechanism_grounding = mechanism_grounding
@@ -1889,11 +1891,14 @@ The dataAvailability object is an internal audit, not new experimental results.
                 structure_policy=structure_policy() if callable(structure_policy) else structure_policy
                 count_policy=self._diagnostic_revision_row_counts
                 count_policy=(count_policy() if callable(count_policy) else count_policy) is True
+                stepwise_policy = self._diagnostic_stepwise_quantities
+                stepwise_policy = stepwise_policy() if callable(stepwise_policy) else stepwise_policy
                 parsed=[bind_diagnostic(v,by_id[v['claimId']],visible_evidence,reverse_aliases,
                     **parameter_options(parameter_policy),
                     **({'target_structure':structure_policy}
                        if structure_policy is True or type(structure_policy) is int and structure_policy == 2 else {}),
-                    **({'revision_row_counts':True} if count_policy else {})) for v in parsed]
+                    **({'revision_row_counts':True} if count_policy else {}),
+                    **({'stepwise_quantities':True} if stepwise_policy is True else {})) for v in parsed]
             if comparison_enabled:
                 from services.deep_research.comparison_reasoning import normalize_audit_scope
                 target_by_id = {c['claimId']: c for c in claims}

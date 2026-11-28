@@ -270,6 +270,8 @@ Targets:
         from services.deep_research.review_diagnostics import bind as bind_diagnostic, parameter_options
         parameter_policy=getattr(checker,'_diagnostic_parameter_ids',False)
         parameter_policy=parameter_policy() if callable(parameter_policy) else parameter_policy
+        stepwise_policy=getattr(checker,'_diagnostic_stepwise_quantities',False)
+        stepwise_policy=stepwise_policy() if callable(stepwise_policy) else stepwise_policy
         # The count of the compared papers comes from the visible citation
         # packet and provides no evidence about experimental measurements.
         cited_works = {row.get('sourceWorkId') for row in own}
@@ -281,6 +283,7 @@ Targets:
         diagnostic_checks=[bind_diagnostic({'status':'passed' if row['relation']=='not_entailed' else 'failed',
             'reason':row['reason'],'diagnosticFacts':row.get('diagnosticFacts')},claim,
             review_evidence,reverse,cited_paper_pair=cited_paper_pair,
+            **({'stepwise_quantities':True} if stepwise_policy is True else {}),
             **parameter_options(parameter_policy)) for row in rows]
         invalid=next((v for v in diagnostic_checks if v['reviewDiagnosticAudit']['errors']),None)
         if invalid:

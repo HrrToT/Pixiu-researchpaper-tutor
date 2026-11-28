@@ -2183,6 +2183,7 @@ space with unsupported global absence or incidental iteration/performance values
             from services.deep_research.audience_single_source import enabled as single_source_reader
             from services.deep_research.audience_editable_source import enabled as editable_source_reader
             from services.deep_research.audience_publication_budget import enabled as publication_reader_budget
+            from services.deep_research.verification import quantity_spelling_for_record
             current = repo_update(run_id, lambda r: r, expected_revision=None)
             def checkpoint_audience(value):
                 repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
@@ -2226,7 +2227,7 @@ space with unsupported global absence or incidental iteration/performance values
                 **({'process_explanations':True} if process_framing_enabled(current) else {}),
                 **({'verification_policy':{
                     'absence_scope_version':current.get('absenceScopeContractVersion',0),
-                    'quantity_spelling_version':current.get('quantitySpellingContractVersion',0),
+                    'quantity_spelling_version':quantity_spelling_for_record(current),
                     'feedback_version':current.get('verificationFeedbackContractVersion',0),
                     'table_references_version':current.get('tableReferencesContractVersion',0)}}
                    if current.get('audienceRewriteContractVersion') in (7,8,9) else {}),
