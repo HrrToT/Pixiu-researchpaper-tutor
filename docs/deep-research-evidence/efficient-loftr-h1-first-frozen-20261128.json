@@ -1,0 +1,138 @@
+{
+  "case": "H1-EFFICIENT-LOFTR",
+  "attempt": 1,
+  "definitionHash": "0f5ba62cf2b29f40e450dd539175bdb5ee925cc5180ec681b0b262d5d408f764",
+  "sourceCommit": "f762f88820edab0c751dd5d3b56053fa075dd7b9",
+  "runId": "dr_run_55902e52c85156c5bf7d0b9910799dea",
+  "materialSha256": "e58112a6987b39ab129b240693d74b4610e643258cfb6ecf8c824f1976061835",
+  "applicationResult": {
+    "status": "completed",
+    "outcome": "partial",
+    "verifiedClaimIds": [
+      "c1"
+    ],
+    "workspaceDeliveryExercised": false,
+    "automaticRetry": false
+  },
+  "independentReview": {
+    "passed": false,
+    "independentCredit": 0,
+    "coverage": {
+      "coarse-computation": "partial",
+      "fine-stages": "covered",
+      "speedup-conditions": "missing",
+      "answer_scope": "partial"
+    },
+    "reason": "The final report omitted the speedup, baseline and test conditions; the beginner explanation did not explain why aggregation and selection reduce attention inputs."
+  },
+  "diagnostic": {
+    "retainedClaimCitations": [
+      {
+        "id": "ev_41274837443b2d15c40bb72be34ce570425c81b0c315964acb3a0e9c43160964",
+        "page": 1,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_1f8dcbb3f9ec140d358ee47bea9a8b8334c7dc068163713cbfecfd4d1a25cb53",
+        "page": 5,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      {
+        "id": "ev_42001047dccbaa3c48c45704d67d3bb5762cd19af64128b843b9bc79c4f04fe1",
+        "page": 5,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    ],
+    "speedDraftCitations": [
+      {
+        "id": "ev_41274837443b2d15c40bb72be34ce570425c81b0c315964acb3a0e9c43160964",
+        "page": 1,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    ],
+    "relevantEvidenceInRunState": {
+      "explicitRatio": {
+        "id": "ev_253985bc0dadb0ecf1a8dacdc23c5f4767b1cf3fb851379725996debcd48dfa3",
+        "page": 1,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "scanNetAndGpu": {
+        "id": "ev_108cf064a9887af945e7a3d11fa5a530977825782625e108b4a34c9d5c3ed072",
+        "page": 6,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "imageDimensions": {
+        "id": "ev_f124b0325caf87e77d693f757534374820bc71a42fd5a74876988a28c5e528e5",
+        "page": 6,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      },
+      "queryAggregation": {
+        "id": "ev_7df9b9040e8e5640c681fc0d4a29666d810031c6ab6d7eb0ddad930b83c9d502",
+        "page": 4,
+        "quoteMatchesPdfWithWhitespaceAndUnicodeNormalized": true
+      }
+    },
+    "evidenceBoundary": "The synthesis allocation supplied ten passages. It omitted the direct ratio and GPU excerpts. The cited abstract excerpt exposed the ratio only in surrounding context; the draft did not bind it to a citable quote.",
+    "initialRejection": {
+      "claimId": "c2",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "25e-1x"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2.5x。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    "repairRejection": {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "2024e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：2024。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    }
+  },
+  "usage": {
+    "stages": [
+      "resolve_brief",
+      "plan",
+      "assess_relevance",
+      "assess_relevance",
+      "synthesize",
+      "verify",
+      "verify_answer_coverage",
+      "repair_claims"
+    ],
+    "providerGenerationCalls": 8,
+    "normalPoolCalls": 5,
+    "reservePoolCalls": 3,
+    "totalTokens": 30623,
+    "tokensByModel": {
+      "gpt-6-luna": 8278,
+      "gpt-6.1-terra": 22345
+    },
+    "graphSeconds": 58.0,
+    "externalSearches": 0,
+    "productionWrites": 0
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-efficient-loftr-first-20261128/intent.json",
+      "sha256": "8f4ca3e05bfa035fb75c8ffa0da5fadb89f2381213f723e9b88516b9a3f73340"
+    },
+    {
+      "path": "tmp/openai-h1-efficient-loftr-first-20261128/run.json",
+      "sha256": "073a7e8af98c9d953e488414039ba533a4c20d95eb9e2bbea7517b524af6b7be"
+    },
+    {
+      "path": "tmp/openai-h1-efficient-loftr-first-20261128/calls.json",
+      "sha256": "b2f709018069b5af5b0816d3b82b8f19e949f74cd94f3af0e9fa6eb0b972c426"
+    },
+    {
+      "path": "tmp/openai-h1-efficient-loftr-first-20261128/result.json",
+      "sha256": "dcb1a9f7c17431c86dd2901e5709a9d16af9b1d13a78627aa8106bed4e9e2f48"
+    },
+    {
+      "path": "tmp/openai-h1-efficient-loftr-first-20261128/provider.jsonl",
+      "sha256": "e82e43d03a2c131c0f094ddd3697292e2c2d73514e94d7f783c0019963898481"
+    }
+  ]
+}

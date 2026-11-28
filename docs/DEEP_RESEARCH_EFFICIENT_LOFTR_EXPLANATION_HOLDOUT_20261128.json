@@ -3,7 +3,7 @@
   "frozenAt": "2026-11-28",
   "frozenTimestamp": "2026-11-28T12:14:28.504274+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "frozen_not_executed",
+  "executionStatus": "executed_once_content_not_accepted",
   "independentCredit": 0,
   "materials": {
     "efficient_loftr_cvpr2024": {
@@ -87,5 +87,6 @@
   },
   "caseDefinitionHashes": {
     "H1-EFFICIENT-LOFTR": "0f5ba62cf2b29f40e450dd539175bdb5ee925cc5180ec681b0b262d5d408f764"
-  }
+  },
+  "firstExecutionReceipt": "deep-research-evidence/efficient-loftr-h1-first-frozen-20261128.json"
 }
