@@ -18,6 +18,33 @@ def prepare(enabled=True):
     return _prepare_repair(report,verification,ev,'Explain the operation.',verified_text_edits=enabled,**opts)
 
 
+def test_term_insertions_keep_every_original_word_and_citation_with_one_owned_packet():
+    from services.deep_research.verified_text_repair import prepare_term_insertions, term_insertions
+
+    one = {'claimId': 'one', 'kind': 'reported', 'text': '球谐系数描述颜色，训练更新球谐系数。',
+           'conditions': {'mode': '训练'}, 'evidenceRefs': ['p']}
+    two = {'claimId': 'two', 'kind': 'reported', 'text': '蒸馏训练紧凑模型。',
+           'conditions': {}, 'evidenceRefs': ['q']}
+    originals = {'one': one, 'two': two}
+    rejected = {'one': {'reason': 'answer_incomplete', 'beginnerTerms': ['球谐系数']},
+                'two': {'reason': 'answer_incomplete', 'beginnerTerms': ['蒸馏']}}
+    evidence = [{'evidenceId': eid, 'accessLevel': 'fulltext', 'verification': {'literal': 'passed'}, 'quote': text}
+                for eid, text in [('p', 'Own representation.'), ('q', 'Own method.'), ('x', 'Uncited other source.')]]
+    scopes = term_insertions(originals, rejected, list(originals), [])
+    prepared = prepare_term_insertions(originals, scopes, evidence, 4000)
+    assert 'Own representation.' in prepared['prompt'] and 'Own method.' in prepared['prompt']
+    assert 'Uncited other source.' not in prepared['prompt']
+    rows = [{'claimId': 'one', 'definitions': [{'term': '球谐系数', 'gloss': '描述颜色随观察方向变化的参数'}]},
+            {'claimId': 'two', 'definitions': [{'term': '蒸馏', 'gloss': '让小模型模仿大模型的输出'}]}]
+    first, second = _parse_repair_response(prepared, {'content': json.dumps(rows)}, json.loads, strict_response=True)
+    assert first == {**one, 'text': '球谐系数（描述颜色随观察方向变化的参数）描述颜色，训练更新球谐系数。'}
+    assert second == {**two, 'text': '蒸馏（让小模型模仿大模型的输出）训练紧凑模型。'}
+    rows[0]['definitions'][0]['gloss'] = '会提升 25 FPS'
+    with pytest.raises(DeepResearchError, match='额外内容'):
+        _parse_repair_response(prepared, {'content': json.dumps(rows)}, json.loads, strict_response=True)
+    assert not term_insertions(originals, rejected, ['one'], [])
+
+
 def test_coverage_only_text_schema_keeps_all_original_sources_conditions_and_goal_ownership():
     old=prepare(False);new=prepare()
     assert new['verifiedTextRepairContractVersion']==1 and 'verifiedTextRepairContractVersion' not in old

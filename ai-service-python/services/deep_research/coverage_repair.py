@@ -172,6 +172,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
     # Map each targeted accepted claim id to the ordered, unique list of gap
     # questions that implicated it.
     targets = {}
+    definitions = {}
     lead_repair_id = None
     for gap in active_gaps:
         if bound_comparison_targets and gap.get('missingJointConclusion') is True:
@@ -250,6 +251,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
             bucket = targets.setdefault(cid, [])
             requested = questions
             if cid in term_targets:
+                definitions[cid] = term_targets[cid]
                 names = '、'.join(term_targets[cid])
                 requested = [excerpt, f'请在本比较单元中用简短通俗的话解释这些现有术语：{names}。'
                              '保留原有操作、事实、数字和原文依据。']
@@ -298,6 +300,7 @@ def prepare_coverage_repair(report, verification, audit, *, prioritize_specific=
                 "reason": "answer_incomplete",
                 "missingQuestions": list(targets[cid]),
                 **({'beginnerLeadRepair': True} if cid == lead_repair_id else {}),
+                **({'beginnerTerms': definitions[cid]} if cid in definitions else {}),
             }
         )
 

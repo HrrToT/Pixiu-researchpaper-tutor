@@ -78,6 +78,11 @@ def _prepare_repair(report, verification, evidence, question, *, max_prompt_byte
     originals = {row['claimId']: row for row in report.get('claims', []) if row.get('claimId') in rejected}
     if not originals:
         return []
+    if comparison_authoring:
+        from services.deep_research.verified_text_repair import term_insertions, prepare_term_insertions
+        terms = term_insertions(originals, rejected, verified_target_ids, required_scope_ids)
+        if terms:
+            return prepare_term_insertions(originals, terms, evidence, max_prompt_bytes)
     if repair_evidence_packet_version in (1,2,3,4,5) and any(c.get('kind') not in {'proposal','suggestion','hypothesis'}
             for c in originals.values()):raise ValueError('Experimental repair input requires prospective targets')
     if experimental_diagnostics and (not experimental_edits or not experimental_intent):
@@ -819,6 +824,9 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
                                     {'responseState': 'received_invalid'})
         return []
     coverage=None
+    if prepared.get('termInsertions'):
+        from services.deep_research.verified_text_repair import apply_term_insertions
+        return apply_term_insertions(revised, originals, prepared['termInsertions'])
     if prepared.get('verifiedTextRepairContractVersion') in (1,2):
         from services.deep_research.verified_text_repair import materialize
         edited=materialize(revised,originals)
@@ -1188,7 +1196,11 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
     if scheduling_version in (1,2) and batch_state is None:state['deferredReviewIds']=sorted(deferred)
     if comparison_authoring and batch_state is None:
         from services.deep_research.comparison_repair import source_batches
-        groups = source_batches(originals, report.get('comparisonCells'),
+        from services.deep_research.verified_text_repair import term_insertions
+        original_by_id = {row['claimId']: row for row in originals}
+        rejected_by_id = {row['claimId']: row for row in verification.get('rejected', [])}
+        insertions = term_insertions(original_by_id, rejected_by_id, verified_target_ids, required_scope_ids)
+        groups = [list(insertions)] if insertions else source_batches(originals, report.get('comparisonCells'),
                                 **({'prioritize_cells': True} if comparison_prioritize_cells else {}),
                                 **({'allow_deferred': True} if comparison_preflight_to_fit else {}))
         if groups:
