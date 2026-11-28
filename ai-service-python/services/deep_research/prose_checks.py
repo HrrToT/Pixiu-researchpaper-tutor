@@ -97,9 +97,22 @@ _NONASSERTIVE_ABSENCE = re.compile(
     r'[^，,；;。.!?]*$|\b(?:if|whether|cannot conclude|cannot claim|cannot say|does not imply)\b[^,;.!?]*$',re.I)
 
 
+_FUTURE_WORK_EXCLUSIVITY = re.compile(
+    r'(?:论文|原文|作者|文中)(?:中|里)?(?:仅|只)(?:是)?(?:建议|提出|讨论)(?:进一步)?(?:探索|研究|尝试)'
+    r'|(?:未来|后续)[^。！？；;.!?]{0,55}(?:而非|而不是|并非)(?:此处|文中|论文中)?'
+    r'(?:已经|已)(?:实施|执行|完成|采用)(?:的)?',
+)
+_EXPLICIT_IMPLEMENTATION_BOUNDARY = re.compile(
+    r'(?:未|没有)(?:曾|实际)?(?:实施|执行|采用|实现)'
+    r'|\b(?:not|never)\s+(?:yet\s+)?(?:implement|deploy|adopt|apply|applie)\w*\b'
+    r'|\b(?:only|solely)\s+(?:suggest|propos|discuss)\w*\s+(?:explor|investigat)\w*\b', re.I,
+)
+
+
 def absence_not_established(claim, support, *, scope_version=0, cited_passage_scope=False):
-    quotation_subject = type(scope_version) is int and scope_version == 9
-    inverted_owner=type(scope_version) is int and scope_version in (8, 9)
+    future_work_exclusivity = type(scope_version) is int and scope_version == 10
+    quotation_subject = type(scope_version) is int and scope_version in (9, 10)
+    inverted_owner=type(scope_version) is int and scope_version in (8, 9, 10)
     if inverted_owner:scope_version=7  # Retain every existing version7 check.
     if type(scope_version) is int and scope_version in (6,7) and claim.get('kind') in {'reported','inference'}:
         # A claim's selected references cannot certify what is absent from the
@@ -112,6 +125,13 @@ def absence_not_established(claim, support, *, scope_version=0, cited_passage_sc
             return True
     reporting_scope = type(scope_version) is int and scope_version in (2,3,4,5,6,7)
     source_pattern = _SOURCE_REPORTING_ABSENCE if reporting_scope else EXPLICIT_ABSENCE
+    factual = claim.get('kind') in {'reported', 'inference'}
+    if future_work_exclusivity and factual and not any(
+            _EXPLICIT_IMPLEMENTATION_BOUNDARY.search(item.get('quote', '')) for item in support):
+        for text in claim_prose(claim):
+            if any(not _NONASSERTIVE_ABSENCE.search(text[:match.start()])
+                   for match in _FUTURE_WORK_EXCLUSIVITY.finditer(text)):
+                return True
     explicit = any(source_pattern.search(item.get('quote', '')) for item in support)
     if explicit:
         return False  # Independent semantic verification still checks the exact subject/scope.
@@ -122,7 +142,6 @@ def absence_not_established(claim, support, *, scope_version=0, cited_passage_sc
                     # "Not reported IN the paper" is source-wide even when the
                     # source noun follows the negation, including in advice.
                     if not _NONASSERTIVE_ABSENCE.search(sentence[:match.start()]):return True
-    factual = claim.get('kind') in {'reported', 'inference'}
     located_passages = (cited_passage_scope or quotation_subject) and bool(support) and all(
         row.get('accessLevel') == 'fulltext' and row.get('verification', {}).get('literal') == 'passed'
         and bool(row.get('quote'))

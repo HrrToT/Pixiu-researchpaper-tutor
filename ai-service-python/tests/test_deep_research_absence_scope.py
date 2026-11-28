@@ -85,6 +85,34 @@ def test_comparison_specific_quotation_scope_preserves_whole_paper_guard(text, l
     assert bool(checked['rejected']) is not allowed
 
 
+@pytest.mark.parametrize('text,rejected', [
+    ('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。', True),
+    ('论文仅建议探索点云压缩，所引材料不能量化其成本。', True),
+    ('原文建议探索点云压缩；这些引文不足以量化额外成本。', False),
+    ('不能据此认为论文仅建议探索点云压缩。', False),
+    ('论文提出了一项可在未来检验的优化。', False),
+])
+def test_future_work_note_does_not_establish_exclusion_of_implemented_work(text, rejected):
+    claim, evidence = fixture(text)
+    evidence['quote'] = ('It would be interesting to adapt compression for this representation. '
+                         'We do not report other scene settings in this figure.')
+    assert not precheck_claims([claim], [evidence], absence_scope_version=9)['rejected']
+    checked = precheck_claims([claim], [evidence], absence_scope_version=10)
+    assert bool(checked['rejected']) is rejected
+    if rejected:
+        assert checked['rejected'][0]['reason'] == 'absence_not_established'
+        assert '未来建议本身不能证明' in checked['rejected'][0]['detail']
+
+
+def test_explicit_implementation_boundary_still_requires_semantic_review():
+    claim, evidence = fixture('论文将点云压缩列为未来可探索的方向，而非此处已实施的压缩步骤。')
+    evidence['quote'] = 'Point cloud compression was not implemented in this study.'
+    check = Mock(return_value=[{'claimId': 'c', 'status': 'failed'}])
+    result = verify_claims([claim], [evidence], check, absence_scope_version=10)
+    check.assert_called_once()
+    assert not result['accepted']
+
+
 @pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 2])
 def test_server_scope_version_is_frozen_and_applies_to_both_verification_passes(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()

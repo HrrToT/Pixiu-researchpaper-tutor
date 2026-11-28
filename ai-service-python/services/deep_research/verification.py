@@ -198,7 +198,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
         if absence_not_established(claim, support, scope_version=absence_scope_version,
                                    cited_passage_scope=cited_passage_scope):
             reason = reason or 'absence_not_established'
-        if type(absence_scope_version) is int and absence_scope_version in (6,7,8,9):
+        if type(absence_scope_version) is int and absence_scope_version in (6,7,8,9,10):
             from services.deep_research.result_scope import purpose_not_established
             if purpose_not_established(claim,support):
                 reason=reason or 'result_purpose_not_established'
@@ -409,11 +409,14 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 diagnostic = {'detail': '把共同结论限定在问题指定的设置。原表题注给出的参数范围不能替代指定列。'}
             elif reason == 'result_purpose_not_established':
                 diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
-            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7,8,9):
+            elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7,8,9,10):
                 diagnostic = {'detail':'本条引用没有明确建立作者或论文缺少这些验证。'
                     '把结论限定为本次引用能支持的实验范围及其不能证明的推广；'
                     '不要写成作者未在其他条件验证、论文没有提供或全文不存在。'
                     '引用中的其他否定句不构成这项缺席判断的依据。'}
+                if absence_scope_version == 10:
+                    diagnostic['detail'] += ('保留引用支持的操作、数值和未来研究建议。'
+                        '未来建议本身不能证明论文未实施相应操作；缺少成本数据时，只说明引文不足以量化什么。')
             if declared_reference_error:
                 from services.deep_research.table_bindings import available_reference_rows
                 reference_check={'reason':declared_reference_error,
