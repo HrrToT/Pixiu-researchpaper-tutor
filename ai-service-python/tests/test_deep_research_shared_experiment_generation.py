@@ -625,6 +625,11 @@ def test_densification_draft_shares_fit_rules_within_the_schema_limits():
     previous = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 8})
     assert 'arm fit references that rule' not in previous
     assert 'Fit after the last opacity reset before testing.' in previous
+    revision = instructions({**record, 'sharedExperimentDensificationExecutionVersion': 10})
+    assert 'Calibrate unknown-unit gates on shared training' in revision
+    assert 'Describe within-level effects in the analysis decision rule' in revision
+    assert 'arm fit references that rule' in revision
+    assert 'fit after last reset' in revision
 
 
 def test_reference_profile_resolves_the_canonical_plan_and_reuses_raw_receipt():
