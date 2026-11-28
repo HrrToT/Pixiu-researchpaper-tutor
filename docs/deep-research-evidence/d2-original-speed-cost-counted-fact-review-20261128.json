@@ -1,0 +1,109 @@
+{
+  "case": "D2-BASELINE-COMPRESSION development continuation",
+  "commit": "f2fc740b7f0b08d197186bcf0a1b1189a67a09a1",
+  "sourceRevision": "arxiv:2308.04079v1",
+  "independentHoldoutCredit": false,
+  "sourceArtifacts": [
+    {
+      "path": "tmp/openai-d2-bibliography-boundary-standard-20261128/run.json",
+      "sha256": "cba9536334c116f13d3a33537874bcff3ece3f6219ba17cf59c90fc6201edb52"
+    },
+    {
+      "path": "tmp/openai-d2-bibliography-boundary-standard-20261128/calls.json",
+      "sha256": "0556e4860514005d50ebe14a6082e687e4cb45f8b590a220b60d26e52ff63bd4"
+    },
+    {
+      "path": "tmp/openai-d2-p1-qualitative-speed-20261128/compiled.json",
+      "sha256": "c2244cf107d20638243484de27e45524e780af519b7af7eed8c9bb7cc1fbd45f"
+    },
+    {
+      "path": "tmp/openai-d2-p1-qualitative-speed-20261128/calls.json",
+      "sha256": "1dc135ca3524218b924bb4edca38c6f623d6ffb65695ed2891a21b0a3bd3cdaf"
+    }
+  ],
+  "carriedUsage": {
+    "standardRunTokens": 75932,
+    "standardRunCalls": 16,
+    "earlierSpeedGenerationTokens": 6760,
+    "earlierSpeedGenerationCalls": 1,
+    "claimsReusedWithoutChange": 9
+  },
+  "admission": {
+    "preflight": {
+      "preflightOnly": true,
+      "offlineAssumedCount": 5200,
+      "providerCalls": 0,
+      "cumulativeTokens": 92916,
+      "cumulativeCalls": 18,
+      "reservedTokens": 10224,
+      "wholeAnswerAuditExecuted": false,
+      "published": false
+    },
+    "preflightArtifact": {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-counted-preflight-v4-20261128/result.json",
+      "sha256": "cd0c6fb4607c3789171988693fc4cc5f58fd78bb5f4cc8f73c68355d2b114fae"
+    },
+    "countEndpointRequests": 1,
+    "actualCountedInputTokens": 4000,
+    "reservedTokens": 9024,
+    "maxTokens": 100000,
+    "maxCalls": 18,
+    "protectedPoolChanged": false
+  },
+  "actualVerification": {
+    "preflightOnly": false,
+    "offlineAssumedCount": null,
+    "providerCalls": 1,
+    "cumulativeTokens": 86913,
+    "cumulativeCalls": 18,
+    "reservedTokens": 9024,
+    "wholeAnswerAuditExecuted": false,
+    "published": false,
+    "accepted": [
+      "cmp_2_0",
+      "cmp_6_0"
+    ],
+    "rejected": [],
+    "usage": {
+      "total_tokens": 4221,
+      "input_tokens": 4000,
+      "output_tokens": 221,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 3997
+    }
+  },
+  "finalCandidate": {
+    "verifiedClaims": 11,
+    "rejectedClaims": 0,
+    "scienceCheckForTwoClaims": true,
+    "wholeAnswerAuditExecuted": false,
+    "published": false
+  },
+  "rawArtifacts": [
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/intent.json",
+      "sha256": "124b7d236c67922b55acdc6f9018a363303e9135ef8d0e50a987a80d8b324cbb"
+    },
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/run.json",
+      "sha256": "d6851a875f9cebff56b296b1ac70bc6791b3484c402966875a183d9831fa6444"
+    },
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/calls.json",
+      "sha256": "9892522b98ad143524ba01c5b407dbd09b3772b858c394115a281f249567174e"
+    },
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/verification.json",
+      "sha256": "79d06c823b01adcfa21bc14658a91452ca030df45963f9eae10b101372109557"
+    },
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/merged-candidate.json",
+      "sha256": "59225694470760cdbe457c7dd9abf7477465e4959c01c7492d7b9a1a92ee3704"
+    },
+    {
+      "path": "tmp/openai-d2-original-speed-cost-semantic-20261128/result.json",
+      "sha256": "bb4118d7755bca2cd1b09063b94f3bd6cf3eb105fcd781f308ba9a186a9b9035"
+    }
+  ],
+  "regressionPassed": 35
+}

@@ -1072,7 +1072,7 @@ H5 续验复用全部科学回执，编译出带 11 处引用的正文。以冻�
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 隔离复验复用 10 条已核验论断，发布完整报告。新版标准预算从头运行保存的部分报告通过跨论文 FPS 边界审核，保留同表数值、显存建议和 LightGaussian 两项处理成本。 [隔离复验](deep-research-evidence/d2-processing-cost-integrated-real-20261128.json) · [从头运行及迭代数回放](deep-research-evidence/d2-bibliography-boundary-standard-real-20261128.json) | 验证原始 3DGS 的处理成本和渲染速度能通过事实与整答审核，并完成独立留出验收。 |
+| D2 两论文比较 | 隔离复验复用 10 条已核验论断，发布完整报告。新版标准预算从头运行保存的部分报告通过跨论文 FPS 边界审核，保留同表数值、显存建议和 LightGaussian 两项处理成本。后续合批核验通过原始 3DGS 的处理成本与渲染速度，保留此前 9 条核验结果。 [隔离复验](deep-research-evidence/d2-processing-cost-integrated-real-20261128.json) · [从头运行及迭代数回放](deep-research-evidence/d2-bibliography-boundary-standard-real-20261128.json) · [两条事实续验](deep-research-evidence/d2-original-speed-cost-counted-fact-review-20261128.json) | 11 条候选已逐条核验。续验累计用满 18 次调用，未发整答终审或发布。标准预算下的完整从头运行和独立留出仍待验收。 |
 | D3 四组实验 | 冻结开发题已通过 25 项科学检查与真实整答终审，累计 89,038 Token，9 个引文可逐字定位，保存完整报告并在隔离工作区验证交付和找回。 [同题开发验收](deep-research-evidence/d3-provenance-final-complete-and-delivery-20261128.json) | 空运行完成生成及原稿续验，两个科学缺口仍开放。修复后须验证一次完整运行，并以新冻结题完成 H5 独立验收。 [空运行回执](deep-research-evidence/d3-fresh-ordinal-and-scientific-scope-20261128.json) |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
