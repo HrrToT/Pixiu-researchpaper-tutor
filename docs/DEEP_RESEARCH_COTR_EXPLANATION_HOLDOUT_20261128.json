@@ -3,7 +3,7 @@
   "frozenAt": "2026-11-28",
   "frozenTimestamp": "2026-11-28T11:38:44.806680+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "executed_once_content_not_accepted",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
   "independentCredit": 0,
   "materials": {
     "cotr_v2": {
@@ -76,5 +76,6 @@
   "caseDefinitionHashes": {
     "H1-COTR": "76e1ba35d67b5104cd297ce731bc51fa076d22aa09aab32c2b55844ee32438e8"
   },
-  "firstExecutionReceipt": "deep-research-evidence/cotr-h1-first-frozen-20261128.json"
+  "firstExecutionReceipt": "deep-research-evidence/cotr-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/cotr-h1-bilingual-quantity-replay-20261128.json"
 }
