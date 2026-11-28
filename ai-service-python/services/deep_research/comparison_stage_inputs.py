@@ -238,10 +238,24 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
             if speed_result:
                 optional_pairs.append(speed_result)
         if not include_joint and original_evidence:
-            definition = representation_definition(own,
-                [target for target in all_targets if target['targetId'] in target_ids], original_evidence)
+            local_targets = [target for target in all_targets if target['targetId'] in target_ids]
+            definition = representation_definition(own, local_targets, original_evidence)
             if definition:
                 optional_pairs.append((definition,))
+            if record.get('comparisonBeginnerMechanismGuidanceVersion') == 5:
+                from services.deep_research.mechanism_sources import compression_mapping_requested, pruning_recovery_score
+                goals = {goal for t in local_targets if compression_mapping_requested(t['question'], include_operations=True)
+                         for goal in t['allowedObligationIds']}
+                recovery = next((row['evidenceId'] for row in own
+                                 if (original := original_evidence.get(row['evidenceId'], {}))
+                                 and original.get('accessLevel') == 'fulltext'
+                                 and original.get('verification', {}).get('literal') == 'passed'
+                                 and not original.get('tableData')
+                                 and original.get('quote') == row.get('quote')
+                                 and goals.intersection(original.get('obligationIds', ()))
+                                 and pruning_recovery_score(row['quote'], row.get('section', ''))), None)
+                if recovery:
+                    optional_pairs.append((recovery,))
         if not include_joint and record.get('comparisonFigureCountSynthesisVersion') in (1, 2):
             from services.deep_research.comparison_joint_reports import paper_figure_count_evidence
             counts = paper_figure_count_evidence(record, question, all_targets, requirements, own)
@@ -277,7 +291,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         glossary_targets = (beginner_mechanism_targets(record, [
             target for target in all_targets
             if target['role'] == 'paper_cell' and target['targetId'] in target_ids])
-            if record.get('comparisonBeginnerMechanismGuidanceVersion') in (3, 4) else [])
+            if record.get('comparisonBeginnerMechanismGuidanceVersion') in (3, 4, 5) else [])
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,
@@ -294,7 +308,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                  **({'speedExplanationProse': True} if prose_explanation else {}),
                  **({'beginnerGlossTargets': glossary_targets} if glossary_targets else {}),
                  **({'partialBeginnerGlosses': True}
-                    if glossary_targets and record.get('comparisonBeginnerMechanismGuidanceVersion') == 4 else {}),
+                    if glossary_targets and record.get('comparisonBeginnerMechanismGuidanceVersion') in (4, 5) else {}),
                  'scientificApproval': False}
         stage['inputDigest'] = digest(stage)
         return stage

@@ -470,7 +470,7 @@ def beginner_mechanism_targets(record, targets):
     from services.deep_research.audience_rewrite import beginner_requested
     from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
 
-    if record.get('comparisonBeginnerMechanismGuidanceVersion') not in (1, 2, 3, 4) or not beginner_requested(record):
+    if record.get('comparisonBeginnerMechanismGuidanceVersion') not in (1, 2, 3, 4, 5) or not beginner_requested(record):
         return []
     return [target['targetId'] for target in targets
             if representation_requested(target['question'])
@@ -752,10 +752,18 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     if target.get('deviceMemoryMeasurementEvidenceIds') == []:
                         target['decisionMode'] = 'measure_both_before_recommending_either'
             if version in (11, 12, 13, 14, 15, 16):
-                body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
-                                  'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
-                                  'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n'
-                                  'Put evidence-comparison bounds inside point.body.boundary.\n')
+                if record.get('comparisonBeginnerDeploymentGuidanceVersion') == 2 and any(
+                        t.get('decisionMode') == 'measure_both_before_recommending_either'
+                        for t in data['jointTargets']):
+                    body_guidance += ('For decisionMode=measure_both_before_recommending_either, use proposal prose '
+                                      'and cellRefs:[]. Cite actual observations that inform testing priorities. First '
+                                      'measure both methods under matched settings, then choose by peak memory and '
+                                      'acceptable quality. Adjust and retest if neither fits.\n')
+                else:
+                    body_guidance += ('For decisionMode=measure_both_before_recommending_either, choose kind="proposal", '
+                                      'body={"deviceMemoryAdvice":"measure_then_choose"}, applicable evidenceRefs and '
+                                      'cellRefs:[]. If no premise is supported, return null. The app renders the procedure.\n')
+                body_guidance += 'Put evidence-comparison bounds inside point.body.boundary.\n'
             if version in (12, 13, 14, 15, 16):
                 body_guidance += ('For exampleMode=server_renders_selected_cells, use kind="reported", '
                                   'body={"tableExample":"selected_cells"}, table and note evidenceRefs, and paired '
@@ -807,7 +815,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 [target for paper in data['papers'] for target in paper['targets']])
             if mechanism_targets:
                 guidance_version = record['comparisonBeginnerMechanismGuidanceVersion']
-                if guidance_version in (3, 4) and source_scope is not None:
+                if guidance_version in (3, 4, 5) and source_scope is not None:
                     data['beginnerGlossTargets'] = mechanism_targets
                     policy += ('For beginnerGlossTargets only, explain what the method stores or does to its input. '
                                'Return point.beginnerGlosses: up to six {"term":"exact words in body.prose.text",'
@@ -821,7 +829,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                "For a training or compression step, say what guides it and why it matters when the cited "
                                "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
                                "Stay in the existing comparison cell and cite the passage for the explanation.\n")
-                    if guidance_version in (2, 3, 4):
+                    if guidance_version in (2, 3, 4, 5):
                         policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
                                    "Say what it means in this paper before using it to explain the method. "
                                    "Keep the definition in the cell, and use only the cited evidence.\n")
@@ -834,6 +842,15 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                             policy += (f"For {', '.join(ids)}, explain what the compact model learns to match "
                                        "during distillation. If the passage explains how extra training views are "
                                        "constructed or used, include that step with its citation.\n")
+                if guidance_version == 5:
+                    from services.deep_research.mechanism_sources import compression_mapping_requested, pruning_recovery_score
+                    for paper in data['papers']:
+                        ids = [t['targetId'] for t in paper['targets'] if t['targetId'] in mechanism_targets
+                               and compression_mapping_requested(t['question'], include_operations=True)]
+                        if ids and any(pruning_recovery_score(e['quote'], e.get('section', '')) for e in paper['evidence']):
+                            policy += (f"For {', '.join(ids)}, explain what representation is compressed and why the "
+                                       "cited pruning and recovery steps are used. Cover them alongside other "
+                                       "supported compression operations, rather than starting at distillation.\n")
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + short_policy + body_guidance + figure_policy
                 + (paper_boundary_policy if scoped_joint else '')

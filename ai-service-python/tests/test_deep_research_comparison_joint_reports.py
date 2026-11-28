@@ -319,6 +319,58 @@ def test_beginner_mechanism_guidance_is_scoped_to_paper_cells_and_new_runs():
         {**r, 'comparisonBeginnerMechanismGuidanceVersion': 0}, QUESTION, cp, {}, None, 4, source_scope=('P1',))
 
 
+def test_compression_prompt_surfaces_pruning_recovery_only_for_the_paper_with_a_direct_passage():
+    from services.deep_research.comparison_wire import render
+
+    cp, _ = packets()
+    question = '向初学者解释。' + QUESTION
+    rows = list(cp['evidence'].values())
+    rows[0] = {**rows[0], 'quote': 'We recover lost details after pruning redundant Gaussians.'}
+    plan = plan_cells(cp['requirements'], cp['sources'], rows, shared_axes=True, typed_roles=True,
+                      question=question, fixed_slots=True, unified_answers=True, local_goal_refs=True,
+                      measurement_display=True)
+    r = record()
+    r.update(question=question, comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonEvaluationProtocolVersion=7, comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=3, comparisonBeginnerMechanismGuidanceVersion=5)
+    cue = 'why the cited pruning and recovery steps are used'
+    assert cue in render(r, question, plan, {}, None, 4, source_scope=('P1',))
+    assert cue not in render(r, question, plan, {}, None, 4, source_scope=('P2',))
+    assert cue not in render({**r, 'comparisonBeginnerMechanismGuidanceVersion': 4}, question,
+                             plan, {}, None, 4, source_scope=('P1',))
+
+
+def test_memory_advice_prompt_requests_cited_reasoning_before_measured_choice():
+    from services.deep_research.comparison_wire import render, resolve_point, targets
+
+    cp, _ = packets()
+    question = '向初学者解释。' + QUESTION + ' 给出显存受限时的有条件选择建议。'
+    plan = plan_cells(cp['requirements'], cp['sources'], list(cp['evidence'].values()),
+                      shared_axes=True, typed_roles=True, question=question, fixed_slots=True,
+                      unified_answers=True, local_goal_refs=True, measurement_display=True,
+                      structured_test_first=True)
+    joint = next(oid for oid, role in plan['roles'].items() if role['kind'] == 'joint')
+    plan['jointDeliverables'] = {joint: [{'kind': 'conditional_advice', 'requirement': '给出显存受限时的有条件选择建议。'}]}
+    plan['structuredTestFirst'] = True
+    r = record()
+    r.update(question=question, comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=3,
+             comparisonBeginnerDeploymentGuidanceVersion=2)
+    current = render(r, question, plan, {}, None, 3, source_scope=('joint',))
+    old = render({**r, 'comparisonBeginnerDeploymentGuidanceVersion': 1}, question,
+                 plan, {}, None, 3, source_scope=('joint',))
+    assert 'Cite actual observations that inform' in current
+    assert 'body={"deviceMemoryAdvice":"measure_then_choose"}' in old
+    assert 'body={"deviceMemoryAdvice":"measure_then_choose"}' not in current
+    target = next(t for t in targets(plan) if t.get('deliverable') == 'conditional_advice')
+    point = {'kind': 'proposal', 'evidenceRefs': target['evidenceIds'][:1], 'cellRefs': [],
+             'body': {'prose': {'text': '同一硬件和场景先实测两种方法的峰值显存，画质达标后再选择。', 'conditions': {}}}}
+    assert resolve_point(point, target, {})['body'] == point['body']
+    point['body']['prose']['text'] += ' 推荐使用方法 A。'
+    with pytest.raises(ValueError, match='device_memory_test_first'):
+        resolve_point(point, target, {})
+
+
 @pytest.mark.parametrize('mutation',['foreign','version','goal'])
 def test_edited_example_keeps_exact_goal_and_source_version_scope(mutation):
     _,draft,c,ev,_=compiled()

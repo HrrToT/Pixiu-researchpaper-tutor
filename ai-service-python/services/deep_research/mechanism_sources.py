@@ -181,6 +181,18 @@ def distillation_operation_score(text, section):
     return 3 + 2 * bool(synthesized_views and camera_change)
 
 
+def pruning_recovery_score(text, section):
+    """Find a direct link from pruning or removal to a recovery operation."""
+    if re.search(r'related work|background|bibliography|references|^table\b', section.strip(), re.I):
+        return 0
+    for sentence in re.split(r'[.!?。！？]+', ' '.join(text.split())):
+        if (re.search(r'\b(?:prun\w*|remov\w*)\b|剪枝|剔除', sentence, re.I)
+                and re.search(r'\brecover\w*\b|\bfinetun\w*\b|\bfine[ -]tun\w*\b|'
+                              r'\bco[ -]adapt\w*\b|恢复|微调', sentence, re.I)):
+            return 1
+    return 0
+
+
 def comparison_overviews(sources, obligations, extracted, *, compression_operations=False):
     from services.deep_research.obligation_binding import eligible_obligation_ids
 

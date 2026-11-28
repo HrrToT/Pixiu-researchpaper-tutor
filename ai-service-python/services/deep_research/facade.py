@@ -383,9 +383,9 @@ class ResearchFacade:
             "comparisonBenchmarkSpeedScopeContractVersion": 7 if self._comparison_cells_version == 1 else 0,
             **({"comparisonBeginnerLeadContractVersion": 1}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
-            **({"comparisonBeginnerDeploymentGuidanceVersion": 1}
+            **({"comparisonBeginnerDeploymentGuidanceVersion": 2}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
-            **({"comparisonBeginnerMechanismGuidanceVersion": 4}
+            **({"comparisonBeginnerMechanismGuidanceVersion": 5}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
             **({"comparisonStageOutputBudgetContractVersion": 1}
                if self._openai_research_models and self._comparison_cells_version == 1
