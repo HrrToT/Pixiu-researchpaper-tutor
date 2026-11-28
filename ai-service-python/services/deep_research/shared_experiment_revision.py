@@ -397,9 +397,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
     def measure(data, *, policy=None, output_tokens=6144):
         context = {key:value for key,value in data.items() if not fact_only or key != 'requirements'}
         guidance = instructions if policy is None else policy
-        if not fact_only and record.get(EXPLICIT_SEMANTICS_MARKER) in (1, 2):
+        if not fact_only and record.get(EXPLICIT_SEMANTICS_MARKER) in (1, 2, 3):
             guidance = NORMALIZATION_GUIDANCE + guidance
-        if not fact_only and record.get(EXPLICIT_SEMANTICS_MARKER) == 2:
+        if not fact_only and record.get(EXPLICIT_SEMANTICS_MARKER) in (2, 3):
             guidance = EVALUATION_PROTOCOL_GUIDANCE + guidance
         prompt=guidance+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
         req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':output_tokens,'timeout_seconds':90})

@@ -102,6 +102,31 @@ def test_named_review_binding_resolves_only_exact_proposal_ids(pointer, expected
     assert _decode_batch(reply, ['section_0'], validator) == result
 
 
+def test_wrapped_proposal_path_resolves_once_without_weakening_exact_ids():
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch, _pointer
+
+    plan = {'steps': [{'id': 'fit', 'operation': {'action': 'Fit only on the training samples'}}]}
+    raw = {'checks': [{'checkId': 'section_2', 'planBindings': ['/proposal/steps/@fit/operation/action']}],
+           'coherent': True, 'issues': []}
+    response = {'content': json.dumps(raw), 'finishReason': 'stop'}
+    validator = Draft202012Validator({'type': 'object'})
+    before = _decode_batch(response, ['section_2'], validator, named_plan=plan, named_id_version=5)
+    assert before == raw
+    after = _decode_batch(response, ['section_2'], validator, named_plan=plan, named_id_version=6)
+    assert after['checks'][0]['planBindings'] == ['/steps/0/operation/action']
+    assert json.loads(response['content']) == raw
+    raw['checks'][0]['planBindings'] = ['/proposal/proposal/steps/@fit/operation/action']
+    nested = _decode_batch({**response, 'content': json.dumps(raw)}, ['section_2'], validator,
+                           named_plan=plan, named_id_version=6)
+    with pytest.raises(KeyError):
+        _pointer(plan, nested['checks'][0]['planBindings'][0])
+    raw['checks'][0]['planBindings'] = ['/proposal/steps/@foreign/operation/action']
+    with pytest.raises(ValueError, match='unknown ID'):
+        _decode_batch({**response, 'content': json.dumps(raw)}, ['section_2'], validator,
+                      named_plan=plan, named_id_version=6)
+
+
 def test_versioned_metric_ids_preserve_the_original_review_response():
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _decode_batch
