@@ -45,6 +45,51 @@ def test_omitted_verified_target_text_still_occupies_the_shared_budget():
     assert fits([{'claimId':'a','text':'x'*2}],originals,plan)
 
 
+def test_insertions_keep_verified_findings_and_are_counted_in_the_existing_budget():
+    report, verification, evidence, opts = inputs()
+    original = '误差在边界下降。模型逐轴排序。'
+    report['claims'][0]['text'] = original
+    prepared = _prepare_repair(report, verification, evidence, '解释过程，限100字。',
+        verified_text_edits=True, integrated_text_edits=True,
+        text_edit_context={**CTX, 'insertionOnly': True}, **opts)
+    assert original in prepared['prompt']
+    assert '不要保留旧段落再追加补丁' not in prepared['prompt']
+    reply = [{'claimId':'c','insertions':[{'after':'模型逐轴排序。','text':'再与等距参考值比较。'}]}]
+    repaired, = _parse_repair_response(prepared, {'content':json.dumps(reply)}, json.loads, strict_response=True)
+    assert repaired['text'] == original + '再与等距参考值比较。'
+    assert repaired['evidenceRefs'] == report['claims'][0]['evidenceRefs']
+    reply[0]['insertions'][0]['text'] = '增' * 100
+    with pytest.raises(DeepResearchError, match='超过共享字数预算'):
+        _parse_repair_response(prepared, {'content':json.dumps(reply)}, json.loads, strict_response=True)
+
+
+@pytest.mark.parametrize('edit', [
+    {'text':'完整替换'},
+    {'insertions':[{'after':'不存在的句子','text':'附注。'}]},
+    {'insertions':[{'after':'原句。','text':'附注。'}]},
+    {'insertions':[{'after':'唯一句。','text':'附注。'},{'after':'唯一句。','text':'另一个附注。'}]},
+])
+def test_insertions_reject_replacements_missing_and_ambiguous_anchors(edit):
+    from services.deep_research.verified_text_repair import materialize_insertions
+
+    with pytest.raises(DeepResearchError, match='位置或格式无效'):
+        materialize_insertions([{'claimId':'c',**edit}], {'c':{'text':'原句。唯一句。原句。'}})
+
+
+def test_insertion_policy_requires_a_concrete_missing_explanation():
+    from services.deep_research.verified_text_repair import explanation_gaps
+
+    verdict = {'obligationId':'operation',
+               'criteria':[{'responseType':'explanation','status':'partial'}]}
+    audit = {'status':'checked','gaps':[{'obligationId':'operation'},
+        {'obligationId':'answer_scope','wholeQuestion':True}], 'verdicts':[verdict]}
+    assert explanation_gaps(audit)
+    assert not explanation_gaps({**audit,'gaps':audit['gaps'][1:]})
+    assert not explanation_gaps({**audit,'verdicts':[{'obligationId':'operation',
+        'criteria':[{'responseType':'identification','status':'partial'}]}]})
+    assert not explanation_gaps({**audit,'verdicts':[{**verdict,'limitAudits':[{'errors':['length']}]}]})
+
+
 def test_old_text_protocol_request_is_exact_and_new_settled_request_cannot_switch_budget_policy():
     report,verification,ev,opts=inputs();states=[]
     send=Mock(return_value={'content':json.dumps([{'claimId':'c','text':'新的有据过程解释。'}])})

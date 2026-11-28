@@ -5,9 +5,11 @@ from services.deep_research.audience_writing_roles import allocation
 
 
 def build(report,verification,evidence,question,originals,requirements,prior,context):
-    if (not isinstance(context,dict) or set(context)!={'outputKind','presentationVersion'}
+    if (not isinstance(context,dict) or set(context) not in (
+            {'outputKind','presentationVersion'}, {'outputKind','presentationVersion','insertionOnly'})
             or not isinstance(context['outputKind'],str) or not context['outputKind']
-            or type(context['presentationVersion']) is not int or context['presentationVersion'] not in (2,3,4)):
+            or type(context['presentationVersion']) is not int or context['presentationVersion'] not in (2,3,4)
+            or type(context.get('insertionOnly',False)) is not bool):
         raise ValueError('Invalid text edit publication context')
     fixed={c['claimId']:c for c in [*verification.get('accepted',[]),*prior]}
     shadow=deepcopy(report)
@@ -25,7 +27,8 @@ def build(report,verification,evidence,question,originals,requirements,prior,con
                 'fixedSiblingIds':list(fixed),'includesFixedConditionsAndPublicationLayout':True}
     roles=allocation(shadow,requirements,None)
     responsibilities=([c for c in roles['targets'] if c['claimId'] in originals] if roles else [])
-    return {'version':1,'budget':budget,'responsibilities':responsibilities,'publicationContext':deepcopy(context)}
+    return {'version':1,'budget':budget,'responsibilities':responsibilities,'publicationContext':deepcopy(context),
+            **({'insertionOnly':True} if context.get('insertionOnly') else {})}
 
 
 def text_count(rows):

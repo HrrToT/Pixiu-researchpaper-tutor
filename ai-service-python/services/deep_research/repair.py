@@ -828,9 +828,10 @@ def _parse_repair_response(prepared, response, parse, presentation_audit=None,dr
         from services.deep_research.verified_text_repair import apply_term_insertions
         return apply_term_insertions(revised, originals, prepared['termInsertions'])
     if prepared.get('verifiedTextRepairContractVersion') in (1,2):
-        from services.deep_research.verified_text_repair import materialize
-        edited=materialize(revised,originals)
-        if prepared.get('presentationVersion') == 6:
+        from services.deep_research.verified_text_repair import materialize, materialize_insertions
+        insert_only = prepared.get('verifiedTextEditPlan', {}).get('insertionOnly')
+        edited = materialize_insertions(revised, originals) if insert_only else materialize(revised, originals)
+        if prepared.get('presentationVersion') == 6 and not insert_only:
             from services.deep_research.citation_presentation import normalize_source_locators
             for index, claim in enumerate(edited):
                 edited[index], audit = normalize_source_locators(claim, paper_pages=prepared['presentationPaperPages'])
@@ -1349,7 +1350,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
             if prepared.get('verifiedTextRepairContractVersion') in (1,2):
                 state.setdefault('verifiedTextEditAudit',{})[key]={'version':1,'claimIds':[row['claimId'] for row in rows],
                     'identityPreserved':True,'requiresFreshVerification':True,
-                    **({'publicationBudgetChecked':True,'plan':prepared['verifiedTextEditPlan']} if prepared['verifiedTextRepairContractVersion']==2 else {})}
+                    **({'publicationBudgetChecked':True,'plan':prepared['verifiedTextEditPlan']} if prepared['verifiedTextRepairContractVersion']==2 else {}),
+                    **({'originalTextPreserved':True} if prepared.get('verifiedTextEditPlan',{}).get('insertionOnly') else {})}
             if drafting_audit:
                 state.setdefault('factualDraftingAudit',{})[key]=drafting_audit
             if coverage_audit:

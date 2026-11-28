@@ -1,0 +1,31 @@
+{
+  "archivedRunSha256": "1c40f45696aa683a1c4e7a9b34ada80407bc906659386f3e940a93a53e524069",
+  "revisionTarget": "c1",
+  "fixedSibling": "c2",
+  "originalTextPreserved": true,
+  "observedReductionPreserved": true,
+  "dimensionEvidence": "ev_3e68fb507191c083c036fbf2bc1a3789373e469081cee3b88f466545ae096309",
+  "hasCoverageBudgetAudit": true,
+  "receivedSemanticReviewCandidate": true,
+  "semanticApproval": false,
+  "published": false,
+  "providerCalls": 0,
+  "case": "H1-UNSUPERPOINT",
+  "scope": "development replay through production verification node with an offline insertion response",
+  "offlineRegressionTestsPassed": 190,
+  "independentCredit": 0,
+  "sourceReceipt": "unsuperpoint-h1-first-frozen-20261128.json",
+  "previousDevelopmentReceipt": "unsuperpoint-h1-scoped-repair-live-20261128.json",
+  "legacyIntegratedPromptBytes": 11238,
+  "insertionPromptBytes": 9710,
+  "artifacts": [
+    {
+      "path": "tmp/unsuperpoint-h1-insertion-preservation-replay-20261128.json",
+      "sha256": "0839fe46a1f520bfb9f15b4bdc122d5e8801cfd4ad107ef9190e87d108ff652f"
+    },
+    {
+      "path": "tmp/replay-h1-unsuperpoint-insertion-preservation-20261128.py",
+      "sha256": "a9c95a6f4822970103d59391e69e7ebed8aeacd3c729810d4145a1ad515a62f5"
+    }
+  ]
+}

@@ -2597,7 +2597,8 @@ def make_verify_node(
             result = (verify_claims_fn(candidates, supporting_evidence, semantic) if candidates
                       else {'accepted': [], 'rejected': []})
             return {**result, 'rejected': [*result.get('rejected', []), *refused]}
-        scoped_text_repair = record.get('verifiedTextRepairContractVersion') == 3
+        text_repair_version = record.get('verifiedTextRepairContractVersion')
+        scoped_text_repair = text_repair_version in (3, 4)
         repair_report = saved.get('repairReport', report_body)
         if saved.get('repairAttempted') and 'initialAnswerCoverage' in saved and 'repairTargets' in saved:
             verification_result = saved['initialVerification']
@@ -2817,6 +2818,8 @@ def make_verify_node(
                         if any(row.get('claimId') == benchmark_id and row.get('beginnerLeadRepair') is True
                                for row in repair_targets.get('rejected', [])):
                             benchmark_example['introOnly'] = True
+                    from services.deep_research.verified_text_repair import explanation_gaps
+                    insert_explanations = text_repair_version == 4 and explanation_gaps(answer_coverage)
                     revised = repair_rejected(repair_report, repair_targets, evidence, effective_question(record),
                         invoke_repair, _safe_parse_json,
                         **({'benchmark_example': benchmark_example} if benchmark_example is not None else {}),
@@ -2829,12 +2832,13 @@ def make_verify_node(
                         **({'comparison_priority_evidence':comparison_priority_evidence}
                            if comparison_priority_evidence else {}),
                         **({'verified_text_edits':True} if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and record['verifiedTextRepairContractVersion'] in (1,2,3)
+                           and text_repair_version in (1,2,3,4)
                            and not comparison_authoring_enabled(record) else {}),
                         **({'integrated_text_edits':True,'text_edit_context':{
-                            'outputKind':saved.get('outputKind'),'presentationVersion':record['reportPresentationContractVersion']}}
+                            'outputKind':saved.get('outputKind'),'presentationVersion':record['reportPresentationContractVersion'],
+                            **({'insertionOnly':True} if insert_explanations else {})}}
                            if type(record.get('verifiedTextRepairContractVersion')) is int
-                           and record['verifiedTextRepairContractVersion'] in (2,3)
+                           and text_repair_version in (2,3,4)
                            and not comparison_authoring_enabled(record)
                            and type(record.get('reportPresentationContractVersion')) is int
                            and record['reportPresentationContractVersion'] in (2,3,4) else {}),
@@ -2923,8 +2927,14 @@ def make_verify_node(
                             for item in record.get('state',{}).get('plan',[]) for o in item.get('obligations',[])]}
                            if type(record.get('factRedraftContractVersion')) is int
                            and record['factRedraftContractVersion'] in (1,2,3) else {}))
-                    if repair_compaction_enabled(record):
+                    can_compact = repair_compaction_enabled(record)
+                    if can_compact:
                         current = repo_update(run_id, lambda r: r, expected_revision=None)
+                        audits = (current['state'].get('repairBatchState') or {}).get('verifiedTextEditAudit', {})
+                        # Insertions have already been materialized and counted
+                        # against the budget. A free rewrite could erase their base.
+                        can_compact = not any(audit.get('originalTextPreserved') for audit in audits.values())
+                    if can_compact:
                         def checkpoint_compaction(value):
                             repo_update(run_id, lambda r: {**r, 'state': {**r.get('state', {}),
                                 'repairCompaction': value}}, expected_revision=None)
