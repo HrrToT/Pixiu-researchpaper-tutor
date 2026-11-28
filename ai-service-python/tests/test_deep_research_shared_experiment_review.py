@@ -43,6 +43,32 @@ def test_lifecycle_array_binding_proves_absence_without_approving_a_check():
     with pytest.raises(ValueError, match='scalar'):
         _binding_findings(*args, references=True, state_arrays=True)
 
+
+@pytest.mark.parametrize('pointer,expected', [
+    ('/steps/@fit/operation/action', '/steps/1/operation/action'),
+    ('/states/@checkpoint/representation', '/states/0/representation'),
+    ('/steps/7/operation/action', '/steps/7/operation/action'),
+    ('/steps/@missing/operation/action', None),
+    ('/steps/@fit', None),
+])
+def test_named_review_binding_resolves_only_exact_proposal_ids(pointer, expected):
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch
+
+    plan = {'steps': [{'id': 'prepare'}, {'id': 'fit'}], 'states': [{'id': 'checkpoint'}]}
+    result = {'checks': [{'checkId': 'section_0', 'planBindings': [pointer]}],
+              'coherent': False, 'issues': [{'planBindings': [pointer]}]}
+    reply = {'content': json.dumps(result), 'finishReason': 'stop'}
+    validator = Draft202012Validator({'type': 'object'})
+    if expected is None:
+        with pytest.raises(ValueError, match='unknown step or state ID'):
+            _decode_batch(reply, ['section_0'], validator, named_plan=plan)
+    else:
+        checked = _decode_batch(reply, ['section_0'], validator, named_plan=plan)
+        assert checked['checks'][0]['planBindings'] == [expected]
+        assert checked['issues'][0]['planBindings'] == [expected]
+    assert _decode_batch(reply, ['section_0'], validator) == result
+
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, UnknownCallError, digest
 from services.deep_research.shared_experiment_generation import prepare as generate
 from services.deep_research.shared_experiment_review import targets, prepare, assess, descriptor, NODE, _pointer

@@ -421,7 +421,7 @@ class ResearchFacade:
             **({"sharedExperimentDensificationExecutionVersion": 9} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewPlannedPrerequisitesVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewCitedPassageScopeVersion": 1} if shared_experiment_profile == 8 else {}),
-            **({"sharedExperimentReviewIndexedStatesVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentReviewIndexedStatesVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewContextFieldVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewSeedBindingsVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentReviewFitCaptureBindingsVersion": 1} if shared_experiment_profile == 8 else {}),

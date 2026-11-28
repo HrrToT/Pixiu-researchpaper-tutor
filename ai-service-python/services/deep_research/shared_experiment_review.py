@@ -434,7 +434,8 @@ def reviewed_prefix_findings(record, input_data, aliases, saved):
             if not set(scoped) <= set(rows):
                 return {}
             part = _decode_batch(response, ids, Draft202012Validator(descriptor(record, ids)['schema']),
-                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
+                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) == 2 else None)
             problems, passed = _binding_findings(
                 part, proposal, targets_by_id, rows, dict.fromkeys(ids, scoped), references=True,
                 contrast_arrays=record.get(REFERENCE_MARKER) in (3, 4),
@@ -553,11 +554,17 @@ def build(record, input_data, aliases, *, required_domains=()):
             'For numbers found in surrounding source context, cite the exact before or after text.\nInput:\n')
     def measure(view, policy=instructions):
         if record.get(REFERENCE_MARKER) == 4 and (steps := view['proposal'].get('steps')):
-            paths = ', '.join(step['id'] for step in steps)
-            policy = 'Step IDs in /steps index order (0-based): ' + paths + '.\n' + policy
-            if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
-                state_ids = ', '.join(state['id'] for state in states)
-                policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
+            if record.get(INDEXED_STATES_MARKER) == 2:
+                policy = ('Use exact IDs from the JSON for steps/states, e.g. /steps/@STEP_ID/operation/action '
+                          'or /states/@STATE_ID/representation. Use indices for other lists, '
+                          'e.g. /pairing/sharedStateIds/0.\n'
+                          + policy.replace('Use zero-based scalar paths', 'Use exact scalar paths'))
+            else:
+                paths = ', '.join(step['id'] for step in steps)
+                policy = 'Step IDs in /steps index order (0-based): ' + paths + '.\n' + policy
+                if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
+                    state_ids = ', '.join(state['id'] for state in states)
+                    policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
         prompt = policy + input_text(view)
         options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
         if reference_policy:
@@ -792,7 +799,7 @@ def _resolved_plan_binding(path, proposal):
     return {'path': path, 'text': text}
 
 
-def _decode_batch(answer, check_ids, validator, *, context_fields=False):
+def _decode_batch(answer, check_ids, validator, *, context_fields=False, named_plan=None):
     if not isinstance(answer, dict) or answer.get('finishReason', answer.get('finish_reason')) != 'stop':
         raise ValueError('Incomplete review')
     content = answer.get('rawContent', answer.get('content', ''))
@@ -812,6 +819,20 @@ def _decode_batch(answer, check_ids, validator, *, context_fields=False):
         raise ValueError('Review target coverage')
     if part['coherent'] == bool(part['issues']):
         raise ValueError('Coherence conflicts with issues')
+    if named_plan is not None:
+        # Convert exact immutable IDs before scope and literal validation.
+        # Numeric paths and the stored provider response retain their identity.
+        indices = {key: {row['id']: i for i, row in enumerate(named_plan.get(key, []))}
+                   for key in ('steps', 'states')}
+        for row in [*part['checks'], *part['issues']]:
+            for i, path in enumerate(row['planBindings']):
+                parts = path.split('/', 3)
+                if len(parts) < 3 or parts[0] or parts[1] not in indices or not parts[2].startswith('@'):
+                    continue
+                key, alias = parts[1:3]
+                if len(parts) != 4 or not parts[3] or alias[1:] not in indices[key]:
+                    raise ValueError('Review pointer uses an unknown step or state ID')
+                row['planBindings'][i] = f'/{key}/{indices[key][alias[1:]]}/{parts[3]}'
     return part
 
 
@@ -948,7 +969,8 @@ def assess(record, input_data, aliases, response):
             packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
                                 if batches and record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
             part = _decode_batch(answer, packet['checkIds'], packet_validator,
-                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
+                                 context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
+                                 named_plan=proposal if record.get(INDEXED_STATES_MARKER) == 2 else None)
             supplied = packet['suppliedEvidenceAliases']
             evidence_by_check.update({cid: supplied for cid in packet['checkIds']})
             value['checks'].extend(part['checks'])
@@ -1062,7 +1084,9 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
                 packet_validator = (Draft202012Validator(descriptor(record, packet['checkIds'])['schema'])
                                     if record.get(SCOPED_PACKET_MARKER) in SCOPED_PACKET_VERSIONS else validator)
                 part = _decode_batch(answer, packet['checkIds'], packet_validator,
-                                     context_fields=record.get(CONTEXT_FIELD_MARKER) == 1)
+                                     context_fields=record.get(CONTEXT_FIELD_MARKER) == 1,
+                                     named_plan=proposal if check_bindings_before_next
+                                     and record.get(INDEXED_STATES_MARKER) == 2 else None)
                 if check_bindings_before_next:
                     scopes = dict.fromkeys(packet['checkIds'], packet['suppliedEvidenceAliases'])
                     problems, passed = _binding_findings(part, proposal, expected, rows, scopes, references=True,
