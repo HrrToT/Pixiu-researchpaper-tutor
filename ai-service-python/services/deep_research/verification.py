@@ -116,7 +116,7 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
                     bind_composite_revisions=False, named_revision_table=None, numeric_context=None,
-                    cited_passage_scope=False) -> dict:
+                    cited_passage_scope=False, named_revision_question=None) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -273,9 +273,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
             else:
                 reason = reason or validate_table_bindings(claim, support, **table_options)
         if named_revision_table and kind in {'reported', 'inference'}:
-            from services.deep_research.revision_table_display import contradictory_revision_values
+            from services.deep_research.revision_table_display import broadens_common_setting, contradictory_revision_values
             if contradictory_revision_values(claim, support, named_revision_table):
                 reason = reason or 'table_revision_value_mismatch'
+            if named_revision_question and broadens_common_setting(claim, support, named_revision_table, named_revision_question):
+                reason = reason or 'table_revision_setting_outside_request'
         if comparison_embedded_measurements and kind in {'inference', 'proposal', 'suggestion', 'hypothesis'}:
             # Ordinary comparison advice can embed reported measurements. Its
             # label cannot waive exact table identity/display checks. This is
@@ -365,6 +367,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                         + '。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。'}
             elif reason == 'table_condition_not_displayed' and type(feedback_version) is int and feedback_version in (1, 2):
                 diagnostic = _table_display_diagnostic(claim, support,comparison_context)
+            elif reason == 'table_revision_setting_outside_request':
+                diagnostic = {'detail': '把共同结论限定在问题指定的设置。原表题注给出的参数范围不能替代指定列。'}
             elif reason == 'result_purpose_not_established':
                 diagnostic={'detail':'所引用的渲染剖析未建立主表结果的归属。区分算子剖析与主要比较；不得把剖析值改称主表值。'}
             elif reason == 'absence_not_established' and type(absence_scope_version) is int and absence_scope_version in (2,3,4,5,6,7,8):
@@ -396,7 +400,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
                   table_references_version=0, review_context_version=0, requested_source_revisions=None,
                   complete_review_feedback=False,comparison_context=None,bound_duration_spelling=False,
                   comparison_embedded_measurements=False, bound_composite_cells=False,
-                  bind_composite_revisions=False, named_revision_table=None) -> dict:
+                  bind_composite_revisions=False, named_revision_table=None, named_revision_question=None) -> dict:
     """Publish only after hard checks and an independent semantic verdict.
 
     Missing, malformed or duplicate model verdicts fail closed. A proposal or
@@ -415,6 +419,7 @@ def verify_claims(claims: list[dict], evidence: list[dict],
         bound_composite_cells=bound_composite_cells,
         bind_composite_revisions=bind_composite_revisions,
         **({'named_revision_table':named_revision_table} if named_revision_table else {}),
+        **({'named_revision_question':named_revision_question} if named_revision_question else {}),
         **({'comparison_embedded_measurements':True} if comparison_embedded_measurements else {}),
         **({'comparison_context':comparison_context} if comparison_context is not None else {}))
     candidates, rejected = checked['candidates'], checked['rejected']

@@ -22,6 +22,15 @@ _COMMON_FINDING = re.compile(
     r'|\b(?:shared|common) (?:findings?|conclusions?) (?:across|in) (?:both|the) (?:revisions|versions)\b',
     re.I,
 )
+_COMMON_ASSERTION = re.compile(
+    r'(?:两|各)版[^。！？]{0,24}(?:共同(?:支持|表明|显示)|均(?:支持|表明|显示))'
+    r'|\b(?:both|all) (?:revisions|versions) (?:show|support|find)\b', re.I,
+)
+_SETTING_RANGE = re.compile(
+    r'(?:保留|选择|筛选|采样|量化|剪枝|\bkeep(?:ing)?|\bretain(?:ing)?|\bselect(?:ing)?|\bprun(?:e|ing))'
+    r'\s*(?P<low>\d+(?:\.\d+)?)\s*[%％]?\s*(?:[-‐‑–—~～至到]|\bto\b)\s*'
+    r'(?P<high>\d+(?:\.\d+)?)\s*[%％]', re.I,
+)
 _ADDED_ROWS = re.compile(r'新增(?:报告|汇报|列出)?|新(?:列出|报告)|\b(?:newly reported|added configurations)\b', re.I)
 GUIDANCE = ('For the same row across revisions, put exact bound cells in a reported claim. '
             'The app formats their revision labels from the PDF. In conclusions explain the difference '
@@ -203,6 +212,27 @@ def _common_order(question, labels, columns, revisions, bindings, cited):
                 return ''
             common = order
     return '各版所列模型的数值均从低到高为 ' + '、'.join(common) + '。'
+
+
+def broadens_common_setting(claim, support, number, question):
+    """A caption's experiment range cannot replace the requested setting."""
+    if not question or not _COMMON_FINDING.search(question):
+        return False
+    settings = {Decimal(value[:-1].strip()) for value in _PERCENT.findall(question)}
+    if len(settings) != 1:
+        return False
+    text = claim.get('text')
+    if not isinstance(text, str) or not (_COMMON_FINDING.search(text) or _COMMON_ASSERTION.search(text)):
+        return False
+    if not any({Decimal(match['low']), Decimal(match['high'])} != settings
+               for match in _SETTING_RANGE.finditer(text)):
+        return False
+    selected, anchored = select(support, number)
+    revisions_by_work = defaultdict(set)
+    for row in selected:
+        if row['evidenceId'] in anchored and (publication := owned_evidence_publication(row)):
+            revisions_by_work[publication['workId']].add(publication['revision'])
+    return any(len(revisions) >= 2 for revisions in revisions_by_work.values())
 
 
 def _earlier_group(own, bindings, number, revision, label):

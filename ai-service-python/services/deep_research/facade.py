@@ -528,7 +528,7 @@ class ResearchFacade:
             "revisionTableCoverageEnvelopeVersion": 1,
             "revisionTablePointRenderingVersion": 1,
             "revisionTableMeasuredMetricAliasVersion": 1,
-            "revisionTableCommonOrderVersion": 1,
+            "revisionTableCommonOrderVersion": 2,
             "revisionTableSingleVersionDisplayVersion": 1,
             "revisionTableDifferingRowsVersion": 1,
             "revisionTableChangeLabelsVersion": 1,
@@ -1631,9 +1631,13 @@ class ResearchFacade:
         revisions=(explicit_revisions(effective_question(record)) if revision_constraints_enabled(record)
             and record.get('sourcePolicy',{}).get('mode') in {'academic_external','external_only'} else {})
         named_revision_table = None
+        named_revision_question = None
         if record.get('namedTableScopeVersion') == 2 and record.get('state', {}).get('outputKind') == 'claim_verification':
             from services.deep_research.named_table_scope import requested_number
-            named_revision_table = requested_number(effective_question(record))
+            question = effective_question(record)
+            named_revision_table = requested_number(question)
+            if named_revision_table and record.get('revisionTableCommonOrderVersion') == 2:
+                named_revision_question = question
         def verify(claims,evidence,semantic=None):
             context=None
             if type(record.get('comparisonPlanningContractVersion')) is int and record['comparisonPlanningContractVersion'] in (2,3,4,5,6):
@@ -1651,6 +1655,7 @@ class ResearchFacade:
                    and record['completeReviewFeedbackContractVersion']==1 else {}),
                 **({'requested_source_revisions':revisions} if revisions else {}),
                 **({'named_revision_table':named_revision_table} if named_revision_table else {}),
+                **({'named_revision_question':named_revision_question} if named_revision_question else {}),
                 **({'comparison_context':context} if context is not None else {}),
                 **({'bound_duration_spelling':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (4,5,6)

@@ -212,6 +212,30 @@ def test_shared_order_comes_only_from_matching_verified_settings(new_values, que
     assert validate_table_bindings(rendered, sources) is None
 
 
+@pytest.mark.parametrize(('question', 'text', 'wrong_table', 'out_of_scope'), [
+    ('核对表1的1%，并说明两版共同支持的结论。', '两版表1共同支持：保留0.1%-1%的权重优于RTN。', False, True),
+    ('核对表1的1%，并说明两版共同支持的结论。', '两版共同支持：保留 0.1 至 1% 的权重。', False, True),
+    ('核对表1的1%，并说明两版共同支持的结论。', '两版表1共同支持：保留1%的权重优于RTN。', False, False),
+    ('核对表1的1%，并说明两版共同支持的结论。', '两版共同显示困惑度下降了0.1%-1%。', False, False),
+    ('核对表1的0.1%和1%，并说明两版共同支持的结论。', '两版共同支持：保留0.1%-1%的权重。', False, False),
+    ('核对表1的1%，并说明两版共同支持的结论。', '两版共同支持：保留0.1%-1%的权重。', True, False),
+])
+def test_claim_scope_rejects_expanding_a_single_setting_to_a_cited_range(question, text, wrong_table, out_of_scope):
+    from services.deep_research.verification import precheck_claims
+
+    sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
+    if wrong_table:
+        sources[1]['location'].update(table='pdf-page-3-table-2', section='Table 2')
+    claim = {'claimId': 'common', 'text': text, 'kind': 'inference', 'evidenceRefs': ['e1', 'e2']}
+    legacy = precheck_claims([claim], sources, named_revision_table='1')
+    assert legacy['candidates']
+    result = precheck_claims([claim], sources, named_revision_table='1', named_revision_question=question)
+    if out_of_scope:
+        assert result['rejected'][0]['reason'] == 'table_revision_setting_outside_request'
+    else:
+        assert result['candidates']
+
+
 def test_reported_metric_name_resolves_only_a_unique_value_in_the_verified_row():
     sources = [revision('18.51', 1, 'a' * 64), revision('16.91', 2, 'b' * 64)]
     bindings = []
