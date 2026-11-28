@@ -200,7 +200,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
     wording_version = record.get('comparisonPaperWordingContractVersion')
     original_evidence = ({reverse[row['evidenceId']]: row for row in record.get('state', {}).get('evidence', [])
                           if row['evidenceId'] in reverse}
-                         if type(wording_version) is int and wording_version in (2, 3, 4) else {})
+                         if type(wording_version) is int and wording_version in (2, 3, 4, 5) else {})
     def build_stage(scope, members):
         include_joint = 'joint' in members
         own = rows if include_joint else [r for r in rows if r['source'] in members]
@@ -228,6 +228,11 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         visible_protocols = known_protocols if include_joint else None
         optional_pairs = [(protocol['noteEvidenceId'], table_id)
                           for table_id, protocol in (visible_protocols or {}).items()]
+        if not include_joint and wording_version == 5 and example_owner:
+            own_ids = {row['evidenceId'] for row in own}
+            optional_pairs.extend((protocol['noteEvidenceId'], table_id)
+                                  for table_id, protocol in (known_protocols or {}).items()
+                                  if {table_id, protocol['noteEvidenceId']} <= own_ids)
         if record.get('comparisonNamedBenchmarkProtocolVersion') == 2:
             from services.deep_research.pdf_benchmark_protocol import synthesis_metric_bundles
             optional_pairs = [*synthesis_metric_bundles(record.get('state', {}).get('evidence', []), own, aliases),

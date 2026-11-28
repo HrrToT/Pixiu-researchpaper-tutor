@@ -398,7 +398,7 @@ class ResearchFacade:
             **({'comparisonLocalFutureWorkRepairVersion': 1}
                if self._comparison_cells_version == 1 and output_kind == 'paper_comparison' else {}),
             "comparisonStageAbstentionContractVersion": 1 if self._comparison_cells_version == 1 else 0,
-            **({'comparisonPaperWordingContractVersion': 4}
+            **({'comparisonPaperWordingContractVersion': 5}
                if self._comparison_cells_version == 1 and self._comparison_review_batch_version == 1
                and output_kind == 'paper_comparison' else {}),
             "comparisonExplorationContractVersion": 1 if self._comparison_cells_version == 1

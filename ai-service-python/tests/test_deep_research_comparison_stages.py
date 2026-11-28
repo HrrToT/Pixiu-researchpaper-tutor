@@ -703,6 +703,27 @@ def test_stage_table_choices_exclude_unmatched_baseline_and_reserved_benchmark_c
                                known_protocols={'E1': original[0]['matchedProtocol']}) == [joint]
 
 
+def test_baseline_variants_preserve_distinct_rows_and_only_the_bound_note():
+    from services.deep_research.comparison_wire import baseline_variants
+
+    table = {'source': 'P1', 'evidenceId': 'E1',
+             'matchedProtocol': {'rowNumber': 2, 'noteEvidenceId': 'E2'},
+             'groups': [['Room', ['PSNR']]],
+             'rows': [[1, 'Baseline [1]', [['V1', '20']]],
+                      [2, 'Baseline∗[1]', [['V2', '22']]],
+                      [3, 'Other∗[2]', [['V3', '21']]],
+                      [4, 'Ours', [['V4', '21']]]]}
+    assert baseline_variants([table]) == [{
+        'source': 'P1', 'table': 'E1',
+        'alternatives': [[{'row': 'Baseline [1]'},
+                          {'row': 'Baseline∗[1]', 'retrainingNote': 'E2'}]],
+    }]
+    assert baseline_variants([{**table, 'matchedProtocol': None}])[0]['alternatives'] == [
+        [{'row': 'Baseline [1]'}, {'row': 'Baseline∗[1]'}],
+    ]
+    assert not baseline_variants([{**table, 'groups': [['Room', ['Training time']]]}])
+
+
 def test_table_and_note_get_a_joint_fit_before_individual_optional_rows():
     from services.deep_research.synthesis_evidence import fit_premises
 
@@ -813,6 +834,47 @@ def test_explicit_one_benchmark_example_is_assigned_to_joint_output():
         assert 'For storage trends also name the matched dataset and baseline.' in new['prompt']
         assert 'For storage trends also name the matched dataset and baseline.' not in old['prompt']
         assert packet(new) == packet(old)
+
+
+def test_paper_prompt_names_local_baseline_variants_without_restoring_benchmark_cells():
+    r, plan, rows, aliases, bundles = fixture()
+    excerpt = '数字只选一组来源和口径明确的基线对照作例子'
+    r.update(question=QUESTION + '。' + excerpt, comparisonPlanningContractVersion=6,
+             comparisonReviewBatchContractVersion=2, comparisonAuthoringContractVersion=16,
+             comparisonJointReportsContractVersion=16, comparisonPaperWordingContractVersion=5)
+    joint = next(goal for goal in plan['requirements'] if goal['comparisonRole']['kind'] == 'joint')
+    joint['comparisonRole']['requestExcerpt'] = excerpt
+    joint['question'] = 'Which single baseline comparison can be presented as the numerical example?'
+    joint['completionCriteria'] = [{
+        'criterionId': 'C1',
+        'requirement': 'Identify one baseline comparison reported in the sources, naming the source, the metric and the setting or dataset used.',
+        'responseType': 'identification',
+    }]
+    first = next(row for row in rows if row['evidenceId'] == 'E1')
+    first['quote'] += '\nTable row 9: Ours-30K * | 145 | 42m'
+    first['tableData']['rows'].append([9, 'Ours-30K *', ['145', '42m']])
+    note = {'evidenceId': 'E3', 'source': 'P1', 'accessLevel': 'fulltext',
+            'obligations': first['obligations'],
+            'quote': 'We re-trained the baseline on our platform, with results marked by ∗.'}
+    rows.append(note)
+    aliases['E3'] = 'original-E3'
+    paper, other, joint_stage = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases,
+                                       merge_joint=False)['stages']
+    local, = packet(paper)['papers']
+    local_targets = [target for target in local['targets'] if 'baselineVariants' in target]
+    assert local_targets
+    assert 'E3' in paper['suppliedEvidenceIds']
+    for target in local_targets:
+        marked = {'row': 'Ours-30K *'}
+        if 'E3' in paper['allowedEvidenceByTarget'][target['targetId']]:
+            marked['retrainingNote'] = 'E3'
+        assert target['baselineVariants'] == [{'table': 'E1', 'alternatives': [
+            [{'row': 'Ours-30K'}, marked],
+        ]}]
+    assert local['tableCatalog'][0]['groups'] == [['Benchmark', ['Train']]]
+    assert 'directions reverse between variants' in paper['prompt']
+    assert 'baselineVariants' not in other['prompt']
+    assert 'baselineVariants' not in joint_stage['prompt']
 
 
 def test_paper_wording_preserves_properties_and_protocol_exceptions_without_changing_joint_input():
