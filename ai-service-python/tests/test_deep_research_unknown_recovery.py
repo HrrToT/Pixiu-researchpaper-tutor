@@ -54,6 +54,37 @@ def test_cancelled_pending_dispatch_is_not_advertised_as_safe_to_continue(tmp_pa
     finally:facade.shutdown()
 
 
+def test_paused_pending_dispatch_rejects_resume_without_reading_payloads(tmp_path, monkeypatch):
+    model = UnknownModel()
+    repo, facade, _ = make_facade(tmp_path, model)
+    try:
+        run_id = create(facade)["runId"]
+        repo.begin_execution(run_id)
+        call, _ = repo.reserve_call(
+            run_id=run_id, node="verify", tool="llm_invoke", args_digest="pending",
+            budget_delta={"tokens": 700, "modelCalls": 1},
+        )
+        pause_payload = {"requestId": "pause", "expectedRunRevision": repo.require_run(run_id)["runRevision"]}
+        paused = facade.action(run_id, "pause", pause_payload)
+        assert paused["allowedActions"] == ["cancel"]
+        saved = repo.require_run(run_id)
+
+        def forbid_payload_read(*_args):
+            raise AssertionError("Resume guard must read call IDs without loading model responses")
+
+        monkeypatch.setattr(repo, "list_calls", forbid_payload_read)
+        payload = {"requestId": "resume", "expectedRunRevision": paused["runRevision"]}
+        with pytest.raises(UnresolvedUnknownError) as denied:
+            facade.action(run_id, "resume", payload)
+        assert denied.value.details["unknownCallIds"] == [call["callId"]]
+        assert repo.require_run(run_id) == saved
+        assert repo.get_call(call["callId"]) == call
+        assert not facade._active_futures
+        assert model.calls == 0
+    finally:
+        facade.shutdown()
+
+
 def test_safely_cancelled_work_keeps_explicit_followup_available(tmp_path):
     model=UnknownModel();repo,facade,_=make_facade(tmp_path,model)
     try:

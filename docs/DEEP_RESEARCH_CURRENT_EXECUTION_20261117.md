@@ -1085,6 +1085,8 @@ D2 标准预算旧回执中，跨论文帧率的四个评测设置观察分别�
 | D6 中断与发布 | 当前离线回归含突然退出、迟到响应、暂停继续、未知请求与幂等发布。候选 `728309431` 在禁网容器上使用现用研究库的只读副本冷启动。463 个运行、12,562 条调用、504 条操作、304 个发布和 304 条发布队列记录的内容哈希逐表保持一致。通过 API 重开 D2、H3 及原 H4，原 H4 保持未知且仅允许取消。 [隔离恢复记录](deep-research-evidence/composite-revision-isolated-recovery-20261125.json) | 发布切换时仍需复核现用任务与数据。 |
 
 D6 补充验证使用本轮真实 D2 代理故障留下的运行库和检查点副本，分别在两个 Python 进程中执行启动恢复并调用正式研究路由。首次启动保留 9 条已核验论断、29 条来源记录和全部 51 行调用账本，恢复请求返回 409。取消只更新一次运行版本，第二次启动仍返回同一取消回执，并拒绝恢复和派生。未知调用保留 30,641 Token 预留值，未生成报告，未写发布队列，未发送模型请求。来源权限使用冻结的材料归属夹具，现用 Java 权限服务及部署切换仍待在目标环境核验。 [真实 D2 隔离恢复记录](deep-research-evidence/d6-d2-live-proxy-unknown-restart-20261128.json)
+
+暂停时仍在途的调用现在也会阻止新一轮执行。状态读取和恢复入口使用同一查询，更新执行轮次前在数据库事务内再核验一次。调用结果迟到但已确认后，仍可由用户主动恢复。运行中断、迟到回执、恢复和端到端检查共 116 项通过，路由回执及状态读取另有 21 项通过。
 | H1 新论文单篇 | [H1-GSC 定义](DEEP_RESEARCH_GSC_EXPLANATION_HOLDOUT_20261112.json)已执行一次。报告成功发布，人工核对未通过。 [执行记录](deep-research-evidence/gsc-explanation-h1-first-real-20261124.json) | 在开发材料上验证机制说明与原文覆盖，再安排新的冻结留出题。 |
 | H2 新多论文 | [H2-ADAPT 定义](DEEP_RESEARCH_ADAPTATION_COMPARISON_HOLDOUT_20261112.json)已执行一次，十条候选均未通过事实核验。 [执行记录](deep-research-evidence/adaptation-comparison-h2-first-real-20261125.json) | 使用开发题验证比较目标与来源配置对齐后，安排新的冻结留出题。 |
 | H3 外部补查 | DuoAttention 同题开发复测通过内容及隔离工作区交付。新留出的 DMC v1 从空任务取得指定全文，科学机制与原文引用通过首次核验，来源标注的独立检查错误地保留一个缺口。DMC 的新版真实终审覆盖全部义务，沿用该审核回执通过完整发布与隔离工作区交付。 [DuoAttention 开发验收](deep-research-evidence/duoattention-h3-development-complete-and-handoff-20261128.json) · [DMC 首次执行与审核回放](deep-research-evidence/dmc-h3-first-and-pinned-access-replay-20261128.json) · [DMC 开发复测](deep-research-evidence/dmc-h3-real-audit-publication-and-handoff-20261128.json) | 保留两次独立首次结果。独立全链路验收仍需新的冻结题。 |

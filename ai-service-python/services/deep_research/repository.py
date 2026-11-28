@@ -151,6 +151,14 @@ def _safe_rollback(conn: sqlite3.Connection) -> None:
         conn.execute("ROLLBACK")
 
 
+def _select_unconfirmed_call_ids(conn: sqlite3.Connection, run_id: str) -> list[str]:
+    rows = conn.execute(
+        "SELECT call_id FROM deep_research_calls_v2 WHERE run_id=? AND status IN (?,?) ORDER BY rowid",
+        (run_id, CALL_STATUS_PENDING, CALL_STATUS_UNKNOWN),
+    ).fetchall()
+    return [row[0] for row in rows]
+
+
 def _clamp_budget_to_profile(budget: dict[str, Any], profile_name: str) -> dict[str, Any]:
     """Ensure client-supplied budget overrides never widen the server profile."""
     _, limits = resolve_budget_profile(profile_name)
@@ -509,7 +517,7 @@ class DeepResearchRepository:
         """Atomically mark a run as running and increment its executionEpoch.
 
         Rejects duplicate pending dispatch (already running), terminal runs,
-        and runs with unresolved unknown calls.  Resets ``startedAt`` only on
+        and runs with unconfirmed calls.  Resets ``startedAt`` only on
         the first execution so wall-clock deadlines do not restart on re-entry.
         """
         normalized = str(run_id or "").strip()
@@ -545,16 +553,10 @@ class DeepResearchRepository:
                 if record.get("status") not in allowed:
                     _safe_rollback(conn)
                     raise IllegalStatusTransitionError(str(record.get("status")), STATUS_RUNNING)
-                # Reject runs with unresolved unknown calls
-                unknown_rows = conn.execute(
-                    "SELECT call_id FROM deep_research_calls_v2 WHERE run_id=? AND status=?",
-                    (normalized, CALL_STATUS_UNKNOWN),
-                ).fetchall()
-                if unknown_rows:
-                    _safe_rollback(conn)
-                    raise UnresolvedUnknownError(
-                        normalized, [r[0] for r in unknown_rows]
-                    )
+                # Check inside the same transaction that advances the epoch.
+                unconfirmed = _select_unconfirmed_call_ids(conn, normalized)
+                if unconfirmed:
+                    raise UnresolvedUnknownError(normalized, unconfirmed)
                 waiting_since = record.get("state", {}).get("waitingSince") if record["status"] == STATUS_WAITING_USER else None
                 if waiting_since and record.get("startedAt"):
                     # Human response time is not active research time. Apply once under the run lock.
@@ -922,11 +924,7 @@ class DeepResearchRepository:
         if not normalized:
             return []
         with closing(sqlite3.connect(self.db_path, timeout=30)) as conn:
-            rows = conn.execute(
-                'SELECT call_id FROM deep_research_calls_v2 WHERE run_id=? AND status IN (?,?) ORDER BY rowid',
-                (normalized, CALL_STATUS_PENDING, CALL_STATUS_UNKNOWN),
-            ).fetchall()
-        return [row[0] for row in rows]
+            return _select_unconfirmed_call_ids(conn, normalized)
 
     # ── recovery ──────────────────────────────────────────────────────────────
 

@@ -981,12 +981,10 @@ class ResearchFacade:
         if expected_revision is not None and record.get("runRevision", 0) != expected_revision:
             raise RevisionConflictError(run_id, expected_revision, record.get("runRevision", 0))
         
-        # Check for unresolved unknown calls
-        calls = self._repo.list_calls(run_id)
-        unknown_calls = [c for c in calls if c.get("status") == "unknown"]
-        if unknown_calls:
+        unconfirmed = _unconfirmed_call_ids(self._repo, run_id)
+        if unconfirmed:
             from services.deep_research.contracts import UnresolvedUnknownError
-            raise UnresolvedUnknownError(run_id, [c["callId"] for c in unknown_calls])
+            raise UnresolvedUnknownError(run_id, unconfirmed)
         
         # Capture pause epoch for wrapper validation
         pause_info = record.get("pause", {})

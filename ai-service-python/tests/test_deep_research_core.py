@@ -345,8 +345,9 @@ def test_begin_execution_resets_started_at_only_on_first_execution(repo: DeepRes
     assert second["startedAt"] == original_started
 
 
-def test_begin_execution_rejects_unresolved_unknown_calls(repo: DeepResearchRepository):
-    """Runs with unresolved unknown calls cannot resume execution."""
+@pytest.mark.parametrize("status", [CALL_STATUS_PENDING, CALL_STATUS_UNKNOWN])
+def test_begin_execution_rejects_unconfirmed_calls(repo: DeepResearchRepository, status):
+    """Paused work cannot advance to a new epoch while a call is unconfirmed."""
     repo.create_run({"runId": "unknown-block-resume"})
     repo.begin_execution("unknown-block-resume")
     call, _ = repo.reserve_call(
@@ -355,10 +356,15 @@ def test_begin_execution_rejects_unresolved_unknown_calls(repo: DeepResearchRepo
         tool="read",
         args_digest=digest({"ub": 1}),
     )
-    repo.complete_call(call["callId"], status=CALL_STATUS_UNKNOWN, error={"reason": "timeout"})
+    if status == CALL_STATUS_UNKNOWN:
+        repo.complete_call(call["callId"], status=status, error={"reason": "timeout"})
     repo.transition("unknown-block-resume", STATUS_PAUSED)
-    with pytest.raises(UnresolvedUnknownError):
+    paused = repo.require_run("unknown-block-resume")
+    with pytest.raises(UnresolvedUnknownError) as denied:
         repo.begin_execution("unknown-block-resume")
+    assert denied.value.details["unknownCallIds"] == [call["callId"]]
+    assert repo.require_run("unknown-block-resume") == paused
+    assert repo.get_call(call["callId"])["status"] == status
 
 
 # ── durable calls & budget reserve ────────────────────────────────────────────
@@ -663,7 +669,8 @@ def test_epoch_protects_stale_completions(repo: DeepResearchRepository):
         args_digest=digest({"ep": 1}),
     )
     assert call["executionEpoch"] == 1
-    # Pause and re-enter creates epoch 2
+    # The first attempt stopped before dispatch, so re-entry can advance the epoch.
+    repo.complete_call(call["callId"], status=CALL_STATUS_PAUSED)
     repo.transition("epoch-protect", STATUS_PAUSED)
     repo.begin_execution("epoch-protect")  # epoch 2
     # Completion from epoch-1 call must be rejected against current epoch 2
@@ -697,6 +704,7 @@ def test_allow_late_is_audit_only_and_does_not_modify_budget(repo: DeepResearchR
     budget_after = repo.require_run("late-audit")["budget"]["modelCalls"]
     assert budget_after == budget_before  # budget unchanged by late completion
     assert repo.require_run("late-audit")["status"] == STATUS_PAUSED
+    assert repo.begin_execution("late-audit")["executionEpoch"] == 2
 
 
 def test_failed_calls_are_not_automatically_rereserved(repo: DeepResearchRepository):
