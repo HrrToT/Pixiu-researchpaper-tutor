@@ -11,6 +11,10 @@ _PAPER = re.compile(r'论文|文中|作者|原文|摘要|\b(?:paper|authors?|art
 _SCOPED = re.compile(r'当前取得|本次检索|所读片段|选定片段|所选证据|当前片段|已取得(?:的)?片段'
     r'|\b(?:selected|retrieved) (?:passages|evidence)\b', re.I)
 _CITED_PASSAGE_SUBJECT = re.compile(r'^\s*所引(?:的)?(?:论文|原文)?(?:的)?(?:段落|片段)(?:中|内)?\s*$')
+_SPECIFIC_QUOTATION_SUBJECT = re.compile(
+    r'\s*(?:但|而|不过)?\s*(?:这些引文|该示例(?:的)?引文|所引(?:的)?(?:引文|段落|片段))'
+    r'(?:中|内)?\s*'
+)
 _CURRENT_EVIDENCE_SUBJECT = re.compile(
     r'(?:(?:现有|当前)(?:的)?(?:证据|材料|片段)|本次(?:取得|获得|检索|选定)?(?:的)?(?:证据|材料|片段))'
     r'(?:中)?(?:尚|仍)?\s*$'
@@ -94,7 +98,8 @@ _NONASSERTIVE_ABSENCE = re.compile(
 
 
 def absence_not_established(claim, support, *, scope_version=0, cited_passage_scope=False):
-    inverted_owner=type(scope_version) is int and scope_version==8
+    quotation_subject = type(scope_version) is int and scope_version == 9
+    inverted_owner=type(scope_version) is int and scope_version in (8, 9)
     if inverted_owner:scope_version=7  # Retain every existing version7 check.
     if type(scope_version) is int and scope_version in (6,7) and claim.get('kind') in {'reported','inference'}:
         # A claim's selected references cannot certify what is absent from the
@@ -118,7 +123,7 @@ def absence_not_established(claim, support, *, scope_version=0, cited_passage_sc
                     # source noun follows the negation, including in advice.
                     if not _NONASSERTIVE_ABSENCE.search(sentence[:match.start()]):return True
     factual = claim.get('kind') in {'reported', 'inference'}
-    located_passages = cited_passage_scope and bool(support) and all(
+    located_passages = (cited_passage_scope or quotation_subject) and bool(support) and all(
         row.get('accessLevel') == 'fulltext' and row.get('verification', {}).get('literal') == 'passed'
         and bool(row.get('quote'))
         and isinstance(row.get('location'), dict)
@@ -135,6 +140,9 @@ def absence_not_established(claim, support, *, scope_version=0, cited_passage_sc
                 if located_passages and _CITED_PASSAGE_SUBJECT.fullmatch(prefix):
                     # This limits scope to the located quotation. Semantic review
                     # still checks the stated omission against that exact passage.
+                    continue
+                if (located_passages and quotation_subject
+                        and _SPECIFIC_QUOTATION_SUBJECT.fullmatch(re.split(r'[，,]', prefix)[-1])):
                     continue
                 if type(scope_version) is int and scope_version in (4,5,6,7):
                     # Nominal headings and attributive untested dimensions under

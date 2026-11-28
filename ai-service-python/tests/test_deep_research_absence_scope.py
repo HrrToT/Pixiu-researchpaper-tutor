@@ -66,6 +66,22 @@ def test_cited_passage_scope_needs_located_text_and_excludes_whole_paper_claims(
     assert bool(result['rejected']) is not allowed
 
 
+@pytest.mark.parametrize('text,located,allowed', [
+    ('作者提出可探索点云压缩，但这些引文未给出具体压缩操作。', True, True),
+    ('该示例引文未说明这些运行是否使用相同硬件。', True, True),
+    ('该示例引文未说明这些运行是否使用相同硬件。', False, False),
+    ('该示例引文未说明这些运行是否使用相同硬件，所以整篇论文未报告配置。', True, False),
+    ('结果没有在所引论文中被披露。', True, False),
+    ('这些证据未说明该方法在哪种硬件上渲染。', True, False),
+])
+def test_comparison_specific_quotation_scope_preserves_whole_paper_guard(text, located, allowed):
+    claim, evidence = fixture(text)
+    if located:
+        evidence['location'] = {'page': 5, 'sourcePassageStart': 200, 'sourcePassageEnd': 310}
+    checked = precheck_claims([claim], [evidence], absence_scope_version=9)
+    assert bool(checked['rejected']) is not allowed
+
+
 @pytest.mark.parametrize('replacement', [None, True, '2', 0, 1, 2])
 def test_server_scope_version_is_frozen_and_applies_to_both_verification_passes(tmp_path, replacement):
     repo = DeepResearchRepository(tmp_path / 'r.sqlite3'); repo.initialize()

@@ -571,7 +571,7 @@ class ResearchFacade:
             "sourcePrecisionContractVersion": 8,
             "sourceContinuityContractVersion": 2,
             "readingPriorityContractVersion": 9,
-            "absenceScopeContractVersion": 8,
+            "absenceScopeContractVersion": 9 if output_kind == 'paper_comparison' else 8,
             "answerFormatContractVersion": 3,
             "repairProgressContractVersion": 2,
             "reportPresentationContractVersion": 4,
