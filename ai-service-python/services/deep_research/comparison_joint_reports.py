@@ -116,12 +116,12 @@ def paper_figure_count_evidence(record, question, targets, requirements, rows):
 
 def evaluation_protocols_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8))
+            and record['comparisonEvaluationProtocolVersion'] in (1, 2, 3, 4, 5, 6, 7, 8, 9))
 
 
 def deployment_memory_context_enabled(record):
     return (type(record.get('comparisonEvaluationProtocolVersion')) is int
-            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8))
+            and record['comparisonEvaluationProtocolVersion'] in (2, 3, 4, 5, 6, 7, 8, 9))
 
 
 def _evaluation_protocol_score(text):
@@ -144,7 +144,7 @@ def speed_comparison_protocol_rank(row):
 
 def retain_evaluation_protocol(rows, candidates, record, query, pdf_id, content_hash, limit):
     """Keep a reported evaluation setting in the scoped speed query's hits."""
-    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8) or not content_hash
+    if (record.get('comparisonEvaluationProtocolVersion') not in (3, 4, 5, 6, 7, 8, 9) or not content_hash
             or limit < 2 or len(rows) > limit or not _SPEED.search(query) or not _REQUESTED_PROTOCOL.search(query)):
         return rows
 
@@ -386,6 +386,53 @@ def place_cross_paper_speed_criterion(plan, question):
         'completionCriteria': [criterion]})
     return result, [{'obligationId': oid, 'sourceObligationId': original['obligationId'],
                      'criterionId': criterion['criterionId'], 'change': 'placed_cross_paper_speed_criterion'}]
+
+
+def place_cross_paper_memory_advice(plan, question):
+    """Keep an explicitly requested memory choice out of factual paper cells."""
+    from services.deep_research.evidence_requirements import _COMMAND, _outside_examples, _request_parts
+    from services.deep_research.general_advice import requests_device_memory
+
+    def is_advice(text):
+        return bool(requests_device_memory(text) and _ADVICE.search(text))
+
+    layers = getattr(question, 'point_instruction_layers', (str(question),))
+    anchors = {part for layer in layers for part in _request_parts(layer)
+               if len(part) >= 8 and is_advice(_outside_examples(part)) and not _SPEED.search(part)
+               and (_COMMAND.match(part) or re.match(
+                   r'^(?:please\s+)?(?:recommend|provide|give|how)\b|^(?:如何|怎样)', part, re.I))}
+    if len(anchors) != 1:
+        return plan, []
+    anchor, = anchors
+    obligations = [row for step in plan for row in step['obligations']]
+    if any(row['comparisonRole']['kind'] == 'joint' and any(is_advice(text)
+           for text in (row['comparisonRole']['requestExcerpt'], row['question'],
+                        *(criterion['requirement'] for criterion in row.get('completionCriteria', []))))
+           for row in obligations):
+        return plan, []
+    matches = [(i, j, k) for i, step in enumerate(plan) for j, row in enumerate(step['obligations'])
+               if row['comparisonRole']['kind'] == 'per_paper' and len(set(row.get('requiredSources', []))) == 2
+               and len(row.get('completionCriteria', [])) > 1
+               for k, criterion in enumerate(row['completionCriteria']) if is_advice(criterion['requirement'])]
+    if len(matches) != 1:
+        return plan, []
+    i, j, k = matches[0]
+    result = deepcopy(plan)
+    step = result[i]
+    original = step['obligations'][j]
+    criterion = original['completionCriteria'].pop(k)
+    if not any(not _ADVICE.search(c['requirement']) for c in original['completionCriteria']):
+        return plan, []
+    oid = 'requested_memory_choice'
+    occupied = {row['obligationId'] for row in obligations}
+    while oid in occupied:
+        oid += '_'
+    step['obligations'].append({**original, 'obligationId': oid, 'question': anchor, 'requestExcerpt': anchor,
+        'searchQuery': 'GPU memory consumption deployment rendering training storage peak memory performance',
+        'comparisonRole': {'kind': 'joint', 'label': '显存条件下的选择建议', 'requestExcerpt': anchor},
+        'completionCriteria': [criterion]})
+    return result, [{'obligationId': oid, 'sourceObligationId': original['obligationId'],
+                     'criterionId': criterion['criterionId'], 'change': 'placed_cross_paper_memory_advice'}]
 
 
 def split_joint_deliverables(roles, requirements, question, *, classify_standalone=False,

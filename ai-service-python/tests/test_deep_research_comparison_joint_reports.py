@@ -53,6 +53,53 @@ def test_places_only_a_unique_two_paper_speed_criterion_in_joint_scope(variant):
     assert place_cross_paper_speed_criterion(placed, question) == (placed, [])
 
 
+@pytest.mark.parametrize('variant', ['misplaced', 'already_joint', 'single_source', 'negated'])
+def test_preserves_requested_memory_choice_as_its_own_joint_target(variant):
+    from services.deep_research.comparison_joint_reports import place_cross_paper_memory_advice, split_joint_deliverables
+    from services.deep_research.comparison_intent import validate_plan
+    from services.deep_research.coverage import validate_plan as validate_structure
+
+    anchor = '并给出显存受限时的有条件选择建议'
+    axis = '存储与画质、渲染速度'
+    speed = '说明为什么不能直接拿两篇的FPS排名'
+    question = f'比较{axis}。{speed}，{anchor}。'
+    reported = {'criterionId': 'results', 'requirement': '分别说明报告的存储与画质。', 'responseType': 'identification'}
+    advice = {'criterionId': 'advice', 'requirement': '结合可核实的存储、画质、速度和处理成本证据，提出显存受限时的有条件选择建议。',
+              'responseType': 'explanation'}
+    original = {'obligationId': 'tradeoffs', 'question': f'比较{axis}，{anchor}。', 'requestExcerpt': axis,
+                'searchQuery': 'storage quality and rendering speed', 'purpose': 'answer_requirement',
+                'requiredSources': ['p1', 'p2'],
+                'comparisonRole': {'kind': 'per_paper', 'label': '报告指标', 'requestExcerpt': axis},
+                'completionCriteria': [reported, advice]}
+    plan = [{'itemId': 'compare', 'question': question, 'obligations': [original], 'dependencies': []}]
+    if variant == 'already_joint':
+        plan[0]['obligations'].append({**original, 'obligationId': 'existing', 'question': anchor,
+            'comparisonRole': {'kind': 'joint', 'label': '选择建议', 'requestExcerpt': anchor}})
+    elif variant == 'single_source':
+        original['requiredSources'] = ['p1']
+    elif variant == 'negated':
+        question = f'比较{axis}。不要给出显存受限时的有条件选择建议。'
+
+    before = deepcopy(plan)
+    placed, changes = place_cross_paper_memory_advice(plan, question)
+    assert plan == before
+    if variant != 'misplaced':
+        assert (placed, changes) == (before, [])
+        return
+    factual, joint = placed[0]['obligations']
+    assert factual['completionCriteria'] == [reported]
+    assert joint['completionCriteria'] == [advice]
+    assert joint['question'] == joint['requestExcerpt'] == anchor
+    assert joint['requiredSources'] == factual['requiredSources'] == ['p1', 'p2']
+    assert changes[0]['criterionId'] == 'advice'
+    validate_plan(validate_structure(placed), question)
+    assert place_cross_paper_memory_advice(placed, question) == (placed, [])
+    requirements = [factual, joint]
+    roles = {row['obligationId']: row['comparisonRole'] for row in requirements}
+    assert split_joint_deliverables(roles, requirements, question, classify_standalone=True,
+        standalone_memory_scope=True)[joint['obligationId']] == [{'kind': 'conditional_advice', 'requirement': anchor}]
+
+
 def fixture(marked=True):
     cp,_=packets()
     question=QUESTION+'数字只选一组同口径基线对照。'

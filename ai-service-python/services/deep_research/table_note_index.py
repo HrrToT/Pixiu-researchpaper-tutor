@@ -144,7 +144,7 @@ def retain_local_protocol_note(rows, candidates, record, query, limit):
     """Keep one original note when the local results already contain a marked table."""
     from services.deep_research.measurement_table_navigation import planned_query_priority
 
-    pdf_protocol = record.get('comparisonEvaluationProtocolVersion') in (6, 7, 8)
+    pdf_protocol = record.get('comparisonEvaluationProtocolVersion') in (6, 7, 8, 9)
     explicit_benchmark = pdf_protocol and re.search(r'\bbaseline\b', query, re.I) and re.search(
         r'\bbenchmark\b', query, re.I)
     if (limit < 2 or len(rows) > limit or not prefers_protocol_note(record)

@@ -345,7 +345,7 @@ class ResearchFacade:
             "comparisonCellsContractVersion": self._comparison_cells_version,
             **({'comparisonMechanismReadContractVersion': 6 if output_kind == 'paper_comparison' else 1}
                if self._comparison_cells_version == 1 else {}),
-            **({'comparisonEvaluationProtocolVersion': 8} if self._comparison_cells_version == 1 else {}),
+            **({'comparisonEvaluationProtocolVersion': 9} if self._comparison_cells_version == 1 else {}),
             **({'comparisonLiteralAxisGoalVersion': 1} if self._comparison_cells_version == 1 else {}),
             **({'comparisonPdfTableFallbackVersion': 2} if self._comparison_cells_version == 1
                 and output_kind == 'paper_comparison' else {}),
