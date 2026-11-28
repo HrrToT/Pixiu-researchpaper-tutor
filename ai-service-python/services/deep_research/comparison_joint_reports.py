@@ -727,7 +727,43 @@ def benchmark_binding_error(claim, draft):
     return None
 
 
-def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missing, *, scoped_companions=False):
+def _same_table_page_quote(table, passage):
+    """Recognize a second literal extraction of the cited table packet."""
+    from services.deep_research.table_evidence import visible_table_packet
+
+    location = table.get('location', {})
+    page = location.get('page')
+    other_location = passage.get('location', {})
+    identity_fields = ('sourceWorkId', 'sourceVersionId', 'contentHash')
+    if (type(page) is not int or page < 1 or type(other_location.get('page')) is not int
+            or page != other_location['page']
+            or location.get('pageResolution') != 'exact' or other_location.get('pageResolution') != 'exact'
+            or any(not table.get(key) or table[key] != passage.get(key) for key in identity_fields)
+            or passage.get('accessLevel') != 'fulltext' or passage.get('tableData')
+            or passage.get('verification', {}).get('literal') != 'passed'):
+        return False
+    packet = visible_table_packet(table.get('tableData'), table.get('quote', ''))
+    if not packet or len(packet['rows']) < 2:
+        return False
+    groups = ''.join(''.join(group.split()) for group, _ in packet['groups'])
+    columns = ''.join(''.join(metric.split()) for _, metrics in packet['groups'] for metric in metrics)
+    rows = []
+    for _, name, values in packet['rows']:
+        name_pattern = r'\s+'.join(re.escape(part) for part in name.split())
+        # PDF extraction can insert a space before the unit of a single cell.
+        cell_patterns = [r'\s*'.join(re.escape(part) for part in
+                         re.sub(r'(?<=\d)(?=[a-zA-Z])', ' ', value).split())
+                         for value in values]
+        rows.append(re.compile(r'\s+'.join([name_pattern, *cell_patterns])))
+    lines = [line.strip() for line in passage.get('quote', '').splitlines() if line.strip()]
+    return sum(''.join(lines[i].split()).endswith(groups)
+               and ''.join(lines[i + 1].split()) == columns
+               and all(pattern.fullmatch(line) for pattern, line in zip(rows, lines[i + 2:i + 2 + len(rows)]))
+               for i in range(len(lines) - len(rows) - 1)) == 1
+
+
+def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missing, *,
+                                scoped_companions=False, physical_table_companions=False):
     """A verified same-table example can replace an inconclusive joint search."""
     from services.deep_research.comparison_presentation import audit_digest, metadata
     from services.deep_research.table_bindings import validate_table_bindings
@@ -765,9 +801,15 @@ def resolved_benchmark_gap_keys(draft, audit, claims, evidence, coverage, missin
         # Supporting qualitative observations can cite the same benchmark.
         # They cannot substitute for the selected, independently verified pair.
         table_id, = {item['evidenceId'] for item in claim['tableBindings']}
+        table_refs = {table_id}
+        if physical_table_companions:
+            tables = [row for row in evidence if row.get('evidenceId') == table_id]
+            if len(tables) == 1:
+                table_refs.update(row['evidenceId'] for row in evidence
+                                  if _same_table_page_quote(tables[0], row))
         companion_ids = {row.get('claimId') for row in claims if row.get('kind') == 'reported'
                          and row.get('verification') == 'semantic_passed' and not row.get('tableBindings')
-                         and table_id in row.get('evidenceRefs', [])}
+                         and table_refs.intersection(row.get('evidenceRefs', []))}
         if not bound_ids - {cid} <= companion_ids:
             return set()
     refs = claim.get('evidenceRefs', [])

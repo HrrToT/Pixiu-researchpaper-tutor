@@ -396,6 +396,66 @@ def test_verified_table_example_can_have_a_verified_qualitative_companion(varian
                                    if variant == 'same_table' else set())
 
 
+@pytest.mark.parametrize('change', [None, 'different_page', 'different_work', 'different_hash',
+                                   'approximate_page', 'abstract', 'unchecked', 'dataset', 'column',
+                                   'variant', 'value', 'missing_row', 'duplicate_table'])
+def test_same_page_table_passage_can_support_a_qualitative_companion(change):
+    from services.deep_research.comparison_joint_reports import resolved_benchmark_gap_keys
+
+    _, draft, claim, table, _ = compiled()
+    cid = claim['claimId']
+    draft['benchmarkExampleClaimId'] = cid
+    draft['jointDeliverables'] = {'example': [{'kind': 'matched_example', 'requirement': '给出同表对照'}]}
+    claim['verification'] = 'semantic_passed'
+    table.update(contentHash='approved-pdf', location={'page': 2, 'pageResolution': 'exact'})
+    passage = {key: deepcopy(table[key]) for key in ('sourceWorkId', 'sourceVersionId', 'contentHash',
+               'location', 'accessLevel', 'verification')}
+    packet = table['tableData']
+    headers = ['Method ' + ' '.join(group for group, _ in packet['groups']),
+               ' '.join(metric for _, metrics in packet['groups'] for metric in metrics)]
+    rows = [' '.join([label, *values]).replace('MB', ' MB') for _, label, values in packet['rows']]
+    if change == 'dataset':
+        headers[0] += ' held out'
+    elif change == 'column':
+        headers[1] = 'Size FPS'
+    elif change == 'variant':
+        rows[0] = rows[0].replace('Baseline', 'Baseline*')
+    elif change == 'value':
+        rows[0] = rows[0].replace('100', '101')
+    elif change == 'missing_row':
+        rows.pop()
+    lines = [*headers, *rows]
+    if change == 'duplicate_table':
+        lines += lines
+    passage.update(evidenceId='physical-passage', quote='\n'.join(lines))
+    if change == 'different_page':
+        passage['location']['page'] = 3
+    elif change == 'different_work':
+        passage['sourceWorkId'] = 'right'
+    elif change == 'different_hash':
+        passage['contentHash'] = 'different-pdf'
+    elif change == 'approximate_page':
+        passage['location']['pageResolution'] = 'approximate'
+    elif change == 'abstract':
+        passage['accessLevel'] = 'abstract'
+    elif change == 'unchecked':
+        passage['verification']['literal'] = 'unchecked'
+    companion = {'claimId': 'context', 'kind': 'reported', 'verification': 'semantic_passed',
+                 'text': '原表报告两种方法的渲染速度。', 'evidenceRefs': [passage['evidenceId']]}
+    claims = [claim, companion]
+    bindings = [{'claimId': cid, 'field': 'text'}, {'claimId': cid, 'field': 'conditions'},
+                {'claimId': 'context', 'field': 'text'}]
+    audit = {'status': 'checked', 'verdicts': [{'obligationId': 'example', 'status': 'covered',
+             'bindings': bindings, 'criteria': [{'criterionId': 'matched_example', 'status': 'covered',
+             'bindings': bindings}]}], 'comparisonPresentationDigest': audit_digest(metadata(draft), claims)}
+    coverage = [{'obligationId': 'example', 'sourceWorkId': 'right', 'supportKind': 'joint',
+                 'state': 'unchecked', 'missingEvidence': 'Earlier joint search was inconclusive.'}]
+    args = (draft, audit, claims, [table, passage], coverage, set())
+    assert resolved_benchmark_gap_keys(*args, scoped_companions=True) == set()
+    assert resolved_benchmark_gap_keys(*args, scoped_companions=True, physical_table_companions=True) == (
+        {('example', 'right', coverage[0]['missingEvidence'])} if change is None else set())
+
+
 def test_historical_compiler_still_refuses_reported_joint_and_prompt_is_unchanged():
     cp,payload,_,_=fixture(False);draft=compile_cells(payload,cp,max_claims=5)
     assert not draft['report']['claims'] and draft['errors']
