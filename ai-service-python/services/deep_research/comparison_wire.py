@@ -755,12 +755,12 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 deployment_version = record.get('comparisonBeginnerDeploymentGuidanceVersion')
                 test_first = [target for target in data['jointTargets']
                               if target.get('decisionMode') == 'measure_both_before_recommending_either']
-                if deployment_version == 3 and any(len(target.get('sources', [])) == 2 for target in test_first):
+                if deployment_version in (3, 4) and any(len(target.get('sources', [])) == 2 for target in test_first):
                     body_guidance += ('For paired test-first advice cite a rationale in proposal prose with cellRefs:[]. '
                                       'Return point.memoryCandidates with one {"name":"literal name in quote or title",'
                                       '"evidenceRef":"cited E ID"} per paper. The app adds matched tests and choice '
                                       'branches. Predict no memory winner.\n')
-                elif deployment_version in (2, 3) and test_first:
+                elif deployment_version in (2, 3, 4) and test_first:
                     body_guidance += ('For decisionMode=measure_both_before_recommending_either, use proposal prose '
                                       'and cellRefs:[]. Cite actual observations that inform testing priorities. First '
                                       'measure both methods under matched settings, then choose by peak memory and '

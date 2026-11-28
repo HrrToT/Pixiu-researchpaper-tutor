@@ -583,7 +583,7 @@ def scoped_example_presentation(record):
             return 2
         lead_version = record.get('comparisonBeginnerLeadContractVersion')
         if version == 7 and type(lead_version) is int and lead_version == 1:
-            if record.get('comparisonBeginnerDeploymentGuidanceVersion') in (1, 2, 3):
+            if record.get('comparisonBeginnerDeploymentGuidanceVersion') in (1, 2, 3, 4):
                 return 6
             return 5
         return 4 if version == 7 else 3

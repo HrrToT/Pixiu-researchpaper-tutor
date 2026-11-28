@@ -1293,6 +1293,30 @@ def test_two_paper_memory_plan_has_named_post_measurement_branches(failure):
     assert '若两者均达标' in text and '若两者均未达标' in text
 
 
+def test_paired_advice_binds_explicit_in_scope_name_references_and_shortens_exact_titles():
+    from services.deep_research.general_advice import pairwise_memory_choices
+
+    left = '3D Gaussian Splatting for Real-Time Radiance Field Rendering'
+    right = 'LightGaussian: Unbounded 3D Gaussian Compression with 15x Reduction and 200+ FPS'
+    sources = {'P1': {'title': left}, 'P2': {'title': right}}
+    evidence = {key: {'source': paper, 'quote': 'A method observation.', 'accessLevel': 'fulltext'}
+                for key, paper in [('E1', 'P1'), ('E2', 'P2'), ('E3', 'P2')]}
+    point = {'kind': 'proposal', 'evidenceRefs': ['E3'], 'cellRefs': [],
+             'body': {'prose': {'text': '磁盘文件体积无法预测运行显存。', 'conditions': {}}},
+             'memoryCandidates': [{'name': left, 'evidenceRef': 'E1'}, {'name': right, 'evidenceRef': 'E2'}]}
+    original = deepcopy(point)
+    compiled, bound = pairwise_memory_choices(
+        point, ['P1', 'P2'], evidence, sources, allowed_candidate_refs=['E1', 'E2', 'E3'])
+    assert bound and compiled['evidenceRefs'] == ['E3', 'E1', 'E2']
+    assert '选 3D Gaussian Splatting。' in compiled['body']['prose']['text']
+    assert '选 LightGaussian。' in compiled['body']['prose']['text']
+    assert point == original
+
+    denied, bound = pairwise_memory_choices(
+        point, ['P1', 'P2'], evidence, sources, allowed_candidate_refs=['E2', 'E3'])
+    assert not bound and denied['evidenceRefs'] == ['E3']
+
+
 @pytest.mark.parametrize('exhausted',['calls','time'])
 def test_exhausted_dispatch_budget_does_not_send_the_next_stage(exhausted):
     r,snapshot=prepared()

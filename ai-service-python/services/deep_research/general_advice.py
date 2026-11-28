@@ -14,7 +14,7 @@ BEGINNER_DEPLOYMENT_PREFLIGHT_TEXT = (
 ) + DEVICE_MEMORY_TEST_FIRST_TEXT
 
 
-def pairwise_memory_choices(point, paper_aliases, evidence, sources):
+def pairwise_memory_choices(point, paper_aliases, evidence, sources, *, allowed_candidate_refs=None):
     """Add prospective choice branches for two distinctly cited paper methods."""
     candidates = point.get('memoryCandidates')
     draft = {key: value for key, value in point.items() if key != 'memoryCandidates'}
@@ -22,24 +22,28 @@ def pairwise_memory_choices(point, paper_aliases, evidence, sources):
     prose = body.get('prose') if isinstance(body, dict) and set(body) == {'prose'} else None
     refs = draft.get('evidenceRefs')
     if (not eligible(draft) or not isinstance(prose, dict) or not isinstance(prose.get('text'), str)
-            or not isinstance(refs, list) or not isinstance(candidates, list) or len(candidates) != 2):
+            or not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs)
+            or not isinstance(candidates, list) or len(candidates) != 2):
         return draft, False
 
     names, papers = [], set()
+    allowed = refs if allowed_candidate_refs is None else allowed_candidate_refs
     for candidate in candidates:
         if not isinstance(candidate, dict) or set(candidate) != {'name', 'evidenceRef'}:
             return draft, False
         ref, name = candidate['evidenceRef'], candidate['name']
-        if not isinstance(ref, str) or ref not in refs or not isinstance(name, str):
-            return draft, False
-        if (not re.fullmatch(r'[\w][\w .+()-]{1,44}', name) or name != name.strip()
-                or re.fullmatch(r'[EPVGQS]\d+|\d+', name)):
+        if not isinstance(ref, str) or ref not in allowed or not isinstance(name, str):
             return draft, False
         row = evidence.get(ref, {})
         paper = row.get('source')
         if row.get('accessLevel') != 'fulltext' or paper not in paper_aliases or paper in papers:
             return draft, False
         title = sources.get(paper, {}).get('title', '')
+        if allowed_candidate_refs is not None and len(name) > 45 and name.casefold() == title.casefold():
+            name = re.split(r':|\s+for\s+', title, maxsplit=1, flags=re.I)[0].strip()
+        if (not re.fullmatch(r'[\w][\w .+()-]{1,44}', name) or name != name.strip()
+                or re.fullmatch(r'[EPVGQS]\d+|\d+', name)):
+            return draft, False
         context = ' '.join(f"{row.get('quote', '')} {title}".split()).casefold()
         if not re.search(r'(?<!\w)' + re.escape(name.casefold()) + r'(?!\w)', context):
             return draft, False
@@ -56,7 +60,8 @@ def pairwise_memory_choices(point, paper_aliases, evidence, sources):
                 '若两者均达标，按任务最看重的实测画质或帧率选择。'
                 '若两者均未达标，调整设置后重测。')
     text = prose['text'].rstrip() + '\n' + procedure + branches
-    return {**draft, 'body': {'prose': {**prose, 'text': text}}}, True
+    bound_refs = list(dict.fromkeys([*refs, *(candidate['evidenceRef'] for candidate in candidates)]))
+    return {**draft, 'evidenceRefs': bound_refs, 'body': {'prose': {**prose, 'text': text}}}, True
 
 
 def eligible(claim):
