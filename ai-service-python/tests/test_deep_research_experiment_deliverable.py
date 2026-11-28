@@ -116,6 +116,21 @@ def test_present_role_labels_never_upgrade_an_unverified_partial_answer():
     assert enforce_experiment_coverage(research_plan, QUESTION, claims, verdicts) == verdicts
 
 
+def test_compiled_roles_preserve_a_real_gap_without_inventing_missing_sections():
+    research_plan = ensure_experiment_deliverable(plan(), QUESTION, ['paper'])
+    primary = research_plan[0]['obligations'][0]
+    verdicts = [{'obligationId': primary['obligationId'], 'status': 'partial',
+                 'criteria': [{'criterionId': 'requested_scope', 'status': 'partial'}],
+                 'gapDetail': {'criterionIds': ['requested_scope']}}]
+    compiled = set().union(*CRITERION_ROLES.values())
+    claims = [{'claimId': 'shared_experiment_answer', 'kind': 'proposal'}]
+    assert enforce_experiment_coverage(research_plan, QUESTION, claims, verdicts,
+                                       compiled_roles=compiled) == verdicts
+    missing = enforce_experiment_coverage(research_plan, QUESTION, claims, verdicts,
+                                          compiled_roles=compiled - {'budget'})
+    assert missing[0]['missingDesignRoles'] == ['budget']
+
+
 def test_legacy_plan_and_factual_role_labels_cannot_change_new_contract_meaning():
     research_plan = ensure_experiment_deliverable(plan(), QUESTION, ['paper'])
     primary = research_plan[0]['obligations'][0]

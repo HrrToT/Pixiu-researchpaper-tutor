@@ -40,7 +40,7 @@ def enabled(record):
     from services.deep_research.shared_experiment_generation import enabled as generation_enabled
 
     version = record.get(MARKER) if isinstance(record, dict) else None
-    return type(version) is int and version == 1 and generation_enabled(record)
+    return type(version) is int and version in (1, 2) and generation_enabled(record)
 
 
 def repeated_fields(proposal):

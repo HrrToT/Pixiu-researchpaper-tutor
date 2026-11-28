@@ -9,7 +9,7 @@ CRITERION_ROLES = {
 }
 
 
-def enforce_experiment_coverage(plan, question, claims, verdicts, *, whole_question_id=None):
+def enforce_experiment_coverage(plan, question, claims, verdicts, *, whole_question_id=None, compiled_roles=()):
     """Missing accepted deliverables cannot be promoted by a coverage verdict.
 
     This only removes an unsupported completion verdict. Present roles never
@@ -24,6 +24,7 @@ def enforce_experiment_coverage(plan, question, claims, verdicts, *, whole_quest
     present = {c.get('designRole') for c in claims if isinstance(c.get('designRole'), str)
                and c.get('kind') in {'proposal', 'suggestion', 'hypothesis'}
                and c.get('designContractVersion') == 2}
+    present.update(compiled_roles)
     missing = {key: sorted(roles - present) for key, roles in CRITERION_ROLES.items() if roles - present}
     if not missing:
         return verdicts

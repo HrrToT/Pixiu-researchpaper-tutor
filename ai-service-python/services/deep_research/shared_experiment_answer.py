@@ -96,6 +96,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint):
         from services.deep_research.tools import TrackedLLMInvoker
         proposal = _generation(record)['boundProposal']['proposal']
         packet_options['shared_experiment_phrases'] = packet.repeated_fields(proposal)
+        if record.get(packet.MARKER) == 2:
+            from services.deep_research.shared_experiment_result import compiled_roles
+            packet_options['compiled_experiment_roles'] = compiled_roles(proposal)
         if isinstance(invoke, TrackedLLMInvoker) and invoke.supports_counted_experiment_answer(record):
             packet_options['counted_experiment_audit'] = True
     audit=audit_final_answer(record['runId'],effective_question(record),record['state'].get('plan',[]),

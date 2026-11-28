@@ -19,6 +19,24 @@ def _operation(op):
     return op['action'] + ('（'+parameters+'）' if parameters else '')
 
 
+def compiled_roles(proposal):
+    """Locate the rendered roles in a proposal already validated for compilation."""
+    data = proposal['data']
+    analysis = proposal['analysis']
+    fields = {
+        'hypothesis': proposal['hypothesis'],
+        'groups': proposal['groups'],
+        'controls': proposal['factors'] and proposal['pairing']['identityChecks'],
+        'data': data['trainingSplit'] and data['evaluationSplit'] and data['seeds'],
+        'budget': proposal['budgets'],
+        'steps': proposal['steps'],
+        'metrics': proposal['metrics'],
+        'analysis': analysis['contrasts'] and analysis['decisionRule'],
+        'limits': analysis['limitations'],
+    }
+    return tuple(role for role, content in fields.items() if content)
+
+
 def compile_candidate(record, input_data, aliases):
     saved = record.get('state',{}).get(review_slot(record))
     if not isinstance(saved,dict) or saved.get('status') != 'checked':

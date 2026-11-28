@@ -49,7 +49,7 @@ def audit_final_answer(run_id, question, plan, claims, evidence, invoke, parse, 
                        explain_comparison_gap=False, shared_experiment_phrases=None, rendered_citation_links=False,
                        requested_endpoint=False, share_comparison_evidence_overlaps=False, compact_rendered_citations=False,
                        counted_comparison_audit=False, counted_experiment_audit=False,
-                       larger_counted_comparison_window=False, pinned_method_access=False):
+                       larger_counted_comparison_window=False, pinned_method_access=False, compiled_experiment_roles=()):
     shared_experiment_packet = shared_experiment_phrases is not None
     if shared_experiment_packet:
         from services.deep_research import shared_experiment_answer_packet as experiment_packet
@@ -454,7 +454,7 @@ including the original-question scope: {json.dumps([o['obligationId'] for p in a
                     status = 'invalid_response'
                 from services.deep_research.experiment_deliverable import enforce_experiment_coverage
                 verdicts = enforce_experiment_coverage(audit_plan, question, claims, verdicts,
-                                                       whole_question_id=identity)
+                                                       whole_question_id=identity, compiled_roles=compiled_experiment_roles)
                 criterion_gaps = completion_criteria_gaps(audit_plan, claims, verdicts, **({"display_metadata":display_metadata} if task_sources else {}))
                 verdicts = [{**v, 'status': 'partial'} if isinstance(v, dict)
                     and v.get('obligationId') in criterion_gaps else v for v in verdicts]

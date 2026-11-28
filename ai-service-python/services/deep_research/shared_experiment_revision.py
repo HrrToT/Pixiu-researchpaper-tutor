@@ -226,10 +226,11 @@ def _apply_scoped(base, saved):
     return bound
 
 
-def _design_only_context(data, reviewed, proposal):
+def _design_only_context(data, reviewed, proposal, *, for_final_answer=False):
     """Keep all quotations and the side excerpts used by unresolved checks."""
     assessment = reviewed.get('assessment', {})
-    if reviewed.get('status') != 'checked' or not assessment.get('valid') or assessment.get('complete'):
+    if (reviewed.get('status') != 'checked' or not assessment.get('valid')
+            or bool(assessment.get('complete')) != for_final_answer):
         return None
     verdict = assessment['verdict']
     expected = {f'fact_{index}' for index in range(len(proposal['sourceFacts']))}
@@ -240,7 +241,9 @@ def _design_only_context(data, reviewed, proposal):
     if any(path == '/sourceFacts' or path.startswith('/sourceFacts/')
            for row in findings for path in row['planBindings']):
         return None
-    references = {(ref['evidenceId'], ref['field']) for row in findings for ref in row.get('evidenceBindings', [])}
+    contextual_checks = verdict['checks'] if for_final_answer else findings
+    references = {(ref['evidenceId'], ref['field']) for row in contextual_checks
+                  for ref in row.get('evidenceBindings', [])}
     evidence = []
     for row in data['evidence']:
         quote = {key: value for key, value in row.items() if key != 'sourceContext'}
@@ -293,6 +296,22 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         answer=validated_saved(prior,input_data,aliases)
         if answer['complete'] is not False or not answer['repairEligible']: raise ValueError('No diagnosed defect permits a repair')
         feedback={'answerCoverage':answer['audit']}
+        from services.deep_research.shared_experiment_answer_packet import MARKER as FINAL_AUDIT_MARKER
+        if record.get(FINAL_AUDIT_MARKER) == 2:
+            # The compiled proposal and original request are already carried
+            # below. Do not duplicate the complete rendered answer per binding.
+            checks = []
+            for verdict in answer['audit']['verdicts']:
+                if verdict['status'] not in ('partial', 'missing'):
+                    continue
+                reasons = {row['checkId']: row['reason'] for row in verdict.get('requestCheckReasons', [])}
+                for aspect in verdict.get('aspects', []):
+                    if aspect['status'] in ('partial', 'missing'):
+                        checks.append({'obligationId': verdict['obligationId'], 'checkId': aspect['aspectId'],
+                                       'status': aspect['status'], 'requirement': aspect['requirement'],
+                                       'reviewReason': reasons.get(aspect['aspectId'], '')})
+            if checks and answer['audit']['answerCoherence']['coherent'] is True:
+                feedback = {'answerCoverage': {'checks': checks}}
     proposal = base['boundProposal']['proposal']
     evaluation_prepare = record.get(EVALUATION_PREPARATION_MARKER) == 1
     instructions = INSTRUCTIONS
@@ -400,6 +419,23 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     if fitted[1] <= 32000:
                         req, size, supplied = fitted
                         preserve_facts = True
+        if size > 32000 and feedback.get('answerCoverage', {}).get('checks'):
+            design_data = _design_only_context(input_data, reviewed, proposal, for_final_answer=True)
+            if design_data is not None:
+                design_policy = (
+                    'Keep verified sourceFacts exactly. Address the listed final-answer gaps only. '
+                    'If the cited excerpts do not establish a requested detail, state that precise limit '
+                    'and distinguish the proposed procedure. Do not claim absence across the entire paper.\n'
+                    + ATTRIBUTION_SCIENCE_INSTRUCTIONS
+                )
+                fitted = fit_accounted_evidence(
+                    record, design_data, aliases, proposal,
+                    lambda data: measure(data, policy=design_policy, output_tokens=4096),
+                    32000, required_only=True,
+                )
+                if fitted[1] < size:
+                    req, size, supplied = fitted
+                    preserve_facts = True
         supply = {'suppliedEvidenceAliases':supplied}
         if preserve_facts:
             supply['preserveSourceFacts'] = True
