@@ -271,7 +271,7 @@ Targets:
         # The count of the compared papers comes from the visible citation
         # packet and provides no evidence about experimental measurements.
         cited_works = {row.get('sourceWorkId') for row in own}
-        cited_paper_pair = (parameter_policy == 6 and len(cited_works) == 2
+        cited_paper_pair = (parameter_policy in (6, 7) and len(cited_works) == 2
                             and all(row.get('sourceWorkId') and row.get('sourceVersionId')
                                     and row.get('accessLevel') == 'fulltext' for row in own))
         # Operator inputs are typed propositions, not the original target prose.

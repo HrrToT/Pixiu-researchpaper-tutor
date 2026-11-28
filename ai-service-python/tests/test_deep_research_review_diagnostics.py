@@ -64,6 +64,25 @@ def test_scientific_notation_number_binding_uses_exact_equivalent_spelling():
     assert bind(raw,claim,ev,{'E1':'own'})['reviewDiagnosticAudit']['errors']==[]
 
 
+@pytest.mark.parametrize('tail,valid', [
+    ('所给引文未确认文献[16]的身份。', True),
+    ('所给引文未确认文献[17]的身份。', False),
+    ('The method used 16 scenes.', False),
+])
+def test_bound_citation_label_is_distinct_from_scientific_counts(tail, valid):
+    claim = {**target(), 'text': 'The two conditions may agree.'}
+    quote = 'The dataset contains nine real-world large-scale scenes as used in [16].'
+    statement = '论文列出九个场景，并指向文献[16]。'
+    raw = {'status': 'failed', 'reason': statement + tail, 'diagnosticFacts': [fact(statement, quote)]}
+    ev = evidence()
+    ev[0]['quote'] = quote
+    result = bind(raw, claim, ev, {'E1': 'own'}, bound_citation_labels=True)
+    assert result['status'] == 'failed'
+    assert (result['reviewDiagnosticAudit']['errors'] == []) is valid
+    if valid:
+        assert bind(raw, claim, ev, {'E1': 'own'})['executionState'] == 'received_invalid'
+
+
 def test_legacy_response_schema_and_request_do_not_change_without_new_policy():
     raw=response();sent=[]
     def invoke(**kw):sent.append(kw);return {'content':json.dumps([raw])}

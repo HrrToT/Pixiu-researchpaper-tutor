@@ -7,6 +7,12 @@ import re
 
 _MIP_NERF_360 = re.compile(r'(?<![A-Za-z0-9_])Mip-NeRF\s*360(?![A-Za-z0-9_%％×倍]|\.\d)', re.I)
 _CITED_PAPER_PAIR = re.compile(r'(?<![第零一二两三四五六七八九十百千万亿0-9.])两篇论文')
+_NUMBERED_REFERENCE = re.compile(
+    r'(?:文献|参考文献|\breference|\bcitation)\s*\[\s*([1-9][0-9]{0,3})\s*\]', re.I)
+_BRACKETED_LABEL = re.compile(r'\[\s*([1-9][0-9]{0,3})\s*\]')
+_QUALIFIED_SCENE_COUNT = re.compile(
+    r'\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)'
+    r'(?:\s+(?:real[- ]world|large[- ]scale|synthetic|indoor|outdoor)){1,3}(?=\s+scenes?\b)', re.I)
 
 
 class DiagnosticAudit(dict):
@@ -41,17 +47,19 @@ override a failed decision or any other audit; the server checks them independen
 
 def parameter_options(policy):
     return dict(
-        source_parameter_ids=policy is True or policy in (2, 3, 4, 5, 6),
-        bound_benchmark_names=policy in (2, 3, 4, 5, 6),
-        alignment_words=policy in (3, 4, 5, 6),
-        explicit_condition_pairs=policy in (4, 5, 6),
-        interpolation_kernel_labels=policy in (5, 6),
+        source_parameter_ids=policy is True or policy in (2, 3, 4, 5, 6, 7),
+        bound_benchmark_names=policy in (2, 3, 4, 5, 6, 7),
+        alignment_words=policy in (3, 4, 5, 6, 7),
+        explicit_condition_pairs=policy in (4, 5, 6, 7),
+        interpolation_kernel_labels=policy in (5, 6, 7),
+        bound_citation_labels=policy == 7,
     )
 
 
 def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,target_structure=False,
          revision_row_counts=False, bound_benchmark_names=False, alignment_words=False,
-         explicit_condition_pairs=False, interpolation_kernel_labels=False, cited_paper_pair=False):
+         explicit_condition_pairs=False, interpolation_kernel_labels=False, cited_paper_pair=False,
+         bound_citation_labels=False):
     if type(target_structure) is not bool and not (type(target_structure) is int and target_structure == 2):
         raise ValueError('Invalid target structure diagnostic policy')
     if type(source_parameter_ids) is not bool:raise ValueError('Invalid diagnostic parameter identity policy')
@@ -65,6 +73,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if not isinstance(reason,str) or not reason.strip():
         errors.append('diagnostic_reason_invalid');reason=''
     covered_numbers = set()
+    cited_labels = set()
     numeric_reason = reason
     own = {e['evidenceId']: e for e in evidence if e.get('evidenceId') in claim.get('evidenceRefs', [])}
     numbers=lambda text:_measurement_numbers(text,word_counts=True)
@@ -108,6 +117,13 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
             errors.append('diagnostic_source_not_bound')
             continue
         statement, excerpt = fact['statement'], fact['excerpt']
+        if bound_citation_labels:
+            labels = set(_NUMBERED_REFERENCE.findall(statement)) & set(_BRACKETED_LABEL.findall(excerpt))
+            cited_labels.update(labels)
+            statement = _NUMBERED_REFERENCE.sub(
+                lambda m: '所引文献' if m.group(1) in labels else m.group(), statement)
+            excerpt = _BRACKETED_LABEL.sub(lambda m: '' if m.group(1) in labels else m.group(), excerpt)
+            excerpt = _QUALIFIED_SCENE_COUNT.sub(r'\1', excerpt)
         if bound_benchmark_names:
             cleaned = _MIP_NERF_360.sub('Mip-NeRF', statement)
             if _MIP_NERF_360.search(excerpt):
@@ -124,6 +140,9 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
         target_references.extend(references)
     if cited_paper_pair:
         numeric_reason = _CITED_PAPER_PAIR.sub('所引论文', numeric_reason)
+    if cited_labels:
+        numeric_reason = _NUMBERED_REFERENCE.sub(
+            lambda m: '所引文献' if m.group(1) in cited_labels else m.group(), numeric_reason)
     introduced = review_numbers(numeric_reason) - numbers(target)
     missing = introduced - covered_numbers
     if missing:
@@ -137,6 +156,7 @@ def bind(verdict, claim, evidence, reverse=None, *, source_parameter_ids=False,t
     if explicit_condition_pairs:audit['sourceParameterIdentityContractVersion']=4
     if interpolation_kernel_labels:audit['sourceParameterIdentityContractVersion']=5
     if cited_paper_pair:audit['sourceParameterIdentityContractVersion']=6
+    if bound_citation_labels:audit['sourceParameterIdentityContractVersion']=7
     if target_structure:
         audit.update(reviewTargetStructureContractVersion=2 if target_structure == 2 else 1,
                      targetStructureReferences=target_references)

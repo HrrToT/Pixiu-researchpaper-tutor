@@ -775,6 +775,9 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                     body_guidance += ('For a requested cross-paper FPS ranking limit, name the specific alignment '
                                       'conditions the citations cannot establish, such as scene, resolution or timing. '
                                       'Do not just say full conditions may differ or claim they actually differ.\n')
+                    if record.get('reviewParameterIdentityContractVersion') == 7:
+                        body_guidance += ('Do not resolve numbered references to named papers without a supplied '
+                                          'bibliography entry or explicit source attribution. Omit unconfirmed links.\n')
         from services.deep_research.comparison_layout import requires_speed_explanation_prose
         stage_targets = [*data['jointTargets'], *(target for paper in data['papers'] for target in paper['targets'])]
         if requires_speed_explanation_prose(record, question, limit, stage_targets, paper_subjects):
