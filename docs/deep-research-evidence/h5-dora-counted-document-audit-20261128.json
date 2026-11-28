@@ -1,0 +1,330 @@
+{
+  "case": "H5-DORA-FACTORIAL development retest",
+  "independentHoldoutCredit": false,
+  "precountedAdmission": {
+    "result": {
+      "scientificStatus": "checked",
+      "scientificComplete": true,
+      "finalAuditComplete": false,
+      "newCalls": 0,
+      "newTokens": 0,
+      "cumulativeTokens": 76064,
+      "elapsedNewSeconds": 36.19,
+      "productionWrites": 0
+    },
+    "budgetLimit": {
+      "kind": "coveragePromptBytes",
+      "limit": 14870,
+      "used": 25193
+    },
+    "reason": "the isolated historic checkpoint lacked countedExperimentAnswerContractVersion",
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-20261128/intent.json",
+        "sha256": "12ccd8c6fc5c79035bbdb7b879517eb97b1dea20f42e8399d259d7a02d8ef4ec"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-20261128/run.json",
+        "sha256": "49b9b6674f56a5727fac0f2121e0b4bf607a869c2b68952fe53efa23b277a492"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-20261128/result.json",
+        "sha256": "09aa5482307c7a3a7d309435d8c17834af534fc3d290205a6f299d7b78ccc751"
+      }
+    ]
+  },
+  "trueDocumentAudit": {
+    "intent": {
+      "commit": "bbf63d81c0c95189cb09fbf624bcf7c37a4cf11c",
+      "runId": "dr_h5_dora_layout_generation_20261128",
+      "carriedActiveSeconds": 238,
+      "carriedTokens": 76064,
+      "carriedCalls": 11,
+      "scope": "isolated counted final document audit with all archived scientific checks revalidated",
+      "maxNewCalls": 3,
+      "checksPassed": 18,
+      "candidateDigest": "93ae7b5d526beb9717b72acec23bcd11ec7ea3fc356ba3f074d5f51107e3e7d9",
+      "citations": 11,
+      "reviewInputDigest": "f62b4599707faffa18fb2f60fd11c9091ddc951b58b1a79e041e5fb38bf7a1c0",
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "checked",
+      "scientificComplete": true,
+      "finalAuditComplete": false,
+      "newCalls": 1,
+      "newTokens": 11556,
+      "cumulativeTokens": 87620,
+      "elapsedNewSeconds": 54.89,
+      "productionWrites": 0
+    },
+    "coherent": true,
+    "partialChecks": {
+      "experiment_deliverable": [
+        {
+          "checkId": "criterion:configuration",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "给出初始化、配对、预算、超参数和数据预检，但训练提示及答案编码规则未具体定义，无法仅凭方案确定训练输入。"
+        }
+      ],
+      "data_availability": [
+        {
+          "checkId": "criterion:available_data",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "列出论文支持的八任务并拟用官方训练和测试全量，但文件尚未取得，成员及各子集数量仍待核验。"
+        }
+      ],
+      "O1-1": [
+        {
+          "checkId": "criterion:C1-1-1",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "列出八任务及论文合并训练、分别测试的方式；各任务具体训练、验证、测试样本量和验证划分未给出。"
+        }
+      ],
+      "O1-2": [
+        {
+          "checkId": "criterion:C1-2-1",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "记录论文轮数、批量、学习率、优化器、预热与调度等；论文硬件配置未记录，拟议A100不能代替论文硬件。"
+        }
+      ],
+      "O2-1": [
+        {
+          "checkId": "criterion:C2-1-1",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "解释幅值训练及分母列范数停止梯度，但未标出论文对应章节或公式编号。"
+        },
+        {
+          "checkId": "criterion:C2-1-2",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "说明分母停止梯度是为减轻反向传播显存；未说明论文对幅值可训练设计的理由。"
+        }
+      ],
+      "O3-1": [
+        {
+          "checkId": "criterion:human_aspect_1",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "四臂、共同初值、配对、数据预检和预算均具体，但训练提示和答案编码未完整指定，影响直接执行。"
+        }
+      ],
+      "answer_scope": [
+        {
+          "checkId": "request",
+          "status": "partial",
+          "bindings": [
+            {
+              "claimId": "shared_experiment_answer",
+              "field": "text"
+            }
+          ],
+          "reason": "整体覆盖四组、配对、测量、效应及资源限制，且不宣称结果；但训练输入编码不足以完整执行，部分论文原始划分信息未提供。",
+          "processLinks": [
+            {
+              "input": {
+                "id": "shared_experiment_answer",
+                "field": "text",
+                "excerpt": "每块四臂结果和完整峰值"
+              },
+              "operation": {
+                "id": "shared_experiment_answer",
+                "field": "text",
+                "excerpt": "先在每个种子配对块内计算各对比"
+              },
+              "output": {
+                "id": "shared_experiment_answer",
+                "field": "text",
+                "excerpt": "报告块数、各块值和95%区间"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "published": false,
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-counted-20261128/intent.json",
+        "sha256": "80826bb024c05cdec2ba7722b9a6831558633ad0034187084fda866cc3681ec2"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-counted-20261128/run.json",
+        "sha256": "a3f9567c39f76ce66ac15f9d6d45bd1417769e290168b6d847e2557ca6214f45"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-counted-20261128/calls.json",
+        "sha256": "fd0be4dd4c8f3c97fef1603e90ccb9e1a92d66db6992ee9fc2f425c6ce2f83e8"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-counted-20261128/result.json",
+        "sha256": "e258fb04ec5f2bf28c4511af0282774e84300b3335b4f6b263c5e7cc060cd637"
+      },
+      {
+        "path": "tmp/openai-h5-dora-layout-document-audit-counted-20261128/provider.jsonl",
+        "sha256": "e8d5fe55e4cec2285635efe08741b5e4629e91b3f4aef895f0073aaf3b8ec394"
+      }
+    ]
+  },
+  "physicalCitations": {
+    "rows": [
+      {
+        "alias": "E1",
+        "suppliedPage": 13,
+        "normalizedExactPageMatches": [
+          13
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E2",
+        "suppliedPage": 13,
+        "normalizedExactPageMatches": [
+          13
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E3",
+        "suppliedPage": 5,
+        "normalizedExactPageMatches": [
+          5
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E4",
+        "suppliedPage": 6,
+        "normalizedExactPageMatches": [
+          6
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E7",
+        "suppliedPage": null,
+        "normalizedExactPageMatches": [
+          3
+        ],
+        "hash": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0"
+      },
+      {
+        "alias": "E8",
+        "suppliedPage": 4,
+        "normalizedExactPageMatches": [
+          4
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E13",
+        "suppliedPage": null,
+        "normalizedExactPageMatches": [
+          3
+        ],
+        "hash": "38a259c1926b724363fcfbd8e5f80fcadf0dd8d9ab6944fea8c00e74fd7590b0"
+      },
+      {
+        "alias": "E15",
+        "suppliedPage": 5,
+        "normalizedExactPageMatches": [
+          5
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E16",
+        "suppliedPage": 4,
+        "normalizedExactPageMatches": [
+          4
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E17",
+        "suppliedPage": 4,
+        "normalizedExactPageMatches": [
+          4
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      },
+      {
+        "alias": "E18",
+        "suppliedPage": 5,
+        "normalizedExactPageMatches": [
+          5
+        ],
+        "hash": "6c15b619c34e4fab99e2fb2c510838a66a30b94ad499a5538d4d10e8aa4cb876"
+      }
+    ],
+    "artifact": {
+      "path": "tmp/h5-layout-physical-citations-20261128.json",
+      "sha256": "a1a61ea2e3b51f747527992d49e93a5fb837678f2f2b7f93b07340e15f56d632"
+    },
+    "suppliedPageCount": 9
+  },
+  "upstreamPromptReplay": {
+    "archiveSha256": "a3f9567c39f76ce66ac15f9d6d45bd1417769e290168b6d847e2557ca6214f45",
+    "generationBytes": 31977,
+    "reviewBatchBytes": [
+      15076,
+      32863,
+      32143
+    ],
+    "factBatchUnchanged": true,
+    "sameEvidenceIds": true,
+    "newReviewInputDigest": "096d12d85cf2b88a81e83cfe73ae1ae1f83c00762247cdedc331ae422354a6de",
+    "providerCalls": 0,
+    "regraded": false,
+    "artifact": {
+      "path": "tmp/h5-layout-training-template-preflight-20261128.json",
+      "sha256": "303f73a2758a045b2151714543aa98fe8a6613c1567d2c5261dcdcd315ffa927"
+    },
+    "commit": "c25ca40e2e7e08d8588bca4da5c681508d7c94f8",
+    "regressionPassed": 411,
+    "finalGenerationTestsPassed": 101
+  }
+}
