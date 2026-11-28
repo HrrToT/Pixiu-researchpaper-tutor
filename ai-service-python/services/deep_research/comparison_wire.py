@@ -466,6 +466,17 @@ def decode(payload, plan, tables, *, max_claims):
                         'tableReferenceCount': len(registry), 'scientificApproval': False}
 
 
+def beginner_mechanism_targets(record, targets):
+    from services.deep_research.audience_rewrite import beginner_requested
+    from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
+
+    if record.get('comparisonBeginnerMechanismGuidanceVersion') not in (1, 2, 3) or not beginner_requested(record):
+        return []
+    return [target['targetId'] for target in targets
+            if representation_requested(target['question'])
+            or compression_mapping_requested(target['question'], include_operations=True)]
+
+
 def render(record, question, plan, tables, limit, max_claims, *, source_scope=None, known_protocols=None):
     from services.deep_research.authored_body import guidance, reasoning_enabled
     from services.deep_research.factual_scope import DRAFTING_SCHEMA
@@ -791,25 +802,29 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
 
             if requests_recheck(question):
                 body_guidance += '\n' + DRAFT_GUIDANCE + '\n'
-        if record.get('comparisonBeginnerMechanismGuidanceVersion') in (1, 2) and data['papers']:
-            from services.deep_research.audience_rewrite import beginner_requested
-            from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
-
-            mechanism_targets = [
-                target['targetId'] for paper in data['papers'] for target in paper['targets']
-                if representation_requested(target['question'])
-                or compression_mapping_requested(target['question'], include_operations=True)
-            ]
-            if mechanism_targets and beginner_requested(record):
-                policy += (f"For beginner mechanism targets {', '.join(mechanism_targets)}, keep the technical term "
-                           "and briefly explain what the representation stores or what the operation does to its input. "
-                           "For a training or compression step, say what guides it and why it matters when the cited "
-                           "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
-                           "Stay in the existing comparison cell and cite the passage for the explanation.\n")
-                if record['comparisonBeginnerMechanismGuidanceVersion'] == 2:
-                    policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
-                               "Say what it means in this paper before using it to explain the method. "
-                               "Keep the definition in the cell, and use only the cited evidence.\n")
+        if data['papers']:
+            mechanism_targets = beginner_mechanism_targets(record,
+                [target for paper in data['papers'] for target in paper['targets']])
+            if mechanism_targets:
+                guidance_version = record['comparisonBeginnerMechanismGuidanceVersion']
+                if guidance_version == 3 and source_scope is not None:
+                    data['beginnerGlossTargets'] = mechanism_targets
+                    policy += ('For beginnerGlossTargets only, explain what the method stores or does to its input. '
+                               'Return point.beginnerGlosses: up to six {"term":"exact words in body.prose.text",'
+                               '"gloss":"plain Chinese phrase, 2–48 characters"}. '
+                               'Define essential unfamiliar terms using the same cited passages. The app inserts each '
+                               'gloss at first use. No extra facts, numbers or repeated inline definitions. Use [] '
+                               'if none can be supported.\n')
+                else:
+                    policy += (f"For beginner mechanism targets {', '.join(mechanism_targets)}, keep the technical term "
+                               "and briefly explain what the representation stores or what the operation does to its input. "
+                               "For a training or compression step, say what guides it and why it matters when the cited "
+                               "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
+                               "Stay in the existing comparison cell and cite the passage for the explanation.\n")
+                    if guidance_version in (2, 3):
+                        policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
+                                   "Say what it means in this paper before using it to explain the method. "
+                                   "Keep the definition in the cell, and use only the cited evidence.\n")
                 if record.get('comparisonMechanismReadContractVersion') in (4, 5, 6):
                     from services.deep_research.mechanism_sources import distillation_operation_score
                     for paper in data['papers']:

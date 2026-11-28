@@ -10,7 +10,9 @@ from services.deep_research.contracts import BudgetExhaustedError, DeepResearchE
 from services.deep_research.comparison_cells import plan_cells
 from services.deep_research.comparison_cross_paper_boundary import scopes as paper_scopes
 from services.deep_research.comparison_layout import requires_speed_explanation_prose, short_prose_enabled
-from services.deep_research.comparison_wire import example_pairs, render, targets, table_catalog, stage_table_catalog
+from services.deep_research.comparison_wire import (
+    beginner_mechanism_targets, example_pairs, render, targets, table_catalog, stage_table_catalog,
+)
 from services.deep_research.request_context import effective_question
 from services.deep_research.synthesis_evidence import fit_premises
 
@@ -272,6 +274,10 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         setting_statements = (stage_papers and not pairs and not prose_explanation
                               and record.get('shortComparisonLayoutContractVersion') in (2, 3, 4, 5)
                               and short_prose_enabled(record, question, character_limit))
+        glossary_targets = (beginner_mechanism_targets(record, [
+            target for target in all_targets
+            if target['role'] == 'paper_cell' and target['targetId'] in target_ids])
+            if record.get('comparisonBeginnerMechanismGuidanceVersion') == 3 else [])
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,
@@ -286,6 +292,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                  **({'paperSubjectsByTarget': stage_papers} if stage_papers else {}),
                  **({'paperSettingStatements': True} if setting_statements else {}),
                  **({'speedExplanationProse': True} if prose_explanation else {}),
+                 **({'beginnerGlossTargets': glossary_targets} if glossary_targets else {}),
                  'scientificApproval': False}
         stage['inputDigest'] = digest(stage)
         return stage

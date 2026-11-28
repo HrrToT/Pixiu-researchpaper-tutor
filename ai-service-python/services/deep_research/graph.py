@@ -2662,7 +2662,7 @@ def make_verify_node(
                 repair_report, verification_result = prepare_design_completion(
                     report_body, verification_result, evidence, saved.get('plan', []))
             repair_targets = prepare_coverage_repair(repair_report, verification_result,
-                beginner_term_repair=record.get('comparisonBeginnerMechanismGuidanceVersion') == 2,
+                beginner_term_repair=record.get('comparisonBeginnerMechanismGuidanceVersion') in (2, 3),
                 beginner_lead_claim_id=((saved.get('comparisonCellDraft') or {}).get('beginnerLeadClaimId')
                                         if record.get('comparisonBenchmarkSpeedScopeContractVersion') in (5, 6, 7) else None),
                 **({'bound_comparison_targets':True} if saved.get('comparisonCellDraft') is not None

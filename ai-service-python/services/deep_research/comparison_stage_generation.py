@@ -5,6 +5,7 @@ the authority for request identity, material permission and atomic budget usage.
 """
 from copy import deepcopy
 import json
+import re
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.experiment_planning import remaining_seconds
@@ -17,6 +18,38 @@ from services.deep_research.comparison_cross_paper_boundary import compile_point
 
 BOUNDED_STAGE_OPTION = '_bounded_comparison_stage_output'
 BOUNDED_STAGE_TOKENS = 4000
+
+
+def bind_beginner_glosses(point):
+    """Compile optional draft glosses while preserving the base point on invalid input."""
+    from services.deep_research.verified_text_repair import insert_term_glosses
+
+    definitions = point.get('beginnerGlosses')
+    base = {key: value for key, value in point.items() if key != 'beginnerGlosses'}
+    if definitions == []:
+        return base, None
+    body = base.get('body')
+    prose = body.get('prose') if isinstance(body, dict) and set(body) == {'prose'} else None
+    text = prose.get('text') if isinstance(prose, dict) else None
+    if not isinstance(text, str) or not isinstance(definitions, list) or not 1 <= len(definitions) <= 6:
+        return base, 'invalid_beginner_glosses'
+    spans = []
+    for definition in definitions:
+        if not isinstance(definition, dict) or set(definition) != {'term', 'gloss'}:
+            return base, 'invalid_beginner_gloss'
+        term, gloss = definition['term'], definition['gloss']
+        if (not isinstance(term, str) or not re.fullmatch(r'[\w -]{2,24}', term)
+                or term != term.strip() or term not in text or not isinstance(gloss, str)
+                or not re.fullmatch(r'[\u4e00-\u9fffA-Za-z 、，]{2,48}', gloss.strip())
+                or not re.search(r'[\u4e00-\u9fff]', gloss)):
+            return base, 'invalid_beginner_gloss'
+        start = text.index(term)
+        end = start + len(term)
+        if any(start < previous_end and previous_start < end for previous_start, previous_end in spans):
+            return base, 'overlapping_beginner_terms'
+        spans.append((start, end))
+    glossed = insert_term_glosses(text, definitions)
+    return {**base, 'body': {'prose': {**prose, 'text': glossed}}}, None
 
 
 def bind_stage_point(point, pairs, *, setting_references=False, protocol_settings_only=False):
@@ -181,12 +214,17 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
             raise DeepResearchError('invalid_comparison_stage_response', '比较阶段响应无效，原结果已保留。') from None
         entry['status'] = 'compiled_unverified'
         admitted = []
+        gloss_errors = []
         for row in payload['answers']:
             point = row.get('point')
             reason = None
             if isinstance(point,dict):
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
+                    if row['targetId'] in stage.get('beginnerGlossTargets', []):
+                        point, gloss_error = bind_beginner_glosses(point)
+                        if gloss_error:
+                            gloss_errors.append({'targetId': row['targetId'], 'reason': gloss_error})
                     papers = stage.get('paperSubjectsByTarget', {}).get(row['targetId'])
                     if stage.get('speedExplanationProse') is True:
                         body = point.get('body')
@@ -225,6 +263,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
         # Negative isolation mirrors the ordinary wire compiler. The exact raw
         # response stays journaled; no guessed citation or positive fact is added.
         entry['isolatedTargets'] = isolated
+        if gloss_errors:
+            entry['beginnerGlossErrors'] = gloss_errors
         checkpoint(deepcopy(saved))
         answers.extend(admitted)
     return {'content':json.dumps({'answers':answers},ensure_ascii=False),'finishReason':'stop'}

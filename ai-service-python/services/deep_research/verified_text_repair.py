@@ -73,14 +73,19 @@ def apply_term_insertions(rows, originals, scopes):
             for item in definitions)
         if not valid or {item['term'] for item in definitions} != set(scopes[cid]):
             raise DeepResearchError('invalid_repair_response', '术语释义不完整或含额外内容。', {'responseState': 'received_invalid'})
-        text = originals[cid]['text']
-        positions = sorted(((text.index(item['term']) + len(item['term']), item['gloss'].strip())
-                            for item in definitions), reverse=True)
-        for index, gloss in positions:
-            text = text[:index] + f'（{gloss}）' + text[index:]
+        text = insert_term_glosses(originals[cid]['text'], definitions)
         replacements.append({'claimId': cid, 'text': text})
         seen.add(cid)
     return materialize(replacements, originals)
+
+
+def insert_term_glosses(text, definitions):
+    """Insert short definitions at the literal terms without changing surrounding prose."""
+    positions = sorted(((text.index(item['term']) + len(item['term']), item['gloss'].strip())
+                        for item in definitions), reverse=True)
+    for index, gloss in positions:
+        text = text[:index] + f'（{gloss}）' + text[index:]
+    return text
 
 
 def prompt(question,length_contract,requirements,originals,checks,questions,source_registry,permissions_marker,evidence_marker):

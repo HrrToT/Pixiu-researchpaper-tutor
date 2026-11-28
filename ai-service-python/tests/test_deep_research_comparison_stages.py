@@ -1202,6 +1202,40 @@ def test_explicit_stage_shape_keeps_valid_siblings_and_journals_invalid_rows(bad
     assert entry['isolatedTargets'] == [{'targetId': rejected['targetId'], 'reason': reason}]
 
 
+@pytest.mark.parametrize('invalid', [False, True])
+def test_beginner_mechanism_glosses_join_first_draft_without_changing_its_citations(invalid):
+    r, plan, rows, aliases, bundles = fixture()
+    r.update(question='向初学者解释两篇论文的表示与压缩机制。' + QUESTION,
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=2,
+             comparisonAuthoringContractVersion=16, comparisonJointReportsContractVersion=16,
+             comparisonBeginnerMechanismGuidanceVersion=3)
+    snapshot = prepare(r, plan['requirements'], plan['sources'], rows, {}, bundles, aliases, merge_joint=False)
+    stage = next(s for s in snapshot['stages'] if s['stageId'] == 'P1')
+    target = stage['beginnerGlossTargets'][0]
+    evidence_id = stage['allowedEvidenceByTarget'][target][0]
+    assert 'point.beginnerGlosses' in stage['prompt']
+    assert not next(s for s in snapshot['stages'] if s['stageId'] == 'joint').get('beginnerGlossTargets')
+    raw = {'targetId': target, 'goalRefs': ['G1'], 'point': {'kind': 'reported',
+           'body': {'prose': {'text': '用协方差表示形状，协方差随拟合更新。', 'conditions': {}}},
+           'evidenceRefs': [evidence_id], 'cellRefs': [],
+           'beginnerGlosses': [{'term': '未出现的术语' if invalid else '协方差', 'gloss': '描述形状和朝向的一组数'}]}}
+    checkpoints = []
+
+    def invoke(_, prompt, __):
+        return {'content': json.dumps({'answers': [raw] if prompt == stage['prompt'] else []}),
+                'finishReason': 'stop'}
+
+    result = generate(snapshot, current=lambda: r, checkpoint=checkpoints.append, invoke=invoke)
+    compiled, = json.loads(result['content'])['answers']
+    expected = ('用协方差表示形状，协方差随拟合更新。' if invalid
+                else '用协方差（描述形状和朝向的一组数）表示形状，协方差随拟合更新。')
+    assert compiled['point']['body']['prose']['text'] == expected
+    assert compiled['point']['evidenceRefs'] == [evidence_id] and 'beginnerGlosses' not in compiled['point']
+    entry = checkpoints[-1]['stages']['P1']
+    assert json.loads(entry['response']['content'])['answers'] == [raw]
+    assert bool(entry.get('beginnerGlossErrors')) is invalid
+
+
 @pytest.mark.parametrize('exhausted',['calls','time'])
 def test_exhausted_dispatch_budget_does_not_send_the_next_stage(exhausted):
     r,snapshot=prepared()
