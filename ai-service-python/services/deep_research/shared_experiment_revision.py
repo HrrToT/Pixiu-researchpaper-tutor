@@ -172,12 +172,14 @@ def apply(base, response, *, allowed_paths=None, evaluation_prepare=False, ident
     # The root unresolved list is an explicit author choice, never silently cleared.
     result['unresolved']=deepcopy(edits['unresolved'])
     bound=base['boundProposal']
-    if digest(result)==digest(original) or validate(result,bound['allowedEvidenceIds'],required_domains=bound['requiredDomains']):
+    capacity_policy = {'count_unique_operations': bound['version'] == 2}
+    if digest(result)==digest(original) or validate(result,bound['allowedEvidenceIds'],
+            required_domains=bound['requiredDomains'], **capacity_policy):
         raise ValueError('No effective repair or invalid complete proposal')
     if not evaluation_prepare and any(step['dataUse'] == 'evaluation_prepare' for step in result['steps']):
         raise ValueError('Evaluation preparation is unavailable in this revision contract')
     return bind_for_review(result,bound['allowedEvidenceIds'],context_digest=bound['contextDigest'],
-                           required_domains=bound['requiredDomains'])
+                           required_domains=bound['requiredDomains'], **capacity_policy)
 
 
 def _input_digest(base, saved):

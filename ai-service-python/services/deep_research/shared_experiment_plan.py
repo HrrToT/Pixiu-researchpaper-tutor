@@ -11,7 +11,9 @@ import re
 from services.deep_research.contracts import digest
 
 MAX_BYTES = 24000
+MAX_EXPANDED_BYTES = 32000
 EVALUATION_PREPARATION_MARKER = 'sharedExperimentEvaluationPreparationVersion'
+OPERATION_CAPACITY_MARKER = 'sharedExperimentOperationCapacityVersion'
 GROUPS = ('00', '10', '01', '11')
 CONTRASTS = {
     'A': [-0.5, 0.5, -0.5, 0.5],
@@ -101,7 +103,21 @@ def schema(version=1, *, evaluation_prepare=False):
     return plan
 
 
-def validate(value, evidence_ids, *, required_domains=()):
+def _counted_size(value, serialized_size):
+    """Exclude only exact compiler copies of factor operations."""
+    factors = {factor['id']: factor for factor in value['factors']}
+    for step in value['steps']:
+        selection = step['factor']
+        if step['kind'] != 'intervene' or selection is None:
+            continue
+        source = factors.get(selection['id'], {}).get('onOperation' if selection['level'] else 'offOperation')
+        if source == step['operation']:
+            copy_size = len(json.dumps(source, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+            serialized_size -= copy_size - len('null')
+    return serialized_size
+
+
+def validate(value, evidence_ids, *, required_domains=(), count_unique_operations=False):
     """Check known identities/causality/accounting; prose needs scientific review."""
     from jsonschema import Draft202012Validator
     from services.deep_research.group_spec import validate_operation
@@ -116,7 +132,8 @@ def validate(value, evidence_ids, *, required_domains=()):
         issues.append({'code': code, 'path': path})
     try:
         encoded = json.dumps(value, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
-        if len(encoded.encode('utf-8')) > MAX_BYTES:
+        size = len(encoded.encode('utf-8'))
+        if size > (MAX_EXPANDED_BYTES if count_unique_operations else MAX_BYTES):
             return [{'code': 'plan.capacity', 'path': '/'}]
     except (TypeError, ValueError, OverflowError, RecursionError):
         return [{'code': 'plan.json', 'path': '/'}]
@@ -125,6 +142,8 @@ def validate(value, evidence_ids, *, required_domains=()):
     errors = list(Draft202012Validator(schema(version if typed_inputs else 1, evaluation_prepare=True)).iter_errors(value))
     if errors:
         return [{'code': 'plan.schema', 'path': '/'+'/'.join(map(str, e.absolute_path))} for e in errors[:64]]
+    if size > MAX_BYTES and (version != 3 or _counted_size(value, size) > MAX_BYTES):
+        return [{'code': 'plan.capacity', 'path': '/'}]
     def indexed(rows, path):
         if len({row['id'] for row in rows}) != len(rows):
             issue('plan.duplicate_identity', path)
@@ -342,14 +361,16 @@ def validate(value, evidence_ids, *, required_domains=()):
     return issues
 
 
-def bind_for_review(value, evidence_ids, *, context_digest, required_domains=()):
+def bind_for_review(value, evidence_ids, *, context_digest, required_domains=(), count_unique_operations=False):
     """Freeze an unchecked proposal. Never expose a publication/approval flag."""
     if not isinstance(context_digest, str) or not re.fullmatch('[0-9a-f]{64}', context_digest):
         raise ValueError('Trusted complete research context digest required')
-    issues = validate(value, evidence_ids, required_domains=required_domains)
+    issues = validate(value, evidence_ids, required_domains=required_domains,
+                      count_unique_operations=count_unique_operations)
     if issues:
         raise ValueError('Invalid shared experiment proposal: '+','.join(sorted({i['code'] for i in issues})))
-    bound = {'version': 1, 'contextDigest': context_digest, 'proposal': deepcopy(value), 'proposalDigest': digest(value),
+    bound = {'version': 2 if count_unique_operations else 1, 'contextDigest': context_digest,
+            'proposal': deepcopy(value), 'proposalDigest': digest(value),
             'allowedEvidenceIds': sorted(set(evidence_ids)), 'requiredDomains': sorted(set(required_domains)),
             'status': 'awaiting_scientific_review', 'scientificApproval': False}
     return {**bound, 'bindingDigest': digest(bound)}
@@ -359,7 +380,7 @@ def validate_bound(bound, *, expected_digest):
     """Any later edit requires a new bound proposal and fresh scientific review."""
     expected = {'version', 'contextDigest', 'proposal', 'proposalDigest', 'allowedEvidenceIds', 'requiredDomains', 'status', 'scientificApproval', 'bindingDigest'}
     if (not isinstance(bound, dict) or set(bound) != expected or type(bound['version']) is not int
-            or bound['version'] != 1 or bound['scientificApproval'] is not False
+            or bound['version'] not in (1, 2) or bound['scientificApproval'] is not False
             or not isinstance(bound['contextDigest'], str) or not re.fullmatch('[0-9a-f]{64}', bound['contextDigest'])
             or bound['status'] != 'awaiting_scientific_review'):
         return False
@@ -367,6 +388,7 @@ def validate_bound(bound, *, expected_digest):
         return (bound['bindingDigest'] == expected_digest
                 and digest({k: v for k, v in bound.items() if k != 'bindingDigest'}) == expected_digest
                 and digest(bound['proposal']) == bound['proposalDigest']
-                and not validate(bound['proposal'], bound['allowedEvidenceIds'], required_domains=bound['requiredDomains']))
+                and not validate(bound['proposal'], bound['allowedEvidenceIds'], required_domains=bound['requiredDomains'],
+                                 count_unique_operations=bound['version'] == 2))
     except (TypeError, ValueError, OverflowError, RecursionError):
         return False

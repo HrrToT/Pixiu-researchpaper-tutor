@@ -9,7 +9,8 @@ import re
 
 from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.shared_experiment_plan import (
-    EVALUATION_PREPARATION_MARKER, MAX_BYTES, bind_for_review, schema, validate, validate_bound,
+    EVALUATION_PREPARATION_MARKER, MAX_BYTES, OPERATION_CAPACITY_MARKER,
+    bind_for_review, schema, validate, validate_bound,
 )
 
 MARKER = 'experimentSharedPlanContractVersion'
@@ -522,6 +523,8 @@ def build(record, input_data, aliases, *, required_domains=()):
         output_policy[DERIVED_ANALYSIS_MARKER] = 1
     if record.get(EVALUATION_PREPARATION_MARKER) == 1:
         output_policy[EVALUATION_PREPARATION_MARKER] = 1
+    if record.get(MARKER) == 8 and record.get(OPERATION_CAPACITY_MARKER) == 1:
+        output_policy[OPERATION_CAPACITY_MARKER] = 1
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
             'requiredDomains': sorted(set(required_domains)), 'inputBytes': len(prompt.encode('utf-8')) + overhead,
             'promptBytes': len(prompt.encode('utf-8')), 'transportOverheadBytes': overhead,
@@ -571,7 +574,8 @@ def _validate_response(response, profile, built):
                                      fit_observation_outputs=built.get('sharedExperimentFitObservationOutputVersion') == 1,
                                      derive_pairing=built.get('sharedExperimentDerivedPairingVersion') == 1,
                                      derive_analysis=built.get(DERIVED_ANALYSIS_MARKER) == 1,
-                                     evaluation_prepare=built.get(EVALUATION_PREPARATION_MARKER) == 1)
+                                     evaluation_prepare=built.get(EVALUATION_PREPARATION_MARKER) == 1,
+                                     count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1)
     else:
         issues = validate(value, evidence_ids, required_domains=domains)
     if not complete:
@@ -631,7 +635,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
     try:
         value, issues = _validate_response(response, record[MARKER], built)
         bound = (None if issues else bind_for_review(value, built['allowedEvidenceIds'],
-                  context_digest=built['contextDigest'], required_domains=built['requiredDomains']))
+                  context_digest=built['contextDigest'], required_domains=built['requiredDomains'],
+                  count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1))
     except (TypeError, ValueError, OverflowError, RecursionError):
         issues = [{'code': 'plan.response_json_or_capacity', 'path': '/'}]; bound = None
     if issues:

@@ -158,6 +158,47 @@ def asset_catalog_draft(canonical):
     return draft
 
 
+def test_profile8_capacity_counts_only_compiler_copies_of_factor_operations():
+    from services.deep_research.shared_experiment_plan import (
+        MAX_BYTES, OPERATION_CAPACITY_MARKER, validate, validate_bound,
+    )
+
+    canonical = typed_input_proposal()
+    canonical['version'] = 3
+    for budget in canonical['budgets']:
+        budget['allocation'] = 'single'
+    for metric in canonical['metrics']:
+        metric['fitMemoryCaptures'] = []
+    factor = canonical['factors'][0]
+    step = next(step for step in canonical['steps'] if step['id'] == 'A1')
+    factor['onOperation']['action'] += ' Calibrate the shared gate.' * 42
+    step['operation'] = deepcopy(factor['onOperation'])
+    expanded_size = lambda: len(json.dumps(canonical, ensure_ascii=False, separators=(',', ':')).encode())
+    while expanded_size() < MAX_BYTES + 300:
+        remaining = MAX_BYTES + 300 - expanded_size()
+        canonical['unresolved'].append(('Verify the calibration stability. ' * 46)[:remaining])
+    draft = asset_catalog_draft(canonical)
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['groups'] = []
+    record, data, aliases = context()
+    record[MARKER] = 8
+    legacy, _, checkpoint = harness(record)
+    with pytest.raises(DeepResearchError, match='共享方案未通过检查'):
+        prepare(legacy, data, aliases, invoke=Mock(return_value=response(draft)), checkpoint=checkpoint)
+    current, _, checkpoint = harness({**record, OPERATION_CAPACITY_MARKER: 1})
+    invoke = Mock(return_value=response(draft))
+    saved = prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint)
+    bound = saved['boundProposal']
+    assert bound['version'] == 2 and bound['proposal'] == canonical
+    assert bound['scientificApproval'] is False
+    assert validate_bound(bound, expected_digest=bound['bindingDigest'])
+    assert prepare(current, data, aliases, invoke=invoke, checkpoint=checkpoint) == saved
+    invoke.assert_called_once()
+    canonical['unresolved'].append('Additional unrelated prose. ' * 57)
+    assert validate(canonical, ['E1'], count_unique_operations=True) == [{'code': 'plan.capacity', 'path': '/'}]
+
+
 def test_owned_states_profile_preserves_assets_creators_and_observation_links():
     r, data, aliases = context()
     r[MARKER] = 4
