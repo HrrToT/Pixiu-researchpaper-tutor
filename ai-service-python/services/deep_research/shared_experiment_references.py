@@ -136,8 +136,29 @@ def _derive_pairing(proposal):
     proposal['pairing'].update(sharedStateIds=sorted(shared), cloneStepIds=[step['id'] for step in clones])
 
 
+def _derive_clone_scope(steps):
+    """Recover a sole clone's per-arm scope from its downstream consumers."""
+    clones = [step for step in steps if step['kind'] == 'clone']
+    if len(clones) != 1:
+        return
+    clone, = clones
+    if (clone['scope'] != 'shared' or clone['groups'] or clone['budgetId'] is not None
+            or clone['dataUse'] != 'none' or clone['updates'] or not clone['creates']):
+        return
+    outputs = {state['id']: set() for state in clone['creates']}
+    for step in steps:
+        used = outputs.keys() & set(step['reads'] + step['updates'])
+        if used and step['scope'] != 'arm':
+            return
+        for state_id in used:
+            outputs[state_id].update(step['groups'])
+    if all(arms == set(GROUPS) for arms in outputs.values()):
+        clone.update(scope='arm', groups=list(GROUPS))
+
+
 def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False,
-                 derive_pairing=False, derive_analysis=False, evaluation_prepare=False, count_unique_operations=False):
+                 derive_pairing=False, derive_analysis=False, evaluation_prepare=False, count_unique_operations=False,
+                 derive_clone_scope=False):
     errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing,
                                              derive_analysis=derive_analysis,
                                              evaluation_prepare=evaluation_prepare)).iter_errors(value)
@@ -166,6 +187,8 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_obs
                 factor = step['factor']
                 axis = 0 if factor['id'] == 'A' else 1
                 step['groups'] = [group for group in GROUPS if int(group[axis]) == factor['level']]
+    if profile == 8 and derive_pairing and derive_clone_scope:
+        _derive_clone_scope(proposal['steps'])
     if profile in (4, 6, 7, 8):
         _expand_owned_states(proposal, issues)
     if profile == 8 and derive_pairing:

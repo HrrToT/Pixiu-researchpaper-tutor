@@ -15,6 +15,7 @@ from services.deep_research.shared_experiment_plan import (
 )
 
 MARKER = 'experimentSharedPlanContractVersion'
+CLONE_SCOPE_MARKER = 'sharedExperimentCloneScopeVersion'
 CLONE_LAYOUT_MARKER = 'experimentArmCloneLayoutVersion'
 NODE = 'plan_experiment_shared'
 FACT_BOUNDARY_MARKER = 'sharedExperimentFactBoundaryVersion'
@@ -560,6 +561,8 @@ def build(record, input_data, aliases, *, required_domains=()):
         output_policy[EVALUATION_PREPARATION_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(OPERATION_CAPACITY_MARKER) == 1:
         output_policy[OPERATION_CAPACITY_MARKER] = 1
+    if record.get(MARKER) == 8 and record.get(CLONE_SCOPE_MARKER) == 1:
+        output_policy[CLONE_SCOPE_MARKER] = 1
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
             'requiredDomains': sorted(set(required_domains)), 'inputBytes': len(prompt.encode('utf-8')) + overhead,
             'promptBytes': len(prompt.encode('utf-8')), 'transportOverheadBytes': overhead,
@@ -610,7 +613,8 @@ def _validate_response(response, profile, built):
                                      derive_pairing=built.get('sharedExperimentDerivedPairingVersion') == 1,
                                      derive_analysis=built.get(DERIVED_ANALYSIS_MARKER) == 1,
                                      evaluation_prepare=built.get(EVALUATION_PREPARATION_MARKER) == 1,
-                                     count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1)
+                                     count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1,
+                                     derive_clone_scope=built.get(CLONE_SCOPE_MARKER) == 1)
     else:
         issues = validate(value, evidence_ids, required_domains=domains)
     if not complete:

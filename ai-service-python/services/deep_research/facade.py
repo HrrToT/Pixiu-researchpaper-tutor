@@ -405,6 +405,7 @@ class ResearchFacade:
             **({"sharedExperimentFitObservationOutputVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentSharedMemoryCaptureVersion": 2} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDerivedPairingVersion": 1} if shared_experiment_profile == 8 else {}),
+            **({"sharedExperimentCloneScopeVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentDerivedAnalysisVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentOperationCapacityVersion": 1} if shared_experiment_profile == 8 else {}),
             **({"sharedExperimentEvaluationPreparationVersion": 1} if shared_experiment_profile == 8 else {}),

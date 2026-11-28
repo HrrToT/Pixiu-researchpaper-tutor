@@ -199,6 +199,38 @@ def test_profile8_capacity_counts_only_compiler_copies_of_factor_operations():
     assert validate(canonical, ['E1'], count_unique_operations=True) == [{'code': 'plan.capacity', 'path': '/'}]
 
 
+@pytest.mark.parametrize('fault', [None, 'shared_consumer', 'incomplete_arm_coverage'])
+def test_clone_scope_is_recovered_only_from_unambiguous_four_arm_consumers(fault):
+    from services.deep_research.shared_experiment_references import compile_plan
+
+    canonical = typed_input_proposal()
+    canonical['version'] = 3
+    for budget in canonical['budgets']:
+        budget['allocation'] = 'single'
+    for metric in canonical['metrics']:
+        metric['fitMemoryCaptures'] = []
+    draft = asset_catalog_draft(canonical)
+    draft['pairing'] = {'identityChecks': draft['pairing']['identityChecks']}
+    clone = next(step for step in draft['steps'] if step['kind'] == 'clone')
+    clone.update(scope='shared', groups=[])
+    for step in draft['steps']:
+        if step['kind'] == 'intervene':
+            step['groups'] = []
+    if fault == 'shared_consumer':
+        draft['steps'][0]['reads'].append('x')
+    elif fault == 'incomplete_arm_coverage':
+        clone['creates'].append({**clone['creates'][0], 'id': 'unconsumed'})
+        next(step for step in draft['steps'] if step['id'] == 'A1')['reads'].append('unconsumed')
+    options = {'profile': 8, 'derive_pairing': True}
+    assert compile_plan(draft, ['E1'], **options)[0] is None
+    recovered, issues = compile_plan(draft, ['E1'], derive_clone_scope=True, **options)
+    if fault:
+        assert recovered is None and issues
+    else:
+        assert recovered == canonical and not issues
+        assert clone['scope'] == 'shared' and clone['groups'] == []
+
+
 def test_owned_states_profile_preserves_assets_creators_and_observation_links():
     r, data, aliases = context()
     r[MARKER] = 4
