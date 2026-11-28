@@ -9,7 +9,7 @@ from services.deep_research.reporting import render_report,conversation_summary,
 from services.deep_research.coverage_references import resolve_coverage_references
 from services.deep_research.completion_criteria import completion_criteria_gaps,invalid_criterion_reviews,revalidate_completion_audit
 from services.deep_research.answer_coverage import answer_coverage_gaps
-from services.deep_research.final_coverage import audit_final_answer
+from services.deep_research.final_coverage import audit_final_answer, remaining_retrieval_gaps
 
 QUESTION='标明实际读到的是全文还是摘要。'
 CLAIMS=[{'claimId':'c','kind':'reported','text':'剪枝减少冗余高斯。','conditions':{},'evidenceRefs':['e']}]
@@ -33,7 +33,8 @@ def test_pinned_method_citation_uses_access_label_on_the_same_accepted_claim(cas
     from services.deep_research.coverage_aspects import invalid_coverage_aspects
     from services.deep_research.coverage_binding_catalog import build_scoped, expand_scoped
 
-    source = {**EVIDENCE[0], 'sourceKind': 'arxiv', 'sourceVersionId': 'arxiv:2403.09636v1',
+    source = {**EVIDENCE[0], 'sourceKind': 'arxiv', 'sourceWorkId': 'arxiv:2403.09636',
+              'sourceVersionId': 'arxiv:2403.09636v1',
               'location': {'page': 3}, 'verification': {'literal': 'passed'}}
     if case == 'wrong_version':
         source['sourceVersionId'] = 'arxiv:2403.09636v2'
@@ -68,6 +69,13 @@ def test_pinned_method_citation_uses_access_label_on_the_same_accepted_claim(cas
     assert bool(answer_coverage_gaps(plan, CLAIMS, resolved, display_metadata=metadata)) == (case != 'valid')
     assert bool(invalid_coverage_aspects(resolved, CLAIMS, [source], [question], display_metadata=metadata,
                                         request_only_obligations=['o'], pinned_method_plan=plan if enabled else [])) == (case != 'valid')
+    retrieval_gap = {'obligationId': 'o', 'sourceWorkId': 'arxiv:2403.09636v1', 'question': question}
+    audit = {'status': 'checked', 'verdicts': resolved, 'gaps': []}
+    accepted = [{**CLAIMS[0], 'verification': 'semantic_passed'}]
+    assert remaining_retrieval_gaps([retrieval_gap], audit, accepted, [source], plan=plan,
+                                   versioned_sources=True, display_metadata=metadata) == (
+        [] if case == 'valid' else [retrieval_gap]
+    )
 
 
 @pytest.mark.parametrize('consolidated', [False, True])

@@ -625,7 +625,8 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
 
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
-                             comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False):
+                             comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False,
+                             display_metadata=None):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -645,8 +646,16 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
     gaps = [gap for gap in gaps if not isinstance(gap, dict) or gap.get('obligationId') not in optional_ids]
     missing = {g.get('obligationId') for g in audit.get('gaps', [])}
     from services.deep_research.answer_coverage import answer_coverage_gaps
-    check_plan = [{'obligations': [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]}]
-    missing.update(g.get('obligationId') for g in answer_coverage_gaps(check_plan, claims, audit.get('verdicts')))
+    pending = [g for g in gaps if isinstance(g, dict) and g.get('obligationId')]
+    if display_metadata:
+        # Retrieval gaps are diagnostic rows and omit the criterion and version
+        # constraints that authorized the final answer's display bindings.
+        obligations = {o['obligationId']: o for item in plan or [] for o in item.get('obligations', [])
+                       if o.get('obligationId')}
+        pending = [obligations.get(g['obligationId'], g) for g in pending]
+    check_plan = [{'obligations': pending}]
+    missing.update(g.get('obligationId') for g in answer_coverage_gaps(
+        check_plan, claims, audit.get('verdicts'), display_metadata=display_metadata))
     resolved_joint = set()
     if comparison_draft:
         from services.deep_research.comparison_joint_reports import resolved_benchmark_gap_keys

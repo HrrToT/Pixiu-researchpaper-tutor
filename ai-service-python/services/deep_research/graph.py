@@ -3126,15 +3126,20 @@ def make_publish_node(
         from services.deep_research.display_metadata import answer_display_metadata
         pinned_method_access = (record.get('externalExplanationInputVersion') == 8 and output_kind == 'direction_survey'
                                 and record.get('sourcePolicy', {}).get('mode') == 'external_only')
+        task_sources = type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion'] == 4
+        identification_locators = type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion'] == 1
+        request_semantics = 2 if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion'] == 2 else 0
+        display_metadata = answer_display_metadata(
+            accepted_claims, brief_state.get('evidence', []), task_sources=True,
+            identification_locators=identification_locators, request_semantics=request_semantics,
+            pinned_method_access=pinned_method_access,
+        ) if task_sources else None
         audit = revalidate_completion_audit(brief_state.get('plan', []), accepted_claims, audit,
-            **({'display_metadata':answer_display_metadata(accepted_claims,brief_state.get('evidence',[]),task_sources=True,identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1, **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}), **({'pinned_method_access':True} if pinned_method_access else {}))}
-               if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}))
+                                            display_metadata=display_metadata)
         from services.deep_research.display_metadata import revalidate_display_metadata
         audit = revalidate_display_metadata(audit, accepted_claims, brief_state.get('evidence', []),
-            identification_locators=type(record.get('identificationLocatorContractVersion')) is int and record['identificationLocatorContractVersion']==1,
-            **({'pinned_method_access':True} if pinned_method_access else {}),
-            **({'task_sources':True} if type(record.get('reportPresentationContractVersion')) is int and record['reportPresentationContractVersion']==4 else {}),
-            **({'request_semantics':2} if type(record.get('requestSemanticsContractVersion')) is int and record['requestSemanticsContractVersion']==2 else {}))
+            identification_locators=identification_locators, pinned_method_access=pinned_method_access,
+            task_sources=task_sources, request_semantics=request_semantics)
         if cell_enabled(record):
             from services.deep_research.comparison_presentation import metadata as comparison_metadata, revalidate_audit
             audit = revalidate_audit(audit, comparison_metadata(brief_state['comparisonCellDraft'])
@@ -3171,6 +3176,7 @@ def make_publish_node(
         gaps = [*remaining_retrieval_gaps(record.get('state', {}).get('gaps', []), audit,
                     accepted_claims, record.get('state', {}).get('evidence', []),
                     plan=brief_state.get('plan', []), question=effective_question(record),
+                    display_metadata=display_metadata if pinned_method_access else None,
                     **({'comparison_draft':brief_state.get('comparisonCellDraft'), 'joint_coverage':brief_state.get('coverage', [])}
                        if cell_enabled(record) and type(record.get('comparisonMatchedExampleGapClosureVersion')) is int
                        and record['comparisonMatchedExampleGapClosureVersion'] in (1, 2) else {}),
