@@ -317,6 +317,9 @@ class ResearchFacade:
             **({"countedComparisonAuditContractVersion": 1}
                if self._openai_research_models and output_kind == 'paper_comparison'
                and self._comparison_cells_version == 1 else {}),
+            **({"countedComparisonFactReviewContractVersion": 1}
+               if self._openai_research_models and output_kind == 'paper_comparison'
+               and self._comparison_cells_version == 1 else {}),
             **({"countedExperimentReviewContractVersion": 1}
                if self._openai_research_models else {}),
             **({"countedExperimentReviewWindowVersion": 4}

@@ -24,6 +24,70 @@ def mock_response(monkeypatch, status, body):
     return post
 
 
+@pytest.mark.parametrize('count', [5000, None])
+def test_comparison_fact_review_counts_only_after_byte_reservation_fails(tmp_path, monkeypatch, count):
+    from services.deep_research.contracts import BudgetExhaustedError
+    from services.deep_research.factual_review import OPTION as BOUNDED_REVIEW_OPTION
+    from services.deep_research.tools import TrackedLLMInvoker
+
+    monkeypatch.setattr(settings, 'openai_api_key', 'test-key')
+    repo = DeepResearchRepository(tmp_path / 'research.sqlite3')
+    repo.initialize()
+    facade = ResearchFacade(repo, Mock(), llm_client=Mock(), openai_research_models=('main', 'routine'),
+                            comparison_cells_version=1)
+    try:
+        created, _ = facade.create({'workspaceTaskId': 'task', 'operationKey': 'op',
+                                    'question': 'Compare the two papers.', 'outputKind': 'paper_comparison'},
+                                   start_async=False)
+        run_id = created['runId']
+        assert created['countedComparisonFactReviewContractVersion'] == 1
+        repo.begin_execution(run_id)
+        repo.update_run(run_id, lambda row: {**row, 'budget': {
+            **row['budget'], 'modelCalls': 12, 'reservedModelCalls': 5,
+            'tokens': 82692, 'normalTokens': 52352,
+        }, 'state': {**row['state'], 'outputKind': 'paper_comparison'}})
+        scope = Mock()
+        scope.validate_run.return_value = True
+        provider = ScopedModelClient(repo, scope, Mock()).for_run(run_id)
+        invoke = TrackedLLMInvoker(provider, repo.reserve_call, repo.complete_call,
+                                  run_record_fn=repo.require_run, call_history_fn=repo.list_calls)
+        posts = []
+
+        def post(url, **kwargs):
+            posts.append(kwargs['json'])
+            if url.endswith('/input_tokens'):
+                assert not repo.list_calls(run_id)
+                response = Mock(status_code=200 if count is not None else 503)
+                response.json.return_value = {'object': 'response.input_tokens', 'input_tokens': count}
+                return response
+            (reserved,) = repo.list_calls(run_id)
+            assert reserved['status'] == 'pending' and reserved['reservedTokens'] == count + 9216
+            response = Mock(status_code=200, headers={})
+            response.json.return_value = {
+                'status': 'completed',
+                'output': [{'type': 'message', 'content': [{'type': 'output_text', 'text': '{"items":[]}'}]}],
+                'usage': {'input_tokens': count, 'output_tokens': 20, 'total_tokens': count + 20},
+            }
+            return response
+
+        monkeypatch.setattr('llm.client.requests.post', post)
+        prompt = 'Evaluate the frozen comparison evidence. ' + 'x' * 17500
+        options = {BOUNDED_REVIEW_OPTION: True, 'max_tokens': 4000}
+        if count is None:
+            with pytest.raises(BudgetExhaustedError):
+                invoke(run_id, 'verify', prompt, options, use_reserve=True)
+            assert len(posts) == 1 and not repo.list_calls(run_id)
+        else:
+            result = invoke(run_id, 'verify', prompt, options, use_reserve=True)
+            assert result['auditInputTokens'] == count
+            measured, generated = posts
+            assert measured == {k: v for k, v in generated.items() if k not in {'store', 'max_output_tokens'}}
+            assert invoke(run_id, 'verify', prompt, options, use_reserve=True) == result
+            assert len(posts) == 2 and repo.require_run(run_id)['budget']['tokens'] == 82692 + count + 20
+    finally:
+        facade.shutdown()
+
+
 def test_chat_request_is_bounded_and_reports_actual_usage(monkeypatch):
     post = mock_response(monkeypatch, 200, {
         "model": "gpt-5.4-mini-2026-03-17",

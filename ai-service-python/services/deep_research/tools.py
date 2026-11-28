@@ -446,6 +446,18 @@ class TrackedLLMInvoker:
             policy = ("countedComparisonAuditContractVersion" if self.supports_counted_comparison_audit(transport_record)
                       else "countedExperimentAnswerContractVersion")
             request_identity[policy] = 1
+        counted_fact_contract = "countedComparisonFactReviewContractVersion"
+        from llm.responses_transport import API_KEY
+        fact_options = extra_body or {}
+        fact_format = fact_options.get('response_format', {})
+        counted_fact_fallback = (structured and use_reserve and node == 'verify'
+                                 and (bounded_review or direct_review)
+                                 and (API_KEY not in fact_options and fact_format == {'type': 'json_object'}
+                                      or fact_options.get(API_KEY) == 'responses'
+                                      and fact_format.get('type') == 'json_schema')
+                                 and self._supports_audit_counting(transport_record, counted_fact_contract))
+        if counted_fact_fallback:
+            request_identity[counted_fact_contract] = 1
         args_digest = digest(request_identity)
         from services.deep_research.factual_review import cell_review_enabled
         guarded_review = bounded_review or named_table_review or direct_review or (self._run_record and node == 'verify'
@@ -557,9 +569,9 @@ class TrackedLLMInvoker:
             from services.deep_research.shared_experiment_answer_packet import MARKER as FINAL_EXPERIMENT_AUDIT
             eligible_repair = (node == "repair_experiment_shared" and
                                transport_record.get(FINAL_EXPERIMENT_AUDIT) == 2)
-            if (counted_science_window or (node != science.NODE and not eligible_repair)
-                    or not use_reserve or not structured
-                    or not self.supports_counted_experiment_review(transport_record)):
+            eligible_experiment = (use_reserve and structured and (node == science.NODE or eligible_repair)
+                                   and self.supports_counted_experiment_review(transport_record))
+            if counted_science_window or not (eligible_experiment or counted_fact_fallback):
                 raise
             budget = self._run_record(run_id)["budget"]
             if budget["maxTokens"] - budget["tokens"] <= max_output + INPUT_RESERVATION_MARGIN:
@@ -590,6 +602,8 @@ class TrackedLLMInvoker:
         try:
             if counted_audit or counted_science_window:
                 result = client.invoke_counted_audit(request)
+            elif counted_fact_fallback and counted_input is not None:
+                result = routed_client().invoke_counted_audit(request)
             else:
                 result = routed_client().invoke(request)
         except LLMProviderError as exc:
