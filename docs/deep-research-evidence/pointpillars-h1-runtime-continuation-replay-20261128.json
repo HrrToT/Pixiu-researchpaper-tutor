@@ -1,0 +1,79 @@
+{
+  "case": "H1-POINTPILLARS",
+  "independentCredit": 0,
+  "developmentReplay": true,
+  "originalRunId": "dr_run_4d3c02dc76b5512a98c2cd103ff3e55e",
+  "originalOutcome": "partial",
+  "definitionHash": "1007aaedc2c629ba802a8f14974cb7de65829d966c1c1115383eadb9823443c3",
+  "materialSha256": "b1c4b0cb1bba246637ac63ecc93919d3f298cc816e8eab129eb9c6d5c4606a2c",
+  "newProviderCalls": 0,
+  "publications": 0,
+  "scope": "Rebuilt local acquisition, read order and literal extraction from the snapshot PDF; intercepted synthesis before dispatch; ran hard prechecks only.",
+  "before": {
+    "page7ReadOffsets": [
+      0,
+      1500
+    ],
+    "inputBytes": 23897
+  },
+  "after": {
+    "page7ReadOffsets": [
+      0,
+      1500,
+      3000
+    ],
+    "inputBytes": 23963,
+    "directCitationBundles": {
+      "reduced_compute_inputs": [
+        {
+          "id": "ev_e8a773e8ff4e675010a74aaa921fd5259ee4e560f6aef470b90e3f523a12f7ee",
+          "page": 4
+        }
+      ],
+      "reported_runtime": [
+        {
+          "id": "ev_6e2e8a8e498aaf6d59b56dba902ebab77105cf574b581a7b56c772dac4b5428f",
+          "page": 3
+        },
+        {
+          "id": "ev_d1e553a33f41c06d2dbcd20fb21392aa2d32e8648a46a3a45e026612702d7b4a",
+          "page": 7
+        },
+        {
+          "id": "ev_c203bbf241f644ebdf5fc846a334e642c50bdc36bcd50eae2b46146d6b201e81",
+          "page": 7
+        }
+      ],
+      "runtime_tradeoff": [
+        {
+          "id": "ev_d1e553a33f41c06d2dbcd20fb21392aa2d32e8648a46a3a45e026612702d7b4a",
+          "page": 7
+        }
+      ]
+    }
+  },
+  "eligibleForSemanticReview": [
+    "archived_revision_with_exact_titled_edition",
+    "handwritten_runtime_and_tradeoff_claim"
+  ],
+  "negativeChecks": [
+    {
+      "case": "invented_rate",
+      "missingReportedNumbers": [
+        "106e0"
+      ]
+    },
+    {
+      "case": "invalid_edition",
+      "missingReportedNumbers": [
+        "202e1"
+      ]
+    },
+    {
+      "case": "year_as_sample_count",
+      "missingReportedNumbers": [
+        "2019e0"
+      ]
+    }
+  ]
+}

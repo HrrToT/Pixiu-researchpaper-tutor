@@ -3,7 +3,7 @@
   "frozenAt": "2026-11-28",
   "frozenTimestamp": "2026-11-28T12:36:10.103676+00:00",
   "budgetProfile": "standard",
-  "executionStatus": "executed_once_content_not_accepted",
+  "executionStatus": "executed_once_content_not_accepted_then_used_for_development",
   "independentCredit": 0,
   "materials": {
     "pointpillars_cvpr2019": {
@@ -88,5 +88,6 @@
   "caseDefinitionHashes": {
     "H1-POINTPILLARS": "1007aaedc2c629ba802a8f14974cb7de65829d966c1c1115383eadb9823443c3"
   },
-  "firstExecutionReceipt": "deep-research-evidence/pointpillars-h1-first-frozen-20261128.json"
+  "firstExecutionReceipt": "deep-research-evidence/pointpillars-h1-first-frozen-20261128.json",
+  "developmentReplayReceipt": "deep-research-evidence/pointpillars-h1-runtime-continuation-replay-20261128.json"
 }
