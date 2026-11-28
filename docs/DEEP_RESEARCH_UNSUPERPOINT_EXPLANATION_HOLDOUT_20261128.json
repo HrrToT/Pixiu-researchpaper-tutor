@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "frozenAt": "2026-11-28",
+  "frozenTimestamp": "2026-11-28T10:52:45.404815+00:00",
+  "budgetProfile": "standard",
+  "executionStatus": "frozen_not_executed",
+  "independentCredit": 0,
+  "materials": {
+    "unsuperpoint_v1": {
+      "path": "tmp/h1-unsuperpoint-frozen-material-20261128/1907.04011v1.pdf",
+      "arxiv": "1907.04011v1",
+      "reference": "https://arxiv.org/abs/1907.04011v1",
+      "sha256": "9818081ac5da89d4f66e395a2e0b9a76050bea9107ab22882123cb7d6ab5009c",
+      "bytes": 3642160,
+      "pageCount": 14
+    }
+  },
+  "cases": [
+    {
+      "id": "H1-UNSUPERPOINT",
+      "split": "holdout",
+      "materials": [
+        "unsuperpoint_v1"
+      ],
+      "kind": "claim_verification",
+      "policy": "task_only",
+      "question": "只依据当前的 UnsuperPoint v1 论文，向初学者解释为什么预测的关键点容易挤在小格边界、均匀性损失具体怎样计算，以及它能约束到什么程度。正文不超过 300 字，引用论文原文，不用外部资料。",
+      "required": [
+        "指出网络预测每个 8×8 区域内相对位置，难以重复检测的点可能靠近格外的匹配点，从而减小匹配距离，形成边界聚集。",
+        "分别排序相对 x、y 坐标，与 0 到 1 的等距序列比较，累积对应位置的平方误差，并组合两个轴的损失。",
+        "说明约束鼓励相对坐标的边缘分布趋于均匀，能减少边界峰值，不能推出每格或二维联合分布严格均匀。",
+        "用第 4.2 节原文支持机制与目标，正文不超过 300 字。"
+      ],
+      "forbidden": [
+        "把 8×8 小格说成图像划分的全局 8×8 网格。",
+        "把坐标排序写成对描述子或置信分数排序，或把均匀序列误写成随机位置标签。",
+        "把两个一维分布的约束当作二维均匀保证，也不要宣称原文没有报告的性能提升。"
+      ]
+    }
+  ],
+  "review": {
+    "dimensions": [
+      "目标回应",
+      "证据支持",
+      "条件完整",
+      "综合价值",
+      "可执行性",
+      "可读性"
+    ],
+    "minimumApplicableScore": 4,
+    "nonApplicable": {
+      "可执行性": "题目解释既有算法。"
+    },
+    "maxAnswerCharacters": 300,
+    "budgetCeilings": {
+      "calls": 18,
+      "tokens": 100000,
+      "seconds": 360
+    },
+    "sourceAnchors": [
+      {
+        "paper": "unsuperpoint_v1",
+        "page": 6,
+        "section": "4.2 and Figure 5",
+        "checks": "8×8 区域与边界聚集原因。"
+      },
+      {
+        "paper": "unsuperpoint_v1",
+        "page": 7,
+        "section": "4.2, equations (13) and (14)",
+        "checks": "分别排序与线性目标；峰值减少。"
+      }
+    ],
+    "goldInputBoundary": "只向应用传入固定问题、论文、任务内材料策略与标准预算。评分标准、参考页码留在应用之外。"
+  },
+  "caseDefinitionHashes": {
+    "H1-UNSUPERPOINT": "bf43970999919ab3772b5c1766374407ee96b71ba43f8b2849a12861f11793df"
+  }
+}
