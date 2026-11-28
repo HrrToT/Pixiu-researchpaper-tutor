@@ -1,0 +1,97 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "integrated_real_answer_review_and_owned_result_read_replay",
+  "candidateCommit": "984cae41292d87e83fc3257287a302673e128200",
+  "isolatedRunId": "dr_d2_quality_scope_integrated_audit_20261128",
+  "originalRunId": "dr_run_2619eb0e348955aba5f024a5a81532ac",
+  "outcome": "partial",
+  "savedClaims": 10,
+  "sourcePolicy": "task_only",
+  "workspaceDeliveryExercised": false,
+  "independentHoldoutCredit": 0,
+  "usage": {
+    "carriedTokens": 79256,
+    "newTokens": 9587,
+    "totalTokens": 88843,
+    "newGenerations": 1,
+    "inputCounts": 1
+  },
+  "coverage": {
+    "verdicts": [
+      {
+        "obligationId": "representation_mechanism",
+        "status": "covered"
+      },
+      {
+        "obligationId": "cost_quality_speed",
+        "status": "covered"
+      },
+      {
+        "obligationId": "requested_numeric_example",
+        "status": "covered"
+      },
+      {
+        "obligationId": "answer_scope",
+        "status": "partial"
+      }
+    ],
+    "remainingGap": {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    },
+    "missingCell": "table_3_0",
+    "requestDigest": "deade4f7ba28926cffa988c3d1ba0a3d45c35592b112d47c5ec06ebd36013d46"
+  },
+  "readSelectionReplay": {
+    "archivedSourceId": "src_6ff3e97e2e9ef46035402f59ca57fafbf8f09d4e6912aacb89920f49bac7f1ec",
+    "page": 1,
+    "previousReadSet": [
+      "src_7ac70d6917fef60629b66a6cedfc93db56d2af018671c647d8fa8280dec90491",
+      "src_8af5040df28802d2a2f33fc6b3a5ddee90ff047f667d6580f2fd5a4b0d116c69",
+      "src_aae945fd551745365223021975317a5b9afe0786c66af83620c46ea2355ffc1f",
+      "src_a03178602fcd7abf1553ffd4a435565352c2ffc63dd204d7f3edfecd8931c7cc",
+      "src_f13085dcce5897dbf579fb18958c6ff5a474df0593fc64fb99b096f05b4b97d7",
+      "src_093395c11475e2e9db5be8be6f7e1fd827d565bfd5ee25976f86900d07405aec"
+    ],
+    "updatedReadSet": [
+      "src_7ac70d6917fef60629b66a6cedfc93db56d2af018671c647d8fa8280dec90491",
+      "src_6ff3e97e2e9ef46035402f59ca57fafbf8f09d4e6912aacb89920f49bac7f1ec",
+      "src_50e4bd513583a59466b418619b4802c12bc4b1b51f4ea4f24e8e9513e39564fc",
+      "src_8af5040df28802d2a2f33fc6b3a5ddee90ff047f667d6580f2fd5a4b0d116c69",
+      "src_aae945fd551745365223021975317a5b9afe0786c66af83620c46ea2355ffc1f",
+      "src_a03178602fcd7abf1553ffd4a435565352c2ffc63dd204d7f3edfecd8931c7cc"
+    ],
+    "existingStageEvidenceHasDirectSource": false,
+    "candidateEligibleForSpeedStage": true,
+    "providerCalls": 0,
+    "semanticAcceptance": false
+  },
+  "regressionPassed": 258,
+  "artifacts": {
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/intent.json": "944e1a763dc9ce0863e603080417ab12a31f0594fca91d6d783bb1fdf96cf686",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/run.json": "6b25379d40949b8f10df502094bdaf416c68f42a92c341888bbba5541707bc8b",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/calls.json": "63cc0b838b09ce2800e6a8036fcc1dcd5dc47540270568aeccafbb66f6d538a8",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/verify-return.json": "d3625436b432296b3d6e5f3d7d6ca7a280fc3541b1a4039d6f6c5571f5924acd",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/publish-return.json": "bdd7582173d0f4fd554bc4c5ceb6a842b7411a70896d6954f281ff37f6f220d3",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/dispatches.json": "7681d0a020118dba60636ead66a0ee932dbdf1489d9d4c695b25bb1e7a9c4956",
+    "tmp/openai-d2-quality-scope-integrated-audit-real-20261128/counts.json": "4a46f7c83e660d7e135c8dc7cb3ccd2f73eca1263b4cb42a7696e5515bc60eed",
+    "tmp/openai-d2-quality-scope-integrated-audit-preflight-v2-20261128/dispatches.json": "dce3e4d46e19ac193a2c360e30206f6a2298e629ab4aff8e878db658d4b2d888",
+    "tmp/openai-d2-quality-scope-fresh-20261128/fps-local-read-selection-replay.json": "ce85ecf4f7c674af3d21df8c3d93c1e3eb995079da2979c068750af87872c036"
+  }
+}
