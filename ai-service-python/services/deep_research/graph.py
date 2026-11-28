@@ -1350,6 +1350,8 @@ def make_synthesize_node(
             obligations = {o['obligationId']: o for item in brief_state.get('plan', []) for o in item['obligations']}
             protocol_bundles = protocol.premise_bundles(candidates, obligations,
                                                        densification=protocol.densification_enabled(record))
+            if record.get(protocol.BASELINE_CONFIG_MARKER) == 1:
+                protocol_bundles.extend(protocol.baseline_configuration_bundles(candidates, question, paper_titles))
             protocol_ids = {eid for bundle in protocol_bundles for eid in bundle['evidenceIds']}
             protocol_rows = {row['evidenceId']: row for row in candidates if row['evidenceId'] in protocol_ids}
         requested_table, requested_table_evidence = None, set()

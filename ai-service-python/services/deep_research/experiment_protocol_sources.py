@@ -6,6 +6,7 @@ from services.deep_research.obligation_binding import eligible_obligation_ids
 
 MARKER = 'sharedExperimentProtocolEvidenceVersion'
 DENSIFICATION_MARKER = 'sharedExperimentDensificationEvidenceVersion'
+BASELINE_CONFIG_MARKER = 'sharedExperimentBaselineConfigVersion'
 OPACITY = 'opacity_schedule'
 MEMBERSHIP = 'dataset_membership'
 OPACITY_CONTINUATION = 'opacity_schedule_continuation'
@@ -38,6 +39,11 @@ _DENSIFICATION_PASSAGE = re.compile(
     r'.{0,190}?\bsplit\b.{0,110}?\breplace\b.{0,160}?\bscale\b.{0,175}?'
     r'\boriginal\s+3D\s+Gaussian\s+as\s+a\s+PDF\s+for\s+sampling\.',
     re.I | re.S)
+_NAMED_BASELINE = re.compile(r'(?:以|基于|按照)\s*([A-Za-z][\w.-]*)\s*论文[的中]?([^，。；]{1,80}?)(?:设置|配置)')
+_MODEL_SIZE = re.compile(r'\b[A-Za-z][A-Za-z0-9._-]*[- ]\d+(?:\.\d+)?B\b', re.I | re.ASCII)
+_CONFIG_CAPTION = re.compile(r'\bTable\s+\d+[.:]\s*Hyperparameter\b', re.I)
+_CONFIG_FIELDS = re.compile(r'\b(?:Optimizer|Learning Rate|LR)\b', re.I)
+_TRAINING_BUDGET_FIELDS = re.compile(r'\b(?:Epochs?|Batch Size|Warmup Steps?)\b', re.I)
 
 
 def enabled(record):
@@ -188,3 +194,32 @@ def premise_bundles(candidates, obligations, *, densification=False):
             adjacent = companion(row, eligible, 'quote') if role == OPACITY else None
             bundles.append({'evidenceIds': [row['evidenceId'], *([adjacent['evidenceId']] if adjacent else [])]})
     return bundles
+
+
+def baseline_configuration_bundles(candidates, question, paper_titles):
+    """Retain a named baseline's caption and data, bound to the same owned page."""
+    anchor = _NAMED_BASELINE.search(question)
+    if not anchor or not (model := _MODEL_SIZE.search(anchor[2])):
+        return []
+    owner_name = anchor[1].casefold()
+    owners = [owner for owner, title in paper_titles.items()
+              if title and (title.casefold() == owner_name or title.casefold().startswith(owner_name + ':'))]
+    if len(owners) != 1:
+        return []
+    model_name = re.compile(r'(?<![\w-])' + re.escape(model[0]) + r'(?![\w-])', re.I)
+    rows = [row for row in candidates if row.get('ownerMaterialId') == owners[0]
+            and row.get('accessLevel') == 'fulltext'
+            and row.get('verification', {}).get('literal') == 'passed'
+            and row.get('sourceVersionId') and row.get('sourceContext')
+            and type(row.get('location', {}).get('page')) is int]
+    for caption in rows:
+        if not (_CONFIG_CAPTION.search(caption['quote']) and model_name.search(caption['quote'])):
+            continue
+        values = next((row for row in rows if row.get('sourceVersionId') == caption['sourceVersionId']
+                       and row['location']['page'] == caption['location']['page']
+                       and row.get('sourceContext') == caption.get('sourceContext')
+                       and model_name.search(row['quote']) and _CONFIG_FIELDS.search(row['quote'])
+                       and _TRAINING_BUDGET_FIELDS.search(row['quote'])), None)
+        if values:
+            return [{'evidenceIds': list(dict.fromkeys((caption['evidenceId'], values['evidenceId'])))}]
+    return []

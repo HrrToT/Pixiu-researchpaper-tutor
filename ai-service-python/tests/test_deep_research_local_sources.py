@@ -444,3 +444,22 @@ def test_pdf_comparison_fallback_keeps_the_start_of_a_nearby_sentence():
     for row in revised:
         start = row['location']['offset']
         assert row['text'] == page[start:start + 1800]
+def test_named_baseline_configuration_requires_owned_same_version_table_rows():
+    from services.deep_research.experiment_protocol_sources import baseline_configuration_bundles
+
+    question = '以DoRA论文的LLaMA-7B常识推理设置为依据设计实验。'
+    tables = {'dora': 'DoRA: Weight-Decomposed Low-Rank Adaptation', 'other': 'LoRA: Low-Rank Adaptation'}
+    caption = 'Table 8. Hyperparameter configurations of DoRA for LLaMA-7B/13B.'
+    values = 'Hyperparameters LLaMA-7B LLaMA-13B\nOptimizer AdamW\nEpochs 3'
+    whole = caption + '\n' + values
+    shared = {'ownerMaterialId': 'dora', 'accessLevel': 'fulltext', 'verification': {'literal': 'passed'},
+              'sourceVersionId': 'v1', 'location': {'page': 13}, 'sourceContext': whole}
+    heading = {**shared, 'evidenceId': 'heading', 'quote': caption}
+    body = {**shared, 'evidenceId': 'body', 'quote': values}
+    variants = [{**body, 'ownerMaterialId': 'other'}, {**body, 'sourceVersionId': 'v2'},
+                {**body, 'location': {'page': 14}}, {**body, 'quote': values.replace('LLaMA-7B', 'LLaVA-7B')}]
+    assert all(not baseline_configuration_bundles([heading, row], question, tables) for row in variants)
+    assert baseline_configuration_bundles([*variants, heading, body], question, tables) == [
+        {'evidenceIds': ['heading', 'body']},
+    ]
+    assert not baseline_configuration_bundles([heading, body], '比较两篇论文的配置。', tables)
