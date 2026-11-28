@@ -59,6 +59,25 @@ def test_chinese_numbers_and_conditions_are_checked_before_model_verdict():
     assert verify_claims([claim(ev, '速度为200 FPS')], [ev], passed)['accepted']
 
 
+@pytest.mark.parametrize('text,enabled,accepted', [
+    ('论文将 Bicycle 列为 Mip-NeRF360 数据集的一个场景。', True, True),
+    ('论文将 Bicycle 列为 Mip-NeRF360 数据集的一个场景。', False, False),
+    ('Mip-NeRF360 数据集总共只有一个场景。', True, False),
+    ('论文将 Bicycle 列为 Mip-NeRF360 数据集的一个场景；共使用一个测试视图。', True, False),
+    ('论文只在列为 Mip-NeRF360 数据集的一个场景中训练。', True, False),
+])
+def test_scene_membership_does_not_use_a_running_header_as_a_count(text, enabled, accepted):
+    quote = 'Mip-NeRF360 scenes include Bicycle and Garden.'
+    header = '3D Gaussian Splatting •1:7\n'
+    ev = make_evidence(source(), quote, header + quote, location={'page': 7}, obligation_ids=[])
+    result = precheck_claims([claim(ev, text)], [ev], quantity_spelling_version=24,
+                            dataset_scene_membership=enabled,
+                            numeric_context={ev['evidenceId']: [header]} if enabled else None)
+    assert bool(result['candidates']) is accepted
+    if not accepted:
+        assert result['rejected'][0]['reason'] == 'numeric_mismatch'
+
+
 def test_positive_sign_in_combined_conditions_preserves_numeric_identity():
     quote = 'At 66% pruning and 2 SH degrees, SSIM goes from 0.927 to 0.926.'
     ev = make_evidence(source(), quote, quote, location={}, obligation_ids=[])

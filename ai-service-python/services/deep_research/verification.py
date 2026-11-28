@@ -9,6 +9,8 @@ from typing import Any, Callable
 from services.deep_research.asset_availability import requires_existing_asset, enforce_asset_prerequisites
 
 _MIP_NERF_360 = re.compile(r'(?<![A-Za-z0-9_])Mip[-‐‑–]NeRF\s*360(?![A-Za-z0-9_]|[.,][0-9])', re.I)
+_SCENE_MEMBERSHIP = re.compile(r'(列为[^，。；！？\r\n]{1,80}?数据集的)一个场景(?=[，。；！？\r\n]|\s*$)')
+_RUNNING_PAGE_LABEL = re.compile(r'•\s*\d+:\d+(?=[ \t]*(?:\r?\n|$))')
 
 
 def normalize_quote(text: str) -> str:
@@ -126,7 +128,8 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
                     bind_composite_revisions=False, named_revision_table=None, numeric_context=None,
-                    cited_passage_scope=False, named_revision_question=None, test_image_sampling=False) -> dict:
+                    cited_passage_scope=False, named_revision_question=None, test_image_sampling=False,
+                    dataset_scene_membership=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -238,6 +241,11 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 source_texts = [_MIP_NERF_360.sub('', text) for text in source_texts]
             if numeric_context:
                 source_texts.extend(text for item in support for text in numeric_context.get(item['evidenceId'], ()))
+            if dataset_scene_membership:
+                # Membership says which dataset contains the scene. It does not
+                # report a count. A running article/page label supplies no count.
+                claim_text = _SCENE_MEMBERSHIP.sub(r'\1场景之一', claim_text)
+                source_texts = [_RUNNING_PAGE_LABEL.sub('', text) for text in source_texts]
             if test_image_sampling:
                 # An exact held-out ordinal expresses one selected image per stride.
                 # Remove that translated count only, never the stride or unrelated numbers.

@@ -20,6 +20,20 @@ def test_fact_packet_explains_its_scope_and_binding_limit():
         {**record, SCOPED_PACKET_MARKER: 5}, {'factChecks': [['fact_0']]})
 
 
+def test_scoped_fact_prompt_names_the_exact_context_field_for_each_check():
+    from services.deep_research.shared_experiment_review import FACT_CONTEXT_MARKER, SCOPED_PACKET_MARKER, _scoped_packet_policy
+
+    packet = {'factChecks': [
+        ['fact_0', 'figure', '/sourceFacts/0/text', [{'evidenceId': 'E4', 'field': 'before'}]],
+        ['fact_1', 'measure', '/sourceFacts/1/text'],
+    ]}
+    policy = {SCOPED_PACKET_MARKER: 7, FACT_CONTEXT_MARKER: 5}
+    prompt = _scoped_packet_policy(policy, packet)
+    assert 'include them in evidenceBindings' in prompt
+    assert 'fact_0 = E4.before' in prompt and 'fact_1 =' not in prompt
+    assert 'fact_0 = E4.before' not in _scoped_packet_policy({**policy, FACT_CONTEXT_MARKER: 4}, packet)
+
+
 def test_lifecycle_array_binding_proves_absence_without_approving_a_check():
     from services.deep_research.shared_experiment_review import _binding_findings
 

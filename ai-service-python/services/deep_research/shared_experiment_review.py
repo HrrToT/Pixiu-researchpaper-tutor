@@ -174,6 +174,15 @@ def _scoped_packet_policy(record, view):
                                     ', /analysis/contrasts/INDEX/weights or /groups/INDEX/levels.')
         if key == 'factChecks':
             bounds += 'This packet intentionally omits the design. Check coherence among sourceFacts only. '
+            if record.get(FACT_CONTEXT_MARKER) == 5:
+                context_bindings = [
+                    f"{row[0]} = " + ', '.join(f"{binding['evidenceId']}.{binding['field']}" for binding in row[3])
+                    for row in view['factChecks'] if len(row) == 4
+                ]
+                if context_bindings:
+                    bounds += ('Read these exact contextual fields. If the fact passes, include them in '
+                               'evidenceBindings as well as any other supporting fields. '
+                               + '; '.join(context_bindings) + '. ')
         mixed = (' humanChecks map [checkId,obligationId,criterionId] to requirements '
                  '(whole is the question). Bind substantive fields covering each criterion.'
                  if mixed_checks else '')
@@ -196,7 +205,7 @@ def reference_review_enabled(record):
 
 def _fact_context_enabled(record):
     version = record.get(FACT_CONTEXT_MARKER)
-    return type(version) is int and version in (1, 2, 3, 4)
+    return type(version) is int and version in (1, 2, 3, 4, 5)
 
 
 def _group_bindings(record):
@@ -284,7 +293,7 @@ def descriptor(record, check_ids=None):
     check = _object({'checkId':{'enum':ids}, 'status':{'enum':['passed','failed','unresolved']},
                      'planBindings':_array(binding, maximum=plan_binding_cap),
                      'evidenceBindings':_array(evidence, maximum=8), 'reason':reason})
-    scoped_facts = (check_ids is not None and record.get(FACT_CONTEXT_MARKER) == 4
+    scoped_facts = (check_ids is not None and record.get(FACT_CONTEXT_MARKER) in (4, 5)
                     and any(checks_by_id[cid]['kind'] == 'source_fact' for cid in ids))
     if scoped_facts:
         variants = []
@@ -529,7 +538,7 @@ def build(record, input_data, aliases, *, required_domains=()):
             instructions = INDEXED_REFERENCE_INSTRUCTIONS
             data['factChecks'] = [[t['checkId'], t['factId'], t['pathPrefixes'][0]]
                                   for t in review_targets if t['kind'] == 'source_fact']
-            if record.get(FACT_CONTEXT_MARKER) in (3, 4):
+            if record.get(FACT_CONTEXT_MARKER) in (3, 4, 5):
                 hints = _fact_context_hints(record, aliases, input_data, bound['proposal']['sourceFacts'])
                 if hints:
                     for row in data['factChecks']:
@@ -665,7 +674,7 @@ def build(record, input_data, aliases, *, required_domains=()):
                    if batches and record.get(STOP_INVALID_BATCH_MARKER) == 1 else {})
     protocol_policy = {protocol.MARKER: 1} if protocol.enabled(record) else {}
     fact_policy = ({FACT_CONTEXT_MARKER: record[FACT_CONTEXT_MARKER]}
-                   if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) else {})
+                   if record.get(FACT_CONTEXT_MARKER) in (2, 3, 4, 5) else {})
     group_policy = {GROUP_BINDINGS_MARKER: 1} if _group_bindings(record) else {}
     fit_capture_policy = ({FIT_CAPTURE_BINDINGS_MARKER: 1}
                           if record.get(FIT_CAPTURE_BINDINGS_MARKER) == 1 else {})
@@ -714,12 +723,13 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0),
               'cited_passage_scope': record.get(CITED_PASSAGE_SCOPE_MARKER) == 1,
+              'dataset_scene_membership': record.get(FACT_CONTEXT_MARKER) == 5,
               'test_image_sampling': record.get('sharedExperimentTestSamplingVersion') == 1}
     if _fact_context_enabled(record):
         from services.deep_research.shared_experiment_generation import fact_boundary_enabled
         if fact_boundary_enabled(record):
             policy['quantity_spelling_version'] = 24
-        elif record.get(FACT_CONTEXT_MARKER) in (2, 3, 4) and policy['quantity_spelling_version'] != 22:
+        elif record.get(FACT_CONTEXT_MARKER) in (2, 3, 4, 5) and policy['quantity_spelling_version'] != 22:
             policy['quantity_spelling_version'] = 18
         contexts = _visible_numeric_context(input_data, by_id, aliases)
         if passed_bindings is None:
