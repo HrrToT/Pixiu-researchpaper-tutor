@@ -277,7 +277,7 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
         glossary_targets = (beginner_mechanism_targets(record, [
             target for target in all_targets
             if target['role'] == 'paper_cell' and target['targetId'] in target_ids])
-            if record.get('comparisonBeginnerMechanismGuidanceVersion') == 3 else [])
+            if record.get('comparisonBeginnerMechanismGuidanceVersion') in (3, 4) else [])
         stage = {'stageId': scope, 'targetIds': target_ids, 'maxPoints': len(target_ids),
                  'prompt': prompt, 'inputBytes': len(prompt.encode('utf-8')),
                  'requiredBundleCount': len(required), 'suppliedEvidenceIds': supplied,
@@ -293,6 +293,8 @@ def prepare(record, requirements, sources, rows, tables, bundles, aliases, *,
                  **({'paperSettingStatements': True} if setting_statements else {}),
                  **({'speedExplanationProse': True} if prose_explanation else {}),
                  **({'beginnerGlossTargets': glossary_targets} if glossary_targets else {}),
+                 **({'partialBeginnerGlosses': True}
+                    if glossary_targets and record.get('comparisonBeginnerMechanismGuidanceVersion') == 4 else {}),
                  'scientificApproval': False}
         stage['inputDigest'] = digest(stage)
         return stage

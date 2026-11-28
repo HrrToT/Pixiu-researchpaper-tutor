@@ -1236,6 +1236,27 @@ def test_beginner_mechanism_glosses_join_first_draft_without_changing_its_citati
     assert bool(entry.get('beginnerGlossErrors')) is invalid
 
 
+def test_beginner_gloss_batch_keeps_valid_definitions_when_one_adds_a_number():
+    from services.deep_research.comparison_stage_generation import bind_beginner_glosses
+
+    point = {'body': {'prose': {'text': '将教师模型蒸馏后用码本量化，并以 float16 保存部分属性。',
+                               'conditions': {}}},
+             'evidenceRefs': ['E1'],
+             'beginnerGlosses': [{'term': '蒸馏', 'gloss': '让较小模型学习教师模型的预测'},
+                                 {'term': 'float16', 'gloss': '16位浮点数格式'},
+                                 {'term': '码本', 'gloss': '存放代表值的集合'}]}
+    saved = deepcopy(point)
+    legacy, legacy_error = bind_beginner_glosses(point)
+    assert legacy_error == 'invalid_beginner_gloss'
+    assert legacy['body'] == point['body']
+    result, error = bind_beginner_glosses(point, isolate_invalid=True)
+    assert error == 'invalid_beginner_gloss'
+    assert result['body']['prose']['text'] == (
+        '将教师模型蒸馏（让较小模型学习教师模型的预测）后用码本（存放代表值的集合）量化，并以 float16 保存部分属性。')
+    assert result['evidenceRefs'] == point['evidenceRefs']
+    assert point == saved
+
+
 @pytest.mark.parametrize('exhausted',['calls','time'])
 def test_exhausted_dispatch_budget_does_not_send_the_next_stage(exhausted):
     r,snapshot=prepared()

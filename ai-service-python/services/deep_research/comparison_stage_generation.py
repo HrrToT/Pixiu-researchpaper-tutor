@@ -20,7 +20,7 @@ BOUNDED_STAGE_OPTION = '_bounded_comparison_stage_output'
 BOUNDED_STAGE_TOKENS = 4000
 
 
-def bind_beginner_glosses(point):
+def bind_beginner_glosses(point, *, isolate_invalid=False):
     """Compile optional draft glosses while preserving the base point on invalid input."""
     from services.deep_research.verified_text_repair import insert_term_glosses
 
@@ -33,23 +33,30 @@ def bind_beginner_glosses(point):
     text = prose.get('text') if isinstance(prose, dict) else None
     if not isinstance(text, str) or not isinstance(definitions, list) or not 1 <= len(definitions) <= 6:
         return base, 'invalid_beginner_glosses'
-    spans = []
+    spans, accepted = [], []
+    error = None
     for definition in definitions:
         if not isinstance(definition, dict) or set(definition) != {'term', 'gloss'}:
-            return base, 'invalid_beginner_gloss'
+            error = error or 'invalid_beginner_gloss'
+            continue
         term, gloss = definition['term'], definition['gloss']
         if (not isinstance(term, str) or not re.fullmatch(r'[\w -]{2,24}', term)
                 or term != term.strip() or term not in text or not isinstance(gloss, str)
                 or not re.fullmatch(r'[\u4e00-\u9fffA-Za-z 、，]{2,48}', gloss.strip())
                 or not re.search(r'[\u4e00-\u9fff]', gloss)):
-            return base, 'invalid_beginner_gloss'
+            error = error or 'invalid_beginner_gloss'
+            continue
         start = text.index(term)
         end = start + len(term)
         if any(start < previous_end and previous_start < end for previous_start, previous_end in spans):
-            return base, 'overlapping_beginner_terms'
+            error = error or 'overlapping_beginner_terms'
+            continue
         spans.append((start, end))
-    glossed = insert_term_glosses(text, definitions)
-    return {**base, 'body': {'prose': {**prose, 'text': glossed}}}, None
+        accepted.append(definition)
+    if not accepted or error and not isolate_invalid:
+        return base, error
+    glossed = insert_term_glosses(text, accepted)
+    return {**base, 'body': {'prose': {**prose, 'text': glossed}}}, error
 
 
 def bind_stage_point(point, pairs, *, setting_references=False, protocol_settings_only=False):
@@ -222,7 +229,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                 pairs = stage.get('examplePairsByTarget', {}).get(row['targetId'])
                 try:
                     if row['targetId'] in stage.get('beginnerGlossTargets', []):
-                        point, gloss_error = bind_beginner_glosses(point)
+                        point, gloss_error = bind_beginner_glosses(
+                            point, isolate_invalid=stage.get('partialBeginnerGlosses') is True)
                         if gloss_error:
                             gloss_errors.append({'targetId': row['targetId'], 'reason': gloss_error})
                     papers = stage.get('paperSubjectsByTarget', {}).get(row['targetId'])

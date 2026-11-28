@@ -470,7 +470,7 @@ def beginner_mechanism_targets(record, targets):
     from services.deep_research.audience_rewrite import beginner_requested
     from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
 
-    if record.get('comparisonBeginnerMechanismGuidanceVersion') not in (1, 2, 3) or not beginner_requested(record):
+    if record.get('comparisonBeginnerMechanismGuidanceVersion') not in (1, 2, 3, 4) or not beginner_requested(record):
         return []
     return [target['targetId'] for target in targets
             if representation_requested(target['question'])
@@ -807,7 +807,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                 [target for paper in data['papers'] for target in paper['targets']])
             if mechanism_targets:
                 guidance_version = record['comparisonBeginnerMechanismGuidanceVersion']
-                if guidance_version == 3 and source_scope is not None:
+                if guidance_version in (3, 4) and source_scope is not None:
                     data['beginnerGlossTargets'] = mechanism_targets
                     policy += ('For beginnerGlossTargets only, explain what the method stores or does to its input. '
                                'Return point.beginnerGlosses: up to six {"term":"exact words in body.prose.text",'
@@ -821,7 +821,7 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
                                "For a training or compression step, say what guides it and why it matters when the cited "
                                "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
                                "Stay in the existing comparison cell and cite the passage for the explanation.\n")
-                    if guidance_version in (2, 3):
+                    if guidance_version in (2, 3, 4):
                         policy += ("At first use, explain each essential technical term in ordinary Chinese beside it. "
                                    "Say what it means in this paper before using it to explain the method. "
                                    "Keep the definition in the cell, and use only the cited evidence.\n")
