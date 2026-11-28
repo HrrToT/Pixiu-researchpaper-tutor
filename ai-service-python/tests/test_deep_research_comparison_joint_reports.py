@@ -289,6 +289,31 @@ def test_historical_compiler_still_refuses_reported_joint_and_prompt_is_unchange
     assert 'SINGLE baseline example' in guidance(r) and 'not a separate numerical inventory' in guidance(r)
 
 
+def test_beginner_mechanism_guidance_is_scoped_to_paper_cells_and_new_runs():
+    from services.deep_research.comparison_wire import render
+
+    cp, _ = packets()
+    question = '向初学者解释。' + QUESTION
+    cp = plan_cells(cp['requirements'], cp['sources'], list(cp['evidence'].values()), shared_axes=True,
+                    typed_roles=True, question=question, fixed_slots=True, unified_answers=True,
+                    local_goal_refs=True, measurement_display=True)
+    r = record()
+    r.update(question=question, comparisonAuthoringContractVersion=16,
+             comparisonJointReportsContractVersion=16, comparisonEvaluationProtocolVersion=7,
+             comparisonPlanningContractVersion=6, comparisonReviewBatchContractVersion=3)
+    r['state']['outputKind'] = 'paper_comparison'
+    marker = 'Naming the step or giving its benefit alone is insufficient.'
+    historic = render(r, question, cp, {}, None, 4, source_scope=('P1',))
+    r['comparisonBeginnerMechanismGuidanceVersion'] = 1
+    authored = render(r, question, cp, {}, None, 4, source_scope=('P1',))
+    assert marker not in historic and marker in authored
+    assert 'what guides it and why it matters when the cited passage supports that explanation' in authored
+    assert marker not in render(r, question, cp, {}, None, 4, source_scope=('joint',))
+    r['question'] = QUESTION
+    assert render(r, QUESTION, cp, {}, None, 4, source_scope=('P1',)) == render(
+        {**r, 'comparisonBeginnerMechanismGuidanceVersion': 0}, QUESTION, cp, {}, None, 4, source_scope=('P1',))
+
+
 @pytest.mark.parametrize('mutation',['foreign','version','goal'])
 def test_edited_example_keeps_exact_goal_and_source_version_scope(mutation):
     _,draft,c,ev,_=compiled()

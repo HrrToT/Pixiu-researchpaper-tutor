@@ -774,6 +774,21 @@ def render(record, question, plan, tables, limit, max_claims, *, source_scope=No
 
             if requests_recheck(question):
                 body_guidance += '\n' + DRAFT_GUIDANCE + '\n'
+        if record.get('comparisonBeginnerMechanismGuidanceVersion') == 1 and data['papers']:
+            from services.deep_research.audience_rewrite import beginner_requested
+            from services.deep_research.mechanism_sources import compression_mapping_requested, representation_requested
+
+            mechanism_targets = [
+                target['targetId'] for paper in data['papers'] for target in paper['targets']
+                if representation_requested(target['question'])
+                or compression_mapping_requested(target['question'], include_operations=True)
+            ]
+            if mechanism_targets and beginner_requested(record):
+                policy += (f"For beginner mechanism targets {', '.join(mechanism_targets)}, keep the technical term "
+                           "and briefly explain what the representation stores or what the operation does to its input. "
+                           "For a training or compression step, say what guides it and why it matters when the cited "
+                           "passage supports that explanation. Naming the step or giving its benefit alone is insufficient. "
+                           "Stay in the existing comparison cell and cite the passage for the explanation.\n")
         return (f'Maximum {max_claims} points; complete answer character limit: {length}.\n'
                 + envelope + policy + short_policy + body_guidance + figure_policy
                 + (paper_boundary_policy if scoped_joint else '')
