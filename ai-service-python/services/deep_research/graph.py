@@ -3257,9 +3257,11 @@ def make_publish_node(
                     display_metadata=display_metadata if pinned_method_access else None,
                     **({'comparison_draft':brief_state.get('comparisonCellDraft'), 'joint_coverage':brief_state.get('coverage', [])}
                        if cell_enabled(record) and type(record.get('comparisonMatchedExampleGapClosureVersion')) is int
-                       and record['comparisonMatchedExampleGapClosureVersion'] in (1, 2) else {}),
+                       and record['comparisonMatchedExampleGapClosureVersion'] in (1, 2, 3) else {}),
                     reconcile_comparison_dependencies=(cell_enabled(record)
-                        and record.get('comparisonMatchedExampleGapClosureVersion') == 2),
+                        and record.get('comparisonMatchedExampleGapClosureVersion') in (2, 3)),
+                    reconcile_conditional_advice=(cell_enabled(record)
+                        and record.get('comparisonMatchedExampleGapClosureVersion') == 3),
                     **({'versioned_sources':True} if type(record.get('sourceGapClosureContractVersion')) is int and record['sourceGapClosureContractVersion']==1 else {})),
                 *audit.get('gaps', [])]
         

@@ -203,3 +203,47 @@ def test_verified_sibling_clears_its_dependency_gap_without_unblocking_downstrea
 
     assert _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources) == gaps[1:]
     assert _remove_reviewed_comparison_dependency_gaps(gaps, plan, {**audited_sources, 'advice': {'paper'}}) == []
+
+
+@pytest.mark.parametrize('failure', [None, 'uncited_fact', 'unbound_advice', 'general_deliverable', 'source_gap'])
+def test_reviewed_advice_uses_only_independent_facts_to_resolve_scheduling_gap(failure):
+    from services.deep_research.comparison_presentation import audit_digest, metadata
+    from services.deep_research.dependencies import UNFINISHED_DEPENDENCY
+    from services.deep_research.final_coverage import remaining_retrieval_gaps
+
+    evidence = [{**EVIDENCE[0], 'sourceVersionId': 'v1'},
+                {**EVIDENCE[0], 'evidenceId': 'b', 'sourceWorkId': 'other', 'sourceVersionId': 'v2'},
+                {**EVIDENCE[0], 'evidenceId': 'unverified-claim-ref', 'sourceVersionId': 'v1'}]
+    required = ['paper', 'other']
+    draft = {'sources': {'P1': {'workId': 'paper', 'versionId': 'v1'},
+                         'P2': {'workId': 'other', 'versionId': 'v2'}},
+             'layoutVersion': 3, 'shortProseVersion': 1, 'layout': [], 'jointGoals': [],
+             'jointDeliverables': {'advice': [{'kind': 'conditional_advice'}]}}
+    plan = [{'itemId': 'read', 'obligations': [{'obligationId': 'facts', 'requiredSources': required}]},
+            {'itemId': 'choose', 'dependencies': ['read'],
+             'obligations': [{'obligationId': 'advice', 'requiredSources': required}]}]
+    facts = {'claimId': 'f', 'text': FULL, 'kind': 'reported', 'evidenceRefs': ['e', 'b'],
+             'obligationIds': ['facts'], 'verification': 'semantic_passed'}
+    advice = {'claimId': 'a', 'text': SHORT, 'kind': 'proposal', 'evidenceRefs': ['e', 'b'],
+              'obligationIds': ['advice'], 'verification': 'proposal'}
+    gap = {'obligationId': 'advice', 'checked': False, 'missingEvidence': UNFINISHED_DEPENDENCY}
+    if failure == 'uncited_fact':
+        advice['evidenceRefs'] = ['unverified-claim-ref', 'b']
+    elif failure == 'unbound_advice':
+        advice['obligationIds'] = ['facts']
+    elif failure == 'general_deliverable':
+        draft['jointDeliverables'] = {'advice': [{'kind': 'comparability'}]}
+    elif failure == 'source_gap':
+        gap['sourceWorkId'] = 'paper'
+    claims = [facts, advice]
+    audit = {'status': 'checked', 'gaps': [], 'answerCoherence': {'coherent': True},
+             'comparisonPresentationDigest': audit_digest(metadata(draft), claims),
+             'verdicts': [{'obligationId': 'facts', 'status': 'covered',
+                           'bindings': [{'claimId': 'f', 'excerpt': FULL}]},
+                          {'obligationId': 'advice', 'status': 'covered',
+                           'bindings': [{'claimId': 'a', 'excerpt': SHORT}]}]}
+    opts = dict(plan=plan, comparison_draft=draft, reconcile_comparison_dependencies=True)
+    assert remaining_retrieval_gaps([gap], audit, claims, evidence, **opts) == [gap]
+    result = remaining_retrieval_gaps([gap], audit, claims, evidence, **opts,
+                                      reconcile_conditional_advice=True)
+    assert result == ([gap] if failure else [])

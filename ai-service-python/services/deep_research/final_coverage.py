@@ -639,7 +639,7 @@ def _remove_reviewed_comparison_dependency_gaps(gaps, plan, audited_sources):
 
 def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, question="",versioned_sources=False,
                              comparison_draft=None, joint_coverage=(), reconcile_comparison_dependencies=False,
-                             display_metadata=None):
+                             display_metadata=None, reconcile_conditional_advice=False):
     """Return source gaps that still block the actual answer.
 
     Required research keeps the source-specific closure rule: a bounded factual
@@ -705,8 +705,27 @@ def remaining_retrieval_gaps(gaps, audit, claims, evidence, *, plan=None, questi
         if (oid not in audit.get('invalidAspectObligations', ())
                 and oid not in audit.get('invalidCriterionObligations', ())):
             exact_covered[oid] = exact_works
+    if reconcile_conditional_advice and exact_origins:
+        _add_reviewed_advice_sources(exact_covered, comparison_draft, audit, claims, accepted, exact_origins)
     remaining = [gap for gap in gaps if not isinstance(gap, dict)
                  or ((gap.get('obligationId'), gap.get('sourceWorkId'), gap.get('missingEvidence')) not in resolved_joint
                      and gap.get('sourceWorkId') not in covered.get(gap.get('obligationId'), set()))]
     return (_remove_reviewed_comparison_dependency_gaps(remaining, plan, exact_covered)
             if exact_origins else remaining)
+
+
+def _add_reviewed_advice_sources(exact_covered, draft, audit, claims, factual_claims, exact_origins):
+    """Resolve scheduling gaps for audited advice whose cited facts were checked separately."""
+    verdicts = {v['obligationId']: v for v in audit['verdicts'] if v.get('obligationId') in exact_covered}
+    factual_refs = {ref for verdict in verdicts.values() for binding in verdict.get('bindings', [])
+                    for ref in factual_claims.get(binding.get('claimId'), {}).get('evidenceRefs', [])}
+    advice = {claim['claimId']: claim for claim in claims if claim.get('verification') == 'proposal'
+              and claim.get('kind') in ('proposal', 'suggestion') and not claim.get('executionSpec')}
+    for oid, deliverables in draft.get('jointDeliverables', {}).items():
+        if len(deliverables) != 1 or deliverables[0].get('kind') != 'conditional_advice' or oid not in verdicts:
+            continue
+        for binding in verdicts[oid].get('bindings', []):
+            claim = advice.get(binding.get('claimId'), {})
+            if oid in claim.get('obligationIds', []):
+                exact_covered[oid].update(exact_origins[ref] for ref in claim.get('evidenceRefs', [])
+                                          if ref in factual_refs and ref in exact_origins)

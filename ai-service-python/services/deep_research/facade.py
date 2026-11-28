@@ -516,7 +516,7 @@ class ResearchFacade:
             "reviewRevisionRowCountVersion": 1,
             "verifiedTextRepairContractVersion": 5 if single_task_paper and output_kind == 'claim_verification' else 2,
             "sourceGapClosureContractVersion": 1,
-            "comparisonMatchedExampleGapClosureVersion": 2,
+            "comparisonMatchedExampleGapClosureVersion": 3,
             "extractionScheduleContractVersion": 1,
             "experimentIntentContractVersion": 3,
             "tableReferencesContractVersion": 4,
