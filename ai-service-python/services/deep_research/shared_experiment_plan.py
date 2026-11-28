@@ -14,6 +14,7 @@ MAX_BYTES = 24000
 MAX_EXPANDED_BYTES = 32000
 EVALUATION_PREPARATION_MARKER = 'sharedExperimentEvaluationPreparationVersion'
 OPERATION_CAPACITY_MARKER = 'sharedExperimentOperationCapacityVersion'
+SHARED_PREFIT_WINDOW_MARKER = 'sharedExperimentSharedPrefitWindowVersion'
 EXPLICIT_SEMANTICS_MARKER = 'sharedExperimentExplicitSemanticsVersion'
 NORMALIZATION_GUIDANCE = (
     'For an update normalized by a norm, name its complete argument before division, specify the axis, '
@@ -130,7 +131,7 @@ def _counted_size(value, serialized_size):
     return serialized_size
 
 
-def validate(value, evidence_ids, *, required_domains=(), count_unique_operations=False):
+def validate(value, evidence_ids, *, required_domains=(), count_unique_operations=False, shared_prefit_window=False):
     """Check known identities/causality/accounting; prose needs scientific review."""
     from jsonschema import Draft202012Validator
     from services.deep_research.group_spec import validate_operation
@@ -311,8 +312,17 @@ def validate(value, evidence_ids, *, required_domains=(), count_unique_operation
         counts = [allocations[(budget['id'], g)] for g in (budget['groups'] if budget['scope'] == 'arm' else ['shared'])]
         if budget.get('allocation') == 'shared_preparation_total':
             positions = [j for j, step in enumerate(value['steps']) if step['budgetId'] == budget['id']]
+            intervening = [step for step in value['steps'][positions[0]:positions[-1] + 1]
+                           if step['budgetId'] != budget['id']] if positions else []
+            # The elapsed interval is continuous. A shared training fit inside
+            # it keeps its own single optimizer-step cap as a second constraint.
+            valid_window = not intervening or shared_prefit_window and all(
+                step['kind'] == 'fit' and step['scope'] == 'shared' and step['dataUse'] == 'training'
+                and (fit_budget := budgets.get(step['budgetId'], {})).get('unit') == 'optimizer_steps'
+                and fit_budget['scope'] == 'shared' and fit_budget.get('allocation') == 'single'
+                for step in intervening)
             if (budget['scope'] != 'shared' or budget['unit'] != 'wall_seconds' or budget['matching'] != 'native'
-                    or budget['cap'] <= 0 or not positions or positions != list(range(positions[0], positions[-1] + 1))
+                    or budget['cap'] <= 0 or not positions or not valid_window
                     or any(value['steps'][j]['kind'] != 'prepare' for j in positions)
                     or any(step['scope'] != 'shared' for step in value['steps'][:positions[-1] + 1])):
                 issue('plan.shared_preparation_budget', f'/budgets/{i}')
@@ -374,15 +384,18 @@ def validate(value, evidence_ids, *, required_domains=(), count_unique_operation
     return issues
 
 
-def bind_for_review(value, evidence_ids, *, context_digest, required_domains=(), count_unique_operations=False):
+def bind_for_review(value, evidence_ids, *, context_digest, required_domains=(), count_unique_operations=False,
+                    shared_prefit_window=False):
     """Freeze an unchecked proposal. Never expose a publication/approval flag."""
     if not isinstance(context_digest, str) or not re.fullmatch('[0-9a-f]{64}', context_digest):
         raise ValueError('Trusted complete research context digest required')
+    if shared_prefit_window and not count_unique_operations:
+        raise ValueError('Shared prefit window requires the current operation capacity policy')
     issues = validate(value, evidence_ids, required_domains=required_domains,
-                      count_unique_operations=count_unique_operations)
+                      count_unique_operations=count_unique_operations, shared_prefit_window=shared_prefit_window)
     if issues:
         raise ValueError('Invalid shared experiment proposal: '+','.join(sorted({i['code'] for i in issues})))
-    bound = {'version': 2 if count_unique_operations else 1, 'contextDigest': context_digest,
+    bound = {'version': 3 if shared_prefit_window else 2 if count_unique_operations else 1, 'contextDigest': context_digest,
             'proposal': deepcopy(value), 'proposalDigest': digest(value),
             'allowedEvidenceIds': sorted(set(evidence_ids)), 'requiredDomains': sorted(set(required_domains)),
             'status': 'awaiting_scientific_review', 'scientificApproval': False}
@@ -393,7 +406,7 @@ def validate_bound(bound, *, expected_digest):
     """Any later edit requires a new bound proposal and fresh scientific review."""
     expected = {'version', 'contextDigest', 'proposal', 'proposalDigest', 'allowedEvidenceIds', 'requiredDomains', 'status', 'scientificApproval', 'bindingDigest'}
     if (not isinstance(bound, dict) or set(bound) != expected or type(bound['version']) is not int
-            or bound['version'] not in (1, 2) or bound['scientificApproval'] is not False
+            or bound['version'] not in (1, 2, 3) or bound['scientificApproval'] is not False
             or not isinstance(bound['contextDigest'], str) or not re.fullmatch('[0-9a-f]{64}', bound['contextDigest'])
             or bound['status'] != 'awaiting_scientific_review'):
         return False
@@ -402,6 +415,7 @@ def validate_bound(bound, *, expected_digest):
                 and digest({k: v for k, v in bound.items() if k != 'bindingDigest'}) == expected_digest
                 and digest(bound['proposal']) == bound['proposalDigest']
                 and not validate(bound['proposal'], bound['allowedEvidenceIds'], required_domains=bound['requiredDomains'],
-                                 count_unique_operations=bound['version'] == 2))
+                                 count_unique_operations=bound['version'] in (2, 3),
+                                 shared_prefit_window=bound['version'] == 3))
     except (TypeError, ValueError, OverflowError, RecursionError):
         return False

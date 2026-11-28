@@ -11,7 +11,7 @@ from services.deep_research.contracts import DeepResearchError, digest
 from services.deep_research.metric_scope import SHARED_SCOPE_MARKER
 from services.deep_research.shared_experiment_plan import (
     EVALUATION_PREPARATION_MARKER, EVALUATION_PROTOCOL_GUIDANCE, EXPLICIT_SEMANTICS_MARKER, MAX_BYTES,
-    NORMALIZATION_GUIDANCE, OPERATION_CAPACITY_MARKER, TRAINING_PROTOCOL_GUIDANCE,
+    NORMALIZATION_GUIDANCE, OPERATION_CAPACITY_MARKER, SHARED_PREFIT_WINDOW_MARKER, TRAINING_PROTOCOL_GUIDANCE,
     bind_for_review, schema, validate, validate_bound,
 )
 
@@ -339,7 +339,7 @@ def instructions(record, *, required_domains=()):
                             'Shared opacity/cull schedule, fit after last reset. Label proposals. '
                             'Peak from load to final sync; sampled peaks are observed only. ',
                         )
-                if record.get('sharedExperimentDensificationExecutionVersion') == 13:
+                if record.get('sharedExperimentDensificationExecutionVersion') in (13, 14):
                     execution = (
                         'Wire <20KB; actions ≤1600 chars. Share projection/support/blend, SH basis/view/bands, '
                         'RGB-to-SH offsets/signs, position derivatives, zero-grad each backward, optimizer/tests. '
@@ -459,6 +459,13 @@ def instructions(record, *, required_domains=()):
             prompt = prompt.replace(
                 'Specify layout, shapes, axes, initial values, computations, controls and open prerequisites.',
                 'Map stored and math layouts both ways. Give shapes, axes, initial values, controls and prerequisites.',
+            )
+        if version == 8 and record.get('sharedExperimentDensificationExecutionVersion') == 14:
+            prompt = prompt.replace(
+                'Use "shared_preparation_total" for consecutive shared prepare steps before cloning. '
+                'Each references one cumulative native wall-clock cap and stop rule without reset. Use null if unbudgeted.',
+                'Shared prepare steps reference one "shared_preparation_total" wall cap, no reset. '
+                'Between those steps, shared training fit keeps its own optimizer-step cap. Null if unbudgeted.',
             )
         return prompt
     if version == 4:
@@ -598,6 +605,8 @@ def build(record, input_data, aliases, *, required_domains=()):
         output_policy[EVALUATION_PREPARATION_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(OPERATION_CAPACITY_MARKER) == 1:
         output_policy[OPERATION_CAPACITY_MARKER] = 1
+        if record.get('sharedExperimentDensificationExecutionVersion') == 14:
+            output_policy[SHARED_PREFIT_WINDOW_MARKER] = 1
     if record.get(MARKER) == 8 and record.get(CLONE_SCOPE_MARKER) == 1:
         output_policy[CLONE_SCOPE_MARKER] = 1
     return {'request': request, 'contextDigest': context_digest, 'allowedEvidenceIds': sorted(supplied),
@@ -651,6 +660,7 @@ def _validate_response(response, profile, built):
                                      derive_analysis=built.get(DERIVED_ANALYSIS_MARKER) == 1,
                                      evaluation_prepare=built.get(EVALUATION_PREPARATION_MARKER) == 1,
                                      count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1,
+                                     shared_prefit_window=built.get(SHARED_PREFIT_WINDOW_MARKER) == 1,
                                      derive_clone_scope=built.get(CLONE_SCOPE_MARKER) == 1)
     else:
         issues = validate(value, evidence_ids, required_domains=domains)
@@ -712,7 +722,8 @@ def prepare(record, input_data, aliases, *, invoke, checkpoint, required_domains
         value, issues = _validate_response(response, record[MARKER], built)
         bound = (None if issues else bind_for_review(value, built['allowedEvidenceIds'],
                   context_digest=built['contextDigest'], required_domains=built['requiredDomains'],
-                  count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1))
+                  count_unique_operations=built.get(OPERATION_CAPACITY_MARKER) == 1,
+                  shared_prefit_window=built.get(SHARED_PREFIT_WINDOW_MARKER) == 1))
     except (TypeError, ValueError, OverflowError, RecursionError):
         issues = [{'code': 'plan.response_json_or_capacity', 'path': '/'}]; bound = None
     if issues:

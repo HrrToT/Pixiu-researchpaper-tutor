@@ -184,7 +184,8 @@ def apply(base, response, *, allowed_paths=None, evaluation_prepare=False, ident
     # The root unresolved list is an explicit author choice, never silently cleared.
     result['unresolved']=deepcopy(edits['unresolved'])
     bound=base['boundProposal']
-    capacity_policy = {'count_unique_operations': bound['version'] == 2}
+    capacity_policy = {'count_unique_operations': bound['version'] in (2, 3),
+                       'shared_prefit_window': bound['version'] == 3}
     if digest(result)==digest(original) or validate(result,bound['allowedEvidenceIds'],
             required_domains=bound['requiredDomains'], **capacity_policy):
         raise ValueError('No effective repair or invalid complete proposal')
@@ -445,7 +446,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                 if design_data is not None:
                     design_policy = ('Paper facts are checked and read-only. Keep sourceFacts exactly.\n'
                                      + ATTRIBUTION_SCIENCE_INSTRUCTIONS)
-                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11, 12, 13):
+                    if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11, 12, 13, 14):
                         design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
                                           'Use unresolved only for open design decisions.\n')
                     if compact_version in (5, 6):

@@ -93,6 +93,47 @@ def test_shared_contract_is_not_paper_specific_or_a_scientific_approval(method):
     assert len(json.dumps(value, ensure_ascii=False).encode()) < 16000
 
 
+@pytest.mark.parametrize('change', [None, 'not_fit', 'missing_step_budget', 'wall_clock_fit', 'evaluation_fit'])
+def test_shared_preparation_window_can_include_independently_budgeted_training_fit(change):
+    value = proposal()
+    value['version'] = 3
+    for step in value['steps']:
+        step['inputIds'] = []
+    for budget in value['budgets']:
+        budget['allocation'] = 'single'
+    for metric in value['metrics']:
+        metric['fitMemoryCaptures'] = []
+    fit = value['steps'][0]
+    before = {**deepcopy(fit), 'id': 'setup', 'kind': 'prepare', 'reads': [], 'creates': ['raw'],
+              'updates': [], 'inputIds': ['input'], 'budgetId': 'prep_clock'}
+    after = {**deepcopy(before), 'id': 'lock', 'reads': ['raw'], 'creates': [], 'inputIds': []}
+    value['states'][0]['source'] = {'kind': 'step', 'id': 'setup'}
+    value['steps'][:1] = [before, fit, after]
+    value['budgets'].append({'id': 'prep_clock', 'unit': 'wall_seconds', 'cap': 600,
+                             'scope': 'shared', 'groups': [], 'matching': 'native',
+                             'allocation': 'shared_preparation_total',
+                             'stopRule': 'Start at setup. Include prefit and checkpoint checks without resetting.'})
+    if change == 'not_fit':
+        fit['kind'] = 'prepare'
+    elif change == 'missing_step_budget':
+        fit['budgetId'] = None
+    elif change == 'wall_clock_fit':
+        value['budgets'][0]['unit'] = 'wall_seconds'
+    elif change == 'evaluation_fit':
+        fit['dataUse'] = 'evaluation'
+    assert 'plan.shared_preparation_budget' in {e['code'] for e in validate(value, ['E1'])}
+    issues = validate(value, ['E1'], count_unique_operations=True, shared_prefit_window=True)
+    if change:
+        assert 'plan.shared_preparation_budget' in {e['code'] for e in issues}
+    else:
+        assert not issues
+        bound = bind_for_review(value, ['E1'], count_unique_operations=True, shared_prefit_window=True)
+        assert bound['version'] == 3 and validate_bound(bound, expected_digest=bound['bindingDigest'])
+        older = {**bound, 'version': 2}
+        older['bindingDigest'] = digest({k: v for k, v in older.items() if k != 'bindingDigest'})
+        assert not validate_bound(older, expected_digest=older['bindingDigest'])
+
+
 @pytest.mark.parametrize('mutation,code', [
     ('levels', 'plan.factorial_groups'), ('duplicate_group', 'plan.duplicate_identity'),
     ('factor_operation', 'plan.intervention_operation'), ('factor_level', 'plan.intervention_level'),

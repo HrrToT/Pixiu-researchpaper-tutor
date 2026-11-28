@@ -158,7 +158,7 @@ def _derive_clone_scope(steps):
 
 def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_observation_outputs=False,
                  derive_pairing=False, derive_analysis=False, evaluation_prepare=False, count_unique_operations=False,
-                 derive_clone_scope=False):
+                 derive_clone_scope=False, shared_prefit_window=False):
     errors = Draft202012Validator(wire_schema(profile, derive_pairing=derive_pairing,
                                              derive_analysis=derive_analysis,
                                              evaluation_prepare=evaluation_prepare)).iter_errors(value)
@@ -235,5 +235,5 @@ def compile_plan(value, evidence_ids, *, required_domains=(), profile=3, fit_obs
     if issues:
         return None, issues
     issues = validate(proposal, evidence_ids, required_domains=required_domains,
-                      count_unique_operations=count_unique_operations)
+                      count_unique_operations=count_unique_operations, shared_prefit_window=shared_prefit_window)
     return (None if issues else proposal), issues
