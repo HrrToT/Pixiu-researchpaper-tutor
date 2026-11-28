@@ -1,0 +1,120 @@
+{
+  "case": "H1-COTR",
+  "attempt": 1,
+  "definitionHash": "76e1ba35d67b5104cd297ce731bc51fa076d22aa09aab32c2b55844ee32438e8",
+  "sourceCommit": "1091851c6af22eb0c1f04e8efa62dc0573b53cdf",
+  "runId": "dr_run_fe61e5c2fd135290a82c816b27af98ca",
+  "materialSha256": "d3f29fb51eab891e46cb4faaf199fe891ec2123e30b1b234c90fdd77228c7453",
+  "applicationResult": {
+    "status": "completed",
+    "outcome": "inconclusive",
+    "verifiedClaims": 0,
+    "scientificReportDeliveredToWorkspace": false,
+    "automaticRetry": false
+  },
+  "independentReview": {
+    "passed": false,
+    "independentCredit": 0,
+    "reason": "No claim survived factual verification. Assessment of draft passages does not count as an accepted report."
+  },
+  "diagnostic": {
+    "draftCitations": [
+      {
+        "id": "ev_ecc955f51822e1a1aa32f6e6b8fa3893891dce8fbdd06a57a9eb1811550083c6",
+        "page": 4,
+        "physicallyVerified": true
+      },
+      {
+        "id": "ev_2bed0450d973c38c5cabf548fe2ab2c06180b9fb3fd5015bf272642e50acced8",
+        "page": 4,
+        "physicallyVerified": true
+      },
+      {
+        "id": "ev_e25ee597a2ad0b9d032e3edaf3bbae7d550b6c0097b73b4342e196b77820925c",
+        "page": 4,
+        "physicallyVerified": true
+      }
+    ],
+    "explicitZoomFactorAndCountInAlreadyCitedQuote": {
+      "id": "ev_2bed0450d973c38c5cabf548fe2ab2c06180b9fb3fd5015bf272642e50acced8",
+      "page": 4
+    },
+    "originalRejection": {
+      "claimId": "c1",
+      "reason": "numeric_mismatch",
+      "missingReportedNumbers": [
+        "1e0",
+        "2e0",
+        "2e0x",
+        "4e0"
+      ],
+      "detail": "本条引用原文未直接报告这些数值：1、2、2x、4。移除这些数字，保留有依据的属性或机制说明；不要用推算、改kind或改写引文绕过检查。"
+    },
+    "repairReviewerRejection": {
+      "claimId": "c1",
+      "reason": "semantic_unresolved",
+      "detail": "审核说明中的新增事实未绑定本条可见原文，本条尚未核验；不能据此改动具体参数。",
+      "reviewDiagnosticAudit": {
+        "version": 1,
+        "reportedStatus": "passed",
+        "reasonSha256": "399e275fbb9fae8bc5448da64225bd8bc0a3655d48e7b2605658c0b64e532301",
+        "bindingCount": 3,
+        "newNumberCount": 2,
+        "unboundNewNumberCount": 2,
+        "errors": [
+          "new_diagnostic_numbers_not_bound"
+        ],
+        "sourceParameterIdentityContractVersion": 1,
+        "reviewTargetStructureContractVersion": 2,
+        "targetStructureReferences": []
+      },
+      "executionState": "received_invalid"
+    },
+    "observedMixedLanguageConflations": [
+      "Chinese textual count in 两张图 and referential identity in 同一个网络 were treated as new reported numbers.",
+      "The numeric scanner did not equate the cited factor of two and four zoom-in steps with 2倍 and 4步.",
+      "Spelling the quantities in English let the rewrite reach semantic review, but the translated diagnostic numbers still failed source binding."
+    ]
+  },
+  "usage": {
+    "stages": [
+      "resolve_brief",
+      "plan",
+      "assess_relevance",
+      "synthesize",
+      "repair_claims",
+      "verify_repair"
+    ],
+    "newCalls": 6,
+    "totalTokens": 20737,
+    "tokensByModel": {
+      "gpt-6-luna": 5218,
+      "gpt-6.1-terra": 15519
+    },
+    "graphSeconds": 71.0,
+    "externalSearches": 0,
+    "productionWrites": 0
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-h1-cotr-first-20261128/intent.json",
+      "sha256": "60a5b5e5c5e731dc29de4339cdf75b2bbab2ff368b333b638bd10d0f0b0a8aec"
+    },
+    {
+      "path": "tmp/openai-h1-cotr-first-20261128/run.json",
+      "sha256": "f4f85241bfa1ce1c33531c5b7d08cb530af9923bb87f248a4622a543ff2088e5"
+    },
+    {
+      "path": "tmp/openai-h1-cotr-first-20261128/calls.json",
+      "sha256": "730e6dd217854a84b2ff6e1348b523c646b6ad7b1d11171c7b0a09ba507d0ae7"
+    },
+    {
+      "path": "tmp/openai-h1-cotr-first-20261128/result.json",
+      "sha256": "f31a4e513bd87edf02eb42a4bc6347ab7befe31be745b8fd8ebbd49cc3b70b12"
+    },
+    {
+      "path": "tmp/openai-h1-cotr-first-20261128/provider.jsonl",
+      "sha256": "1f28cebea4d719a0c15539db230a38dc31573b771cace4e142b6b5e9e1568f78"
+    }
+  ]
+}
