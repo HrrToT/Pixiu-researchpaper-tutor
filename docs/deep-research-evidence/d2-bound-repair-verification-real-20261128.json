@@ -1,0 +1,87 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "isolated_existing_repair_review_branch",
+  "independentHoldoutCredit": 0,
+  "originalRunId": "dr_run_4187fb789ebb555e96da1f32f682d889",
+  "isolatedRunId": "dr_d2_review_remaining_two_real_20261128",
+  "sourceCommit": "00f73271a1ed514ee389dedcfe4669259248731d",
+  "reviewReasonPartsContractVersion": 4,
+  "reusedRepairCallId": "ef536b6a46d5751d00360a94c876fb70",
+  "usage": {
+    "carriedGenerations": 16,
+    "carriedTokens": 71648,
+    "newGenerations": 2,
+    "newGenerationTokens": 13047,
+    "tokensByStage": {
+      "verify_repair": 3759,
+      "verify_answer_coverage": 9288
+    },
+    "totalGenerations": 18,
+    "totalTokens": 84695,
+    "accountedSeconds": 190.679,
+    "newProviderCountingRequests": 1
+  },
+  "result": {
+    "outcome": "partial",
+    "revisedClaimsPassingReview": [
+      "cmp_2_0",
+      "cmp_6_0"
+    ],
+    "retainedClaims": 11,
+    "wholeAnswerAuditStatus": "checked",
+    "coherent": true,
+    "coveredObligations": [
+      "o1",
+      "o2",
+      "o3",
+      "o4",
+      "requested_numeric_example",
+      "answer_scope"
+    ],
+    "originalPublicationGapIds": [
+      "o3",
+      "o4",
+      "requested_numeric_example"
+    ],
+    "publicationId": "dr_pub_5d441387821045a0b7a596baed2d4a4e",
+    "deliveredToWorkspace": false
+  },
+  "offlinePublicationGapReplay": {
+    "remainingObligationIds": [
+      "o4"
+    ],
+    "historicalGapRowsPreserved": 7,
+    "networkCalls": 0,
+    "publicationWrites": 0
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/intent.json",
+      "sha256": "ec07aae11e063b310004a937a94f4e2b9dcef212aa330c77de1f4fad4803ca52"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/run.json",
+      "sha256": "ac27f4366951622f883498983bdf6c2dedf730cd4532a06b60dbc07ac027a1cc"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/calls.json",
+      "sha256": "dcecbeb683881a84d1ab6246f5a7ec685f3b4723e47da79e200f338898d95ea9"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/counts.json",
+      "sha256": "e395251aa567d0aab8663c4ca450f40cd6eb4bc1f97e5cb53e8768f4cc28dcb1"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/summary.json",
+      "sha256": "d95737f506966ee46ba837d19b96fe0d23a78d044bb9596d7be008bbd49bd4d5"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/verify-request.txt",
+      "sha256": "c3bbff6536740f328bd141d5bb3cc8540b5bc1faa1d97459798e7e1608484dc3"
+    },
+    {
+      "path": "tmp/openai-d2-review-remaining-two-real-20261128/publish-return.json",
+      "sha256": "fdd40f4e33db950e71f44e0cc336039638b509b7ed8065124812708e57ff6d11"
+    }
+  ]
+}
