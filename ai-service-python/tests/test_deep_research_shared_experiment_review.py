@@ -127,6 +127,26 @@ def test_wrapped_proposal_path_resolves_once_without_weakening_exact_ids():
                       named_plan=plan, named_id_version=6)
 
 
+def test_action_only_operation_reference_preserves_typed_parameter_boundary():
+    from jsonschema import Draft202012Validator
+    from services.deep_research.shared_experiment_review import _decode_batch
+
+    operation = {'action': 'Use the fixed update budget.', 'parameters': []}
+    plan = {'steps': [{'id': 'fit', 'operation': operation}]}
+    payload = {'checks': [{'checkId': 'section_5', 'planBindings': ['/proposal/steps/@fit/operation']}],
+               'coherent': True, 'issues': []}
+    response = {'content': json.dumps(payload), 'finishReason': 'stop'}
+    validator = Draft202012Validator({'type': 'object'})
+    assert _decode_batch(response, ['section_5'], validator, named_plan=plan, named_id_version=6)[
+        'checks'][0]['planBindings'] == ['/steps/0/operation']
+    assert _decode_batch(response, ['section_5'], validator, named_plan=plan, named_id_version=7)[
+        'checks'][0]['planBindings'] == ['/steps/0/operation/action']
+    operation['parameters'].append({'name': 'steps', 'value': 1000})
+    assert _decode_batch(response, ['section_5'], validator, named_plan=plan, named_id_version=7)[
+        'checks'][0]['planBindings'] == ['/steps/0/operation']
+    assert json.loads(response['content']) == payload
+
+
 def test_versioned_metric_ids_preserve_the_original_review_response():
     from jsonschema import Draft202012Validator
     from services.deep_research.shared_experiment_review import _decode_batch
