@@ -1083,12 +1083,14 @@ D2 原始核验回放确认，运行到 67,245 Token、15 次生成时还有三�
 
 复用已保存的修订草稿，按新版协议只执行独立核验和整答审核，新增 13,047 Token，隔离分支共 18 次生成、84,695 Token。两条修订均通过，保留 11 条内容。整答六项均覆盖，一致性通过。发布仍为部分报告，因为检索时的三条依赖缺口留到了交付。离线回放修正了已核验子项的缺口处理，原始检索记录保留。跨论文 FPS 和同口径数值示例的遗留缺口已在回放中清除。显存建议自身仍缺一侧通过事实核验的绑定，发布门槛保留。 [两步续验与发布缺口回放](deep-research-evidence/d2-bound-repair-verification-real-20261128.json)
 
+显存建议的原始引文均能对应到同一次整答审核中独立核验通过的事实。新版发布检查在这个条件下消除检索调度留下的缺口。复用完全相同的 11 条内容与原始整答审核记录，隔离数据库保存完整报告，原检索记录保持一致。通过本机 Java/Python 接口交付并重启 Java 后读回相同内容，验证了两篇 PDF 的引用页、重复交付抑制及跨任务文件隔离。本次没有调用模型。 [条件建议发布与交付回放](deep-research-evidence/d2-conditional-advice-publication-delivery-20261128.json)
+
 按原设计记录固定题适用范围。历史人工通过只覆盖所列的开发题和源码版本。完整回归、浏览器交互和隔离启动各保留自身的证据范围。
 
 | 案例 | 当前适用证据 | 剩余验收 |
 | --- | --- | --- |
 | D1 单论文聚焦 | 冻结开发题 D1-v27 经人工原文、指标与研究范围核对通过。 [记录](deep-research-evidence/D1-v27-diagnostic-20261018.json) | 保留历史通过。新单篇材料由 H1 验证。 |
-| D2 两论文比较 | 早期隔离复验复用 10 条已核验论断，发布完整报告。标准预算从头运行通过跨论文 FPS 边界审核，保存部分报告。最新版隔离续验复用修订草稿，两条修订通过独立核验，整答六项均通过。 [早期隔离复验](deep-research-evidence/d2-processing-cost-integrated-real-20261128.json) · [最新版两步续验](deep-research-evidence/d2-bound-repair-verification-real-20261128.json) | 最新续验仍保存部分报告。显存建议的发布依赖待验，标准预算下的完整从头运行和独立留出仍待验收。 |
+| D2 两论文比较 | 标准预算从头运行通过跨论文 FPS 边界审核，保存部分报告。隔离续验复用修订草稿，两条修订通过独立核验，整答六项均通过。复用该审核结果验证发布，11 条内容完整交付到隔离工作区并重开找回。 [两步续验](deep-research-evidence/d2-bound-repair-verification-real-20261128.json) · [发布与交付回放](deep-research-evidence/d2-conditional-advice-publication-delivery-20261128.json) | 标准预算下更新后从头执行的完整链路和 H2 独立留出仍待验收。 |
 | D3 四组实验 | 冻结开发题已通过 25 项科学检查与真实整答终审，累计 89,038 Token，9 个引文可逐字定位，保存完整报告并在隔离工作区验证交付和找回。 [同题开发验收](deep-research-evidence/d3-provenance-final-complete-and-delivery-20261128.json) | 空运行完成生成及原稿续验，两个科学缺口仍开放。修复后须验证一次完整运行，并以新冻结题完成 H5 独立验收。 [空运行回执](deep-research-evidence/d3-fresh-ordinal-and-scientific-scope-20261128.json) |
 | D4 证据不足 | 原冻结题历史人工审查通过。其部分成果保留一般化边界。 [D4 历史状态](DEEP_RESEARCH_ACCEPTANCE_STATUS_20261015.json) | 保留该题的人工结果，独立内容还须按各留出题重新核对。 |
 | D5 计划调整与追问 | 固定开发题通过真实生成、逐项核验与整答核验。134 字子报告用两篇原文解释 FPS 比值的限制。沿用父报告证据，无重新检索。隔离 Java 工作区分别保存父子成果、保留引用并在重启后读回。 [内容及交付验收](deep-research-evidence/d5-speed-explanation-final-audit-20261127.json) | D5 固定开发验收通过。生产切换仍按统一上线验收执行。 |
