@@ -43,5 +43,17 @@
     "tmp/d2-targeted-future-work-prompt-inspection-20261129/summary.json": "99f96d2d99e2d4a0292a2b0b706f3182a1c4069e0aa62684229feea24c2c3afd",
     "tmp/d2-local-definitions-repair-preflight-20261129/repair-prompt.txt": "8b31ae33f8e2c83c4bb64e17a5b662940f0ab01f3e86d66a0cc289decb901a8d",
     "tmp/d2-local-definitions-repair-preflight-20261129/summary.json": "430c283562eac8ad159a18b050b8f1dd88ca933a49806873b4d181f7c8006839"
+  },
+  "continuationPreflight": {
+    "originalCaseCallsUsed": 16,
+    "originalCaseCallLimit": 18,
+    "originalCaseTokensUsed": 76162,
+    "originalCaseTokenLimit": 100000,
+    "repairPromptByteLimit": 0,
+    "candidateDispatched": false,
+    "countProbeDispatched": false,
+    "reason": "The remaining two generation slots cannot accommodate targeted repair, independent review and a new whole-answer audit under the original protected release policy.",
+    "artifact": "tmp/d2-single-local-definition-preflight-20261129/summary.json",
+    "sha256": "fcfde61306dae1b4bb24943bcce8196143185323969e440a977e2ef8914d53e2"
   }
 }
