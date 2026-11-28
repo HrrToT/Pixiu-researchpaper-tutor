@@ -204,7 +204,7 @@ def _group_bindings(record):
 
 def counted_window_enabled(record):
     return (isinstance(record, dict) and type(record.get(COUNTED_WINDOW_MARKER)) is int
-            and record[COUNTED_WINDOW_MARKER] == 1 and record.get('openaiResearchModels')
+            and record[COUNTED_WINDOW_MARKER] in (1, 2) and record.get('openaiResearchModels')
             and record.get('countedExperimentReviewContractVersion') == 1
             and record.get(SCOPED_PACKET_MARKER) == 7 and record.get(REFERENCE_MARKER) == 4)
 
@@ -587,7 +587,18 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if (limited and _reviewed_fact_batch(record, limited, bound, input_data, aliases)
                         and (not batches or cost(limited) < cost(batches))):
                     batches = limited
-            if counted_window_enabled(record) and len(batches) > 3:
+            counted_window = counted_window_enabled(record)
+            if counted_window and not batches and record[COUNTED_WINDOW_MARKER] == 2 and size > MAX_INPUT:
+                batches = partition_bounded_review(
+                    record, data, aliases, bound['proposal'],
+                    lambda view: measure(view, _scoped_packet_policy(record, view)),
+                    COUNTED_MAX_INPUT, MAX_CHECKS_PER_REVIEW, scoped=True, fit_check_count=True,
+                    required_design_evidence_only=True,
+                )
+                if any(part['inputBytes'] > MAX_INPUT and
+                       any(check.startswith('fact_') for check in part['checkIds']) for part in batches):
+                    batches = []
+            elif counted_window and len(batches) > 3:
                 wider = partition_bounded_review(
                     record, data, aliases, bound['proposal'],
                     lambda view: measure(view, _scoped_packet_policy(record, view)),

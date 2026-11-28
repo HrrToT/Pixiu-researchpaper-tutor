@@ -487,7 +487,8 @@ class TrackedLLMInvoker:
         )
         if counted_science_window:
             max_byte_length = science.COUNTED_MAX_INPUT
-            args_digest = digest({**request_identity, science.COUNTED_WINDOW_MARKER: 1})
+            args_digest = digest({**request_identity,
+                                  science.COUNTED_WINDOW_MARKER: transport_record[science.COUNTED_WINDOW_MARKER]})
         if admission_bytes > max_byte_length:
             raise ValueError(
                 f"Prompt too large: {admission_bytes} bytes (~{estimated_input} tokens) "
