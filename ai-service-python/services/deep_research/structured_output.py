@@ -195,7 +195,7 @@ def messages_for_record(record, node, prompt):
         prospective=kind=='experiment_design'),prospective=kind=='experiment_design')
 
 
-def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False,factual_source_fields=False,factual_compact_supported=False,comparison_audit_envelope=False):
+def normalize(node, response, *, factual_singleton=False,initial_plan_response=False,factual_diagnostics=False,factual_ownership=False,factual_reason_parts=False,factual_source_fields=False,factual_compact_supported=False,factual_repair_rejection=False,comparison_audit_envelope=False):
     if type(comparison_audit_envelope) is not bool or comparison_audit_envelope and node!='verify_answer_coverage':
         raise ValueError('Invalid comparison audit transport policy')
     if type(factual_singleton) is not bool:raise ValueError('Invalid factual response envelope policy')
@@ -281,6 +281,7 @@ def normalize(node, response, *, factual_singleton=False,initial_plan_response=F
                 **({'reason_field_references':True} if factual_source_fields else {}),
                 **({'reason_parts':True} if factual_reason_parts else {}),
                 **({'compact_supported':True} if factual_compact_supported else {}),
+                **({'repair_rejection':True} if factual_repair_rejection else {}),
                 **({'diagnostic_facts':True} if factual_diagnostics else {}),
                 **({'reporting_ownership':True} if factual_ownership else {}))
             except DeepResearchError:

@@ -105,6 +105,47 @@ def test_singleton_native_transport_accepts_new_schema_only_with_frozen_flag_and
     assert old['content']=='null'
 
 
+def test_comparison_repair_quarantines_a_rejection_without_its_own_submitted_clause():
+    from services.deep_research.structured_output import normalize
+
+    cost = {**target(), 'text': 'The cited training schedule does not isolate processing cost.'}
+    other = {**target(), 'claimId': 'other'}
+    rejected = row(False)
+    rejected['reasonParts'] = [{'text': 'The source distinguishes opacity from transparency.'}]
+    passed = {**row(), 'claimId': 'other', 'reasonParts': []}
+    sent = []
+
+    def invoke(**kwargs):
+        sent.append(kwargs)
+        return {'content': json.dumps([rejected, passed]), 'finishReason': 'stop'}
+
+    check = checker(invoke, **{**opts(), 'review_reason_parts': 4}, comparison_review_batches=True)
+
+    def verify():
+        return {v['claimId']: v for v in check.check_revisions([cost, other], evidence(), [])}
+
+    first = verify()
+    assert first['c']['executionState'] == 'received_invalid'
+    assert first['other']['status'] == 'passed'
+    assert len(sent) == 1 and 'A source detail absent from the submitted claim is not a defect.' in sent[0]['prompt']
+
+    rejected['rejectedClause'] = {'statementPath': ['text'], 'statementExcerpt': 'opacity'}
+    assert verify()['c']['executionState'] == 'received_invalid'
+    rejected['reasonParts'] = [{'text': 'The cited material only establishes the reported setup.'}]
+    rejected['rejectedClause']['statementExcerpt'] = 'does not isolate processing cost.'
+    third = verify()
+    assert third['c']['status'] == 'failed' and 'executionState' not in third['c']
+    assert third['other']['status'] == 'passed'
+    assert len(sent) == 3
+
+    packet = {'content': json.dumps(rejected), 'finishReason': 'stop'}
+    policy = dict(factual_singleton=True, factual_diagnostics=True,
+                  factual_reason_parts=True, factual_compact_supported=True)
+    assert normalize('verify_repair', packet, **policy)['content'] == 'null'
+    assert json.loads(normalize('verify_repair', packet, **policy,
+                                factual_repair_rejection=True)['content']) == rejected
+
+
 @pytest.mark.parametrize('version', [1, 2, 3])
 def test_new_reviewer_wording_leaves_the_numeric_validation_gate_intact(version):
     sent = []

@@ -63,7 +63,36 @@ The short reason must identify the actual support or mismatch, not debate a seco
 decision or expose a long reasoning transcript. Do not guess missing source facts.'''
 
 
-def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnostic_facts=False,reason_parts=False,reason_field_references=False,compact_supported=False):
+REPAIR_REJECTION_GUIDANCE = '''For a failed review, include rejectedClause with
+{"statementPath":["text"],"statementExcerpt":"exact rejected assertion from this target"}.
+A string condition may use ["conditions","its exact key"]. Copy the disputed words,
+including qualifications that change their meaning, and explain the defect in reasonParts.
+A source detail absent from the submitted claim is not a defect. Distinguish what the
+cited excerpts do not quantify from what the paper did not measure. Omit rejectedClause
+for a supported review.'''
+
+
+def _validate_rejected_clause(row, target):
+    if row['scopeAudit']['supported']:
+        return 'rejectedClause' not in row
+    clause = row.get('rejectedClause')
+    if not isinstance(clause, dict) or set(clause) != {'statementPath', 'statementExcerpt'}:
+        return False
+    excerpt, path = clause['statementExcerpt'], clause['statementPath']
+    if (not isinstance(excerpt, str) or not excerpt.strip()
+            or not (path == ['text'] or isinstance(path, list) and len(path) == 2
+                    and path[0] == 'conditions' and isinstance(path[1], str))):
+        return False
+    if target is None:
+        return True  # Transport checks shape before the exact target is available.
+    from services.deep_research.audit_source_fields import resolve_target
+    actual = resolve_target({'statementPath': path}, target)
+    return actual is not None and excerpt in actual
+
+
+def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnostic_facts=False,
+           reason_parts=False, reason_field_references=False, compact_supported=False,
+           repair_rejection=False, targets=None):
     """Never reinterpret legacy status=failed, or infer a decision from prose."""
     if type(reporting_ownership) is not bool:raise ValueError('Invalid reporting ownership policy')
     if type(diagnostic_facts) is not bool:raise ValueError('Invalid diagnostic binding policy')
@@ -73,6 +102,7 @@ def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnost
     allowed={'claimId','reason','scopeAudit','comparisonAudit','resultPurposeAudit'}
     if diagnostic_facts:allowed.add('diagnosticFacts')
     if reporting_ownership:allowed.add('reportingOwnershipAudit')
+    if repair_rejection:allowed.add('rejectedClause')
     scope_keys={'claimStrength','evidenceStrength','supported','statementPath','premises'}
     def redundant(value):
         if isinstance(value,dict):
@@ -98,6 +128,11 @@ def decode(rows, *, singleton_claim_id=None, reporting_ownership=False, diagnost
                 or row['scopeAudit'].get('statementPath')!=['text']):
             raise DeepResearchError('invalid_verification_response','事实核查包含冲突判定或缺少完整声明审计，未改判。',
                                     {'responseState':'received_invalid'})
+        if repair_rejection:
+            target = None if targets is None else targets.get(row['claimId'], {})
+            if not _validate_rejected_clause(row, target):
+                raise DeepResearchError('invalid_verification_response', '事实核查拒绝未绑定待审声明中的原句。',
+                                        {'responseState': 'received_invalid'})
         result.append({**deepcopy(row),'status':'passed' if row['scopeAudit']['supported'] else 'failed',
             **({'factualResponseEnvelope':{'version':1,'kind':'single_exact_target_object'}} if singleton else {})})
     return result

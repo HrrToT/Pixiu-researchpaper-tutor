@@ -719,14 +719,17 @@ class TrackedLLMInvoker:
                     'factual_ownership':type(transport_record.get('reportingOwnershipContractVersion')) is int
                         and transport_record['reportingOwnershipContractVersion']==1,
                     **({'factual_reason_parts':True} if type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3) else {}),
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3, 4) else {}),
                     **({'factual_compact_supported':True}
                        if type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion'] == 3 else {}),
+                       and transport_record['reviewReasonPartsContractVersion'] in (3, 4) else {}),
+                    **({'factual_repair_rejection':True}
+                       if node == 'verify_repair' and type(transport_record.get('reviewReasonPartsContractVersion')) is int
+                       and transport_record['reviewReasonPartsContractVersion'] == 4 else {}),
                     **({'factual_source_fields':True} if type(transport_record.get('reviewSourceFieldReferenceContractVersion')) is int
                        and transport_record['reviewSourceFieldReferenceContractVersion']==1
                        and type(transport_record.get('reviewReasonPartsContractVersion')) is int
-                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3) else {})}
+                       and transport_record['reviewReasonPartsContractVersion'] in (1, 2, 3, 4) else {})}
                    if type(transport_record.get('factualEnvelopeContractVersion')) is int
                    and transport_record['factualEnvelopeContractVersion']==2
                    and type(transport_record.get('factualDecisionContractVersion')) is int
@@ -1289,7 +1292,7 @@ Do not accept vague connections. A partly supported claim must fail until its wo
                 parts_policy=self._review_reason_parts
                 parts_policy = parts_policy() if callable(parts_policy) else parts_policy
                 reason_parts_version = (1 if parts_policy is True else parts_policy
-                                        if type(parts_policy) is int and parts_policy in (1, 2, 3) else 0)
+                                        if type(parts_policy) is int and parts_policy in (1, 2, 3, 4) else 0)
                 reason_parts = schema_policy and bool(reason_parts_version)
                 fields_policy=self._review_source_fields
                 source_field_references=reason_parts and (fields_policy() if callable(fields_policy) else fields_policy) is True
@@ -1700,6 +1703,7 @@ The dataAvailability object is an internal audit, not new experimental results.
         diagnostic_policy=(diagnostic_policy() if callable(diagnostic_policy) else diagnostic_policy) is True
         from services.deep_research.source_version_review import eligible as diagnostic_eligible
         diagnostic_policy=diagnostic_policy and diagnostic_eligible(claims)
+        bind_repair_rejection = reason_parts and reason_parts_version == 4 and node == 'verify_repair'
         if diagnostic_policy:
             parameter_policy = self._diagnostic_parameter_ids
             parameter_policy = parameter_policy() if callable(parameter_policy) else parameter_policy
@@ -1709,10 +1713,10 @@ The dataAvailability object is an internal audit, not new experimental results.
                 if source_field_references:
                     from services.deep_research.review_source_fields import GUIDANCE as diagnostic_guidance
             prompt+='\n'+diagnostic_guidance
-            if reason_parts and reason_parts_version in (2, 3):
+            if reason_parts and reason_parts_version in (2, 3, 4):
                 from services.deep_research.review_reason_parts import NO_NEW_EXPOSITORY_COUNTS
                 prompt += '\n' + NO_NEW_EXPOSITORY_COUNTS
-                if reason_parts_version == 3:
+                if reason_parts_version in (3, 4):
                     from services.deep_research.review_reason_parts import SUPPORTED_WITHOUT_NARRATION
                     prompt += '\n' + SUPPORTED_WITHOUT_NARRATION
             elif parameter_policy in (2, 3, 4, 5):
@@ -1721,6 +1725,9 @@ The dataAvailability object is an internal audit, not new experimental results.
         if scope_observations and source_field_references:
             prompt += ('\nFor reasonParts and scopeAudit.premises, copy a path exactly from '
                        'availableSourcePaths for the cited evidence ID. Use a nonempty string leaf.\n')
+        if bind_repair_rejection:
+            from services.deep_research.factual_decision import REPAIR_REJECTION_GUIDANCE
+            prompt += '\n' + REPAIR_REJECTION_GUIDANCE
         if representation_context:
             from services.deep_research.workflow_representation_review import POLICY as representation_review_policy
             prompt += '\n' + representation_review_policy + '\nExact unapproved shared representation:\n' + json.dumps(
@@ -1891,12 +1898,15 @@ The dataAvailability object is an internal audit, not new experimental results.
                 from services.deep_research.factual_decision import decode
                 singleton_policy=self._singleton_factual_response
                 singleton_policy=(singleton_policy() if callable(singleton_policy) else singleton_policy) is True
+                repair_binding = ({'repair_rejection': True,
+                    'targets': {c['claimId']: c for c in json.loads(claims_text)}}
+                    if bind_repair_rejection else {})
                 def decode_one(rows,targets):
                     if source_field_references:
                         from services.deep_research.review_source_fields import resolve_response
                         rows=resolve_response(rows,targets,visible_evidence,reverse_aliases)
-                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'compact_supported':True} if reason_parts and reason_parts_version == 3 else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
-                        if singleton_policy and len(targets)==1 else {}))
+                    return decode(rows,**({'diagnostic_facts':True} if diagnostic_policy else {}),**({'reason_parts':True} if reason_parts else {}),**({'compact_supported':True} if reason_parts and reason_parts_version in (3, 4) else {}),**({'reporting_ownership':True} if reporting_enabled else {}),**({'singleton_claim_id':targets[0]['claimId']}
+                        if singleton_policy and len(targets)==1 else {}), **repair_binding)
                 if complete_factual_batch and len(claims)>1:
                     from services.deep_research.comparison_review_batches import decode_targets
                     parsed,isolated_batch_failures=decode_targets(parsed,claims,result,lambda rows,c:decode_one(rows,[c]))
