@@ -1,0 +1,192 @@
+{
+  "case": "H5-DORA-FACTORIAL development continuation",
+  "independentHoldoutCredit": false,
+  "originalFirstRunRegraded": false,
+  "scientificReview": {
+    "intent": {
+      "commit": "ddfb6119312281e9d8f5224888d7509d73e0a949",
+      "runId": "dr_h5_dora_scope_generation_20261128",
+      "scope": "isolated continuation of accepted generation checkpoint",
+      "carriedActiveSeconds": 106,
+      "carriedTokens": 31336,
+      "carriedCalls": 6,
+      "reviewBatchBytes": [
+        15057,
+        32887,
+        32289
+      ],
+      "reviewInputDigest": "6abe4958f0397e5012a0859661603381cc969ee056e8928b96dfe525e2f0029e",
+      "maxNewCalls": 5,
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "stopped_design_failure",
+      "scientificComplete": false,
+      "newCalls": 2,
+      "newTokens": 15059,
+      "cumulativeTokens": 46395,
+      "elapsedNewSeconds": 29.33,
+      "productionWrites": 0
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-review-20261128/intent.json",
+        "sha256": "6451cc6d33d0c7faa0f0352b1133aa61629197bc198252771affe5b2440c5811"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-review-20261128/run.json",
+        "sha256": "2ab3e963572e6e16303d0034da5612113cc486922473de985a508e3e8aa79415"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-review-20261128/calls.json",
+        "sha256": "f2ece4183c0bf1de9803536b7fec25a64da866bbae018e550acafb5924026220"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-review-20261128/result.json",
+        "sha256": "cdc3a6e0fa35b37b31a513e35ee789b7dac3477d33ae130a707de1fc4f29ce5a"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-review-20261128/provider.jsonl",
+        "sha256": "ca244fb26b026bf1a9800e88bed578cc9253195c9a26196c7221c63ef6084947"
+      }
+    ],
+    "passedFacts": 8,
+    "passedDesignSections": 6,
+    "totalDesignSections": 8,
+    "finalRequestedCriteriaNotReviewed": 4,
+    "failedChecks": [
+      {
+        "checkId": "section_1",
+        "status": "failed",
+        "planBindings": [
+          "/data/trainingSplit",
+          "/data/evaluationSplit",
+          "/data/splitPrecheck",
+          "/data/inputs/@datasets/preparation",
+          "/data/selectionUses"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E3",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          }
+        ],
+        "reason": "拟获取并核验八任务数据，但只检查精确内容哈希，未检查跨划分成员身份是否重复；同一成员内容不同也可能泄漏。原始ID与行号均已记录，却未要求按任务核对成员不交叠。"
+      },
+      {
+        "checkId": "section_6",
+        "status": "failed",
+        "planBindings": [
+          "/metrics/@quality/procedure",
+          "/metrics/@memory/procedure",
+          "/steps/@me/operation/action",
+          "/steps/@tr/operation/action",
+          "/states/@peak/representation"
+        ],
+        "evidenceBindings": [
+          {
+            "evidenceId": "E4",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E15",
+            "field": "quote"
+          },
+          {
+            "evidenceId": "E15",
+            "field": "after"
+          }
+        ],
+        "reason": "显存窗口及同步重置规则明确，但质量评估仅说统一模板和候选答案，并未给出各任务的提示、候选构造、答案边界及截断等具体规则，无法据此复现八任务准确率。"
+      }
+    ]
+  },
+  "targetedRepair": {
+    "intent": {
+      "commit": "ddfb6119312281e9d8f5224888d7509d73e0a949",
+      "runId": "dr_h5_dora_scope_generation_20261128",
+      "carriedActiveSeconds": 136,
+      "carriedTokens": 46395,
+      "carriedCalls": 8,
+      "maxNewCalls": 1,
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "inputBytes": 30636,
+      "inputDigest": "28aaa9168bb3816e61f911a9e180774e3ccd7720830cc1fc098500dcd5398bad",
+      "reviewInputDigest": "6abe4958f0397e5012a0859661603381cc969ee056e8928b96dfe525e2f0029e",
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "repairStatus": "invalid_response",
+      "newCalls": 1,
+      "newTokens": 9855,
+      "cumulativeTokens": 56250,
+      "elapsedNewSeconds": 13.81,
+      "productionWrites": 0,
+      "published": false
+    },
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-repair-20261128/intent.json",
+        "sha256": "c81aaf91c3b976d41b0998017504ed17522d204f3659c39f4b7b318185cebabf"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-repair-20261128/run.json",
+        "sha256": "0d6d2febcb0c828da4e316e7ae7db50d9d11a806bd123f0554770a853bb057e4"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-repair-20261128/calls.json",
+        "sha256": "766bdbcea812a1db6111f6730dedac808889a23dc5b70f9cfe3ac30d7f832ee0"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-repair-20261128/result.json",
+        "sha256": "d6bbe79ab9bd93250e2f1a61d4e6eb14d1f98c37c28f4e6c3a8bb6d1dab6b2a1"
+      },
+      {
+        "path": "tmp/openai-h5-dora-deliverable-scope-repair-20261128/provider.jsonl",
+        "sha256": "cd4c6fca24797d2c50b4b2ba5d8da07d7189a0f76cccbfebf6f71621e884034a"
+      }
+    ],
+    "originalResponseStatus": "invalid_response",
+    "editPaths": [
+      "/data/splitPrecheck",
+      "/data/inputs/2/preparation",
+      "/steps/9/operation/action",
+      "/metrics/0/procedure"
+    ],
+    "invalidTransportField": {
+      "path": "/steps/9/operation/action",
+      "field": "parameters",
+      "value": []
+    }
+  },
+  "offlineRecovery": {
+    "archivedRepairSha256": "0d6d2febcb0c828da4e316e7ae7db50d9d11a806bd123f0554770a853bb057e4",
+    "rawRepairStillInvalid": true,
+    "compiledBindingDigest": "41329585e96660a850a5cb2a772d0fdcf2af8cf5ab309114477970f6cc4e8c84",
+    "sourceFactsPreserved": true,
+    "reviewInputDigest": "237702f2662bb346a0f123c5e7729ac22db746c5a1270cc821450bdfe7f5d4e2",
+    "reviewBatchBytes": [
+      15057,
+      33878,
+      33280
+    ],
+    "freshGenerationBytes": 31975,
+    "providerCalls": 0,
+    "scientificReviewExecuted": false,
+    "artifact": {
+      "path": "tmp/h5-dora-evaluation-protocol-repair-replay-20261128.json",
+      "sha256": "8843c0eb7de97fe5e7ef95a6d39c92a40d4428e139e7a62b76f62fc0cbc67507"
+    },
+    "commit": "7e549f4d7a155c8994d9739bd169c1dd56e75cf6",
+    "regressionPassed": 249
+  }
+}
