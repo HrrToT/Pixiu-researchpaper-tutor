@@ -45,6 +45,26 @@ def test_term_insertions_keep_every_original_word_and_citation_with_one_owned_pa
     assert not term_insertions(originals, rejected, ['one'], [])
 
 
+def test_untouched_scope_boundary_does_not_split_a_two_cell_term_request():
+    from test_deep_research_repair_instructions import comparison_fixture
+
+    report, verification, evidence, opts = comparison_fixture()
+    left = {**report['claims'][0], 'text': '球谐系数描述颜色。'}
+    right = {**left, 'claimId': 'right', 'text': '蒸馏训练紧凑模型。'}
+    boundary = {**left, 'claimId': 'boundary'}
+    report['claims'] = [left, right, boundary]
+    verification['accepted'] = [boundary]
+    verification['rejected'] = [{'claimId': left['claimId'], 'reason': 'answer_incomplete', 'beginnerTerms': ['球谐系数']},
+                                {'claimId': 'right', 'reason': 'answer_incomplete', 'beginnerTerms': ['蒸馏']}]
+    reply = [{'claimId': left['claimId'], 'definitions': [{'term': '球谐系数', 'gloss': '表示颜色的一组参数'}]},
+             {'claimId': 'right', 'definitions': [{'term': '蒸馏', 'gloss': '让小模型模仿大模型输出'}]}]
+    invoke = Mock(return_value={'content': json.dumps(reply)})
+    options = {**opts, 'required_scope_ids': ['boundary'], 'verified_target_ids': [left['claimId'], 'right']}
+    revised = repair_rejected(report, verification, evidence, '向初学者解释。', invoke, json.loads, **options)
+    assert {row['claimId'] for row in revised} == {left['claimId'], 'right'}
+    invoke.assert_called_once()
+
+
 def test_coverage_only_text_schema_keeps_all_original_sources_conditions_and_goal_ownership():
     old=prepare(False);new=prepare()
     assert new['verifiedTextRepairContractVersion']==1 and 'verifiedTextRepairContractVersion' not in old

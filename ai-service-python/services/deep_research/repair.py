@@ -1199,7 +1199,8 @@ def repair_rejected(report, verification, evidence, question, invoke, parse, *, 
         from services.deep_research.verified_text_repair import term_insertions
         original_by_id = {row['claimId']: row for row in originals}
         rejected_by_id = {row['claimId']: row for row in verification.get('rejected', [])}
-        insertions = term_insertions(original_by_id, rejected_by_id, verified_target_ids, required_scope_ids)
+        insertions = term_insertions(original_by_id, rejected_by_id, verified_target_ids,
+                                     [cid for cid in required_scope_ids if cid in original_by_id])
         groups = [list(insertions)] if insertions else source_batches(originals, report.get('comparisonCells'),
                                 **({'prioritize_cells': True} if comparison_prioritize_cells else {}),
                                 **({'allow_deferred': True} if comparison_preflight_to_fit else {}))
