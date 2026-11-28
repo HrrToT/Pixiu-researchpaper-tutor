@@ -1,0 +1,134 @@
+{
+  "case": "H5-DORA-FACTORIAL development continuation",
+  "archivedGenerationAndRepairPreserved": true,
+  "independentHoldoutCredit": false,
+  "isolatedSetup": {
+    "originalInPlaceAttemptStoppedBeforeProvider": true,
+    "reason": "Repository rejected an immutable run policy change.",
+    "seededSettledLocalReceipts": 4,
+    "productionWrites": 0
+  },
+  "realRevisedReview": {
+    "intent": {
+      "commit": "cb0d17af44a14aa2209e2b23b8ad52499abc5c54",
+      "runId": "dr_h5_dora_scope_generation_20261128",
+      "scope": "isolated review of canonical replay of saved repair",
+      "archivedRepairResponseDigest": "2727b3ce0a7b0d6b35184c2abad8b93ccba4e4f546c16027134ca833e3d8d347",
+      "bindingDigest": "41329585e96660a850a5cb2a772d0fdcf2af8cf5ab309114477970f6cc4e8c84",
+      "carriedActiveSeconds": 150,
+      "carriedTokens": 56250,
+      "carriedCalls": 9,
+      "maxNewCalls": 5,
+      "reviewBatchBytes": [
+        15057,
+        33878,
+        33280
+      ],
+      "reusedFactSourceDigest": "af0a9e4a79987285f5e0367ebc50d979e242d0f47e4bfe3b5fded6d6ec185c38",
+      "reviewInputDigest": "237702f2662bb346a0f123c5e7729ac22db746c5a1270cc821450bdfe7f5d4e2",
+      "maxCumulativeTokens": 100000,
+      "maxActiveSeconds": 360,
+      "productionWrites": 0,
+      "independentHoldout": false
+    },
+    "result": {
+      "scientificStatus": "invalid_response",
+      "scientificComplete": false,
+      "newCalls": 2,
+      "newTokens": 21650,
+      "cumulativeTokens": 77900,
+      "elapsedNewSeconds": 46.73,
+      "productionWrites": 0
+    },
+    "usage": [
+      {
+        "input_tokens": 9736,
+        "output_tokens": 1323,
+        "total_tokens": 11059,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9733
+      },
+      {
+        "input_tokens": 9641,
+        "output_tokens": 950,
+        "total_tokens": 10591,
+        "estimated": false,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 9638
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "tmp/openai-h5-dora-evaluation-protocol-revised-review-v2-20261128/intent.json",
+        "sha256": "0a98c99e60e82bdb7b5b03af293038dc1cfe63a09a2f05776c87d756b4453659"
+      },
+      {
+        "path": "tmp/openai-h5-dora-evaluation-protocol-revised-review-v2-20261128/run.json",
+        "sha256": "04dad79c3ec67a98ef2d982cea5e0f9217938c45418d5f16561cec4127ae538f"
+      },
+      {
+        "path": "tmp/openai-h5-dora-evaluation-protocol-revised-review-v2-20261128/calls.json",
+        "sha256": "eb79b115ccf5fc0bd3f7121e73111e8ff74c5c663f5966204b8b694c712ff1d2"
+      },
+      {
+        "path": "tmp/openai-h5-dora-evaluation-protocol-revised-review-v2-20261128/result.json",
+        "sha256": "aec051913b22ba9b351504478c7f221da61eab97298a23797f12aeb349687101"
+      },
+      {
+        "path": "tmp/openai-h5-dora-evaluation-protocol-revised-review-v2-20261128/provider.jsonl",
+        "sha256": "b0bad7f45cad5c04a3b3e6949a57cdb6ccc1c4a9b08ee7c47756a14256ae7413"
+      }
+    ],
+    "factBatchReused": true,
+    "factChecksReused": 8,
+    "generationRepeated": false,
+    "revisedDataAndMeasurementPassedInDesignBatch": true,
+    "originalTerminalStatus": "invalid_response",
+    "finalReportAuditExecuted": false,
+    "published": false
+  },
+  "offlineDecoderReplay": {
+    "archivedReviewSha256": "04dad79c3ec67a98ef2d982cea5e0f9217938c45418d5f16561cec4127ae538f",
+    "priorInputDigest": "237702f2662bb346a0f123c5e7729ac22db746c5a1270cc821450bdfe7f5d4e2",
+    "newDecoderInputDigest": "6fb7a4a56d040dd909c711538db567bd4e9c90027e4649d659e44f45cea452d1",
+    "sameReviewRequests": true,
+    "passedChecks": 19,
+    "totalChecks": 20,
+    "remainingCheck": {
+      "checkId": "section_2",
+      "status": "failed",
+      "planBindings": [
+        "/states/4/representation",
+        "/states/2/representation",
+        "/steps/8/operation/action",
+        "/steps/1/operation/action",
+        "/data/inputs/1/preparation"
+      ],
+      "evidenceBindings": [
+        {
+          "evidenceId": "E17",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E8",
+          "field": "quote"
+        },
+        {
+          "evidenceId": "E2",
+          "field": "quote"
+        }
+      ],
+      "reason": "方案统一假定适配权重形状为[d,k]、按第0轴求列范数，却未规定如何将LLaMA实际线性层存储布局映射到该约定，尤其未规定何时转置并映回。模型结构检查没有验证该映射，故无法保证公式对应各实际Q/K/V/Up/Down层。"
+    },
+    "newGenerationBytes": 31984,
+    "providerCalls": 0,
+    "scientificComplete": false,
+    "artifact": {
+      "path": "tmp/h5-dora-proposal-pointer-replay-20261128.json",
+      "sha256": "f0e71607ffb5c0ccd10cdeb01875e570f91d01cb9ea8ec23363198b9bb692cd1"
+    },
+    "commit": "9af0962c71a8ef5e7784729aa388fe1c1e7ea18b",
+    "regressionPassed": 409
+  }
+}
