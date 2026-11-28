@@ -253,7 +253,8 @@ def generate(snapshot, *, current, checkpoint, invoke, recover=None, before_disp
                         point = compile_paper_boundary(
                             point, papers, snapshot['sources'], evidence_owners,
                             setting_statements=stage.get('paperSettingStatements') is True,
-                            cited_dataset_scope=record.get('comparisonCrossPaperBoundaryContractVersion') in (7, 8))
+                            cited_dataset_scope=record.get('comparisonCrossPaperBoundaryContractVersion') in (7, 8, 9),
+                            isolate_method_summaries=record.get('comparisonCrossPaperBoundaryContractVersion') == 9)
                     point = bind_stage_point(point, pairs,
                                              setting_references=setting_references and (stage['stageId'] == 'joint' or bool(papers)),
                                              protocol_settings_only=(record.get('comparisonJointReportsContractVersion') == 16

@@ -32,6 +32,13 @@ TYPED_POLICY = ('For paperSubjects use exact publication IDs in comparison_evide
                 'Use notEstablished for comparisons the citations do not establish. Explain established alignment with citations. '
                 'Return null if no answer is grounded.\n')
 _DATASET_ATTRIBUTE = re.compile(r'(?:评测|实验|测试|基准)?数据集(?:范围)?|(?:evaluation |test |benchmark )?datasets?', re.I)
+_METHOD_SUMMARY_ATTRIBUTE = re.compile(
+    r'(?:原始)?(?:场景)?表示(?:与训练|与压缩机制|机制)|'
+    r'(?:额外)?压缩(?:与处理成本|机制|流程)|(?:额外)?处理成本|'
+    r'(?:original |scene )?representation and (?:training|compression)|'
+    r'(?:additional )?(?:compression (?:mechanism|pipeline|and processing cost)|processing cost)',
+    re.I,
+)
 
 
 def explicitly_requests_cross_paper_speed(question):
@@ -42,7 +49,7 @@ def explicitly_requests_cross_paper_speed(question):
 
 def scopes(record, plan, targets, *, question=None):
     version = record.get('comparisonCrossPaperBoundaryContractVersion')
-    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6, 7, 8, 9):
         return {}
     explicit_request = version >= 2 and explicitly_requests_cross_paper_speed(question)
     requirements = {row['obligationId']: row for row in plan.get('requirements', [])}
@@ -60,7 +67,7 @@ def scopes(record, plan, targets, *, question=None):
         # Role excerpts can be shorter than the user's requirement. Use only
         # this target's frozen question and criteria to recover its meaning.
         frozen_speed = False
-        if version in (3, 4, 5, 6, 7, 8) and explicit_request:
+        if version in (3, 4, 5, 6, 7, 8, 9) and explicit_request:
             criteria = requirements.get(oid, {}).get('completionCriteria', [])
             question_parts = [target['question'], *(row['requirement'] for row in criteria)]
             frozen_speed = any(explicitly_requests_cross_paper_speed(part) for part in question_parts)
@@ -69,7 +76,8 @@ def scopes(record, plan, targets, *, question=None):
     return result
 
 
-def compile_point(point, papers, sources, evidence_owners, *, setting_statements=False, cited_dataset_scope=False):
+def compile_point(point, papers, sources, evidence_owners, *, setting_statements=False, cited_dataset_scope=False,
+                  isolate_method_summaries=False):
     """Resolve model-selected publication aliases without inferring evidence or settings."""
     refs = point.get('evidenceRefs')
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
@@ -113,6 +121,10 @@ def compile_point(point, papers, sources, evidence_owners, *, setting_statements
         if not anchors:
             raise ValueError('stage_cross_paper_setting_owner')
         attribute = setting.get('attribute')
+        if (isolate_method_summaries and set(setting) == {'subject', 'attribute', 'value', 'evidenceRefs'}
+                and isinstance(value, str) and isinstance(attribute, str)
+                and _METHOD_SUMMARY_ATTRIBUTE.fullmatch(attribute.strip())):
+            continue
         if cited_dataset_scope and isinstance(attribute, str) and _DATASET_ATTRIBUTE.fullmatch(attribute.strip()):
             # An observed list is about these passages. The authored values and
             # their independent factual checks still apply as written.

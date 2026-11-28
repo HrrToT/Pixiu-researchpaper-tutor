@@ -349,6 +349,31 @@ def test_cited_dataset_scope_keeps_values_and_exact_setting_ownership():
         compile_point(point, papers, sources, {'E1': 'P2', 'E2': 'P1'}, cited_dataset_scope=True)
 
 
+def test_fps_boundary_keeps_benchmark_protocol_without_unrelated_method_summaries():
+    from services.deep_research.comparison_cross_paper_boundary import compile_point
+
+    papers = ['P1', 'P2']
+    sources = {'P1': {'title': 'Paper One'}, 'P2': {'title': 'Paper Two'}}
+    owners = {'E1': 'P1', 'E2': 'P2'}
+    point = {'evidenceRefs': ['E1', 'E2'], 'body': {'boundary': {
+        'observedSettings': [
+            {'subject': 'P1', 'attribute': '原始表示与训练', 'value': '从稀疏点开始训练。', 'evidenceRefs': ['E1']},
+            {'subject': 'P2', 'attribute': '额外压缩与处理成本', 'value': '微调压缩模型。', 'evidenceRefs': ['E2']},
+            {'subject': 'P1', 'attribute': '测试平台', 'value': '使用 GPU X，指定基线除外。', 'evidenceRefs': ['E1']},
+            {'subject': 'P2', 'attribute': '对照口径', 'value': '使用 GPU X 重新训练对照模型。', 'evidenceRefs': ['E2']},
+        ],
+        'notEstablished': [{'type': 'comparison_evidence', 'subjects': papers, 'quantity': 'FPS 排名'}],
+    }}}
+    previous = compile_point(point, papers, sources, owners)
+    current = compile_point(point, papers, sources, owners, isolate_method_summaries=True)
+    assert current['body']['boundary']['observedSettings'] == previous['body']['boundary']['observedSettings'][2:]
+    assert current['body']['boundary']['notEstablished'] == previous['body']['boundary']['notEstablished']
+    assert current['evidenceRefs'] == point['evidenceRefs']
+    point['body']['boundary']['observedSettings'][0]['evidenceRefs'] = ['E2']
+    with pytest.raises(ValueError, match='stage_cross_paper_setting_owner'):
+        compile_point(point, papers, sources, owners, isolate_method_summaries=True)
+
+
 @pytest.mark.parametrize('with_example', [True, False])
 def test_planner_grouping_cannot_hide_asked_cross_paper_speed_under_memory_advice(with_example):
     r, plan, rows, aliases, bundles = fixture()
