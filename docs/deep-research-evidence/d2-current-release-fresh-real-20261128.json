@@ -1,0 +1,140 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_development_graph_run",
+  "sourceCommit": "e183b5296eca5abbc84782154c3a787df0b0ab87",
+  "definitionHash": "7be10cf7ae80a29d251db502ad41c2f4705e55225a35f3160f55765d73bd25f9",
+  "runId": "dr_run_099f9b11f08a571da4d78e26558fb931",
+  "independentHoldoutCredit": 0,
+  "reusedStageReceipts": 0,
+  "externalLiteratureSearches": 0,
+  "productionWrites": 0,
+  "usage": {
+    "generationCalls": 16,
+    "tokens": 82034,
+    "seconds": 194.0,
+    "byModel": {
+      "gpt-6-luna": {
+        "calls": 6,
+        "tokens": 20403
+      },
+      "gpt-6.1-terra": {
+        "calls": 10,
+        "tokens": 61631
+      }
+    },
+    "providerCountingRequests": 1
+  },
+  "result": {
+    "verifiedClaims": 11,
+    "factualRejections": 0,
+    "status": "completed",
+    "outcome": "partial",
+    "coveredObligationIds": [
+      "representation_mechanism",
+      "processing_cost",
+      "storage_quality",
+      "speed_and_choice",
+      "requested_numeric_example"
+    ],
+    "wholeAnswerGap": {
+      "requestExcerpt": "向初学者比较原始表示与压缩后部署的取舍",
+      "missingAnswerElement": "球谐系数、协方差和蒸馏等关键术语缺少面向初学者的解释。"
+    },
+    "coherent": true,
+    "publicationId": "dr_pub_74463ac2296c4ab9813f814977ba6a55",
+    "deliveredToWorkspace": false
+  },
+  "diagnostic": {
+    "beginnerTermsByTarget": {
+      "cmp_0_0": [
+        "球谐系数",
+        "蒸馏"
+      ],
+      "cmp_1_0": [
+        "球谐系数",
+        "协方差"
+      ]
+    },
+    "countedStages": {
+      "P1": {
+        "bytes": 23984,
+        "beginnerDefinitionGuidance": true
+      },
+      "P2": {
+        "bytes": 23986,
+        "beginnerDefinitionGuidance": true
+      },
+      "joint": {
+        "bytes": 23893,
+        "beginnerDefinitionGuidance": false
+      }
+    },
+    "repairState": "skipped_budget",
+    "repairLimit": {
+      "kind": "repairEvidenceBytes",
+      "limit": 0,
+      "used": 6440
+    }
+  },
+  "sourceChecks": {
+    "literalOccurrencesAtCitedPhysicalPage": 38,
+    "tablePhysicalPage": 6,
+    "groupIndex": 0,
+    "tableRows": {
+      "3D-GS": {
+        "values": [
+          "144",
+          "782MB",
+          "27.40",
+          "0.813",
+          "0.217"
+        ],
+        "physicalRow": "3D-GS∗ [16]                 144      782MB      27.40       0.813        0.217106      433MB      23.66       0.845        0.178"
+      },
+      "Ours": {
+        "values": [
+          "237",
+          "45MB",
+          "27.13",
+          "0.806",
+          "0.237"
+        ],
+        "physicalRow": "Ours                        237       45MB       27.13       0.806        0.237357       25MB       23.44       0.832        0.202"
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/intent.json",
+      "sha256": "1c9452bc86c35d16b4bf693ed209d71603414bfd7b04e55dafb0eb5011fbf682"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/run.json",
+      "sha256": "1c1344dfaeb9e0bf7441f635cf8bcc780114ec6861d923cc03c3a5faca808c39"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/calls.json",
+      "sha256": "5360d061b4a9dc07ff3cbaba583c4b26f58cc69d925877b54fe90cb4edcaf770"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/result.json",
+      "sha256": "b3f754e4abb0e2a685073e626e1fd3cf32be4bb026a6468180c0879defc15095"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/provider.jsonl",
+      "sha256": "2a6c08a7f88d18dcadcdeb45430e917d5da8a1acaeeb5120c4d06519397e0916"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/provider-counts.jsonl",
+      "sha256": "31857e625b87aec8132240fe5d871858f5b5d07299909da1fb33cefeda95ed65"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/report.md",
+      "sha256": "b0e923c59ef1d3a028cce1d44d04c9044dc6759e2fd0f471e7ca8cf3d3815a9d"
+    },
+    {
+      "path": "tmp/openai-d2-current-release-fresh-20261128/citation-physical-check.json",
+      "sha256": "27b9a86c1b4a380c0bc45e1536fe9507d4fc07a7099f95f98577003b1146684a"
+    }
+  ]
+}
