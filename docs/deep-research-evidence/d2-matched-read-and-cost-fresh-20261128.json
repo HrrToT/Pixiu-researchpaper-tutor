@@ -1,0 +1,167 @@
+{
+  "case": "D2-BASELINE-COMPRESSION",
+  "kind": "fresh_d2_matched_table_and_cost_with_advice_binding_replay",
+  "sourceCommit": "74550c642096fd3bfad893177305735242ce6d8a",
+  "runId": "dr_run_bbc93c1fb86d585babe92a2124b06d54",
+  "outcome": "partial",
+  "usage": {
+    "generationRequests": 13,
+    "totalTokens": 71503,
+    "seconds": 116.0,
+    "byModel": {
+      "gpt-6-luna": 5,
+      "gpt-6.1-terra": 8
+    }
+  },
+  "pdfChecks": {
+    "status": "completed",
+    "outcome": "partial",
+    "claimCount": 6,
+    "literalCitationOccurrences": {
+      "true": 18
+    },
+    "sourceTableCells": {
+      "true": 10
+    }
+  },
+  "verifiedOriginalSpeedCell": "cmp_7_0",
+  "verifiedLightGaussianCostCell": "cmp_2_0",
+  "verifiedMatchedExample": "cmp_conclusion_1",
+  "rejectedClaims": [
+    {
+      "claimId": "cmp_1_0",
+      "reason": "absence_not_established",
+      "detail": "本条引用没有明确建立作者或论文缺少这些验证。把结论限定为本次引用能支持的实验范围及其不能证明的推广；不要写成作者未在其他条件验证、论文没有提供或全文不存在。引用中的其他否定句不构成这项缺席判断的依据。"
+    },
+    {
+      "claimId": "cmp_3_0",
+      "reason": "semantic_unresolved",
+      "detail": "摘录称从零阶开始，随后每次引入一个频带，直至全部四个频带纳入；不能据此说引入至四阶。"
+    },
+    {
+      "claimId": "cmp_4_0",
+      "reason": "semantic_unresolved",
+      "detail": "表中 LightGaussian 的存储小于所列 3D-GS，但大于 Compressed 3D-GS*；“模型存储较小”未限定比较基线。"
+    }
+  ],
+  "remainingGaps": [
+    {
+      "obligationId": "obl1",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "说明两篇论文中表示与压缩机制的差异，以及压缩引入的额外处理成本。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：Identify the additional processing costs reported for compression, including their scope as described in the papers."
+    },
+    {
+      "obligationId": "obl1",
+      "sourceWorkId": "803219bf205d0142621b1ac5339f8d918d3f883f814559f6336b8bfdec5ca634.pdf",
+      "question": "说明两篇论文中表示与压缩机制的差异，以及压缩引入的额外处理成本。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：Identify the additional processing costs reported for compression, including their scope as described in the papers."
+    },
+    {
+      "obligationId": "requested_numeric_example",
+      "sourceWorkId": "f4c0c9f27e2d02b0265017f66049d471eb66cb50203bc918f51ba07d20cbbe11.pdf",
+      "question": "给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。",
+      "checked": true,
+      "missingEvidence": "联合前提尚未就绪：给出一组来源明确、数据组和测量口径对齐的原文基线对照数字，并说明适用条件。"
+    },
+    {
+      "obligationId": "obl3",
+      "question": "给出显存受限场景下的有条件选择建议，并将建议依据限定在两篇论文报告的信息及其适用边界内。",
+      "checked": false,
+      "missingEvidence": "依赖的研究问题尚未完成"
+    },
+    {
+      "obligationId": "obl1",
+      "question": "说明两篇论文中表示与压缩机制的差异，以及压缩引入的额外处理成本。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "Describe the representation and compression operations documented in each paper, distinguishing the original method from the compressed deployment workflow.",
+        "Identify the additional processing costs reported for compression, including their scope as described in the papers."
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "c1",
+          "c2"
+        ],
+        "aspectIds": [
+          "criterion:c1",
+          "criterion:c2"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      }
+    },
+    {
+      "obligationId": "obl3",
+      "question": "给出显存受限场景下的有条件选择建议，并将建议依据限定在两篇论文报告的信息及其适用边界内。",
+      "missingEvidence": "尚未形成通过核验的联合比较结论",
+      "stage": "answer",
+      "missingAspects": [
+        "Provide a conditional choice recommendation for memory-constrained use, tying the conditions to the reported trade-offs and stating relevant evidence limits.",
+        "给出显存受限场景下的有条件选择建议，并将建议依据限定在两篇论文报告的信息及其适用边界内。"
+      ],
+      "aspectEvidenceRefs": [],
+      "gapDetail": {
+        "criterionIds": [
+          "c5"
+        ],
+        "aspectIds": [
+          "criterion:c5"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "missingJointConclusion": true
+    },
+    {
+      "obligationId": "answer_scope",
+      "question": "只依据任务中的原始3DGS v1和LightGaussian v6，向初学者比较原始表示与压缩后部署的取舍。先给结论，再用简洁表格比较表示与压缩机制、额外处理成本、存储与画质、渲染速度。数字只选一组来源和口径明确的基线对照作例子，不列全部数据集；说明能比较什么、为什么不能直接拿两篇的FPS排名，并给出显存受限时的有条件选择建议。不用外部资料。",
+      "missingEvidence": "最终回答尚未完整回应这一问题",
+      "stage": "answer",
+      "missingAspects": [
+        "给出显存受限时的有条件选择建议"
+      ],
+      "aspectEvidenceRefs": [],
+      "missingRequestExcerpt": "给出显存受限时的有条件选择建议",
+      "gapDetail": {
+        "criterionIds": [],
+        "aspectIds": [
+          "request"
+        ],
+        "missingContent": "请补全本条固定要求中标为未满足的部分，具体要求见 missingAspects。",
+        "reason": "此缺口由固定检查项的未满足状态汇总；模型说明不作为新增要求或论文事实。"
+      },
+      "wholeQuestion": true
+    }
+  ],
+  "pairedAdviceReplay": {
+    "originalRunErrors": [
+      {
+        "targetId": "joint_obl3_conditional_advice",
+        "reason": "joint_advice_requires_device_memory_test_first"
+      }
+    ],
+    "updatedErrors": [],
+    "bothNamedBranches": true,
+    "sameOtherDraftPointsAcrossCandidateVersions": 9,
+    "providerCalls": 0,
+    "draftAdviceOnly": true
+  },
+  "productionWrites": 0,
+  "workspaceDeliveryExercised": false,
+  "independentHoldoutCredit": 0,
+  "artifacts": {
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/intent.json": "6fd2de61ed014364e1b5b9d79cf27c20c91ee1a87710c50fb766cc6bfeb78bce",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/run.json": "81d6e2598458cebc6786f2892984b40da57b33f123c5ff94cefdbca8a8fcc41b",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/result.json": "4b844df795eedcec2eb2bd83bc5d9aa56a89469c047df546cc18a6482e55b680",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/calls.json": "8e45c9d9539dec824856bc59511fead26c0f60e25036707dc88349f7de0e78fa",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/provider.jsonl": "dfc8710762d3ff62b9b1a0f1c08cde5b6376acef1d2800019a66618c233de349",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/independent-pdf-check.json": "8bc1601b1961f752e6baa8a53967c0caca9f42e907fbaec9dabec2b24044f343",
+    "tmp/openai-d2-matched-read-and-cost-fresh-20261128/exact-title-reference-replay.json": "18640cb20c28be522d7fa897ffcaab8e7e393f1b1a5699b74b3d8dbdbe52849c",
+    "tmp/openai-d2-speed-read-fresh-20261128/listed-costs-precheck-replay.json": "0b7955812ead0a90bdd3b60ee2ae6cfbc051ef887bfa9a8392a44118a9a4eb1f"
+  }
+}
