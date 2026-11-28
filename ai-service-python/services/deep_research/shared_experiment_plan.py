@@ -14,6 +14,11 @@ MAX_BYTES = 24000
 MAX_EXPANDED_BYTES = 32000
 EVALUATION_PREPARATION_MARKER = 'sharedExperimentEvaluationPreparationVersion'
 OPERATION_CAPACITY_MARKER = 'sharedExperimentOperationCapacityVersion'
+EXPLICIT_SEMANTICS_MARKER = 'sharedExperimentExplicitSemanticsVersion'
+NORMALIZATION_GUIDANCE = (
+    'For an update normalized by a norm, name its complete argument before division, specify the axis, '
+    'and identify what is detached if gradients change.\n'
+)
 GROUPS = ('00', '10', '01', '11')
 CONTRASTS = {
     'A': [-0.5, 0.5, -0.5, 0.5],

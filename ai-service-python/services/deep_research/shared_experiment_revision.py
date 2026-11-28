@@ -10,7 +10,8 @@ from services.deep_research.shared_experiment_generation import (
     fact_boundary_enabled, prepare as original_generation,
 )
 from services.deep_research.shared_experiment_plan import (
-    EVALUATION_PREPARATION_MARKER, MAX_BYTES, _array, _object, bind_for_review, validate, validate_bound,
+    EVALUATION_PREPARATION_MARKER, EXPLICIT_SEMANTICS_MARKER, MAX_BYTES, NORMALIZATION_GUIDANCE,
+    _array, _object, bind_for_review, validate, validate_bound,
 )
 
 NODE='repair_experiment_shared'
@@ -383,7 +384,10 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     'Rephrasing alone does not resolve a citation error.\n' + instructions)
     def measure(data, *, policy=None, output_tokens=6144):
         context = {key:value for key,value in data.items() if not fact_only or key != 'requirements'}
-        prompt=(instructions if policy is None else policy)+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
+        guidance = instructions if policy is None else policy
+        if not fact_only and record.get(EXPLICIT_SEMANTICS_MARKER) == 1:
+            guidance = NORMALIZATION_GUIDANCE + guidance
+        prompt=guidance+input_text({**context,'baseDigest':base['bindingDigest'],**fields})
         req=request_identity(record,NODE,prompt,{'temperature':0.0,'max_tokens':output_tokens,'timeout_seconds':90})
         return req, len(prompt.encode('utf-8'))+overhead_bytes(record,NODE,req['extra'])
     supply = {}

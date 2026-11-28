@@ -8,7 +8,7 @@ import json
 
 from services.deep_research.contracts import BudgetExhaustedError, DeepResearchError, digest
 from services.deep_research.shared_experiment_generation import enabled, build as build_generation, prepare as prepare_generation, _parse
-from services.deep_research.shared_experiment_plan import validate_bound, _object, _array
+from services.deep_research.shared_experiment_plan import EXPLICIT_SEMANTICS_MARKER, GROUPS, validate_bound, _object, _array
 
 NODE = 'review_experiment_shared'
 MAX_INPUT = 32000
@@ -611,6 +611,9 @@ def build(record, input_data, aliases, *, required_domains=()):
                 if record.get(INDEXED_STATES_MARKER) == 1 and (states := view['proposal'].get('states')):
                     state_ids = ', '.join(state['id'] for state in states)
                     policy = 'State IDs in /states index order (0-based): ' + state_ids + '.\n' + policy
+        if record.get(EXPLICIT_SEMANTICS_MARKER) == 1 and view['proposal'].get('analysis', {}).get('contrasts'):
+            arm_order = ','.join(GROUPS)
+            policy = f'Contrast weight order is [{arm_order}] (bits A,B), independent of groups list order.\n' + policy
         prompt = policy + input_text(view)
         options = {'temperature':0.0,'max_tokens':OUTPUT_TOKENS,'timeout_seconds':90}
         if reference_policy:

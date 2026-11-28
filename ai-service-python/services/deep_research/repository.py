@@ -403,6 +403,7 @@ class DeepResearchRepository:
                                      'countedExperimentAnswerContractVersion',
                                      'sharedExperimentReviewPackingVersion',
                                      'sharedExperimentReviewGroupBindingsVersion',
+                                     'sharedExperimentExplicitSemanticsVersion',
                                      'sharedExperimentFactBoundaryVersion',
                                      'sharedExperimentDensificationEvidenceVersion',
                                      'sharedExperimentDensificationExecutionVersion',
