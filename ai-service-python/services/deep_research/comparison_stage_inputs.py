@@ -22,7 +22,7 @@ def enabled(record):
     return (type(record.get('comparisonPlanningContractVersion')) is int
             and record['comparisonPlanningContractVersion'] == 6
             and type(record.get('comparisonReviewBatchContractVersion')) is int
-            and record['comparisonReviewBatchContractVersion'] in (2, 3)
+            and record['comparisonReviewBatchContractVersion'] in (2, 3, 4)
             and comparison_enabled(record))
 
 

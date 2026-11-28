@@ -7,7 +7,7 @@ def enabled(record):
             and (record['comparisonPlanningContractVersion'] in (1,2)
                  or record['comparisonPlanningContractVersion'] in (3,4,5,6)
                  and type(record.get('comparisonReviewBatchContractVersion')) is int
-                 and record['comparisonReviewBatchContractVersion'] in (2, 3))
+                 and record['comparisonReviewBatchContractVersion'] in (2, 3, 4))
             and type(record.get('factualReviewContractVersion')) is int
             and record['factualReviewContractVersion'] == 4 and cells_enabled(record))
 

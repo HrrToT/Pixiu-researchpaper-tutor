@@ -359,7 +359,7 @@ class ResearchFacade:
                and output_kind == 'paper_comparison' else
                {'shortComparisonLayoutContractVersion': 4} if continuation_context and self._comparison_cells_version == 1 else {}),
             "comparisonReviewBatchContractVersion": (
-                3 if output_kind == 'paper_comparison' else 2) if self._comparison_review_batch_version == 1 else 0,
+                4 if output_kind == 'paper_comparison' else 2) if self._comparison_review_batch_version == 1 else 0,
             "comparisonPlanningContractVersion": (6 if self._comparison_review_batch_version == 1 else 2) if self._comparison_cells_version == 1 else 0,
             **({'comparisonJointRequestCoverageVersion': 3, 'comparisonPerPaperResultRolesVersion': 2,
                 'comparisonSelectedPairBindingVersion': 1}
@@ -1684,11 +1684,11 @@ class ResearchFacade:
                 **({'bound_duration_spelling':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (4,5,6)
                    and type(record.get('comparisonReviewBatchContractVersion')) is int
-                   and record['comparisonReviewBatchContractVersion'] in (2, 3) else {}),
+                   and record['comparisonReviewBatchContractVersion'] in (2, 3, 4) else {}),
                 **({'comparison_embedded_measurements':True} if type(record.get('comparisonPlanningContractVersion')) is int
                    and record['comparisonPlanningContractVersion'] in (5,6)
                    and type(record.get('comparisonReviewBatchContractVersion')) is int
-                   and record['comparisonReviewBatchContractVersion'] in (2, 3)
+                   and record['comparisonReviewBatchContractVersion'] in (2, 3, 4)
                    and self._repo.require_run(run_id).get('state',{}).get('outputKind')=='paper_comparison' else {}))
         return verify
     

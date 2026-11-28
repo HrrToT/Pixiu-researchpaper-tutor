@@ -113,6 +113,31 @@ def test_four_target_limit_still_splits_complete_input_over_the_capacity():
 
     assert groups(claims, preview, max_targets=4) == [claims[:3], claims[3:]]
 
+
+def test_five_initial_targets_preserve_per_target_decoding_and_repair_limits():
+    from test_deep_research_comparison_intent import record as comparison_record
+    from services.deep_research.comparison_review_batches import initial_target_limit
+    from services.deep_research.factual_review import DIRECT_REVIEW_OPTION
+
+    record = {**comparison_record(), MARKER: 4, 'claimIsolationContractVersion': 1,
+              'comparisonPlanningContractVersion': 6}
+    limit = initial_target_limit(record)
+    assert limit == 5
+    assert initial_target_limit({**record, MARKER: 3}) == 4
+    claims, evidence = inputs(limit)
+    rows = [response(c['claimId'], i) for i, c in enumerate(claims)]
+    rows[-1]['scopeAudit']['premises'][0]['evidenceId'] = 'E1'
+    invoke = Mock(return_value={'content': json.dumps(rows)})
+    semantic = checker(invoke)
+    semantic._comparison_initial_review_targets = limit
+    semantic._direct_comparison_review = True
+    verdicts = semantic(claims, evidence)
+    assert [row['status'] for row in verdicts] == ['passed'] * 4 + ['failed']
+    assert semantic._comparison_target_limit('verify_repair') == 3
+    invoke.assert_called_once()
+    assert invoke.call_args.kwargs['extra_body'][DIRECT_REVIEW_OPTION] is True
+    assert all(row['quote'] in invoke.call_args.kwargs['prompt'] for row in evidence)
+
 def test_complete_oversized_quote_is_not_trimmed_or_sent():
     claims,evidence=inputs(1);evidence[0]['quote']='x'*40000
     evidence[0]['sourceContext']=evidence[0]['quote']
@@ -237,14 +262,14 @@ def test_real_sqlite_ledger_reuses_batch_identity_and_never_resends_unknown(tmp_
         assert REPAIR_OUTPUT_OPTION not in request.extra_body
 
 
-@pytest.mark.parametrize('value',[None,True,'1',0,2,3,4])
+@pytest.mark.parametrize('value',[None,True,'1',0,2,3,4,5])
 def test_batch_policy_requires_exact_server_marker_and_isolated_comparison_profile(value):
     from test_deep_research_shared_experiment_generation import context
     r,_,_=context();r['comparisonPlanningContractVersion']=2;r['state']['outputKind']='paper_comparison'
     r[MARKER]=1
     assert enabled(r)
     r[MARKER]=value
-    assert enabled(r) is (type(value) is int and value in (2, 3))
+    assert enabled(r) is (type(value) is int and value in (2, 3, 4))
     r[MARKER]=1;r['claimIsolationContractVersion']=value
     assert not enabled(r)
 
