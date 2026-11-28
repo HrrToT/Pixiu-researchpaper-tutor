@@ -111,12 +111,22 @@ def _table_display_diagnostic(claim, support,comparison_context=None):
             '不能只写另一个方法名代替Ours等原表标签，也不能修改单元格或加入未报告的计算。'}
 
 
+_TEST_IMAGE_ORDINAL = re.compile(
+    r'\b(?:taking|selecting|using|take|select|use)\s+every\s+([1-9]\d*)(?:st|nd|rd|th)'
+    r'\s+(?:photo(?:graph)?|image)\s+for\s+(?:the\s+)?test(?:ing)?\b', re.I,
+)
+_TEST_IMAGE_SAMPLE = re.compile(
+    r'(每(?:隔)?\s*([1-9]\d*)\s*(?:张(?:照片|图像|图片)|幅(?:图像|图片))\s*(?:抽取|选取|留出|取)\s*)'
+    r'(?:1|一)(?=\s*(?:张|幅)(?:照片|图像|图片)?\s*(?:作为|用于|做|供)?测试)',
+)
+
+
 def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_version=0,
                     quantity_spelling_version=0, feedback_version=0, table_references_version=0,
                     requested_source_revisions=None,comparison_context=None,bound_duration_spelling=False,
                     comparison_embedded_measurements=False, bound_composite_cells=False,
                     bind_composite_revisions=False, named_revision_table=None, numeric_context=None,
-                    cited_passage_scope=False, named_revision_question=None) -> dict:
+                    cited_passage_scope=False, named_revision_question=None, test_image_sampling=False) -> dict:
     """Pure hard checks shared by publication and pre-classification edits.
 
     Candidates still require a separate semantic verdict; nothing is accepted
@@ -228,6 +238,13 @@ def precheck_claims(claims: list[dict], evidence: list[dict], *, absence_scope_v
                 source_texts = [_MIP_NERF_360.sub('', text) for text in source_texts]
             if numeric_context:
                 source_texts.extend(text for item in support for text in numeric_context.get(item['evidenceId'], ()))
+            if test_image_sampling:
+                # An exact held-out ordinal expresses one selected image per stride.
+                # Remove that translated count only, never the stride or unrelated numbers.
+                strides = {stride for text in source_texts for stride in _TEST_IMAGE_ORDINAL.findall(text)
+                           if stride != '1'}
+                claim_text = _TEST_IMAGE_SAMPLE.sub(
+                    lambda match: match[1] if match[2] in strides else match[0], claim_text)
             if conceptual_articles:
                 from services.deep_research.measurement_numbers import parameter_identifiers, without_parameter_identifiers
                 known = set().union(*(parameter_identifiers(text) for text in source_texts))

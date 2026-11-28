@@ -1,6 +1,6 @@
 import pytest
 
-from services.deep_research.verification import make_evidence, verify_claims
+from services.deep_research.verification import make_evidence, precheck_claims, verify_claims
 from services.deep_research.coverage import coverage_gaps, validate_plan
 
 
@@ -33,6 +33,23 @@ def test_number_mismatch_cannot_be_overridden_by_model():
     result = verify_claims([claim(ev, "150x reduction")], [ev], passed)
     assert not result["accepted"]
     assert result["rejected"][0]["reason"] == "numeric_mismatch"
+
+
+@pytest.mark.parametrize('text,quote,enabled,passes', [
+    ('每隔8张照片取1张作为测试集', 'Taking every 8th photo for test.', True, True),
+    ('每隔8张照片取一张测试', 'Taking every 8th photo for test.', True, True),
+    ('每隔8张照片取1张作为测试集', 'Taking every 8th photo for test.', False, False),
+    ('每隔9张照片取1张作为测试集', 'Taking every 8th photo for test. Table 9.', True, False),
+    ('每隔8张照片取2张作为测试集', 'Taking every 8th photo for test.', True, False),
+    ('每隔8张照片取1张作为测试集', 'Taking every 8th photo for training.', True, False),
+    ('每隔8张照片取1张作为测试集，训练1轮', 'Taking every 8th photo for test.', True, False),
+])
+def test_test_image_ordinal_only_explains_the_count_of_this_sampling_clause(text, quote, enabled, passes):
+    ev = make_evidence(source(), quote, quote, location={}, obligation_ids=[])
+    result = precheck_claims([claim(ev, text)], [ev], quantity_spelling_version=24, test_image_sampling=enabled)
+    assert bool(result['candidates']) is passes
+    if not passes:
+        assert result['rejected'][0]['reason'] == 'numeric_mismatch'
 
 
 def test_chinese_numbers_and_conditions_are_checked_before_model_verdict():

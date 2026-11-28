@@ -695,7 +695,8 @@ def _fact_prechecks(record, aliases, input_data, *, passed_bindings=None):
     policy = {'absence_scope_version': record.get('absenceScopeContractVersion', 0),
               'quantity_spelling_version': record.get('quantitySpellingContractVersion', 0),
               'table_references_version': record.get('tableReferencesContractVersion', 0),
-              'cited_passage_scope': record.get(CITED_PASSAGE_SCOPE_MARKER) == 1}
+              'cited_passage_scope': record.get(CITED_PASSAGE_SCOPE_MARKER) == 1,
+              'test_image_sampling': record.get('sharedExperimentTestSamplingVersion') == 1}
     if _fact_context_enabled(record):
         from services.deep_research.shared_experiment_generation import fact_boundary_enabled
         if fact_boundary_enabled(record):
