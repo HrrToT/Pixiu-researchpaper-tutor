@@ -336,6 +336,38 @@ def test_design_only_repair_keeps_quoted_context_and_protects_checked_paper_fact
         _apply_scoped(base, {**saved, 'response': reply(changed)})
 
 
+def test_design_repair_may_omit_quotes_only_for_unchanged_verified_facts():
+    from services.deep_research.shared_experiment_revision import _apply_scoped, _input_digest
+    from test_deep_research_shared_experiment_plan import bind_for_review, proposal
+
+    original = proposal()
+    original['version'] = 3
+    for step in original['steps']:
+        step['inputIds'] = []
+    original['data']['inputs'][0]['availability'] = 'provided'
+    for budget in original['budgets']:
+        budget['allocation'] = 'single'
+    for metric in original['metrics']:
+        metric['fitMemoryCaptures'] = []
+    original['sourceFacts'][0]['evidenceRefs'] = ['E2']
+    bound = bind_for_review(original, ['E1', 'E2'])
+    base = {'bindingDigest': bound['bindingDigest'], 'boundProposal': bound}
+    edit = {'baseDigest': bound['bindingDigest'], 'unresolved': original['unresolved'], 'edits': [
+        {'path': '/analysis/limitations', 'value': 'Report effects only for the declared scenes and levels.'}]}
+    saved = {'preserveSourceFacts': True, 'suppliedEvidenceAliases': ['E1'], 'response': reply(edit)}
+    with pytest.raises(ValueError, match='outside its input'):
+        _apply_scoped(base, saved)
+    scoped = {**saved, 'omitLockedFactEvidence': True}
+    output = _apply_scoped(base, scoped)
+    assert output['proposal']['sourceFacts'] == original['sourceFacts'] and not output['scientificApproval']
+    assert _input_digest(base, scoped) != _input_digest(base, saved)
+    with pytest.raises(ValueError, match='require locked'):
+        _apply_scoped(base, {**scoped, 'preserveSourceFacts': False})
+    edit['edits'].append({'path': '/sourceFacts/0/evidenceRefs', 'value': ['E1']})
+    with pytest.raises(ValueError, match='cannot change checked source facts'):
+        _apply_scoped(base, {**scoped, 'response': reply(edit)})
+
+
 def test_invalid_review_response_and_unknown_are_not_repair_eligibility():
     r,data,aliases=ready()
     def save(v):r['state']['sharedExperimentReview']=deepcopy(v)

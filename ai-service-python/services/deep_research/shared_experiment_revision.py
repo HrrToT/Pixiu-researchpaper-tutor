@@ -203,6 +203,8 @@ def _input_digest(base, saved):
         scope['allowedFactEditPaths'] = saved['allowedFactEditPaths']
     if saved.get('preserveSourceFacts') is True:
         scope['preserveSourceFacts'] = True
+    if saved.get('omitLockedFactEvidence') is True:
+        scope['omitLockedFactEvidence'] = True
     if saved.get(EVALUATION_PREPARATION_MARKER) == 1:
         scope[EVALUATION_PREPARATION_MARKER] = 1
     if saved.get(BOUND_DIGEST_MARKER) in (2, 3):
@@ -228,6 +230,9 @@ def view(record):
 
 
 def _apply_scoped(base, saved):
+    omit_fact_evidence = saved.get('omitLockedFactEvidence') is True
+    if omit_fact_evidence and saved.get('preserveSourceFacts') is not True:
+        raise ValueError('Omitted fact quotations require locked source facts')
     bound = apply(base, saved['response'], allowed_paths=saved.get('allowedFactEditPaths'),
                   evaluation_prepare=saved.get(EVALUATION_PREPARATION_MARKER) == 1,
                   identical_unresolved_echo=saved.get(BOUND_DIGEST_MARKER) in (2, 3),
@@ -235,7 +240,7 @@ def _apply_scoped(base, saved):
     if (saved.get('preserveSourceFacts') is True
             and bound['proposal']['sourceFacts'] != base['boundProposal']['proposal']['sourceFacts']):
         raise ValueError('A design-only repair cannot change checked source facts')
-    if bound['proposal'].get('version') == 3:
+    if bound['proposal'].get('version') == 3 and not omit_fact_evidence:
         supplied = set(saved['suppliedEvidenceAliases'])
         if any(not set(fact['evidenceRefs']) <= supplied for fact in bound['proposal']['sourceFacts']):
             raise ValueError('Repair cited evidence outside its input')
@@ -417,7 +422,8 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                                                      feedback_refs=feedback_refs)
         compact_version = record.get(COMPACT_SCIENCE_MARKER)
         preserve_facts = False
-        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4, 5, 6):
+        omit_locked_fact_evidence = False
+        if size > 32000 and 'scientificReview' in feedback and compact_version in (1, 2, 3, 4, 5, 6, 7):
             compact_data = {**input_data, 'evidence': [
                 {key: value for key, value in row.items() if key not in {
                     'resultRoleHintOnly', 'sourceContextRequired', 'contextOmitted', 'obligations',
@@ -428,6 +434,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                 1: COMPACT_SCIENCE_INSTRUCTIONS, 2: SCOPED_SCIENCE_INSTRUCTIONS,
                 3: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 4: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
                 5: ATTRIBUTION_SCIENCE_INSTRUCTIONS, 6: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
+                7: ATTRIBUTION_SCIENCE_INSTRUCTIONS,
             }[compact_version]
             compact_req, compact_size, compact_supplied = fit_accounted_evidence(
                 record, compact_data, aliases, proposal,
@@ -436,9 +443,9 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
             )
             if compact_size < size:
                 req, size, supplied = compact_req, compact_size, compact_supplied
-            if size > 32000 and compact_version in (4, 5, 6):
+            if size > 32000 and compact_version in (4, 5, 6, 7):
                 verified_prefix = None
-                if compact_version in (5, 6) and reviewed.get('verifiedPrefixFindings'):
+                if compact_version in (5, 6, 7) and reviewed.get('verifiedPrefixFindings'):
                     from services.deep_research.shared_experiment_review import reviewed_prefix_findings
                     verified_prefix = reviewed_prefix_findings(
                         prior, input_data, aliases, reviewed, include_source_fact_status=True)
@@ -449,7 +456,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     if record.get('sharedExperimentDensificationExecutionVersion') in (8, 9, 10, 11, 12, 13, 14):
                         design_policy += ('Keep with-checks asset preparation in data.inputs, not unresolved. '
                                           'Use unresolved only for open design decisions.\n')
-                    if compact_version in (5, 6):
+                    if compact_version in (5, 6, 7):
                         # Each redundant excerpt is a literal prefix of the same
                         # requirement; the question and all criteria stay intact.
                         design_data['requirements'] = [
@@ -461,7 +468,7 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                         if verified_prefix:
                             design_policy = ('Unchecked IDs have no verdict; retain their requirements.\n'
                                              + design_policy)
-                    if compact_version == 6:
+                    if compact_version in (6, 7):
                         design_policy = design_policy.replace(
                             'Define reproducible steps, stops, state links and held-out isolation. For unclear paper details,\n'
                             'state what evidence cannot establish. Aliases only in evidenceRefs. Invent no assets or results.\n',
@@ -474,6 +481,22 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
                     if fitted[1] <= 32000:
                         req, size, supplied = fitted
                         preserve_facts = True
+                    elif compact_version == 7 and verified_prefix:
+                        # The exact fact rows remain in the proposal and cannot
+                        # change. Only the diagnosed design edits need original
+                        # quotes in this request; the next review rechecks scope.
+                        selected = [row for row in design_data['evidence'] if row['evidenceId'] in feedback_refs]
+                        selected_ids = [row['evidenceId'] for row in selected]
+                        if set(selected_ids) == feedback_refs:
+                            table_ids = {row.get('tableDataRef') for row in selected}
+                            packet = {**design_data, 'evidence': selected,
+                                      'tables': {key: value for key, value in design_data['tables'].items()
+                                                 if key in table_ids}}
+                            packet_req, packet_size = measure(packet, policy=design_policy, output_tokens=4096)
+                            if packet_size <= 32000:
+                                req, size, supplied = packet_req, packet_size, selected_ids
+                                preserve_facts = True
+                                omit_locked_fact_evidence = True
         if size > 32000 and feedback.get('answerCoverage', {}).get('checks'):
             design_data = _design_only_context(input_data, reviewed, proposal, for_final_answer=True)
             if design_data is not None:
@@ -494,6 +517,8 @@ def prepare(record,input_data,aliases,*,invoke,checkpoint,required_domains=()):
         supply = {'suppliedEvidenceAliases':supplied}
         if preserve_facts:
             supply['preserveSourceFacts'] = True
+        if omit_locked_fact_evidence:
+            supply['omitLockedFactEvidence'] = True
     else:
         req, size = measure(input_data)
     if fact_only:
